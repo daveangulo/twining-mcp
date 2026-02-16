@@ -2,19 +2,31 @@
  * Decision business logic.
  * Validates input, applies defaults, delegates to DecisionStore,
  * and cross-posts to blackboard.
+ * Generates embeddings on decide (Phase 2) with graceful fallback.
  */
 import { DecisionStore } from "../storage/decision-store.js";
 import { BlackboardEngine } from "./blackboard.js";
 import { TwiningError } from "../utils/errors.js";
 import type { DecisionConfidence } from "../utils/types.js";
+import type { Embedder } from "../embeddings/embedder.js";
+import type { IndexManager } from "../embeddings/index-manager.js";
 
 export class DecisionEngine {
   private readonly decisionStore: DecisionStore;
   private readonly blackboardEngine: BlackboardEngine;
+  private readonly embedder: Embedder | null;
+  private readonly indexManager: IndexManager | null;
 
-  constructor(decisionStore: DecisionStore, blackboardEngine: BlackboardEngine) {
+  constructor(
+    decisionStore: DecisionStore,
+    blackboardEngine: BlackboardEngine,
+    embedder?: Embedder | null,
+    indexManager?: IndexManager | null,
+  ) {
     this.decisionStore = decisionStore;
     this.blackboardEngine = blackboardEngine;
+    this.embedder = embedder ?? null;
+    this.indexManager = indexManager ?? null;
   }
 
   /** Record a decision with full rationale. */
@@ -96,6 +108,24 @@ export class DecisionEngine {
       scope: decision.scope,
       agent_id: decision.agent_id,
     });
+
+    // Generate embedding (Phase 2) — never let embedding failure prevent the decide
+    if (this.embedder && this.indexManager) {
+      try {
+        const text =
+          decision.summary + " " + decision.rationale + " " + decision.context;
+        const vector = await this.embedder.embed(text);
+        if (vector) {
+          await this.indexManager.addEntry("decisions", decision.id, vector);
+        }
+      } catch (error) {
+        // Silent failure — embedding is best-effort
+        console.error(
+          "[twining] Decision embedding generation failed (non-fatal):",
+          error,
+        );
+      }
+    }
 
     return { id: decision.id, timestamp: decision.timestamp };
   }

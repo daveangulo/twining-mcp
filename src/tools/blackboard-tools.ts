@@ -101,6 +101,40 @@ export function registerBlackboardTools(
     },
   );
 
+  // twining_query — Semantic search across blackboard entries
+  server.registerTool(
+    "twining_query",
+    {
+      description:
+        "Semantic search across blackboard entries. Uses embeddings when available, falls back to keyword search. Returns entries ranked by relevance.",
+      inputSchema: {
+        query: z.string().describe("Natural language query"),
+        entry_types: z
+          .array(z.string())
+          .optional()
+          .describe("Optional type filter"),
+        limit: z
+          .number()
+          .optional()
+          .describe("Max results (default: 10)"),
+      },
+    },
+    async (args) => {
+      try {
+        const result = await engine.query(args.query, {
+          entry_types: args.entry_types,
+          limit: args.limit,
+        });
+        return toolResult(result);
+      } catch (e) {
+        return toolError(
+          e instanceof Error ? e.message : "Unknown error",
+          "INTERNAL_ERROR",
+        );
+      }
+    },
+  );
+
   // twining_recent — Quick access to latest entries
   server.registerTool(
     "twining_recent",
