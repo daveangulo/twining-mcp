@@ -12,7 +12,7 @@ Twining delivers a shared coordination layer for AI agents, built bottom-up from
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation + Core Data** - Storage layer, blackboard, basic decisions, and MCP server wiring
+- [x] **Phase 1: Foundation + Core Data** - Storage layer, blackboard, basic decisions, and MCP server wiring
 - [ ] **Phase 2: Intelligence** - Embeddings, semantic search, and token-budgeted context assembly
 - [ ] **Phase 3: Graph + Lifecycle** - Knowledge graph, decision lifecycle (trace/reconsider/override/conflict), and archiving
 
@@ -31,8 +31,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans in 2 waves
 
 Plans:
-- [ ] 01-01-PLAN.md — Utils, config, and storage layer (types, IDs, tokens, file-store with locking, blackboard-store, decision-store, init)
-- [ ] 01-02-PLAN.md — Engine layer and MCP server (blackboard engine, decision engine, tool handlers with Zod schemas, server wiring, stdio transport)
+- [x] 01-01-PLAN.md — Utils, config, and storage layer (types, IDs, tokens, file-store with locking, blackboard-store, decision-store, init)
+- [x] 01-02-PLAN.md — Engine layer and MCP server (blackboard engine, decision engine, tool handlers with Zod schemas, server wiring, stdio transport)
 
 ### Phase 2: Intelligence
 **Goal**: Agents get semantic search across all stored data and can request tailored, token-budgeted context packages for any task
@@ -72,6 +72,6 @@ Phases execute in numeric order: 1 -> 2 -> 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation + Core Data | 0/2 | Not started | - |
+| 1. Foundation + Core Data | 2/2 | Complete | 2026-02-16 |
 | 2. Intelligence | 0/2 | Not started | - |
 | 3. Graph + Lifecycle | 0/2 | Not started | - |
