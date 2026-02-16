@@ -1,0 +1,705 @@
+/**
+ * Tests for the ContextAssembler class.
+ * Uses temp directories with pre-populated fixture data.
+ */
+import { describe, it, expect, beforeEach } from "vitest";
+import { ContextAssembler } from "../src/engine/context-assembler.js";
+import { BlackboardStore } from "../src/storage/blackboard-store.js";
+import { DecisionStore } from "../src/storage/decision-store.js";
+import { SearchEngine } from "../src/embeddings/search.js";
+import { Embedder } from "../src/embeddings/embedder.js";
+import { IndexManager } from "../src/embeddings/index-manager.js";
+import { DEFAULT_CONFIG } from "../src/config.js";
+import type { TwiningConfig } from "../src/utils/types.js";
+import os from "node:os";
+import path from "node:path";
+import fs from "node:fs";
+
+function makeTwiningDir(): string {
+  const dir = fs.mkdtempSync(
+    path.join(os.tmpdir(), "twining-context-assembler-test-"),
+  );
+  // Create required subdirectories and files
+  fs.mkdirSync(path.join(dir, "decisions"), { recursive: true });
+  fs.mkdirSync(path.join(dir, "embeddings"), { recursive: true });
+  fs.writeFileSync(path.join(dir, "blackboard.jsonl"), "");
+  fs.writeFileSync(
+    path.join(dir, "decisions", "index.json"),
+    JSON.stringify([]),
+  );
+  return dir;
+}
+
+function makeConfig(overrides?: Partial<TwiningConfig>): TwiningConfig {
+  return { ...DEFAULT_CONFIG, ...overrides };
+}
+
+describe("ContextAssembler", () => {
+  let twiningDir: string;
+  let blackboardStore: BlackboardStore;
+  let decisionStore: DecisionStore;
+  let config: TwiningConfig;
+
+  beforeEach(() => {
+    twiningDir = makeTwiningDir();
+    blackboardStore = new BlackboardStore(twiningDir);
+    decisionStore = new DecisionStore(twiningDir);
+    config = makeConfig();
+    Embedder.resetInstances();
+  });
+
+  describe("assemble", () => {
+    it("should return correct structure matching AssembledContext interface", async () => {
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+      );
+
+      const result = await assembler.assemble("test task", "project");
+
+      expect(result).toHaveProperty("assembled_at");
+      expect(result).toHaveProperty("task", "test task");
+      expect(result).toHaveProperty("scope", "project");
+      expect(result).toHaveProperty("token_estimate");
+      expect(result).toHaveProperty("active_decisions");
+      expect(result).toHaveProperty("open_needs");
+      expect(result).toHaveProperty("recent_findings");
+      expect(result).toHaveProperty("active_warnings");
+      expect(result).toHaveProperty("recent_questions");
+      expect(result).toHaveProperty("related_entities");
+      expect(result.related_entities).toEqual([]);
+    });
+
+    it("should return empty results for empty stores", async () => {
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+      );
+
+      const result = await assembler.assemble("test task", "project");
+
+      expect(result.active_decisions).toHaveLength(0);
+      expect(result.open_needs).toHaveLength(0);
+      expect(result.recent_findings).toHaveLength(0);
+      expect(result.active_warnings).toHaveLength(0);
+      expect(result.recent_questions).toHaveLength(0);
+      expect(result.token_estimate).toBe(0);
+    });
+
+    it("should include decisions matching scope", async () => {
+      await decisionStore.create({
+        agent_id: "test",
+        domain: "implementation",
+        scope: "src/auth/",
+        summary: "Use JWT for auth",
+        context: "Need stateless auth",
+        rationale: "Enables horizontal scaling",
+        constraints: [],
+        alternatives: [],
+        depends_on: [],
+        confidence: "high",
+        reversible: true,
+        affected_files: ["src/auth/jwt.ts"],
+        affected_symbols: [],
+      });
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+      );
+
+      const result = await assembler.assemble("update auth", "src/auth/");
+
+      expect(result.active_decisions).toHaveLength(1);
+      expect(result.active_decisions[0]!.summary).toBe("Use JWT for auth");
+    });
+
+    it("should include blackboard entries matching scope", async () => {
+      await blackboardStore.append({
+        agent_id: "test",
+        entry_type: "warning",
+        tags: [],
+        scope: "src/auth/",
+        summary: "JWT tokens expire quickly",
+        detail: "Consider refresh token rotation",
+      });
+
+      await blackboardStore.append({
+        agent_id: "test",
+        entry_type: "need",
+        tags: [],
+        scope: "src/auth/",
+        summary: "Need rate limiting on auth endpoint",
+        detail: "",
+      });
+
+      await blackboardStore.append({
+        agent_id: "test",
+        entry_type: "finding",
+        tags: [],
+        scope: "src/auth/",
+        summary: "Found existing session middleware",
+        detail: "In src/middleware.ts",
+      });
+
+      await blackboardStore.append({
+        agent_id: "test",
+        entry_type: "question",
+        tags: [],
+        scope: "src/auth/",
+        summary: "Should we support OAuth?",
+        detail: "",
+      });
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+      );
+
+      const result = await assembler.assemble("update auth", "src/auth/");
+
+      expect(result.active_warnings).toHaveLength(1);
+      expect(result.open_needs).toHaveLength(1);
+      expect(result.recent_findings).toHaveLength(1);
+      expect(result.recent_questions).toHaveLength(1);
+    });
+
+    it("should respect token budget", async () => {
+      // Create many entries to exceed a small budget
+      for (let i = 0; i < 20; i++) {
+        await blackboardStore.append({
+          agent_id: "test",
+          entry_type: "finding",
+          tags: [],
+          scope: "project",
+          summary: `Finding number ${i} with some detailed description text`,
+          detail: `This is a longer detail section for finding ${i} that should consume some tokens in the budget calculation.`,
+        });
+      }
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+      );
+
+      // Use a very small budget
+      const result = await assembler.assemble("test task", "project", 100);
+
+      expect(result.token_estimate).toBeLessThanOrEqual(100);
+      // Should not have all 20 findings
+      const totalItems =
+        result.recent_findings.length +
+        result.active_decisions.length +
+        result.open_needs.length +
+        result.active_warnings.length +
+        result.recent_questions.length;
+      expect(totalItems).toBeLessThan(20);
+    });
+
+    it("should score warnings higher than findings", async () => {
+      // Create a warning and a finding with the same content
+      await blackboardStore.append({
+        agent_id: "test",
+        entry_type: "warning",
+        tags: [],
+        scope: "project",
+        summary: "Important warning about security",
+        detail: "Details about the security issue",
+      });
+
+      await blackboardStore.append({
+        agent_id: "test",
+        entry_type: "finding",
+        tags: [],
+        scope: "project",
+        summary: "Finding about security",
+        detail: "Details about a security finding",
+      });
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+      );
+
+      // With a tiny budget, warnings should be included first
+      const result = await assembler.assemble("check security", "project", 30);
+
+      // Warnings get reserved budget, so should appear even with tight budget
+      expect(result.active_warnings.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it("should exclude entries outside scope", async () => {
+      await blackboardStore.append({
+        agent_id: "test",
+        entry_type: "finding",
+        tags: [],
+        scope: "src/auth/",
+        summary: "Auth finding",
+        detail: "",
+      });
+
+      await blackboardStore.append({
+        agent_id: "test",
+        entry_type: "finding",
+        tags: [],
+        scope: "src/database/",
+        summary: "Database finding",
+        detail: "",
+      });
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+      );
+
+      const result = await assembler.assemble("auth work", "src/auth/");
+
+      // Only the auth finding should be included
+      expect(result.recent_findings).toHaveLength(1);
+      expect(result.recent_findings[0]!.summary).toBe("Auth finding");
+    });
+
+    it("should work with null search engine (keyword fallback path)", async () => {
+      await blackboardStore.append({
+        agent_id: "test",
+        entry_type: "finding",
+        tags: [],
+        scope: "project",
+        summary: "Test finding",
+        detail: "Some details",
+      });
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null, // No search engine
+        config,
+      );
+
+      const result = await assembler.assemble("test task", "project");
+
+      // Should still work, just without semantic search
+      expect(result.recent_findings).toHaveLength(1);
+    });
+
+    it("should score more recent entries higher", async () => {
+      // Create an old entry and a new entry
+      // We can't easily control timestamps with the store, but we can verify
+      // that entries created now have high recency scores by checking they're included
+      await blackboardStore.append({
+        agent_id: "test",
+        entry_type: "finding",
+        tags: [],
+        scope: "project",
+        summary: "Recent finding",
+        detail: "Fresh information",
+      });
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+      );
+
+      const result = await assembler.assemble("check", "project");
+      expect(result.recent_findings).toHaveLength(1);
+    });
+
+    it("should include needs even if low-scored when budget allows", async () => {
+      // Add a need entry
+      await blackboardStore.append({
+        agent_id: "test",
+        entry_type: "need",
+        tags: [],
+        scope: "project",
+        summary: "Need tests for auth module",
+        detail: "",
+      });
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+      );
+
+      const result = await assembler.assemble("review work", "project");
+
+      expect(result.open_needs).toHaveLength(1);
+      expect(result.open_needs[0]!.summary).toBe("Need tests for auth module");
+    });
+
+    it("should work with search engine in fallback mode", async () => {
+      const embedder = new Embedder(twiningDir);
+      (embedder as any).fallbackMode = true;
+      const indexManager = new IndexManager(twiningDir);
+      const searchEngine = new SearchEngine(embedder, indexManager);
+
+      await blackboardStore.append({
+        agent_id: "test",
+        entry_type: "finding",
+        tags: [],
+        scope: "project",
+        summary: "JWT token validation",
+        detail: "Using jose library",
+      });
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        searchEngine,
+        config,
+      );
+
+      const result = await assembler.assemble("JWT authentication", "project");
+
+      // Should still work via keyword search
+      expect(result).toHaveProperty("assembled_at");
+    });
+  });
+
+  describe("summarize", () => {
+    it("should return correct counts for a populated store", async () => {
+      // Add decisions
+      await decisionStore.create({
+        agent_id: "test",
+        domain: "architecture",
+        scope: "project",
+        summary: "Active decision",
+        context: "Context",
+        rationale: "Rationale",
+        constraints: [],
+        alternatives: [],
+        depends_on: [],
+        confidence: "high",
+        reversible: true,
+        affected_files: [],
+        affected_symbols: [],
+      });
+
+      // Add blackboard entries
+      await blackboardStore.append({
+        agent_id: "test",
+        entry_type: "need",
+        tags: [],
+        scope: "project",
+        summary: "Open need",
+        detail: "",
+      });
+      await blackboardStore.append({
+        agent_id: "test",
+        entry_type: "warning",
+        tags: [],
+        scope: "project",
+        summary: "Active warning",
+        detail: "",
+      });
+      await blackboardStore.append({
+        agent_id: "test",
+        entry_type: "question",
+        tags: [],
+        scope: "project",
+        summary: "Unanswered question",
+        detail: "",
+      });
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+      );
+
+      const result = await assembler.summarize();
+
+      expect(result.scope).toBe("project");
+      expect(result.active_decisions).toBe(1);
+      expect(result.provisional_decisions).toBe(0);
+      expect(result.open_needs).toBe(1);
+      expect(result.active_warnings).toBe(1);
+      expect(result.unanswered_questions).toBe(1);
+      expect(result.recent_activity_summary).toContain("1 decision made");
+    });
+
+    it("should filter by scope", async () => {
+      await decisionStore.create({
+        agent_id: "test",
+        domain: "architecture",
+        scope: "src/auth/",
+        summary: "Auth decision",
+        context: "Context",
+        rationale: "Rationale",
+        constraints: [],
+        alternatives: [],
+        depends_on: [],
+        confidence: "high",
+        reversible: true,
+        affected_files: [],
+        affected_symbols: [],
+      });
+
+      await decisionStore.create({
+        agent_id: "test",
+        domain: "architecture",
+        scope: "src/database/",
+        summary: "DB decision",
+        context: "Context",
+        rationale: "Rationale",
+        constraints: [],
+        alternatives: [],
+        depends_on: [],
+        confidence: "high",
+        reversible: true,
+        affected_files: [],
+        affected_symbols: [],
+      });
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+      );
+
+      const result = await assembler.summarize("src/auth/");
+
+      expect(result.scope).toBe("src/auth/");
+      expect(result.active_decisions).toBe(1);
+    });
+
+    it("should return zeros for empty store", async () => {
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+      );
+
+      const result = await assembler.summarize();
+
+      expect(result.active_decisions).toBe(0);
+      expect(result.provisional_decisions).toBe(0);
+      expect(result.open_needs).toBe(0);
+      expect(result.active_warnings).toBe(0);
+      expect(result.unanswered_questions).toBe(0);
+      expect(result.recent_activity_summary).toContain("0 decisions");
+    });
+
+    it("should count recent activity in last 24 hours", async () => {
+      // Add entries (they'll have current timestamps, so within 24h)
+      await blackboardStore.append({
+        agent_id: "test",
+        entry_type: "finding",
+        tags: [],
+        scope: "project",
+        summary: "Recent finding 1",
+        detail: "",
+      });
+      await blackboardStore.append({
+        agent_id: "test",
+        entry_type: "finding",
+        tags: [],
+        scope: "project",
+        summary: "Recent finding 2",
+        detail: "",
+      });
+      await blackboardStore.append({
+        agent_id: "test",
+        entry_type: "warning",
+        tags: [],
+        scope: "project",
+        summary: "Recent warning",
+        detail: "",
+      });
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+      );
+
+      const result = await assembler.summarize();
+
+      expect(result.recent_activity_summary).toContain("2 findings posted");
+      expect(result.recent_activity_summary).toContain("1 warning raised");
+    });
+  });
+
+  describe("whatChanged", () => {
+    it("should filter entries by timestamp", async () => {
+      const beforeTime = new Date().toISOString();
+      // Small delay to ensure timestamps differ
+      await new Promise((r) => setTimeout(r, 10));
+
+      await blackboardStore.append({
+        agent_id: "test",
+        entry_type: "finding",
+        tags: [],
+        scope: "project",
+        summary: "New finding after timestamp",
+        detail: "",
+      });
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+      );
+
+      const result = await assembler.whatChanged(beforeTime);
+
+      expect(result.new_entries).toHaveLength(1);
+      expect(result.new_entries[0]!.summary).toBe(
+        "New finding after timestamp",
+      );
+    });
+
+    it("should filter decisions by timestamp", async () => {
+      const beforeTime = new Date().toISOString();
+      await new Promise((r) => setTimeout(r, 10));
+
+      await decisionStore.create({
+        agent_id: "test",
+        domain: "architecture",
+        scope: "project",
+        summary: "New decision",
+        context: "Context",
+        rationale: "Rationale",
+        constraints: [],
+        alternatives: [],
+        depends_on: [],
+        confidence: "high",
+        reversible: true,
+        affected_files: [],
+        affected_symbols: [],
+      });
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+      );
+
+      const result = await assembler.whatChanged(beforeTime);
+
+      expect(result.new_decisions).toHaveLength(1);
+      expect(result.new_decisions[0]!.summary).toBe("New decision");
+    });
+
+    it("should return empty results when nothing changed", async () => {
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+      );
+
+      const result = await assembler.whatChanged(new Date().toISOString());
+
+      expect(result.new_entries).toHaveLength(0);
+      expect(result.new_decisions).toHaveLength(0);
+      expect(result.overridden_decisions).toHaveLength(0);
+      expect(result.reconsidered_decisions).toHaveLength(0);
+    });
+
+    it("should filter by scope", async () => {
+      const beforeTime = new Date().toISOString();
+      await new Promise((r) => setTimeout(r, 10));
+
+      await blackboardStore.append({
+        agent_id: "test",
+        entry_type: "finding",
+        tags: [],
+        scope: "src/auth/",
+        summary: "Auth finding",
+        detail: "",
+      });
+
+      await blackboardStore.append({
+        agent_id: "test",
+        entry_type: "finding",
+        tags: [],
+        scope: "src/database/",
+        summary: "Database finding",
+        detail: "",
+      });
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+      );
+
+      const result = await assembler.whatChanged(beforeTime, "src/auth/");
+
+      expect(result.new_entries).toHaveLength(1);
+      expect(result.new_entries[0]!.summary).toBe("Auth finding");
+    });
+
+    it("should identify overridden decisions", async () => {
+      // Record the time before creating the decision
+      const beforeTime = new Date().toISOString();
+      await new Promise((r) => setTimeout(r, 10));
+
+      const decision = await decisionStore.create({
+        agent_id: "test",
+        domain: "architecture",
+        scope: "project",
+        summary: "Original decision",
+        context: "Context",
+        rationale: "Rationale",
+        constraints: [],
+        alternatives: [],
+        depends_on: [],
+        confidence: "high",
+        reversible: true,
+        affected_files: [],
+        affected_symbols: [],
+      });
+
+      // Override the decision
+      await decisionStore.updateStatus(decision.id, "overridden", {
+        overridden_by: "human",
+        override_reason: "Changed requirements",
+      });
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+      );
+
+      const result = await assembler.whatChanged(beforeTime);
+
+      // The decision was created after beforeTime and then overridden,
+      // so it should appear in overridden_decisions
+      expect(result.overridden_decisions).toHaveLength(1);
+      expect(result.overridden_decisions[0]!.summary).toBe(
+        "Original decision",
+      );
+      expect(result.overridden_decisions[0]!.reason).toBe(
+        "Changed requirements",
+      );
+    });
+  });
+});

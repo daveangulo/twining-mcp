@@ -162,6 +162,25 @@ export interface TwiningConfig {
   conflict_resolution: string;
 }
 
+/** Summarize result — spec section 4.3 twining_summarize return */
+export interface SummarizeResult {
+  scope: string;
+  active_decisions: number;
+  provisional_decisions: number;
+  open_needs: number;
+  active_warnings: number;
+  unanswered_questions: number;
+  recent_activity_summary: string;
+}
+
+/** What changed result — spec section 4.3 twining_what_changed return */
+export interface WhatChangedResult {
+  new_decisions: { id: string; summary: string }[];
+  new_entries: { id: string; entry_type: string; summary: string }[];
+  overridden_decisions: { id: string; summary: string; reason: string }[];
+  reconsidered_decisions: { id: string; summary: string }[];
+}
+
 /** Decision index entry — subset for fast lookup */
 export interface DecisionIndexEntry {
   id: string;
