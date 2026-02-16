@@ -9,6 +9,8 @@ import { DecisionEngine } from "../src/engine/decisions.js";
 import { TwiningError } from "../src/utils/errors.js";
 
 let tmpDir: string;
+let blackboardStore: BlackboardStore;
+let decisionStore: DecisionStore;
 let blackboardEngine: BlackboardEngine;
 let decisionEngine: DecisionEngine;
 
@@ -31,10 +33,10 @@ beforeEach(() => {
     path.join(tmpDir, "decisions", "index.json"),
     JSON.stringify([]),
   );
-  const bbStore = new BlackboardStore(tmpDir);
-  const dcsnStore = new DecisionStore(tmpDir);
-  blackboardEngine = new BlackboardEngine(bbStore);
-  decisionEngine = new DecisionEngine(dcsnStore, blackboardEngine);
+  blackboardStore = new BlackboardStore(tmpDir);
+  decisionStore = new DecisionStore(tmpDir);
+  blackboardEngine = new BlackboardEngine(blackboardStore);
+  decisionEngine = new DecisionEngine(decisionStore, blackboardEngine);
 });
 
 afterEach(() => {
@@ -135,7 +137,7 @@ describe("DecisionEngine.why", () => {
   it("returns decisions matching scope with correct counts", async () => {
     await decisionEngine.decide(validDecisionInput());
     await decisionEngine.decide(
-      validDecisionInput({ summary: "Second decision" }),
+      validDecisionInput({ summary: "Second decision", domain: "testing" }),
     );
     const result = await decisionEngine.why("src/auth/");
     expect(result.decisions).toHaveLength(2);
@@ -161,5 +163,379 @@ describe("DecisionEngine.why", () => {
     );
     const result = await decisionEngine.why("src/auth/");
     expect(result.decisions[0]!.alternatives_count).toBe(2);
+  });
+});
+
+describe("DecisionEngine.trace", () => {
+  it("follows depends_on chain upstream", async () => {
+    const d1 = await decisionEngine.decide(
+      validDecisionInput({ summary: "Foundation decision" }),
+    );
+    const d2 = await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Middle decision",
+        depends_on: [d1.id],
+      }),
+    );
+    const d3 = await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Leaf decision",
+        depends_on: [d2.id],
+      }),
+    );
+
+    const result = await decisionEngine.trace(d3.id, "upstream");
+    expect(result.chain).toHaveLength(2);
+    const ids = result.chain.map((c) => c.id);
+    expect(ids).toContain(d2.id);
+    expect(ids).toContain(d1.id);
+  });
+
+  it("finds dependents downstream", async () => {
+    const d1 = await decisionEngine.decide(
+      validDecisionInput({ summary: "Root decision" }),
+    );
+    const d2 = await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Child decision",
+        depends_on: [d1.id],
+      }),
+    );
+    const d3 = await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Grandchild decision",
+        depends_on: [d2.id],
+      }),
+    );
+
+    const result = await decisionEngine.trace(d1.id, "downstream");
+    expect(result.chain).toHaveLength(2);
+    const ids = result.chain.map((c) => c.id);
+    expect(ids).toContain(d2.id);
+    expect(ids).toContain(d3.id);
+  });
+
+  it("combines upstream and downstream when direction is both", async () => {
+    const d1 = await decisionEngine.decide(
+      validDecisionInput({ summary: "Parent" }),
+    );
+    const d2 = await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Center",
+        depends_on: [d1.id],
+      }),
+    );
+    const d3 = await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Child",
+        depends_on: [d2.id],
+      }),
+    );
+
+    const result = await decisionEngine.trace(d2.id, "both");
+    expect(result.chain).toHaveLength(2);
+    const ids = result.chain.map((c) => c.id);
+    expect(ids).toContain(d1.id);
+    expect(ids).toContain(d3.id);
+  });
+
+  it("handles circular dependencies without infinite loops", async () => {
+    // Create two decisions that depend on each other (circular)
+    const d1 = await decisionEngine.decide(
+      validDecisionInput({ summary: "Decision A" }),
+    );
+    const d2 = await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Decision B",
+        depends_on: [d1.id],
+      }),
+    );
+    // Manually add circular dependency by updating d1's depends_on
+    const d1Full = await decisionStore.get(d1.id);
+    d1Full!.depends_on = [d2.id];
+    fs.writeFileSync(
+      path.join(tmpDir, "decisions", `${d1.id}.json`),
+      JSON.stringify(d1Full, null, 2),
+    );
+
+    // Should not hang — visited set prevents infinite loop
+    const result = await decisionEngine.trace(d1.id, "both");
+    expect(result.chain).toHaveLength(1);
+    expect(result.chain[0]!.id).toBe(d2.id);
+  });
+
+  it("throws NOT_FOUND for missing decision ID", async () => {
+    await expect(
+      decisionEngine.trace("nonexistent-id"),
+    ).rejects.toThrow(TwiningError);
+
+    try {
+      await decisionEngine.trace("nonexistent-id");
+    } catch (e) {
+      expect((e as TwiningError).code).toBe("NOT_FOUND");
+    }
+  });
+
+  it("returns empty chain when decision has no dependencies", async () => {
+    const d1 = await decisionEngine.decide(
+      validDecisionInput({ summary: "Standalone" }),
+    );
+
+    const result = await decisionEngine.trace(d1.id);
+    expect(result.chain).toHaveLength(0);
+  });
+});
+
+describe("DecisionEngine.reconsider", () => {
+  it("sets active decision to provisional and returns flagged: true", async () => {
+    const d1 = await decisionEngine.decide(validDecisionInput());
+    const result = await decisionEngine.reconsider(
+      d1.id,
+      "New requirements emerged",
+    );
+
+    expect(result.flagged).toBe(true);
+    expect(result.decision_summary).toBe("Use JWT for auth");
+
+    // Verify status changed
+    const decision = await decisionStore.get(d1.id);
+    expect(decision!.status).toBe("provisional");
+  });
+
+  it("posts a warning to blackboard", async () => {
+    const d1 = await decisionEngine.decide(validDecisionInput());
+    await decisionEngine.reconsider(d1.id, "Perf concerns");
+
+    const { entries } = await blackboardEngine.read({
+      entry_types: ["warning"],
+    });
+    expect(entries.length).toBeGreaterThanOrEqual(1);
+    const warning = entries.find((e) =>
+      e.summary.includes("Reconsideration flagged"),
+    );
+    expect(warning).toBeTruthy();
+    expect(warning!.detail).toContain("Perf concerns");
+  });
+
+  it("returns flagged: false for already-provisional decision", async () => {
+    const d1 = await decisionEngine.decide(validDecisionInput());
+    await decisionStore.updateStatus(d1.id, "provisional");
+
+    const result = await decisionEngine.reconsider(
+      d1.id,
+      "Already reconsidered",
+    );
+    expect(result.flagged).toBe(false);
+  });
+
+  it("includes downstream dependent count in warning", async () => {
+    const d1 = await decisionEngine.decide(
+      validDecisionInput({ summary: "Parent decision" }),
+    );
+    await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Child A",
+        depends_on: [d1.id],
+      }),
+    );
+    await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Child B",
+        depends_on: [d1.id],
+      }),
+    );
+
+    await decisionEngine.reconsider(d1.id, "Needs review");
+
+    const { entries } = await blackboardEngine.read({
+      entry_types: ["warning"],
+    });
+    const warning = entries.find((e) =>
+      e.summary.includes("Reconsideration flagged"),
+    );
+    expect(warning!.detail).toContain(
+      "2 downstream decisions may be affected",
+    );
+  });
+
+  it("throws NOT_FOUND for missing decision", async () => {
+    await expect(
+      decisionEngine.reconsider("nonexistent", "reason"),
+    ).rejects.toThrow(TwiningError);
+  });
+});
+
+describe("DecisionEngine.override", () => {
+  it("sets status to overridden and records reason", async () => {
+    const d1 = await decisionEngine.decide(validDecisionInput());
+    const result = await decisionEngine.override(
+      d1.id,
+      "Security review required different approach",
+    );
+
+    expect(result.overridden).toBe(true);
+    expect(result.old_summary).toBe("Use JWT for auth");
+
+    const decision = await decisionStore.get(d1.id);
+    expect(decision!.status).toBe("overridden");
+    expect(decision!.overridden_by).toBe("human");
+    expect(decision!.override_reason).toBe(
+      "Security review required different approach",
+    );
+  });
+
+  it("posts override entry to blackboard", async () => {
+    const d1 = await decisionEngine.decide(validDecisionInput());
+    await decisionEngine.override(
+      d1.id,
+      "Changed requirements",
+      undefined,
+      "architect-agent",
+    );
+
+    const { entries } = await blackboardEngine.read({
+      entry_types: ["decision"],
+    });
+    const overrideEntry = entries.find((e) =>
+      e.summary.includes("Override:"),
+    );
+    expect(overrideEntry).toBeTruthy();
+    expect(overrideEntry!.summary).toContain("overridden by architect-agent");
+    expect(overrideEntry!.detail).toBe("Changed requirements");
+  });
+
+  it("auto-creates replacement decision when newDecision is provided", async () => {
+    const d1 = await decisionEngine.decide(validDecisionInput());
+    const result = await decisionEngine.override(
+      d1.id,
+      "Session-based is more secure for our case",
+      "Use session-based auth instead",
+      "security-agent",
+    );
+
+    expect(result.new_decision_id).toBeTruthy();
+    expect(result.new_decision_id).toHaveLength(26);
+
+    // Verify the new decision was created
+    const newDecision = await decisionStore.get(result.new_decision_id!);
+    expect(newDecision).toBeTruthy();
+    expect(newDecision!.summary).toBe("Use session-based auth instead");
+    expect(newDecision!.agent_id).toBe("security-agent");
+  });
+
+  it("throws NOT_FOUND for missing decision", async () => {
+    await expect(
+      decisionEngine.override("nonexistent", "reason"),
+    ).rejects.toThrow(TwiningError);
+  });
+});
+
+describe("DecisionEngine conflict detection", () => {
+  it("marks new decision as provisional when same domain+scope has active decision", async () => {
+    // First decision — active
+    await decisionEngine.decide(
+      validDecisionInput({ summary: "Use JWT for auth" }),
+    );
+
+    // Second decision in same domain+scope with different summary — should conflict
+    const result = await decisionEngine.decide(
+      validDecisionInput({ summary: "Use sessions for auth" }),
+    );
+
+    expect(result.conflicts).toBeTruthy();
+    expect(result.conflicts!.length).toBe(1);
+    expect(result.conflicts![0]!.summary).toBe("Use JWT for auth");
+
+    // Verify new decision is provisional
+    const decision = await decisionStore.get(result.id);
+    expect(decision!.status).toBe("provisional");
+  });
+
+  it("posts warning to blackboard on conflict", async () => {
+    await decisionEngine.decide(
+      validDecisionInput({ summary: "Use JWT for auth" }),
+    );
+    await decisionEngine.decide(
+      validDecisionInput({ summary: "Use sessions for auth" }),
+    );
+
+    const { entries } = await blackboardEngine.read({
+      entry_types: ["warning"],
+    });
+    const conflictWarning = entries.find((e) =>
+      e.summary.includes("Potential conflict"),
+    );
+    expect(conflictWarning).toBeTruthy();
+  });
+
+  it("does not conflict with different domain same scope", async () => {
+    await decisionEngine.decide(
+      validDecisionInput({
+        domain: "architecture",
+        scope: "src/auth/",
+        summary: "Use JWT",
+      }),
+    );
+    const result = await decisionEngine.decide(
+      validDecisionInput({
+        domain: "testing",
+        scope: "src/auth/",
+        summary: "Use mocks for auth tests",
+      }),
+    );
+
+    expect(result.conflicts).toBeUndefined();
+  });
+
+  it("does not conflict with same domain different scope (no prefix overlap)", async () => {
+    await decisionEngine.decide(
+      validDecisionInput({
+        domain: "architecture",
+        scope: "src/auth/",
+        summary: "Use JWT",
+      }),
+    );
+    const result = await decisionEngine.decide(
+      validDecisionInput({
+        domain: "architecture",
+        scope: "src/database/",
+        summary: "Use Postgres",
+      }),
+    );
+
+    expect(result.conflicts).toBeUndefined();
+  });
+
+  it("detects conflict with prefix-overlapping scope", async () => {
+    await decisionEngine.decide(
+      validDecisionInput({
+        domain: "architecture",
+        scope: "src/",
+        summary: "Use functional patterns",
+      }),
+    );
+    // More specific scope that overlaps via prefix
+    const result = await decisionEngine.decide(
+      validDecisionInput({
+        domain: "architecture",
+        scope: "src/auth/",
+        summary: "Use OOP patterns for auth",
+      }),
+    );
+
+    expect(result.conflicts).toBeTruthy();
+    expect(result.conflicts!.length).toBe(1);
+  });
+
+  it("does not conflict with same summary (re-creation)", async () => {
+    await decisionEngine.decide(
+      validDecisionInput({ summary: "Use JWT for auth" }),
+    );
+    const result = await decisionEngine.decide(
+      validDecisionInput({ summary: "Use JWT for auth" }),
+    );
+
+    // Same summary should not be treated as a conflict
+    expect(result.conflicts).toBeUndefined();
   });
 });

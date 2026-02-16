@@ -86,6 +86,35 @@ export async function readJSONL<T>(filePath: string): Promise<T[]> {
   return results;
 }
 
+/**
+ * Overwrite a JSONL file atomically under lock.
+ * Used by archiver to rewrite blackboard after removing archived entries.
+ */
+export async function writeJSONL(
+  filePath: string,
+  data: unknown[],
+): Promise<void> {
+  // Ensure parent directory exists
+  const dir = path.dirname(filePath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  // Ensure file exists for proper-lockfile
+  if (!fs.existsSync(filePath)) {
+    fs.writeFileSync(filePath, "");
+  }
+  const release = await lockfile.lock(filePath, LOCK_OPTIONS);
+  try {
+    const content =
+      data.length > 0
+        ? data.map((item) => JSON.stringify(item)).join("\n") + "\n"
+        : "";
+    fs.writeFileSync(filePath, content);
+  } finally {
+    await release();
+  }
+}
+
 /** Ensure a directory exists, creating it recursively if needed. */
 export function ensureDir(dirPath: string): void {
   fs.mkdirSync(dirPath, { recursive: true });

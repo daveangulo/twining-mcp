@@ -2,14 +2,24 @@
  * Decision business logic.
  * Validates input, applies defaults, delegates to DecisionStore,
  * and cross-posts to blackboard.
+ * Phase 3: Adds trace, reconsider, override, and conflict detection.
  * Generates embeddings on decide (Phase 2) with graceful fallback.
  */
 import { DecisionStore } from "../storage/decision-store.js";
 import { BlackboardEngine } from "./blackboard.js";
 import { TwiningError } from "../utils/errors.js";
-import type { DecisionConfidence } from "../utils/types.js";
+import type { Decision, DecisionConfidence } from "../utils/types.js";
 import type { Embedder } from "../embeddings/embedder.js";
 import type { IndexManager } from "../embeddings/index-manager.js";
+
+/** Entry in a dependency trace chain. */
+export interface TraceEntry {
+  id: string;
+  summary: string;
+  depends_on: string[];
+  dependents: string[];
+  status: string;
+}
 
 export class DecisionEngine {
   private readonly decisionStore: DecisionStore;
@@ -29,7 +39,7 @@ export class DecisionEngine {
     this.indexManager = indexManager ?? null;
   }
 
-  /** Record a decision with full rationale. */
+  /** Record a decision with full rationale and conflict detection. */
   async decide(input: {
     domain: string;
     scope: string;
@@ -50,7 +60,11 @@ export class DecisionEngine {
     affected_files?: string[];
     affected_symbols?: string[];
     agent_id?: string;
-  }): Promise<{ id: string; timestamp: string }> {
+  }): Promise<{
+    id: string;
+    timestamp: string;
+    conflicts?: { id: string; summary: string }[];
+  }> {
     // Validate required fields
     if (!input.domain) {
       throw new TwiningError("domain is required", "INVALID_INPUT");
@@ -73,6 +87,17 @@ export class DecisionEngine {
       await this.decisionStore.updateStatus(input.supersedes, "superseded");
     }
 
+    // Conflict detection: scan for active decisions in same domain with overlapping scope
+    const index = await this.decisionStore.getIndex();
+    const conflicts = index.filter(
+      (entry) =>
+        entry.domain === input.domain &&
+        (entry.scope.startsWith(input.scope) ||
+          input.scope.startsWith(entry.scope)) &&
+        entry.status === "active" &&
+        entry.summary !== input.summary,
+    );
+
     // Normalize alternatives: ensure pros/cons arrays exist
     const alternatives = (input.alternatives ?? []).map((alt) => ({
       option: alt.option,
@@ -81,7 +106,7 @@ export class DecisionEngine {
       reason_rejected: alt.reason_rejected,
     }));
 
-    // Create decision with defaults
+    // Create decision with defaults — provisional if conflicts found
     const decision = await this.decisionStore.create({
       agent_id: input.agent_id ?? "main",
       domain: input.domain,
@@ -98,6 +123,22 @@ export class DecisionEngine {
       affected_files: input.affected_files ?? [],
       affected_symbols: input.affected_symbols ?? [],
     });
+
+    // If conflicts exist, mark new decision as provisional and post warning
+    if (conflicts.length > 0) {
+      await this.decisionStore.updateStatus(decision.id, "provisional");
+      const conflictDetails = conflicts
+        .map((c) => `- ${c.id}: "${c.summary}"`)
+        .join("\n");
+      await this.blackboardEngine.post({
+        entry_type: "warning",
+        summary: `Potential conflict: new decision may conflict with ${conflicts.length} existing decision(s)`,
+        detail: `New decision "${decision.summary}" conflicts with:\n${conflictDetails}`,
+        tags: [input.domain],
+        scope: input.scope,
+        agent_id: decision.agent_id,
+      });
+    }
 
     // Cross-post to blackboard
     await this.blackboardEngine.post({
@@ -127,7 +168,20 @@ export class DecisionEngine {
       }
     }
 
-    return { id: decision.id, timestamp: decision.timestamp };
+    const result: {
+      id: string;
+      timestamp: string;
+      conflicts?: { id: string; summary: string }[];
+    } = { id: decision.id, timestamp: decision.timestamp };
+
+    if (conflicts.length > 0) {
+      result.conflicts = conflicts.map((c) => ({
+        id: c.id,
+        summary: c.summary,
+      }));
+    }
+
+    return result;
   }
 
   /** Retrieve decision chain for a scope or file. */
@@ -162,5 +216,212 @@ export class DecisionEngine {
     ).length;
 
     return { decisions: mapped, active_count, provisional_count };
+  }
+
+  /**
+   * Trace a decision's dependency chain upstream and/or downstream.
+   * Uses BFS with a visited set to prevent infinite loops from circular dependencies.
+   */
+  async trace(
+    decisionId: string,
+    direction: "upstream" | "downstream" | "both" = "both",
+  ): Promise<{ chain: TraceEntry[] }> {
+    // Verify root decision exists
+    const rootDecision = await this.decisionStore.get(decisionId);
+    if (!rootDecision) {
+      throw new TwiningError(
+        `Decision not found: ${decisionId}`,
+        "NOT_FOUND",
+      );
+    }
+
+    // Load all decisions to build the dependency maps
+    const index = await this.decisionStore.getIndex();
+    const decisions = new Map<string, Decision>();
+    for (const entry of index) {
+      const d = await this.decisionStore.get(entry.id);
+      if (d) decisions.set(d.id, d);
+    }
+
+    // Build reverse dependency map: parentId -> [childIds that depend on parent]
+    const reverseMap = new Map<string, string[]>();
+    for (const [id, d] of decisions) {
+      for (const dep of d.depends_on) {
+        if (!reverseMap.has(dep)) reverseMap.set(dep, []);
+        reverseMap.get(dep)!.push(id);
+      }
+    }
+
+    const visited = new Set<string>();
+    visited.add(decisionId);
+    const chain: TraceEntry[] = [];
+
+    // BFS upstream: follow depends_on
+    if (direction === "upstream" || direction === "both") {
+      const queue = [...(rootDecision.depends_on ?? [])];
+      while (queue.length > 0) {
+        const current = queue.shift()!;
+        if (visited.has(current)) continue;
+        visited.add(current);
+        const d = decisions.get(current);
+        if (d) {
+          chain.push({
+            id: d.id,
+            summary: d.summary,
+            depends_on: d.depends_on,
+            dependents: reverseMap.get(d.id) ?? [],
+            status: d.status,
+          });
+          for (const dep of d.depends_on) {
+            if (!visited.has(dep)) queue.push(dep);
+          }
+        }
+      }
+    }
+
+    // BFS downstream: follow reverse map (dependents)
+    if (direction === "downstream" || direction === "both") {
+      const queue = [...(reverseMap.get(decisionId) ?? [])];
+      while (queue.length > 0) {
+        const current = queue.shift()!;
+        if (visited.has(current)) continue;
+        visited.add(current);
+        const d = decisions.get(current);
+        if (d) {
+          chain.push({
+            id: d.id,
+            summary: d.summary,
+            depends_on: d.depends_on,
+            dependents: reverseMap.get(d.id) ?? [],
+            status: d.status,
+          });
+          const downstream = reverseMap.get(d.id) ?? [];
+          for (const dep of downstream) {
+            if (!visited.has(dep)) queue.push(dep);
+          }
+        }
+      }
+    }
+
+    return { chain };
+  }
+
+  /**
+   * Flag a decision for reconsideration.
+   * Sets active decisions to provisional and posts a warning.
+   */
+  async reconsider(
+    decisionId: string,
+    newContext: string,
+    agentId?: string,
+  ): Promise<{ flagged: boolean; decision_summary: string }> {
+    const decision = await this.decisionStore.get(decisionId);
+    if (!decision) {
+      throw new TwiningError(
+        `Decision not found: ${decisionId}`,
+        "NOT_FOUND",
+      );
+    }
+
+    let flagged = false;
+    if (decision.status === "active") {
+      await this.decisionStore.updateStatus(decisionId, "provisional");
+      flagged = true;
+    }
+
+    // Check for downstream dependents
+    const index = await this.decisionStore.getIndex();
+    const downstreamIds: string[] = [];
+    for (const entry of index) {
+      const d = await this.decisionStore.get(entry.id);
+      if (d && d.depends_on.includes(decisionId)) {
+        downstreamIds.push(d.id);
+      }
+    }
+
+    let detail = newContext;
+    if (downstreamIds.length > 0) {
+      detail += `\nNote: ${downstreamIds.length} downstream decisions may be affected: ${downstreamIds.join(", ")}`;
+    }
+
+    // Post warning to blackboard
+    await this.blackboardEngine.post({
+      entry_type: "warning",
+      summary: `Reconsideration flagged: ${decision.summary}`.slice(0, 200),
+      detail,
+      tags: [decision.domain],
+      scope: decision.scope,
+      agent_id: agentId ?? "main",
+    });
+
+    return { flagged, decision_summary: decision.summary };
+  }
+
+  /**
+   * Override a decision with a reason, optionally creating a replacement.
+   */
+  async override(
+    decisionId: string,
+    reason: string,
+    newDecision?: string,
+    overriddenBy?: string,
+  ): Promise<{
+    overridden: boolean;
+    old_summary: string;
+    new_decision_id?: string;
+  }> {
+    const decision = await this.decisionStore.get(decisionId);
+    if (!decision) {
+      throw new TwiningError(
+        `Decision not found: ${decisionId}`,
+        "NOT_FOUND",
+      );
+    }
+
+    // Set status to overridden with extra fields
+    await this.decisionStore.updateStatus(decisionId, "overridden", {
+      overridden_by: overriddenBy ?? "human",
+      override_reason: reason,
+    });
+
+    // Post override entry to blackboard
+    const overrider = overriddenBy ?? "human";
+    await this.blackboardEngine.post({
+      entry_type: "decision",
+      summary:
+        `Override: ${decision.summary} -- overridden by ${overrider}`.slice(
+          0,
+          200,
+        ),
+      detail: reason,
+      tags: [decision.domain],
+      scope: decision.scope,
+      agent_id: overrider,
+    });
+
+    const result: {
+      overridden: boolean;
+      old_summary: string;
+      new_decision_id?: string;
+    } = {
+      overridden: true,
+      old_summary: decision.summary,
+    };
+
+    // If a replacement decision is provided, create it via decide()
+    if (newDecision) {
+      const newResult = await this.decide({
+        domain: decision.domain,
+        scope: decision.scope,
+        summary: newDecision,
+        context: reason,
+        rationale: reason,
+        supersedes: decisionId,
+        agent_id: overriddenBy ?? "human",
+      });
+      result.new_decision_id = newResult.id;
+    }
+
+    return result;
   }
 }
