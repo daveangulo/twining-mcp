@@ -28,11 +28,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Agent can record a decision with rationale, alternatives, and confidence, then retrieve all decisions affecting a given scope via `twining_why`
   4. Two concurrent agents can write to the blackboard and decision store without data corruption
   5. All tool calls return structured JSON responses (never crash the MCP connection), including for invalid inputs
-**Plans**: TBD
+**Plans**: 2 plans in 2 waves
 
 Plans:
-- [ ] 01-01: Utils and storage layer (types, IDs, tokens, file-store with locking, domain stores)
-- [ ] 01-02: Engine layer and MCP server (blackboard engine, decision engine, tool handlers, server wiring, stdio transport)
+- [ ] 01-01-PLAN.md — Utils, config, and storage layer (types, IDs, tokens, file-store with locking, blackboard-store, decision-store, init)
+- [ ] 01-02-PLAN.md — Engine layer and MCP server (blackboard engine, decision engine, tool handlers with Zod schemas, server wiring, stdio transport)
 
 ### Phase 2: Intelligence
 **Goal**: Agents get semantic search across all stored data and can request tailored, token-budgeted context packages for any task
