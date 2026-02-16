@@ -1,15 +1,17 @@
 /**
  * MCP server creation with all tool registrations.
  * Creates stores, engines, and registers all tools.
- * Phase 2: Wires embedding layer and context assembly.
+ * Phase 3: Adds knowledge graph layer to existing foundation.
  */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { ensureInitialized } from "./storage/init.js";
 import { loadConfig } from "./config.js";
 import { BlackboardStore } from "./storage/blackboard-store.js";
 import { DecisionStore } from "./storage/decision-store.js";
+import { GraphStore } from "./storage/graph-store.js";
 import { BlackboardEngine } from "./engine/blackboard.js";
 import { DecisionEngine } from "./engine/decisions.js";
+import { GraphEngine } from "./engine/graph.js";
 import { ContextAssembler } from "./engine/context-assembler.js";
 import { Embedder } from "./embeddings/embedder.js";
 import { IndexManager } from "./embeddings/index-manager.js";
@@ -18,6 +20,7 @@ import { registerBlackboardTools } from "./tools/blackboard-tools.js";
 import { registerDecisionTools } from "./tools/decision-tools.js";
 import { registerContextTools } from "./tools/context-tools.js";
 import { registerLifecycleTools } from "./tools/lifecycle-tools.js";
+import { registerGraphTools } from "./tools/graph-tools.js";
 
 /**
  * Create and configure the Twining MCP server.
@@ -33,6 +36,7 @@ export function createServer(projectRoot: string): McpServer {
   // Create stores
   const blackboardStore = new BlackboardStore(twiningDir);
   const decisionStore = new DecisionStore(twiningDir);
+  const graphStore = new GraphStore(twiningDir);
 
   // Create embedding layer (lazy-loaded — no ONNX init cost at startup)
   const embedder = new Embedder(twiningDir);
@@ -52,11 +56,13 @@ export function createServer(projectRoot: string): McpServer {
     embedder,
     indexManager,
   );
+  const graphEngine = new GraphEngine(graphStore);
   const contextAssembler = new ContextAssembler(
     blackboardStore,
     decisionStore,
     searchEngine,
     config,
+    graphEngine,
   );
 
   // Create MCP server
@@ -70,6 +76,7 @@ export function createServer(projectRoot: string): McpServer {
   registerDecisionTools(server, decisionEngine);
   registerContextTools(server, contextAssembler);
   registerLifecycleTools(server, twiningDir, blackboardStore, decisionStore);
+  registerGraphTools(server, graphEngine);
 
   return server;
 }

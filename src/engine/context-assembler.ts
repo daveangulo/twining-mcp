@@ -6,6 +6,7 @@
 import type { BlackboardStore } from "../storage/blackboard-store.js";
 import type { DecisionStore } from "../storage/decision-store.js";
 import type { SearchEngine } from "../embeddings/search.js";
+import type { GraphEngine } from "./graph.js";
 import type {
   AssembledContext,
   BlackboardEntry,
@@ -33,17 +34,20 @@ export class ContextAssembler {
   private readonly decisionStore: DecisionStore;
   private readonly searchEngine: SearchEngine | null;
   private readonly config: TwiningConfig;
+  private readonly graphEngine: GraphEngine | null;
 
   constructor(
     blackboardStore: BlackboardStore,
     decisionStore: DecisionStore,
     searchEngine: SearchEngine | null,
     config: TwiningConfig,
+    graphEngine?: GraphEngine | null,
   ) {
     this.blackboardStore = blackboardStore;
     this.decisionStore = decisionStore;
     this.searchEngine = searchEngine;
     this.config = config;
+    this.graphEngine = graphEngine ?? null;
   }
 
   /**
@@ -297,6 +301,9 @@ export class ContextAssembler {
       }
     }
 
+    // 8. Populate related_entities from knowledge graph
+    const relatedEntities = await this.getRelatedEntities(scope);
+
     return {
       assembled_at: new Date().toISOString(),
       task,
@@ -307,7 +314,7 @@ export class ContextAssembler {
       recent_findings: recentFindings,
       active_warnings: activeWarnings,
       recent_questions: recentQuestions,
-      related_entities: [], // Graph is Phase 3
+      related_entities: relatedEntities,
     };
   }
 
@@ -440,6 +447,54 @@ export class ContextAssembler {
       overridden_decisions: overriddenDecisions,
       reconsidered_decisions: reconsideredDecisions,
     };
+  }
+
+  /**
+   * Populate related_entities from the knowledge graph.
+   * Finds entities matching the scope and gets their immediate neighbors.
+   * Never throws — graph errors are silently caught to avoid breaking context assembly.
+   */
+  private async getRelatedEntities(
+    scope: string,
+  ): Promise<AssembledContext["related_entities"]> {
+    if (!this.graphEngine) return [];
+
+    try {
+      // Search for entities whose name matches the scope
+      const { entities } = await this.graphEngine.query(scope, undefined, 5);
+      if (entities.length === 0) return [];
+
+      const relatedEntities: AssembledContext["related_entities"] = [];
+
+      for (const entity of entities) {
+        try {
+          const { neighbors } = await this.graphEngine.neighbors(
+            entity.id,
+            1,
+          );
+          const relations = neighbors.map(
+            (n) => `${n.relation.type}: ${n.entity.name}`,
+          );
+          relatedEntities.push({
+            name: entity.name,
+            type: entity.type,
+            relations,
+          });
+        } catch {
+          // Skip entities that fail to traverse
+          relatedEntities.push({
+            name: entity.name,
+            type: entity.type,
+            relations: [],
+          });
+        }
+      }
+
+      return relatedEntities;
+    } catch {
+      // Graph errors should never break context assembly
+      return [];
+    }
   }
 
   /** Compute recency score using exponential decay. */
