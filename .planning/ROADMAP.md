@@ -59,11 +59,11 @@ Plans:
   3. A human can override a decision with a reason, and the system detects when a new decision contradicts an existing active decision in the same scope
   4. Agent can archive old blackboard entries (generating a summary finding), while decisions remain permanently unarchived
   5. Agent can check overall health and status of the Twining state
-**Plans**: TBD
+**Plans**: 2 plans in 2 waves
 
 Plans:
-- [ ] 03-01: Knowledge graph engine and tools (entities, relations, neighbors, graph_query)
-- [ ] 03-02: Decision lifecycle and archiving (trace, reconsider, override, conflict detection, archive with summarization, status)
+- [ ] 03-01-PLAN.md — Knowledge graph storage, engine, MCP tools (add_entity, add_relation, neighbors, graph_query), context assembly integration
+- [ ] 03-02-PLAN.md — Decision lifecycle (trace, reconsider, override, conflict detection), archiver with summarization, enhanced status
 
 ## Progress
 
