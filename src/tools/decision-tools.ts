@@ -1,6 +1,6 @@
 /**
  * MCP tool handlers for decision operations.
- * Registers twining_decide and twining_why.
+ * Registers twining_decide, twining_why, twining_trace, twining_reconsider, twining_override.
  */
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -115,6 +115,113 @@ export function registerDecisionTools(
         const result = await engine.why(args.scope);
         return toolResult(result);
       } catch (e) {
+        return toolError(
+          e instanceof Error ? e.message : "Unknown error",
+          "INTERNAL_ERROR",
+        );
+      }
+    },
+  );
+
+  // twining_trace — Trace a decision's dependency chain
+  server.registerTool(
+    "twining_trace",
+    {
+      description:
+        "Trace a decision's dependency chain upstream (what it depends on) and/or downstream (what depends on it). Uses BFS with cycle protection.",
+      inputSchema: {
+        decision_id: z.string().describe("ID of the decision to trace"),
+        direction: z
+          .enum(["upstream", "downstream", "both"])
+          .optional()
+          .describe('Direction to trace (default: "both")'),
+      },
+    },
+    async (args) => {
+      try {
+        const result = await engine.trace(args.decision_id, args.direction);
+        return toolResult(result);
+      } catch (e) {
+        if (e instanceof TwiningError) {
+          return toolError(e.message, e.code);
+        }
+        return toolError(
+          e instanceof Error ? e.message : "Unknown error",
+          "INTERNAL_ERROR",
+        );
+      }
+    },
+  );
+
+  // twining_reconsider — Flag a decision for reconsideration
+  server.registerTool(
+    "twining_reconsider",
+    {
+      description:
+        "Flag a decision for reconsideration. Sets active decisions to provisional status and posts a warning to the blackboard with downstream impact analysis.",
+      inputSchema: {
+        decision_id: z.string().describe("ID of the decision to reconsider"),
+        new_context: z
+          .string()
+          .describe("New context or reason for reconsideration"),
+        agent_id: z
+          .string()
+          .optional()
+          .describe("ID of the agent requesting reconsideration"),
+      },
+    },
+    async (args) => {
+      try {
+        const result = await engine.reconsider(
+          args.decision_id,
+          args.new_context,
+          args.agent_id,
+        );
+        return toolResult(result);
+      } catch (e) {
+        if (e instanceof TwiningError) {
+          return toolError(e.message, e.code);
+        }
+        return toolError(
+          e instanceof Error ? e.message : "Unknown error",
+          "INTERNAL_ERROR",
+        );
+      }
+    },
+  );
+
+  // twining_override — Override a decision with a reason
+  server.registerTool(
+    "twining_override",
+    {
+      description:
+        "Override a decision with a reason. Sets the decision to overridden status, records who overrode it and why, and optionally creates a replacement decision automatically.",
+      inputSchema: {
+        decision_id: z.string().describe("ID of the decision to override"),
+        reason: z.string().describe("Reason for the override"),
+        new_decision: z
+          .string()
+          .optional()
+          .describe("Summary of the replacement decision to auto-create"),
+        overridden_by: z
+          .string()
+          .optional()
+          .describe('Who is overriding (default: "human")'),
+      },
+    },
+    async (args) => {
+      try {
+        const result = await engine.override(
+          args.decision_id,
+          args.reason,
+          args.new_decision,
+          args.overridden_by,
+        );
+        return toolResult(result);
+      } catch (e) {
+        if (e instanceof TwiningError) {
+          return toolError(e.message, e.code);
+        }
         return toolError(
           e instanceof Error ? e.message : "Unknown error",
           "INTERNAL_ERROR",

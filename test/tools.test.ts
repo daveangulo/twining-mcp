@@ -5,8 +5,11 @@ import os from "node:os";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { BlackboardStore } from "../src/storage/blackboard-store.js";
 import { DecisionStore } from "../src/storage/decision-store.js";
+import { GraphStore } from "../src/storage/graph-store.js";
 import { BlackboardEngine } from "../src/engine/blackboard.js";
 import { DecisionEngine } from "../src/engine/decisions.js";
+import { Archiver } from "../src/engine/archiver.js";
+import { DEFAULT_CONFIG } from "../src/config.js";
 import { registerBlackboardTools } from "../src/tools/blackboard-tools.js";
 import { registerDecisionTools } from "../src/tools/decision-tools.js";
 import { registerLifecycleTools } from "../src/tools/lifecycle-tools.js";
@@ -17,6 +20,8 @@ let bbEngine: BlackboardEngine;
 let dcsnEngine: DecisionEngine;
 let bbStore: BlackboardStore;
 let dcsnStore: DecisionStore;
+let graphStore: GraphStore;
+let archiver: Archiver;
 
 /**
  * Helper to call a registered tool by name.
@@ -51,13 +56,15 @@ beforeEach(() => {
 
   bbStore = new BlackboardStore(tmpDir);
   dcsnStore = new DecisionStore(tmpDir);
+  graphStore = new GraphStore(tmpDir);
   bbEngine = new BlackboardEngine(bbStore);
   dcsnEngine = new DecisionEngine(dcsnStore, bbEngine);
+  archiver = new Archiver(tmpDir, bbStore, bbEngine, null);
 
   server = new McpServer({ name: "test-server", version: "1.0.0" });
   registerBlackboardTools(server, bbEngine);
   registerDecisionTools(server, dcsnEngine);
-  registerLifecycleTools(server, tmpDir, bbStore, dcsnStore);
+  registerLifecycleTools(server, tmpDir, bbStore, dcsnStore, graphStore, archiver, DEFAULT_CONFIG);
 });
 
 afterEach(() => {
