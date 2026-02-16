@@ -110,50 +110,50 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FOUND-01 | — | Pending |
-| FOUND-02 | — | Pending |
-| FOUND-03 | — | Pending |
-| FOUND-04 | — | Pending |
-| FOUND-05 | — | Pending |
-| FOUND-06 | — | Pending |
-| BLKB-01 | — | Pending |
-| BLKB-02 | — | Pending |
-| BLKB-03 | — | Pending |
-| BLKB-04 | — | Pending |
-| BLKB-05 | — | Pending |
-| BLKB-06 | — | Pending |
-| DCSN-01 | — | Pending |
-| DCSN-02 | — | Pending |
-| DCSN-03 | — | Pending |
-| DCSN-04 | — | Pending |
-| DCSN-05 | — | Pending |
-| DCSN-06 | — | Pending |
-| DCSN-07 | — | Pending |
-| CTXA-01 | — | Pending |
-| CTXA-02 | — | Pending |
-| CTXA-03 | — | Pending |
-| CTXA-04 | — | Pending |
-| GRPH-01 | — | Pending |
-| GRPH-02 | — | Pending |
-| GRPH-03 | — | Pending |
-| GRPH-04 | — | Pending |
-| EMBD-01 | — | Pending |
-| EMBD-02 | — | Pending |
-| EMBD-03 | — | Pending |
-| EMBD-04 | — | Pending |
-| LIFE-01 | — | Pending |
-| LIFE-02 | — | Pending |
-| LIFE-03 | — | Pending |
-| LIFE-04 | — | Pending |
-| MCPI-01 | — | Pending |
-| MCPI-02 | — | Pending |
-| MCPI-03 | — | Pending |
+| FOUND-01 | Phase 1 | Pending |
+| FOUND-02 | Phase 1 | Pending |
+| FOUND-03 | Phase 1 | Pending |
+| FOUND-04 | Phase 1 | Pending |
+| FOUND-05 | Phase 1 | Pending |
+| FOUND-06 | Phase 1 | Pending |
+| BLKB-01 | Phase 1 | Pending |
+| BLKB-02 | Phase 1 | Pending |
+| BLKB-03 | Phase 2 | Pending |
+| BLKB-04 | Phase 1 | Pending |
+| BLKB-05 | Phase 1 | Pending |
+| BLKB-06 | Phase 1 | Pending |
+| DCSN-01 | Phase 1 | Pending |
+| DCSN-02 | Phase 1 | Pending |
+| DCSN-03 | Phase 3 | Pending |
+| DCSN-04 | Phase 3 | Pending |
+| DCSN-05 | Phase 3 | Pending |
+| DCSN-06 | Phase 1 | Pending |
+| DCSN-07 | Phase 3 | Pending |
+| CTXA-01 | Phase 2 | Pending |
+| CTXA-02 | Phase 2 | Pending |
+| CTXA-03 | Phase 2 | Pending |
+| CTXA-04 | Phase 2 | Pending |
+| GRPH-01 | Phase 3 | Pending |
+| GRPH-02 | Phase 3 | Pending |
+| GRPH-03 | Phase 3 | Pending |
+| GRPH-04 | Phase 3 | Pending |
+| EMBD-01 | Phase 2 | Pending |
+| EMBD-02 | Phase 2 | Pending |
+| EMBD-03 | Phase 2 | Pending |
+| EMBD-04 | Phase 2 | Pending |
+| LIFE-01 | Phase 3 | Pending |
+| LIFE-02 | Phase 3 | Pending |
+| LIFE-03 | Phase 3 | Pending |
+| LIFE-04 | Phase 3 | Pending |
+| MCPI-01 | Phase 1 | Pending |
+| MCPI-02 | Phase 1 | Pending |
+| MCPI-03 | Phase 1 | Pending |
 
 **Coverage:**
 - v1 requirements: 38 total
-- Mapped to phases: 0
-- Unmapped: 38
+- Mapped to phases: 38
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-16*
-*Last updated: 2026-02-16 after initial definition*
+*Last updated: 2026-02-16 after roadmap creation*
