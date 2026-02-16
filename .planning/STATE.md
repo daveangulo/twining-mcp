@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-16)
 
 **Core value:** Agents share *why* decisions were made, not just *what* was done -- eliminating information silos across context windows.
-**Current focus:** Phase 3 in progress; graph storage and tools complete, lifecycle next
+**Current focus:** All 3 phases complete. 221 tests passing, 14 MCP tools, clean build.
 
 ## Current Position
 
-Phase: 3 of 3 (Graph + Lifecycle)
-Plan: 1 of 2 in current phase -- COMPLETE
-Status: Phase 3 Plan 1 complete (192 tests passing, builds to dist/)
-Last activity: 2026-02-16 -- Graph storage, engine, MCP tools, and context assembly integration
+Phase: 3 of 3 (Graph + Lifecycle) -- COMPLETE
+Plan: 2 of 2 in current phase -- COMPLETE
+Status: All phases complete. 221 tests passing, builds to dist/. 14 MCP tools operational.
+Last activity: 2026-02-16 -- Decision lifecycle, archiver, enhanced status
 
-Progress: [████████░░] 83%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5 (2 in Phase 1 + 2 in Phase 2 + 1 in Phase 3)
-- Average duration: ~12min
-- Total execution time: ~1h 4min
+- Total plans completed: 6 (2 in Phase 1 + 2 in Phase 2 + 2 in Phase 3)
+- Average duration: ~11min
+- Total execution time: ~1h 9min
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [████████░░] 83%
 |-------|-------|-------|----------|
 | 1 | 2 | ~30min | ~15min |
 | 2 | 2 | ~25min | ~12min |
-| 3 | 1 | 4min | 4min |
+| 3 | 2 | 9min | ~4.5min |
 
 **Recent Trend:**
-- Last 5 plans: Phase 1 (01, 02), Phase 2 (01, 02), Phase 3 (01)
-- Trend: Accelerating execution, Phase 3 Plan 1 completed in 4min
+- Last 6 plans: Phase 1 (01, 02), Phase 2 (01, 02), Phase 3 (01, 02)
+- Trend: Accelerating execution, Phase 3 completed in 9min total (2 plans)
 
 *Updated after each plan completion*
 
@@ -54,10 +54,14 @@ Recent decisions affecting current work:
 - [Phase 3]: Entity upsert matches on name+type pair, merges properties on update. BFS depth clamped to max 3 with visited set for cycle safety.
 - [Phase 3]: Entity resolution in addRelation tries ID first then name; AMBIGUOUS_ENTITY error for multiple name matches.
 - [Phase 3]: Context assembler graph integration wrapped in try/catch so graph errors never break assembly.
+- [Phase 3]: Conflict detection uses prefix overlap on scope plus same domain and different summary.
+- [Phase 3]: Archiver locks blackboard.jsonl for full read-partition-rewrite cycle to prevent concurrent data loss.
+- [Phase 3]: Override auto-creates replacement via decide() inheriting domain and scope from overridden decision.
+- [Phase 3]: Status warnings: stale provisionals (>7 days), archive threshold from config, orphan graph entities.
 
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
@@ -66,6 +70,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 03-01-PLAN.md (Graph storage, engine, tools, context integration)
+Stopped at: Completed 03-02-PLAN.md (Decision lifecycle, archiver, enhanced status). All phases complete.
 Resume file: None
-Next: Execute Phase 3 Plan 2 (lifecycle management).
+Next: Project complete. All 3 phases delivered with 221 tests, 14 MCP tools, clean build.
