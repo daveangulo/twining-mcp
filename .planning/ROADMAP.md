@@ -13,7 +13,7 @@ Twining delivers a shared coordination layer for AI agents, built bottom-up from
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation + Core Data** - Storage layer, blackboard, basic decisions, and MCP server wiring
-- [ ] **Phase 2: Intelligence** - Embeddings, semantic search, and token-budgeted context assembly
+- [x] **Phase 2: Intelligence** - Embeddings, semantic search, and token-budgeted context assembly
 - [ ] **Phase 3: Graph + Lifecycle** - Knowledge graph, decision lifecycle (trace/reconsider/override/conflict), and archiving
 
 ## Phase Details
@@ -43,11 +43,11 @@ Plans:
   2. If ONNX runtime fails to load, server continues working with keyword-based search fallback -- never crashes
   3. Agent can request assembled context for a task+scope and receive a package of relevant decisions, blackboard entries, and summaries within a specified token budget
   4. Agent can see what changed since a given timestamp and get a high-level summary of project state
-**Plans**: TBD
+**Plans**: 2 plans in 2 waves
 
 Plans:
-- [ ] 02-01: Embeddings layer (lazy-loaded ONNX embedder, index manager, cosine similarity search, keyword fallback)
-- [ ] 02-02: Context assembly engine and tools (assembler with weighted scoring, summarize, what_changed, wire into MCP tools)
+- [x] 02-01-PLAN.md — Embeddings layer (lazy-loaded ONNX embedder, index manager, cosine similarity search, keyword fallback, wire into engines)
+- [x] 02-02-PLAN.md — Context assembly engine and tools (assembler with weighted scoring, summarize, what_changed, wire into MCP tools)
 
 ### Phase 3: Graph + Lifecycle
 **Goal**: Agents can build and traverse a knowledge graph of code entities, manage the full decision lifecycle (trace, reconsider, override, conflict detection), and archive old state
@@ -73,5 +73,5 @@ Phases execute in numeric order: 1 -> 2 -> 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation + Core Data | 2/2 | Complete | 2026-02-16 |
-| 2. Intelligence | 0/2 | Not started | - |
+| 2. Intelligence | 2/2 | Complete | 2026-02-16 |
 | 3. Graph + Lifecycle | 0/2 | Not started | - |
