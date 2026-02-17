@@ -39,6 +39,7 @@
     <button class="tab-btn" data-tab="decisions">Decisions</button>
     <button class="tab-btn" data-tab="graph">Graph</button>
     <button class="tab-btn" data-tab="search">Search</button>
+    <button class="tab-btn" data-tab="agents">Agents</button>
   </nav>
 
   <div class="search-bar">
@@ -90,6 +91,22 @@
         <div class="stat-card">
           <div class="stat-label">Last Activity</div>
           <div class="stat-value" id="stat-last-activity">--</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Registered Agents</div>
+          <div class="stat-value" id="stat-registered-agents">--</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Agents</div>
+          <div class="stat-value" id="stat-active-agents">--</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Pending Delegations</div>
+          <div class="stat-value" id="stat-pending-delegations">--</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Handoffs</div>
+          <div class="stat-value" id="stat-total-handoffs">--</div>
         </div>
       </div>
       <div id="uninitialized-msg" style="display:none">No data yet. Twining will populate as agents use MCP tools.</div>
@@ -221,6 +238,88 @@
         </div>
         <div class="detail-panel" id="search-detail">
           <p class="placeholder">Click a search result to view details</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agents Tab -->
+    <div class="tab-content" id="tab-agents" style="display:none">
+      <div class="view-toggle" id="agents-view-toggle">
+        <button class="view-btn active" data-view="agents-list" data-tab="agents">Agents</button>
+        <button class="view-btn" data-view="delegations" data-tab="agents">Delegations</button>
+        <button class="view-btn" data-view="handoffs" data-tab="agents">Handoffs</button>
+      </div>
+
+      <!-- Agents List Sub-view -->
+      <div class="view-table" id="agents-list-view">
+        <div class="content-area">
+          <div class="list-panel">
+            <table class="data-table" id="agents-table">
+              <thead>
+                <tr>
+                  <th class="sortable-header" data-sort-key="agent_id">Agent ID</th>
+                  <th class="sortable-header" data-sort-key="liveness">Status</th>
+                  <th class="sortable-header" data-sort-key="role">Role</th>
+                  <th>Capabilities</th>
+                  <th class="sortable-header" data-sort-key="last_active">Last Active</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <div class="pagination" id="agents-pagination"></div>
+          </div>
+          <div class="detail-panel" id="agents-detail">
+            <p class="placeholder">Select an agent to view details</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delegations Sub-view -->
+      <div class="view-visual" id="delegations-view" style="display:none">
+        <div class="content-area">
+          <div class="list-panel">
+            <table class="data-table" id="delegations-table">
+              <thead>
+                <tr>
+                  <th class="sortable-header" data-sort-key="timestamp">Timestamp</th>
+                  <th class="sortable-header" data-sort-key="urgency">Urgency</th>
+                  <th class="sortable-header" data-sort-key="summary">Summary</th>
+                  <th>Required Capabilities</th>
+                  <th class="sortable-header" data-sort-key="expired">Status</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <div class="pagination" id="delegations-pagination"></div>
+          </div>
+          <div class="detail-panel" id="delegations-detail">
+            <p class="placeholder">Select a delegation to view details</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Handoffs Sub-view -->
+      <div class="view-visual" id="handoffs-view" style="display:none">
+        <div class="content-area">
+          <div class="list-panel">
+            <table class="data-table" id="handoffs-table">
+              <thead>
+                <tr>
+                  <th class="sortable-header" data-sort-key="created_at">Created</th>
+                  <th class="sortable-header" data-sort-key="source_agent">Source</th>
+                  <th class="sortable-header" data-sort-key="target_agent">Target</th>
+                  <th class="sortable-header" data-sort-key="summary">Summary</th>
+                  <th class="sortable-header" data-sort-key="result_status">Result</th>
+                  <th class="sortable-header" data-sort-key="acknowledged">Ack</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <div class="pagination" id="handoffs-pagination"></div>
+          </div>
+          <div class="detail-panel" id="handoffs-detail">
+            <p class="placeholder">Select a handoff to view details</p>
+          </div>
         </div>
       </div>
     </div>
