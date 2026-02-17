@@ -22,6 +22,9 @@ import type {
   DiscoverResult,
   DelegationInput,
   DelegationResult,
+  DelegationMetadata,
+  DelegationUrgency,
+  BlackboardEntry,
   CreateHandoffInput,
   HandoffRecord,
   TwiningConfig,
@@ -83,6 +86,43 @@ export function scoreAgent(
   };
 }
 
+/** Default timeout durations per urgency level. */
+export const DELEGATION_TIMEOUTS: Record<DelegationUrgency, number> = {
+  high: 300000,       // 5 minutes
+  normal: 1800000,    // 30 minutes
+  low: 14400000,      // 4 hours
+};
+
+/**
+ * Parse delegation metadata from a blackboard entry's detail field.
+ * Returns null for non-delegation entries or malformed JSON.
+ */
+export function parseDelegationMetadata(
+  entry: BlackboardEntry,
+): DelegationMetadata | null {
+  if (!entry.detail) return null;
+  try {
+    const parsed = JSON.parse(entry.detail);
+    if (parsed && parsed.type === "delegation") {
+      return parsed as DelegationMetadata;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Check if a delegation has expired.
+ * Returns true when now >= expires_at (boundary inclusive).
+ */
+export function isDelegationExpired(
+  metadata: DelegationMetadata,
+  now: Date = new Date(),
+): boolean {
+  return now.getTime() >= new Date(metadata.expires_at).getTime();
+}
+
 export class CoordinationEngine {
   private readonly agentStore: AgentStore;
   private readonly handoffStore: HandoffStore;
@@ -139,8 +179,58 @@ export class CoordinationEngine {
   }
 
   /** Post a delegation request to the blackboard. */
-  async postDelegation(_input: DelegationInput): Promise<DelegationResult> {
-    throw new Error("not implemented");
+  async postDelegation(input: DelegationInput): Promise<DelegationResult> {
+    const now = new Date();
+    const urgency: DelegationUrgency = input.urgency ?? "normal";
+
+    // Compute timeout: custom override > config > default constant
+    const urgencyKey = `${urgency}_ms` as keyof NonNullable<
+      TwiningConfig["delegations"]
+    >["timeouts"];
+    const configTimeout = this.config.delegations?.timeouts?.[urgencyKey];
+    const timeoutMs =
+      input.timeout_ms ?? configTimeout ?? DELEGATION_TIMEOUTS[urgency];
+
+    // Compute expiry
+    const expiresAt = new Date(now.getTime() + timeoutMs).toISOString();
+
+    // Normalize capabilities
+    const normalizedCapabilities = normalizeTags(input.required_capabilities);
+
+    // Build delegation metadata
+    const metadata: DelegationMetadata = {
+      type: "delegation",
+      required_capabilities: normalizedCapabilities,
+      urgency,
+      expires_at: expiresAt,
+      timeout_ms: timeoutMs,
+    };
+
+    // Build tags: user tags + delegation + urgency
+    const tags = [...(input.tags ?? []), "delegation", urgency];
+
+    // Post to blackboard as a "need" entry
+    const { id, timestamp } = await this.blackboardEngine.post({
+      entry_type: "need",
+      summary: input.summary,
+      detail: JSON.stringify(metadata),
+      tags,
+      scope: input.scope ?? "project",
+      agent_id: input.agent_id ?? "main",
+    });
+
+    // Get suggested agents via discover (exclude gone agents)
+    const discovery = await this.discover({
+      required_capabilities: input.required_capabilities,
+      include_gone: false,
+    });
+
+    return {
+      entry_id: id,
+      timestamp,
+      expires_at: expiresAt,
+      suggested_agents: discovery.agents,
+    };
   }
 
   /** Create a handoff record between agents. */
