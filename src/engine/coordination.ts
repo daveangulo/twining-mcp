@@ -233,16 +233,103 @@ export class CoordinationEngine {
     };
   }
 
+  /**
+   * Assemble a context snapshot from active decisions and blackboard
+   * warnings/findings. Used by createHandoff when auto_snapshot is true.
+   */
+  private async assembleContextSnapshot(
+    scope?: string,
+  ): Promise<HandoffRecord["context_snapshot"]> {
+    // 1. Get decision index and filter to active decisions
+    const decisionIndex = await this.decisionStore.getIndex();
+    let activeDecisions = decisionIndex.filter((d) => d.status === "active");
+
+    // If scope provided, use bidirectional prefix matching
+    if (scope) {
+      activeDecisions = activeDecisions.filter(
+        (d) => d.scope.startsWith(scope) || scope.startsWith(d.scope),
+      );
+    }
+
+    // 2. Read blackboard entries for warnings and findings
+    const { entries: bbEntries } = await this.blackboardStore.read({
+      entry_types: ["warning", "finding"],
+      scope,
+    });
+
+    const warnings = bbEntries.filter((e) => e.entry_type === "warning");
+    const findings = bbEntries.filter((e) => e.entry_type === "finding");
+
+    // 3. Build context snapshot
+    const decision_ids = activeDecisions.map((d) => d.id);
+    const warning_ids = warnings.map((e) => e.id);
+    const finding_ids = findings.map((e) => e.id);
+
+    // 4. Build capped summaries
+    const summaries: string[] = [];
+    for (const d of activeDecisions.slice(0, 5)) {
+      summaries.push(`Decision: ${d.summary}`);
+    }
+    for (const w of warnings.slice(0, 3)) {
+      summaries.push(`Warning: ${w.summary}`);
+    }
+    for (const f of findings.slice(0, 3)) {
+      summaries.push(`Finding: ${f.summary}`);
+    }
+
+    return { decision_ids, warning_ids, finding_ids, summaries };
+  }
+
   /** Create a handoff record between agents. */
-  async createHandoff(_input: CreateHandoffInput): Promise<HandoffRecord> {
-    throw new Error("not implemented");
+  async createHandoff(input: CreateHandoffInput): Promise<HandoffRecord> {
+    // 1. Determine context_snapshot
+    let context_snapshot: HandoffRecord["context_snapshot"];
+    if (input.context_snapshot) {
+      // Manual override
+      context_snapshot = input.context_snapshot;
+    } else if (input.auto_snapshot !== false) {
+      // Auto-assemble (default)
+      context_snapshot = await this.assembleContextSnapshot(input.scope);
+    } else {
+      // Explicitly disabled
+      context_snapshot = {
+        decision_ids: [],
+        warning_ids: [],
+        finding_ids: [],
+        summaries: [],
+      };
+    }
+
+    // 2. Create via HandoffStore
+    const record = await this.handoffStore.create({
+      source_agent: input.source_agent,
+      target_agent: input.target_agent,
+      scope: input.scope,
+      summary: input.summary,
+      results: input.results,
+      context_snapshot,
+    });
+
+    // 3. Post status entry to blackboard
+    const statusSummary = `Handoff created: ${input.summary}`.slice(0, 200);
+    const statusDetail = `From ${input.source_agent} to ${input.target_agent ?? "any agent"}. ${input.results.length} result(s).`;
+    await this.blackboardEngine.post({
+      entry_type: "status",
+      summary: statusSummary,
+      detail: statusDetail,
+      tags: ["handoff"],
+      scope: input.scope ?? "project",
+      agent_id: input.source_agent,
+    });
+
+    return record;
   }
 
   /** Acknowledge receipt of a handoff. */
   async acknowledgeHandoff(
-    _handoffId: string,
-    _agentId: string,
+    handoffId: string,
+    agentId: string,
   ): Promise<HandoffRecord> {
-    throw new Error("not implemented");
+    return this.handoffStore.acknowledge(handoffId, agentId);
   }
 }
