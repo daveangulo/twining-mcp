@@ -45,11 +45,12 @@
   3. Dashboard serves a static page that loads without errors in the browser
   4. Server handles port conflicts gracefully by trying subsequent ports
   5. Server shuts down cleanly when MCP process exits
-**Plans**: 2 plans
+**Plans**: 3 plans
 
 Plans:
 - [ ] 07-01-PLAN.md -- Core HTTP server module (config, static serving, port retry, health endpoint, tests)
 - [ ] 07-02-PLAN.md -- Static assets, MCP lifecycle integration, browser auto-open, graceful shutdown, build pipeline
+- [ ] 07-03-PLAN.md -- Gap closure: wire setupDashboardShutdown into MCP lifecycle (INFRA-07)
 
 ### Phase 8: Observability Dashboard
 **Goal**: User can browse all Twining state through the web dashboard
