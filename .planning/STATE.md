@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Phase: 12 of 14 (Coordination Engine)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: Executing
-Last activity: 2026-02-17 -- Completed 12-01 CoordinationEngine Scoring & Discovery
+Last activity: 2026-02-17 -- Completed 12-02 Delegation Posting & Expiry
 
-Progress: [#########################.......] 82% (11/14 phases, 26/28 plans complete)
+Progress: [##########################......] 85% (11/14 phases, 27/28 plans complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 26 (6 v1 + 6 v1.1 + 10 v1.2 + 4 v1.3)
+- Total plans completed: 27 (6 v1 + 6 v1.1 + 10 v1.2 + 5 v1.3)
 - v1.1 execution time: ~19min (6 plans, 13 tasks)
 - v1.2 execution time: ~31min (10 plans)
 
@@ -38,7 +38,7 @@ Progress: [#########################.......] 82% (11/14 phases, 26/28 plans comp
 | 9. Search and Filter | 2/2 | 7min | 3.5min |
 | 10. Visualizations & Polish | 3/3 | 10min | 3.3min |
 | 11. Types & Storage | 3/3 | 7min | 2.3min |
-| 12. Coordination Engine | 1/3 | 2min | 2min |
+| 12. Coordination Engine | 2/3 | 4min | 2min |
 
 ## Accumulated Context
 
@@ -60,6 +60,10 @@ Recent decisions for v1.3:
 - Weighting: 70% capability overlap + 30% liveness score
 - Zero required capabilities yields overlap=0, ranked by liveness only (no NaN)
 - include_gone defaults to true; total_registered always reflects all agents
+- Delegation metadata stored as JSON in blackboard entry detail field (not separate table)
+- Timeout resolution chain: custom timeout_ms > config delegations.timeouts > DELEGATION_TIMEOUTS constant
+- isDelegationExpired uses >= for boundary (expired at exact moment)
+- postDelegation calls discover() with include_gone=false for suggested agents
 
 ### Pending Todos
 
@@ -72,6 +76,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 12-01-PLAN.md (CoordinationEngine Scoring & Discovery)
-Resume file: .planning/phases/12-coordination-engine/12-01-SUMMARY.md
-Next: 12-02-PLAN.md (Delegation & Handoff methods)
+Stopped at: Completed 12-02-PLAN.md (Delegation Posting & Expiry)
+Resume file: .planning/phases/12-coordination-engine/12-02-SUMMARY.md
+Next: 12-03-PLAN.md (Handoff & Context Snapshot)
