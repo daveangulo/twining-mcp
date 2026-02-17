@@ -36,7 +36,14 @@ Agents share *why* decisions were made, not just *what* was done — eliminating
 
 ### Active
 
-(No active requirements — planning next milestone)
+<!-- Current scope: v1.3 Agent Coordination -->
+
+- [ ] Agent registry with auto-registration and optional explicit registration
+- [ ] Capability-based agent discovery
+- [ ] Typed delegation needs on blackboard with capability matching
+- [ ] Structured handoffs between agents
+- [ ] Context assembly integration for handoff consumption
+- [ ] Agent liveness tracking via last-activity inference
 
 ### Out of Scope
 
@@ -109,5 +116,15 @@ Agents share *why* decisions were made, not just *what* was done — eliminating
 | textContent for all user data rendering | XSS prevention throughout dashboard; never innerHTML for user-provided content | ✓ Good — v1.2 |
 | Global scope filter with bi-directional prefix matching | Intuitive scope narrowing; "src/" matches "src/auth" and "src/auth" matches "src/" | ✓ Good — v1.2 |
 
+## Current Milestone: v1.3 Agent Coordination
+
+**Goal:** Enable agents to discover each other, delegate work through capability-matched needs, and hand off context cleanly between context windows.
+
+**Target features:**
+- Agent registry (auto + explicit registration with capabilities)
+- Capability-based discovery and delegation via blackboard needs
+- Structured handoffs consumed through context assembly
+- Last-activity liveness inference
+
 ---
-*Last updated: 2026-02-17 after v1.2 milestone*
+*Last updated: 2026-02-17 after starting milestone v1.3*
