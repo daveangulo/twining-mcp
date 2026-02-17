@@ -60,6 +60,7 @@ export class DecisionEngine {
     affected_files?: string[];
     affected_symbols?: string[];
     agent_id?: string;
+    commit_hash?: string;
   }): Promise<{
     id: string;
     timestamp: string;
@@ -122,6 +123,7 @@ export class DecisionEngine {
       reversible: input.reversible ?? true,
       affected_files: input.affected_files ?? [],
       affected_symbols: input.affected_symbols ?? [],
+      commit_hashes: input.commit_hash ? [input.commit_hash] : [],
     });
 
     // If conflicts exist, mark new decision as provisional and post warning
@@ -216,6 +218,67 @@ export class DecisionEngine {
     ).length;
 
     return { decisions: mapped, active_count, provisional_count };
+  }
+
+  /**
+   * Link a commit hash to an existing decision.
+   * Posts a status entry to the blackboard for traceability.
+   */
+  async linkCommit(
+    decisionId: string,
+    commitHash: string,
+    agentId?: string,
+  ): Promise<{ linked: boolean; decision_summary: string }> {
+    const decision = await this.decisionStore.get(decisionId);
+    if (!decision) {
+      throw new TwiningError(
+        `Decision not found: ${decisionId}`,
+        "NOT_FOUND",
+      );
+    }
+
+    await this.decisionStore.linkCommit(decisionId, commitHash);
+
+    // Post status entry to blackboard
+    const summary = `Commit ${commitHash.slice(0, 7)} linked to decision: ${decision.summary}`.slice(0, 200);
+    await this.blackboardEngine.post({
+      entry_type: "status",
+      summary,
+      detail: `Linked commit ${commitHash} to decision ${decisionId}`,
+      tags: [decision.domain],
+      scope: decision.scope,
+      agent_id: agentId ?? "main",
+    });
+
+    return { linked: true, decision_summary: decision.summary };
+  }
+
+  /**
+   * Get decisions linked to a specific commit hash.
+   */
+  async getByCommitHash(commitHash: string): Promise<{
+    decisions: Array<{
+      id: string;
+      summary: string;
+      domain: string;
+      scope: string;
+      confidence: string;
+      timestamp: string;
+      commit_hashes: string[];
+    }>;
+  }> {
+    const decisions = await this.decisionStore.getByCommitHash(commitHash);
+    return {
+      decisions: decisions.map((d) => ({
+        id: d.id,
+        summary: d.summary,
+        domain: d.domain,
+        scope: d.scope,
+        confidence: d.confidence,
+        timestamp: d.timestamp,
+        commit_hashes: d.commit_hashes,
+      })),
+    };
   }
 
   /**

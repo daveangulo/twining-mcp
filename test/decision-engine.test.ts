@@ -133,6 +133,87 @@ describe("DecisionEngine.decide", () => {
   });
 });
 
+describe("DecisionEngine.decide with commit_hash", () => {
+  it("creates decision with commit_hashes when commit_hash provided", async () => {
+    const result = await decisionEngine.decide(
+      validDecisionInput({ commit_hash: "abc123" }),
+    );
+    const decision = await decisionStore.get(result.id);
+    expect(decision!.commit_hashes).toEqual(["abc123"]);
+  });
+
+  it("creates decision with empty commit_hashes when commit_hash not provided", async () => {
+    const result = await decisionEngine.decide(validDecisionInput());
+    const decision = await decisionStore.get(result.id);
+    expect(decision!.commit_hashes).toEqual([]);
+  });
+});
+
+describe("DecisionEngine.linkCommit", () => {
+  it("links commit to existing decision and returns summary", async () => {
+    const d1 = await decisionEngine.decide(validDecisionInput());
+    const result = await decisionEngine.linkCommit(d1.id, "abc123");
+
+    expect(result.linked).toBe(true);
+    expect(result.decision_summary).toBe("Use JWT for auth");
+
+    // Verify the commit hash was persisted
+    const decision = await decisionStore.get(d1.id);
+    expect(decision!.commit_hashes).toContain("abc123");
+  });
+
+  it("throws NOT_FOUND for nonexistent decision", async () => {
+    await expect(
+      decisionEngine.linkCommit("nonexistent", "abc123"),
+    ).rejects.toThrow(TwiningError);
+
+    try {
+      await decisionEngine.linkCommit("nonexistent", "abc123");
+    } catch (e) {
+      expect((e as TwiningError).code).toBe("NOT_FOUND");
+    }
+  });
+
+  it("posts a status entry to blackboard", async () => {
+    const d1 = await decisionEngine.decide(validDecisionInput());
+    await decisionEngine.linkCommit(d1.id, "abc123def456");
+
+    const { entries } = await blackboardEngine.read({
+      entry_types: ["status"],
+    });
+    const statusEntry = entries.find((e) =>
+      e.summary.includes("abc123d"),
+    );
+    expect(statusEntry).toBeTruthy();
+    expect(statusEntry!.summary).toContain("linked to decision");
+  });
+});
+
+describe("DecisionEngine.getByCommitHash", () => {
+  it("returns matching decisions", async () => {
+    await decisionEngine.decide(
+      validDecisionInput({ commit_hash: "abc123" }),
+    );
+    await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Another decision",
+        domain: "testing",
+        commit_hash: "def456",
+      }),
+    );
+
+    const result = await decisionEngine.getByCommitHash("abc123");
+    expect(result.decisions).toHaveLength(1);
+    expect(result.decisions[0]!.summary).toBe("Use JWT for auth");
+    expect(result.decisions[0]!.commit_hashes).toContain("abc123");
+  });
+
+  it("returns empty decisions array for unknown hash", async () => {
+    const result = await decisionEngine.getByCommitHash("unknown");
+    expect(result.decisions).toHaveLength(0);
+  });
+});
+
 describe("DecisionEngine.why", () => {
   it("returns decisions matching scope with correct counts", async () => {
     await decisionEngine.decide(validDecisionInput());

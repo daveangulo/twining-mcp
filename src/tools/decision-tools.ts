@@ -80,6 +80,10 @@ export function registerDecisionTools(
           .string()
           .optional()
           .describe('Identifier for the deciding agent (default: "main")'),
+        commit_hash: z
+          .string()
+          .optional()
+          .describe("Git commit hash to associate with this decision"),
       },
     },
     async (args) => {
@@ -216,6 +220,41 @@ export function registerDecisionTools(
           args.reason,
           args.new_decision,
           args.overridden_by,
+        );
+        return toolResult(result);
+      } catch (e) {
+        if (e instanceof TwiningError) {
+          return toolError(e.message, e.code);
+        }
+        return toolError(
+          e instanceof Error ? e.message : "Unknown error",
+          "INTERNAL_ERROR",
+        );
+      }
+    },
+  );
+
+  // twining_link_commit — Link a git commit hash to an existing decision
+  server.registerTool(
+    "twining_link_commit",
+    {
+      description:
+        "Link a git commit hash to an existing decision. Enables bidirectional traceability between decisions and commits.",
+      inputSchema: {
+        decision_id: z.string().describe("ID of the decision to link"),
+        commit_hash: z.string().describe("Git commit hash to link"),
+        agent_id: z
+          .string()
+          .optional()
+          .describe("ID of the agent performing the link"),
+      },
+    },
+    async (args) => {
+      try {
+        const result = await engine.linkCommit(
+          args.decision_id,
+          args.commit_hash,
+          args.agent_id,
         );
         return toolResult(result);
       } catch (e) {
