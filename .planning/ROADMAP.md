@@ -91,11 +91,12 @@ Plans:
   2. User can view the knowledge graph as an interactive force-directed visualization with zoom, pan, and click-to-expand
   3. Graph nodes are color-coded by entity type and decisions are color-coded by confidence level
   4. Dashboard supports a dark mode theme
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 10-01: TBD
-- [ ] 10-02: TBD
+- [ ] 10-01-PLAN.md -- Vendor libraries, dark mode theme, view-mode toggle scaffolding
+- [ ] 10-02-PLAN.md -- Decision timeline visualization (vis-timeline, confidence color-coding, click-to-inspect)
+- [ ] 10-03-PLAN.md -- Graph visualization (cytoscape.js, force-directed layout, click-to-expand, entity type colors)
 
 ## Progress
 
