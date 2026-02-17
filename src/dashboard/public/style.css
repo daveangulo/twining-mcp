@@ -42,6 +42,16 @@ header {
   margin: 0 auto;
 }
 
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.header-logo {
+  border-radius: 6px;
+}
+
 header h1 {
   font-size: 1.25rem;
   font-weight: 600;

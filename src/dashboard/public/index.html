@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Twining Dashboard</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/icon-512.png">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="vendor/vis-timeline-graph2d.min.css">
   <script src="vendor/cytoscape.min.js" defer></script>
@@ -12,7 +15,10 @@
 </head>
 <body>
   <header>
-    <h1>Twining Dashboard</h1>
+    <div class="header-brand">
+      <img src="assets/favicon.svg" alt="Twining" width="28" height="28" class="header-logo">
+      <h1>Twining Dashboard</h1>
+    </div>
     <div class="global-scope-filter">
       <label for="global-scope">Scope:</label>
       <input type="text" id="global-scope" placeholder="Filter by scope (e.g., src/auth/)..." />
