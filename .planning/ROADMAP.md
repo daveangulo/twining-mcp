@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation + Core Data** - Storage layer, blackboard, basic decisions, and MCP server wiring
 - [x] **Phase 2: Intelligence** - Embeddings, semantic search, and token-budgeted context assembly
-- [ ] **Phase 3: Graph + Lifecycle** - Knowledge graph, decision lifecycle (trace/reconsider/override/conflict), and archiving
+- [x] **Phase 3: Graph + Lifecycle** - Knowledge graph, decision lifecycle (trace/reconsider/override/conflict), and archiving (completed 2026-02-17)
 
 ## Phase Details
 
@@ -74,4 +74,4 @@ Phases execute in numeric order: 1 -> 2 -> 3
 |-------|----------------|--------|-----------|
 | 1. Foundation + Core Data | 2/2 | Complete | 2026-02-16 |
 | 2. Intelligence | 2/2 | Complete | 2026-02-16 |
-| 3. Graph + Lifecycle | 0/2 | Not started | - |
+| 3. Graph + Lifecycle | 0/2 | Complete    | 2026-02-17 |
