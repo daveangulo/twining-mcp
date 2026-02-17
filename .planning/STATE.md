@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Agents share *why* decisions were made, not just *what* was done -- eliminating information silos across context windows.
-**Current focus:** Phase 13 - Tools & Assembly (v1.3 Agent Coordination) -- COMPLETE
+**Current focus:** Phase 14 - Agent Dashboard (v1.3 Agent Coordination)
 
 ## Current Position
 
-Phase: 13 of 14 (Tools & Assembly)
-Plan: 2 of 2 in current phase (COMPLETE)
-Status: Phase Complete
-Last activity: 2026-02-17 -- Completed 13-02 Context Assembly Coordination Integration
+Phase: 14 of 14 (Agent Dashboard)
+Plan: 1 of 2 in current phase
+Status: In Progress
+Last activity: 2026-02-17 -- Completed 14-01 Agent Coordination API Endpoints
 
-Progress: [##############################..] 93% (13/14 phases, 30/31 plans complete)
+Progress: [##############################.] 97% (14/14 phases, 31/32 plans complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 30 (6 v1 + 6 v1.1 + 10 v1.2 + 8 v1.3)
+- Total plans completed: 31 (6 v1 + 6 v1.1 + 10 v1.2 + 9 v1.3)
 - v1.1 execution time: ~19min (6 plans, 13 tasks)
 - v1.2 execution time: ~31min (10 plans)
 
@@ -40,6 +40,7 @@ Progress: [##############################..] 93% (13/14 phases, 30/31 plans comp
 | 11. Types & Storage | 3/3 | 7min | 2.3min |
 | 12. Coordination Engine | 3/3 | 8min | 2.7min |
 | 13. Tools & Assembly | 2/2 | 6min | 3min |
+| 14. Agent Dashboard | 1/2 | 5min | 5min |
 
 ## Accumulated Context
 
@@ -74,6 +75,9 @@ Recent decisions for v1.3:
 - Handoff and agent data included outside token budget (like planning_state)
 - Substring matching for capability-to-task matching (bidirectional includes)
 - Coordination stores created before ContextAssembler in server.ts for correct initialization order
+- All coordination API counts computed fresh per request (no caching) for simplicity
+- Delegation endpoint scores agents inline with scoreAgent rather than full CoordinationEngine
+- Suggested agents capped at top 5 non-gone agents sorted by total_score
 
 ### Pending Todos
 
@@ -86,6 +90,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 13-02-PLAN.md (Context Assembly Coordination Integration)
-Resume file: .planning/phases/13-tools-and-assembly/13-02-SUMMARY.md
-Next: Phase 14 (final v1.3 phase)
+Stopped at: Completed 14-01-PLAN.md (Agent Coordination API Endpoints)
+Resume file: .planning/phases/14-agent-dashboard/14-01-SUMMARY.md
+Next: 14-02 (Frontend Agents Tab)
