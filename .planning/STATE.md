@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 ## Current Position
 
 Phase: 4 of 6 (Git Commit Linking)
-Plan: 0 of ? in current phase
-Status: Ready to plan
-Last activity: 2026-02-16 — Roadmap created for v1.1 (phases 4-6)
+Plan: 1 of 2 in current phase
+Status: Executing
+Last activity: 2026-02-17 — Completed 04-01 (Decision commit linking)
 
-Progress: [░░░░░░░░░░] 0% (v1.1)
+Progress: [██░░░░░░░░] 17% (v1.1)
 
 ## Performance Metrics
 
@@ -30,6 +30,7 @@ Progress: [░░░░░░░░░░] 0% (v1.1)
 | 1. Foundation | 2 | — | — |
 | 2. Intelligence | 2 | — | — |
 | 3. Graph + Lifecycle | 2 | — | — |
+| 4. Git Commit Linking | 1/2 | 3min | 3min |
 
 **Recent Trend:**
 - v1 completed in 1 day (6 plans)
@@ -47,6 +48,8 @@ v1.1 decisions:
 - GSD bridge is bidirectional: planning state feeds context assembly AND decisions sync to planning docs
 - Git linking is bidirectional: decisions reference commits, commits queryable for decisions
 - Phase 4 (git linking) before Phase 5 (GSD bridge) because git linking modifies the Decision data model
+- commit_hashes as string[] (not single hash) to support multi-commit decision linkage
+- Index entries mirror commit_hashes for fast lookups without loading full decision files
 
 ### Pending Todos
 
@@ -58,7 +61,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-16
-Stopped at: Roadmap created for v1.1 milestone (phases 4-6, 13 requirements mapped)
+Last session: 2026-02-17
+Stopped at: Completed 04-01-PLAN.md (Decision commit linking)
 Resume file: None
-Next: `/gsd:plan-phase 4` to plan Git Commit Linking
+Next: Execute 04-02-PLAN.md (Commit query tools)
