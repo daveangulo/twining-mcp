@@ -22,3 +22,25 @@
 - writeJSONL exported from file-store.ts but unused by archiver
 
 ---
+
+## v1.1 Integrations + Polish (Shipped: 2026-02-17)
+
+**Phases completed:** 3 phases, 6 plans, 13 tasks
+**Tests:** 274 passing across 18 files (+53 new)
+**LOC:** ~5,204 production + 5,400 test = 10,604 TypeScript
+**Timeline:** 2026-02-16 → 2026-02-17 (1 day)
+**Git range:** fde5aa6..e25cbbe (13 code commits + 9 docs commits)
+**MCP tools:** 22 (up from 18 in v1)
+
+**Key accomplishments:**
+- Bidirectional git commit linking — decisions track commits, commits queryable for decisions (twining_link_commit, twining_commits)
+- GSD planning bridge — .planning/ state feeds context assembly and summarization; decisions sync back to STATE.md
+- Serena enrichment workflow — CLAUDE.md documents agent-mediated knowledge graph population from code symbols
+- Cross-scope decision search — twining_search_decisions with keyword/semantic search and domain/status/confidence filters
+- Full state export — twining_export produces single markdown document of all Twining state with scope filtering
+
+**Tech debt carried forward:**
+- None (audit confirmed zero tech debt)
+
+---
+
