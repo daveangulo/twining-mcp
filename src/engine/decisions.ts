@@ -11,9 +11,14 @@ import path from "node:path";
 import { DecisionStore } from "../storage/decision-store.js";
 import { BlackboardEngine } from "./blackboard.js";
 import { TwiningError } from "../utils/errors.js";
-import type { Decision, DecisionConfidence } from "../utils/types.js";
+import type {
+  Decision,
+  DecisionConfidence,
+  DecisionStatus,
+} from "../utils/types.js";
 import type { Embedder } from "../embeddings/embedder.js";
 import type { IndexManager } from "../embeddings/index-manager.js";
+import type { SearchEngine } from "../embeddings/search.js";
 
 /** Entry in a dependency trace chain. */
 export interface TraceEntry {
@@ -30,6 +35,7 @@ export class DecisionEngine {
   private readonly embedder: Embedder | null;
   private readonly indexManager: IndexManager | null;
   private readonly projectRoot: string | null;
+  private readonly searchEngine: SearchEngine | null;
 
   constructor(
     decisionStore: DecisionStore,
@@ -37,12 +43,14 @@ export class DecisionEngine {
     embedder?: Embedder | null,
     indexManager?: IndexManager | null,
     projectRoot?: string | null,
+    searchEngine?: SearchEngine | null,
   ) {
     this.decisionStore = decisionStore;
     this.blackboardEngine = blackboardEngine;
     this.embedder = embedder ?? null;
     this.indexManager = indexManager ?? null;
     this.projectRoot = projectRoot ?? null;
+    this.searchEngine = searchEngine ?? null;
   }
 
   /**
@@ -553,5 +561,161 @@ export class DecisionEngine {
     }
 
     return result;
+  }
+
+  /**
+   * Search decisions across all scopes by keyword or semantic similarity.
+   * Supports filtering by domain, status, and confidence.
+   * Never throws — returns empty results on error.
+   */
+  async searchDecisions(
+    query: string,
+    filters?: {
+      domain?: string;
+      status?: DecisionStatus;
+      confidence?: DecisionConfidence;
+    },
+    limit?: number,
+  ): Promise<{
+    results: Array<{
+      id: string;
+      summary: string;
+      domain: string;
+      scope: string;
+      confidence: string;
+      status: string;
+      timestamp: string;
+      relevance: number;
+      commit_hashes: string[];
+    }>;
+    total_matched: number;
+    fallback_mode: boolean;
+  }> {
+    const maxResults = limit ?? 20;
+
+    try {
+      if (!query || query.trim().length === 0) {
+        return { results: [], total_matched: 0, fallback_mode: true };
+      }
+
+      // Load index and apply filters before loading full decision files
+      const index = await this.decisionStore.getIndex();
+      let filtered = index;
+
+      if (filters?.domain) {
+        filtered = filtered.filter(
+          (entry) => entry.domain === filters.domain,
+        );
+      }
+      if (filters?.status) {
+        filtered = filtered.filter(
+          (entry) => entry.status === filters.status,
+        );
+      }
+      if (filters?.confidence) {
+        filtered = filtered.filter(
+          (entry) => entry.confidence === filters.confidence,
+        );
+      }
+
+      if (filtered.length === 0) {
+        return { results: [], total_matched: 0, fallback_mode: true };
+      }
+
+      // Load full Decision objects for filtered entries
+      const decisions: Decision[] = [];
+      for (const entry of filtered) {
+        const d = await this.decisionStore.get(entry.id);
+        if (d) decisions.push(d);
+      }
+
+      // Delegate to SearchEngine if available
+      if (this.searchEngine) {
+        const searchResults = await this.searchEngine.searchDecisions(
+          query,
+          decisions,
+          { limit: maxResults },
+        );
+        return {
+          results: searchResults.results.map((r) => ({
+            id: r.decision.id,
+            summary: r.decision.summary,
+            domain: r.decision.domain,
+            scope: r.decision.scope,
+            confidence: r.decision.confidence,
+            status: r.decision.status,
+            timestamp: r.decision.timestamp,
+            relevance: r.relevance,
+            commit_hashes: r.decision.commit_hashes ?? [],
+          })),
+          total_matched: searchResults.results.length,
+          fallback_mode: searchResults.fallback_mode,
+        };
+      }
+
+      // Keyword fallback: manual keyword matching
+      const queryTerms = query
+        .toLowerCase()
+        .split(/\s+/)
+        .filter((t) => t.length > 0);
+
+      if (queryTerms.length === 0) {
+        return { results: [], total_matched: 0, fallback_mode: true };
+      }
+
+      const scored: Array<{
+        decision: Decision;
+        relevance: number;
+      }> = [];
+
+      for (const decision of decisions) {
+        const text = (
+          decision.summary +
+          " " +
+          decision.rationale +
+          " " +
+          decision.context
+        ).toLowerCase();
+
+        let score = 0;
+        for (const term of queryTerms) {
+          if (text.includes(term)) {
+            const parts = text.split(term);
+            const matches = parts.length - 1;
+            score += Math.log(1 + matches);
+          }
+        }
+
+        const normalizedScore = score / queryTerms.length;
+        if (normalizedScore > 0) {
+          scored.push({ decision, relevance: normalizedScore });
+        }
+      }
+
+      scored.sort((a, b) => b.relevance - a.relevance);
+      const topResults = scored.slice(0, maxResults);
+
+      return {
+        results: topResults.map((r) => ({
+          id: r.decision.id,
+          summary: r.decision.summary,
+          domain: r.decision.domain,
+          scope: r.decision.scope,
+          confidence: r.decision.confidence,
+          status: r.decision.status,
+          timestamp: r.decision.timestamp,
+          relevance: r.relevance,
+          commit_hashes: r.decision.commit_hashes ?? [],
+        })),
+        total_matched: topResults.length,
+        fallback_mode: true,
+      };
+    } catch (error) {
+      console.error(
+        "[twining] searchDecisions failed (non-fatal):",
+        error,
+      );
+      return { results: [], total_matched: 0, fallback_mode: true };
+    }
   }
 }
