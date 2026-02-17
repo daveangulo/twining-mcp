@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Agents share *why* decisions were made, not just *what* was done -- eliminating information silos across context windows.
-**Current focus:** Phase 9 in progress (Search and Filter) -- Plan 01 complete
+**Current focus:** Phase 9 complete (Search and Filter) -- all plans done
 
 ## Current Position
 
 Phase: 9 of 10 (Search and Filter)
-Plan: 1 of 2 in current phase
-Status: In Progress
-Last activity: 2026-02-17 -- Completed 09-01 (Search API Backend)
+Plan: 2 of 2 in current phase (COMPLETE)
+Status: Phase Complete
+Last activity: 2026-02-17 -- Completed 09-02 (Search Frontend)
 
-Progress: [██████████████████░░] 90% (18/~20 plans, 8 phases complete)
+Progress: [████████████████████] 95% (20/~20 plans, 9 phases complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 18 (6 v1 + 6 v1.1 + 6 v1.2)
+- Total plans completed: 20 (6 v1 + 6 v1.1 + 8 v1.2)
 - v1.1 execution time: ~19min (6 plans, 13 tasks)
 
 **By Phase:**
@@ -34,7 +34,7 @@ Progress: [██████████████████░░] 90% (18
 | 6. Search + Export | 2/2 | 7min | 3.5min |
 | 7. HTTP Server Foundation | 3/3 | 8min | 2.7min |
 | 8. Observability Dashboard | 2/2 | 6min | 3min |
-| 9. Search and Filter | 1/2 | 3min | 3min |
+| 9. Search and Filter | 2/2 | 7min | 3.5min |
 
 *Updated after each plan completion*
 
@@ -57,6 +57,9 @@ All v1 and v1.1 decisions archived in PROJECT.md Key Decisions table with outcom
 - Polling guard prevents duplicate timers; selected items tracked by ID for refresh stability
 - Lazy engine initialization in API routes to prevent IndexManager side effects on uninitialized projects
 - Fixed relevance 0.5 for graph entities in unified search (GraphEngine has no relevance scoring)
+- Search bar placed between nav tabs and main content for always-visible access
+- Global scope filter uses bi-directional prefix matching for intuitive scope narrowing
+- Graph entity relations shown in detail panel with clickable source/target IDs
 
 ### Pending Todos
 
@@ -69,6 +72,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 09-01-PLAN.md (Search API Backend)
+Stopped at: Completed 09-02-PLAN.md (Search Frontend) -- Phase 9 complete
 Resume file: None
-Next: Phase 9 Plan 02 (Search Frontend)
+Next: Phase 10 (Timeline Visualization) if planned
