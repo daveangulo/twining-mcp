@@ -67,25 +67,25 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| GSDB-01 | — | Pending |
-| GSDB-02 | — | Pending |
-| GSDB-03 | — | Pending |
-| GSDB-04 | — | Pending |
-| GITL-01 | — | Pending |
-| GITL-02 | — | Pending |
-| GITL-03 | — | Pending |
-| GITL-04 | — | Pending |
-| SRNA-01 | — | Pending |
-| SRCH-01 | — | Pending |
-| SRCH-02 | — | Pending |
-| XPRT-01 | — | Pending |
-| XPRT-02 | — | Pending |
+| GSDB-01 | Phase 5 | Pending |
+| GSDB-02 | Phase 5 | Pending |
+| GSDB-03 | Phase 5 | Pending |
+| GSDB-04 | Phase 5 | Pending |
+| GITL-01 | Phase 4 | Pending |
+| GITL-02 | Phase 4 | Pending |
+| GITL-03 | Phase 4 | Pending |
+| GITL-04 | Phase 4 | Pending |
+| SRNA-01 | Phase 5 | Pending |
+| SRCH-01 | Phase 6 | Pending |
+| SRCH-02 | Phase 6 | Pending |
+| XPRT-01 | Phase 6 | Pending |
+| XPRT-02 | Phase 6 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 13 total
-- Mapped to phases: 0
-- Unmapped: 13
+- Mapped to phases: 13
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-16*
-*Last updated: 2026-02-16 after initial definition*
+*Last updated: 2026-02-16 after roadmap creation*
