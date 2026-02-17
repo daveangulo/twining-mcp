@@ -14,6 +14,7 @@ import { DecisionEngine } from "./engine/decisions.js";
 import { GraphEngine } from "./engine/graph.js";
 import { Archiver } from "./engine/archiver.js";
 import { ContextAssembler } from "./engine/context-assembler.js";
+import { PlanningBridge } from "./engine/planning-bridge.js";
 import { Embedder } from "./embeddings/embedder.js";
 import { IndexManager } from "./embeddings/index-manager.js";
 import { SearchEngine } from "./embeddings/search.js";
@@ -65,12 +66,14 @@ export function createServer(projectRoot: string): McpServer {
     blackboardEngine,
     indexManager,
   );
+  const planningBridge = new PlanningBridge(projectRoot);
   const contextAssembler = new ContextAssembler(
     blackboardStore,
     decisionStore,
     searchEngine,
     config,
     graphEngine,
+    planningBridge,
   );
 
   // Create MCP server

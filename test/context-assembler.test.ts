@@ -4,6 +4,7 @@
  */
 import { describe, it, expect, beforeEach } from "vitest";
 import { ContextAssembler } from "../src/engine/context-assembler.js";
+import { PlanningBridge } from "../src/engine/planning-bridge.js";
 import { BlackboardStore } from "../src/storage/blackboard-store.js";
 import { DecisionStore } from "../src/storage/decision-store.js";
 import { SearchEngine } from "../src/embeddings/search.js";
@@ -700,6 +701,176 @@ describe("ContextAssembler", () => {
       expect(result.overridden_decisions[0]!.reason).toBe(
         "Changed requirements",
       );
+    });
+  });
+
+  describe("planning integration", () => {
+    const MOCK_STATE_MD = `# Project State
+
+## Current Position
+
+Phase: 3 of 5 (API Layer)
+Plan: 1 of 2 in current phase
+Status: In progress
+
+Progress: [######----] 60% (v1)
+
+## Accumulated Context
+
+### Pending Todos
+
+- Add rate limiting to API endpoints
+
+### Blockers/Concerns
+
+- ONNX runtime not compatible with ARM64
+
+## Session Continuity
+
+Last session: 2026-02-17
+`;
+
+    const MOCK_REQUIREMENTS_MD = `# Requirements
+
+## API Layer
+
+- [ ] **API-01**: Rate limiting on all endpoints
+- [x] **API-02**: Input validation
+- [ ] **API-03**: Error response formatting
+`;
+
+    function setupPlanningDir(projectRoot: string): void {
+      const planningDir = path.join(projectRoot, ".planning");
+      fs.mkdirSync(planningDir, { recursive: true });
+      fs.writeFileSync(path.join(planningDir, "STATE.md"), MOCK_STATE_MD);
+      fs.writeFileSync(
+        path.join(planningDir, "REQUIREMENTS.md"),
+        MOCK_REQUIREMENTS_MD,
+      );
+    }
+
+    it("should include planning_state in assemble() when .planning/ exists", async () => {
+      // The twiningDir is inside a temp dir; we need a project root that contains .planning/
+      // Use the parent of twiningDir as a project root stand-in
+      const projectRoot = path.dirname(twiningDir);
+      setupPlanningDir(projectRoot);
+      const planningBridge = new PlanningBridge(projectRoot);
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+        null,
+        planningBridge,
+      );
+
+      const result = await assembler.assemble("build api", "project");
+
+      expect(result.planning_state).toBeDefined();
+      expect(result.planning_state!.current_phase).toBe("3 of 5 (API Layer)");
+      expect(result.planning_state!.progress).toContain("60%");
+      expect(result.planning_state!.blockers).toHaveLength(1);
+      expect(result.planning_state!.open_requirements).toHaveLength(2);
+    });
+
+    it("should add synthetic planning finding in assemble()", async () => {
+      const projectRoot = path.dirname(twiningDir);
+      setupPlanningDir(projectRoot);
+      const planningBridge = new PlanningBridge(projectRoot);
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+        null,
+        planningBridge,
+      );
+
+      const result = await assembler.assemble("build api", "project");
+
+      // Should have a synthetic planning finding in recent_findings
+      const planningFinding = result.recent_findings.find(
+        (f) => f.id === "planning-state",
+      );
+      expect(planningFinding).toBeDefined();
+      expect(planningFinding!.summary).toContain("Phase 3 of 5 (API Layer)");
+      expect(planningFinding!.summary).toContain("60%");
+      expect(planningFinding!.summary).toContain("ONNX runtime");
+    });
+
+    it("should include planning_state in summarize() when .planning/ exists", async () => {
+      const projectRoot = path.dirname(twiningDir);
+      setupPlanningDir(projectRoot);
+      const planningBridge = new PlanningBridge(projectRoot);
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+        null,
+        planningBridge,
+      );
+
+      const result = await assembler.summarize();
+
+      expect(result.planning_state).toBeDefined();
+      expect(result.planning_state!.current_phase).toBe("3 of 5 (API Layer)");
+      expect(result.recent_activity_summary).toContain(
+        "Current phase: 3 of 5 (API Layer)",
+      );
+      expect(result.recent_activity_summary).toContain("60%");
+    });
+
+    it("should not include planning_state when .planning/ does not exist", async () => {
+      // Use a project root with no .planning/ dir
+      const emptyProjectRoot = fs.mkdtempSync(
+        path.join(os.tmpdir(), "twining-no-planning-"),
+      );
+      const planningBridge = new PlanningBridge(emptyProjectRoot);
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+        null,
+        planningBridge,
+      );
+
+      const assembleResult = await assembler.assemble("test", "project");
+      expect(assembleResult.planning_state).toBeUndefined();
+      expect(
+        assembleResult.recent_findings.find((f) => f.id === "planning-state"),
+      ).toBeUndefined();
+
+      const summarizeResult = await assembler.summarize();
+      expect(summarizeResult.planning_state).toBeUndefined();
+      expect(summarizeResult.recent_activity_summary).not.toContain(
+        "Current phase",
+      );
+
+      fs.rmSync(emptyProjectRoot, { recursive: true, force: true });
+    });
+
+    it("should work normally when no PlanningBridge is provided", async () => {
+      // No planningBridge argument at all
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+        null,
+        // No planning bridge
+      );
+
+      const assembleResult = await assembler.assemble("test", "project");
+      expect(assembleResult.planning_state).toBeUndefined();
+
+      const summarizeResult = await assembler.summarize();
+      expect(summarizeResult.planning_state).toBeUndefined();
     });
   });
 });

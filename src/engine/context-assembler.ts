@@ -7,6 +7,7 @@ import type { BlackboardStore } from "../storage/blackboard-store.js";
 import type { DecisionStore } from "../storage/decision-store.js";
 import type { SearchEngine } from "../embeddings/search.js";
 import type { GraphEngine } from "./graph.js";
+import type { PlanningBridge } from "./planning-bridge.js";
 import type {
   AssembledContext,
   BlackboardEntry,
@@ -35,6 +36,7 @@ export class ContextAssembler {
   private readonly searchEngine: SearchEngine | null;
   private readonly config: TwiningConfig;
   private readonly graphEngine: GraphEngine | null;
+  private readonly planningBridge: PlanningBridge | null;
 
   constructor(
     blackboardStore: BlackboardStore,
@@ -42,12 +44,14 @@ export class ContextAssembler {
     searchEngine: SearchEngine | null,
     config: TwiningConfig,
     graphEngine?: GraphEngine | null,
+    planningBridge?: PlanningBridge | null,
   ) {
     this.blackboardStore = blackboardStore;
     this.decisionStore = decisionStore;
     this.searchEngine = searchEngine;
     this.config = config;
     this.graphEngine = graphEngine ?? null;
+    this.planningBridge = planningBridge ?? null;
   }
 
   /**
@@ -304,7 +308,7 @@ export class ContextAssembler {
     // 8. Populate related_entities from knowledge graph
     const relatedEntities = await this.getRelatedEntities(scope);
 
-    return {
+    const result: AssembledContext = {
       assembled_at: new Date().toISOString(),
       task,
       scope,
@@ -316,6 +320,39 @@ export class ContextAssembler {
       recent_questions: recentQuestions,
       related_entities: relatedEntities,
     };
+
+    // 9. Integrate planning state from .planning/ directory
+    const planningState = this.planningBridge?.readPlanningState() ?? null;
+    if (planningState) {
+      // Always include planning_state as metadata (not subject to token budget)
+      result.planning_state = planningState;
+
+      // Add a synthetic scored finding for planning context so it competes
+      // for token budget alongside other items (GSDB-04)
+      let planningText = `Planning: Phase ${planningState.current_phase}, Progress: ${planningState.progress}`;
+      if (planningState.blockers.length > 0) {
+        planningText += `. Blockers: ${planningState.blockers.join("; ")}`;
+      }
+      const planningTokenCost = estimateTokens(planningText);
+      const planningScore =
+        1.0 * weights.recency +    // always fresh
+        0.5 * weights.relevance +  // moderate default relevance
+        0.5 * weights.decision_confidence;
+      if (tokensUsed + planningTokenCost <= budget) {
+        recentFindings.push({
+          id: "planning-state",
+          summary: planningText,
+          detail: planningState.open_requirements.length > 0
+            ? `Open requirements: ${planningState.open_requirements.join(", ")}`
+            : "",
+          scope: "project",
+          timestamp: new Date().toISOString(),
+        });
+        result.token_estimate += planningTokenCost;
+      }
+    }
+
+    return result;
   }
 
   /**
@@ -371,12 +408,19 @@ export class ContextAssembler {
       (e) => e.entry_type === "warning",
     ).length;
 
-    const recentActivitySummary =
+    let recentActivitySummary =
       `In the last 24 hours: ${recentDecisionCount} decision${recentDecisionCount !== 1 ? "s" : ""} made, ` +
       `${recentFindingCount} finding${recentFindingCount !== 1 ? "s" : ""} posted, ` +
       `${recentWarningCount} warning${recentWarningCount !== 1 ? "s" : ""} raised.`;
 
-    return {
+    // Integrate planning state from .planning/ directory
+    const planningState = this.planningBridge?.readPlanningState() ?? null;
+
+    if (planningState) {
+      recentActivitySummary += ` Current phase: ${planningState.current_phase}. Progress: ${planningState.progress}.`;
+    }
+
+    const result: SummarizeResult = {
       scope: targetScope,
       active_decisions: activeDecisions,
       provisional_decisions: provisionalDecisions,
@@ -385,6 +429,12 @@ export class ContextAssembler {
       unanswered_questions: unansweredQuestions,
       recent_activity_summary: recentActivitySummary,
     };
+
+    if (planningState) {
+      result.planning_state = planningState;
+    }
+
+    return result;
   }
 
   /**
