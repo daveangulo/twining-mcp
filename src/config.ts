@@ -25,6 +25,12 @@ export const DEFAULT_CONFIG: TwiningConfig = {
     },
   },
   conflict_resolution: "human",
+  agents: {
+    liveness: {
+      idle_after_ms: 300000, // 5 minutes
+      gone_after_ms: 1800000, // 30 minutes
+    },
+  },
 };
 
 /** Deep merge source into target, returning a new object */

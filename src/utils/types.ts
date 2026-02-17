@@ -162,6 +162,12 @@ export interface TwiningConfig {
     };
   };
   conflict_resolution: string;
+  agents?: {
+    liveness: {
+      idle_after_ms: number;
+      gone_after_ms: number;
+    };
+  };
 }
 
 /** Summarize result — spec section 4.3 twining_summarize return */
@@ -205,4 +211,69 @@ export interface DecisionIndexEntry {
   affected_files: string[];
   affected_symbols: string[];
   commit_hashes: string[];
+}
+
+// Agent coordination types — v1.3
+
+/** Agent liveness state derived from last_active timestamp */
+export type AgentLiveness = "active" | "idle" | "gone";
+
+/** Configurable thresholds for liveness computation */
+export interface LivenessThresholds {
+  idle_after_ms: number;
+  gone_after_ms: number;
+}
+
+/** Agent registry record — spec section for agent coordination */
+export interface AgentRecord {
+  agent_id: string;
+  capabilities: string[];
+  role?: string;
+  description?: string;
+  registered_at: string;
+  last_active: string;
+}
+
+/** Structured result within a handoff */
+export interface HandoffResult {
+  description: string;
+  status: "completed" | "partial" | "blocked" | "failed";
+  artifacts?: string[];
+  notes?: string;
+}
+
+/** Full handoff record between agents */
+export interface HandoffRecord {
+  id: string;
+  created_at: string;
+  source_agent: string;
+  target_agent?: string;
+  scope?: string;
+  summary: string;
+  results: HandoffResult[];
+  context_snapshot: {
+    decision_ids: string[];
+    warning_ids: string[];
+    finding_ids: string[];
+    summaries: string[];
+  };
+  acknowledged_by?: string;
+  acknowledged_at?: string;
+}
+
+/** Lightweight handoff index entry for JSONL index */
+export interface HandoffIndexEntry {
+  id: string;
+  created_at: string;
+  source_agent: string;
+  target_agent?: string;
+  scope?: string;
+  summary: string;
+  result_status:
+    | "completed"
+    | "partial"
+    | "blocked"
+    | "failed"
+    | "mixed";
+  acknowledged: boolean;
 }
