@@ -44,3 +44,26 @@
 
 ---
 
+
+## v1.2 Web Dashboard (Shipped: 2026-02-17)
+
+**Phases completed:** 4 phases, 10 plans
+**Tests:** 312 passing across 20 files (+38 new)
+**LOC:** ~5,673 production TypeScript + 2,799 frontend (HTML/CSS/JS) + 6,410 test
+**Timeline:** 2026-02-16 → 2026-02-17 (1 day)
+**Git range:** 157a3c1..05c5acf (16 feature commits, 37 total)
+**MCP tools:** 22 (unchanged from v1.1)
+
+**Key accomplishments:**
+- Embedded HTTP server running alongside MCP stdio with fire-and-forget lifecycle, port retry, path traversal prevention, and graceful shutdown
+- Full observability dashboard with 5 JSON API endpoints, tab navigation, sortable/paginated tables, detail inspector, and 3-second visibility-aware polling
+- Unified search across blackboard, decisions, and graph with semantic/keyword fallback, faceted filtering, and cross-tab ULID navigation
+- Decision timeline visualization with vis-timeline, confidence/status color-coding, and click-to-inspect detail
+- Interactive knowledge graph visualization with cytoscape.js force-directed layout, entity type colors, and click-to-expand neighbors
+- Dark mode theme with CSS custom properties, localStorage persistence, and system preference detection
+
+**Tech debt carried forward:**
+- None (audit confirmed zero tech debt)
+
+---
+
