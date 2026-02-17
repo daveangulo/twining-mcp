@@ -18,7 +18,7 @@
 
 ### v1.1 Integrations + Polish
 
-- [ ] **Phase 4: Git Commit Linking** - Bidirectional decision-to-commit traceability with data model extension and new query tools
+- [x] **Phase 4: Git Commit Linking** - Bidirectional decision-to-commit traceability with data model extension and new query tools (completed 2026-02-17)
 - [ ] **Phase 5: GSD Planning Bridge + Serena Docs** - Planning state feeds context assembly, decisions sync to planning docs, Serena workflow documented
 - [ ] **Phase 6: Search + Export** - Standalone tools for decision search and full state export to markdown
 
@@ -79,6 +79,6 @@ Phases execute in numeric order: 4 → 5 → 6
 | 1. Foundation + Core Data | v1 | 2/2 | Complete | 2026-02-16 |
 | 2. Intelligence | v1 | 2/2 | Complete | 2026-02-16 |
 | 3. Graph + Lifecycle | v1 | 2/2 | Complete | 2026-02-17 |
-| 4. Git Commit Linking | v1.1 | 0/2 | Planned | - |
+| 4. Git Commit Linking | v1.1 | Complete    | 2026-02-17 | - |
 | 5. GSD Planning Bridge + Serena Docs | v1.1 | 0/? | Not started | - |
 | 6. Search + Export | v1.1 | 0/? | Not started | - |
