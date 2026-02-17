@@ -788,8 +788,12 @@ function renderGraph() {
   }
 }
 
-function renderGraphDetail(entity) {
-  var panel = document.getElementById("graph-detail");
+function renderGraphVisualDetail(entity) {
+  renderGraphDetail(entity, "graph-visual-detail");
+}
+
+function renderGraphDetail(entity, panelId) {
+  var panel = document.getElementById(panelId || "graph-detail");
   if (!panel) return;
   clearElement(panel);
 
@@ -1473,6 +1477,7 @@ function initGraphVis() {
     if (entity) {
       state.graph.selectedId = nodeId;
       renderGraphDetail(entity);
+      renderGraphVisualDetail(entity);
     }
 
     // Expand neighbors if not already expanded
