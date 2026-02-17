@@ -61,11 +61,11 @@ Plans:
   2. User can browse paginated, sortable lists of blackboard entries, decisions, and graph entities
   3. User can click any item to see its full details in an inspector panel
   4. Dashboard auto-refreshes data without manual reload, and pauses polling when tab is hidden
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 08-01: TBD
-- [ ] 08-02: TBD
+- [ ] 08-01-PLAN.md -- API routes layer (5 JSON endpoints for status, blackboard, decisions, graph)
+- [ ] 08-02-PLAN.md -- Dashboard frontend (tab navigation, tables, sorting, pagination, detail inspector, polling with visibility-aware lifecycle)
 
 ### Phase 9: Search and Filter
 **Goal**: User can find specific entries across all Twining data types
@@ -110,6 +110,6 @@ Phases execute in numeric order: 7 -> 8 -> 9 -> 10
 | 5. GSD Planning Bridge + Serena Docs | v1.1 | 2/2 | Complete | 2026-02-17 |
 | 6. Search + Export | v1.1 | 2/2 | Complete | 2026-02-17 |
 | 7. HTTP Server Foundation | v1.2 | 0/2 | Planned | - |
-| 8. Observability Dashboard | v1.2 | 0/? | Not started | - |
+| 8. Observability Dashboard | v1.2 | 0/2 | Planned | - |
 | 9. Search and Filter | v1.2 | 0/? | Not started | - |
 | 10. Visualizations and Polish | v1.2 | 0/? | Not started | - |
