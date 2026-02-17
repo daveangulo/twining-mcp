@@ -1,620 +1,628 @@
-# Architecture Research: Embedded Dashboard Integration
+# Architecture: Agent Coordination Integration
 
-**Domain:** MCP Server with Embedded HTTP Dashboard
-**Researched:** 2026-02-16
-**Confidence:** HIGH
+**Domain:** Agent Registry, Capability Matching, Delegation, and Handoffs for Twining MCP Server
+**Researched:** 2026-02-17
+**Confidence:** HIGH (architecture derives from existing patterns and codebase analysis)
 
 ## Executive Summary
 
-An embedded HTTP dashboard can coexist with stdio-based MCP transport in the same Node.js process. The dashboard runs on a separate port (localhost:24282) while the MCP server communicates via stdio. Both access the same engine layer, creating a "dual transport" architecture where agents write via MCP tools (stdio) and humans monitor via web UI (HTTP).
+Agent coordination integrates into Twining's existing architecture as a new horizontal layer that sits beside (not above) the existing blackboard, decisions, and graph systems. The key insight is that Twining already has 80% of the coordination infrastructure: the blackboard's "need"/"offer" entry types are the delegation mechanism, the context assembler is the handoff packager, and the knowledge graph can store agent-capability relationships. What's missing is the agent registry (who exists and what they can do), capability-typed needs (structured delegation requests), structured handoff records (context packages with completion status), and need/offer matching logic.
 
-**Key Finding:** This is a validated pattern. Serena MCP and the MCP dual-transport architecture demonstrate that stdio and HTTP servers can run in the same process with conditional initialization based on environment/config.
+The architecture adds 3 new storage files, 2 new engine modules, 1 new tool file, and modifications to 4 existing modules. No existing APIs change -- all new features are additive.
 
-## Standard Architecture
+## Recommended Architecture
 
 ### System Overview
 
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                      MCP Client (Claude Desktop)                         │
-│                                stdio transport                            │
-└────────────────────────────────┬────────────────────────────────────────┘
-                                 │ JSON-RPC 2.0
-                                 ↓
-┌─────────────────────────────────────────────────────────────────────────┐
-│                      Twining MCP Server Process                          │
-├─────────────────────────────────────────────────────────────────────────┤
-│  ┌────────────────────┐                    ┌──────────────────────┐     │
-│  │  StdioTransport    │                    │  HTTP Server (new)   │     │
-│  │  (port: stdin/out) │                    │  (port: 24282)       │     │
-│  └─────────┬──────────┘                    └──────────┬───────────┘     │
-│            │                                           │                 │
-│            ↓                                           ↓                 │
-│  ┌────────────────────────────────────────────────────────────────┐     │
-│  │                    MCP Tools Layer                              │     │
-│  │  blackboard-tools, decision-tools, graph-tools, etc.            │     │
-│  └─────────┬──────────────────────────────────────────┬───────────┘     │
-│            │                                           │                 │
-│            ↓                                           ↓                 │
-│  ┌────────────────────────────────────────────────────────────────┐     │
-│  │                    Engine Layer                                 │     │
-│  │  blackboard, decisions, graph, context-assembler, etc.          │     │
-│  └─────────┬──────────────────────────────────────────┬───────────┘     │
-│            │                                           │                 │
-│            ↓                                           ↓                 │
-│  ┌────────────────────────────────────────────────────────────────┐     │
-│  │                    Storage Layer                                │     │
-│  │  blackboard-store, decision-store, graph-store                  │     │
-│  └────────────────────────────────────────────────────────────────┘     │
-│                                                                           │
-│  ┌────────────────────────────────────────────────────────────────┐     │
-│  │              Dashboard API Routes (new)                         │     │
-│  │  GET /api/status, /api/blackboard, /api/decisions, etc.         │     │
-│  │  SSE /api/stream (Server-Sent Events for real-time updates)    │     │
-│  └─────────────────────────────────────────────────────────────────┘     │
-│                                                                           │
-│  ┌────────────────────────────────────────────────────────────────┐     │
-│  │              Static File Serving (new)                          │     │
-│  │  GET /dashboard → static/index.html                             │     │
-│  │  GET /static/* → static assets (CSS, JS)                        │     │
-│  └────────────────────────────────────────────────────────────────┘     │
-│                                                                           │
-└─────────────────────────────────────────────────────────────────────────┘
-                                 │
-                                 ↓
-                    .twining/ (file-based storage)
-                    ├── blackboard.jsonl
-                    ├── decisions/
-                    ├── graph/
-                    └── config.yml
++--------------------------------------------------------------------+
+|                    Twining MCP Server Process                       |
++--------------------------------------------------------------------+
+|                                                                     |
+|  +------------------+  +------------------+  +------------------+  |
+|  |   Blackboard     |  |   Decision       |  |   Context        |  |
+|  |   Engine         |  |   Tracker        |  |   Assembler      |  |
+|  +--------+---------+  +--------+---------+  +--------+---------+  |
+|           |                      |                      |           |
+|  +--------+----------------------+----------------------+---------+ |
+|  |                  Agent Coordination Layer (NEW)                 | |
+|  |  +----------------+  +------------------+  +----------------+  | |
+|  |  | Agent Registry |  | Delegation       |  | Handoff        |  | |
+|  |  | Engine         |  | Matcher          |  | Manager        |  | |
+|  |  +------+---------+  +--------+---------+  +------+---------+  | |
+|  +---------|----------------------|----------------------|---------+ |
+|            |                      |                      |           |
+|  +---------+----------------------+----------------------+---------+ |
+|  |                    Knowledge Graph                              | |
+|  +-----------------------------+-----------------------------------+ |
+|                                |                                     |
+|  +-----------------------------+-----------------------------------+ |
+|  |              File Storage Layer (.twining/)                     | |
+|  +------------------------------------------------------------------+
+|                                                                     |
++---------------------------+-----------------------------------------+
+|                  MCP Tool Surface                                   |
+|                                                                     |
+|  Existing:                                                          |
+|    Blackboard: post, read, query, recent                            |
+|    Decisions:  decide, why, trace, reconsider, override, search     |
+|    Context:    assemble, summarize, what_changed                    |
+|    Graph:      add_entity, add_relation, neighbors, graph_query     |
+|    Lifecycle:  archive, status                                      |
+|    Export:     export                                                |
+|                                                                     |
+|  NEW (v1.3):                                                        |
+|    Agents:     register, discover, delegate, handoff, agents        |
+|                                                                     |
++--------------------------------------------------------------------+
 ```
 
-### Component Responsibilities
+### Component Boundaries
 
-| Component | Responsibility | Integration Type |
-|-----------|----------------|------------------|
-| **HTTP Server** | Serves dashboard UI and API endpoints on localhost:24282 | NEW - wraps existing engine layer |
-| **Dashboard API Routes** | REST endpoints exposing engine state as JSON | NEW - reads from existing stores |
-| **SSE Stream** | Server-Sent Events for real-time updates (1-second polling) | NEW - pushes state changes to browser |
-| **Static File Server** | Serves bundled HTML/JS/CSS (no build step) | NEW - vanilla JS/htmx/Alpine.js |
-| **StdioTransport** | Existing MCP stdio communication | UNCHANGED - runs in parallel with HTTP |
-| **Engine Layer** | Existing business logic (blackboard, decisions, graph) | UNCHANGED - accessed by both stdio and HTTP |
-| **Storage Layer** | File I/O to .twining/ directory | UNCHANGED - single source of truth |
+| Component | Responsibility | Communicates With | New/Modified |
+|-----------|---------------|-------------------|-------------|
+| `AgentStore` | CRUD for agent registry, liveness tracking | File store, AgentEngine | NEW |
+| `HandoffStore` | CRUD for handoff records | File store, HandoffManager | NEW |
+| `AgentEngine` | Registration, discovery, capability matching | AgentStore, GraphEngine | NEW |
+| `DelegationMatcher` | Match blackboard needs to agent capabilities | BlackboardStore, AgentStore | NEW (inside AgentEngine) |
+| `HandoffManager` | Create/complete handoffs, package context | HandoffStore, ContextAssembler, BlackboardEngine | NEW (inside AgentEngine) |
+| `BlackboardEngine` | Post entries (extended with delegation metadata) | BlackboardStore (unchanged interface) | MODIFIED (minor) |
+| `ContextAssembler` | Assemble context (extended with handoff awareness) | BlackboardStore, DecisionStore, HandoffStore | MODIFIED (minor) |
+| `GraphEngine` | Entity/relation CRUD (gains "agent" entity type) | GraphStore (unchanged interface) | UNCHANGED (type extension in types.ts) |
+| `lifecycle-tools.ts` | Status tool (extended with agent counts) | AgentStore | MODIFIED (minor) |
+| `server.ts` | Wire up new stores/engines, register new tools | All stores and engines | MODIFIED |
 
-## Recommended Project Structure
+### Data Flow
+
+#### Agent Registration Flow
+```
+Agent calls twining_register
+  -> AgentEngine.register(name, capabilities, scope?)
+    -> AgentStore.upsert(agentRecord)
+    -> GraphEngine.addEntity(name, type="agent", properties={capabilities, scope})
+    -> BlackboardEngine.post(entry_type="status", "Agent X registered with capabilities [...]")
+    -> return { agent_id, registered_at }
+```
+
+#### Delegation Flow (Need -> Match -> Handoff)
+```
+Agent A calls twining_delegate(need, required_capabilities)
+  -> AgentEngine.delegate(need, capabilities)
+    -> BlackboardEngine.post(entry_type="need", summary=need,
+         detail includes structured capability_requirements)
+    -> DelegationMatcher.findMatchingAgents(capabilities)
+      -> AgentStore.getByCapabilities(capabilities)
+      -> Filter by liveness (last_active within threshold)
+      -> Score by capability overlap + scope proximity
+    -> return { need_id, matching_agents[], suggestion }
+```
+
+#### Handoff Flow
+```
+Agent B calls twining_handoff(need_id, result_summary, artifacts?)
+  -> HandoffManager.createHandoff(need_id, agentId, result, artifacts)
+    -> ContextAssembler.assembleForHandoff(need_scope)
+      -> Returns relevant decisions, warnings, findings for the scope
+    -> HandoffStore.create({ need_id, from_agent, context_snapshot, result, artifacts })
+    -> BlackboardEngine.post(entry_type="offer", summary="Handoff for: [need]",
+         detail=result_summary, relates_to=[need_id])
+    -> AgentStore.updateActivity(agentId)
+    -> return { handoff_id, context_snapshot }
+```
+
+#### Handoff Consumption Flow
+```
+Agent A calls twining_assemble(task, scope)
+  -> ContextAssembler.assemble(task, scope)  [EXISTING]
+    -> [existing logic: decisions, warnings, needs, findings, graph]
+    -> NEW: HandoffStore.getRelevantHandoffs(scope)
+    -> Include handoff results + context snapshots in assembled output
+    -> return AssembledContext (with new handoff_results field)
+```
+
+## New File Structure
+
+```
+.twining/
+  agents/
+    registry.json              # Agent registry (array of AgentRecord)
+  handoffs/
+    index.json                 # Handoff index (summaries for fast lookup)
+    {ulid}.json                # Individual handoff records
+```
+
+## New Data Models
+
+### AgentRecord
+
+```typescript
+interface AgentRecord {
+  id: string;                    // ULID
+  name: string;                  // Human-readable (e.g., "frontend-specialist")
+  agent_id: string;              // Agent identifier (from MCP calls)
+  capabilities: string[];        // What this agent can do (tags)
+  scope?: string;                // Optional scope restriction
+  registered_at: string;         // ISO 8601
+  last_active: string;           // ISO 8601, updated on any tool call
+  status: "active" | "idle" | "gone";  // Inferred from last_active
+  metadata?: Record<string, string>;   // Optional extra info
+}
+```
+
+**Design rationale:**
+- `capabilities` are free-form string tags (not an enum) because agents should self-describe their capabilities at registration time. Examples: `["typescript", "testing", "frontend", "auth"]`. This matches how blackboard tags already work.
+- `status` is inferred, not declared. "active" = last_active within 5 minutes, "idle" = within 1 hour, "gone" = older. Agents don't need to send heartbeats.
+- Upsert by `name` -- re-registering with the same name updates the record. This handles session restarts cleanly.
+
+### DelegationNeed (extends BlackboardEntry)
+
+Delegation needs are regular blackboard entries with structured metadata in the `detail` field. No new data model needed -- the blackboard already has `entry_type: "need"` and structured `detail`. The delegation metadata is encoded as a JSON block within the detail:
+
+```typescript
+// Posted as a regular blackboard entry with structured detail
+interface DelegationMetadata {
+  type: "delegation";
+  required_capabilities: string[];   // Must-have capabilities
+  preferred_capabilities?: string[]; // Nice-to-have capabilities
+  urgency: "high" | "normal" | "low";
+  timeout_hours?: number;            // Auto-expire after N hours
+  delegation_id: string;             // Cross-reference ID
+}
+```
+
+**Design rationale:** Embedding delegation metadata in a regular blackboard entry means existing tools (read, query, recent) already surface delegations. No parallel data structure needed. Agents without v1.3 tools can still see delegations as regular "need" entries. The detail field uses a `<!-- delegation:json -->` marker that the DelegationMatcher recognizes and parses.
+
+### HandoffRecord
+
+```typescript
+interface HandoffRecord {
+  id: string;                        // ULID
+  need_id: string;                   // Blackboard entry this fulfills
+  delegation_id?: string;            // Cross-ref to delegation metadata
+  from_agent: string;                // Agent providing the result
+  to_agent?: string;                 // Agent consuming (if known)
+
+  // What was accomplished
+  summary: string;                   // One-line result summary
+  result: string;                    // Detailed result/findings
+  artifacts: string[];               // File paths, entry IDs, etc.
+
+  // Context snapshot at handoff time
+  context_snapshot: {
+    relevant_decisions: string[];    // Decision IDs active at handoff
+    active_warnings: string[];       // Warning entry IDs
+    scope: string;                   // Scope of work
+  };
+
+  // Lifecycle
+  status: "pending" | "accepted" | "rejected";
+  created_at: string;                // ISO 8601
+  accepted_at?: string;              // When consumer acknowledged
+  rejection_reason?: string;
+}
+```
+
+**Design rationale:**
+- Handoffs are first-class records (not just blackboard entries) because they carry structured context snapshots that need to survive archiving. Blackboard entries get archived; handoff records persist like decisions.
+- `context_snapshot` captures the decision/warning state at handoff time, preventing the "stale context" problem where the consuming agent sees different state than what the producing agent saw.
+- `status` tracks whether the handoff was consumed, enabling the dashboard to show pending vs completed handoffs.
+
+### HandoffIndexEntry
+
+```typescript
+interface HandoffIndexEntry {
+  id: string;
+  need_id: string;
+  delegation_id?: string;
+  from_agent: string;
+  to_agent?: string;
+  summary: string;
+  scope: string;
+  status: "pending" | "accepted" | "rejected";
+  created_at: string;
+}
+```
+
+## New Source Code Structure
 
 ```
 src/
-├── dashboard/           # NEW - Dashboard-specific code
-│   ├── server.ts        # HTTP server initialization (Express)
-│   ├── routes.ts        # API route definitions
-│   ├── stream.ts        # SSE implementation for real-time updates
-│   └── static/          # Bundled static assets (no build step)
-│       ├── index.html   # Dashboard UI (vanilla HTML)
-│       ├── app.js       # Vanilla JS + htmx + Alpine.js (~29KB total)
-│       ├── style.css    # Minimal CSS
-│       └── lib/         # Vendored dependencies (htmx, Alpine.js)
-│           ├── htmx.min.js      # 14KB
-│           └── alpine.min.js    # 15KB
-├── engine/              # EXISTING - Business logic
-│   ├── blackboard.ts
-│   ├── decisions.ts
-│   ├── graph.ts
-│   ├── context-assembler.ts
-│   ├── archiver.ts
-│   ├── exporter.ts
-│   └── planning-bridge.ts
-├── storage/             # EXISTING - File I/O layer
-│   ├── file-store.ts
-│   ├── blackboard-store.ts
-│   ├── decision-store.ts
-│   ├── graph-store.ts
-│   └── init.ts
-├── tools/               # EXISTING - MCP tool handlers
-│   ├── blackboard-tools.ts
-│   ├── decision-tools.ts
-│   ├── context-tools.ts
-│   ├── graph-tools.ts
-│   ├── lifecycle-tools.ts
-│   └── export-tools.ts
-├── index.ts             # MODIFIED - Entry point, starts both transports
-└── server.ts            # MODIFIED - MCP server + dashboard server setup
+  storage/
+    agent-store.ts               # NEW: Agent registry CRUD
+    handoff-store.ts             # NEW: Handoff record CRUD + index
+  engine/
+    agent-engine.ts              # NEW: Registration, discovery, delegation, handoff
+  tools/
+    agent-tools.ts               # NEW: MCP tool handlers for agent coordination
 ```
 
-### Structure Rationale
+## New MCP Tools
 
-- **src/dashboard/:** Isolated from core MCP functionality. Dashboard can be disabled via config without affecting stdio transport.
-- **src/dashboard/static/:** All static assets are bundled (vendored), no build step required. Copy files as-is during deployment.
-- **src/index.ts:** Modified to conditionally start HTTP server based on config (default: enabled on port 24282).
-- **src/server.ts:** Modified to expose a `getDashboardState()` method that dashboard routes can call to read current state.
+### `twining_register`
+Register an agent with capabilities.
 
-## Architectural Patterns
-
-### Pattern 1: Dual Transport (Stdio + HTTP)
-
-**What:** Run two transport layers in the same Node.js process—stdio for MCP communication, HTTP for dashboard access.
-
-**When to use:** When you need a web UI alongside a stdio-based MCP server without disrupting the existing architecture.
-
-**Trade-offs:**
-- **Pro:** Single process, shared in-memory state, no IPC complexity
-- **Pro:** HTTP server is optional—can be disabled for headless operation
-- **Con:** HTTP server increases memory footprint (~10-20MB for Express + SSE)
-- **Con:** Port conflicts possible if 24282 is in use (fallback to random port)
-
-**Example:**
 ```typescript
-// src/index.ts
-async function main(): Promise<void> {
-  const projectRoot = parseProjectRoot();
-  const config = loadConfig(projectRoot);
+{
+  name: string;              // Human-readable agent name
+  capabilities: string[];    // What this agent can do
+  scope?: string;            // Optional scope restriction
+  agent_id?: string;         // Defaults to caller identifier
+  metadata?: Record<string, string>;
+}
+// Returns: { agent_id: string, registered_at: string }
+```
 
-  // Create MCP server (existing)
-  const mcpServer = createServer(projectRoot);
-  const stdioTransport = new StdioServerTransport();
-  await mcpServer.connect(stdioTransport);
+### `twining_discover`
+Find agents matching capability requirements.
 
-  // Conditionally start HTTP dashboard
-  if (config.dashboard?.enabled !== false) {
-    const dashboardPort = config.dashboard?.port || 24282;
-    await startDashboardServer(mcpServer, projectRoot, dashboardPort);
+```typescript
+{
+  capabilities?: string[];    // Required capabilities (AND match)
+  scope?: string;             // Scope filter
+  include_idle?: boolean;     // Include idle agents (default: false)
+}
+// Returns: { agents: AgentRecord[], total: number }
+```
+
+### `twining_delegate`
+Post a delegation need with capability requirements. Returns matching agents.
+
+```typescript
+{
+  need: string;               // What needs to be done (max 200 chars)
+  detail?: string;            // Full context
+  required_capabilities: string[];
+  preferred_capabilities?: string[];
+  scope?: string;
+  urgency?: "high" | "normal" | "low";
+  timeout_hours?: number;
+  agent_id?: string;
+}
+// Returns: { need_id: string, delegation_id: string, matching_agents: AgentRecord[] }
+```
+
+### `twining_handoff`
+Complete a delegation with results and context snapshot.
+
+```typescript
+{
+  need_id: string;            // Blackboard need entry being fulfilled
+  summary: string;            // One-line result
+  result: string;             // Detailed findings/result
+  artifacts?: string[];       // File paths, entry IDs produced
+  agent_id?: string;
+}
+// Returns: { handoff_id: string, context_snapshot: object }
+```
+
+### `twining_agents`
+List all registered agents with status.
+
+```typescript
+{
+  status_filter?: "active" | "idle" | "gone" | "all";
+}
+// Returns: { agents: AgentRecord[], active: number, idle: number, gone: number }
+```
+
+## Integration Points with Existing Modules
+
+### 1. types.ts -- Extended Types
+
+Add new types and extend existing ones:
+
+```typescript
+// New entity type for knowledge graph
+type EntityType = "module" | "function" | "class" | "file" | "concept"
+  | "pattern" | "dependency" | "api_endpoint" | "agent";  // NEW
+
+// New relation type
+type RelationType = "depends_on" | "implements" | "decided_by" | "affects"
+  | "tested_by" | "calls" | "imports" | "related_to"
+  | "can_do" | "delegated_to";  // NEW
+
+// Extended AssembledContext
+interface AssembledContext {
+  // ... existing fields ...
+  handoff_results?: {
+    id: string;
+    summary: string;
+    from_agent: string;
+    scope: string;
+    created_at: string;
+  }[];
+  available_agents?: {
+    name: string;
+    capabilities: string[];
+    status: string;
+  }[];
+}
+```
+
+### 2. BlackboardEngine -- Minor Extension
+
+No code changes needed. Delegation uses existing `post()` with `entry_type: "need"`. The structured delegation metadata goes in the `detail` field. The `DelegationMatcher` (in agent-engine.ts) handles parsing delegation metadata from blackboard entries.
+
+### 3. ContextAssembler -- Extended Assembly
+
+Add handoff awareness to `assemble()`:
+
+```typescript
+// In assemble(), after existing logic:
+// NEW: Include relevant handoff results
+if (this.handoffStore) {
+  const handoffs = await this.handoffStore.getByScope(scope);
+  const pendingHandoffs = handoffs.filter(h => h.status === "pending");
+  // Add to assembled context (subject to token budget)
+}
+
+// NEW: Include available agents for delegation suggestions
+if (this.agentStore) {
+  const agents = await this.agentStore.getActive();
+  // Add summary of available agents (lightweight, always included)
+}
+```
+
+### 4. lifecycle-tools.ts -- Extended Status
+
+Add agent counts to `twining_status` output:
+
+```typescript
+// In twining_status handler:
+const agentStore = new AgentStore(twiningDir);
+const agents = await agentStore.getAll();
+const activeAgents = agents.filter(a => a.status === "active").length;
+const registeredAgents = agents.length;
+// Add to result: { registered_agents, active_agents }
+```
+
+### 5. server.ts -- Wiring
+
+```typescript
+// In createServer():
+import { AgentStore } from "./storage/agent-store.js";
+import { HandoffStore } from "./storage/handoff-store.js";
+import { AgentEngine } from "./engine/agent-engine.js";
+import { registerAgentTools } from "./tools/agent-tools.js";
+
+const agentStore = new AgentStore(twiningDir);
+const handoffStore = new HandoffStore(twiningDir);
+
+const agentEngine = new AgentEngine(
+  agentStore,
+  handoffStore,
+  blackboardEngine,
+  contextAssembler,
+  graphEngine,
+);
+
+// Extended context assembler with handoff awareness
+const contextAssembler = new ContextAssembler(
+  blackboardStore, decisionStore, searchEngine, config,
+  graphEngine, planningBridge,
+  handoffStore, agentStore,  // NEW optional params
+);
+
+registerAgentTools(server, agentEngine);
+```
+
+### 6. init.ts -- New Directories
+
+```typescript
+// In initTwiningDir():
+fs.mkdirSync(path.join(twiningDir, "agents"), { recursive: true });
+fs.mkdirSync(path.join(twiningDir, "handoffs"), { recursive: true });
+
+// Empty data files
+fs.writeFileSync(
+  path.join(twiningDir, "agents", "registry.json"),
+  JSON.stringify([], null, 2),
+);
+fs.writeFileSync(
+  path.join(twiningDir, "handoffs", "index.json"),
+  JSON.stringify([], null, 2),
+);
+```
+
+### 7. Dashboard API -- New Endpoints
+
+```typescript
+// In api-routes.ts:
+// GET /api/agents -- list all registered agents
+// GET /api/handoffs -- list handoff index
+// GET /api/handoffs/:id -- get full handoff record
+```
+
+### 8. Dashboard UI -- New Tab
+
+Add "Agents" tab to dashboard showing:
+- Agent registry with status indicators
+- Pending delegations (needs without handoffs)
+- Handoff history (completed delegations)
+
+## Patterns to Follow
+
+### Pattern 1: Upsert by Name (Agent Registry)
+
+Mirrors the existing GraphStore entity upsert pattern. Re-registering an agent with the same name updates capabilities and resets `last_active`. This handles:
+- Session restarts (agent re-registers on new session)
+- Capability changes (agent gains new skills)
+- Multi-session agents (same logical agent across Claude Code sessions)
+
+```typescript
+async upsert(input: Omit<AgentRecord, "id" | "registered_at" | "status">): Promise<AgentRecord> {
+  const existing = agents.find(a => a.name === input.name);
+  if (existing) {
+    existing.capabilities = input.capabilities;
+    existing.last_active = new Date().toISOString();
+    existing.scope = input.scope;
+    existing.metadata = { ...existing.metadata, ...input.metadata };
+    // write back
+    return existing;
   }
+  // create new
+  const record: AgentRecord = {
+    ...input,
+    id: generateId(),
+    registered_at: new Date().toISOString(),
+    status: "active",
+  };
+  agents.push(record);
+  return record;
 }
 ```
 
-### Pattern 2: Read-Only Dashboard (No Write API)
+### Pattern 2: Inferred Liveness (No Heartbeats)
 
-**What:** Dashboard exposes read-only API endpoints. All mutations happen through MCP tools (stdio transport only).
+Instead of requiring agents to send heartbeat messages, infer liveness from `last_active` timestamps. Update `last_active` whenever an agent calls any Twining tool (via agent_id matching). Status thresholds:
 
-**When to use:** When dashboard is for monitoring/debugging, not primary interaction. Simplifies security model.
-
-**Trade-offs:**
-- **Pro:** No authentication needed (localhost only, read-only)
-- **Pro:** Eliminates race conditions between HTTP writes and MCP writes
-- **Pro:** Clear separation: agents write (stdio), humans read (HTTP)
-- **Con:** Can't use dashboard to manually post blackboard entries or decisions (must use MCP client)
-
-**Example:**
 ```typescript
-// src/dashboard/routes.ts
-import type { Express } from 'express';
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-
-export function registerDashboardRoutes(app: Express, getState: () => DashboardState) {
-  // Read-only API routes
-  app.get('/api/status', (req, res) => {
-    const state = getState();
-    res.json({
-      blackboard_entries: state.blackboardStore.count(),
-      active_decisions: state.decisionStore.countActive(),
-      graph_entities: state.graphStore.countEntities(),
-      last_activity: state.blackboardStore.getLastTimestamp()
-    });
-  });
-
-  app.get('/api/blackboard', (req, res) => {
-    const { limit = 50, entry_type } = req.query;
-    const state = getState();
-    const entries = state.blackboardStore.read({ limit, entry_type });
-    res.json({ entries });
-  });
-
-  // No POST/PUT/DELETE routes - writes only via MCP tools
+private inferStatus(lastActive: string): "active" | "idle" | "gone" {
+  const ageMs = Date.now() - new Date(lastActive).getTime();
+  const ageMinutes = ageMs / (1000 * 60);
+  if (ageMinutes < 5) return "active";
+  if (ageMinutes < 60) return "idle";
+  return "gone";
 }
 ```
 
-### Pattern 3: SSE for Real-Time Updates
+**Why no heartbeats:** MCP is request/response -- there's no background channel for heartbeats. Agents would have to call a dedicated heartbeat tool, which wastes tokens and clutters tool lists. Inferring from existing activity is free.
 
-**What:** Use Server-Sent Events (SSE) to push state updates to dashboard every 1 second.
+### Pattern 3: Delegation via Blackboard (Not Direct Routing)
 
-**When to use:** For dashboards that need live data without client polling overhead.
+Delegations are posted as blackboard "need" entries with structured metadata. This preserves the blackboard pattern's core principle: agents self-select into work based on visible shared state. The `twining_delegate` tool is a convenience that:
+1. Posts the need with structured capabilities
+2. Queries the registry for matching agents
+3. Returns suggestions (but does NOT assign work)
 
-**Trade-offs:**
-- **Pro:** Efficient—single long-lived HTTP connection, server pushes when state changes
-- **Pro:** Automatic reconnection if connection drops (native browser EventSource)
-- **Pro:** Native browser API (EventSource), no library needed
-- **Con:** Unidirectional (server → client only, but that's what we want for read-only dashboard)
-- **Con:** ~1KB/s bandwidth per connected client (negligible for localhost)
+The actual delegation happens when an agent reads the need and chooses to fulfill it. This matches how Claude Code subagents and agent teams already work -- there's no forced assignment.
 
-**Example:**
+### Pattern 4: Context Snapshot on Handoff
+
+When an agent creates a handoff, the system automatically snapshots the relevant context (active decisions, warnings) at that moment. This prevents the "context drift" problem where:
+- Agent A posts a handoff
+- Time passes, decisions change
+- Agent B reads the handoff but the context has shifted
+
+The snapshot preserves decision IDs and warning IDs so Agent B can verify whether those decisions are still active.
+
+### Pattern 5: Optional Constructor Parameters (Existing Pattern)
+
+Follow the established pattern from `ContextAssembler` where new dependencies are optional constructor parameters with null defaults:
+
 ```typescript
-// src/dashboard/stream.ts
-import type { Response } from 'express';
-
-export function registerSSE(app: Express, getState: () => DashboardState) {
-  app.get('/api/stream', (req, res: Response) => {
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-    res.flushHeaders();
-
-    const interval = setInterval(() => {
-      const state = getState();
-      res.write(`data: ${JSON.stringify({
-        blackboard_count: state.blackboardStore.count(),
-        decision_count: state.decisionStore.countActive(),
-        last_activity: state.blackboardStore.getLastTimestamp()
-      })}\n\n`);
-    }, 1000); // Poll every 1 second
-
-    req.on('close', () => clearInterval(interval));
-  });
-}
+constructor(
+  blackboardStore: BlackboardStore,
+  decisionStore: DecisionStore,
+  searchEngine: SearchEngine | null,
+  config: TwiningConfig,
+  graphEngine?: GraphEngine | null,
+  planningBridge?: PlanningBridge | null,
+  handoffStore?: HandoffStore | null,   // NEW, optional
+  agentStore?: AgentStore | null,       // NEW, optional
+)
 ```
 
-Client-side (vanilla JS):
-```javascript
-// src/dashboard/static/app.js
-const eventSource = new EventSource('/api/stream');
-eventSource.onmessage = (event) => {
-  const state = JSON.parse(event.data);
-  document.getElementById('blackboard-count').textContent = state.blackboard_count;
-  document.getElementById('decision-count').textContent = state.decision_count;
-};
-```
+This ensures backward compatibility -- existing tests don't break because they don't pass the new params.
 
-### Pattern 4: No-Build Frontend (htmx + Alpine.js)
+## Anti-Patterns to Avoid
 
-**What:** Use htmx for AJAX/HTML updates and Alpine.js for client-side state, avoiding build tooling.
+### Anti-Pattern 1: Agent-to-Agent Direct Communication
 
-**When to use:** When you want dynamic UI without npm build scripts, webpack, or React.
+**What:** Building a messaging system where agents send messages directly to each other.
+**Why bad:** MCP is request/response from client to server. There's no push channel. Agents can't receive notifications. Any "messaging" would require polling, which is exactly what the blackboard already provides.
+**Instead:** Use the blackboard. Post needs, post offers, post answers. Agents read the blackboard to discover what's happening. This is already Twining's core pattern.
 
-**Trade-offs:**
-- **Pro:** Zero build step—copy static files as-is
-- **Pro:** Tiny bundle size (htmx 14KB + Alpine.js 15KB = 29KB total)
-- **Pro:** Server renders HTML, client enhances with minimal JS
-- **Con:** Not suited for complex SPAs (but dashboard is simple CRUD UI)
-- **Con:** Less tooling/IDE support than React/Vue
+### Anti-Pattern 2: Capability Ontology/Taxonomy
 
-**Example:**
-```html
-<!-- src/dashboard/static/index.html -->
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Twining Dashboard</title>
-  <script src="/static/lib/htmx.min.js"></script>
-  <script src="/static/lib/alpine.min.js" defer></script>
-  <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-  <!-- htmx fetches /api/blackboard and injects response here -->
-  <div hx-get="/api/blackboard" hx-trigger="load, every 2s" hx-swap="innerHTML">
-    Loading blackboard entries...
-  </div>
+**What:** Defining a fixed taxonomy of agent capabilities with hierarchical categories.
+**Why bad:** Over-engineering. Capabilities are contextual and evolve. A fixed taxonomy creates artificial constraints and requires maintenance.
+**Instead:** Free-form string tags with substring matching. `["typescript", "testing"]` matches a need for `["testing"]`. Simple, flexible, no governance overhead.
 
-  <!-- Alpine.js for client-side dropdown state -->
-  <div x-data="{ open: false }">
-    <button @click="open = !open">Toggle Filter</button>
-    <div x-show="open">
-      <!-- Filter UI -->
-    </div>
-  </div>
-</body>
-</html>
-```
+### Anti-Pattern 3: Forced Task Assignment
 
-## Data Flow
+**What:** Having `twining_delegate` automatically assign work to a specific agent.
+**Why bad:** Violates the blackboard pattern's self-selection principle. MCP can't push tasks to agents. Assigned agents might not exist anymore. Creates coupling between delegator and delegatee.
+**Instead:** Post the need with capability requirements. Return suggestions. The consuming agent reads the blackboard and voluntarily picks up work.
 
-### Request Flow (MCP Tool Call - UNCHANGED)
+### Anti-Pattern 4: Separate Delegation Queue
+
+**What:** Creating a separate data structure/file for delegation requests.
+**Why bad:** Duplicates the blackboard. Creates two places to look for needs. Fragments the context assembly pipeline.
+**Instead:** Delegations are blackboard entries with structured metadata. One system, one query path, one context assembly pipeline.
+
+### Anti-Pattern 5: Heavy Handoff Records
+
+**What:** Storing full context assembly output in every handoff record.
+**Why bad:** Handoff records become enormous. Most of the context is already in the decisions and blackboard entries referenced by ID.
+**Instead:** Store IDs and summaries in the context snapshot. The consuming agent can use `twining_assemble` to get full context, with the handoff's scope as input.
+
+## Build Order (Dependencies)
+
+Build new components bottom-up, following the existing pattern:
 
 ```
-Claude Desktop
-    ↓ (stdio, JSON-RPC)
-StdioServerTransport
-    ↓
-MCP Server → Tool Handler (twining_post, twining_decide, etc.)
-    ↓
-Engine Layer (BlackboardEngine, DecisionEngine)
-    ↓
-Storage Layer (append to blackboard.jsonl, write decision JSON)
-    ↓
-File System (.twining/)
+Phase 1: Foundation
+  1. types.ts         -- Add AgentRecord, HandoffRecord, extended types
+  2. init.ts          -- Add agents/ and handoffs/ directories
+  3. agent-store.ts   -- Agent registry CRUD with upsert-by-name
+  4. handoff-store.ts -- Handoff CRUD with index management
+
+Phase 2: Engine
+  5. agent-engine.ts  -- Registration, discovery, delegation matching, handoff creation
+     - Depends on: agent-store, handoff-store, blackboard-engine, context-assembler, graph-engine
+
+Phase 3: Integration
+  6. context-assembler.ts -- Extend with handoff awareness (optional params)
+  7. lifecycle-tools.ts   -- Extend status with agent counts
+  8. agent-tools.ts       -- New MCP tool handlers
+  9. server.ts            -- Wire everything up
+
+Phase 4: Dashboard
+  10. api-routes.ts       -- Add /api/agents, /api/handoffs endpoints
+  11. Dashboard UI        -- Add Agents tab with registry + delegations + handoffs
 ```
 
-### Request Flow (Dashboard API - NEW)
-
-```
-Browser
-    ↓ (HTTP GET /api/blackboard)
-Express Router → Dashboard Route Handler
-    ↓
-getState() → Engine Layer
-    ↓
-Storage Layer (read blackboard.jsonl)
-    ↓
-JSON Response → Browser
-```
-
-### Real-Time Update Flow (SSE - NEW)
-
-```
-Browser (EventSource connected to /api/stream)
-    ↑ (SSE, every 1 second)
-Express SSE Route (polls getState())
-    ↑
-Engine Layer (read current counts/timestamps)
-    ↑
-Storage Layer (read file metadata, count lines)
-```
-
-### Key Data Flows
-
-1. **Stdio writes, HTTP reads:** All mutations happen via MCP tools (stdio transport). Dashboard reads state via HTTP API.
-2. **Shared engine layer:** Both transports access the same in-memory engine instances. No IPC, no state duplication.
-3. **File-based synchronization:** Storage layer is single source of truth. Both transports read from .twining/ files.
-
-## Integration Points
-
-### New Components
-
-| Component | File | Purpose |
-|-----------|------|---------|
-| **DashboardServer** | `src/dashboard/server.ts` | HTTP server setup (Express), listen on port 24282 |
-| **DashboardRoutes** | `src/dashboard/routes.ts` | API endpoints (GET /api/status, /api/blackboard, /api/decisions, /api/graph) |
-| **SSEHandler** | `src/dashboard/stream.ts` | Server-Sent Events for real-time state updates (1-second poll) |
-| **StaticAssets** | `src/dashboard/static/` | HTML/JS/CSS (htmx + Alpine.js, no build step) |
-
-### Modified Components
-
-| Component | File | Modification |
-|-----------|------|-------------|
-| **MCP Server** | `src/server.ts` | Add `getDashboardState()` method exposing stores/engines for HTTP routes |
-| **Entry Point** | `src/index.ts` | Conditionally start HTTP server after stdio transport connects |
-| **Config Schema** | `src/config.ts` | Add `dashboard: { enabled: boolean, port: number }` (default: true, 24282) |
-
-### Unchanged Components
-
-All existing engine and storage code remains unchanged:
-- `src/engine/` — Business logic, accessed by both transports
-- `src/storage/` — File I/O, single source of truth
-- `src/tools/` — MCP tool handlers, stdio transport only
-- `src/embeddings/` — Embedding system, used by both transports via engine layer
-
-## Scaling Considerations
-
-| Scale | Dashboard Impact |
-|-------|------------------|
-| **Single user (localhost only)** | Default mode. HTTP server listens on 127.0.0.1:24282. No authentication needed. |
-| **Team (local network)** | Bind to 0.0.0.0 if needed, but MUST add authentication (HTTP Basic Auth or API key). Warn in docs. |
-| **Multi-instance (multiple MCP servers)** | Use port auto-increment (24282, 24283, ...) if default port in use. Display chosen port on startup. |
-
-### Scaling Priorities
-
-1. **First bottleneck:** SSE bandwidth with many clients. **Fix:** Increase poll interval from 1s to 5s or disable SSE for multiple clients.
-2. **Second bottleneck:** Concurrent file reads (.twining/ files). **Fix:** Add in-memory caching layer with TTL (already partially solved by engine layer).
-
-## Anti-Patterns
-
-### Anti-Pattern 1: Write API in Dashboard
-
-**What people do:** Add POST /api/blackboard to let dashboard post entries directly.
-
-**Why it's wrong:** Creates two write paths (MCP tools + HTTP API), breaking the single-writer assumption of stdio transport. Requires authentication, CSRF protection, and race condition handling.
-
-**Do this instead:** Dashboard is read-only. Use MCP client (Claude Desktop) to mutate state via stdio transport.
-
-### Anti-Pattern 2: Build Step for Frontend
-
-**What people do:** Use React/Vue with npm run build, webpack, etc.
-
-**Why it's wrong:** Adds complexity, build dependencies, and deployment overhead for a simple monitoring UI.
-
-**Do this instead:** Use htmx + Alpine.js (no build step). Vendor libraries in `src/dashboard/static/lib/`.
-
-### Anti-Pattern 3: WebSockets for Updates
-
-**What people do:** Use WebSocket for bidirectional real-time updates.
-
-**Why it's wrong:** Dashboard doesn't need client → server messages (read-only). WebSockets add protocol complexity vs. SSE.
-
-**Do this instead:** Use Server-Sent Events (SSE) for unidirectional server → client updates. Native browser API, automatic reconnect.
-
-### Anti-Pattern 4: Separate Process for Dashboard
-
-**What people do:** Run dashboard as separate Node.js process communicating via IPC or network.
-
-**Why it's wrong:** Adds IPC complexity, state synchronization, and deployment overhead. Defeats the "embedded dashboard" goal.
-
-**Do this instead:** Run HTTP server in same process as MCP server. Both access shared engine layer.
-
-## Technology Stack
-
-### HTTP Server
-
-**Recommended:** Express.js (most popular, well-documented, minimal)
-
-**Alternative:** Fastify (faster, but more complex for simple use case)
-
-**Rationale:** Express has the largest ecosystem, simplest middleware model, and best htmx integration examples.
-
-**Installation:**
-```bash
-npm install express @types/express
-```
-
-**Example:**
-```typescript
-import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-export function createDashboardServer(getState: () => DashboardState, port: number) {
-  const app = express();
-
-  // Serve static files
-  app.use('/static', express.static(path.join(__dirname, 'static')));
-
-  // Register API routes
-  registerDashboardRoutes(app, getState);
-  registerSSE(app, getState);
-
-  // Root redirect to dashboard
-  app.get('/', (req, res) => res.redirect('/dashboard'));
-  app.get('/dashboard', (req, res) => {
-    res.sendFile(path.join(__dirname, 'static', 'index.html'));
-  });
-
-  app.listen(port, '127.0.0.1', () => {
-    console.error(`[Dashboard] http://localhost:${port}/dashboard`); // stderr, not stdout (stdio transport)
-  });
-
-  return app;
-}
-```
-
-### Frontend Stack
-
-**Libraries:**
-- **htmx** (14KB): AJAX requests, HTML swapping, polling
-- **Alpine.js** (15KB): Client-side state, dropdowns, modals
-- **No framework:** Vanilla HTML/CSS
-
-**CDN vs. Vendored:**
-- **Use vendored** (copy .min.js files into `src/dashboard/static/lib/`)
-- **Don't use CDN** (dashboard must work offline on localhost)
-
-**Installation:**
-```bash
-# Download vendored copies (one-time)
-curl -o src/dashboard/static/lib/htmx.min.js https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js
-curl -o src/dashboard/static/lib/alpine.min.js https://unpkg.com/alpinejs@3.14.3/dist/cdn.min.js
-```
-
-### SSE Implementation
-
-**Library:** None (native Node.js `http` + `res.write()`)
-
-**Example:**
-```typescript
-app.get('/api/stream', (req, res) => {
-  res.setHeader('Content-Type', 'text/event-stream');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.setHeader('Connection', 'keep-alive');
-  res.flushHeaders();
-
-  const send = () => res.write(`data: ${JSON.stringify(getState())}\n\n`);
-  const interval = setInterval(send, 1000);
-  req.on('close', () => clearInterval(interval));
-});
-```
-
-## Build Order
-
-**Existing order (v1.0-v1.1):**
-1. src/utils/ (types, ids, tokens)
-2. src/storage/ (file-store, blackboard-store, decision-store, graph-store)
-3. src/engine/ (blackboard, decisions, graph, context-assembler, archiver)
-4. src/embeddings/ (embedder, index-manager, search)
-5. src/tools/ (one file per tool group)
-6. src/server.ts + src/index.ts (MCP registration and entry point)
-
-**New order (v1.2 with dashboard):**
-1. src/utils/ (types, ids, tokens) — UNCHANGED
-2. src/storage/ (file-store, blackboard-store, decision-store, graph-store) — UNCHANGED
-3. src/engine/ (blackboard, decisions, graph, context-assembler, archiver) — UNCHANGED
-4. src/embeddings/ (embedder, index-manager, search) — UNCHANGED
-5. src/tools/ (one file per tool group) — UNCHANGED
-6. **src/dashboard/static/ (vendor htmx, Alpine.js, write index.html, app.js, style.css)** — NEW
-7. **src/dashboard/routes.ts (API routes)** — NEW (depends on stores)
-8. **src/dashboard/stream.ts (SSE handler)** — NEW (depends on stores)
-9. **src/dashboard/server.ts (HTTP server init)** — NEW (depends on routes + stream)
-10. src/server.ts (add `getDashboardState()` method) — MODIFIED
-11. src/index.ts (conditionally start dashboard) — MODIFIED
-12. src/config.ts (add dashboard config schema) — MODIFIED
-
-**Rationale:** Dashboard is built after core MCP functionality is complete. Static assets come first (no dependencies), then routes (depend on stores), then server (depends on routes), then integration (modify entry point).
-
-## Serena Reference Implementation
-
-The Serena MCP server provides a proven reference for embedded dashboard architecture:
-
-**Dashboard URL:** `http://localhost:24282/dashboard/index.html` (same port we'll use)
-
-**Features:**
-- Displays real-time logs
-- Allows shutting down MCP server
-- Always enabled by default (with flag to disable)
-- Uses higher port if 24282 unavailable
-- Prevents zombie processes by providing UI control
-
-**Key Learnings:**
-1. **Port selection:** 24282 is a good default (high port, unlikely to conflict, same as Serena)
-2. **Default enabled:** Dashboard should be on by default (can disable via config)
-3. **Localhost only:** Bind to 127.0.0.1, not 0.0.0.0 (security)
-4. **Startup message:** Log dashboard URL to stderr (not stdout—would corrupt stdio transport)
-
-**Differences from Serena:**
-- Serena is Python/Flask, Twining will be TypeScript/Express
-- Serena includes write actions (shutdown server), Twining dashboard is read-only
-- Serena focuses on logs, Twining focuses on blackboard/decisions/graph visualization
-
-## Dashboard UI Features
-
-### Core Views
-
-1. **Status Overview (/):** Stats, last activity, health
-2. **Blackboard Timeline (/blackboard):** Recent entries, filterable by type/tags/scope
-3. **Decisions (/decisions):** Active decisions, confidence levels, trace chains
-4. **Graph Visualization (/graph):** Entity/relation explorer (simple table view, not interactive graph)
-5. **Search (/search):** Semantic search across blackboard + decisions
-
-### UI Components
-
-| Component | Implementation | Notes |
-|-----------|----------------|-------|
-| **Live Stats** | SSE + Alpine.js counter | Blackboard count, decision count, last activity |
-| **Entry Table** | htmx polling `/api/blackboard?limit=50` every 2s | Filterable, sortable |
-| **Decision Detail** | htmx GET `/api/decisions/:id` on click | Modal overlay |
-| **Graph Explorer** | htmx GET `/api/graph/neighbors/:id` | Expand/collapse neighbors |
-| **Search Box** | htmx POST `/api/search` on input debounce | Instant results |
-
-## Deployment Considerations
-
-**No deployment changes needed.** Dashboard is embedded in the same process as MCP server.
-
-**Distribution:**
-- Package `src/dashboard/static/` in npm bundle (include in `files` array in package.json)
-- Static assets copied to `dist/dashboard/static/` during `npm run build`
-
-**Runtime:**
-- Dashboard starts automatically when MCP server starts (unless disabled in config)
-- No separate deployment step
-
-**Security:**
-- Localhost only (127.0.0.1) by default
-- No authentication (trusted localhost environment)
-- If exposing to network: MUST add HTTP Basic Auth or API key validation
+**Why this order:**
+- Phase 1 has zero dependencies on existing engine modules -- pure storage + types
+- Phase 2 depends on Phase 1 stores + existing engines (which are stable)
+- Phase 3 modifies existing modules minimally (optional params, additive output)
+- Phase 4 is pure read-only display, depends on Phase 1 stores
+
+## Scalability Considerations
+
+| Concern | At 5 agents | At 20 agents | At 100 agents |
+|---------|------------|--------------|---------------|
+| Registry file size | ~2KB | ~8KB | ~40KB |
+| Discovery query | <1ms (linear scan) | <1ms | ~5ms (consider indexing) |
+| Capability matching | Substring scan, instant | Fast enough | Consider capability index |
+| Handoff records | Few per session | Moderate | Archive old handoffs with blackboard |
+| Liveness inference | Negligible | Negligible | Negligible (timestamp comparison) |
+
+For Twining's use case (typically 1-10 agents), all operations are well within performance bounds. The registry is a single JSON file read into memory, capability matching is O(agents * capabilities), and handoff lookups use the same index pattern as decisions.
+
+## Interaction with Claude Code Features
+
+### Subagents
+Claude Code subagents get their own context window. When a subagent registers with Twining and uses `twining_assemble`, it automatically receives context from the main agent's decisions and other subagents' findings. This is the primary coordination pathway.
+
+### Agent Teams
+Claude Code's experimental agent teams feature (shared task lists + mailbox) operates at the session level. Twining operates at the project state level. They're complementary:
+- Agent teams handle real-time task assignment within a session
+- Twining handles persistent state, decisions, and cross-session knowledge
+- An agent team member can use `twining_delegate` to create a need that persists beyond the team's lifetime
+- Twining handoffs capture context snapshots that survive agent team dissolution
+
+### Cross-Session Continuity
+The agent registry survives session restarts. When a new Claude Code session starts and registers with Twining, it can discover what was delegated by previous sessions and pick up pending work via handoffs.
 
 ## Sources
 
-### MCP Architecture & Transport
-- [Dual-Transport MCP Servers: STDIO vs. HTTP Explained](https://medium.com/@kumaran.isk/dual-transport-mcp-servers-stdio-vs-http-explained-bd8865671e1f) — Demonstrates running stdio and HTTP transports in same process with conditional initialization
-- [Building an MCP Server the Official Way: STDIO Core + HTTP Gateway Explained](https://blog.popescul.com/posts/2026/01/15/mcp-server-official-way/) — Architecture patterns for dual-transport MCP servers
-- [MCP Server Transports: STDIO, Streamable HTTP & SSE](https://docs.roocode.com/features/mcp/server-transports) — Technical details on MCP transport types
-
-### Node.js HTTP & Express
-- [Express serve-static middleware](https://expressjs.com/en/resources/middleware/serve-static.html) — Official documentation for serving static files in Express
-- [Node.js HTTP server listen on multiple ports](https://onelinerhub.com/nodejs/http-server-listen-on-multiple-ports) — Confirms single Node.js process can listen on multiple ports
-- [Express.js Middleware Architecture Deep Dive](https://www.grizzlypeaksoftware.com/library/expressjs-middleware-architecture-deep-dive-u03rb1on) — Middleware ordering and architecture patterns
-
-### Server-Sent Events (SSE)
-- [Why Server-Sent Events (SSE) are ideal for Real-Time Updates](https://talent500.com/blog/server-sent-events-real-time-updates/) — SSE vs polling vs WebSockets comparison
-- [Understanding Server-Sent Events (SSE) with Node.js](https://itsfuad.medium.com/understanding-server-sent-events-sse-with-node-js-3e881c533081) — Implementation patterns for SSE in Node.js
-- [WebSockets vs. SSE vs. Long Polling: Which Should You Use?](https://blog.openreplay.com/websockets-sse-long-polling/) — Technical comparison of real-time update strategies
-
-### No-Build Frontend (htmx + Alpine.js)
-- [HTMX and Alpine.js: How to combine two great, lean front ends](https://www.infoworld.com/article/3856520/htmx-and-alpine-js-how-to-combine-two-great-lean-front-ends.html) — Complementary use cases, no build step required
-- [Why Developers Are Ditching Frameworks for Vanilla JavaScript](https://thenewstack.io/why-developers-are-ditching-frameworks-for-vanilla-javascript/) — Trend toward zero-build tooling in 2026
-- [Django, HTMX and Alpine.js: Modern websites, JavaScript optional](https://www.saaspegasus.com/guides/modern-javascript-for-django-developers/htmx-alpine/) — Architecture patterns for htmx + Alpine.js
-
-### Serena Reference Implementation
-- [The Dashboard and GUI Tool — Serena Documentation](https://oraios.github.io/serena/02-usage/060_dashboard.html) — Official Serena dashboard implementation details
-- [Serena MCP Setup Guide: Claude Code, Codex & JetBrains (2026)](https://smartscope.blog/en/generative-ai/claude/serena-mcp-implementation-guide/) — Dashboard configuration and usage patterns
-- [GitHub - oraios/serena](https://github.com/oraios/serena) — Reference implementation source code
-
----
-*Architecture research for: Embedded Dashboard Integration*
-*Researched: 2026-02-16*
+- [Exploring Advanced LLM Multi-Agent Systems Based on Blackboard Architecture](https://arxiv.org/html/2507.01701v1) -- Blackboard control mechanism, agent selection, shared memory design
+- [Four Design Patterns for Event-Driven Multi-Agent Systems](https://www.confluent.io/blog/event-driven-multi-agent-systems/) -- Blackboard vs orchestrator vs market patterns, arbiter evolution
+- [Create custom subagents - Claude Code Docs](https://code.claude.com/docs/en/sub-agents) -- Claude Code subagent architecture, context isolation, delegation patterns
+- [Orchestrate teams of Claude Code sessions](https://code.claude.com/docs/en/agent-teams) -- Agent teams architecture, shared task lists, mailbox messaging
+- [MCP Registry](https://github.com/modelcontextprotocol/registry) -- MCP capability discovery patterns
+- [Best Practices for Multi-Agent Orchestration and Reliable Handoffs](https://skywork.ai/blog/ai-agent-orchestration-best-practices-handoffs/) -- Handoff reliability, context packaging
+- [Advancing Multi-Agent Systems Through Model Context Protocol](https://arxiv.org/abs/2504.21030) -- MCP-based multi-agent coordination architecture
+- Twining codebase analysis (server.ts, context-assembler.ts, blackboard.ts, graph.ts, types.ts, all stores)
