@@ -140,6 +140,21 @@ export interface AssembledContext {
     relations: string[];
   }[];
   planning_state?: PlanningState;
+  recent_handoffs?: {
+    id: string;
+    source_agent: string;
+    target_agent: string;
+    scope: string;
+    summary: string;
+    result_status: string;
+    acknowledged: boolean;
+    created_at: string;
+  }[];
+  suggested_agents?: {
+    agent_id: string;
+    capabilities: string[];
+    liveness: string;
+  }[];
 }
 
 /** Config — matches spec section 2.3 config.yml structure */

@@ -7,6 +7,8 @@ import { ContextAssembler } from "../src/engine/context-assembler.js";
 import { PlanningBridge } from "../src/engine/planning-bridge.js";
 import { BlackboardStore } from "../src/storage/blackboard-store.js";
 import { DecisionStore } from "../src/storage/decision-store.js";
+import { HandoffStore } from "../src/storage/handoff-store.js";
+import { AgentStore } from "../src/storage/agent-store.js";
 import { SearchEngine } from "../src/embeddings/search.js";
 import { Embedder } from "../src/embeddings/embedder.js";
 import { IndexManager } from "../src/embeddings/index-manager.js";
@@ -871,6 +873,182 @@ Last session: 2026-02-17
 
       const summarizeResult = await assembler.summarize();
       expect(summarizeResult.planning_state).toBeUndefined();
+    });
+  });
+
+  describe("handoff and agent integration", () => {
+    let handoffStore: HandoffStore;
+    let agentStore: AgentStore;
+
+    beforeEach(() => {
+      handoffStore = new HandoffStore(twiningDir);
+      agentStore = new AgentStore(twiningDir);
+    });
+
+    it("includes recent handoffs matching scope in assembled context", async () => {
+      // Create handoffs matching scope
+      await handoffStore.create({
+        source_agent: "agent-a",
+        target_agent: "agent-b",
+        scope: "src/auth/",
+        summary: "Completed auth token validation",
+        results: [{ description: "Added JWT checks", status: "completed" }],
+        context_snapshot: { decision_ids: [], warning_ids: [], finding_ids: [], summaries: [] },
+      });
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+        null,
+        null,
+        handoffStore,
+        null,
+      );
+
+      const result = await assembler.assemble("review auth", "src/auth/");
+
+      expect(result.recent_handoffs).toBeDefined();
+      expect(result.recent_handoffs).toHaveLength(1);
+      expect(result.recent_handoffs![0]!.source_agent).toBe("agent-a");
+      expect(result.recent_handoffs![0]!.target_agent).toBe("agent-b");
+      expect(result.recent_handoffs![0]!.summary).toBe("Completed auth token validation");
+      expect(result.recent_handoffs![0]!.result_status).toBe("completed");
+      expect(result.recent_handoffs![0]!.acknowledged).toBe(false);
+    });
+
+    it("caps handoffs at 5", async () => {
+      // Create 7 handoffs
+      for (let i = 0; i < 7; i++) {
+        await handoffStore.create({
+          source_agent: `agent-${i}`,
+          scope: "src/auth/",
+          summary: `Handoff ${i}`,
+          results: [{ description: `Result ${i}`, status: "completed" }],
+          context_snapshot: { decision_ids: [], warning_ids: [], finding_ids: [], summaries: [] },
+        });
+      }
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+        null,
+        null,
+        handoffStore,
+        null,
+      );
+
+      const result = await assembler.assemble("review auth", "src/auth/");
+
+      expect(result.recent_handoffs).toBeDefined();
+      expect(result.recent_handoffs).toHaveLength(5);
+    });
+
+    it("returns empty recent_handoffs when no handoffs match scope", async () => {
+      // Create a handoff for a different scope
+      await handoffStore.create({
+        source_agent: "agent-a",
+        scope: "src/database/",
+        summary: "DB migration",
+        results: [{ description: "Migrated schema", status: "completed" }],
+        context_snapshot: { decision_ids: [], warning_ids: [], finding_ids: [], summaries: [] },
+      });
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+        null,
+        null,
+        handoffStore,
+        null,
+      );
+
+      const result = await assembler.assemble("review auth", "src/auth/");
+
+      // No matching handoffs — field should be undefined (not set)
+      expect(result.recent_handoffs).toBeUndefined();
+    });
+
+    it("suggests agents with matching capabilities for task", async () => {
+      // Register agents with capabilities
+      await agentStore.upsert({
+        agent_id: "testing-agent",
+        capabilities: ["testing", "validation"],
+      });
+      await agentStore.upsert({
+        agent_id: "deploy-agent",
+        capabilities: ["deployment", "infrastructure"],
+      });
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+        null,
+        null,
+        null,
+        agentStore,
+      );
+
+      const result = await assembler.assemble("add testing for auth module", "src/auth/");
+
+      expect(result.suggested_agents).toBeDefined();
+      expect(result.suggested_agents).toHaveLength(1);
+      expect(result.suggested_agents![0]!.agent_id).toBe("testing-agent");
+      expect(result.suggested_agents![0]!.capabilities).toContain("testing");
+      expect(result.suggested_agents![0]!.liveness).toBe("active");
+    });
+
+    it("does not suggest gone agents", async () => {
+      // Register agent with old last_active (gone)
+      await agentStore.upsert({
+        agent_id: "old-agent",
+        capabilities: ["testing"],
+      });
+      // Manually set last_active to an hour ago (beyond gone threshold)
+      const registryPath = path.join(twiningDir, "agents", "registry.json");
+      const agents = JSON.parse(fs.readFileSync(registryPath, "utf-8"));
+      agents[0].last_active = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+      fs.writeFileSync(registryPath, JSON.stringify(agents));
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+        null,
+        null,
+        null,
+        agentStore,
+      );
+
+      const result = await assembler.assemble("add testing", "project");
+
+      // Gone agent should not be suggested
+      expect(result.suggested_agents).toBeUndefined();
+    });
+
+    it("works without handoffStore or agentStore (backward compatible)", async () => {
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+        null,
+        null,
+        // No handoffStore or agentStore
+      );
+
+      const result = await assembler.assemble("test task", "project");
+
+      expect(result.recent_handoffs).toBeUndefined();
+      expect(result.suggested_agents).toBeUndefined();
     });
   });
 });

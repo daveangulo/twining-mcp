@@ -8,6 +8,8 @@ import type { DecisionStore } from "../storage/decision-store.js";
 import type { SearchEngine } from "../embeddings/search.js";
 import type { GraphEngine } from "./graph.js";
 import type { PlanningBridge } from "./planning-bridge.js";
+import type { HandoffStore } from "../storage/handoff-store.js";
+import type { AgentStore } from "../storage/agent-store.js";
 import type {
   AssembledContext,
   BlackboardEntry,
@@ -16,6 +18,9 @@ import type {
   TwiningConfig,
   WhatChangedResult,
 } from "../utils/types.js";
+import { DEFAULT_LIVENESS_THRESHOLDS } from "../utils/liveness.js";
+import { computeLiveness } from "../utils/liveness.js";
+import { normalizeTags } from "../utils/tags.js";
 import { estimateTokens } from "../utils/tokens.js";
 
 /** Half-life for recency decay in hours (one week). */
@@ -37,6 +42,8 @@ export class ContextAssembler {
   private readonly config: TwiningConfig;
   private readonly graphEngine: GraphEngine | null;
   private readonly planningBridge: PlanningBridge | null;
+  private readonly handoffStore: HandoffStore | null;
+  private readonly agentStore: AgentStore | null;
 
   constructor(
     blackboardStore: BlackboardStore,
@@ -45,6 +52,8 @@ export class ContextAssembler {
     config: TwiningConfig,
     graphEngine?: GraphEngine | null,
     planningBridge?: PlanningBridge | null,
+    handoffStore?: HandoffStore | null,
+    agentStore?: AgentStore | null,
   ) {
     this.blackboardStore = blackboardStore;
     this.decisionStore = decisionStore;
@@ -52,6 +61,8 @@ export class ContextAssembler {
     this.config = config;
     this.graphEngine = graphEngine ?? null;
     this.planningBridge = planningBridge ?? null;
+    this.handoffStore = handoffStore ?? null;
+    this.agentStore = agentStore ?? null;
   }
 
   /**
@@ -349,6 +360,52 @@ export class ContextAssembler {
           timestamp: new Date().toISOString(),
         });
         result.token_estimate += planningTokenCost;
+      }
+    }
+
+    // 10. Include recent handoffs matching scope (HND-03)
+    if (this.handoffStore) {
+      const handoffEntries = await this.handoffStore.list({ scope, limit: 5 });
+      if (handoffEntries.length > 0) {
+        result.recent_handoffs = handoffEntries.map((h) => ({
+          id: h.id,
+          source_agent: h.source_agent,
+          target_agent: h.target_agent ?? "",
+          scope: h.scope ?? "",
+          summary: h.summary,
+          result_status: h.result_status,
+          acknowledged: h.acknowledged,
+          created_at: h.created_at,
+        }));
+      }
+    }
+
+    // 11. Include suggested agents with matching capabilities (HND-06)
+    if (this.agentStore) {
+      const allAgents = await this.agentStore.getAll();
+      const thresholds = this.config.agents?.liveness ?? DEFAULT_LIVENESS_THRESHOLDS;
+      const taskTerms = normalizeTags(task.split(/\s+/));
+
+      const suggestedAgents: NonNullable<AssembledContext["suggested_agents"]> = [];
+      for (const agent of allAgents) {
+        const liveness = computeLiveness(agent.last_active, new Date(), thresholds);
+        if (liveness === "gone") continue;
+
+        const normalizedCaps = normalizeTags(agent.capabilities);
+        const hasMatch = normalizedCaps.some((cap) =>
+          taskTerms.some((term) => term.includes(cap) || cap.includes(term)),
+        );
+        if (hasMatch) {
+          suggestedAgents.push({
+            agent_id: agent.agent_id,
+            capabilities: agent.capabilities,
+            liveness,
+          });
+        }
+      }
+
+      if (suggestedAgents.length > 0) {
+        result.suggested_agents = suggestedAgents;
       }
     }
 
