@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Agents share *why* decisions were made, not just *what* was done -- eliminating information silos across context windows.
-**Current focus:** Phase 13 - Tools & Assembly (v1.3 Agent Coordination)
+**Current focus:** Phase 13 - Tools & Assembly (v1.3 Agent Coordination) -- COMPLETE
 
 ## Current Position
 
 Phase: 13 of 14 (Tools & Assembly)
-Plan: 1 of 2 in current phase
-Status: In Progress
-Last activity: 2026-02-17 -- Completed 13-01 Agent Coordination Tools
+Plan: 2 of 2 in current phase (COMPLETE)
+Status: Phase Complete
+Last activity: 2026-02-17 -- Completed 13-02 Context Assembly Coordination Integration
 
-Progress: [#############################...] 91% (12/14 phases, 29/30 plans complete)
+Progress: [##############################..] 93% (13/14 phases, 30/31 plans complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 29 (6 v1 + 6 v1.1 + 10 v1.2 + 7 v1.3)
+- Total plans completed: 30 (6 v1 + 6 v1.1 + 10 v1.2 + 8 v1.3)
 - v1.1 execution time: ~19min (6 plans, 13 tasks)
 - v1.2 execution time: ~31min (10 plans)
 
@@ -39,7 +39,7 @@ Progress: [#############################...] 91% (12/14 phases, 29/30 plans comp
 | 10. Visualizations & Polish | 3/3 | 10min | 3.3min |
 | 11. Types & Storage | 3/3 | 7min | 2.3min |
 | 12. Coordination Engine | 3/3 | 8min | 2.7min |
-| 13. Tools & Assembly | 1/2 | 3min | 3min |
+| 13. Tools & Assembly | 2/2 | 6min | 3min |
 
 ## Accumulated Context
 
@@ -71,6 +71,9 @@ Recent decisions for v1.3:
 - BlackboardStore.read() handles scope filtering internally, passed directly for warnings/findings
 - agentStore optional parameter (null default) in registerLifecycleTools for backward compatibility
 - active_count computed from all agents before filtering for consistent global metrics
+- Handoff and agent data included outside token budget (like planning_state)
+- Substring matching for capability-to-task matching (bidirectional includes)
+- Coordination stores created before ContextAssembler in server.ts for correct initialization order
 
 ### Pending Todos
 
@@ -83,6 +86,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 13-01-PLAN.md (Agent Coordination Tools)
-Resume file: .planning/phases/13-tools-and-assembly/13-01-SUMMARY.md
-Next: 13-02 (remaining coordination tools: register, delegate, discover, handoff, handoffs)
+Stopped at: Completed 13-02-PLAN.md (Context Assembly Coordination Integration)
+Resume file: .planning/phases/13-tools-and-assembly/13-02-SUMMARY.md
+Next: Phase 14 (final v1.3 phase)
