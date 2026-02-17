@@ -7,10 +7,20 @@ import { HandoffStore } from "../src/storage/handoff-store.js";
 import { BlackboardStore } from "../src/storage/blackboard-store.js";
 import { BlackboardEngine } from "../src/engine/blackboard.js";
 import { DecisionStore } from "../src/storage/decision-store.js";
-import { CoordinationEngine, scoreAgent } from "../src/engine/coordination.js";
+import {
+  CoordinationEngine,
+  scoreAgent,
+  parseDelegationMetadata,
+  isDelegationExpired,
+  DELEGATION_TIMEOUTS,
+} from "../src/engine/coordination.js";
 import { DEFAULT_CONFIG } from "../src/config.js";
 import { DEFAULT_LIVENESS_THRESHOLDS } from "../src/utils/liveness.js";
-import type { AgentRecord } from "../src/utils/types.js";
+import type {
+  AgentRecord,
+  BlackboardEntry,
+  DelegationMetadata,
+} from "../src/utils/types.js";
 
 let tmpDir: string;
 let agentStore: AgentStore;
@@ -243,5 +253,262 @@ describe("CoordinationEngine.discover()", () => {
     expect(agent).toBeDefined();
     expect(agent!.capability_overlap).toBeGreaterThan(0);
     expect(agent!.matched_capabilities).toContain("code");
+  });
+});
+
+// --- Delegation helpers and postDelegation tests (Plan 02) ---
+
+/** Helper: build a minimal BlackboardEntry for testing parseDelegationMetadata. */
+function makeEntry(overrides: Partial<BlackboardEntry> & { id: string }): BlackboardEntry {
+  return {
+    timestamp: new Date().toISOString(),
+    agent_id: "main",
+    entry_type: "need",
+    tags: [],
+    scope: "project",
+    summary: "test entry",
+    detail: "",
+    ...overrides,
+  };
+}
+
+describe("parseDelegationMetadata", () => {
+  it("returns DelegationMetadata from valid delegation entry", () => {
+    const metadata: DelegationMetadata = {
+      type: "delegation",
+      required_capabilities: ["code", "test"],
+      urgency: "normal",
+      expires_at: "2026-01-15T12:30:00.000Z",
+      timeout_ms: 1800000,
+    };
+    const entry = makeEntry({ id: "e1", detail: JSON.stringify(metadata) });
+    const result = parseDelegationMetadata(entry);
+    expect(result).not.toBeNull();
+    expect(result!.type).toBe("delegation");
+    expect(result!.required_capabilities).toEqual(["code", "test"]);
+    expect(result!.urgency).toBe("normal");
+    expect(result!.expires_at).toBe("2026-01-15T12:30:00.000Z");
+  });
+
+  it("returns null for entry with non-delegation detail", () => {
+    const entry = makeEntry({ id: "e2", detail: JSON.stringify({ type: "other", foo: "bar" }) });
+    const result = parseDelegationMetadata(entry);
+    expect(result).toBeNull();
+  });
+
+  it("returns null for entry with invalid JSON in detail", () => {
+    const entry = makeEntry({ id: "e3", detail: "not valid json {{{" });
+    const result = parseDelegationMetadata(entry);
+    expect(result).toBeNull();
+  });
+
+  it("returns null for entry with empty detail string", () => {
+    const entry = makeEntry({ id: "e4", detail: "" });
+    const result = parseDelegationMetadata(entry);
+    expect(result).toBeNull();
+  });
+});
+
+describe("isDelegationExpired", () => {
+  const expiresAt = "2026-01-15T12:30:00.000Z";
+  const metadata: DelegationMetadata = {
+    type: "delegation",
+    required_capabilities: ["code"],
+    urgency: "normal",
+    expires_at: expiresAt,
+  };
+
+  it("returns false when now is before expires_at", () => {
+    const before = new Date("2026-01-15T12:29:59.000Z");
+    expect(isDelegationExpired(metadata, before)).toBe(false);
+  });
+
+  it("returns true when now is after expires_at", () => {
+    const after = new Date("2026-01-15T12:30:01.000Z");
+    expect(isDelegationExpired(metadata, after)).toBe(true);
+  });
+
+  it("returns true when now equals expires_at (boundary)", () => {
+    const exact = new Date("2026-01-15T12:30:00.000Z");
+    expect(isDelegationExpired(metadata, exact)).toBe(true);
+  });
+});
+
+describe("DELEGATION_TIMEOUTS", () => {
+  it("has entries for high, normal, low", () => {
+    expect(DELEGATION_TIMEOUTS).toHaveProperty("high");
+    expect(DELEGATION_TIMEOUTS).toHaveProperty("normal");
+    expect(DELEGATION_TIMEOUTS).toHaveProperty("low");
+  });
+
+  it("high < normal < low (ordering)", () => {
+    expect(DELEGATION_TIMEOUTS.high).toBeLessThan(DELEGATION_TIMEOUTS.normal);
+    expect(DELEGATION_TIMEOUTS.normal).toBeLessThan(DELEGATION_TIMEOUTS.low);
+  });
+});
+
+describe("CoordinationEngine.postDelegation()", () => {
+  it("posts a 'need' entry to blackboard with delegation metadata in detail", async () => {
+    const result = await engine.postDelegation({
+      summary: "Need code reviewer",
+      required_capabilities: ["code-review"],
+    });
+
+    expect(result.entry_id).toBeDefined();
+    expect(result.timestamp).toBeDefined();
+    expect(result.expires_at).toBeDefined();
+
+    // Verify the blackboard entry was created
+    const { entries } = await blackboardEngine.read({ entry_types: ["need"] });
+    const entry = entries.find((e) => e.id === result.entry_id);
+    expect(entry).toBeDefined();
+    expect(entry!.entry_type).toBe("need");
+
+    // Verify detail contains delegation metadata
+    const metadata = JSON.parse(entry!.detail);
+    expect(metadata.type).toBe("delegation");
+    expect(metadata.required_capabilities).toEqual(["code-review"]);
+  });
+
+  it("returns entry_id, timestamp, expires_at, and suggested_agents", async () => {
+    const result = await engine.postDelegation({
+      summary: "Need help",
+      required_capabilities: ["test"],
+    });
+
+    expect(typeof result.entry_id).toBe("string");
+    expect(typeof result.timestamp).toBe("string");
+    expect(typeof result.expires_at).toBe("string");
+    expect(Array.isArray(result.suggested_agents)).toBe(true);
+  });
+
+  it("default urgency is 'normal' with 30-minute timeout", async () => {
+    const result = await engine.postDelegation({
+      summary: "Normal urgency task",
+      required_capabilities: ["code"],
+    });
+
+    // expires_at should be ~30 minutes from now
+    const timestamp = new Date(result.timestamp).getTime();
+    const expiresAt = new Date(result.expires_at).getTime();
+    const diff = expiresAt - timestamp;
+    // Allow small timing tolerance
+    expect(diff).toBeGreaterThanOrEqual(1800000 - 1000);
+    expect(diff).toBeLessThanOrEqual(1800000 + 1000);
+  });
+
+  it("high urgency uses 5-minute timeout", async () => {
+    const result = await engine.postDelegation({
+      summary: "Urgent task",
+      required_capabilities: ["code"],
+      urgency: "high",
+    });
+
+    const timestamp = new Date(result.timestamp).getTime();
+    const expiresAt = new Date(result.expires_at).getTime();
+    const diff = expiresAt - timestamp;
+    expect(diff).toBeGreaterThanOrEqual(300000 - 1000);
+    expect(diff).toBeLessThanOrEqual(300000 + 1000);
+  });
+
+  it("low urgency uses 4-hour timeout", async () => {
+    const result = await engine.postDelegation({
+      summary: "Low priority task",
+      required_capabilities: ["code"],
+      urgency: "low",
+    });
+
+    const timestamp = new Date(result.timestamp).getTime();
+    const expiresAt = new Date(result.expires_at).getTime();
+    const diff = expiresAt - timestamp;
+    expect(diff).toBeGreaterThanOrEqual(14400000 - 1000);
+    expect(diff).toBeLessThanOrEqual(14400000 + 1000);
+  });
+
+  it("custom timeout_ms overrides urgency-based default", async () => {
+    const customTimeout = 60000; // 1 minute
+    const result = await engine.postDelegation({
+      summary: "Custom timeout task",
+      required_capabilities: ["code"],
+      urgency: "normal",
+      timeout_ms: customTimeout,
+    });
+
+    const timestamp = new Date(result.timestamp).getTime();
+    const expiresAt = new Date(result.expires_at).getTime();
+    const diff = expiresAt - timestamp;
+    expect(diff).toBeGreaterThanOrEqual(customTimeout - 1000);
+    expect(diff).toBeLessThanOrEqual(customTimeout + 1000);
+  });
+
+  it("tags include 'delegation' and urgency level", async () => {
+    await engine.postDelegation({
+      summary: "Tagged task",
+      required_capabilities: ["code"],
+      urgency: "high",
+      tags: ["custom-tag"],
+    });
+
+    const { entries } = await blackboardEngine.read({ entry_types: ["need"] });
+    expect(entries.length).toBeGreaterThan(0);
+    const entry = entries[0]!;
+    expect(entry.tags).toContain("delegation");
+    expect(entry.tags).toContain("high");
+    expect(entry.tags).toContain("custom-tag");
+  });
+
+  it("scope defaults to 'project' when not specified", async () => {
+    await engine.postDelegation({
+      summary: "Default scope task",
+      required_capabilities: ["code"],
+    });
+
+    const { entries } = await blackboardEngine.read({ entry_types: ["need"] });
+    expect(entries.length).toBeGreaterThan(0);
+    expect(entries[0]!.scope).toBe("project");
+  });
+
+  it("required_capabilities are normalized before storing in metadata", async () => {
+    const result = await engine.postDelegation({
+      summary: "Normalized caps",
+      required_capabilities: ["  CODE  ", "Test", "CODE"],
+    });
+
+    const { entries } = await blackboardEngine.read({ entry_types: ["need"] });
+    const entry = entries.find((e) => e.id === result.entry_id);
+    const metadata = JSON.parse(entry!.detail);
+    // Normalized: lowercased, trimmed, deduplicated
+    expect(metadata.required_capabilities).toEqual(["code", "test"]);
+  });
+
+  it("suggested_agents comes from discover() with include_gone=false", async () => {
+    // Register an active agent with matching capabilities
+    await agentStore.upsert({ agent_id: "helper", capabilities: ["code"] });
+
+    const result = await engine.postDelegation({
+      summary: "Need coder",
+      required_capabilities: ["code"],
+    });
+
+    expect(result.suggested_agents.length).toBeGreaterThan(0);
+    expect(result.suggested_agents[0]!.agent_id).toBe("helper");
+  });
+
+  it("registers 2 agents with different capabilities, verifies suggested_agents ranked correctly", async () => {
+    await agentStore.upsert({ agent_id: "full-match", capabilities: ["code", "test"] });
+    await agentStore.upsert({ agent_id: "partial-match", capabilities: ["code"] });
+
+    const result = await engine.postDelegation({
+      summary: "Need code and test",
+      required_capabilities: ["code", "test"],
+    });
+
+    expect(result.suggested_agents.length).toBe(2);
+    // full-match should rank higher
+    expect(result.suggested_agents[0]!.agent_id).toBe("full-match");
+    expect(result.suggested_agents[1]!.agent_id).toBe("partial-match");
+    expect(result.suggested_agents[0]!.total_score).toBeGreaterThan(
+      result.suggested_agents[1]!.total_score,
+    );
   });
 });

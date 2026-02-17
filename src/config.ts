@@ -31,6 +31,13 @@ export const DEFAULT_CONFIG: TwiningConfig = {
       gone_after_ms: 1800000, // 30 minutes
     },
   },
+  delegations: {
+    timeouts: {
+      high_ms: 300000,       // 5 minutes
+      normal_ms: 1800000,    // 30 minutes
+      low_ms: 14400000,      // 4 hours
+    },
+  },
 };
 
 /** Deep merge source into target, returning a new object */

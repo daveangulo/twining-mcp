@@ -168,6 +168,13 @@ export interface TwiningConfig {
       gone_after_ms: number;
     };
   };
+  delegations?: {
+    timeouts: {
+      high_ms: number;
+      normal_ms: number;
+      low_ms: number;
+    };
+  };
 }
 
 /** Summarize result — spec section 4.3 twining_summarize return */
