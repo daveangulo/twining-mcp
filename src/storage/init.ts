@@ -23,6 +23,8 @@ export function initTwiningDir(projectRoot: string): void {
   fs.mkdirSync(path.join(twiningDir, "graph"), { recursive: true });
   fs.mkdirSync(path.join(twiningDir, "embeddings"), { recursive: true });
   fs.mkdirSync(path.join(twiningDir, "archive"), { recursive: true });
+  fs.mkdirSync(path.join(twiningDir, "agents"), { recursive: true });
+  fs.mkdirSync(path.join(twiningDir, "handoffs"), { recursive: true });
 
   // Config with project name auto-detected
   const config = {
@@ -43,6 +45,10 @@ export function initTwiningDir(projectRoot: string): void {
   );
   fs.writeFileSync(
     path.join(twiningDir, "graph", "relations.json"),
+    JSON.stringify([], null, 2),
+  );
+  fs.writeFileSync(
+    path.join(twiningDir, "agents", "registry.json"),
     JSON.stringify([], null, 2),
   );
 
