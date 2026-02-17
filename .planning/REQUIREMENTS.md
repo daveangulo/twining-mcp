@@ -1,7 +1,7 @@
 # Requirements: Twining MCP Server
 
 **Defined:** 2026-02-17
-**Core Value:** Agents share *why* decisions were made, not just *what* was done — eliminating information silos across context windows.
+**Core Value:** Agents share *why* decisions were made, not just *what* was done -- eliminating information silos across context windows.
 
 ## v1.2 Requirements
 
@@ -63,7 +63,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | Inline editing of state | Dashboard is read-only observer; MCP tools are the write interface |
 | WebSocket real-time | Polling every 2-5s is sufficient; WebSockets add connection management complexity |
 | Custom dashboard layouts | No evidence users need customization in v1.2; fixed opinionated layout |
-| Embedded code editor | Scope creep — Monaco bundling, syntax highlighting, validation too heavy |
+| Embedded code editor | Scope creep -- Monaco bundling, syntax highlighting, validation too heavy |
 | PDF/CSV export from UI | `twining_export` already produces markdown; external tools can convert |
 
 ## Traceability
@@ -98,10 +98,10 @@ Deferred to future release. Tracked but not in current roadmap.
 | VIZ-07 | Phase 10 | Pending |
 
 **Coverage:**
-- v1.2 requirements: 25 total
-- Mapped to phases: 25
-- Unmapped: 0 ✓
+- v1.2 requirements: 26 total
+- Mapped to phases: 26
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-17*
-*Last updated: 2026-02-17 after initial definition*
+*Last updated: 2026-02-16 after roadmap creation*
