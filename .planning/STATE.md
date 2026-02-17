@@ -5,15 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Agents share *why* decisions were made, not just *what* was done -- eliminating information silos across context windows.
-**Current focus:** Planning next milestone
+**Current focus:** v1.2 Web Dashboard
 
 ## Current Position
 
-Phase: v1.1 complete (6 phases total across v1 + v1.1)
-Status: v1.1 SHIPPED — all milestones complete
-Last activity: 2026-02-17 — Milestone v1.1 archived
-
-Progress: [██████████] 100% (v1.1)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-17 — Milestone v1.2 started
 
 ## Performance Metrics
 
@@ -39,6 +38,8 @@ Progress: [██████████] 100% (v1.1)
 ### Decisions
 
 All v1 and v1.1 decisions archived in PROJECT.md Key Decisions table with outcomes.
+- Direct fs calls in DecisionEngine for STATE.md sync — deliberate exception to storage-layer convention
+- Build bottom-up: utils → storage → engine → embeddings → tools → server
 
 ### Pending Todos
 
@@ -51,6 +52,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Milestone v1.1 archived and tagged
+Stopped at: Milestone v1.2 requirements definition
 Resume file: None
-Next: /gsd:new-milestone to start next milestone
+Next: Define requirements, then /gsd:plan-phase

@@ -30,12 +30,15 @@ Agents share *why* decisions were made, not just *what* was done — eliminating
 
 ### Active
 
-(None — planning next milestone)
+- [ ] Embedded web dashboard with HTTP server alongside stdio MCP
+- [ ] Operational stats — tool call counts, state volumes (entries, decisions, entities)
+- [ ] Search + filter — text search across blackboard/decisions/graph with faceted filtering
+- [ ] Decision timeline — chronological visualization of decision lifecycle
+- [ ] Knowledge graph visualization — interactive entity/relation graph
 
 ### Out of Scope
 
 - Multi-agent registration and capability matching — future milestone
-- Web dashboard — future milestone
 - Learned relevance weights — future milestone
 - Cross-repo Twining state — future milestone
 - Decision impact analysis — future milestone
@@ -52,6 +55,7 @@ Agents share *why* decisions were made, not just *what* was done — eliminating
 - **Build order:** utils → storage → engine → embeddings → tools → server/index (bottom-up)
 - **Testing:** vitest with temp directories, 274 tests across 18 files
 - **Current state:** v1.1 shipped — 22 MCP tools, ~5,204 LOC production + 5,400 LOC tests
+- **Current milestone:** v1.2 Web Dashboard — embedded HTTP server, vanilla HTML/JS frontend, operational stats, search+filter, decision timeline, graph visualization
 
 ## Constraints
 
@@ -85,5 +89,7 @@ Agents share *why* decisions were made, not just *what* was done — eliminating
 | Index-level filtering before loading full files | Minimizes disk I/O for search across large decision sets | ✓ Good — v1.1 |
 | Agent-mediated Serena workflow (CLAUDE.md) | No direct MCP-to-MCP coupling; agent orchestrates both tool sets | ✓ Good — v1.1 |
 
+| Embedded HTTP server (Serena-style) | In-process daemon, vanilla HTML/JS, minimal deps; matches proven pattern from Serena MCP | — Pending |
+
 ---
-*Last updated: 2026-02-17 after v1.1 milestone*
+*Last updated: 2026-02-17 after starting v1.2 milestone*
