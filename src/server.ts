@@ -23,6 +23,8 @@ import { registerDecisionTools } from "./tools/decision-tools.js";
 import { registerContextTools } from "./tools/context-tools.js";
 import { registerLifecycleTools } from "./tools/lifecycle-tools.js";
 import { registerGraphTools } from "./tools/graph-tools.js";
+import { Exporter } from "./engine/exporter.js";
+import { registerExportTools } from "./tools/export-tools.js";
 
 /**
  * Create and configure the Twining MCP server.
@@ -77,6 +79,9 @@ export function createServer(projectRoot: string): McpServer {
     planningBridge,
   );
 
+  // Create exporter
+  const exporter = new Exporter(blackboardStore, decisionStore, graphStore);
+
   // Create MCP server
   const server = new McpServer({
     name: "twining-mcp",
@@ -97,6 +102,7 @@ export function createServer(projectRoot: string): McpServer {
     config,
   );
   registerGraphTools(server, graphEngine);
+  registerExportTools(server, exporter);
 
   return server;
 }
