@@ -212,6 +212,57 @@ describe("DecisionEngine.getByCommitHash", () => {
     const result = await decisionEngine.getByCommitHash("unknown");
     expect(result.decisions).toHaveLength(0);
   });
+
+  it("returns full metadata shape for each decision", async () => {
+    await decisionEngine.decide(
+      validDecisionInput({ commit_hash: "full123" }),
+    );
+
+    const result = await decisionEngine.getByCommitHash("full123");
+    expect(result.decisions).toHaveLength(1);
+    const d = result.decisions[0]!;
+    expect(d).toHaveProperty("id");
+    expect(d).toHaveProperty("summary");
+    expect(d).toHaveProperty("domain");
+    expect(d).toHaveProperty("scope");
+    expect(d).toHaveProperty("confidence");
+    expect(d).toHaveProperty("timestamp");
+    expect(d).toHaveProperty("commit_hashes");
+    expect(d.id).toHaveLength(26);
+    expect(d.domain).toBe("architecture");
+    expect(d.scope).toBe("src/auth/");
+    expect(d.confidence).toBe("medium");
+    expect(d.commit_hashes).toEqual(["full123"]);
+  });
+
+  it("returns all decisions linked to the same commit hash", async () => {
+    await decisionEngine.decide(
+      validDecisionInput({
+        summary: "First linked decision",
+        commit_hash: "shared999",
+      }),
+    );
+    await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Second linked decision",
+        domain: "testing",
+        commit_hash: "shared999",
+      }),
+    );
+    await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Unrelated decision",
+        domain: "ops",
+        commit_hash: "other111",
+      }),
+    );
+
+    const result = await decisionEngine.getByCommitHash("shared999");
+    expect(result.decisions).toHaveLength(2);
+    const summaries = result.decisions.map((d) => d.summary);
+    expect(summaries).toContain("First linked decision");
+    expect(summaries).toContain("Second linked decision");
+  });
 });
 
 describe("DecisionEngine.why", () => {
@@ -244,6 +295,20 @@ describe("DecisionEngine.why", () => {
     );
     const result = await decisionEngine.why("src/auth/");
     expect(result.decisions[0]!.alternatives_count).toBe(2);
+  });
+
+  it("includes commit_hashes for decisions with linked commits", async () => {
+    await decisionEngine.decide(
+      validDecisionInput({ commit_hash: "abc123" }),
+    );
+    const result = await decisionEngine.why("src/auth/");
+    expect(result.decisions[0]!.commit_hashes).toEqual(["abc123"]);
+  });
+
+  it("returns empty commit_hashes for decisions without linked commits", async () => {
+    await decisionEngine.decide(validDecisionInput());
+    const result = await decisionEngine.why("src/auth/");
+    expect(result.decisions[0]!.commit_hashes).toEqual([]);
   });
 });
 

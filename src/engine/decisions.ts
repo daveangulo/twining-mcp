@@ -196,6 +196,7 @@ export class DecisionEngine {
       status: string;
       timestamp: string;
       alternatives_count: number;
+      commit_hashes: string[];
     }>;
     active_count: number;
     provisional_count: number;
@@ -210,6 +211,7 @@ export class DecisionEngine {
       status: d.status,
       timestamp: d.timestamp,
       alternatives_count: d.alternatives.length,
+      commit_hashes: d.commit_hashes ?? [],
     }));
 
     const active_count = decisions.filter((d) => d.status === "active").length;

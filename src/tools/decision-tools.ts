@@ -1,6 +1,6 @@
 /**
  * MCP tool handlers for decision operations.
- * Registers twining_decide, twining_why, twining_trace, twining_reconsider, twining_override.
+ * Registers twining_decide, twining_why, twining_commits, twining_trace, twining_reconsider, twining_override.
  */
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -221,6 +221,34 @@ export function registerDecisionTools(
           args.new_decision,
           args.overridden_by,
         );
+        return toolResult(result);
+      } catch (e) {
+        if (e instanceof TwiningError) {
+          return toolError(e.message, e.code);
+        }
+        return toolError(
+          e instanceof Error ? e.message : "Unknown error",
+          "INTERNAL_ERROR",
+        );
+      }
+    },
+  );
+
+  // twining_commits — Query decisions by commit hash
+  server.registerTool(
+    "twining_commits",
+    {
+      description:
+        "Query decisions by commit hash. Returns all decisions that were linked to a given commit, enabling traceability from code changes back to decision rationale.",
+      inputSchema: {
+        commit_hash: z
+          .string()
+          .describe("Git commit hash to look up"),
+      },
+    },
+    async (args) => {
+      try {
+        const result = await engine.getByCommitHash(args.commit_hash);
         return toolResult(result);
       } catch (e) {
         if (e instanceof TwiningError) {
