@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Agents share *why* decisions were made, not just *what* was done -- eliminating information silos across context windows.
-**Current focus:** Phase 8 in progress (Observability Dashboard) -- Plan 01 complete, Plan 02 remaining
+**Current focus:** Phase 8 complete (Observability Dashboard) -- both plans delivered
 
 ## Current Position
 
 Phase: 8 of 10 (Observability Dashboard)
-Plan: 1 of 2 in current phase
-Status: In Progress
-Last activity: 2026-02-17 -- Completed 08-01 (Dashboard Data API endpoints)
+Plan: 2 of 2 in current phase
+Status: Phase Complete
+Last activity: 2026-02-17 -- Completed 08-02 (Dashboard Frontend with polling)
 
-Progress: [████████████████░░░░] 80% (16/~20 plans, 7 phases complete)
+Progress: [█████████████████░░░] 85% (17/~20 plans, 8 phases complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 16 (6 v1 + 6 v1.1 + 4 v1.2)
+- Total plans completed: 17 (6 v1 + 6 v1.1 + 5 v1.2)
 - v1.1 execution time: ~19min (6 plans, 13 tasks)
 
 **By Phase:**
@@ -33,7 +33,7 @@ Progress: [████████████████░░░░] 80% (16
 | 5. GSD Bridge + Serena | 2/2 | 7min | 3.5min |
 | 6. Search + Export | 2/2 | 7min | 3.5min |
 | 7. HTTP Server Foundation | 3/3 | 8min | 2.7min |
-| 8. Observability Dashboard | 1/2 | 3min | 3min |
+| 8. Observability Dashboard | 2/2 | 6min | 3min |
 
 *Updated after each plan completion*
 
@@ -52,6 +52,8 @@ All v1 and v1.1 decisions archived in PROJECT.md Key Decisions table with outcom
 - API handler runs before health check and static files in request pipeline
 - Store instances created once in factory closure, not per-request
 - Uninitialized state checked via fs.existsSync, dashboard never calls ensureInitialized
+- All user-provided content rendered via textContent (never innerHTML) to prevent XSS
+- Polling guard prevents duplicate timers; selected items tracked by ID for refresh stability
 
 ### Pending Todos
 
@@ -64,6 +66,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 08-01-PLAN.md (Dashboard Data API endpoints)
+Stopped at: Completed 08-02-PLAN.md (Dashboard Frontend with polling)
 Resume file: None
-Next: Execute 08-02 (Dashboard Frontend with polling)
+Next: Phase 9 planning/execution
