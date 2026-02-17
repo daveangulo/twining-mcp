@@ -1,0 +1,107 @@
+# Requirements: Twining MCP Server
+
+**Defined:** 2026-02-17
+**Core Value:** Agents share *why* decisions were made, not just *what* was done — eliminating information silos across context windows.
+
+## v1.2 Requirements
+
+Requirements for the Web Dashboard milestone. Each maps to roadmap phases.
+
+### Infrastructure
+
+- [ ] **INFRA-01**: Dashboard HTTP server starts automatically alongside MCP stdio server in the same process
+- [ ] **INFRA-02**: Dashboard serves static HTML/CSS/JS assets with no build step required
+- [ ] **INFRA-03**: Dashboard port is configurable via environment variable with sensible default (24282)
+- [ ] **INFRA-04**: Dashboard auto-opens browser on server start (configurable, can be disabled)
+- [ ] **INFRA-05**: Dashboard gracefully handles port conflicts by trying subsequent ports
+- [ ] **INFRA-06**: Dashboard HTTP output never corrupts MCP stdio transport (all logging to stderr)
+- [ ] **INFRA-07**: Dashboard shuts down gracefully when MCP server exits
+
+### Observability
+
+- [ ] **OBS-01**: User can view operational stats at a glance (blackboard entries, active/provisional decisions, graph entities/relations, last activity)
+- [ ] **OBS-02**: User can browse blackboard entries in a paginated list with sortable columns
+- [ ] **OBS-03**: User can browse decisions in a paginated list with sortable columns
+- [ ] **OBS-04**: User can browse knowledge graph entities in a paginated list
+- [ ] **OBS-05**: User can click any entry to see full details in an inspector panel
+- [ ] **OBS-06**: Dashboard auto-refreshes data via polling (2-5 second interval)
+- [ ] **OBS-07**: Polling pauses when dashboard tab is not visible (visibility API)
+
+### Search & Filter
+
+- [ ] **SRCH-01**: User can search across blackboard entries, decisions, and graph entities with free text
+- [ ] **SRCH-02**: User can filter results by entry type, status, scope, tags, and date range
+- [ ] **SRCH-03**: User can use semantic search (ONNX embeddings) for relevance-ranked results
+- [ ] **SRCH-04**: User can click ID references in detail panels to navigate to related entries
+- [ ] **SRCH-05**: User can apply a global scope filter that affects all views
+
+### Visualization
+
+- [ ] **VIZ-01**: User can view decisions on a chronological timeline showing lifecycle events
+- [ ] **VIZ-02**: User can click timeline items to see full decision details
+- [ ] **VIZ-03**: User can view knowledge graph as interactive force-directed visualization
+- [ ] **VIZ-04**: User can zoom, pan, and click nodes in graph to expand neighbors
+- [ ] **VIZ-05**: Graph nodes are color-coded by entity type
+- [ ] **VIZ-06**: Decisions are color-coded by confidence level (high/medium/low/provisional)
+- [ ] **VIZ-07**: Dashboard supports dark mode theme
+
+## Future Requirements
+
+Deferred to future release. Tracked but not in current roadmap.
+
+### Dashboard Enhancements
+
+- **DASH-01**: Custom dashboard layouts/widgets
+- **DASH-02**: Export dashboard views to PDF/image
+- **DASH-03**: Inline editing of blackboard entries and decisions
+- **DASH-04**: Real-time WebSocket updates (replace polling)
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Inline editing of state | Dashboard is read-only observer; MCP tools are the write interface |
+| WebSocket real-time | Polling every 2-5s is sufficient; WebSockets add connection management complexity |
+| Custom dashboard layouts | No evidence users need customization in v1.2; fixed opinionated layout |
+| Embedded code editor | Scope creep — Monaco bundling, syntax highlighting, validation too heavy |
+| PDF/CSV export from UI | `twining_export` already produces markdown; external tools can convert |
+
+## Traceability
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| INFRA-01 | Phase 7 | Pending |
+| INFRA-02 | Phase 7 | Pending |
+| INFRA-03 | Phase 7 | Pending |
+| INFRA-04 | Phase 7 | Pending |
+| INFRA-05 | Phase 7 | Pending |
+| INFRA-06 | Phase 7 | Pending |
+| INFRA-07 | Phase 7 | Pending |
+| OBS-01 | Phase 8 | Pending |
+| OBS-02 | Phase 8 | Pending |
+| OBS-03 | Phase 8 | Pending |
+| OBS-04 | Phase 8 | Pending |
+| OBS-05 | Phase 8 | Pending |
+| OBS-06 | Phase 8 | Pending |
+| OBS-07 | Phase 8 | Pending |
+| SRCH-01 | Phase 9 | Pending |
+| SRCH-02 | Phase 9 | Pending |
+| SRCH-03 | Phase 9 | Pending |
+| SRCH-04 | Phase 9 | Pending |
+| SRCH-05 | Phase 9 | Pending |
+| VIZ-01 | Phase 10 | Pending |
+| VIZ-02 | Phase 10 | Pending |
+| VIZ-03 | Phase 10 | Pending |
+| VIZ-04 | Phase 10 | Pending |
+| VIZ-05 | Phase 10 | Pending |
+| VIZ-06 | Phase 10 | Pending |
+| VIZ-07 | Phase 10 | Pending |
+
+**Coverage:**
+- v1.2 requirements: 25 total
+- Mapped to phases: 25
+- Unmapped: 0 ✓
+
+---
+*Requirements defined: 2026-02-17*
+*Last updated: 2026-02-17 after initial definition*
