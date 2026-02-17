@@ -277,3 +277,75 @@ export interface HandoffIndexEntry {
     | "mixed";
   acknowledged: boolean;
 }
+
+// Agent discovery result types
+
+/** Input for agent discovery/ranking */
+export interface DiscoverInput {
+  required_capabilities: string[];
+  include_gone?: boolean; // Include gone agents (default: true)
+  min_score?: number; // Minimum total_score threshold (default: 0)
+}
+
+/** Scored agent result from discovery */
+export interface AgentScore {
+  agent_id: string;
+  capabilities: string[];
+  role?: string;
+  description?: string;
+  liveness: AgentLiveness;
+  capability_overlap: number; // 0-1: matched/required
+  liveness_score: number; // active=1.0, idle=0.5, gone=0.1
+  total_score: number; // weighted combination
+  matched_capabilities: string[];
+}
+
+/** Result of agent discovery */
+export interface DiscoverResult {
+  agents: AgentScore[];
+  total_registered: number;
+}
+
+// Delegation types
+
+/** Urgency levels for delegated tasks */
+export type DelegationUrgency = "high" | "normal" | "low";
+
+/** Metadata attached to delegation blackboard entries */
+export interface DelegationMetadata {
+  type: "delegation";
+  required_capabilities: string[];
+  urgency: DelegationUrgency;
+  expires_at: string;
+  timeout_ms?: number;
+}
+
+/** Input for posting a delegation to the blackboard */
+export interface DelegationInput {
+  summary: string;
+  required_capabilities: string[];
+  urgency?: DelegationUrgency; // Default: "normal"
+  timeout_ms?: number; // Override default expiry
+  scope?: string;
+  tags?: string[];
+  agent_id?: string;
+}
+
+/** Result of posting a delegation */
+export interface DelegationResult {
+  entry_id: string;
+  timestamp: string;
+  expires_at: string;
+  suggested_agents: AgentScore[];
+}
+
+/** Input for creating a handoff between agents */
+export interface CreateHandoffInput {
+  source_agent: string;
+  target_agent?: string;
+  scope?: string;
+  summary: string;
+  results: HandoffResult[];
+  auto_snapshot?: boolean; // Auto-assemble context snapshot (default: true)
+  context_snapshot?: HandoffRecord["context_snapshot"]; // Manual override
+}
