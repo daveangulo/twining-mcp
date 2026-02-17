@@ -30,8 +30,12 @@ function serveStatic(
   publicDir: string,
 ): (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void> {
   return async (req: http.IncomingMessage, res: http.ServerResponse) => {
-    const url = new URL(req.url || "/", `http://${req.headers.host}`);
-    const pathname = url.pathname === "/" ? "/index.html" : url.pathname;
+    // Parse URL to strip query strings, but use raw pathname for traversal check
+    const rawUrl = req.url || "/";
+    const qIndex = rawUrl.indexOf("?");
+    const rawPath = qIndex >= 0 ? rawUrl.slice(0, qIndex) : rawUrl;
+    const decodedPath = decodeURIComponent(rawPath);
+    const pathname = decodedPath === "/" ? "/index.html" : decodedPath;
     const filePath = path.join(publicDir, pathname);
 
     // Path traversal prevention
@@ -87,7 +91,11 @@ function tryListen(
         }
       });
       server.listen(currentPort, "127.0.0.1", () => {
-        resolve(currentPort);
+        // When port is 0, OS assigns a random port — read the actual port
+        const addr = server.address();
+        const actualPort =
+          typeof addr === "object" && addr !== null ? addr.port : currentPort;
+        resolve(actualPort);
       });
     }
 
