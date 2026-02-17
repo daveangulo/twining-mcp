@@ -67,3 +67,26 @@
 
 ---
 
+
+## v1.3 Agent Coordination (Shipped: 2026-02-17)
+
+**Phases completed:** 4 phases, 10 plans, 22 tasks
+**Tests:** 444 passing across 27 files (+132 new)
+**LOC:** ~6,943 production TypeScript + 3,155 frontend (HTML/CSS/JS) + 8,762 test
+**Timeline:** 2026-02-16 → 2026-02-17 (2 days)
+**Git range:** 977ff5c..224b81f (15 feature commits, 40 total)
+**MCP tools:** 23 (up from 22 in v1.2; added twining_agents)
+
+**Key accomplishments:**
+- Agent registry with auto-registration on first tool call, explicit registration with capabilities/role/description, and OR-match capability discovery
+- Coordination engine with scoreAgent (70/30 capability/liveness weighting), delegation posting with urgency-based timeouts (5min/30min/4hr), and auto-assembled context snapshots
+- MCP tool surface (twining_agents for agent listing, enhanced twining_status with agent counts) and ContextAssembler integration with handoff results and capability-matched agent suggestions
+- REST API endpoints for agent coordination state (/api/agents, /api/delegations, /api/handoffs) with inline liveness scoring
+- Dashboard Agents tab with 3 sortable sub-views (agents/delegations/handoffs), namespaced badge styles, delegation expiry indicators, and handoff context snapshot detail panels
+
+**Tech debt carried forward:**
+- Test flake: handoff-store.test.ts timestamp ordering test (same-millisecond, not functional)
+- Human verification recommended: dashboard visual appearance and dark mode for new badge styles
+
+---
+
