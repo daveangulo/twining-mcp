@@ -7,6 +7,11 @@
   "bin": {
     "twining-mcp": "./dist/index.js"
   },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
@@ -17,10 +22,23 @@
     "agent",
     "coordination",
     "blackboard",
-    "decisions"
+    "decisions",
+    "semantic-search",
+    "knowledge-graph",
+    "context",
+    "claude",
+    "ai"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "Dave Angulo",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daveangulo/twining-mcp.git"
+  },
+  "homepage": "https://github.com/daveangulo/twining-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/daveangulo/twining-mcp/issues"
+  },
   "dependencies": {
     "@huggingface/transformers": "^3.8.1",
     "@modelcontextprotocol/sdk": "^1.26.0",
