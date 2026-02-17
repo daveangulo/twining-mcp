@@ -60,6 +60,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Roadmap created for v1.3 Agent Coordination (4 phases, 21 requirements)
-Resume file: None
+Stopped at: Phase 11 context gathered
+Resume file: .planning/phases/11-types-and-storage/11-CONTEXT.md
 Next: `/gsd:plan-phase 11`
