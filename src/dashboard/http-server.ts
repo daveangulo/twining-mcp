@@ -10,6 +10,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { getDashboardConfig } from "./dashboard-config.js";
+import { createApiHandler } from "./api-routes.js";
 
 /** MIME types for static assets served from the public directory. */
 const MIME_TYPES: Record<string, string> = {
@@ -105,26 +106,40 @@ function tryListen(
 
 /**
  * Create a request handler that routes between API and static files.
+ * API routes are checked first, then health check, then static files.
  */
-function handleRequest(
+export function handleRequest(
   publicDir: string,
+  projectRoot: string,
 ): (req: http.IncomingMessage, res: http.ServerResponse) => void {
   const staticHandler = serveStatic(publicDir);
+  const apiHandler = createApiHandler(projectRoot);
 
   return (req: http.IncomingMessage, res: http.ServerResponse) => {
-    if (req.url === "/api/health") {
-      res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
-      res.end(JSON.stringify({ ok: true, server: "twining-mcp" }));
-      return;
-    }
+    // Try API routes first (async)
+    apiHandler(req, res)
+      .then((handled) => {
+        if (handled) return;
 
-    staticHandler(req, res).catch((err: unknown) => {
-      console.error("[twining] Static file handler error:", err);
-      if (!res.headersSent) {
-        res.writeHead(500);
-        res.end("Internal Server Error");
-      }
-    });
+        // Health check endpoint
+        if (req.url === "/api/health") {
+          res.writeHead(200, {
+            "Content-Type": "application/json; charset=utf-8",
+          });
+          res.end(JSON.stringify({ ok: true, server: "twining-mcp" }));
+          return;
+        }
+
+        // Fall through to static file serving
+        return staticHandler(req, res);
+      })
+      .catch((err: unknown) => {
+        console.error("[twining] Request handler error:", err);
+        if (!res.headersSent) {
+          res.writeHead(500);
+          res.end("Internal Server Error");
+        }
+      });
   };
 }
 
@@ -132,10 +147,10 @@ function handleRequest(
  * Start the dashboard HTTP server.
  * Returns the server and actual port, or null if the dashboard is disabled.
  *
- * @param _projectRoot - The project root directory (reserved for future use)
+ * @param projectRoot - The project root directory (used for API data access)
  */
 export async function startDashboard(
-  _projectRoot: string,
+  projectRoot: string,
 ): Promise<{ server: http.Server; port: number } | null> {
   const config = getDashboardConfig();
   if (!config.enabled) {
@@ -147,7 +162,7 @@ export async function startDashboard(
   const __dirname = path.dirname(__filename);
   const publicDir = path.join(__dirname, "public");
 
-  const server = http.createServer(handleRequest(publicDir));
+  const server = http.createServer(handleRequest(publicDir, projectRoot));
   const port = await tryListen(server, config.port, 5);
 
   const url = `http://127.0.0.1:${port}`;
