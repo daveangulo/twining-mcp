@@ -57,7 +57,10 @@
   2. Handoff records persist to `.twining/handoffs/` as individual JSON files with a JSONL index
   3. Agent liveness status (active/idle/gone) is computable from last_active timestamp with configurable thresholds
   4. `.twining/agents/` and `.twining/handoffs/` directories are auto-created on first use via init extensions
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 11-01-PLAN.md -- Types, utilities (liveness + tags), init extension, config
+- [ ] 11-02-PLAN.md -- AgentStore (TDD)
+- [ ] 11-03-PLAN.md -- HandoffStore (TDD)
 
 ### Phase 12: Coordination Engine
 **Goal**: Agents can register, discover each other by capability, post delegation needs with matching, and create handoffs
@@ -108,7 +111,7 @@ Phases execute in numeric order: 11 -> 12 -> 13 -> 14
 | 8. Observability Dashboard | v1.2 | 2/2 | Complete | 2026-02-17 |
 | 9. Search and Filter | v1.2 | 2/2 | Complete | 2026-02-17 |
 | 10. Visualizations and Polish | v1.2 | 3/3 | Complete | 2026-02-17 |
-| 11. Types and Storage | v1.3 | 0/? | Not started | - |
+| 11. Types and Storage | v1.3 | 0/3 | Not started | - |
 | 12. Coordination Engine | v1.3 | 0/? | Not started | - |
 | 13. Tools and Assembly | v1.3 | 0/? | Not started | - |
 | 14. Agent Dashboard | v1.3 | 0/? | Not started | - |
