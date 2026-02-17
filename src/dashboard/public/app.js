@@ -13,11 +13,25 @@ var state = {
   blackboard: { data: [], sortKey: "timestamp", sortDir: "desc", page: 1, pageSize: 25, selectedId: null },
   decisions: { data: [], sortKey: "timestamp", sortDir: "desc", page: 1, pageSize: 25, selectedId: null },
   graph: { data: [], relations: [], sortKey: "name", sortDir: "asc", page: 1, pageSize: 25, selectedId: null },
+  search: { results: [], sortKey: "relevance", sortDir: "desc", page: 1, pageSize: 25, selectedId: null, query: "", fallback_mode: true },
+  globalScope: "",
   status: null,
   pollTimer: null,
   pollInterval: 3000,
   connected: false
 };
+
+/* ========== Debounce Utility ========== */
+
+function debounce(fn, delay) {
+  var timer = null;
+  return function() {
+    var args = arguments;
+    var ctx = this;
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(function() { fn.apply(ctx, args); timer = null; }, delay);
+  };
+}
 
 /* ========== Helper Functions ========== */
 
@@ -188,6 +202,7 @@ function refreshData() {
   if (tab === "blackboard") fetchBlackboard();
   else if (tab === "decisions") fetchDecisions();
   else if (tab === "graph") fetchGraph();
+  else if (tab === "search" && state.search.query) fetchSearch();
 }
 
 function startPolling() {
@@ -223,6 +238,12 @@ function switchTab(tabName) {
   }
 
   state.activeTab = tabName;
+
+  // Ensure data is loaded for the target tab (needed for navigateToId)
+  if (tabName === "blackboard" && state.blackboard.data.length === 0) fetchBlackboard();
+  if (tabName === "decisions" && state.decisions.data.length === 0) fetchDecisions();
+  if (tabName === "graph" && state.graph.data.length === 0) fetchGraph();
+
   stopPolling();
   startPolling();
   refreshData();
@@ -260,6 +281,7 @@ function handleSort(tabName, key) {
   if (tabName === "blackboard") renderBlackboard();
   else if (tabName === "decisions") renderDecisions();
   else if (tabName === "graph") renderGraph();
+  else if (tabName === "search") renderSearchResults();
 }
 
 function updateSortHeaders(tableId, sortKey, sortDir) {
@@ -346,7 +368,8 @@ function renderStatus() {
 
 function renderBlackboard() {
   var ts = state.blackboard;
-  var sorted = sortData(ts.data, ts.sortKey, ts.sortDir);
+  var scoped = applyGlobalScope(ts.data, "scope");
+  var sorted = sortData(scoped, ts.sortKey, ts.sortDir);
   var page = paginate(sorted, ts.page, ts.pageSize);
 
   updateSortHeaders("blackboard-table", ts.sortKey, ts.sortDir);
@@ -420,8 +443,7 @@ function renderBlackboardDetail(entry) {
     { label: "Summary", value: entry.summary },
     { label: "Scope", value: entry.scope },
     { label: "Agent ID", value: entry.agent_id },
-    { label: "Tags", value: (entry.tags && entry.tags.length) ? entry.tags.join(", ") : null },
-    { label: "Relates To", value: (entry.relates_to && entry.relates_to.length) ? entry.relates_to.join(", ") : null }
+    { label: "Tags", value: (entry.tags && entry.tags.length) ? entry.tags.join(", ") : null }
   ];
 
   for (var i = 0; i < fields.length; i++) {
@@ -429,8 +451,25 @@ function renderBlackboardDetail(entry) {
     if (f.value === undefined || f.value === null) continue;
     var div = el("div", "detail-field");
     div.appendChild(el("div", "detail-label", f.label));
-    div.appendChild(el("div", "detail-value", String(f.value)));
+    // Use clickable ID rendering for ID field
+    if (f.label === "ID") {
+      var valDiv = el("div", "detail-value");
+      renderIdValue(valDiv, String(f.value));
+      div.appendChild(valDiv);
+    } else {
+      div.appendChild(el("div", "detail-value", String(f.value)));
+    }
     panel.appendChild(div);
+  }
+
+  // Relates To with clickable IDs
+  if (entry.relates_to && entry.relates_to.length) {
+    var rtDiv = el("div", "detail-field");
+    rtDiv.appendChild(el("div", "detail-label", "Relates To"));
+    var rtVal = el("div", "detail-value");
+    renderIdList(rtVal, entry.relates_to);
+    rtDiv.appendChild(rtVal);
+    panel.appendChild(rtDiv);
   }
 
   // Detail field (long text)
@@ -449,7 +488,8 @@ function renderBlackboardDetail(entry) {
 
 function renderDecisions() {
   var ts = state.decisions;
-  var sorted = sortData(ts.data, ts.sortKey, ts.sortDir);
+  var scoped = applyGlobalScope(ts.data, "scope");
+  var sorted = sortData(scoped, ts.sortKey, ts.sortDir);
   var page = paginate(sorted, ts.page, ts.pageSize);
 
   updateSortHeaders("decisions-table", ts.sortKey, ts.sortDir);
@@ -538,7 +578,14 @@ function renderDecisionDetail(decision) {
     if (f.value === undefined || f.value === null) continue;
     var div = el("div", "detail-field");
     div.appendChild(el("div", "detail-label", f.label));
-    div.appendChild(el("div", "detail-value", String(f.value)));
+    // Use clickable ID rendering for ID field
+    if (f.label === "ID") {
+      var valDiv = el("div", "detail-value");
+      renderIdValue(valDiv, String(f.value));
+      div.appendChild(valDiv);
+    } else {
+      div.appendChild(el("div", "detail-value", String(f.value)));
+    }
     panel.appendChild(div);
   }
 
@@ -610,22 +657,37 @@ function renderDecisionDetail(decision) {
     panel.appendChild(altDiv);
   }
 
-  // Array fields
-  var arrayFields = [
+  // Array fields (non-ID)
+  var plainArrayFields = [
     { label: "Affected Files", value: decision.affected_files },
     { label: "Affected Symbols", value: decision.affected_symbols },
-    { label: "Commit Hashes", value: decision.commit_hashes },
-    { label: "Depends On", value: decision.depends_on },
-    { label: "Supersedes", value: decision.supersedes ? [decision.supersedes] : null }
+    { label: "Commit Hashes", value: decision.commit_hashes }
   ];
 
-  for (var af = 0; af < arrayFields.length; af++) {
-    var arrField = arrayFields[af];
+  for (var af = 0; af < plainArrayFields.length; af++) {
+    var arrField = plainArrayFields[af];
     if (!arrField.value || arrField.value.length === 0) continue;
     var arrDiv = el("div", "detail-field");
     arrDiv.appendChild(el("div", "detail-label", arrField.label));
     arrDiv.appendChild(el("div", "detail-value", arrField.value.join(", ")));
     panel.appendChild(arrDiv);
+  }
+
+  // ID array fields with clickable links
+  var idArrayFields = [
+    { label: "Depends On", value: decision.depends_on },
+    { label: "Supersedes", value: decision.supersedes ? [decision.supersedes] : null }
+  ];
+
+  for (var idf = 0; idf < idArrayFields.length; idf++) {
+    var idField = idArrayFields[idf];
+    if (!idField.value || idField.value.length === 0) continue;
+    var idDiv = el("div", "detail-field");
+    idDiv.appendChild(el("div", "detail-label", idField.label));
+    var idVal = el("div", "detail-value");
+    renderIdList(idVal, idField.value);
+    idDiv.appendChild(idVal);
+    panel.appendChild(idDiv);
   }
 }
 
@@ -640,7 +702,8 @@ function renderDecisionDetailNotFound() {
 
 function renderGraph() {
   var ts = state.graph;
-  var sorted = sortData(ts.data, ts.sortKey, ts.sortDir);
+  var scoped = applyGlobalScope(ts.data, "scope");
+  var sorted = sortData(scoped, ts.sortKey, ts.sortDir);
   var page = paginate(sorted, ts.page, ts.pageSize);
 
   updateSortHeaders("graph-table", ts.sortKey, ts.sortDir);
@@ -732,7 +795,14 @@ function renderGraphDetail(entity) {
     if (f.value === undefined || f.value === null) continue;
     var div = el("div", "detail-field");
     div.appendChild(el("div", "detail-label", f.label));
-    div.appendChild(el("div", "detail-value", String(f.value)));
+    // Use clickable ID rendering for ID field
+    if (f.label === "ID") {
+      var valDiv = el("div", "detail-value");
+      renderIdValue(valDiv, String(f.value));
+      div.appendChild(valDiv);
+    } else {
+      div.appendChild(el("div", "detail-value", String(f.value)));
+    }
     panel.appendChild(div);
   }
 
@@ -752,6 +822,299 @@ function renderGraphDetail(entity) {
       }
     }
     panel.appendChild(propsDiv);
+  }
+
+  // Relations involving this entity (with clickable source/target IDs)
+  var entityId = entity.id || entity.name;
+  var relatedRelations = state.graph.relations.filter(function(r) {
+    return r.source === entityId || r.target === entityId;
+  });
+  if (relatedRelations.length > 0) {
+    var relDiv = el("div", "detail-field");
+    relDiv.appendChild(el("div", "detail-label", "Relations (" + relatedRelations.length + ")"));
+    for (var r = 0; r < relatedRelations.length; r++) {
+      var rel = relatedRelations[r];
+      var relBlock = el("div");
+      relBlock.style.marginBottom = "0.25rem";
+      relBlock.style.fontSize = "0.8125rem";
+
+      var sourceSpan = el("span");
+      renderIdValue(sourceSpan, rel.source || "--");
+      relBlock.appendChild(sourceSpan);
+      relBlock.appendChild(document.createTextNode(" --[" + (rel.type || "?") + "]--> "));
+      var targetSpan = el("span");
+      renderIdValue(targetSpan, rel.target || "--");
+      relBlock.appendChild(targetSpan);
+
+      relDiv.appendChild(relBlock);
+    }
+    panel.appendChild(relDiv);
+  }
+}
+
+/* ========== Global Scope Filter ========== */
+
+function applyGlobalScope(data, scopeField) {
+  if (!state.globalScope) return data;
+  var gs = state.globalScope;
+  return data.filter(function(item) {
+    var itemScope = item[scopeField || "scope"] || "";
+    // For graph entities, check properties.file or properties.scope as fallback
+    if (!itemScope && item.properties) {
+      itemScope = item.properties.file || item.properties.scope || "";
+    }
+    return itemScope.startsWith(gs) || gs.startsWith(itemScope);
+  });
+}
+
+/* ========== Clickable ID Navigation (SRCH-04) ========== */
+
+var ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/i;
+
+function renderIdValue(container, value) {
+  if (ULID_PATTERN.test(value)) {
+    var link = el("span", "clickable-id", value);
+    link.addEventListener("click", function(e) {
+      e.stopPropagation();
+      navigateToId(value);
+    });
+    container.appendChild(link);
+  } else {
+    container.textContent = value;
+  }
+}
+
+function renderIdList(container, ids) {
+  if (!ids || !ids.length) { container.textContent = "--"; return; }
+  for (var i = 0; i < ids.length; i++) {
+    if (i > 0) container.appendChild(document.createTextNode(", "));
+    renderIdValue(container, ids[i]);
+  }
+}
+
+function navigateToId(id) {
+  // Check blackboard
+  for (var i = 0; i < state.blackboard.data.length; i++) {
+    if (state.blackboard.data[i].id === id) {
+      switchTab("blackboard");
+      state.blackboard.selectedId = id;
+      renderBlackboard();
+      renderBlackboardDetail(state.blackboard.data[i]);
+      return;
+    }
+  }
+  // Check decisions
+  for (var j = 0; j < state.decisions.data.length; j++) {
+    if (state.decisions.data[j].id === id) {
+      switchTab("decisions");
+      state.decisions.selectedId = id;
+      renderDecisions();
+      fetchDecisionDetail(id);
+      return;
+    }
+  }
+  // Check graph entities
+  for (var k = 0; k < state.graph.data.length; k++) {
+    if (state.graph.data[k].id === id) {
+      switchTab("graph");
+      state.graph.selectedId = id;
+      renderGraph();
+      renderGraphDetail(state.graph.data[k]);
+      return;
+    }
+  }
+  // Not found -- data may not be loaded yet
+  var statusBar = document.getElementById("search-status-bar");
+  if (statusBar) {
+    clearElement(statusBar);
+    statusBar.appendChild(el("span", null, "ID not found in loaded data: " + id));
+  }
+}
+
+/* ========== Search Functions ========== */
+
+function buildSearchUrl() {
+  var q = state.search.query;
+  if (!q) return null;
+  var params = "q=" + encodeURIComponent(q);
+
+  // Type filter
+  var typesSelect = document.getElementById("filter-types");
+  if (typesSelect) {
+    var selectedTypes = [];
+    for (var i = 0; i < typesSelect.options.length; i++) {
+      if (typesSelect.options[i].selected) selectedTypes.push(typesSelect.options[i].value);
+    }
+    if (selectedTypes.length > 0 && selectedTypes.length < 3) {
+      params += "&types=" + selectedTypes.join(",");
+    }
+  }
+
+  // Status filter
+  var statusSelect = document.getElementById("filter-status");
+  if (statusSelect && statusSelect.value) params += "&status=" + encodeURIComponent(statusSelect.value);
+
+  // Scope (uses global scope if set)
+  if (state.globalScope) params += "&scope=" + encodeURIComponent(state.globalScope);
+
+  // Date filters
+  var sinceInput = document.getElementById("filter-since");
+  if (sinceInput && sinceInput.value) params += "&since=" + sinceInput.value + "T00:00:00Z";
+  var untilInput = document.getElementById("filter-until");
+  if (untilInput && untilInput.value) params += "&until=" + untilInput.value + "T23:59:59Z";
+
+  return "/api/search?" + params;
+}
+
+function fetchSearch() {
+  var url = buildSearchUrl();
+  if (!url) {
+    state.search.results = [];
+    renderSearchResults();
+    return;
+  }
+
+  fetch(url)
+    .then(function(res) {
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    })
+    .then(function(data) {
+      state.search.results = data.results || [];
+      state.search.fallback_mode = data.fallback_mode !== false;
+      state.search.page = 1;
+      state.connected = true;
+      updateConnectionIndicator();
+      renderSearchResults();
+    })
+    .catch(function() {
+      state.connected = false;
+      updateConnectionIndicator();
+    });
+}
+
+function performSearch() {
+  var input = document.getElementById("search-input");
+  state.search.query = input ? input.value.trim() : "";
+  if (!state.search.query) {
+    state.search.results = [];
+    renderSearchResults();
+    return;
+  }
+  // Auto-switch to search tab
+  switchTab("search");
+  fetchSearch();
+}
+
+/* ========== Render: Search Results ========== */
+
+function renderSearchResults() {
+  var ts = state.search;
+  var tbody = document.querySelector("#search-table tbody");
+  if (!tbody) return;
+  clearElement(tbody);
+
+  var sorted = sortData(ts.results, ts.sortKey, ts.sortDir);
+  var page = paginate(sorted, ts.page, ts.pageSize);
+
+  for (var i = 0; i < page.length; i++) {
+    var result = page[i];
+    var tr = el("tr");
+    tr.setAttribute("data-id", result.id || "");
+    if (ts.selectedId && result.id === ts.selectedId) tr.classList.add("selected");
+
+    // Type badge
+    var tdType = el("td");
+    tdType.appendChild(createBadge(result.type));
+    tr.appendChild(tdType);
+
+    // Summary/Name
+    var tdSummary = el("td", null, truncate(result.summary || result.name || "--", 80));
+    tr.appendChild(tdSummary);
+
+    // Scope
+    var tdScope = el("td", null, result.scope || "--");
+    tr.appendChild(tdScope);
+
+    // Relevance
+    var relPct = Math.round((result.relevance || 0) * 100);
+    var tdRel = el("td", null, relPct + "%");
+    tr.appendChild(tdRel);
+
+    // Timestamp
+    var tdTime = el("td", null, formatTimestamp(result.timestamp));
+    tr.appendChild(tdTime);
+
+    // Click to show detail
+    (function(r) {
+      tr.addEventListener("click", function() {
+        ts.selectedId = r.id;
+        renderSearchResults();
+        renderSearchDetail(r);
+      });
+    })(result);
+
+    tbody.appendChild(tr);
+  }
+
+  renderPagination("search-pagination", sorted.length, ts, renderSearchResults);
+
+  // Status bar
+  var statusBar = document.getElementById("search-status-bar");
+  if (statusBar) {
+    clearElement(statusBar);
+    if (ts.query) {
+      var msg = ts.results.length + " results for \"" + ts.query + "\"";
+      if (ts.fallback_mode) msg += " (keyword search)";
+      else msg += " (semantic search)";
+      statusBar.appendChild(el("span", null, msg));
+    }
+  }
+}
+
+function renderSearchDetail(result) {
+  var panel = document.getElementById("search-detail");
+  if (!panel) return;
+  clearElement(panel);
+
+  panel.appendChild(el("h3", null, (result.type || "Item") + " Details"));
+
+  var fields = [
+    { label: "ID", value: result.id },
+    { label: "Type", value: result.type },
+    { label: "Summary", value: result.summary || result.name },
+    { label: "Scope", value: result.scope },
+    { label: "Relevance", value: result.relevance != null ? Math.round(result.relevance * 100) + "%" : null },
+    { label: "Timestamp", value: formatTimestamp(result.timestamp) },
+    { label: "Status", value: result.status },
+    { label: "Domain", value: result.domain },
+    { label: "Confidence", value: result.confidence },
+    { label: "Entry Type", value: result.entry_type },
+    { label: "Entity Type", value: result.entity_type }
+  ];
+
+  for (var i = 0; i < fields.length; i++) {
+    var f = fields[i];
+    if (f.value === undefined || f.value === null) continue;
+    var div = el("div", "detail-field");
+    div.appendChild(el("div", "detail-label", f.label));
+    // Use clickable ID rendering for ID field
+    if (f.label === "ID") {
+      var valDiv = el("div", "detail-value");
+      renderIdValue(valDiv, String(f.value));
+      div.appendChild(valDiv);
+    } else {
+      div.appendChild(el("div", "detail-value", String(f.value)));
+    }
+    panel.appendChild(div);
+  }
+
+  // "Go to item" button
+  if (result.id) {
+    var goBtn = el("button", null, "Go to " + result.type + " tab");
+    goBtn.style.marginTop = "1rem";
+    goBtn.addEventListener("click", function() { navigateToId(result.id); });
+    panel.appendChild(goBtn);
   }
 }
 
@@ -784,9 +1147,69 @@ document.addEventListener("DOMContentLoaded", function() {
         if (tableId === "blackboard-table") tabName = "blackboard";
         else if (tableId === "decisions-table") tabName = "decisions";
         else if (tableId === "graph-table") tabName = "graph";
+        else if (tableId === "search-table") tabName = "search";
         if (tabName) handleSort(tabName, key);
       });
     })(sortHeaders[j]);
+  }
+
+  // Search input: debounced performSearch on "input" event
+  var searchInput = document.getElementById("search-input");
+  if (searchInput) {
+    var debouncedSearch = debounce(performSearch, 300);
+    searchInput.addEventListener("input", debouncedSearch);
+    // Enter key: immediate performSearch (bypass debounce)
+    searchInput.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        performSearch();
+      }
+    });
+  }
+
+  // Search button: performSearch on click
+  var searchBtn = document.getElementById("search-btn");
+  if (searchBtn) {
+    searchBtn.addEventListener("click", performSearch);
+  }
+
+  // Clear button: clear search input, reset search state, switch to stats tab
+  var clearBtn = document.getElementById("search-clear-btn");
+  if (clearBtn) {
+    clearBtn.addEventListener("click", function() {
+      var input = document.getElementById("search-input");
+      if (input) input.value = "";
+      state.search.query = "";
+      state.search.results = [];
+      state.search.selectedId = null;
+      state.search.page = 1;
+      renderSearchResults();
+      switchTab("stats");
+    });
+  }
+
+  // Global scope filter
+  var globalScopeInput = document.getElementById("global-scope");
+  if (globalScopeInput) {
+    var debouncedScope = debounce(function() {
+      state.globalScope = globalScopeInput.value.trim();
+      // Visual indicator
+      if (state.globalScope) {
+        globalScopeInput.classList.add("scope-active");
+        var indicator = document.getElementById("scope-indicator");
+        if (indicator) { indicator.style.display = "inline"; indicator.textContent = "Filtered: " + state.globalScope; }
+      } else {
+        globalScopeInput.classList.remove("scope-active");
+        var indicator2 = document.getElementById("scope-indicator");
+        if (indicator2) indicator2.style.display = "none";
+      }
+      // Reset pagination, re-render active tab
+      state.blackboard.page = 1;
+      state.decisions.page = 1;
+      state.graph.page = 1;
+      refreshData();
+    }, 300);
+    globalScopeInput.addEventListener("input", debouncedScope);
   }
 
   // Initial data load
