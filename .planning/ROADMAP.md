@@ -48,11 +48,11 @@ Plans:
   2. `twining_summarize` output includes current planning state (phase, progress, open requirements) when `.planning/` exists
   3. After `twining_decide` is called, the decision summary appears in `.planning/STATE.md` accumulated context section
   4. CLAUDE.md contains clear instructions for the Serena-mediated knowledge graph enrichment workflow
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 05-01: TBD
-- [ ] 05-02: TBD
+- [ ] 05-01-PLAN.md — Planning bridge read-side: PlanningBridge + assemble/summarize integration (GSDB-01, GSDB-02, GSDB-04)
+- [ ] 05-02-PLAN.md — Planning bridge write-side + Serena docs: decide() syncs to STATE.md, CLAUDE.md workflow (GSDB-03, SRNA-01)
 
 ### Phase 6: Search + Export
 **Goal**: Agents and humans can search decisions without knowing scope and export full Twining state as readable markdown
@@ -80,5 +80,5 @@ Phases execute in numeric order: 4 → 5 → 6
 | 2. Intelligence | v1 | 2/2 | Complete | 2026-02-16 |
 | 3. Graph + Lifecycle | v1 | 2/2 | Complete | 2026-02-17 |
 | 4. Git Commit Linking | v1.1 | Complete    | 2026-02-17 | - |
-| 5. GSD Planning Bridge + Serena Docs | v1.1 | 0/? | Not started | - |
+| 5. GSD Planning Bridge + Serena Docs | v1.1 | 0/2 | Not started | - |
 | 6. Search + Export | v1.1 | 0/? | Not started | - |
