@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-02-16)
 
 **Core value:** Agents share *why* decisions were made, not just *what* was done -- eliminating information silos across context windows.
-**Current focus:** Phase 5 — GSD Bridge
+**Current focus:** Phase 6 — Search + Export
 
 ## Current Position
 
-Phase: 5 of 6 (GSD Bridge)
-Plan: 2 of 2 in current phase
-Status: Phase 5 complete (both plans done)
-Last activity: 2026-02-17 — Completed 05-01 (Planning bridge read-side)
+Phase: 6 of 6 (Search + Export)
+Plan: 1 of 2 in current phase
+Status: Plan 06-01 complete (decision search)
+Last activity: 2026-02-17 — Completed 06-01 (Decision search tool)
 
-Progress: [██████░░░░] 67% (v1.1)
+Progress: [████████░░] 83% (v1.1)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6 (v1)
+- Total plans completed: 9 (6 v1 + 3 v1.1)
 - Average duration: —
 - Total execution time: —
 
@@ -32,6 +32,7 @@ Progress: [██████░░░░] 67% (v1.1)
 | 3. Graph + Lifecycle | 2 | — | — |
 | 4. Git Commit Linking | 2/2 | 5min | 2.5min |
 | 5. GSD Bridge + Serena | 2/2 | 7min | 3.5min |
+| 6. Search + Export | 1/2 | 3min | 3min |
 
 **Recent Trend:**
 - v1 completed in 1 day (6 plans)
@@ -56,6 +57,9 @@ v1.1 decisions:
 - syncToPlanning is fire-and-forget with try/catch -- never blocks or crashes decide()
 - PlanningState always included as metadata (not subject to token budget) plus synthetic scored finding that IS budget-aware
 - PlanningBridge uses resilient parsing: "unknown" defaults, empty arrays for missing sections, null only when .planning/ absent
+- SearchEngine passed as optional constructor param to DecisionEngine for loose coupling
+- Index-level filtering before loading full Decision files for search performance
+- Keyword fallback uses same TF scoring as SearchEngine.keywordSearch for consistency
 
 ### Pending Todos
 
@@ -68,6 +72,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 05-01-PLAN.md (Planning bridge read-side) -- Phase 5 fully complete
+Stopped at: Completed 06-01-PLAN.md (Decision search tool)
 Resume file: None
-Next: Phase 6 (Search + Export)
+Next: 06-02-PLAN.md (Export/snapshot tooling)
