@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Phase: 14 of 14 (Agent Dashboard)
-Plan: 1 of 2 in current phase
-Status: In Progress
-Last activity: 2026-02-17 -- Completed 14-01 Agent Coordination API Endpoints
+Plan: 2 of 2 in current phase
+Status: Phase Complete
+Last activity: 2026-02-17 -- Completed 14-02 Frontend Agents Tab
 
-Progress: [##############################.] 97% (14/14 phases, 31/32 plans complete)
+Progress: [################################] 100% (14/14 phases, 32/32 plans complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 31 (6 v1 + 6 v1.1 + 10 v1.2 + 9 v1.3)
+- Total plans completed: 32 (6 v1 + 6 v1.1 + 10 v1.2 + 10 v1.3)
 - v1.1 execution time: ~19min (6 plans, 13 tasks)
 - v1.2 execution time: ~31min (10 plans)
 
@@ -40,7 +40,7 @@ Progress: [##############################.] 97% (14/14 phases, 31/32 plans compl
 | 11. Types & Storage | 3/3 | 7min | 2.3min |
 | 12. Coordination Engine | 3/3 | 8min | 2.7min |
 | 13. Tools & Assembly | 2/2 | 6min | 3min |
-| 14. Agent Dashboard | 1/2 | 5min | 5min |
+| 14. Agent Dashboard | 2/2 | 10min | 5min |
 
 ## Accumulated Context
 
@@ -78,6 +78,9 @@ Recent decisions for v1.3:
 - All coordination API counts computed fresh per request (no caching) for simplicity
 - Delegation endpoint scores agents inline with scoreAgent rather than full CoordinationEngine
 - Suggested agents capped at top 5 non-gone agents sorted by total_score
+- Namespaced badge classes (liveness-*, urgency-*, result-*) to avoid conflicts with existing status badges
+- Agents sub-view skips scope filtering since agents don't have a scope field
+- Delegations/handoffs apply global scope filtering consistently with other scoped data
 
 ### Pending Todos
 
@@ -90,6 +93,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 14-01-PLAN.md (Agent Coordination API Endpoints)
-Resume file: .planning/phases/14-agent-dashboard/14-01-SUMMARY.md
-Next: 14-02 (Frontend Agents Tab)
+Stopped at: Completed 14-02-PLAN.md (Frontend Agents Tab) -- All phases complete
+Resume file: .planning/phases/14-agent-dashboard/14-02-SUMMARY.md
+Next: All 14 phases and 32 plans complete
