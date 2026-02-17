@@ -807,3 +807,121 @@ describe("DecisionEngine conflict detection", () => {
     expect(result.conflicts).toBeUndefined();
   });
 });
+
+describe("DecisionEngine.searchDecisions", () => {
+  it("finds decisions by keyword", async () => {
+    await decisionEngine.decide(
+      validDecisionInput({ summary: "Use JWT for authentication" }),
+    );
+    await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Use PostgreSQL for database",
+        domain: "database",
+        scope: "src/db/",
+      }),
+    );
+    await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Use Redis for caching",
+        domain: "infrastructure",
+        scope: "src/cache/",
+      }),
+    );
+
+    const result = await decisionEngine.searchDecisions("JWT authentication");
+    expect(result.results.length).toBeGreaterThanOrEqual(1);
+    expect(result.results[0]!.summary).toContain("JWT");
+    expect(result.results[0]!.relevance).toBeGreaterThan(0);
+    expect(result.fallback_mode).toBe(true);
+  });
+
+  it("filters by domain", async () => {
+    await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Use JWT for auth",
+        domain: "architecture",
+      }),
+    );
+    await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Use integration tests for auth",
+        domain: "implementation",
+        scope: "src/tests/",
+      }),
+    );
+
+    const result = await decisionEngine.searchDecisions("auth", {
+      domain: "architecture",
+    });
+    expect(result.results.length).toBe(1);
+    expect(result.results[0]!.domain).toBe("architecture");
+  });
+
+  it("filters by status", async () => {
+    await decisionEngine.decide(
+      validDecisionInput({ summary: "Active auth decision" }),
+    );
+    const d2 = await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Overridden auth decision",
+        domain: "testing",
+        scope: "src/tests/",
+      }),
+    );
+    await decisionStore.updateStatus(d2.id, "overridden");
+
+    const result = await decisionEngine.searchDecisions("auth", {
+      status: "active",
+    });
+    // Only active decisions should be returned
+    for (const r of result.results) {
+      expect(r.status).toBe("active");
+    }
+    const overriddenSummaries = result.results.filter(
+      (r) => r.summary === "Overridden auth decision",
+    );
+    expect(overriddenSummaries).toHaveLength(0);
+  });
+
+  it("filters by confidence", async () => {
+    await decisionEngine.decide(
+      validDecisionInput({
+        summary: "High confidence auth decision",
+        confidence: "high",
+      }),
+    );
+    await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Low confidence auth decision",
+        confidence: "low",
+        domain: "testing",
+        scope: "src/tests/",
+      }),
+    );
+
+    const result = await decisionEngine.searchDecisions("auth", {
+      confidence: "high",
+    });
+    expect(result.results.length).toBe(1);
+    expect(result.results[0]!.confidence).toBe("high");
+  });
+
+  it("returns empty results for empty query", async () => {
+    await decisionEngine.decide(validDecisionInput());
+
+    const result = await decisionEngine.searchDecisions("");
+    expect(result.results).toEqual([]);
+    expect(result.total_matched).toBe(0);
+    expect(result.fallback_mode).toBe(true);
+  });
+
+  it("returns empty results for no matches", async () => {
+    await decisionEngine.decide(validDecisionInput());
+
+    const result =
+      await decisionEngine.searchDecisions("xyzzy gibberish nonsense");
+    expect(result.results).toEqual([]);
+    expect(result.total_matched).toBe(0);
+    expect(result.fallback_mode).toBe(true);
+  });
+});
