@@ -139,6 +139,7 @@ export interface AssembledContext {
     type: string;
     relations: string[];
   }[];
+  planning_state?: PlanningState;
 }
 
 /** Config — matches spec section 2.3 config.yml structure */
@@ -172,6 +173,7 @@ export interface SummarizeResult {
   active_warnings: number;
   unanswered_questions: number;
   recent_activity_summary: string;
+  planning_state?: PlanningState;
 }
 
 /** What changed result — spec section 4.3 twining_what_changed return */
@@ -180,6 +182,15 @@ export interface WhatChangedResult {
   new_entries: { id: string; entry_type: string; summary: string }[];
   overridden_decisions: { id: string; summary: string; reason: string }[];
   reconsidered_decisions: { id: string; summary: string }[];
+}
+
+/** Planning state from .planning/ directory */
+export interface PlanningState {
+  current_phase: string;
+  progress: string;
+  blockers: string[];
+  pending_todos: string[];
+  open_requirements: string[];
 }
 
 /** Decision index entry — subset for fast lookup */
