@@ -608,6 +608,7 @@ footer p {
 
 #timeline-container {
   height: 400px;
+  overflow: hidden;
   border: 1px solid var(--card-border);
   border-radius: 4px;
   background: var(--card-bg);
@@ -764,6 +765,8 @@ footer p {
 /* ========== Timeline Legend ========== */
 
 .timeline-legend {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;

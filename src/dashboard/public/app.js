@@ -1255,13 +1255,31 @@ function initTimeline() {
   });
 
   window.timelineInstance.fit();
+  renderTimelineLegend();
+}
 
-  // Add legend below timeline (only once)
-  if (!document.getElementById('timeline-legend')) {
-    var legend = el('p', 'timeline-legend');
-    legend.id = 'timeline-legend';
-    legend.textContent = 'High = green, Medium = amber, Low = red. Dashed = provisional, Strikethrough = superseded/overridden.';
-    container.parentNode.insertBefore(legend, container.nextSibling);
+function renderTimelineLegend() {
+  var legend = document.getElementById('timeline-legend');
+  if (!legend || legend.children.length > 0) return;
+  var items = [
+    { color: '#4caf50', label: 'High confidence' },
+    { color: '#ff9800', label: 'Medium confidence' },
+    { color: '#f44336', label: 'Low confidence' },
+    { color: 'var(--muted)', label: 'Provisional (dashed)', dashed: true },
+    { color: 'var(--muted)', label: 'Superseded (strikethrough)', strike: true }
+  ];
+  for (var i = 0; i < items.length; i++) {
+    var item = document.createElement('span');
+    item.style.cssText = 'display:inline-flex;align-items:center;gap:4px;margin-right:12px;font-size:0.8rem;';
+    var dot = document.createElement('span');
+    dot.style.cssText = 'width:10px;height:10px;border-radius:50%;display:inline-block;background:' + items[i].color;
+    if (items[i].dashed) dot.style.cssText += ';border:2px dashed var(--text);background:transparent';
+    var label = document.createElement('span');
+    label.textContent = items[i].label;
+    if (items[i].strike) label.style.textDecoration = 'line-through';
+    item.appendChild(dot);
+    item.appendChild(label);
+    legend.appendChild(item);
   }
 }
 
