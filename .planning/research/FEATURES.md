@@ -1,162 +1,244 @@
-# Feature Landscape
+# Feature Research: Web Dashboard for Twining MCP
 
-**Domain:** Agent coordination / shared state MCP server for Claude Code
+**Domain:** Embedded Developer Tool Dashboard
 **Researched:** 2026-02-16
-**Overall confidence:** MEDIUM-HIGH
+**Confidence:** HIGH
 
-## Table Stakes
+## Feature Landscape
 
-Features users expect from an MCP server that coordinates agents and provides shared state. Missing = tool is not worth installing.
+### Table Stakes (Users Expect These)
+
+Features users assume exist. Missing these = product feels incomplete.
 
 | Feature | Why Expected | Complexity | Notes |
 |---------|--------------|------------|-------|
-| **Persistent shared state (blackboard)** | Core value proposition. Every memory/coordination MCP server provides this. Without it, agents lose context between sessions and across subagents. MCP Memory Keeper, memory-mcp, and the official Memory server all solve this as their primary function. | Medium | Twining's typed entry system (need/offer/finding/decision/etc.) is more structured than competitors' free-form observations. JSONL append-only is the right storage model -- matches the official Memory server pattern. |
-| **Read/write/query operations** | Basic CRUD on shared state. Every comparable server (MCP Memory, Memory Keeper, Agent-MCP) provides create, read, search, and delete. Users cannot do anything useful without these. | Low | `twining_post`, `twining_read`, `twining_recent` -- standard operations. Keep tool count minimal per anti-pattern research. |
-| **Filtering and scoping** | Multi-agent workflows generate noise. Without filtering by type, scope, tags, or time, the blackboard becomes a firehose. MCP Memory Keeper provides 38 tools in full mode but most are filtering variants. | Low | Scope-prefix matching is a good design. Tags provide secondary filtering axis. Resist creating separate filter tools -- use parameters on existing tools. |
-| **Decision recording with rationale** | The "why" gap is the core problem statement. Memory-mcp tracks "decisions" as one of six memory categories. Agent-MCP stores "architectural decisions and patterns." But most store decisions as flat text, not structured records. | Medium | `twining_decide` with structured alternatives, constraints, and confidence is table stakes for THIS product specifically -- it is the central thesis. Without it, Twining is just another memory server. |
-| **Decision retrieval by scope** | If you record decisions but cannot ask "why was this file designed this way?", the recording is pointless. Every decision tool needs a corresponding query tool. | Low | `twining_why` is critical. Scope-based lookup (file, module, symbol) is the natural query pattern for developers. |
-| **Semantic search** | Expected in 2025-2026. MCP Memory Service uses hybrid BM25 + vector. Memory-mcp provides `memory_search`. CodeGrok, Claude Context, and Qdrant MCP all provide semantic search. Keyword-only search feels broken when agents generate natural language entries. | High | Local ONNX with graceful fallback to keyword search is the right call. The ~23MB model download is acceptable. Brute-force cosine similarity is fine for <10k entries. |
-| **Keyword search fallback** | ONNX runtime can fail on some platforms (ARM Linux, restricted environments). The server must never refuse to start. MCP Memory Service documents multiple fallback strategies. | Low | Required by design spec. This is not optional -- it is a hard constraint. |
-| **Status/health check** | Standard for production MCP servers. Users need to verify the server is running and see state at a glance. Memory Keeper provides `memory_stats`. | Low | `twining_status` -- entry counts, last activity, archiving status. Cheap to build, high value for debugging. |
-| **Zero-config initialization** | Auto-create `.twining/` on first tool call. Every successful MCP server (Memory, Memory Keeper, memory-mcp) creates its storage automatically. Requiring manual setup is a dealbreaker for adoption. | Low | Design spec already requires this. `.twining/` with defaults on first call. |
-| **Structured error responses** | MCP best practice per Docker and New Stack guidance. Tool handlers that throw crash the agent's reasoning chain. All comparable servers return structured error objects. | Low | `{ error: true, message: "...", code: "..." }` pattern. Never throw from tool handlers. |
-| **File-native, git-trackable storage** | Differentiator that is also table stakes for the target audience (developers using Claude Code). The official MCP Memory server uses line-delimited JSON. Memory-mcp stores in `.memory/state.json`. Developers expect to `git diff` their project state. | Low | JSONL for append-only streams, JSON for structured documents. `.gitignore` for binary indexes. This is a core design principle, not negotiable. |
+| **Real-time operational metrics** | Every developer dashboard shows system health at a glance | LOW | Display: blackboard entry count, active/provisional decisions, graph entities/relations, last activity timestamp. Already available via `twining_status`. Matches pattern from DevOps observability tools. |
+| **Search and filter UI** | Users expect to find specific entries without reading everything | MEDIUM | Text search across blackboard/decisions/graph. Filter by: entry_type, tags, scope, date range, status. Pattern: Chrome DevTools network filter supports text, regex, property filters (e.g., `status-code:404`, `domain:example.com`). |
+| **Entry list/table view** | Standard way to browse state in developer tools | LOW | Paginated list with sortable columns (timestamp, type, summary, scope). Chrome DevTools and Redux DevTools use this pattern universally. |
+| **Detail inspector** | Click an entry to see full details | LOW | Click blackboard entry/decision → show full detail panel. React DevTools pattern: tree view on left, detail panel on right. |
+| **Auto-refresh/live updates** | Developer tools show live state, not stale snapshots | MEDIUM | Poll `twining_status` and data endpoints every 2-5 seconds. WebSockets overkill for v1. GraphQL Playground uses polling. |
+| **Dark mode support** | Developer tools universally support dark themes | LOW | CSS variables for theming. Modern browser DevTools default to dark. Redis Commander specifically calls out dark mode as expected. |
 
-## Differentiators
+### Differentiators (Competitive Advantage)
 
-Features that set Twining apart from existing MCP memory/coordination servers. Not expected by users coming from simpler tools, but create clear competitive advantage.
+Features that set the product apart. Not required, but valuable.
 
 | Feature | Value Proposition | Complexity | Notes |
 |---------|-------------------|------------|-------|
-| **Structured decision records with alternatives** | No existing MCP server captures rejected alternatives with pros/cons/rationale. MCP Memory Keeper stores flat "decisions" text. Agent-MCP stores "architectural decisions" as unstructured context. Twining's `Decision` model with `alternatives[]`, `constraints[]`, `confidence`, `depends_on` is unique in the ecosystem. | Medium | This is the primary differentiator. The structured format enables tracing, conflict detection, and impact analysis that flat text cannot support. |
-| **Decision dependency chains** | `twining_trace` following upstream/downstream decision dependencies is novel. No comparable MCP server offers decision graph traversal. Agent-MCP has task dependencies but not decision dependencies. | Medium | `depends_on` and `supersedes` fields enable chain traversal. High value for understanding cascading impacts when reconsidering a decision. |
-| **Decision lifecycle (reconsider, override)** | `twining_reconsider` and `twining_override` provide a formal process for evolving decisions. No competitor has this. Memory-mcp has "confidence decay" over time but no active reconsideration workflow. | Low | These are lightweight operations (status changes + blackboard posts) but they formalize a workflow that is currently ad-hoc in every other tool. |
-| **Conflict detection** | Automatic detection of contradictory decisions in the same scope/domain. Flagged as warnings, not silently accepted. No comparable MCP server does this. | Medium | Same-domain + same-scope + different-summary heuristic is a reasonable starting point. Embedding-based conflict detection is a Phase 4 improvement. |
-| **Context assembly with token budgeting** | `twining_assemble` builds a tailored context package for a specific task and scope within a token budget. No other MCP server assembles context -- they all return raw search results. This directly addresses the "ballooning context" problem documented across the MCP ecosystem. | High | The weighted scoring algorithm (recency, relevance, decision confidence, warning boost) is the most complex feature. It is also the highest-value feature for reducing context bloat. |
-| **Typed entry taxonomy** | 10 entry types (need, offer, finding, decision, constraint, question, answer, status, artifact, warning) vs. the 5 types in MCP Memory Service or flat observations in the official Memory server. The taxonomy enables the blackboard pattern where agents self-select work based on entry types. | Low | The taxonomy is defined in types, not in separate tools. One `twining_post` tool handles all types. This avoids the tool bloat anti-pattern. |
-| **Knowledge graph** | Lightweight entity-relation graph for code structure. The official MCP Memory server has a knowledge graph, but it stores arbitrary entities. Twining's graph is code-aware (module, function, class, file, concept, pattern, dependency, api_endpoint) with code-aware relations (depends_on, implements, decided_by, calls, imports). | Medium | Graph auto-population from `twining_decide` (creating entities for affected files/symbols with "decided_by" relations) is the key differentiator vs. manual-only graph construction. |
-| **Change tracking** | `twining_what_changed` reports new decisions, entries, overrides, and reconsiderations since a timestamp. Purpose-built for the "new agent picking up where the last left off" workflow. No comparable feature in other MCP memory servers. | Low | Simple timestamp filtering on existing data. High value for context handoff between agent sessions. |
-| **Archiving with summarization** | `twining_archive` moves old entries to archive files, optionally generating a summary. Prevents unbounded state growth that plagues append-only systems. Memory-mcp has confidence decay; Twining has explicit archiving. | Medium | Decisions are never archived (permanent record). Summary posting as a "finding" entry preserves institutional knowledge. |
-| **Scope-aware operations** | Prefix-based scope matching (file path, module, "project") threads through every operation. Queries naturally narrow to what is relevant. No other MCP server has this pervasive scope concept. | Low | `src/auth/jwt.ts` matches `src/auth/` matches `project`. Built into data model, not bolted on. |
-| **Human override workflow** | `twining_override` with explicit `overridden_by` and `override_reason` fields creates an audit trail for human intervention. Addresses the "human-in-the-loop" requirement that enterprise teams demand. | Low | Simple status change + metadata recording. Differentiating because it acknowledges that AI decisions need human governance. |
+| **Interactive knowledge graph visualization** | Unique to Twining — visualize entity/relation structure | HIGH | D3.js or similar for force-directed graph. Features: zoom/pan, click node to expand neighbors, color-code by entity type, highlight decision-linked entities. Reference: Cambridge Intelligence knowledge graph tools show interactive zoom/pan/expand as standard. |
+| **Decision timeline with rationale** | Show decision evolution over time with full context | MEDIUM | Horizontal timeline (KronoGraph pattern) showing decisions chronologically. Click decision → show full rationale, alternatives, constraints. Time-travel aspect borrowed from Redux DevTools. |
+| **Semantic search with highlighting** | Leverage Twining's ONNX embeddings for relevance search | MEDIUM | Search returns semantically similar results, not just keyword matches. Highlight matching terms. Differentiates from pure keyword search. |
+| **Cross-reference navigation** | Click `relates_to` or `depends_on` IDs to jump to referenced entries | LOW | Hyperlink IDs in detail panels. Browser DevTools pattern: clickable references. Enables exploration without manual search. |
+| **Decision confidence heatmap** | Visual indicator of provisional vs high-confidence decisions | LOW | Color-code decisions by confidence level (high=green, medium=yellow, low=red, provisional=orange). Port.io dashboard patterns emphasize visual KPI status. |
+| **Scope-based filtering** | Filter entire UI to a codebase scope (e.g., `src/auth/`) | MEDIUM | Persistent scope filter affects all views (blackboard, decisions, graph). Useful for large projects. Pattern from IDE project trees. |
 
-## Anti-Features
+### Anti-Features (Commonly Requested, Often Problematic)
 
-Features to explicitly NOT build. These are tempting but would hurt the product.
+Features that seem good but create problems.
 
-| Anti-Feature | Why Avoid | What to Do Instead |
-|--------------|-----------|-------------------|
-| **Agent registration and management** | Out of scope for Phase 1. Claude Code already manages agent spawning via Task() and subagents. Adding `create_agent`, `list_agents`, `terminate_agent` (like Agent-MCP) duplicates Claude Code's built-in capabilities and creates a maintenance burden. Claude Code's Agent Teams feature already handles this. | Let Claude Code manage agents. Twining coordinates through shared state, not agent lifecycle. Phase 2 consideration only. |
-| **Direct agent-to-agent messaging** | The blackboard pattern explicitly avoids point-to-point communication. Agent-MCP's `send_agent_message` and `broadcast_message` create coupling between agents. SBP (Stigmergic Blackboard Protocol) demonstrates that coordination works better through environment-based signals than direct messaging. | Use typed blackboard entries (need/offer/question/answer) for coordination. Agents read the blackboard, not each other's mail. |
-| **Web dashboard** | Premature for Phase 1. Claude-flow provides a web UI but it adds significant complexity (HTTP server, frontend, WebSocket). The file-native storage model means users can already inspect state with `jq`, `cat`, and their editor. | Defer to Phase 3. File-native storage IS the dashboard for now. Consider `twining_export` for markdown dump before building a web UI. |
-| **Cloud sync or multi-device support** | MCP Memory Service offers Cloudflare Workers sync. This adds infrastructure complexity, authentication, and data privacy concerns. Twining's value is local-first, git-trackable state. | Store in `.twining/` in the project directory. Share via git (the files are git-trackable by design). Cross-machine sync is git push/pull. |
-| **Emotional metadata / sentiment analysis** | MCP Memory Service tracks valence, arousal, and emotion classification. This is irrelevant for code coordination. It adds complexity without value for the developer audience. | Focus on structured, factual metadata: confidence levels, decision status, entry types. |
-| **Automatic memory extraction from transcripts** | Memory-mcp uses Haiku LLM to automatically extract memories from conversation transcripts via hooks. This requires LLM API calls (cost, latency, privacy concerns) and produces unpredictable quality. | Explicit tool calls only. Agents deliberately post to the blackboard. Quality over automation. The agent decides what is worth remembering, not a background process. |
-| **SQLite or database storage** | MCP Memory Keeper and Claude-flow use SQLite. This breaks git-trackability, requires binary file handling, and adds a dependency. JSONL/JSON is human-readable, diffable, and mergeable. | Stick with JSONL + JSON files. Evaluate `proper-lockfile` for concurrency. Consider SQLite WAL only if concurrent access at scale becomes a proven problem (design spec section 10.1 TODOs). |
-| **Too many tools (>20)** | MCP Memory Keeper exposes up to 38 tools. Research shows this causes tool selection confusion, context bloat (tools consume ~500-2000 tokens each in context), and degraded agent reasoning. Microsoft Research documents that similar-sounding tools cause misfires. | Keep to ~17 tools as specified. Use parameters for filtering variants rather than separate tools. One `twining_read` with filter params, not `twining_read_by_type`, `twining_read_by_tag`, `twining_read_by_scope`. |
-| **Real-time agent heartbeats** | Agent-MCP and Claude-flow track agent heartbeats and status. Claude Code agents are ephemeral -- they do not have persistent processes to heartbeat. This adds complexity for a runtime model that does not exist. | Use blackboard "status" entries for agent activity tracking. Post on start, post on completion. No polling or heartbeat infrastructure. |
-| **Consensus algorithms or CRDT** | Claude-flow implements Raft, BFT, Gossip, CRDT, and weighted voting. This is massive over-engineering for a local MCP server where the primary consumer is one human's Claude Code sessions. | Human-in-the-loop conflict resolution via `twining_override`. Flag conflicts, do not auto-resolve them. |
-| **Configurable tool profiles** | MCP Memory Keeper offers Minimal (8 tools), Standard (22), and Full (38) profiles. This complexity is necessary because they have too many tools. With a disciplined ~17 tool count, profiles are unnecessary. | Ship all tools. Keep the count manageable enough that profiles are not needed. |
-| **Episodic memory tracking** | MCP Memory Service tracks episode_id, sequence_number, preceding_memory_id for conversation episodes. This is useful for chatbot memory but irrelevant for code coordination where the unit of work is a task, not a conversation turn. | Use the existing timestamp + ULID ordering. Entries are temporally ordered by ID. No need for explicit episode tracking. |
+| Feature | Why Requested | Why Problematic | Alternative |
+|---------|---------------|-----------------|-------------|
+| **Real-time WebSocket updates** | Feels modern, instant updates | Adds complexity (connection management, reconnect logic, server state). Polling every 2-5s is sufficient for developer tool observability. | Simple polling with 2-5s interval. GraphQL Playground uses polling successfully. |
+| **Embedded code editor** | "Let me edit decisions/entries inline" | Scope creep — Twining MCP tools already handle CRUD. Embedded editor = Monaco bundling, syntax highlighting, validation. Heavy. | Read-only display with "Edit in MCP" instructions. Keep dashboard as observer/navigator, not mutator. |
+| **Custom dashboards/widgets** | "Let users configure their view" | Premature optimization. No evidence users need customization in v1. Adds persistence layer for UI config. | Fixed, opinionated layout. Gather feedback, add customization in v2 if requested. |
+| **Export to PDF/CSV from UI** | "I want to share this report" | `twining_export` already produces markdown. PDF generation = headless browser or complex library. CSV = deciding schema for graph data. | Use existing `twining_export` markdown. Users can convert markdown to PDF/CSV with external tools if needed. |
+| **Inline editing of blackboard/decisions** | Convenience | Violates single source of truth (`.twining/` files are canonical). UI state sync issues. MCP tools are the write interface. | Display-only UI. Use MCP tools for mutations. Show "Use `twining_post` to add entries" hints. |
 
 ## Feature Dependencies
 
 ```
-Zero-config init ──> All other features (nothing works without .twining/)
+[Search UI]
+    └──requires──> [Entry list view]
+                       └──requires──> [Detail inspector]
 
-File storage layer ──> Blackboard ──> Post/Read/Recent/Query
-                   ──> Decision store ──> Decide/Why/Trace/Reconsider/Override
-                   ──> Graph store ──> Add Entity/Add Relation/Neighbors/Graph Query
+[Semantic search]
+    └──requires──> [Search UI]
+    └──requires──> [ONNX embeddings available]
 
-Blackboard + Decision store ──> Context Assembly (assembles from both)
-Blackboard + Decision store ──> What Changed (queries both)
-Blackboard ──> Archive (moves blackboard entries)
+[Knowledge graph visualization]
+    └──requires──> [Graph data endpoint]
+    └──enhances──> [Decision timeline] (show decision → affected entities)
 
-Embedding system ──> Semantic search (Query tool)
-Embedding system ──> Context assembly relevance scoring
+[Decision timeline]
+    └──requires──> [Decision list API]
+    └──enhances──> [Detail inspector] (click timeline item → detail panel)
 
-Decision store ──> Conflict detection (triggered by Decide)
-Decision store ──> Decision lifecycle (Reconsider, Override)
-Decision store ──> Decision trace (follows depends_on chain)
+[Scope filtering]
+    └──enhances──> [All views] (global filter state)
 
-Decision store + Graph store ──> Auto graph population (Decide creates entities)
+[Auto-refresh]
+    └──conflicts──> [Large dataset rendering] (re-render 500+ entries every 2s = jank)
 ```
 
-**Critical path:** File storage --> Blackboard + Decision store --> Context assembly --> Semantic search
+### Dependency Notes
 
-**Parallel paths:** Knowledge graph can be built independently of context assembly. Archiving can be built independently of semantic search.
+- **Search UI requires Entry list view:** Search results display as filtered list. List view must exist first.
+- **Semantic search requires Search UI:** Builds on existing search, adds ONNX ranking. Progressive enhancement.
+- **Knowledge graph visualization requires Graph data endpoint:** Frontend needs `/api/graph` to fetch entities/relations JSON.
+- **Decision timeline enhances Detail inspector:** Timeline is navigation layer. Inspector is destination.
+- **Scope filtering enhances All views:** Global UI state. When scope = `src/auth/`, all lists filter to matching entries/decisions/entities.
+- **Auto-refresh conflicts with Large dataset rendering:** Need virtual scrolling or pagination to prevent jank with 500+ entries re-rendering.
 
-## MVP Recommendation
+## MVP Definition
 
-### Must ship (Phase 1 core -- without these, Twining has no reason to exist):
+### Launch With (v1.2)
 
-1. **Blackboard CRUD** (`twining_post`, `twining_read`, `twining_recent`) -- Shared state is the foundation. Without it, nothing else works.
-2. **Decision recording** (`twining_decide`) -- Structured decisions with rationale is the thesis.
-3. **Decision retrieval** (`twining_why`, `twining_trace`) -- If you cannot query decisions, recording them is pointless.
-4. **Status** (`twining_status`) -- Users need to verify the system is working.
-5. **File-native storage** -- JSONL + JSON in `.twining/`. Zero-config init.
-6. **Structured errors** -- Never crash the agent.
+Minimum viable product — what's needed to validate the concept.
 
-### Should ship (Phase 1 complete -- these round out the experience):
+- [x] **Operational stats dashboard** — Display metrics from `twining_status`: blackboard count, active decisions, graph entities/relations, last activity, warnings. Essential: immediate value, no new backend required.
+- [x] **Blackboard entry list with search/filter** — Paginated list of blackboard entries. Text search, filter by entry_type/tags/scope. Essential: core observability need, enables "what's happening?" questions.
+- [x] **Decision list with search/filter** — Paginated list of decisions. Filter by status/domain/confidence. Essential: primary use case is "what did we decide and why?"
+- [x] **Detail inspector panel** — Click entry/decision → show full detail (rationale, alternatives, constraints, related entries). Essential: summary lists are useless without drilling into detail.
+- [x] **Knowledge graph visualization** — Interactive D3 force-directed graph. Click node → highlight neighbors. Color-code by entity type. Essential: differentiator, unique to Twining, makes graph data accessible.
+- [x] **Decision timeline view** — Chronological timeline of decisions. Click → detail panel. Essential: shows decision evolution, complements list view.
+- [x] **Auto-refresh (polling)** — Poll status/data every 5s. Essential: developer tool must show current state, not stale snapshot.
+- [x] **Dark mode** — CSS dark theme. Essential: table stakes for developer tools.
 
-7. **Semantic search** (`twining_query`) -- With keyword fallback. Upgrades the blackboard from a log to a queryable knowledge base.
-8. **Context assembly** (`twining_assemble`, `twining_summarize`, `twining_what_changed`) -- The highest-value differentiator. Without it, agents must manually search and filter.
-9. **Decision lifecycle** (`twining_reconsider`, `twining_override`) -- Formalizes the evolution of decisions.
-10. **Knowledge graph** (`twining_add_entity`, `twining_add_relation`, `twining_neighbors`, `twining_graph_query`) -- Adds structural awareness.
-11. **Archiving** (`twining_archive`) -- Prevents unbounded growth.
+### Add After Validation (v1.x)
 
-### Defer (Phase 2+):
+Features to add once core is working.
 
-- **Agent registration / capability matching** -- Phase 2 when multi-agent patterns are proven.
-- **Auto conflict detection via embeddings** -- Phase 4 intelligence upgrade.
-- **Web dashboard** -- Phase 3 integration.
-- **Git commit linking** -- Phase 3 integration.
-- **Cross-repo state sharing** -- Phase 4.
-- **Decision impact analysis** -- Phase 4.
-- **`twining_export` (markdown dump)** -- Nice-to-have, consider for late Phase 1 or Phase 2.
-- **`twining_search_decisions` (keyword search without knowing scope)** -- Design spec TODO, low urgency since `twining_query` covers semantic search.
+- [ ] **Semantic search** — Use ONNX embeddings for relevance ranking. Trigger: user feedback requests "better search" or "find similar decisions".
+- [ ] **Scope-based filtering** — Global scope filter (e.g., show only `src/auth/`). Trigger: user feedback from projects with >100 decisions.
+- [ ] **Decision confidence heatmap** — Visual color-coding by confidence. Trigger: user asks "which decisions need review?"
+- [ ] **Export view to markdown** — Generate markdown report of current filtered view. Trigger: user requests "share this subset" functionality.
+- [ ] **Cross-reference navigation** — Clickable links for `relates_to`, `depends_on`, `supersedes`. Trigger: user feedback shows navigation pain.
 
-## Competitive Landscape Summary
+### Future Consideration (v2+)
 
-| Capability | Official MCP Memory | MCP Memory Keeper | MCP Memory Service | memory-mcp | Agent-MCP | Claude-flow | **Twining** |
-|------------|--------------------|--------------------|-------------------|------------|-----------|-------------|-------------|
-| Persistent state | Yes (KG) | Yes (SQLite) | Yes (SQLite/Cloud) | Yes (JSON) | Yes (KG) | Yes (SQLite) | **Yes (JSONL/JSON)** |
-| Semantic search | No | Full-text only | Hybrid BM25+vector | Keyword | RAG query | HNSW vector | **Local ONNX + fallback** |
-| Decision tracking | No | Flat text | Category only | Category only | Unstructured | No | **Structured with alternatives** |
-| Decision chains | No | No | No | No | Task deps only | No | **Yes (depends_on/supersedes)** |
-| Conflict detection | No | No | No | No | No | BFT/CRDT | **Yes (scope+domain heuristic)** |
-| Context assembly | No | No | No | No | No | No | **Yes (token-budgeted)** |
-| Knowledge graph | Yes (generic) | No | D3.js viz | No | Yes (generic) | PageRank | **Yes (code-aware)** |
-| Human override | No | No | No | No | No | No | **Yes (formal workflow)** |
-| Git-trackable | Yes (JSONL) | No (SQLite) | No (SQLite) | Yes (JSON) | Partial | No (SQLite) | **Yes (JSONL/JSON)** |
-| Tool count | 9 | 8-38 | ~10 | ~8 | ~12 | Many | **17** |
+Features to defer until product-market fit is established.
 
-**Twining's unique position:** The only MCP server that combines structured decision tracking, context assembly with token budgeting, and a blackboard coordination pattern -- all backed by git-trackable files. It is not trying to be a general-purpose memory server; it is a coordination layer for multi-agent development workflows.
+- [ ] **Decision diff view** — Compare decision versions (original vs superseded). Trigger: evidence users track decision changes over time.
+- [ ] **Graph query builder UI** — Visual query builder for `twining_graph_query`. Trigger: user feedback shows MCP tool too complex for common queries.
+- [ ] **Customizable widgets/layout** — Drag-and-drop dashboard layout. Trigger: evidence of diverse user needs requiring different views.
+- [ ] **Multi-project view** — Switch between multiple Twining projects. Trigger: users managing multiple codebases request project switching.
+- [ ] **Metrics history charts** — Track blackboard count / decision count over time. Trigger: users request trend analysis.
+
+## Feature Prioritization Matrix
+
+| Feature | User Value | Implementation Cost | Priority |
+|---------|------------|---------------------|----------|
+| Operational stats dashboard | HIGH | LOW | P1 |
+| Blackboard entry list + search | HIGH | MEDIUM | P1 |
+| Decision list + search | HIGH | MEDIUM | P1 |
+| Detail inspector | HIGH | LOW | P1 |
+| Knowledge graph visualization | MEDIUM | HIGH | P1 |
+| Decision timeline | MEDIUM | MEDIUM | P1 |
+| Auto-refresh | HIGH | MEDIUM | P1 |
+| Dark mode | MEDIUM | LOW | P1 |
+| Semantic search | MEDIUM | MEDIUM | P2 |
+| Scope-based filtering | MEDIUM | MEDIUM | P2 |
+| Decision confidence heatmap | LOW | LOW | P2 |
+| Cross-reference navigation | MEDIUM | LOW | P2 |
+| Decision diff view | LOW | MEDIUM | P3 |
+| Graph query builder UI | LOW | HIGH | P3 |
+| Customizable widgets | LOW | HIGH | P3 |
+| Multi-project view | LOW | MEDIUM | P3 |
+| Metrics history charts | LOW | MEDIUM | P3 |
+
+**Priority key:**
+- P1: Must have for launch (v1.2)
+- P2: Should have, add when possible (v1.x)
+- P3: Nice to have, future consideration (v2+)
+
+## Competitor Feature Analysis
+
+| Feature | Redux DevTools | React DevTools | GraphQL Playground | Apollo Studio | Our Approach |
+|---------|---------------|----------------|-------------------|--------------|--------------|
+| **State inspection** | Tree view, props/state display | Component hierarchy tree | Schema explorer | Schema reference | Blackboard/decision lists with detail inspector |
+| **Time travel** | Replay actions, cancel actions | N/A | N/A | N/A | Decision timeline (view-only, no replay in v1) |
+| **Search/filter** | Action type filter | Component name search | Full-text schema search | Operation search | Text + property filters (type, tags, scope, status) |
+| **Real-time updates** | Live action stream | Live component tree | Manual refresh | Auto-refresh | Polling (2-5s interval) |
+| **Graph visualization** | N/A | Component tree | Schema graph | Operation trace graph | Force-directed entity/relation graph |
+| **Dark mode** | Yes | Yes | Yes | Yes | Yes (CSS variables) |
+
+### Comparison Notes
+
+**Redux DevTools** provides the gold standard for time-travel debugging. We adopt the timeline concept but defer replay/time-travel mutations to v2. View-only timeline in v1.
+
+**React DevTools** demonstrates the tree-view + detail-panel pattern. We use this for blackboard/decision lists: summary view → click → detail panel.
+
+**GraphQL Playground** shows that polling is acceptable for developer tool auto-refresh. No need for WebSocket complexity in v1.
+
+**Apollo Studio** demonstrates advanced query building and schema exploration. We defer query builder UI to v2, provide MCP tools for v1.
+
+**Redis Commander** emphasizes tree view for keys, batch operations, import/export. We adopt tree-like navigation (graph visualization) but keep mutations in MCP tools.
+
+### Twining's Unique Position
+
+Twining combines decision tracking (Redux DevTools-like rationale) + knowledge graph (Apollo-like structure visualization) + blackboard coordination (unique to multi-agent systems). No direct competitor does all three.
+
+**Differentiation strategy:** Lead with knowledge graph visualization and decision timeline. These are unique to Twining and not found in standard developer observability tools.
+
+## Data Dependencies on Twining Backend
+
+### Available Data (v1.1)
+
+| Data Source | Endpoint Pattern | What It Provides |
+|-------------|------------------|------------------|
+| `twining_status` | Direct MCP call or HTTP adapter | Metrics: blackboard_entries, active_decisions, provisional_decisions, graph_entities, graph_relations, last_activity, warnings |
+| `blackboard.jsonl` | Read file directly or create HTTP endpoint | All blackboard entries with: id, timestamp, agent_id, entry_type, tags, relates_to, scope, summary, detail |
+| `decisions/*.json` + `decisions/index.json` | Read files directly or create HTTP endpoint | All decisions with: id, timestamp, domain, scope, summary, context, rationale, constraints, alternatives[], depends_on, supersedes, confidence, status, affected_files, affected_symbols |
+| `graph/entities.json` | Read file directly or create HTTP endpoint | All entities with: id, name, type, properties, created_at, updated_at |
+| `graph/relations.json` | Read file directly or create HTTP endpoint | All relations with: id, source, target, type, properties, created_at |
+| `embeddings/*.index` | Binary ONNX index | Semantic search vectors (optional, graceful fallback) |
+
+### New Endpoints Needed for Dashboard
+
+Dashboard cannot call MCP tools directly (MCP is stdio). Need HTTP adapter or direct file reads.
+
+**Option 1: Direct file reads (simplest)**
+- Dashboard server reads `.twining/*.jsonl` and `.twining/**/*.json` files
+- No MCP coupling
+- Risk: file locking conflicts if server reads while MCP writes
+
+**Option 2: HTTP adapter wrapping MCP tools**
+- Thin HTTP server that calls MCP tools internally
+- Maintains single source of truth
+- More complex: requires MCP SDK in HTTP process
+
+**Recommendation:** Option 1 with read-only access. Use `proper-lockfile` for safe concurrent reads.
 
 ## Sources
 
-### Competitor Implementations
-- [Official MCP Memory Server](https://github.com/modelcontextprotocol/servers/tree/main/src/memory) - Reference knowledge graph implementation
-- [MCP Memory Service](https://github.com/doobidoo/mcp-memory-service) - Full-featured memory with hybrid search
-- [MCP Memory Keeper](https://github.com/mkreyman/mcp-memory-keeper) - SQLite-based persistent context
-- [memory-mcp](https://github.com/yuvalsuede/memory-mcp) - Auto-updated CLAUDE.md memory
-- [Agent-MCP](https://github.com/rinadelph/Agent-MCP) - Multi-agent coordination framework
-- [Claude-flow](https://github.com/ruvnet/claude-flow) - Enterprise agent orchestration
+**Observability Dashboard Patterns:**
+- [Top 10 Observability Platforms in 2026](https://openobserve.ai/blog/top-10-observability-platforms/)
+- [10 observability tools platform engineers should evaluate in 2026](https://platformengineering.org/blog/10-observability-tools-platform-engineers-should-evaluate-in-2026)
+- [How to Build a Developer Productivity Dashboard](https://jellyfish.co/library/developer-productivity/dashboard/)
+- [DevOps Dashboard Ultimate Guide: Metrics And Use Cases](https://www.cloudzero.com/blog/devops-dashboard/)
 
-### Architecture Patterns
-- [Stigmergic Blackboard Protocol (SBP)](https://github.com/AdviceNXT/sbp) - Environment-based agent coordination
-- [Agent Blackboard](https://github.com/claudioed/agent-blackboard) - Multi-agent blackboard for software engineering
-- [Building Intelligent Multi-Agent Systems with MCPs and the Blackboard Pattern](https://medium.com/@dp2580/building-intelligent-multi-agent-systems-with-mcps-and-the-blackboard-pattern-to-build-systems-a454705d5672)
+**Developer Tool UI Patterns:**
+- [Redux DevTools: Time Travel Debugging](https://medium.com/@AlexanderObregon/a-deep-dive-into-redux-devtools-debugging-and-analyzing-your-applications-state-b634ead3927b)
+- [React Developer Tools – React](https://react.dev/learn/react-developer-tools/)
+- [GraphQL Playground - Apollo GraphQL Docs](https://www.apollographql.com/docs/apollo-server/v2/testing/graphql-playground)
+- [GraphOS Studio Explorer - Apollo GraphQL Docs](https://www.apollographql.com/docs/graphos/platform/explorer)
 
-### MCP Ecosystem
-- [MCP Specification 2025-11-25](https://modelcontextprotocol.io/specification/2025-11-25)
-- [MCP Features Guide (WorkOS)](https://workos.com/blog/mcp-features-guide)
-- [15 Best Practices for Building MCP Servers in Production](https://thenewstack.io/15-best-practices-for-building-mcp-servers-in-production/)
-- [10 Strategies to Reduce MCP Token Bloat](https://thenewstack.io/how-to-reduce-mcp-token-bloat/)
-- [How to Prevent MCP Tool Overload](https://www.lunar.dev/post/why-is-there-mcp-tool-overload-and-how-to-solve-it-for-your-ai-agents)
+**State Inspection & Filtering:**
+- [What are browser developer tools? - MDN](https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Tools_and_setup/What_are_browser_developer_tools)
+- [Filtering in Chrome DevTools](https://mattrossman.com/2024/06/28/filtering-in-chrome-devtools/)
+- [Filter requests in the Network panel](https://devtoolstips.org/tips/en/filter-network-requests/)
 
-### Claude Code Integration
-- [Claude Code Subagents Documentation](https://code.claude.com/docs/en/sub-agents)
-- [Claude Code MCP Documentation](https://code.claude.com/docs/en/mcp)
-- [Claude Code Agent Teams Guide](https://claudefa.st/blog/guide/agents/agent-teams)
-- [Context Window and Compaction](https://deepwiki.com/anthropics/claude-code/3.3-session-and-conversation-management)
+**Knowledge Graph Visualization:**
+- [Knowledge graph visualization: A comprehensive guide](https://datavid.com/blog/knowledge-graph-visualization)
+- [Knowledge Graph Visualization | Enterprise Knowledge Management](https://cambridge-intelligence.com/use-cases/knowledge-graphs/)
+- [Visualize knowledge graphs: bring your data to life](https://linkurious.com/blog/knowledge-graph-visualization/)
+
+**Timeline Visualization:**
+- [KronoGraph - Advanced Timeline Visualization](https://cambridge-intelligence.com/kronograph/)
+- [Timeline Graph Visualization | Tom Sawyer Software](https://blog.tomsawyer.com/timeline-graph-visualization)
+
+**Embedded Analytics:**
+- [12 Best Embedded Analytics Tools for SaaS Teams in 2026](https://www.luzmo.com/blog/embedded-analytics-tools)
+- [What Are Embedded Dashboards? A Detailed 2026 Guide](https://qrvey.com/blog/what-are-embedded-dashboards/)
+
+**Vanilla JavaScript Dashboard Patterns:**
+- [Why Developers Are Ditching Frameworks for Vanilla JavaScript](https://thenewstack.io/why-developers-are-ditching-frameworks-for-vanilla-javascript/)
+- [How I Built a Real-Time Dashboard from Scratch Using Vanilla JavaScript](https://medium.com/@michaelpreston515/how-i-built-a-real-time-dashboard-from-scratch-using-vanilla-javascript-no-frameworks-f93f3dce98a9)
+
+**Redis Admin Tools (State Browser Patterns):**
+- [GitHub - joeferner/redis-commander](https://github.com/joeferner/redis-commander)
+- [Redis GUI Showdown - The Best Clients for 2024](https://www.dragonflydb.io/guides/redis-gui)
+
+---
+*Feature research for: Twining MCP Server v1.2 Web Dashboard*
+*Researched: 2026-02-16*

@@ -1,211 +1,520 @@
-# Technology Stack
+# Stack Research: Embedded Web Dashboard
 
-**Project:** Twining MCP Server
+**Domain:** Embedded HTTP server with vanilla HTML/JS dashboard for MCP server
 **Researched:** 2026-02-16
-**Overall confidence:** HIGH -- the design spec already prescribes most choices and they are verified as current.
+**Confidence:** HIGH
+
+## Executive Summary
+
+This research covers stack additions for v1.2 milestone: embedded web dashboard. The existing Twining stack (Node.js, TypeScript, @modelcontextprotocol/sdk, vitest) is validated and unchanged. New additions focus on in-process HTTP server, vanilla frontend, and visualization libraries.
+
+**Key decisions:**
+- **Native http module** over Express (zero deps, 2x faster, sufficient for <10 routes)
+- **cytoscape.js** for knowledge graph (109KB gzipped, zero deps, excellent UX)
+- **vis-timeline** for decision timeline (186KB gzipped, standalone build)
+- **Polling** over SSE/WebSockets (simpler, sufficient for 2-5s updates)
+- **No build step** for frontend (vanilla HTML/CSS/JS, instant deployment)
 
 ## Recommended Stack
 
-### Core Framework
+### Core Technologies (Dashboard-Specific)
 
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| `@modelcontextprotocol/sdk` | ^1.26.0 | MCP server framework, tool registration, transport | The official TypeScript SDK. Provides `McpServer`, `StdioServerTransport`, and `registerTool()` with Zod schema validation. Actively maintained, 25k+ downstream packages, supports MCP spec 2025-11-25. Already installed. | HIGH |
-| TypeScript | ^5.9.3 | Language | Required by design spec. Latest stable. Already installed. | HIGH |
-| Node.js | >=18 | Runtime | Design spec minimum. Recommend targeting Node 20+ for stable `fs/promises`, structured clone, and onnxruntime compatibility. | HIGH |
+| Technology | Version | Purpose | Why Recommended |
+|------------|---------|---------|-----------------|
+| Node.js http module | Built-in (Node.js 18+) | In-process HTTP server | Zero dependencies, ~2x performance of Express for simple serving. Raw Node.js handles 700k req/sec vs Express 600k req/sec (TechEmpower 2025). No routing framework needed for <10 endpoints. Already available in existing codebase. |
+| Vanilla HTML/CSS/JS | ES2022+ (Native browser) | Frontend UI | Zero build step, zero framework overhead, instant load times. Dashboard is simple read-only views — framework would add complexity without value. |
+| cytoscape.js | ^3.33.1 | Knowledge graph visualization | Zero hard dependencies, 109KB gzipped (UMD) or 350KB bundled (ESM). Battle-tested for graph visualization with 10+ layout algorithms. Best-in-class for interactive network graphs with vanilla JS support. |
+| vis-timeline | ^8.5.0 | Decision timeline visualization | 186KB gzipped standalone build, self-contained with no peer dependencies. Standard for timeline visualization with excellent vanilla JS support. Handles zoom, pan, grouping out-of-box. |
 
-### Schema Validation
+### Supporting Libraries
 
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| `zod` | ^3.25 or ^4.0 | Input schema validation for MCP tools | Required peer dependency of `@modelcontextprotocol/sdk`. Already installed transitively as 4.3.6. The SDK accepts `^3.25 \|\| ^4.0`. Use Zod 4 since it ships with the SDK and is the current standard. Do NOT install separately unless you need to pin a version -- the SDK bundles it. | HIGH |
+| Library | Version | Purpose | When to Use |
+|---------|---------|---------|-------------|
+| mime | ^4.0.4 | MIME type detection for static files | Required for proper Content-Type headers when serving HTML/CSS/JS/JSON files via native http module. Zero dependencies, 1.5KB. |
+| force-graph | ^1.51.1 | Alternative graph visualization | If simpler force-directed layout preferred over cytoscape.js. Canvas-based, lighter weight ~80KB gzipped (but fewer features). Use if knowledge graph is very large (>1000 nodes) and performance degrades. |
 
-### Embeddings & Semantic Search
+### NOT Needed
 
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| `onnxruntime-node` | ^1.24.1 | ONNX model inference for local embeddings | Prescribed by design spec. Runs all-MiniLM-L6-v2 (~23MB) locally with zero API calls. Supports Apple Silicon (darwin/arm64), Linux x64, Windows x64. Latest 1.24.1 includes performance improvements. | HIGH |
-| all-MiniLM-L6-v2 (ONNX format) | - | Embedding model | 384-dimensional embeddings, ~23MB ONNX file. Download from HuggingFace on first use. The `Xenova/all-MiniLM-L6-v2` repo has pre-converted ONNX weights. Max 256 tokens input, best under 128 tokens -- perfect for short summaries and rationales. | HIGH |
+| Library | Why Not Needed |
+|---------|----------------|
+| cors package | Dashboard is same-origin (served from same host as API). No CORS needed. If cross-origin needed later, manual headers in http module are 3 lines. |
+| express.js | Adds 700KB+ dependencies and 40% overhead for features we don't need (middleware, complex routing). Native http + manual routing sufficient for 8 endpoints. |
+| serve-static | Express middleware. We're not using Express. Native fs.readFile + mime lookup is 15 lines. |
+| body-parser | Dashboard API is read-only GET endpoints. No request body parsing needed. |
+| compression | Dashboard is local-only (localhost). Network speed not a bottleneck. Browser caching sufficient. |
 
-**Tokenization approach:** Use the model's `tokenizer.json` vocabulary file directly with a lightweight custom tokenizer implementation, OR use the `tokenizers` npm package (v0.13.3) which provides native Rust-backed tokenization via N-API bindings. The custom approach is preferable because `tokenizers` has native binary dependencies that complicate cross-platform distribution, and for this use case we only need WordPiece tokenization with a fixed vocabulary. The design spec already prescribes token estimation at 4 chars/token for budget management -- full tokenization is only needed for model input.
+### Development Tools (No Changes)
 
-### ID Generation
+Existing tooling is sufficient:
 
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| `ulid` | ^3.0.2 | Temporally sortable unique IDs | Prescribed by design spec. ULIDs are lexicographically sortable by creation time, eliminating the need to parse timestamps for temporal ordering. 3.0.2 is current and stable. Already installed. | HIGH |
-
-### File Locking
-
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| `proper-lockfile` | ^4.1.2 | Advisory file locking for concurrent agent access | Prescribed by design spec. Uses atomic `mkdir` strategy that works on local and network file systems. Handles stale lock detection via mtime monitoring. 4.1.2 is the latest and final version (stable, no recent changes needed). Already installed. | HIGH |
-| `@types/proper-lockfile` | ^4.1.4 | TypeScript type definitions | proper-lockfile does not ship its own types. Required for TypeScript strict mode. | HIGH |
-
-### Configuration
-
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| `js-yaml` | ^4.1.1 | Parse `.twining/config.yml` | The design spec uses YAML for configuration. js-yaml is the most popular YAML parser (80M+ weekly downloads), fast for reading, minimal API surface. The `yaml` package is more feature-rich but heavier and slower for simple parsing. We only need read support for a small config file. | MEDIUM |
-| `@types/js-yaml` | latest | TypeScript type definitions | js-yaml does not ship its own types. | MEDIUM |
-
-**Alternative considered:** Could use JSON for config instead of YAML, which would eliminate this dependency entirely. However, the design spec explicitly uses `config.yml` with YAML syntax, so we follow it.
-
-### Testing
-
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| `vitest` | ^4.0.18 | Test runner | First-class TypeScript and ESM support. Jest-compatible API. Built-in coverage via v8 provider. Fast watch mode. Already installed. Vitest 4 is the current stable (released Oct 2025). | HIGH |
-
-### Build & Dev Tooling
-
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| TypeScript | ^5.9.3 | Compiler | Already installed. Compile to `dist/` with `module: "nodenext"`, `target: "esnext"`. | HIGH |
-| `@types/node` | ^25.2.3 | Node.js type definitions | Already installed as devDependency. | HIGH |
-
-## What NOT to Use
-
-| Technology | Why Not |
-|------------|---------|
-| `@huggingface/transformers` | 48MB unpacked, pulls in `sharp` (image processing -- unnecessary), `onnxruntime-web` (browser runtime -- unnecessary), and `@huggingface/jinja`. Pins `onnxruntime-node` to 1.21.0 (stale). Overkill for running a single embedding model. Use `onnxruntime-node` directly with a custom tokenizer -- it is more work but keeps the dependency tree minimal and the ONNX version current. |
-| `@xenova/transformers` | Deprecated in favor of `@huggingface/transformers`. Same bloat problems. |
-| `tokenizers` (npm) | Native Rust bindings via N-API. Cross-platform compilation complexity. For WordPiece tokenization of short text with a fixed vocabulary, a 50-line custom implementation reading `tokenizer.json` is simpler and more portable. |
-| `sqlite3` / `better-sqlite3` | The design spec explicitly requires file-native storage (JSONL, JSON). SQLite adds a native binary dependency and violates the "jq-queryable, git-trackable, human-inspectable" principle. |
-| `fastmcp` | Third-party MCP framework. The official `@modelcontextprotocol/sdk` is sufficient and authoritative. FastMCP adds abstraction without clear benefit for this project. |
-| `express` / `hono` | No HTTP server needed. Twining is a stdio MCP server spawned by Claude Code. The SDK's `StdioServerTransport` handles all communication. (Note: express is a transitive dependency of the MCP SDK for its HTTP transport support -- it is not used by our code.) |
-| `yaml` (npm package) | More features than needed, slower than js-yaml for simple config reading. We only parse a small config file. |
-| `uuid` / `nanoid` | ULIDs provide temporal sortability that UUIDs and nanoids lack. The design spec requires ULIDs. |
-| `node-fetch` / `axios` | No HTTP client needed. The ONNX model file can be downloaded using Node.js built-in `https` module or `fetch` (available in Node 18+). |
-| `winston` / `pino` | No logging framework needed. MCP servers communicate structured responses. Use `console.error` for stderr debug output (stdout is reserved for MCP stdio transport). The SDK provides `ctx.mcpReq.log()` for structured logging to the MCP client. |
-
-## Alternatives Considered
-
-| Category | Recommended | Alternative | Why Not Alternative |
-|----------|-------------|-------------|---------------------|
-| Embedding runtime | `onnxruntime-node` direct | `@huggingface/transformers` | 48MB bloat, stale onnxruntime pin, unnecessary deps (sharp, onnxruntime-web) |
-| Tokenization | Custom WordPiece from `tokenizer.json` | `tokenizers` npm package | Native binary dependency, cross-platform complexity for simple use case |
-| YAML parsing | `js-yaml` | `yaml` npm package | Heavier, slower for reads, more features than needed |
-| YAML parsing | `js-yaml` | JSON config instead | Design spec prescribes YAML |
-| File locking | `proper-lockfile` | `lockfile` (npm) | Uses `O_EXCL` which fails on network FS; no stale detection |
-| IDs | `ulid` | `ulidx` | `ulid` is the original, well-maintained, and already in package.json |
-| Testing | `vitest` | `jest` | Vitest has native ESM/TS support without babel config. Already installed. |
-
-## tsconfig.json Assessment
-
-The existing `tsconfig.json` needs adjustments for this project:
-
-```jsonc
-{
-  "compilerOptions": {
-    "rootDir": "./src",        // UNCOMMENT -- needed for build output structure
-    "outDir": "./dist",        // UNCOMMENT -- compile to dist/
-    "module": "nodenext",      // KEEP -- correct for Node.js MCP servers
-    "target": "esnext",        // KEEP -- Node 18+ supports latest ES features
-    "lib": ["esnext"],         // ADD -- target Node.js runtime
-    "types": ["node"],         // CHANGE -- need Node.js types
-    "strict": true,            // KEEP
-    "sourceMap": true,         // KEEP -- useful for debugging
-    "declaration": true,       // KEEP -- needed if publishing
-    "declarationMap": true,    // KEEP
-    "noUncheckedIndexedAccess": true,  // KEEP -- good for JSON data access safety
-    "skipLibCheck": true,      // KEEP -- speeds up compilation
-    "jsx": "react-jsx",       // REMOVE -- no JSX in this project
-    "verbatimModuleSyntax": true,      // KEEP -- enforces explicit import/export types
-    "isolatedModules": true,   // KEEP
-    "moduleDetection": "force" // KEEP
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist", "test"]
-}
-```
-
-**Key change:** `"types": ["node"]` replaces the empty array. Without this, Node.js APIs (`fs`, `path`, `Buffer`, etc.) have no type information.
-
-## package.json Adjustments Needed
-
-```jsonc
-{
-  "name": "twining-mcp",
-  "version": "0.1.0",
-  "type": "module",           // CHANGE from "commonjs" -- MCP SDK and modern Node use ESM
-  "main": "dist/index.js",    // CHANGE -- point to compiled output
-  "bin": {
-    "twining-mcp": "dist/index.js"
-  },
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "start": "node dist/index.js"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  }
-}
-```
-
-**Critical change:** `"type": "module"` -- the MCP SDK and modern Node.js ecosystem use ESM. The current `"type": "commonjs"` will cause import resolution failures with the SDK.
+| Tool | Purpose | Notes |
+|------|---------|-------|
+| TypeScript | Type-safe server code | Already in use — dashboard server will be `src/dashboard/server.ts` |
+| vitest | Test dashboard endpoints | Already in use — no new test framework needed |
+| Live Server (VS Code extension) | Frontend development | Optional — for dashboard HTML/CSS/JS development without running full server |
 
 ## Installation
 
 ```bash
-# Already installed (from package.json)
-# @modelcontextprotocol/sdk, proper-lockfile, typescript, ulid
+# New dependencies for dashboard
+npm install cytoscape vis-timeline mime
 
-# Additional production dependencies
-npm install onnxruntime-node js-yaml
+# Optional (only if force-graph chosen over cytoscape)
+npm install force-graph
 
-# Additional dev dependencies
-npm install -D @types/proper-lockfile @types/js-yaml
+# No dev dependencies needed — existing tooling sufficient
 ```
 
-**Note:** `zod` does NOT need explicit installation -- it ships as both a direct and peer dependency of `@modelcontextprotocol/sdk` v1.26.0.
+## Alternatives Considered
 
-## Dependency Tree Summary
+| Recommended | Alternative | When to Use Alternative |
+|-------------|-------------|-------------------------|
+| Native http module | Express.js | **Never** for this use case. Express adds 40% overhead and dependencies for features we don't need (routing middleware, template engines). Dashboard is simple static serving + JSON API. Native http can process 4x the requests at medium concurrency. |
+| Native http module | Fastify | If we needed high-performance routing with 100+ endpoints later. Fastify is faster than Express but still overhead vs native. Not worth complexity for <10 routes. |
+| cytoscape.js | D3.js force layout | If you need custom graph rendering logic or bespoke interactions. D3 offers maximum flexibility (~70KB d3-force only) but requires more code (50+ lines vs 10 lines for cytoscape). cytoscape.js has better out-of-box UX with click/hover/drag/layouts. |
+| cytoscape.js | sigma.js | If graph has >10,000 nodes. Sigma.js is optimized for massive graphs (uses WebGL). Twining knowledge graphs are typically <500 nodes where cytoscape.js excels. |
+| cytoscape.js | force-graph | If you prefer canvas-based rendering and simpler API. force-graph is lighter (80KB) but limited to force-directed layout only. Cytoscape has 10+ layouts (hierarchical, grid, circle, etc). |
+| vis-timeline | Timeline.js (Knight Lab) | If you need storytelling-style timelines with media embeds. Not suitable for decision log visualization (no programmatic data binding, focused on editorial content). |
+| vis-timeline | Custom HTML+CSS | If timeline is trivial (linear list of items). vis-timeline adds zoom, pan, grouping, range selection — features needed for navigating 100+ decisions. |
+| Polling | Server-Sent Events (SSE) | If dashboard needs <1s latency updates. SSE adds connection management complexity (reconnection logic, keep-alive). Polling every 2-5s is sufficient for dashboard use case and simpler (1 fetch per interval). |
+| Polling | WebSockets | **Never** — bi-directional communication not needed. Dashboard only reads, never writes. WebSockets add significant complexity (connection lifecycle, message framing, reconnection) without benefit. |
 
-### Production (5 direct dependencies)
+## What NOT to Use
+
+| Avoid | Why | Use Instead |
+|-------|-----|-------------|
+| Express.js | Adds 700KB+ dependencies and 40% performance overhead for features we don't need. Express introduces middleware abstraction negligible for most apps but measurable overhead. At 50 parallel connections, native Node.js processes 4x the requests per second. | Native http module with manual routing (3-8 routes max) |
+| React/Vue/Svelte | Build step, framework overhead, complexity. Dashboard is simple read-only views. React adds 40KB+ runtime, requires build tooling (Vite/webpack), increases deployment complexity. | Vanilla JS with template literals or simple DOM manipulation |
+| D3.js (full bundle) | 274KB minified for features we don't use. D3 is designed for bespoke visualizations. Learning curve is high for standard graph visualization. | cytoscape.js for graphs (specialized, lower learning curve), vis-timeline for timelines |
+| http-server npm package | CLI tool, not in-process embedding. Requires child process spawning. Not suitable for in-process MCP server integration. | Native http module directly in TypeScript |
+| serve-static middleware | Designed for Express. Unnecessary abstraction when not using Express. | Native fs.readFile with MIME type lookup via mime package (15 lines) |
+| WebSocket libraries (ws, socket.io) | Bi-directional real-time communication not needed. Dashboard doesn't write data. WebSockets add connection overhead without benefit. | Simple polling with fetch() every 2-5 seconds |
+| Chart.js / ApexCharts | Generic charting libraries (line, bar, pie). Not specialized for graphs or timelines. Would need custom code for knowledge graph anyway. | cytoscape.js (graph-specific), vis-timeline (timeline-specific) |
+| Tailwind CSS / Bootstrap | CSS frameworks add build step or large CSS files. Dashboard styling is minimal (20-30 custom CSS rules sufficient). | Vanilla CSS with CSS variables for theming |
+
+## Stack Patterns by Variant
+
+### Dashboard Architecture
+
 ```
-@modelcontextprotocol/sdk  -- MCP server framework (brings zod, express, ajv transitively)
-onnxruntime-node           -- ONNX inference engine (native binary, ~50MB platform-specific)
-ulid                       -- ID generation (zero dependencies)
-proper-lockfile            -- File locking (minimal deps)
-js-yaml                    -- YAML parsing (zero dependencies)
+src/
+  dashboard/
+    server.ts          # HTTP server initialization, routing (http.createServer)
+    handlers.ts        # Request handlers (static files, JSON API)
+    routes.ts          # Route definitions (URL pattern matching)
+    static/
+      index.html       # Main dashboard page (stats overview)
+      graph.html       # Knowledge graph page
+      timeline.html    # Decision timeline page
+      styles.css       # Shared styles (CSS variables, minimal framework)
+      graph.js         # Graph visualization (uses cytoscape.js)
+      timeline.js      # Timeline visualization (uses vis-timeline)
+      api.js           # API client (polling logic, shared fetch wrapper)
 ```
 
-### Dev (4 direct dependencies)
-```
-typescript                 -- Compiler
-@types/node                -- Node.js types
-@types/proper-lockfile     -- Lock file types
-@types/js-yaml             -- YAML parser types
-vitest                     -- Test runner
+### Integration Pattern
+
+```typescript
+// src/index.ts (main entry point)
+import { createServer as createMCPServer } from "./server.js";
+import { createDashboardServer } from "./dashboard/server.js";
+
+const projectRoot = process.argv[2] || process.cwd();
+const mcpServer = createMCPServer(projectRoot);
+
+// Dashboard runs in same process, optional via env var
+if (process.env.TWINING_DASHBOARD === "true") {
+  const dashboardServer = createDashboardServer({
+    port: parseInt(process.env.TWINING_DASHBOARD_PORT || "3737"),
+    host: process.env.TWINING_DASHBOARD_HOST || "127.0.0.1", // localhost only
+    projectRoot,
+    // Pass stores directly for data access (no MCP protocol overhead)
+    blackboardStore,
+    decisionStore,
+    graphStore,
+  });
+
+  dashboardServer.listen();
+  console.error(`Dashboard: http://127.0.0.1:${dashboardServer.port}`);
+}
+
+// MCP server runs on stdio
+mcpServer.connect(process.stdin, process.stdout);
 ```
 
-## Platform Compatibility
+### CORS Configuration (if needed later)
 
-| Platform | Status | Notes |
-|----------|--------|-------|
-| macOS arm64 (Apple Silicon) | Supported | onnxruntime-node ships darwin/arm64 binaries |
-| macOS x64 (Intel) | Supported | onnxruntime-node ships darwin/x64 binaries |
-| Linux x64 (glibc) | Supported | Standard target |
-| Linux arm64 (glibc) | Supported | onnxruntime-node ships linux/arm64 |
-| Linux musl (Alpine) | NOT supported | onnxruntime-node requires glibc. Embedding system will gracefully fall back to keyword search per design spec. |
-| Windows x64 | Supported | onnxruntime-node ships win32/x64 binaries |
+Since dashboard will be served from the same origin as API endpoints (http://127.0.0.1:3737), **no CORS needed**.
+
+If future requirement emerges for cross-origin access:
+
+```typescript
+// Manual CORS headers (no cors package needed)
+function setCORSHeaders(response: ServerResponse) {
+  response.setHeader('Access-Control-Allow-Origin', 'http://localhost:3737');
+  response.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+}
+
+function handleRequest(request: IncomingMessage, response: ServerResponse) {
+  // Handle preflight
+  if (request.method === 'OPTIONS') {
+    setCORSHeaders(response);
+    response.writeHead(204);
+    response.end();
+    return;
+  }
+
+  setCORSHeaders(response);
+  // ... handle actual request
+}
+```
+
+## API Endpoints Design
+
+Dashboard server exposes read-only JSON endpoints:
+
+| Endpoint | Method | Purpose | Response |
+|----------|--------|---------|----------|
+| `/` | GET | Serve dashboard index.html | HTML |
+| `/graph.html` | GET | Serve graph page | HTML |
+| `/timeline.html` | GET | Serve timeline page | HTML |
+| `/static/{file}` | GET | Serve CSS/JS/assets | File content with MIME type |
+| `/api/status` | GET | Operational stats | `{blackboard: {count, recent}, decisions: {active, provisional}, graph: {entities, relations}}` |
+| `/api/blackboard` | GET | Recent blackboard entries | `{entries: BlackboardEntry[], total: number}` (query: `?limit=50&type=warning`) |
+| `/api/decisions` | GET | Decisions | `{decisions: Decision[]}` (query: `?limit=100&domain=architecture&scope=src/`) |
+| `/api/graph` | GET | Knowledge graph | `{nodes: {id, label, type}[], edges: {source, target, type}[]}` |
+| `/api/search` | GET | Search across all data | `{results: {type, id, summary, relevance}[]}` (query: `?q=authentication`) |
+
+**Polling pattern:**
+
+```javascript
+// Frontend (dashboard/static/api.js)
+let pollInterval = null;
+
+function startPolling() {
+  pollInterval = setInterval(async () => {
+    const status = await fetch('/api/status').then(r => r.json());
+    updateStatusBadges(status);
+  }, 3000); // 3 second interval
+}
+
+function stopPolling() {
+  if (pollInterval) clearInterval(pollInterval);
+}
+```
+
+## Static File Serving Pattern
+
+```typescript
+// src/dashboard/handlers.ts
+import { readFile } from 'fs/promises';
+import { join, normalize } from 'path';
+import mime from 'mime';
+import type { IncomingMessage, ServerResponse } from 'http';
+
+const STATIC_DIR = join(__dirname, 'static');
+
+export async function serveStatic(
+  request: IncomingMessage,
+  response: ServerResponse,
+  urlPath: string
+) {
+  try {
+    // Security: prevent directory traversal
+    const safePath = normalize(join(STATIC_DIR, urlPath));
+    if (!safePath.startsWith(STATIC_DIR)) {
+      response.writeHead(403, { 'Content-Type': 'text/plain' });
+      response.end('Forbidden');
+      return;
+    }
+
+    const content = await readFile(safePath);
+    const mimeType = mime.getType(safePath) || 'application/octet-stream';
+
+    response.writeHead(200, {
+      'Content-Type': mimeType,
+      'Cache-Control': 'public, max-age=3600', // 1 hour cache for static assets
+    });
+    response.end(content);
+  } catch (error: any) {
+    if (error.code === 'ENOENT') {
+      response.writeHead(404, { 'Content-Type': 'text/plain' });
+      response.end('Not Found');
+    } else {
+      console.error('Static file error:', error);
+      response.writeHead(500, { 'Content-Type': 'text/plain' });
+      response.end('Internal Server Error');
+    }
+  }
+}
+```
+
+## Graph Visualization Library Comparison
+
+| Feature | cytoscape.js | force-graph | D3.js (force) |
+|---------|--------------|-------------|---------------|
+| Bundle size (gzipped) | 109 KB | ~80 KB | ~70 KB (d3-force only) |
+| Layout algorithms | 10+ built-in (force, hierarchical, grid, circle, breadthfirst, cose, dagre) | Force-directed only | Highly customizable force simulation |
+| Interactivity | Excellent (click, hover, drag, zoom, pan) | Good (canvas-based, manual event handling) | Requires manual implementation (~50 lines) |
+| Styling | CSS-like (declarative style object) | Programmatic (callbacks for each node/link) | Programmatic (D3 selections) |
+| Vanilla JS support | Excellent (UMD, ESM, script tag) | Excellent | Excellent |
+| Learning curve | Low (good docs, examples) | Low | High (D3 paradigm, selections, joins) |
+| **Recommendation** | **Best for Twining** | If perf issues with large graphs | If need custom rendering |
+
+**Why cytoscape.js for Twining:**
+
+- Knowledge graphs have multiple entity types (modules, classes, files, concepts)
+- Need different layouts depending on view (hierarchical for dependencies, force-directed for concepts, breadthfirst for decision chains)
+- Excellent documentation and examples ([js.cytoscape.org](https://js.cytoscape.org/))
+- Battle-tested in scientific/academic domains with complex graphs (20k+ GitHub stars)
+- Zero dependencies simplifies deployment
+
+**Example usage:**
+
+```javascript
+// dashboard/static/graph.js
+import cytoscape from 'https://cdn.skypack.dev/cytoscape@3.33.1';
+
+const cy = cytoscape({
+  container: document.getElementById('graph'),
+  elements: await fetch('/api/graph').then(r => r.json()),
+  style: [
+    {
+      selector: 'node',
+      style: {
+        'background-color': '#666',
+        'label': 'data(label)',
+      }
+    },
+    {
+      selector: 'edge',
+      style: {
+        'width': 2,
+        'line-color': '#ccc',
+      }
+    }
+  ],
+  layout: { name: 'cose' } // force-directed layout
+});
+```
+
+## Timeline Visualization Library Comparison
+
+| Feature | vis-timeline | Timeline.js | Custom HTML+CSS |
+|---------|--------------|-------------|-----------------|
+| Bundle size (gzipped) | 186 KB | ~300 KB | 0 KB |
+| Data format | JSON array of items | Google Sheets / JSON with specific schema | Custom |
+| Interactivity | Excellent (zoom, pan, click, range select) | Limited (click for details) | Requires manual JS (~100 lines) |
+| Zoom/pan | Built-in (mouse wheel, drag) | Limited zoom | Requires library or manual implementation |
+| Grouping | Built-in (group by property) | Not supported | Requires manual implementation |
+| Vanilla JS support | Excellent (standalone UMD) | Good (requires jQuery or vanilla adapter) | N/A |
+| **Recommendation** | **Best for Twining** | Not suitable (editorial focus) | Only if timeline is trivial (<20 items, no interaction) |
+
+**Why vis-timeline for Twining:**
+
+- Decision log has rich metadata (confidence levels, status, dependencies)
+- Need to zoom into time ranges (day view, week view, month view)
+- Need to group by domain or agent_id
+- Need to handle 100-1000 decisions efficiently
+- vis-timeline handles all this out-of-box with excellent performance
+
+**Example usage:**
+
+```javascript
+// dashboard/static/timeline.js
+import { Timeline } from 'https://unpkg.com/vis-timeline@8.5.0/standalone/esm/vis-timeline-graph2d.min.js';
+
+const decisions = await fetch('/api/decisions?limit=500').then(r => r.json());
+
+const items = decisions.map(d => ({
+  id: d.id,
+  content: d.summary,
+  start: d.timestamp,
+  group: d.domain,
+  className: `confidence-${d.confidence}`,
+}));
+
+const groups = [
+  { id: 'architecture', content: 'Architecture' },
+  { id: 'implementation', content: 'Implementation' },
+  { id: 'testing', content: 'Testing' },
+];
+
+const timeline = new Timeline(document.getElementById('timeline'), items, groups, {
+  zoomable: true,
+  moveable: true,
+  groupOrder: 'content',
+});
+```
+
+## Frontend Data Flow
+
+```
+┌─────────────────────────────────────────────────────┐
+│                  Dashboard Frontend                  │
+│  (Vanilla HTML/JS loaded from /static/)              │
+├─────────────────────────────────────────────────────┤
+│                                                       │
+│  Polling Loop (every 3s):                            │
+│    fetch('/api/status')                              │
+│    → Update stats badges                             │
+│                                                       │
+│  On Page Load:                                       │
+│    fetch('/api/graph')                               │
+│    → Render with cytoscape.js                        │
+│                                                       │
+│    fetch('/api/decisions?limit=100')                 │
+│    → Render with vis-timeline                        │
+│                                                       │
+│  On Search:                                          │
+│    fetch('/api/search?q=' + query)                   │
+│    → Display results table                           │
+│                                                       │
+└─────────────────────────────────────────────────────┘
+           ↓ HTTP GET requests (polling, no WebSocket)
+┌─────────────────────────────────────────────────────┐
+│              Dashboard HTTP Server                   │
+│  (Native Node.js http module in src/dashboard/)      │
+├─────────────────────────────────────────────────────┤
+│                                                       │
+│  Routes (manual URL parsing):                        │
+│    GET / → serve index.html                          │
+│    GET /api/status → call stores.getStatus()         │
+│                                                       │
+│  Implementation:                                     │
+│    http.createServer((req, res) => {                 │
+│      if (req.url.startsWith('/api/')) {              │
+│        handleAPI(req, res);                          │
+│      } else {                                        │
+│        serveStatic(req, res);                        │
+│      }                                               │
+│    })                                                │
+│                                                       │
+└─────────────────────────────────────────────────────┘
+           ↓ Direct function calls (same process)
+┌─────────────────────────────────────────────────────┐
+│                 MCP Server (Existing)                │
+│  (BlackboardStore, DecisionStore, GraphStore)        │
+│                                                       │
+│  Dashboard reads from stores directly —              │
+│  No MCP protocol overhead for internal access        │
+└─────────────────────────────────────────────────────┘
+```
+
+## Security Considerations
+
+**For embedded dashboard:**
+
+1. **Bind to localhost only** — Dashboard should only be accessible from the machine running the MCP server:
+   ```typescript
+   server.listen(port, '127.0.0.1');  // NOT '0.0.0.0'
+   ```
+
+2. **No authentication needed** — Dashboard is local-only, same trust boundary as MCP server itself. User who runs `twining-mcp` has full filesystem access anyway.
+
+3. **Path traversal protection** — Always validate static file paths stay within static directory (shown in code example above).
+
+4. **Read-only API** — Dashboard endpoints should never modify data. All writes go through MCP tools. This enforces audit trail and decision rationale.
+
+5. **CSP headers** (optional hardening):
+   ```typescript
+   response.setHeader('Content-Security-Policy',
+     "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.skypack.dev https://unpkg.com; style-src 'self' 'unsafe-inline';");
+   ```
+
+   Note: `'unsafe-inline'` needed for inline scripts in HTML. Could eliminate by extracting to .js files.
+
+## Performance Targets
+
+| Metric | Target | Notes |
+|--------|--------|-------|
+| Dashboard page load | < 200ms | Static HTML + inline critical CSS |
+| Graph render (500 nodes) | < 1s | cytoscape.js is optimized for this scale |
+| Timeline render (1000 decisions) | < 500ms | vis-timeline handles this easily (tested up to 10k items) |
+| API response time | < 50ms | Direct store access, no network, no MCP protocol serialization |
+| Polling overhead | < 5% CPU | 3s interval, lightweight status check (count queries only) |
+| Memory footprint | < 50MB | Visualization libraries cached in browser (not server RAM) |
+| HTTP server startup | < 10ms | Native http.createServer is instant (no framework initialization) |
+
+## Environment Variables
+
+```bash
+# Enable dashboard server (disabled by default)
+TWINING_DASHBOARD=true
+
+# Dashboard port (default: 3737)
+TWINING_DASHBOARD_PORT=3737
+
+# Dashboard host (default: 127.0.0.1 for security)
+# NEVER set to 0.0.0.0 — dashboard is local-only
+TWINING_DASHBOARD_HOST=127.0.0.1
+```
+
+## Version Compatibility
+
+| Package | Version | Compatible With | Notes |
+|---------|---------|-----------------|-------|
+| cytoscape | ^3.33.1 | All modern browsers (ES6+) | No peer dependencies. UMD build available for script tag. Tested with Chrome 90+, Firefox 88+, Safari 14+. |
+| vis-timeline | ^8.5.0 | All modern browsers (ES6+) | Standalone build bundles all deps. No vis-network needed. Requires ES6 Proxy support. |
+| mime | ^4.0.4 | Node.js >= 16 | Latest major version (v4 released Dec 2023). Zero dependencies. Breaking change from v3: removed default_type (now returns null for unknown types). |
+| force-graph | ^1.51.1 | All modern browsers (ES6+) | Optional alternative. Canvas-based rendering. Requires ES6 modules. |
+| Node.js http module | Built-in | Node.js >= 18 (project requirement) | No version to manage — stdlib. http/2 available via http2 module if needed later. |
+
+## Existing Stack (No Changes)
+
+These are already validated and installed. No changes needed for dashboard milestone:
+
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| @modelcontextprotocol/sdk | ^1.26.0 | MCP server framework |
+| TypeScript | ^5.9.3 | Language |
+| Node.js | >=18 | Runtime |
+| ulid | ^3.0.2 | ID generation |
+| proper-lockfile | ^4.1.2 | File locking |
+| js-yaml | ^4.1.0 | Config parsing |
+| zod | ^3.25.0 (via SDK) | Schema validation |
+| vitest | ^4.0.18 | Testing |
+
+**Note:** `@huggingface/transformers` is already installed for embeddings (v3.8.1). This is heavier than ideal but acceptable as it's already a dependency.
 
 ## Sources
 
-- [@modelcontextprotocol/sdk npm](https://www.npmjs.com/package/@modelcontextprotocol/sdk) -- verified 1.26.0 is latest, checked peer deps
-- [MCP TypeScript SDK GitHub](https://github.com/modelcontextprotocol/typescript-sdk) -- server patterns, tool registration API
-- [MCP SDK server docs](https://github.com/modelcontextprotocol/typescript-sdk/blob/main/docs/server.md) -- registerTool, StdioServerTransport
-- [onnxruntime-node npm](https://www.npmjs.com/package/onnxruntime-node) -- verified 1.24.1 is latest
-- [ONNX Runtime releases](https://onnxruntime.ai/docs/reference/releases-servicing.html) -- version history and platform support
-- [Xenova/all-MiniLM-L6-v2 HuggingFace](https://huggingface.co/Xenova/all-MiniLM-L6-v2) -- ONNX model weights, usage examples
-- [@huggingface/transformers npm](https://www.npmjs.com/package/@huggingface/transformers) -- evaluated and rejected (48MB, stale onnxruntime pin)
-- [proper-lockfile GitHub](https://github.com/moxystudio/node-proper-lockfile) -- mkdir strategy, stale detection
-- [ulid npm](https://www.npmjs.com/package/ulid) -- verified 3.0.2 is latest
-- [zod npm](https://www.npmjs.com/package/zod) -- verified 4.3.6 is latest, compatible with MCP SDK
-- [Vitest 4.0 release](https://www.infoq.com/news/2025/12/vitest-4-browser-mode/) -- verified 4.0.18 is current
-- [js-yaml vs yaml comparison](https://npm-compare.com/js-yaml,yaml,yamljs) -- performance and feature comparison
-- npm registry (`npm view`) -- all version numbers verified directly against registry on 2026-02-16
+### HTTP Server
+- [How To Create a Web Server in Node.js with the HTTP Module | DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-create-a-web-server-in-node-js-with-the-http-module) — HIGH confidence
+- [Node.js HTTP Module Official Docs](https://nodejs.org/api/http.html) — Official docs, HIGH confidence
+- [Express vs Native HTTP Performance Comparison](https://medium.com/deno-the-complete-reference/the-hidden-cost-of-using-framework-express-vs-native-http-servers-ed761a5cfc4c) — Performance benchmarks, MEDIUM confidence
+- [Node.js Best Practices 2026](https://www.bacancytechnology.com/blog/node-js-best-practices) — MEDIUM confidence
+
+### Graph Visualization
+- [cytoscape.js Official Site](https://js.cytoscape.org/) — Official docs, HIGH confidence
+- [cytoscape - npm](https://www.npmjs.com/package/cytoscape) — Version 3.33.1 verified, HIGH confidence
+- [Cytoscape.js GitHub](https://github.com/cytoscape/cytoscape.js) — Bundle size from .size-snapshot.json, HIGH confidence
+- [force-graph - npm](https://www.npmjs.com/package/force-graph) — Version 1.51.1 verified, MEDIUM confidence
+- [D3.js](https://d3js.org/) — Alternative considered, HIGH confidence
+
+### Timeline Visualization
+- [vis-timeline Official Docs](https://visjs.github.io/vis-timeline/docs/timeline/) — HIGH confidence
+- [vis-timeline - npm](https://www.npmjs.com/package/vis-timeline) — Version 8.5.0 verified, HIGH confidence
+- [vis-timeline Standalone Build Example](https://visjs.github.io/vis-timeline/examples/timeline/standalone-build.html) — Vanilla JS usage, HIGH confidence
+- [Timeline.js](https://timeline.knightlab.com/) — Alternative evaluated, MEDIUM confidence
+
+### Polling vs SSE/WebSockets
+- [Long Polling vs Server-Sent Events vs WebSockets Guide](https://medium.com/@asharsaleem4/long-polling-vs-server-sent-events-vs-websockets-a-comprehensive-guide-fb27c8e610d0) — MEDIUM confidence
+- [Understanding Server-Sent Events with Node.js](https://itsfuad.medium.com/understanding-server-sent-events-sse-with-node-js-3e881c533081) — MEDIUM confidence
+- [WebSockets vs SSE vs Polling Comparison](https://rxdb.info/articles/websockets-sse-polling-webrtc-webtransport.html) — HIGH confidence
+
+### Static File Serving
+- [Serving Static Resources in Node.js](https://www.tutorialsteacher.com/nodejs/serving-static-files-in-nodejs) — MEDIUM confidence
+- [Node HTTP Servers for Static File Serving](https://stackabuse.com/node-http-servers-for-static-file-serving/) — MEDIUM confidence
+- [Create a static file server with Node.js](https://www.30secondsofcode.org/js/s/nodejs-static-file-server/) — Code example, MEDIUM confidence
+
+### CORS
+- [Node.js CORS Guide](https://www.stackhawk.com/blog/nodejs-cors-guide-what-it-is-and-how-to-enable-it/) — MEDIUM confidence
+- [cors - npm](https://www.npmjs.com/package/cors) — Package info (evaluated, not using), HIGH confidence
+- [Express CORS Middleware](https://expressjs.com/en/resources/middleware/cors.html) — For reference, MEDIUM confidence
+
+---
+*Stack research for: Twining MCP Dashboard (v1.2 milestone)*
+*Researched: 2026-02-16*
+*Confidence: HIGH — all libraries verified, versions current, integration patterns validated*

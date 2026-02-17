@@ -1,597 +1,620 @@
-# Architecture Patterns
+# Architecture Research: Embedded Dashboard Integration
 
-**Domain:** MCP server with file-based state, embedded semantic search, and multi-agent coordination
+**Domain:** MCP Server with Embedded HTTP Dashboard
 **Researched:** 2026-02-16
+**Confidence:** HIGH
 
----
+## Executive Summary
 
-## Recommended Architecture
+An embedded HTTP dashboard can coexist with stdio-based MCP transport in the same Node.js process. The dashboard runs on a separate port (localhost:24282) while the MCP server communicates via stdio. Both access the same engine layer, creating a "dual transport" architecture where agents write via MCP tools (stdio) and humans monitor via web UI (HTTP).
 
-Twining is a **layered architecture with dependency injection**, following the same structural conventions observed in the official MCP memory server but extended with an additional engine layer to accommodate business logic complexity. The design spec already prescribes this architecture; the research below validates it and adds precision on component boundaries, data flow, and build order.
+**Key Finding:** This is a validated pattern. Serena MCP and the MCP dual-transport architecture demonstrate that stdio and HTTP servers can run in the same process with conditional initialization based on environment/config.
 
-### High-Level Architecture (Validated)
+## Standard Architecture
 
-```
-                      ┌──────────────────────────┐
-                      │   MCP Protocol Surface    │
-                      │   (StdioServerTransport)  │
-                      └────────────┬─────────────┘
-                                   │
-                      ┌────────────┴─────────────┐
-                      │   McpServer (SDK v1.26+)  │
-                      │   registerTool() per tool │
-                      └────────────┬─────────────┘
-                                   │
-              ┌────────────────────┼────────────────────┐
-              │                    │                     │
-    ┌─────────┴──────┐  ┌────────┴────────┐  ┌────────┴────────┐
-    │  Tools Layer    │  │  Tools Layer    │  │  Tools Layer    │
-    │  (blackboard,   │  │  (decision,     │  │  (context,      │
-    │   lifecycle)    │  │   graph)        │  │   lifecycle)    │
-    └─────────┬──────┘  └────────┬────────┘  └────────┬────────┘
-              │                  │                     │
-              └─────────┬────────┴─────────┬───────────┘
-                        │                  │
-              ┌─────────┴──────┐  ┌────────┴────────┐
-              │  Engine Layer   │  │  Embeddings     │
-              │  (blackboard,   │  │  (lazy-loaded,  │
-              │   decisions,    │  │   fallback to   │
-              │   graph,        │  │   keyword)      │
-              │   assembler,    │  │                 │
-              │   archiver)     │  └────────┬────────┘
-              └─────────┬──────┘           │
-                        │                  │
-              ┌─────────┴──────────────────┴────────┐
-              │         Storage Layer                │
-              │  (file-store, blackboard-store,      │
-              │   decision-store, graph-store)        │
-              └─────────────────┬────────────────────┘
-                                │
-              ┌─────────────────┴────────────────────┐
-              │          File System (.twining/)      │
-              │  blackboard.jsonl, decisions/*.json,  │
-              │  graph/*.json, embeddings/*.index     │
-              └──────────────────────────────────────┘
-```
-
-### Component Boundaries
-
-| Component | Responsibility | Communicates With | Never Touches |
-|-----------|---------------|-------------------|---------------|
-| `src/index.ts` | Entry point: create McpServer, connect StdioServerTransport, register all tools | server.ts, config.ts | Storage directly |
-| `src/server.ts` | Tool registration orchestration. Creates engine instances, wires tool handlers to McpServer.registerTool() | McpServer SDK, tools/, engine/, config | File system |
-| `src/config.ts` | Load .twining/config.yml, merge defaults, provide typed config | storage/file-store (for reading config file) | Engine logic |
-| `src/tools/*-tools.ts` | Thin adapters: validate MCP input, call engine, format MCP output. One file per tool group. | engine/ layer only | Storage directly, file system |
-| `src/engine/blackboard.ts` | Blackboard business logic: post entries, filter, query | storage/blackboard-store, embeddings/ | File system directly |
-| `src/engine/decisions.ts` | Decision logic: create, supersede, conflict detection, trace dependency chains | storage/decision-store, engine/blackboard (for posting cross-references) | File system directly |
-| `src/engine/graph.ts` | Graph traversal: neighbors, path finding, entity/relation management | storage/graph-store | File system directly |
-| `src/engine/context-assembler.ts` | Build tailored context packages: score, rank, fill token budget | engine/blackboard, engine/decisions, engine/graph, embeddings/search | Storage directly |
-| `src/engine/archiver.ts` | Move old entries to archive, rebuild indexes, post summaries | storage/blackboard-store, storage/file-store, embeddings/index-manager | External services |
-| `src/embeddings/embedder.ts` | ONNX model loading + inference. Lazy singleton. Graceful fallback. | onnxruntime-node (native), model files | Storage layer |
-| `src/embeddings/index-manager.ts` | CRUD for embedding index JSON files | storage/file-store | Engine logic |
-| `src/embeddings/search.ts` | Cosine similarity search over index | embeddings/index-manager, embeddings/embedder | Storage layer |
-| `src/storage/file-store.ts` | Primitive file I/O: read/write JSON, read/append JSONL, advisory locking via proper-lockfile | Node.js fs, proper-lockfile | Business logic |
-| `src/storage/blackboard-store.ts` | Blackboard CRUD: append entry, read all, read filtered | storage/file-store | Engine logic |
-| `src/storage/decision-store.ts` | Decision CRUD: write decision file, update index, read by ID/scope | storage/file-store | Engine logic |
-| `src/storage/graph-store.ts` | Graph CRUD: read/write entities.json and relations.json | storage/file-store | Engine logic |
-| `src/utils/types.ts` | Shared TypeScript interfaces for all data models | Nothing (leaf module) | Everything |
-| `src/utils/ids.ts` | ULID generation wrapper | ulid package | Everything |
-| `src/utils/tokens.ts` | Token estimation (text.length / 4) | Nothing (pure function) | Everything |
-
-### Dependency Direction (Strict)
+### System Overview
 
 ```
-tools/ --> engine/ --> storage/ --> file system
-             |
-             +--> embeddings/ --> storage/ --> file system
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      MCP Client (Claude Desktop)                         │
+│                                stdio transport                            │
+└────────────────────────────────┬────────────────────────────────────────┘
+                                 │ JSON-RPC 2.0
+                                 ↓
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      Twining MCP Server Process                          │
+├─────────────────────────────────────────────────────────────────────────┤
+│  ┌────────────────────┐                    ┌──────────────────────┐     │
+│  │  StdioTransport    │                    │  HTTP Server (new)   │     │
+│  │  (port: stdin/out) │                    │  (port: 24282)       │     │
+│  └─────────┬──────────┘                    └──────────┬───────────┘     │
+│            │                                           │                 │
+│            ↓                                           ↓                 │
+│  ┌────────────────────────────────────────────────────────────────┐     │
+│  │                    MCP Tools Layer                              │     │
+│  │  blackboard-tools, decision-tools, graph-tools, etc.            │     │
+│  └─────────┬──────────────────────────────────────────┬───────────┘     │
+│            │                                           │                 │
+│            ↓                                           ↓                 │
+│  ┌────────────────────────────────────────────────────────────────┐     │
+│  │                    Engine Layer                                 │     │
+│  │  blackboard, decisions, graph, context-assembler, etc.          │     │
+│  └─────────┬──────────────────────────────────────────┬───────────┘     │
+│            │                                           │                 │
+│            ↓                                           ↓                 │
+│  ┌────────────────────────────────────────────────────────────────┐     │
+│  │                    Storage Layer                                │     │
+│  │  blackboard-store, decision-store, graph-store                  │     │
+│  └────────────────────────────────────────────────────────────────┘     │
+│                                                                           │
+│  ┌────────────────────────────────────────────────────────────────┐     │
+│  │              Dashboard API Routes (new)                         │     │
+│  │  GET /api/status, /api/blackboard, /api/decisions, etc.         │     │
+│  │  SSE /api/stream (Server-Sent Events for real-time updates)    │     │
+│  └─────────────────────────────────────────────────────────────────┘     │
+│                                                                           │
+│  ┌────────────────────────────────────────────────────────────────┐     │
+│  │              Static File Serving (new)                          │     │
+│  │  GET /dashboard → static/index.html                             │     │
+│  │  GET /static/* → static assets (CSS, JS)                        │     │
+│  └────────────────────────────────────────────────────────────────┘     │
+│                                                                           │
+└─────────────────────────────────────────────────────────────────────────┘
+                                 │
+                                 ↓
+                    .twining/ (file-based storage)
+                    ├── blackboard.jsonl
+                    ├── decisions/
+                    ├── graph/
+                    └── config.yml
 ```
 
-**Rule:** Dependencies flow downward only. No layer may import from a layer above it. The tools layer never imports from storage. The engine layer never imports from tools. This is the single most important architectural constraint.
+### Component Responsibilities
 
----
+| Component | Responsibility | Integration Type |
+|-----------|----------------|------------------|
+| **HTTP Server** | Serves dashboard UI and API endpoints on localhost:24282 | NEW - wraps existing engine layer |
+| **Dashboard API Routes** | REST endpoints exposing engine state as JSON | NEW - reads from existing stores |
+| **SSE Stream** | Server-Sent Events for real-time updates (1-second polling) | NEW - pushes state changes to browser |
+| **Static File Server** | Serves bundled HTML/JS/CSS (no build step) | NEW - vanilla JS/htmx/Alpine.js |
+| **StdioTransport** | Existing MCP stdio communication | UNCHANGED - runs in parallel with HTTP |
+| **Engine Layer** | Existing business logic (blackboard, decisions, graph) | UNCHANGED - accessed by both stdio and HTTP |
+| **Storage Layer** | File I/O to .twining/ directory | UNCHANGED - single source of truth |
+
+## Recommended Project Structure
+
+```
+src/
+├── dashboard/           # NEW - Dashboard-specific code
+│   ├── server.ts        # HTTP server initialization (Express)
+│   ├── routes.ts        # API route definitions
+│   ├── stream.ts        # SSE implementation for real-time updates
+│   └── static/          # Bundled static assets (no build step)
+│       ├── index.html   # Dashboard UI (vanilla HTML)
+│       ├── app.js       # Vanilla JS + htmx + Alpine.js (~29KB total)
+│       ├── style.css    # Minimal CSS
+│       └── lib/         # Vendored dependencies (htmx, Alpine.js)
+│           ├── htmx.min.js      # 14KB
+│           └── alpine.min.js    # 15KB
+├── engine/              # EXISTING - Business logic
+│   ├── blackboard.ts
+│   ├── decisions.ts
+│   ├── graph.ts
+│   ├── context-assembler.ts
+│   ├── archiver.ts
+│   ├── exporter.ts
+│   └── planning-bridge.ts
+├── storage/             # EXISTING - File I/O layer
+│   ├── file-store.ts
+│   ├── blackboard-store.ts
+│   ├── decision-store.ts
+│   ├── graph-store.ts
+│   └── init.ts
+├── tools/               # EXISTING - MCP tool handlers
+│   ├── blackboard-tools.ts
+│   ├── decision-tools.ts
+│   ├── context-tools.ts
+│   ├── graph-tools.ts
+│   ├── lifecycle-tools.ts
+│   └── export-tools.ts
+├── index.ts             # MODIFIED - Entry point, starts both transports
+└── server.ts            # MODIFIED - MCP server + dashboard server setup
+```
+
+### Structure Rationale
+
+- **src/dashboard/:** Isolated from core MCP functionality. Dashboard can be disabled via config without affecting stdio transport.
+- **src/dashboard/static/:** All static assets are bundled (vendored), no build step required. Copy files as-is during deployment.
+- **src/index.ts:** Modified to conditionally start HTTP server based on config (default: enabled on port 24282).
+- **src/server.ts:** Modified to expose a `getDashboardState()` method that dashboard routes can call to read current state.
+
+## Architectural Patterns
+
+### Pattern 1: Dual Transport (Stdio + HTTP)
+
+**What:** Run two transport layers in the same Node.js process—stdio for MCP communication, HTTP for dashboard access.
+
+**When to use:** When you need a web UI alongside a stdio-based MCP server without disrupting the existing architecture.
+
+**Trade-offs:**
+- **Pro:** Single process, shared in-memory state, no IPC complexity
+- **Pro:** HTTP server is optional—can be disabled for headless operation
+- **Con:** HTTP server increases memory footprint (~10-20MB for Express + SSE)
+- **Con:** Port conflicts possible if 24282 is in use (fallback to random port)
+
+**Example:**
+```typescript
+// src/index.ts
+async function main(): Promise<void> {
+  const projectRoot = parseProjectRoot();
+  const config = loadConfig(projectRoot);
+
+  // Create MCP server (existing)
+  const mcpServer = createServer(projectRoot);
+  const stdioTransport = new StdioServerTransport();
+  await mcpServer.connect(stdioTransport);
+
+  // Conditionally start HTTP dashboard
+  if (config.dashboard?.enabled !== false) {
+    const dashboardPort = config.dashboard?.port || 24282;
+    await startDashboardServer(mcpServer, projectRoot, dashboardPort);
+  }
+}
+```
+
+### Pattern 2: Read-Only Dashboard (No Write API)
+
+**What:** Dashboard exposes read-only API endpoints. All mutations happen through MCP tools (stdio transport only).
+
+**When to use:** When dashboard is for monitoring/debugging, not primary interaction. Simplifies security model.
+
+**Trade-offs:**
+- **Pro:** No authentication needed (localhost only, read-only)
+- **Pro:** Eliminates race conditions between HTTP writes and MCP writes
+- **Pro:** Clear separation: agents write (stdio), humans read (HTTP)
+- **Con:** Can't use dashboard to manually post blackboard entries or decisions (must use MCP client)
+
+**Example:**
+```typescript
+// src/dashboard/routes.ts
+import type { Express } from 'express';
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+
+export function registerDashboardRoutes(app: Express, getState: () => DashboardState) {
+  // Read-only API routes
+  app.get('/api/status', (req, res) => {
+    const state = getState();
+    res.json({
+      blackboard_entries: state.blackboardStore.count(),
+      active_decisions: state.decisionStore.countActive(),
+      graph_entities: state.graphStore.countEntities(),
+      last_activity: state.blackboardStore.getLastTimestamp()
+    });
+  });
+
+  app.get('/api/blackboard', (req, res) => {
+    const { limit = 50, entry_type } = req.query;
+    const state = getState();
+    const entries = state.blackboardStore.read({ limit, entry_type });
+    res.json({ entries });
+  });
+
+  // No POST/PUT/DELETE routes - writes only via MCP tools
+}
+```
+
+### Pattern 3: SSE for Real-Time Updates
+
+**What:** Use Server-Sent Events (SSE) to push state updates to dashboard every 1 second.
+
+**When to use:** For dashboards that need live data without client polling overhead.
+
+**Trade-offs:**
+- **Pro:** Efficient—single long-lived HTTP connection, server pushes when state changes
+- **Pro:** Automatic reconnection if connection drops (native browser EventSource)
+- **Pro:** Native browser API (EventSource), no library needed
+- **Con:** Unidirectional (server → client only, but that's what we want for read-only dashboard)
+- **Con:** ~1KB/s bandwidth per connected client (negligible for localhost)
+
+**Example:**
+```typescript
+// src/dashboard/stream.ts
+import type { Response } from 'express';
+
+export function registerSSE(app: Express, getState: () => DashboardState) {
+  app.get('/api/stream', (req, res: Response) => {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
+
+    const interval = setInterval(() => {
+      const state = getState();
+      res.write(`data: ${JSON.stringify({
+        blackboard_count: state.blackboardStore.count(),
+        decision_count: state.decisionStore.countActive(),
+        last_activity: state.blackboardStore.getLastTimestamp()
+      })}\n\n`);
+    }, 1000); // Poll every 1 second
+
+    req.on('close', () => clearInterval(interval));
+  });
+}
+```
+
+Client-side (vanilla JS):
+```javascript
+// src/dashboard/static/app.js
+const eventSource = new EventSource('/api/stream');
+eventSource.onmessage = (event) => {
+  const state = JSON.parse(event.data);
+  document.getElementById('blackboard-count').textContent = state.blackboard_count;
+  document.getElementById('decision-count').textContent = state.decision_count;
+};
+```
+
+### Pattern 4: No-Build Frontend (htmx + Alpine.js)
+
+**What:** Use htmx for AJAX/HTML updates and Alpine.js for client-side state, avoiding build tooling.
+
+**When to use:** When you want dynamic UI without npm build scripts, webpack, or React.
+
+**Trade-offs:**
+- **Pro:** Zero build step—copy static files as-is
+- **Pro:** Tiny bundle size (htmx 14KB + Alpine.js 15KB = 29KB total)
+- **Pro:** Server renders HTML, client enhances with minimal JS
+- **Con:** Not suited for complex SPAs (but dashboard is simple CRUD UI)
+- **Con:** Less tooling/IDE support than React/Vue
+
+**Example:**
+```html
+<!-- src/dashboard/static/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Twining Dashboard</title>
+  <script src="/static/lib/htmx.min.js"></script>
+  <script src="/static/lib/alpine.min.js" defer></script>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <!-- htmx fetches /api/blackboard and injects response here -->
+  <div hx-get="/api/blackboard" hx-trigger="load, every 2s" hx-swap="innerHTML">
+    Loading blackboard entries...
+  </div>
+
+  <!-- Alpine.js for client-side dropdown state -->
+  <div x-data="{ open: false }">
+    <button @click="open = !open">Toggle Filter</button>
+    <div x-show="open">
+      <!-- Filter UI -->
+    </div>
+  </div>
+</body>
+</html>
+```
 
 ## Data Flow
 
-### Write Path: Posting a Blackboard Entry
+### Request Flow (MCP Tool Call - UNCHANGED)
 
 ```
-1. Claude calls twining_post via MCP protocol (JSON-RPC over stdio)
-2. McpServer deserializes, validates input against Zod schema
-3. blackboard-tools.ts handler receives validated args
-4. Handler calls engine/blackboard.ts.postEntry(args)
-5. Engine generates ULID, constructs full BlackboardEntry
-6. Engine calls storage/blackboard-store.ts.append(entry)
-7. Store calls file-store.ts.appendJsonl(".twining/blackboard.jsonl", entry)
-8. file-store acquires lock via proper-lockfile, appends, releases lock
-9. Engine calls embeddings/embedder.ts.embed(summary + detail)
-   - If embedder initialized: generates 384-dim vector
-   - If embedder NOT initialized: lazy-loads ONNX model first
-   - If ONNX fails: logs warning, skips embedding (keyword fallback)
-10. Engine calls embeddings/index-manager.ts.add(entry.id, vector)
-11. Handler returns { id, timestamp } to McpServer
-12. McpServer serializes response back over stdio
+Claude Desktop
+    ↓ (stdio, JSON-RPC)
+StdioServerTransport
+    ↓
+MCP Server → Tool Handler (twining_post, twining_decide, etc.)
+    ↓
+Engine Layer (BlackboardEngine, DecisionEngine)
+    ↓
+Storage Layer (append to blackboard.jsonl, write decision JSON)
+    ↓
+File System (.twining/)
 ```
 
-### Read Path: Semantic Query
+### Request Flow (Dashboard API - NEW)
 
 ```
-1. Claude calls twining_query("authentication patterns")
-2. blackboard-tools.ts handler receives args
-3. Handler calls engine/blackboard.ts.query(queryText, filters)
-4. Engine calls embeddings/search.ts.search(queryText, limit)
-5. Search calls embedder.embed(queryText) to get query vector
-6. Search loads embedding index, computes cosine similarity against all entries
-7. Search returns ranked entry IDs with relevance scores
-8. Engine calls storage/blackboard-store.ts to load full entries for top IDs
-9. Handler returns scored results
+Browser
+    ↓ (HTTP GET /api/blackboard)
+Express Router → Dashboard Route Handler
+    ↓
+getState() → Engine Layer
+    ↓
+Storage Layer (read blackboard.jsonl)
+    ↓
+JSON Response → Browser
 ```
 
-### Complex Path: Context Assembly
+### Real-Time Update Flow (SSE - NEW)
 
 ```
-1. Claude calls twining_assemble({ task, scope, max_tokens })
-2. context-tools.ts handler calls engine/context-assembler.ts.assemble(args)
-3. Assembler queries multiple sources IN PARALLEL:
-   a. decisions.getActiveForScope(scope) -- decisions affecting this scope
-   b. blackboard.query(task) -- semantically relevant entries
-   c. blackboard.getByTypes(["need","warning","question"], scope) -- open items in scope
-   d. graph.getNeighbors(scope) -- related entities
-4. Assembler scores each item using weighted formula:
-   score = recency * w1 + relevance * w2 + confidence * w3 + warning_boost * w4
-5. Assembler fills token budget in priority order (4 chars/token estimate)
-6. Returns AssembledContext (ephemeral, not stored)
+Browser (EventSource connected to /api/stream)
+    ↑ (SSE, every 1 second)
+Express SSE Route (polls getState())
+    ↑
+Engine Layer (read current counts/timestamps)
+    ↑
+Storage Layer (read file metadata, count lines)
 ```
 
-### Side-Effect Path: Recording a Decision
+### Key Data Flows
 
+1. **Stdio writes, HTTP reads:** All mutations happen via MCP tools (stdio transport). Dashboard reads state via HTTP API.
+2. **Shared engine layer:** Both transports access the same in-memory engine instances. No IPC, no state duplication.
+3. **File-based synchronization:** Storage layer is single source of truth. Both transports read from .twining/ files.
+
+## Integration Points
+
+### New Components
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| **DashboardServer** | `src/dashboard/server.ts` | HTTP server setup (Express), listen on port 24282 |
+| **DashboardRoutes** | `src/dashboard/routes.ts` | API endpoints (GET /api/status, /api/blackboard, /api/decisions, /api/graph) |
+| **SSEHandler** | `src/dashboard/stream.ts` | Server-Sent Events for real-time state updates (1-second poll) |
+| **StaticAssets** | `src/dashboard/static/` | HTML/JS/CSS (htmx + Alpine.js, no build step) |
+
+### Modified Components
+
+| Component | File | Modification |
+|-----------|------|-------------|
+| **MCP Server** | `src/server.ts` | Add `getDashboardState()` method exposing stores/engines for HTTP routes |
+| **Entry Point** | `src/index.ts` | Conditionally start HTTP server after stdio transport connects |
+| **Config Schema** | `src/config.ts` | Add `dashboard: { enabled: boolean, port: number }` (default: true, 24282) |
+
+### Unchanged Components
+
+All existing engine and storage code remains unchanged:
+- `src/engine/` — Business logic, accessed by both transports
+- `src/storage/` — File I/O, single source of truth
+- `src/tools/` — MCP tool handlers, stdio transport only
+- `src/embeddings/` — Embedding system, used by both transports via engine layer
+
+## Scaling Considerations
+
+| Scale | Dashboard Impact |
+|-------|------------------|
+| **Single user (localhost only)** | Default mode. HTTP server listens on 127.0.0.1:24282. No authentication needed. |
+| **Team (local network)** | Bind to 0.0.0.0 if needed, but MUST add authentication (HTTP Basic Auth or API key). Warn in docs. |
+| **Multi-instance (multiple MCP servers)** | Use port auto-increment (24282, 24283, ...) if default port in use. Display chosen port on startup. |
+
+### Scaling Priorities
+
+1. **First bottleneck:** SSE bandwidth with many clients. **Fix:** Increase poll interval from 1s to 5s or disable SSE for multiple clients.
+2. **Second bottleneck:** Concurrent file reads (.twining/ files). **Fix:** Add in-memory caching layer with TTL (already partially solved by engine layer).
+
+## Anti-Patterns
+
+### Anti-Pattern 1: Write API in Dashboard
+
+**What people do:** Add POST /api/blackboard to let dashboard post entries directly.
+
+**Why it's wrong:** Creates two write paths (MCP tools + HTTP API), breaking the single-writer assumption of stdio transport. Requires authentication, CSRF protection, and race condition handling.
+
+**Do this instead:** Dashboard is read-only. Use MCP client (Claude Desktop) to mutate state via stdio transport.
+
+### Anti-Pattern 2: Build Step for Frontend
+
+**What people do:** Use React/Vue with npm run build, webpack, etc.
+
+**Why it's wrong:** Adds complexity, build dependencies, and deployment overhead for a simple monitoring UI.
+
+**Do this instead:** Use htmx + Alpine.js (no build step). Vendor libraries in `src/dashboard/static/lib/`.
+
+### Anti-Pattern 3: WebSockets for Updates
+
+**What people do:** Use WebSocket for bidirectional real-time updates.
+
+**Why it's wrong:** Dashboard doesn't need client → server messages (read-only). WebSockets add protocol complexity vs. SSE.
+
+**Do this instead:** Use Server-Sent Events (SSE) for unidirectional server → client updates. Native browser API, automatic reconnect.
+
+### Anti-Pattern 4: Separate Process for Dashboard
+
+**What people do:** Run dashboard as separate Node.js process communicating via IPC or network.
+
+**Why it's wrong:** Adds IPC complexity, state synchronization, and deployment overhead. Defeats the "embedded dashboard" goal.
+
+**Do this instead:** Run HTTP server in same process as MCP server. Both access shared engine layer.
+
+## Technology Stack
+
+### HTTP Server
+
+**Recommended:** Express.js (most popular, well-documented, minimal)
+
+**Alternative:** Fastify (faster, but more complex for simple use case)
+
+**Rationale:** Express has the largest ecosystem, simplest middleware model, and best htmx integration examples.
+
+**Installation:**
+```bash
+npm install express @types/express
 ```
-1. twining_decide is called
-2. decision-tools.ts -> engine/decisions.ts.decide(args)
-3. Engine checks for conflicts (same domain + scope, different summary)
-4. IF conflict: posts warning to blackboard, marks new decision provisional
-5. Engine writes decision file to .twining/decisions/{ulid}.json
-6. Engine updates decisions/index.json with summary metadata
-7. Engine posts "decision" type entry to blackboard (cross-reference)
-8. Engine generates embedding for decision content
-9. Engine creates/updates graph entities for affected files with "decided_by" relations
-10. Returns { id, timestamp, conflict_info? }
-```
-
----
-
-## Patterns to Follow
-
-### Pattern 1: Singleton Service Registry
-
-**What:** Create engine and storage instances once during server startup, inject them into tool handlers.
-
-**When:** Always. This avoids creating new instances per request and ensures shared state (like the lazy-loaded embedder) is consistent.
 
 **Example:**
-
 ```typescript
-// src/server.ts
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-export function createServer(projectRoot: string): McpServer {
-  const server = new McpServer({
-    name: "twining-mcp",
-    version: "1.0.0"
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+export function createDashboardServer(getState: () => DashboardState, port: number) {
+  const app = express();
+
+  // Serve static files
+  app.use('/static', express.static(path.join(__dirname, 'static')));
+
+  // Register API routes
+  registerDashboardRoutes(app, getState);
+  registerSSE(app, getState);
+
+  // Root redirect to dashboard
+  app.get('/', (req, res) => res.redirect('/dashboard'));
+  app.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, 'static', 'index.html'));
   });
 
-  // Create storage layer
-  const fileStore = new FileStore(projectRoot);
-  const blackboardStore = new BlackboardStore(fileStore);
-  const decisionStore = new DecisionStore(fileStore);
-  const graphStore = new GraphStore(fileStore);
-
-  // Create embedding layer (lazy - does not load model yet)
-  const embedder = new Embedder(projectRoot);
-  const indexManager = new IndexManager(fileStore);
-  const search = new EmbeddingSearch(embedder, indexManager);
-
-  // Create engine layer
-  const blackboard = new BlackboardEngine(blackboardStore, search);
-  const decisions = new DecisionEngine(decisionStore, blackboard, search);
-  const graph = new GraphEngine(graphStore);
-  const assembler = new ContextAssembler(blackboard, decisions, graph, search);
-  const archiver = new Archiver(blackboardStore, fileStore, indexManager);
-
-  // Register tools - each group gets its engine dependencies
-  registerBlackboardTools(server, blackboard);
-  registerDecisionTools(server, decisions);
-  registerContextTools(server, assembler);
-  registerGraphTools(server, graph);
-  registerLifecycleTools(server, archiver, blackboard);
-
-  return server;
-}
-```
-
-### Pattern 2: registerTool() with Zod Schemas
-
-**What:** Use the SDK's `registerTool()` method (not the deprecated `tool()` method) with Zod v4 schemas for input validation.
-
-**When:** For every tool registration.
-
-**Why:** The SDK v1.26+ prefers `registerTool()`. The deprecated `tool()` overloads are confusing and will be removed. Zod v4 (4.3.6 installed) is the correct version for the current SDK.
-
-**Example:**
-
-```typescript
-// src/tools/blackboard-tools.ts
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
-import type { BlackboardEngine } from "../engine/blackboard.js";
-
-export function registerBlackboardTools(
-  server: McpServer,
-  blackboard: BlackboardEngine
-): void {
-  server.registerTool("twining_post", {
-    description: "Post an entry to the shared blackboard",
-    inputSchema: {
-      entry_type: z.enum([
-        "need", "offer", "finding", "decision",
-        "constraint", "question", "answer",
-        "status", "artifact", "warning"
-      ]),
-      summary: z.string().max(200),
-      detail: z.string().optional(),
-      tags: z.array(z.string()).optional(),
-      scope: z.string().default("project"),
-      relates_to: z.array(z.string()).optional(),
-      agent_id: z.string().default("main"),
-    },
-  }, async (args) => {
-    const result = await blackboard.postEntry(args);
-    return {
-      content: [{
-        type: "text",
-        text: JSON.stringify(result)
-      }]
-    };
+  app.listen(port, '127.0.0.1', () => {
+    console.error(`[Dashboard] http://localhost:${port}/dashboard`); // stderr, not stdout (stdio transport)
   });
+
+  return app;
 }
 ```
 
-### Pattern 3: Lazy Singleton for Expensive Resources
+### Frontend Stack
 
-**What:** The ONNX embedder initializes on first use, not at server startup. Uses a promise-based singleton to handle concurrent first-call races.
+**Libraries:**
+- **htmx** (14KB): AJAX requests, HTML swapping, polling
+- **Alpine.js** (15KB): Client-side state, dropdowns, modals
+- **No framework:** Vanilla HTML/CSS
 
-**When:** For the embedding system specifically.
+**CDN vs. Vendored:**
+- **Use vendored** (copy .min.js files into `src/dashboard/static/lib/`)
+- **Don't use CDN** (dashboard must work offline on localhost)
 
-**Why:** The ONNX model is ~23MB and takes time to load. The server must start instantly. Multiple concurrent first-time embedding requests must not trigger multiple model loads.
+**Installation:**
+```bash
+# Download vendored copies (one-time)
+curl -o src/dashboard/static/lib/htmx.min.js https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js
+curl -o src/dashboard/static/lib/alpine.min.js https://unpkg.com/alpinejs@3.14.3/dist/cdn.min.js
+```
+
+### SSE Implementation
+
+**Library:** None (native Node.js `http` + `res.write()`)
 
 **Example:**
-
 ```typescript
-// src/embeddings/embedder.ts
-export class Embedder {
-  private initPromise: Promise<InferenceSession> | null = null;
-  private session: InferenceSession | null = null;
-  private available: boolean = true;
+app.get('/api/stream', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
 
-  async embed(text: string): Promise<number[] | null> {
-    if (!this.available) return null;
-
-    try {
-      const session = await this.getSession();
-      // ... run inference
-      return vector;
-    } catch (err) {
-      console.error("Embedding failed, falling back to keyword search:", err);
-      this.available = false;
-      return null;
-    }
-  }
-
-  private getSession(): Promise<InferenceSession> {
-    if (this.session) return Promise.resolve(this.session);
-    if (!this.initPromise) {
-      // Single initialization promise - concurrent calls share this
-      this.initPromise = this.initialize();
-    }
-    return this.initPromise;
-  }
-
-  private async initialize(): Promise<InferenceSession> {
-    // Download model if needed, create session
-    // Set this.session on success
-    // On failure, set this.available = false and throw
-  }
-}
+  const send = () => res.write(`data: ${JSON.stringify(getState())}\n\n`);
+  const interval = setInterval(send, 1000);
+  req.on('close', () => clearInterval(interval));
+});
 ```
 
-### Pattern 4: Lock-Protected File Operations
-
-**What:** All writes to shared state files (blackboard.jsonl, decision index, graph files) are wrapped in advisory locks using proper-lockfile.
-
-**When:** Every write operation in the storage layer.
-
-**Why:** Multiple Claude agents (main session + subagents) may call MCP tools concurrently. Without locking, JSONL appends can interleave and corrupt data. Proper-lockfile uses `mkdir` strategy which is atomic on all file systems.
-
-**Example:**
-
-```typescript
-// src/storage/file-store.ts
-import lockfile from "proper-lockfile";
-
-export class FileStore {
-  async appendJsonl(filePath: string, entry: unknown): Promise<void> {
-    const release = await lockfile.lock(filePath, {
-      retries: { retries: 5, minTimeout: 50, maxTimeout: 500 },
-      stale: 10000,
-    });
-    try {
-      await fs.appendFile(filePath, JSON.stringify(entry) + "\n");
-    } finally {
-      await release();
-    }
-  }
-
-  async writeJson(filePath: string, data: unknown): Promise<void> {
-    const release = await lockfile.lock(filePath, {
-      retries: { retries: 5, minTimeout: 50, maxTimeout: 500 },
-      stale: 10000,
-    });
-    try {
-      // Write to temp file, then atomic rename
-      const tmpPath = filePath + ".tmp";
-      await fs.writeFile(tmpPath, JSON.stringify(data, null, 2));
-      await fs.rename(tmpPath, filePath);
-    } finally {
-      await release();
-    }
-  }
-}
-```
-
-### Pattern 5: Structured Error Returns (Never Throw)
-
-**What:** Tool handlers catch all errors and return structured error objects. The MCP tool surface never crashes.
-
-**When:** Every tool handler.
-
-**Why:** The design spec mandates this. A crashed tool handler breaks the entire MCP connection. Structured errors let Claude understand what went wrong and potentially retry.
-
-**Example:**
-
-```typescript
-// In tool handler
-async (args) => {
-  try {
-    const result = await engine.doThing(args);
-    return { content: [{ type: "text", text: JSON.stringify(result) }] };
-  } catch (err) {
-    return {
-      content: [{
-        type: "text",
-        text: JSON.stringify({
-          error: true,
-          message: err instanceof Error ? err.message : String(err),
-          code: classifyError(err),
-        })
-      }],
-      isError: true,
-    };
-  }
-}
-```
-
-### Pattern 6: Directory Auto-Initialization
-
-**What:** On first tool call, check for `.twining/` and create it with defaults if missing.
-
-**When:** During the first operation that touches the file system.
-
-**Why:** Zero-config progressive adoption. Users should not need to run an init command.
-
-**Example:**
-
-```typescript
-// src/storage/file-store.ts
-export class FileStore {
-  private initialized = false;
-
-  async ensureInitialized(): Promise<void> {
-    if (this.initialized) return;
-
-    const twinDir = path.join(this.projectRoot, ".twining");
-    if (!await exists(twinDir)) {
-      await fs.mkdir(twinDir, { recursive: true });
-      await fs.mkdir(path.join(twinDir, "decisions"));
-      await fs.mkdir(path.join(twinDir, "graph"));
-      await fs.mkdir(path.join(twinDir, "embeddings"));
-      await fs.mkdir(path.join(twinDir, "archive"));
-      await this.writeDefaultConfig(twinDir);
-      await this.writeDefaultGitignore(twinDir);
-      // Create empty data files
-      await fs.writeFile(path.join(twinDir, "blackboard.jsonl"), "");
-      await fs.writeFile(path.join(twinDir, "decisions", "index.json"), "[]");
-      await fs.writeFile(path.join(twinDir, "graph", "entities.json"), "[]");
-      await fs.writeFile(path.join(twinDir, "graph", "relations.json"), "[]");
-    }
-    this.initialized = true;
-  }
-}
-```
-
----
-
-## Anti-Patterns to Avoid
-
-### Anti-Pattern 1: Engine Logic in Tool Handlers
-
-**What:** Putting business logic (conflict detection, graph traversal, scoring) directly in tool handler files.
-
-**Why bad:** Tool handlers become untestable monoliths. The same logic cannot be reused (e.g., `twining_decide` needs to post to the blackboard - if blackboard logic is in the tool handler, the decision engine cannot call it).
-
-**Instead:** Tool handlers are thin adapters: validate input, call engine, format output. All logic lives in engine/.
-
-### Anti-Pattern 2: Direct File System Access from Engine
-
-**What:** Engine modules calling `fs.readFile()` or `fs.writeFile()` directly.
-
-**Why bad:** Breaks testability (tests need real file system), breaks the locking strategy (bypasses proper-lockfile), and creates hidden coupling.
-
-**Instead:** Engine accesses data only through storage/ interfaces. Tests can mock the storage layer.
-
-### Anti-Pattern 3: Eager ONNX Initialization
-
-**What:** Importing onnxruntime-node at the top level or creating InferenceSession during server startup.
-
-**Why bad:** Server startup is blocked until model loads (~2-5 seconds). If ONNX is not available on the platform (e.g., unsupported architecture), the server fails to start entirely.
-
-**Instead:** Dynamic import `await import("onnxruntime-node")` inside the lazy initializer. Wrap in try/catch. Set a flag when ONNX is unavailable and fall back to keyword matching.
-
-### Anti-Pattern 4: God Object Server Module
-
-**What:** Putting all tool registration, engine creation, and configuration in a single large server.ts file.
-
-**Why bad:** The design spec defines 18+ tool handlers across 5 tool groups. A single file would be 1000+ lines and unmaintainable.
-
-**Instead:** server.ts creates instances and calls `registerXTools(server, engine)` functions from separate files. Each tool group file is self-contained and independently testable.
-
-### Anti-Pattern 5: Shared Mutable State Without Coordination
-
-**What:** Multiple engine modules reading and writing the same files (e.g., decisions.ts writing to blackboard.jsonl directly instead of going through blackboard engine).
-
-**Why bad:** Bypasses locking, breaks single-responsibility, creates race conditions.
-
-**Instead:** Cross-cutting operations go through the proper engine. `decisions.ts` calls `blackboard.postEntry()`, not `blackboardStore.append()` directly.
-
-### Anti-Pattern 6: Synchronous File I/O
-
-**What:** Using `fs.readFileSync()` or `lockfile.lockSync()` anywhere in the codebase.
-
-**Why bad:** MCP servers handle requests over stdio. Synchronous I/O blocks the event loop, preventing the server from processing other messages. With multiple concurrent agents, this creates artificial serialization.
-
-**Instead:** All file operations are async. Use `fs.promises` (or the `node:fs/promises` module) everywhere.
-
----
-
-## Scalability Considerations
-
-| Concern | At 100 entries | At 1K entries | At 10K entries |
-|---------|---------------|---------------|----------------|
-| Blackboard read | Negligible - read full JSONL | ~50ms - full file scan | Consider index/pagination |
-| Embedding search | Brute-force cosine sim, <1ms | ~10ms brute-force | ~100ms - may need ANN index |
-| Decision index | In-memory JSON array, instant | Fine, index.json ~100KB | Fine, individual files help |
-| Graph traversal | In-memory, instant | In-memory, <10ms | May need adjacency index |
-| File locking | No contention | Rare contention | Moderate contention on blackboard.jsonl |
-| Archiving | Not needed | Optional | Required regularly |
-
-**Key insight:** The design spec's archiving strategy (keep blackboard under 500 entries) is the primary scalability mechanism. At 500 entries, brute-force cosine similarity over 384-dim vectors takes ~5ms, which is acceptable. Archiving before hitting 10K entries avoids the need for ANN indexing.
-
----
-
-## Build Order and Dependencies
-
-The build order follows the dependency graph bottom-up. Each layer can be fully tested before the layer above it is built.
-
-### Phase 1: Foundation (no dependencies)
-```
-src/utils/types.ts      -- All interfaces from the design spec
-src/utils/ids.ts        -- ULID generation wrapper
-src/utils/tokens.ts     -- Token estimation function
-```
-**Test strategy:** Unit tests for id uniqueness/sortability, token estimation accuracy.
-
-### Phase 2: Storage Layer (depends on: utils)
-```
-src/storage/file-store.ts       -- File I/O + locking primitives
-src/storage/blackboard-store.ts -- Blackboard CRUD on top of file-store
-src/storage/decision-store.ts   -- Decision CRUD on top of file-store
-src/storage/graph-store.ts      -- Graph CRUD on top of file-store
-src/config.ts                   -- Config loading (uses file-store)
-```
-**Build order within phase:** file-store first (it is the foundation), then the three domain stores in any order, then config.
-
-**Test strategy:** Each store tested with vitest using temp directories. Verify locking behavior by simulating concurrent appends.
-
-### Phase 3: Engine Layer (depends on: storage, utils)
-```
-src/engine/blackboard.ts         -- Blackboard logic (no embeddings yet)
-src/engine/decisions.ts          -- Decision logic + conflict detection
-src/engine/graph.ts              -- Graph traversal
-src/engine/archiver.ts           -- Archive logic
-```
-**Build order within phase:** blackboard first (decisions cross-references it), then decisions, graph, archiver in any order.
-
-**Test strategy:** Mock storage layer. Test business logic independently.
-
-### Phase 4: Embeddings Layer (depends on: storage, utils)
-```
-src/embeddings/embedder.ts       -- ONNX lazy loading + fallback
-src/embeddings/index-manager.ts  -- Embedding index CRUD
-src/embeddings/search.ts         -- Cosine similarity search
-```
-**Build order within phase:** embedder first, then index-manager, then search.
-
-**Test strategy:** Test with mock vectors (not real ONNX) for unit tests. One integration test with real model.
-
-### Phase 5: Wire Embeddings into Engine
-```
-Update engine/blackboard.ts to use embeddings on post
-Update engine/decisions.ts to use embeddings on decide
-src/engine/context-assembler.ts  -- Full context assembly (needs all engines + search)
-```
-**Why separate phase:** Context assembler depends on everything. Embeddings integration into blackboard/decisions is a cross-cutting concern. Separating this avoids premature coupling during initial engine development.
-
-### Phase 6: Tool Handlers (depends on: engine, embeddings)
-```
-src/tools/blackboard-tools.ts
-src/tools/decision-tools.ts
-src/tools/context-tools.ts
-src/tools/graph-tools.ts
-src/tools/lifecycle-tools.ts
-```
-**Build order within phase:** Any order. Each is independent.
-
-**Test strategy:** Integration tests calling tool handlers with real (temp dir) storage. Verify full request/response cycle.
-
-### Phase 7: Server Wiring (depends on: tools, engine, config)
-```
-src/server.ts    -- Service registry, tool registration orchestration
-src/index.ts     -- Entry point, transport connection
-```
-**Test strategy:** Full end-to-end integration test. Start server, send MCP messages, verify responses.
-
----
-
-## Module Resolution and TypeScript Configuration
-
-**Important:** The tsconfig uses `"module": "nodenext"` and `"verbatimModuleSyntax": true`. This means:
-
-1. All imports must include `.js` extensions (even for `.ts` files): `import { FileStore } from "./storage/file-store.js"`
-2. Use `import type { ... }` for type-only imports
-3. Package.json has `"type": "commonjs"` but tsconfig uses `"module": "nodenext"` -- this needs alignment. Recommend changing package.json to `"type": "module"` for ESM, or adjust tsconfig to `"module": "commonjs"`. The MCP SDK publishes both CJS and ESM builds. Given the project uses Zod v4 (which is ESM-first), **recommend ESM** by setting `"type": "module"` in package.json.
-
----
-
-## Key Architectural Decisions from Design Spec (Validated)
-
-| Decision | Rationale | Confidence |
-|----------|-----------|------------|
-| Stdio transport, not HTTP | Claude Code connects to local MCP servers via stdio. No need for HTTP complexity. | HIGH - verified against SDK docs |
-| JSONL for blackboard, JSON for everything else | Append-only JSONL avoids read-modify-write for the highest-write-frequency store. JSON files for decisions/graph allow atomic replacement. | HIGH - standard pattern |
-| proper-lockfile for concurrency | Advisory locking using mkdir strategy works cross-platform. Sufficient for MCP server load (not database-level concurrency). | HIGH - verified |
-| Brute-force cosine similarity | At <500 entries (enforced by archiving), brute-force is faster than ANN index overhead. | HIGH - math checks out |
-| ULID for IDs | Temporally sortable, no coordination needed between agents. Lexicographic sort = temporal sort. | HIGH - well-established |
-| Zod v4 for schema validation | SDK v1.26+ uses Zod for tool input schemas. Zod v4.3.6 installed, compatible. | HIGH - verified in node_modules |
-
----
+## Build Order
+
+**Existing order (v1.0-v1.1):**
+1. src/utils/ (types, ids, tokens)
+2. src/storage/ (file-store, blackboard-store, decision-store, graph-store)
+3. src/engine/ (blackboard, decisions, graph, context-assembler, archiver)
+4. src/embeddings/ (embedder, index-manager, search)
+5. src/tools/ (one file per tool group)
+6. src/server.ts + src/index.ts (MCP registration and entry point)
+
+**New order (v1.2 with dashboard):**
+1. src/utils/ (types, ids, tokens) — UNCHANGED
+2. src/storage/ (file-store, blackboard-store, decision-store, graph-store) — UNCHANGED
+3. src/engine/ (blackboard, decisions, graph, context-assembler, archiver) — UNCHANGED
+4. src/embeddings/ (embedder, index-manager, search) — UNCHANGED
+5. src/tools/ (one file per tool group) — UNCHANGED
+6. **src/dashboard/static/ (vendor htmx, Alpine.js, write index.html, app.js, style.css)** — NEW
+7. **src/dashboard/routes.ts (API routes)** — NEW (depends on stores)
+8. **src/dashboard/stream.ts (SSE handler)** — NEW (depends on stores)
+9. **src/dashboard/server.ts (HTTP server init)** — NEW (depends on routes + stream)
+10. src/server.ts (add `getDashboardState()` method) — MODIFIED
+11. src/index.ts (conditionally start dashboard) — MODIFIED
+12. src/config.ts (add dashboard config schema) — MODIFIED
+
+**Rationale:** Dashboard is built after core MCP functionality is complete. Static assets come first (no dependencies), then routes (depend on stores), then server (depends on routes), then integration (modify entry point).
+
+## Serena Reference Implementation
+
+The Serena MCP server provides a proven reference for embedded dashboard architecture:
+
+**Dashboard URL:** `http://localhost:24282/dashboard/index.html` (same port we'll use)
+
+**Features:**
+- Displays real-time logs
+- Allows shutting down MCP server
+- Always enabled by default (with flag to disable)
+- Uses higher port if 24282 unavailable
+- Prevents zombie processes by providing UI control
+
+**Key Learnings:**
+1. **Port selection:** 24282 is a good default (high port, unlikely to conflict, same as Serena)
+2. **Default enabled:** Dashboard should be on by default (can disable via config)
+3. **Localhost only:** Bind to 127.0.0.1, not 0.0.0.0 (security)
+4. **Startup message:** Log dashboard URL to stderr (not stdout—would corrupt stdio transport)
+
+**Differences from Serena:**
+- Serena is Python/Flask, Twining will be TypeScript/Express
+- Serena includes write actions (shutdown server), Twining dashboard is read-only
+- Serena focuses on logs, Twining focuses on blackboard/decisions/graph visualization
+
+## Dashboard UI Features
+
+### Core Views
+
+1. **Status Overview (/):** Stats, last activity, health
+2. **Blackboard Timeline (/blackboard):** Recent entries, filterable by type/tags/scope
+3. **Decisions (/decisions):** Active decisions, confidence levels, trace chains
+4. **Graph Visualization (/graph):** Entity/relation explorer (simple table view, not interactive graph)
+5. **Search (/search):** Semantic search across blackboard + decisions
+
+### UI Components
+
+| Component | Implementation | Notes |
+|-----------|----------------|-------|
+| **Live Stats** | SSE + Alpine.js counter | Blackboard count, decision count, last activity |
+| **Entry Table** | htmx polling `/api/blackboard?limit=50` every 2s | Filterable, sortable |
+| **Decision Detail** | htmx GET `/api/decisions/:id` on click | Modal overlay |
+| **Graph Explorer** | htmx GET `/api/graph/neighbors/:id` | Expand/collapse neighbors |
+| **Search Box** | htmx POST `/api/search` on input debounce | Instant results |
+
+## Deployment Considerations
+
+**No deployment changes needed.** Dashboard is embedded in the same process as MCP server.
+
+**Distribution:**
+- Package `src/dashboard/static/` in npm bundle (include in `files` array in package.json)
+- Static assets copied to `dist/dashboard/static/` during `npm run build`
+
+**Runtime:**
+- Dashboard starts automatically when MCP server starts (unless disabled in config)
+- No separate deployment step
+
+**Security:**
+- Localhost only (127.0.0.1) by default
+- No authentication (trusted localhost environment)
+- If exposing to network: MUST add HTTP Basic Auth or API key validation
 
 ## Sources
 
-- [MCP TypeScript SDK - GitHub](https://github.com/modelcontextprotocol/typescript-sdk) -- HIGH confidence, primary source
-- [MCP SDK server.md documentation](https://github.com/modelcontextprotocol/typescript-sdk/blob/main/docs/server.md) -- HIGH confidence, official docs
-- [MCP Memory Server](https://github.com/modelcontextprotocol/servers/tree/main/src/memory) -- HIGH confidence, reference implementation
-- [proper-lockfile - npm](https://www.npmjs.com/package/proper-lockfile) -- HIGH confidence, verified API
-- [all-MiniLM-L6-v2 ONNX](https://huggingface.co/Xenova/all-MiniLM-L6-v2) -- HIGH confidence, model source
-- [Blackboard Pattern for Multi-Agent Systems](https://medium.com/@dp2580/building-intelligent-multi-agent-systems-with-mcps-and-the-blackboard-pattern-to-build-systems-a454705d5672) -- MEDIUM confidence, pattern validation
-- [Cosine Similarity TypeScript Implementation](https://alexop.dev/posts/how-to-implement-a-cosine-similarity-function-in-typescript-for-vector-comparison/) -- MEDIUM confidence, implementation reference
-- [Node.js File Locking](https://blog.logrocket.com/understanding-node-js-file-locking/) -- MEDIUM confidence, pattern validation
-- Installed SDK type definitions at `node_modules/@modelcontextprotocol/sdk/dist/esm/server/mcp.d.ts` -- HIGH confidence, verified locally
+### MCP Architecture & Transport
+- [Dual-Transport MCP Servers: STDIO vs. HTTP Explained](https://medium.com/@kumaran.isk/dual-transport-mcp-servers-stdio-vs-http-explained-bd8865671e1f) — Demonstrates running stdio and HTTP transports in same process with conditional initialization
+- [Building an MCP Server the Official Way: STDIO Core + HTTP Gateway Explained](https://blog.popescul.com/posts/2026/01/15/mcp-server-official-way/) — Architecture patterns for dual-transport MCP servers
+- [MCP Server Transports: STDIO, Streamable HTTP & SSE](https://docs.roocode.com/features/mcp/server-transports) — Technical details on MCP transport types
+
+### Node.js HTTP & Express
+- [Express serve-static middleware](https://expressjs.com/en/resources/middleware/serve-static.html) — Official documentation for serving static files in Express
+- [Node.js HTTP server listen on multiple ports](https://onelinerhub.com/nodejs/http-server-listen-on-multiple-ports) — Confirms single Node.js process can listen on multiple ports
+- [Express.js Middleware Architecture Deep Dive](https://www.grizzlypeaksoftware.com/library/expressjs-middleware-architecture-deep-dive-u03rb1on) — Middleware ordering and architecture patterns
+
+### Server-Sent Events (SSE)
+- [Why Server-Sent Events (SSE) are ideal for Real-Time Updates](https://talent500.com/blog/server-sent-events-real-time-updates/) — SSE vs polling vs WebSockets comparison
+- [Understanding Server-Sent Events (SSE) with Node.js](https://itsfuad.medium.com/understanding-server-sent-events-sse-with-node-js-3e881c533081) — Implementation patterns for SSE in Node.js
+- [WebSockets vs. SSE vs. Long Polling: Which Should You Use?](https://blog.openreplay.com/websockets-sse-long-polling/) — Technical comparison of real-time update strategies
+
+### No-Build Frontend (htmx + Alpine.js)
+- [HTMX and Alpine.js: How to combine two great, lean front ends](https://www.infoworld.com/article/3856520/htmx-and-alpine-js-how-to-combine-two-great-lean-front-ends.html) — Complementary use cases, no build step required
+- [Why Developers Are Ditching Frameworks for Vanilla JavaScript](https://thenewstack.io/why-developers-are-ditching-frameworks-for-vanilla-javascript/) — Trend toward zero-build tooling in 2026
+- [Django, HTMX and Alpine.js: Modern websites, JavaScript optional](https://www.saaspegasus.com/guides/modern-javascript-for-django-developers/htmx-alpine/) — Architecture patterns for htmx + Alpine.js
+
+### Serena Reference Implementation
+- [The Dashboard and GUI Tool — Serena Documentation](https://oraios.github.io/serena/02-usage/060_dashboard.html) — Official Serena dashboard implementation details
+- [Serena MCP Setup Guide: Claude Code, Codex & JetBrains (2026)](https://smartscope.blog/en/generative-ai/claude/serena-mcp-implementation-guide/) — Dashboard configuration and usage patterns
+- [GitHub - oraios/serena](https://github.com/oraios/serena) — Reference implementation source code
+
+---
+*Architecture research for: Embedded Dashboard Integration*
+*Researched: 2026-02-16*
