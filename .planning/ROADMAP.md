@@ -45,11 +45,11 @@
   3. Dashboard serves a static page that loads without errors in the browser
   4. Server handles port conflicts gracefully by trying subsequent ports
   5. Server shuts down cleanly when MCP process exits
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 07-01: TBD
-- [ ] 07-02: TBD
+- [ ] 07-01-PLAN.md -- Core HTTP server module (config, static serving, port retry, health endpoint, tests)
+- [ ] 07-02-PLAN.md -- Static assets, MCP lifecycle integration, browser auto-open, graceful shutdown, build pipeline
 
 ### Phase 8: Observability Dashboard
 **Goal**: User can browse all Twining state through the web dashboard
@@ -108,7 +108,7 @@ Phases execute in numeric order: 7 -> 8 -> 9 -> 10
 | 4. Git Commit Linking | v1.1 | 2/2 | Complete | 2026-02-17 |
 | 5. GSD Planning Bridge + Serena Docs | v1.1 | 2/2 | Complete | 2026-02-17 |
 | 6. Search + Export | v1.1 | 2/2 | Complete | 2026-02-17 |
-| 7. HTTP Server Foundation | v1.2 | 0/? | Not started | - |
+| 7. HTTP Server Foundation | v1.2 | 0/2 | Planned | - |
 | 8. Observability Dashboard | v1.2 | 0/? | Not started | - |
 | 9. Search and Filter | v1.2 | 0/? | Not started | - |
 | 10. Visualizations and Polish | v1.2 | 0/? | Not started | - |
