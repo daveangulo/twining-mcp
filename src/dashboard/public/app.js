@@ -1118,9 +1118,99 @@ function renderSearchDetail(result) {
   }
 }
 
+/* ========== Theme Toggle ========== */
+
+function initTheme() {
+  var saved = localStorage.getItem('twining-theme');
+  if (saved) {
+    setTheme(saved);
+  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    setTheme('dark');
+  }
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+      if (!localStorage.getItem('twining-theme')) {
+        setTheme(e.matches ? 'dark' : 'light');
+      }
+    });
+  }
+}
+
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  var icon = document.getElementById('theme-icon');
+  if (icon) icon.textContent = theme === 'dark' ? '\u2600' : '\u263D';
+}
+
+function toggleTheme() {
+  var current = document.documentElement.getAttribute('data-theme') || 'light';
+  var next = current === 'dark' ? 'light' : 'dark';
+  setTheme(next);
+  localStorage.setItem('twining-theme', next);
+  // Refresh cytoscape styles if graph is initialized (for Plan 10-03)
+  if (window.cyInstance) {
+    window.cyInstance.style(buildGraphStyles());
+  }
+}
+
+/* ========== View-Mode Toggles ========== */
+
+function toggleView(tab, viewName) {
+  // Update active button state
+  var toggleContainer = document.getElementById(tab + '-view-toggle');
+  if (toggleContainer) {
+    toggleContainer.querySelectorAll('.view-btn').forEach(function(b) {
+      b.classList.toggle('active', b.getAttribute('data-view') === viewName);
+    });
+  }
+  if (tab === 'decisions') {
+    document.getElementById('decisions-table-view').style.display = viewName === 'table' ? 'block' : 'none';
+    document.getElementById('decisions-timeline-view').style.display = viewName === 'timeline' ? 'block' : 'none';
+    if (viewName === 'timeline' && typeof initTimeline === 'function') initTimeline();
+  }
+  if (tab === 'graph') {
+    document.getElementById('graph-table-view').style.display = viewName === 'table' ? 'block' : 'none';
+    document.getElementById('graph-visual-view').style.display = viewName === 'visual' ? 'block' : 'none';
+    if (viewName === 'visual' && typeof initGraphVis === 'function') initGraphVis();
+  }
+}
+
+/* ========== Visualization Stubs (replaced by Plans 10-02 and 10-03) ========== */
+
+function initTimeline() {
+  // Stub -- replaced by Plan 10-02
+}
+
+function initGraphVis() {
+  // Stub -- replaced by Plan 10-03
+}
+
+function buildGraphStyles() {
+  // Stub -- replaced by Plan 10-03
+  return [];
+}
+
 /* ========== Initialization ========== */
 
 document.addEventListener("DOMContentLoaded", function() {
+  // Initialize theme (must be early to avoid flash)
+  initTheme();
+
+  // Theme toggle button
+  var themeBtn = document.getElementById('theme-toggle');
+  if (themeBtn) {
+    themeBtn.addEventListener('click', toggleTheme);
+  }
+
+  // View-mode toggle buttons
+  document.querySelectorAll('.view-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var tab = btn.getAttribute('data-tab');
+      var view = btn.getAttribute('data-view');
+      if (tab && view) toggleView(tab, view);
+    });
+  });
+
   // Tab navigation
   var tabBtns = document.querySelectorAll(".tab-btn");
   for (var i = 0; i < tabBtns.length; i++) {

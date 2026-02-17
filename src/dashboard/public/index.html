@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Twining Dashboard</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="vendor/vis-timeline-graph2d.min.css">
+  <script src="vendor/cytoscape.min.js" defer></script>
+  <script src="vendor/vis-timeline-graph2d.min.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -15,6 +18,9 @@
       <input type="text" id="global-scope" placeholder="Filter by scope (e.g., src/auth/)..." />
       <span id="scope-indicator" class="scope-indicator" style="display:none"></span>
     </div>
+    <button id="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+      <span id="theme-icon">&#9789;</span>
+    </button>
     <div class="header-status">
       <div class="connection-status">
         <span class="status-dot" id="connection-dot"></span>
@@ -114,49 +120,75 @@
 
     <!-- Decisions Tab -->
     <div class="tab-content" id="tab-decisions" style="display:none">
-      <div class="content-area">
-        <div class="list-panel">
-          <table class="data-table" id="decisions-table">
-            <thead>
-              <tr>
-                <th class="sortable-header" data-sort-key="timestamp">Timestamp</th>
-                <th class="sortable-header" data-sort-key="domain">Domain</th>
-                <th class="sortable-header" data-sort-key="scope">Scope</th>
-                <th class="sortable-header" data-sort-key="summary">Summary</th>
-                <th class="sortable-header" data-sort-key="status">Status</th>
-                <th class="sortable-header" data-sort-key="confidence">Confidence</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-          <div class="pagination" id="decisions-pagination"></div>
+      <div class="view-toggle" id="decisions-view-toggle">
+        <button class="view-btn active" data-view="table" data-tab="decisions">Table</button>
+        <button class="view-btn" data-view="timeline" data-tab="decisions">Timeline</button>
+      </div>
+      <div class="view-table" id="decisions-table-view">
+        <div class="content-area">
+          <div class="list-panel">
+            <table class="data-table" id="decisions-table">
+              <thead>
+                <tr>
+                  <th class="sortable-header" data-sort-key="timestamp">Timestamp</th>
+                  <th class="sortable-header" data-sort-key="domain">Domain</th>
+                  <th class="sortable-header" data-sort-key="scope">Scope</th>
+                  <th class="sortable-header" data-sort-key="summary">Summary</th>
+                  <th class="sortable-header" data-sort-key="status">Status</th>
+                  <th class="sortable-header" data-sort-key="confidence">Confidence</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <div class="pagination" id="decisions-pagination"></div>
+          </div>
+          <div class="detail-panel" id="decisions-detail">
+            <p class="placeholder">Select a decision to view details</p>
+          </div>
         </div>
-        <div class="detail-panel" id="decisions-detail">
-          <p class="placeholder">Select a decision to view details</p>
+      </div>
+      <div class="view-visual" id="decisions-timeline-view" style="display:none">
+        <div class="content-area">
+          <div class="list-panel">
+            <div id="timeline-container"></div>
+          </div>
+          <div class="detail-panel" id="decisions-timeline-detail">
+            <p class="placeholder">Select a timeline item to view details</p>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Graph Tab -->
     <div class="tab-content" id="tab-graph" style="display:none">
-      <div class="content-area">
-        <div class="list-panel">
-          <table class="data-table" id="graph-table">
-            <thead>
-              <tr>
-                <th class="sortable-header" data-sort-key="name">Name</th>
-                <th class="sortable-header" data-sort-key="type">Type</th>
-                <th class="sortable-header" data-sort-key="properties">Properties</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-          <div class="pagination" id="graph-pagination"></div>
-          <p id="graph-relations-info"></p>
+      <div class="view-toggle" id="graph-view-toggle">
+        <button class="view-btn active" data-view="table" data-tab="graph">Table</button>
+        <button class="view-btn" data-view="visual" data-tab="graph">Visual</button>
+      </div>
+      <div class="view-table" id="graph-table-view">
+        <div class="content-area">
+          <div class="list-panel">
+            <table class="data-table" id="graph-table">
+              <thead>
+                <tr>
+                  <th class="sortable-header" data-sort-key="name">Name</th>
+                  <th class="sortable-header" data-sort-key="type">Type</th>
+                  <th class="sortable-header" data-sort-key="properties">Properties</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <div class="pagination" id="graph-pagination"></div>
+            <p id="graph-relations-info"></p>
+          </div>
+          <div class="detail-panel" id="graph-detail">
+            <p class="placeholder">Select an entity to view details</p>
+          </div>
         </div>
-        <div class="detail-panel" id="graph-detail">
-          <p class="placeholder">Select an entity to view details</p>
-        </div>
+      </div>
+      <div class="view-visual" id="graph-visual-view" style="display:none">
+        <div id="graph-canvas"></div>
+        <div class="graph-legend" id="graph-legend"></div>
       </div>
     </div>
 
