@@ -576,6 +576,128 @@ describe("DecisionEngine.override", () => {
   });
 });
 
+describe("DecisionEngine STATE.md sync", () => {
+  const stateTemplate = `# Project State
+
+## Current Position
+
+Phase: 1 of 3
+Plan: 1 of 2
+
+## Accumulated Context
+
+### Decisions
+
+v1 decisions:
+- Previous decision here
+
+### Pending Todos
+
+None.
+`;
+
+  it("appends decision summary to STATE.md Decisions section", async () => {
+    // Create .planning/STATE.md in a separate project root
+    const projectRoot = fs.mkdtempSync(
+      path.join(os.tmpdir(), "twining-state-sync-test-"),
+    );
+    const planningDir = path.join(projectRoot, ".planning");
+    fs.mkdirSync(planningDir, { recursive: true });
+    fs.writeFileSync(path.join(planningDir, "STATE.md"), stateTemplate);
+
+    const engine = new DecisionEngine(
+      decisionStore,
+      blackboardEngine,
+      null,
+      null,
+      projectRoot,
+    );
+
+    await engine.decide(validDecisionInput({ summary: "Use Redis for caching" }));
+
+    const content = fs.readFileSync(
+      path.join(planningDir, "STATE.md"),
+      "utf-8",
+    );
+    expect(content).toContain("- Use Redis for caching");
+    // Should be in the Decisions section, before Pending Todos
+    const decisionsIdx = content.indexOf("### Decisions");
+    const todosIdx = content.indexOf("### Pending Todos");
+    const newEntryIdx = content.indexOf("- Use Redis for caching");
+    expect(newEntryIdx).toBeGreaterThan(decisionsIdx);
+    expect(newEntryIdx).toBeLessThan(todosIdx);
+
+    fs.rmSync(projectRoot, { recursive: true, force: true });
+  });
+
+  it("works normally when projectRoot is null (no sync)", async () => {
+    const engine = new DecisionEngine(
+      decisionStore,
+      blackboardEngine,
+      null,
+      null,
+      null,
+    );
+
+    const result = await engine.decide(validDecisionInput());
+    expect(result.id).toHaveLength(26);
+    // No error thrown — passes silently
+  });
+
+  it("works normally when .planning/STATE.md does not exist", async () => {
+    const projectRoot = fs.mkdtempSync(
+      path.join(os.tmpdir(), "twining-state-sync-test-"),
+    );
+    // No .planning/ directory created
+
+    const engine = new DecisionEngine(
+      decisionStore,
+      blackboardEngine,
+      null,
+      null,
+      projectRoot,
+    );
+
+    const result = await engine.decide(validDecisionInput());
+    expect(result.id).toHaveLength(26);
+    // No error thrown — passes silently
+
+    fs.rmSync(projectRoot, { recursive: true, force: true });
+  });
+
+  it("does not crash when STATE.md is missing Decisions section", async () => {
+    const projectRoot = fs.mkdtempSync(
+      path.join(os.tmpdir(), "twining-state-sync-test-"),
+    );
+    const planningDir = path.join(projectRoot, ".planning");
+    fs.mkdirSync(planningDir, { recursive: true });
+    // STATE.md without a Decisions section
+    fs.writeFileSync(
+      path.join(planningDir, "STATE.md"),
+      "# Project State\n\n## Current Position\n\nSome content here.\n",
+    );
+
+    const engine = new DecisionEngine(
+      decisionStore,
+      blackboardEngine,
+      null,
+      null,
+      projectRoot,
+    );
+
+    const result = await engine.decide(validDecisionInput());
+    expect(result.id).toHaveLength(26);
+    // No error thrown, file unchanged
+    const content = fs.readFileSync(
+      path.join(planningDir, "STATE.md"),
+      "utf-8",
+    );
+    expect(content).not.toContain("Use JWT for auth");
+
+    fs.rmSync(projectRoot, { recursive: true, force: true });
+  });
+});
+
 describe("DecisionEngine conflict detection", () => {
   it("marks new decision as provisional when same domain+scope has active decision", async () => {
     // First decision — active

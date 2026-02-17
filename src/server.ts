@@ -56,6 +56,7 @@ export function createServer(projectRoot: string): McpServer {
     blackboardEngine,
     embedder,
     indexManager,
+    projectRoot,
   );
   const graphEngine = new GraphEngine(graphStore);
   const archiver = new Archiver(

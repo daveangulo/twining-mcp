@@ -4,7 +4,10 @@
  * and cross-posts to blackboard.
  * Phase 3: Adds trace, reconsider, override, and conflict detection.
  * Generates embeddings on decide (Phase 2) with graceful fallback.
+ * Phase 5: Syncs decision summaries to .planning/STATE.md for GSD bridge.
  */
+import fs from "node:fs";
+import path from "node:path";
 import { DecisionStore } from "../storage/decision-store.js";
 import { BlackboardEngine } from "./blackboard.js";
 import { TwiningError } from "../utils/errors.js";
@@ -26,17 +29,76 @@ export class DecisionEngine {
   private readonly blackboardEngine: BlackboardEngine;
   private readonly embedder: Embedder | null;
   private readonly indexManager: IndexManager | null;
+  private readonly projectRoot: string | null;
 
   constructor(
     decisionStore: DecisionStore,
     blackboardEngine: BlackboardEngine,
     embedder?: Embedder | null,
     indexManager?: IndexManager | null,
+    projectRoot?: string | null,
   ) {
     this.decisionStore = decisionStore;
     this.blackboardEngine = blackboardEngine;
     this.embedder = embedder ?? null;
     this.indexManager = indexManager ?? null;
+    this.projectRoot = projectRoot ?? null;
+  }
+
+  /**
+   * Sync a decision summary to .planning/STATE.md.
+   * Appends to the "### Decisions" section under "## Accumulated Context".
+   * Never throws — planning sync failure must not prevent decide().
+   * Uses direct fs calls because STATE.md is a GSD planning file, not Twining data.
+   */
+  private syncToPlanning(summary: string): void {
+    if (!this.projectRoot) return;
+
+    try {
+      const statePath = path.join(this.projectRoot, ".planning", "STATE.md");
+      if (!fs.existsSync(statePath)) return;
+
+      const content = fs.readFileSync(statePath, "utf-8");
+      const lines = content.split("\n");
+
+      // Find the "### Decisions" section
+      let decisionsLineIndex = -1;
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i]!.trim() === "### Decisions") {
+          decisionsLineIndex = i;
+          break;
+        }
+      }
+
+      if (decisionsLineIndex === -1) return; // No Decisions section found
+
+      // Find the end of the Decisions section (next ### or ## header)
+      let insertIndex = lines.length; // Default: end of file
+      for (let i = decisionsLineIndex + 1; i < lines.length; i++) {
+        if (/^#{2,3}\s/.test(lines[i]!)) {
+          insertIndex = i;
+          break;
+        }
+      }
+
+      // Insert the decision summary before the next header
+      // Walk back over any trailing blank lines to insert after content
+      let insertAt = insertIndex;
+      while (insertAt > decisionsLineIndex + 1 && lines[insertAt - 1]!.trim() === "") {
+        insertAt--;
+      }
+
+      const newLine = `- ${summary}`;
+      lines.splice(insertAt, 0, newLine);
+
+      fs.writeFileSync(statePath, lines.join("\n"), "utf-8");
+    } catch (error) {
+      // Never let planning sync failure prevent the decide operation
+      console.error(
+        "[twining] STATE.md sync failed (non-fatal):",
+        error,
+      );
+    }
   }
 
   /** Record a decision with full rationale and conflict detection. */
@@ -169,6 +231,9 @@ export class DecisionEngine {
         );
       }
     }
+
+    // Sync decision summary to .planning/STATE.md (Phase 5 GSD bridge)
+    this.syncToPlanning(decision.summary);
 
     const result: {
       id: string;
