@@ -33,8 +33,10 @@ header {
   border-bottom: 1px solid var(--card-border);
   padding: 1rem 1.5rem;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
@@ -351,4 +353,124 @@ footer p {
   color: #94a3b8;
   max-width: 1200px;
   margin: 0 auto;
+}
+
+/* ========== Search Bar ========== */
+
+.search-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+  align-items: center;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.search-bar input[type="text"] {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+.search-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.search-filters select,
+.search-filters input[type="date"] {
+  padding: 0.4rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.search-filters button {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.search-filters button:hover {
+  background: #e8e8e8;
+}
+
+#search-btn {
+  background: #4a90d9;
+  color: #fff;
+  border-color: #4a90d9;
+}
+
+#search-btn:hover {
+  background: #3a7bc8;
+}
+
+/* ========== Global Scope Filter ========== */
+
+.global-scope-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.global-scope-filter label {
+  font-size: 0.85rem;
+  color: #666;
+  white-space: nowrap;
+}
+
+.global-scope-filter input {
+  width: 220px;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.global-scope-filter input.scope-active {
+  border-color: #4a90d9;
+  box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.2);
+}
+
+.scope-indicator {
+  font-size: 0.8rem;
+  color: #4a90d9;
+  white-space: nowrap;
+}
+
+/* ========== Search Status & Clickable IDs ========== */
+
+#search-status-bar {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.search-fallback-notice {
+  color: #a0522d;
+  font-size: 0.85rem;
+  font-style: italic;
+  padding: 0.25rem 1rem;
+}
+
+.clickable-id {
+  color: #4a90d9;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.clickable-id:hover {
+  color: #2a6ab9;
 }

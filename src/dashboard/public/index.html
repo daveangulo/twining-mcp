@@ -10,6 +10,11 @@
 <body>
   <header>
     <h1>Twining Dashboard</h1>
+    <div class="global-scope-filter">
+      <label for="global-scope">Scope:</label>
+      <input type="text" id="global-scope" placeholder="Filter by scope (e.g., src/auth/)..." />
+      <span id="scope-indicator" class="scope-indicator" style="display:none"></span>
+    </div>
     <div class="header-status">
       <div class="connection-status">
         <span class="status-dot" id="connection-dot"></span>
@@ -27,7 +32,30 @@
     <button class="tab-btn" data-tab="blackboard">Blackboard</button>
     <button class="tab-btn" data-tab="decisions">Decisions</button>
     <button class="tab-btn" data-tab="graph">Graph</button>
+    <button class="tab-btn" data-tab="search">Search</button>
   </nav>
+
+  <div class="search-bar">
+    <input type="text" id="search-input" placeholder="Search across all data..." />
+    <div class="search-filters">
+      <select id="filter-types" multiple title="Filter by type">
+        <option value="blackboard" selected>Blackboard</option>
+        <option value="decisions" selected>Decisions</option>
+        <option value="entities" selected>Entities</option>
+      </select>
+      <select id="filter-status" title="Filter by status">
+        <option value="">Any status</option>
+        <option value="active">Active</option>
+        <option value="provisional">Provisional</option>
+        <option value="superseded">Superseded</option>
+        <option value="overridden">Overridden</option>
+      </select>
+      <input type="date" id="filter-since" title="From date" />
+      <input type="date" id="filter-until" title="Until date" />
+      <button id="search-btn" title="Search">Search</button>
+      <button id="search-clear-btn" title="Clear search">Clear</button>
+    </div>
+  </div>
 
   <main>
     <!-- Stats Tab -->
@@ -128,6 +156,31 @@
         </div>
         <div class="detail-panel" id="graph-detail">
           <p class="placeholder">Select an entity to view details</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Tab -->
+    <div class="tab-content" id="tab-search" style="display:none">
+      <div id="search-status-bar"></div>
+      <div class="content-area">
+        <div class="list-panel">
+          <table class="data-table" id="search-table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Summary / Name</th>
+                <th>Scope</th>
+                <th>Relevance</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div class="pagination" id="search-pagination"></div>
+        </div>
+        <div class="detail-panel" id="search-detail">
+          <p class="placeholder">Click a search result to view details</p>
         </div>
       </div>
     </div>
