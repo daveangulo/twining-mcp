@@ -86,7 +86,10 @@ Plans:
   2. `twining_status` includes registered agent count and active agent count
   3. `twining_assemble` includes relevant handoff results in its context output when assembling for a scope
   4. Context assembly suggests available agents with matching capabilities for the current task
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 13-01-PLAN.md -- twining_agents tool + twining_status agent counts (DEL-04, DEL-05)
+- [ ] 13-02-PLAN.md -- Context assembler handoff + agent suggestion integration (HND-03, HND-06)
 
 ### Phase 14: Agent Dashboard
 **Goal**: Agent coordination state is visible and browsable in the web dashboard
@@ -117,5 +120,5 @@ Phases execute in numeric order: 11 -> 12 -> 13 -> 14
 | 10. Visualizations and Polish | v1.2 | 3/3 | Complete | 2026-02-17 |
 | 11. Types and Storage | v1.3 | Complete    | 2026-02-17 | - |
 | 12. Coordination Engine | v1.3 | Complete    | 2026-02-17 | - |
-| 13. Tools and Assembly | v1.3 | 0/? | Not started | - |
+| 13. Tools and Assembly | v1.3 | 0/2 | Not started | - |
 | 14. Agent Dashboard | v1.3 | 0/? | Not started | - |
