@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Phase: 12 of 14 (Coordination Engine)
-Plan: 2 of 3 in current phase
-Status: Executing
-Last activity: 2026-02-17 -- Completed 12-02 Delegation Posting & Expiry
+Plan: 3 of 3 in current phase (PHASE COMPLETE)
+Status: Phase Complete
+Last activity: 2026-02-17 -- Completed 12-03 Handoff & Context Snapshot
 
-Progress: [##########################......] 85% (11/14 phases, 27/28 plans complete)
+Progress: [############################....] 88% (12/14 phases, 28/28 plans complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 27 (6 v1 + 6 v1.1 + 10 v1.2 + 5 v1.3)
+- Total plans completed: 28 (6 v1 + 6 v1.1 + 10 v1.2 + 6 v1.3)
 - v1.1 execution time: ~19min (6 plans, 13 tasks)
 - v1.2 execution time: ~31min (10 plans)
 
@@ -38,7 +38,7 @@ Progress: [##########################......] 85% (11/14 phases, 27/28 plans comp
 | 9. Search and Filter | 2/2 | 7min | 3.5min |
 | 10. Visualizations & Polish | 3/3 | 10min | 3.3min |
 | 11. Types & Storage | 3/3 | 7min | 2.3min |
-| 12. Coordination Engine | 2/3 | 4min | 2min |
+| 12. Coordination Engine | 3/3 | 8min | 2.7min |
 
 ## Accumulated Context
 
@@ -64,6 +64,10 @@ Recent decisions for v1.3:
 - Timeout resolution chain: custom timeout_ms > config delegations.timeouts > DELEGATION_TIMEOUTS constant
 - isDelegationExpired uses >= for boundary (expired at exact moment)
 - postDelegation calls discover() with include_gone=false for suggested agents
+- Auto-snapshot is default for createHandoff (auto_snapshot !== false triggers assembly)
+- Bidirectional prefix matching on decisions for context snapshot scope filtering
+- Summaries capped at 5 decisions, 3 warnings, 3 findings in context snapshots
+- BlackboardStore.read() handles scope filtering internally, passed directly for warnings/findings
 
 ### Pending Todos
 
@@ -76,6 +80,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 12-02-PLAN.md (Delegation Posting & Expiry)
-Resume file: .planning/phases/12-coordination-engine/12-02-SUMMARY.md
-Next: 12-03-PLAN.md (Handoff & Context Snapshot)
+Stopped at: Completed 12-03-PLAN.md (Handoff & Context Snapshot) -- Phase 12 complete
+Resume file: .planning/phases/12-coordination-engine/12-03-SUMMARY.md
+Next: Phase 13 (MCP Tool Registration)
