@@ -192,6 +192,80 @@ describe("DecisionStore.updateStatus", () => {
   });
 });
 
+describe("DecisionStore.create with commit_hashes", () => {
+  it("persists commit_hashes in both file and index", async () => {
+    const decision = await store.create(
+      makeDecisionInput({ commit_hashes: ["abc123"] }),
+    );
+    // Check file
+    const filePath = path.join(tmpDir, "decisions", `${decision.id}.json`);
+    const content = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+    expect(content.commit_hashes).toEqual(["abc123"]);
+    // Check index
+    const index = await store.getIndex();
+    expect(index[0]!.commit_hashes).toEqual(["abc123"]);
+  });
+
+  it("defaults commit_hashes to empty array when not provided", async () => {
+    const decision = await store.create(makeDecisionInput());
+    expect(decision.commit_hashes).toEqual([]);
+    const index = await store.getIndex();
+    expect(index[0]!.commit_hashes).toEqual([]);
+  });
+});
+
+describe("DecisionStore.linkCommit", () => {
+  it("adds a hash to an existing decision", async () => {
+    const decision = await store.create(makeDecisionInput());
+    await store.linkCommit(decision.id, "abc123");
+
+    // Check file
+    const updated = await store.get(decision.id);
+    expect(updated!.commit_hashes).toContain("abc123");
+
+    // Check index
+    const index = await store.getIndex();
+    expect(index[0]!.commit_hashes).toContain("abc123");
+  });
+
+  it("does not add duplicate hashes", async () => {
+    const decision = await store.create(makeDecisionInput());
+    await store.linkCommit(decision.id, "abc123");
+    await store.linkCommit(decision.id, "abc123");
+
+    const updated = await store.get(decision.id);
+    expect(updated!.commit_hashes).toEqual(["abc123"]);
+
+    const index = await store.getIndex();
+    expect(index[0]!.commit_hashes).toEqual(["abc123"]);
+  });
+
+  it("throws for nonexistent decision", async () => {
+    await expect(
+      store.linkCommit("NONEXISTENT0000000000000000", "abc123"),
+    ).rejects.toThrow("Decision not found");
+  });
+});
+
+describe("DecisionStore.getByCommitHash", () => {
+  it("returns matching decisions", async () => {
+    await store.create(makeDecisionInput({ commit_hashes: ["abc123"] }));
+    await store.create(
+      makeDecisionInput({ summary: "Another", commit_hashes: ["def456"] }),
+    );
+
+    const results = await store.getByCommitHash("abc123");
+    expect(results).toHaveLength(1);
+    expect(results[0]!.summary).toBe("Use JWT for auth");
+  });
+
+  it("returns empty array for unknown hash", async () => {
+    await store.create(makeDecisionInput({ commit_hashes: ["abc123"] }));
+    const results = await store.getByCommitHash("unknown");
+    expect(results).toHaveLength(0);
+  });
+});
+
 describe("DecisionStore.getIndex", () => {
   it("stays in sync after multiple creates", async () => {
     await store.create(makeDecisionInput({ summary: "D1" }));

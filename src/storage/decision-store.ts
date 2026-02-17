@@ -33,6 +33,7 @@ export class DecisionStore {
   ): Promise<Decision> {
     const decision: Decision = {
       ...input,
+      commit_hashes: input.commit_hashes ?? [],
       id: generateId(),
       timestamp: new Date().toISOString(),
       status: "active",
@@ -137,6 +138,69 @@ export class DecisionStore {
     return readJSON<DecisionIndexEntry[]>(this.indexPath);
   }
 
+  /** Link a commit hash to an existing decision. Updates both file and index. */
+  async linkCommit(id: string, commitHash: string): Promise<void> {
+    const filePath = path.join(this.decisionsDir, `${id}.json`);
+    if (!fs.existsSync(filePath)) {
+      throw new Error(`Decision not found: ${id}`);
+    }
+
+    // Update individual decision file
+    const decision = JSON.parse(
+      fs.readFileSync(filePath, "utf-8"),
+    ) as Decision;
+    if (!decision.commit_hashes) {
+      decision.commit_hashes = [];
+    }
+    if (!decision.commit_hashes.includes(commitHash)) {
+      decision.commit_hashes.push(commitHash);
+    }
+    fs.writeFileSync(filePath, JSON.stringify(decision, null, 2));
+
+    // Update index
+    const release = await lockfile.lock(this.indexPath, INDEX_LOCK_OPTIONS);
+    try {
+      const index = JSON.parse(
+        fs.readFileSync(this.indexPath, "utf-8"),
+      ) as DecisionIndexEntry[];
+      const indexEntry = index.find((e) => e.id === id);
+      if (indexEntry) {
+        if (!indexEntry.commit_hashes) {
+          indexEntry.commit_hashes = [];
+        }
+        if (!indexEntry.commit_hashes.includes(commitHash)) {
+          indexEntry.commit_hashes.push(commitHash);
+        }
+      }
+      fs.writeFileSync(this.indexPath, JSON.stringify(index, null, 2));
+    } finally {
+      await release();
+    }
+  }
+
+  /** Get decisions linked to a specific commit hash. */
+  async getByCommitHash(commitHash: string): Promise<Decision[]> {
+    const index = await this.getIndex();
+    const matching = index.filter(
+      (entry) => entry.commit_hashes && entry.commit_hashes.includes(commitHash),
+    );
+
+    const decisions: Decision[] = [];
+    for (const entry of matching) {
+      const decision = await this.get(entry.id);
+      if (decision) decisions.push(decision);
+    }
+
+    // Sort by timestamp descending
+    decisions.sort(
+      (a, b) =>
+        b.timestamp.localeCompare(a.timestamp) ||
+        b.id.localeCompare(a.id),
+    );
+
+    return decisions;
+  }
+
   /** Extract index entry from a full decision. */
   private toIndexEntry(decision: Decision): DecisionIndexEntry {
     return {
@@ -149,6 +213,7 @@ export class DecisionStore {
       status: decision.status,
       affected_files: decision.affected_files,
       affected_symbols: decision.affected_symbols,
+      commit_hashes: decision.commit_hashes ?? [],
     };
   }
 }

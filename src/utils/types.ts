@@ -67,6 +67,7 @@ export interface Decision {
   reversible: boolean;
   affected_files: string[];
   affected_symbols: string[];
+  commit_hashes: string[];
   overridden_by?: string;
   override_reason?: string;
 }
@@ -192,4 +193,5 @@ export interface DecisionIndexEntry {
   status: DecisionStatus;
   affected_files: string[];
   affected_symbols: string[];
+  commit_hashes: string[];
 }
