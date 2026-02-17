@@ -42,7 +42,7 @@
 **Milestone Goal:** Enable agents to discover each other, delegate work through capability-matched needs, and hand off context cleanly between context windows.
 
 - [x] **Phase 11: Types and Storage** - Agent registry and handoff record data models, storage layer, init extensions (completed 2026-02-17)
-- [ ] **Phase 12: Coordination Engine** - Registration, discovery, delegation matching, and handoff logic
+- [x] **Phase 12: Coordination Engine** - Registration, discovery, delegation matching, and handoff logic (completed 2026-02-17)
 - [ ] **Phase 13: Tools and Assembly** - MCP tool surface, context assembler integration, status extension
 - [ ] **Phase 14: Agent Dashboard** - API endpoints and Agents tab with registry, delegation, and handoff views
 
@@ -116,6 +116,6 @@ Phases execute in numeric order: 11 -> 12 -> 13 -> 14
 | 9. Search and Filter | v1.2 | 2/2 | Complete | 2026-02-17 |
 | 10. Visualizations and Polish | v1.2 | 3/3 | Complete | 2026-02-17 |
 | 11. Types and Storage | v1.3 | Complete    | 2026-02-17 | - |
-| 12. Coordination Engine | v1.3 | 0/? | Not started | - |
+| 12. Coordination Engine | v1.3 | Complete    | 2026-02-17 | - |
 | 13. Tools and Assembly | v1.3 | 0/? | Not started | - |
 | 14. Agent Dashboard | v1.3 | 0/? | Not started | - |
