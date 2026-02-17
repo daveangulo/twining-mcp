@@ -474,3 +474,273 @@ footer p {
 .clickable-id:hover {
   color: #2a6ab9;
 }
+
+/* ========== Dark Mode ========== */
+
+[data-theme="dark"] {
+  --bg: #0f172a;
+  --text: #e2e8f0;
+  --card-bg: #1e293b;
+  --card-border: #334155;
+  --accent: #60a5fa;
+  --success: #4ade80;
+  --error: #f87171;
+  --warning: #fbbf24;
+  --muted: #94a3b8;
+}
+
+[data-theme="dark"] .data-table tbody tr:hover {
+  background-color: #334155;
+}
+
+[data-theme="dark"] .data-table tbody tr.selected {
+  background-color: #1e3a5f;
+}
+
+[data-theme="dark"] .badge.active {
+  background: #064e3b;
+  color: #a7f3d0;
+}
+
+[data-theme="dark"] .badge.provisional {
+  background: #451a03;
+  color: #fde68a;
+}
+
+[data-theme="dark"] .badge.superseded {
+  background: #334155;
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .badge.overridden {
+  background: #450a0a;
+  color: #fecaca;
+}
+
+[data-theme="dark"] .badge.high {
+  background: #064e3b;
+  color: #a7f3d0;
+}
+
+[data-theme="dark"] .badge.medium {
+  background: #451a03;
+  color: #fde68a;
+}
+
+[data-theme="dark"] .badge.low {
+  background: #450a0a;
+  color: #fecaca;
+}
+
+[data-theme="dark"] .search-bar {
+  background: #1e293b;
+  border-bottom-color: #334155;
+}
+
+[data-theme="dark"] .search-bar input[type="text"],
+[data-theme="dark"] .search-filters select,
+[data-theme="dark"] .search-filters input[type="date"],
+[data-theme="dark"] .search-filters button {
+  background: #0f172a;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .global-scope-filter input {
+  background: #0f172a;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .global-scope-filter label {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .clickable-id {
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .clickable-id:hover {
+  color: #93bbfd;
+}
+
+/* ========== Theme Toggle Button ========== */
+
+#theme-toggle {
+  background: none;
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+#theme-toggle:hover {
+  background: var(--card-border);
+}
+
+/* ========== View-Mode Toggle ========== */
+
+.view-toggle {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.view-btn {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--card-border);
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.view-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* ========== Visualization Containers ========== */
+
+#timeline-container {
+  height: 400px;
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  background: var(--card-bg);
+}
+
+#graph-canvas {
+  height: 500px;
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  background: var(--card-bg);
+}
+
+/* ========== Graph Legend ========== */
+
+.graph-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.graph-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.graph-legend-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* ========== vis-timeline Dark Mode Overrides ========== */
+
+[data-theme="dark"] .vis-timeline {
+  border-color: var(--card-border);
+}
+
+[data-theme="dark"] .vis-item {
+  background-color: var(--card-bg);
+  border-color: var(--card-border);
+  color: var(--text);
+}
+
+[data-theme="dark"] .vis-time-axis .vis-text {
+  color: var(--muted);
+}
+
+[data-theme="dark"] .vis-panel.vis-bottom,
+[data-theme="dark"] .vis-panel.vis-top,
+[data-theme="dark"] .vis-panel.vis-left,
+[data-theme="dark"] .vis-panel.vis-right {
+  border-color: var(--card-border);
+}
+
+[data-theme="dark"] .vis-labelset .vis-label {
+  color: var(--text);
+}
+
+/* ========== Timeline Confidence/Status Color-Coding ========== */
+
+.vis-item.confidence-high {
+  background-color: #dcfce7;
+  border-color: #166534;
+  color: #166534;
+}
+
+.vis-item.confidence-medium {
+  background-color: #fef3c7;
+  border-color: #92400e;
+  color: #92400e;
+}
+
+.vis-item.confidence-low {
+  background-color: #fecaca;
+  border-color: #991b1b;
+  color: #991b1b;
+}
+
+.vis-item.status-provisional {
+  background-color: #fef3c7;
+  border-color: #d97706;
+  border-style: dashed;
+}
+
+.vis-item.status-superseded {
+  background-color: #f1f5f9;
+  border-color: #475569;
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+.vis-item.status-overridden {
+  background-color: #fecaca;
+  border-color: #991b1b;
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+/* Dark mode variants for timeline items */
+[data-theme="dark"] .vis-item.confidence-high {
+  background-color: #064e3b;
+  border-color: #4ade80;
+  color: #a7f3d0;
+}
+
+[data-theme="dark"] .vis-item.confidence-medium {
+  background-color: #451a03;
+  border-color: #fbbf24;
+  color: #fde68a;
+}
+
+[data-theme="dark"] .vis-item.confidence-low {
+  background-color: #450a0a;
+  border-color: #f87171;
+  color: #fecaca;
+}
+
+[data-theme="dark"] .vis-item.status-provisional {
+  background-color: #451a03;
+  border-color: #fbbf24;
+}
+
+[data-theme="dark"] .vis-item.status-superseded {
+  background-color: #1e293b;
+  border-color: #475569;
+}
+
+[data-theme="dark"] .vis-item.status-overridden {
+  background-color: #450a0a;
+  border-color: #f87171;
+}
