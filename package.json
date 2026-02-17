@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "postbuild": "cp -r src/dashboard/public dist/dashboard/public",
+    "postbuild": "rm -rf dist/dashboard/public && cp -r src/dashboard/public dist/dashboard/public",
     "test": "vitest run",
     "test:watch": "vitest"
   },
