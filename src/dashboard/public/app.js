@@ -762,6 +762,12 @@ function renderGraph() {
     relInfo.textContent = ts.relations.length + " relation" + (ts.relations.length !== 1 ? "s" : "");
   }
 
+  // Update graph visualization if visual view is active
+  var graphVisualView = document.getElementById('graph-visual-view');
+  if (graphVisualView && graphVisualView.style.display !== 'none' && window.cyInstance) {
+    updateGraphData();
+  }
+
   // Check if selected item still exists
   if (ts.selectedId) {
     var found = false;
@@ -1284,13 +1290,351 @@ function fetchTimelineDecisionDetail(id) {
     });
 }
 
-function initGraphVis() {
-  // Stub -- replaced by Plan 10-03
-}
+/* ========== Graph Visualization (cytoscape.js) ========== */
+
+var ENTITY_COLORS = {
+  module: '#3b82f6',
+  'function': '#8b5cf6',
+  'class': '#06b6d4',
+  file: '#6b7280',
+  concept: '#f59e0b',
+  pattern: '#10b981',
+  dependency: '#ef4444',
+  api_endpoint: '#ec4899'
+};
 
 function buildGraphStyles() {
-  // Stub -- replaced by Plan 10-03
-  return [];
+  var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  var textColor = isDark ? '#e2e8f0' : '#1a1a2e';
+  var edgeColor = isDark ? '#64748b' : '#94a3b8';
+  var accentColor = isDark ? '#60a5fa' : '#3b82f6';
+
+  var styles = [
+    {
+      selector: 'node',
+      style: {
+        'label': 'data(label)',
+        'text-valign': 'bottom',
+        'text-halign': 'center',
+        'font-size': '10px',
+        'width': 30,
+        'height': 30,
+        'color': textColor,
+        'text-margin-y': 4,
+        'background-color': '#6b7280'
+      }
+    },
+    {
+      selector: 'edge',
+      style: {
+        'width': 2,
+        'line-color': edgeColor,
+        'target-arrow-color': edgeColor,
+        'target-arrow-shape': 'triangle',
+        'curve-style': 'bezier',
+        'label': 'data(label)',
+        'font-size': '8px',
+        'color': textColor,
+        'text-rotation': 'autorotate',
+        'text-margin-y': -8
+      }
+    },
+    {
+      selector: 'node:selected',
+      style: {
+        'border-width': 3,
+        'border-color': accentColor
+      }
+    }
+  ];
+
+  // Per-type node styles
+  var types = Object.keys(ENTITY_COLORS);
+  for (var i = 0; i < types.length; i++) {
+    styles.push({
+      selector: 'node[type="' + types[i] + '"]',
+      style: {
+        'background-color': ENTITY_COLORS[types[i]]
+      }
+    });
+  }
+
+  return styles;
+}
+
+function renderGraphLegend() {
+  var legend = document.getElementById('graph-legend');
+  if (!legend) return;
+  clearElement(legend);
+  var types = Object.keys(ENTITY_COLORS);
+  for (var i = 0; i < types.length; i++) {
+    var item = document.createElement('span');
+    item.className = 'graph-legend-item';
+    item.style.cssText = 'display:inline-flex;align-items:center;gap:4px;margin-right:12px;font-size:0.8rem;';
+    var dot = document.createElement('span');
+    dot.className = 'graph-legend-dot';
+    dot.style.cssText = 'width:10px;height:10px;border-radius:50%;display:inline-block;background:' + ENTITY_COLORS[types[i]];
+    var label = document.createElement('span');
+    label.textContent = types[i];
+    item.appendChild(dot);
+    item.appendChild(label);
+    legend.appendChild(item);
+  }
+}
+
+function buildGraphElements() {
+  var entities = state.graph.data;
+  var relations = state.graph.relations;
+  var scoped = applyGlobalScope(entities, 'scope');
+  var elements = [];
+
+  // Build a set of visible entity IDs for filtering edges
+  var visibleIds = {};
+  for (var i = 0; i < scoped.length; i++) {
+    var ent = scoped[i];
+    var eid = ent.id || ent.name;
+    visibleIds[eid] = true;
+    elements.push({
+      data: {
+        id: eid,
+        label: ent.name || eid,
+        type: ent.type || 'concept'
+      }
+    });
+  }
+
+  for (var j = 0; j < relations.length; j++) {
+    var rel = relations[j];
+    if (visibleIds[rel.source] && visibleIds[rel.target]) {
+      elements.push({
+        data: {
+          id: rel.id || (rel.source + '-' + rel.target + '-' + j),
+          source: rel.source,
+          target: rel.target,
+          label: rel.type || ''
+        }
+      });
+    }
+  }
+
+  return elements;
+}
+
+function initGraphVis() {
+  // Empty state check
+  if (!state.graph.data || state.graph.data.length === 0) {
+    var canvas = document.getElementById('graph-canvas');
+    if (canvas) {
+      clearElement(canvas);
+      var msg = el('div', 'placeholder');
+      msg.style.cssText = 'display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-style:italic;';
+      msg.textContent = 'No graph entities yet';
+      canvas.appendChild(msg);
+    }
+    renderGraphLegend();
+    return;
+  }
+
+  // Create-once guard: if already initialized, just update data
+  if (window.cyInstance) {
+    updateGraphData();
+    return;
+  }
+
+  if (typeof cytoscape === 'undefined') return;
+
+  // Initialize expanded nodes tracker
+  if (!state.graph.expandedNodes) {
+    state.graph.expandedNodes = {};
+  }
+
+  var elements = buildGraphElements();
+
+  window.cyInstance = cytoscape({
+    container: document.getElementById('graph-canvas'),
+    elements: elements,
+    layout: { name: 'cose', animate: true, animationDuration: 500, nodeRepulsion: function() { return 8000; } },
+    style: buildGraphStyles(),
+    minZoom: 0.2,
+    maxZoom: 5
+  });
+
+  // Click node to show detail and expand neighbors
+  window.cyInstance.on('tap', 'node', function(evt) {
+    var nodeId = evt.target.id();
+    var entity = null;
+    for (var i = 0; i < state.graph.data.length; i++) {
+      var e = state.graph.data[i];
+      if ((e.id || e.name) === nodeId) {
+        entity = e;
+        break;
+      }
+    }
+    if (entity) {
+      state.graph.selectedId = nodeId;
+      renderGraphDetail(entity);
+    }
+
+    // Expand neighbors if not already expanded
+    if (!state.graph.expandedNodes[nodeId]) {
+      state.graph.expandedNodes[nodeId] = true;
+      expandNeighbors(nodeId);
+    }
+  });
+
+  renderGraphLegend();
+}
+
+function expandNeighbors(nodeId) {
+  if (!window.cyInstance) return;
+  var relations = state.graph.relations;
+  var newElements = [];
+  var existingIds = {};
+
+  // Collect existing node IDs in cytoscape
+  window.cyInstance.nodes().forEach(function(n) {
+    existingIds[n.id()] = true;
+  });
+
+  // Also collect existing edge IDs
+  window.cyInstance.edges().forEach(function(e) {
+    existingIds[e.id()] = true;
+  });
+
+  for (var i = 0; i < relations.length; i++) {
+    var rel = relations[i];
+    if (rel.source !== nodeId && rel.target !== nodeId) continue;
+
+    var neighborId = rel.source === nodeId ? rel.target : rel.source;
+
+    // Add neighbor node if not present
+    if (!existingIds[neighborId]) {
+      var neighborEntity = null;
+      for (var j = 0; j < state.graph.data.length; j++) {
+        var ent = state.graph.data[j];
+        if ((ent.id || ent.name) === neighborId) {
+          neighborEntity = ent;
+          break;
+        }
+      }
+      if (neighborEntity) {
+        newElements.push({
+          group: 'nodes',
+          data: {
+            id: neighborId,
+            label: neighborEntity.name || neighborId,
+            type: neighborEntity.type || 'concept'
+          }
+        });
+        existingIds[neighborId] = true;
+      }
+    }
+
+    // Add edge if not present
+    var edgeId = rel.id || (rel.source + '-' + rel.target + '-' + i);
+    if (!existingIds[edgeId]) {
+      newElements.push({
+        group: 'edges',
+        data: {
+          id: edgeId,
+          source: rel.source,
+          target: rel.target,
+          label: rel.type || ''
+        }
+      });
+      existingIds[edgeId] = true;
+    }
+  }
+
+  if (newElements.length > 0) {
+    var added = window.cyInstance.add(newElements);
+    // Re-layout only new elements without resetting viewport
+    added.layout({
+      name: 'cose',
+      animate: true,
+      animationDuration: 300,
+      fit: false,
+      nodeRepulsion: function() { return 8000; }
+    }).run();
+  }
+}
+
+function updateGraphData() {
+  if (!window.cyInstance) return;
+
+  var elements = buildGraphElements();
+
+  // Build sets of desired node and edge IDs
+  var desiredNodeIds = {};
+  var desiredEdgeIds = {};
+  var desiredNodes = [];
+  var desiredEdges = [];
+
+  for (var i = 0; i < elements.length; i++) {
+    var elem = elements[i];
+    if (elem.data.source) {
+      desiredEdgeIds[elem.data.id] = true;
+      desiredEdges.push(elem);
+    } else {
+      desiredNodeIds[elem.data.id] = true;
+      desiredNodes.push(elem);
+    }
+  }
+
+  // Remove stale nodes (not in desired set and not manually expanded neighbors)
+  var toRemove = [];
+  window.cyInstance.nodes().forEach(function(n) {
+    if (!desiredNodeIds[n.id()]) {
+      toRemove.push(n);
+    }
+  });
+  if (toRemove.length > 0) {
+    window.cyInstance.remove(window.cyInstance.collection().merge(toRemove));
+  }
+
+  // Add new nodes
+  var existingNodeIds = {};
+  window.cyInstance.nodes().forEach(function(n) { existingNodeIds[n.id()] = true; });
+  var newNodes = [];
+  for (var j = 0; j < desiredNodes.length; j++) {
+    if (!existingNodeIds[desiredNodes[j].data.id]) {
+      newNodes.push(desiredNodes[j]);
+    }
+  }
+
+  // Remove stale edges
+  var edgesToRemove = [];
+  window.cyInstance.edges().forEach(function(e) {
+    if (!desiredEdgeIds[e.id()]) {
+      edgesToRemove.push(e);
+    }
+  });
+  if (edgesToRemove.length > 0) {
+    window.cyInstance.remove(window.cyInstance.collection().merge(edgesToRemove));
+  }
+
+  // Add new edges
+  var existingEdgeIds = {};
+  window.cyInstance.edges().forEach(function(e) { existingEdgeIds[e.id()] = true; });
+  var newEdges = [];
+  for (var k = 0; k < desiredEdges.length; k++) {
+    if (!existingEdgeIds[desiredEdges[k].data.id]) {
+      newEdges.push(desiredEdges[k]);
+    }
+  }
+
+  var allNew = newNodes.concat(newEdges);
+  if (allNew.length > 0) {
+    window.cyInstance.add(allNew);
+    // Only re-layout if new elements were added
+    window.cyInstance.layout({
+      name: 'cose',
+      animate: true,
+      animationDuration: 300,
+      fit: false,
+      nodeRepulsion: function() { return 8000; }
+    }).run();
+  }
 }
 
 /* ========== Initialization ========== */
