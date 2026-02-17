@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Agents share *why* decisions were made, not just *what* was done -- eliminating information silos across context windows.
-**Current focus:** Phase 11 - Types and Storage (v1.3 Agent Coordination)
+**Current focus:** Phase 12 - Coordination Engine (v1.3 Agent Coordination)
 
 ## Current Position
 
-Phase: 11 of 14 (Types and Storage) -- COMPLETE
-Plan: 3 of 3 in current phase
-Status: Phase Complete
-Last activity: 2026-02-17 -- Completed 11-03 HandoffStore
+Phase: 12 of 14 (Coordination Engine)
+Plan: 1 of 3 in current phase
+Status: Executing
+Last activity: 2026-02-17 -- Completed 12-01 CoordinationEngine Scoring & Discovery
 
-Progress: [########################......] 79% (11/14 phases, 25/25 plans complete)
+Progress: [#########################.......] 82% (11/14 phases, 26/28 plans complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 25 (6 v1 + 6 v1.1 + 10 v1.2 + 3 v1.3)
+- Total plans completed: 26 (6 v1 + 6 v1.1 + 10 v1.2 + 4 v1.3)
 - v1.1 execution time: ~19min (6 plans, 13 tasks)
 - v1.2 execution time: ~31min (10 plans)
 
@@ -38,6 +38,7 @@ Progress: [########################......] 79% (11/14 phases, 25/25 plans comple
 | 9. Search and Filter | 2/2 | 7min | 3.5min |
 | 10. Visualizations & Polish | 3/3 | 10min | 3.3min |
 | 11. Types & Storage | 3/3 | 7min | 2.3min |
+| 12. Coordination Engine | 1/3 | 2min | 2min |
 
 ## Accumulated Context
 
@@ -55,6 +56,10 @@ Recent decisions for v1.3:
 - Role/description overwrite uses undefined check (not falsy) to preserve existing values
 - JSONL index for handoffs (append-friendly vs JSON array for concurrent writes)
 - Aggregate result_status: all-same -> that status, mixed -> "mixed", empty -> "completed"
+- scoreAgent is a standalone pure function (not class method) for testability
+- Weighting: 70% capability overlap + 30% liveness score
+- Zero required capabilities yields overlap=0, ranked by liveness only (no NaN)
+- include_gone defaults to true; total_registered always reflects all agents
 
 ### Pending Todos
 
@@ -67,6 +72,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 11-03-PLAN.md (HandoffStore) -- Phase 11 complete
-Resume file: .planning/phases/11-types-and-storage/11-03-SUMMARY.md
-Next: Phase 12 planning (Agent Registration & Delegation Tools)
+Stopped at: Completed 12-01-PLAN.md (CoordinationEngine Scoring & Discovery)
+Resume file: .planning/phases/12-coordination-engine/12-01-SUMMARY.md
+Next: 12-02-PLAN.md (Delegation & Handoff methods)
