@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 ## Current Position
 
 Phase: 6 of 6 (Search + Export)
-Plan: 1 of 2 in current phase
-Status: Plan 06-01 complete (decision search)
-Last activity: 2026-02-17 — Completed 06-01 (Decision search tool)
+Plan: 2 of 2 in current phase
+Status: Phase 06 complete (all plans done) -- v1.1 MILESTONE COMPLETE
+Last activity: 2026-02-17 — Completed 06-02 (Export/snapshot tooling)
 
-Progress: [████████░░] 83% (v1.1)
+Progress: [██████████] 100% (v1.1)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9 (6 v1 + 3 v1.1)
+- Total plans completed: 10 (6 v1 + 4 v1.1)
 - Average duration: —
 - Total execution time: —
 
@@ -32,7 +32,7 @@ Progress: [████████░░] 83% (v1.1)
 | 3. Graph + Lifecycle | 2 | — | — |
 | 4. Git Commit Linking | 2/2 | 5min | 2.5min |
 | 5. GSD Bridge + Serena | 2/2 | 7min | 3.5min |
-| 6. Search + Export | 1/2 | 3min | 3min |
+| 6. Search + Export | 2/2 | 7min | 3.5min |
 
 **Recent Trend:**
 - v1 completed in 1 day (6 plans)
@@ -60,6 +60,8 @@ v1.1 decisions:
 - SearchEngine passed as optional constructor param to DecisionEngine for loose coupling
 - Index-level filtering before loading full Decision files for search performance
 - Keyword fallback uses same TF scoring as SearchEngine.keywordSearch for consistency
+- Test file placed in test/ directory (not src/engine/) to follow existing project convention
+- Entity ID-to-name resolution uses full entity list (not just filtered) to resolve orphan relation references
 
 ### Pending Todos
 
@@ -72,6 +74,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 06-01-PLAN.md (Decision search tool)
+Stopped at: Completed 06-02-PLAN.md (Export/snapshot tooling) -- v1.1 milestone complete
 Resume file: None
-Next: 06-02-PLAN.md (Export/snapshot tooling)
+Next: All v1.1 plans complete. Project ready for next milestone or maintenance.
