@@ -1245,6 +1245,14 @@ function initTimeline() {
   });
 
   window.timelineInstance.fit();
+
+  // Add legend below timeline (only once)
+  if (!document.getElementById('timeline-legend')) {
+    var legend = el('p', 'timeline-legend');
+    legend.id = 'timeline-legend';
+    legend.textContent = 'High = green, Medium = amber, Low = red. Dashed = provisional, Strikethrough = superseded/overridden.';
+    container.parentNode.insertBefore(legend, container.nextSibling);
+  }
 }
 
 function updateTimelineData() {

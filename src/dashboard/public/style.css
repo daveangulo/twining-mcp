@@ -671,6 +671,22 @@ footer p {
   color: var(--text);
 }
 
+[data-theme="dark"] .vis-panel.vis-background {
+  background-color: var(--bg);
+}
+
+[data-theme="dark"] .vis-panel.vis-center {
+  background-color: var(--card-bg);
+}
+
+[data-theme="dark"] .vis-current-time {
+  background-color: var(--accent);
+}
+
+[data-theme="dark"] .vis-item.vis-selected {
+  border-color: var(--accent);
+}
+
 /* ========== Timeline Confidence/Status Color-Coding ========== */
 
 .vis-item.confidence-high {
@@ -743,4 +759,15 @@ footer p {
 [data-theme="dark"] .vis-item.status-overridden {
   background-color: #450a0a;
   border-color: #f87171;
+}
+
+/* ========== Timeline Legend ========== */
+
+.timeline-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  font-size: 0.75rem;
+  color: var(--muted);
 }
