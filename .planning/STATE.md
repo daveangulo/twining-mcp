@@ -2,24 +2,29 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-17)
+See: .planning/PROJECT.md (updated 2026-02-16)
 
 **Core value:** Agents share *why* decisions were made, not just *what* was done -- eliminating information silos across context windows.
-**Current focus:** v1 milestone complete. Planning next milestone.
+**Current focus:** v1.1 Integrations + Polish — GSD bridge, git linking, Serena workflow, search_decisions, export.
 
 ## Current Position
 
-Phase: v1 complete (3 phases, 6 plans)
-Status: Milestone v1 shipped. 221 tests passing, 18 MCP tools, clean build.
-Last activity: 2026-02-17 -- Milestone v1 archived
+Phase: Not started (defining requirements)
+Status: Defining requirements for v1.1
+Last activity: 2026-02-16 -- Milestone v1.1 started
 
-Progress: [██████████] 100% (v1)
+Progress: [░░░░░░░░░░] 0% (v1.1)
 
 ## Accumulated Context
 
 ### Decisions
 
 All v1 decisions archived in PROJECT.md Key Decisions table with outcomes.
+
+v1.1 decisions:
+- Serena integration via CLAUDE.md workflow pattern (agent-mediated, no direct MCP-to-MCP coupling)
+- GSD bridge is bidirectional: planning state feeds context assembly AND decisions sync to planning docs
+- Git linking is bidirectional: decisions reference commits, commits queryable for decisions
 
 ### Pending Todos
 
@@ -31,7 +36,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-17
-Stopped at: Completed v1 milestone archival.
+Last session: 2026-02-16
+Stopped at: Defining v1.1 milestone scope.
 Resume file: None
-Next: `/gsd:new-milestone` to define next version scope.
+Next: Complete requirements and roadmap definition.

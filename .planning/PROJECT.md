@@ -25,18 +25,20 @@ Agents share *why* decisions were made, not just *what* was done — eliminating
 
 ### Active
 
-(None yet — define in next milestone)
+- [ ] GSD planning bridge — `.planning/` state feeds context assembly; decisions sync to planning docs
+- [ ] Git commit linking — bidirectional decision-to-commit tracking with new tools
+- [ ] Serena enrichment workflow — CLAUDE.md instructions for agent-mediated code graph population
+- [ ] `twining_search_decisions` tool — find decisions by keyword without knowing scope
+- [ ] `twining_export` tool — dump Twining state as single markdown document for human review
 
 ### Out of Scope
 
 - Multi-agent registration and capability matching — future milestone
-- Serena MCP integration — future milestone
-- GSD `.planning/` state synchronization — future milestone
-- Git commit linking — future milestone
 - Web dashboard — future milestone
 - Learned relevance weights — future milestone
 - Cross-repo Twining state — future milestone
 - Decision impact analysis — future milestone
+- Hook-based pending-posts/actions processing — deferred, CLAUDE.md workflows preferred over hook plumbing
 
 ## Context
 
@@ -74,5 +76,16 @@ Agents share *why* decisions were made, not just *what* was done — eliminating
 | Weighted context scoring (0.3/0.4/0.2/0.1) | Recency, relevance, confidence, warning boost — balanced signals | ✓ Good — v1 |
 | Permanent ONNX fallback once triggered | Avoids repeated expensive init failures; keyword search is adequate fallback | ✓ Good — v1 |
 
+## Current Milestone: v1.1 Integrations + Polish
+
+**Goal:** Connect Twining to the development ecosystem — GSD planning state, git history, and Serena code intelligence — while adding developer experience polish (search_decisions, export).
+
+**Target features:**
+- GSD planning bridge (bidirectional state sync)
+- Git commit linking (decision ↔ commit traceability)
+- Serena enrichment workflow (CLAUDE.md agent-mediated pattern)
+- Decision search by keyword
+- State export to markdown
+
 ---
-*Last updated: 2026-02-17 after v1 milestone*
+*Last updated: 2026-02-16 after v1.1 milestone start*
