@@ -5,6 +5,7 @@
  */
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { createServer } from "./server.js";
+import { startDashboard } from "./dashboard/http-server.js";
 
 async function main(): Promise<void> {
   // Parse --project argument, default to cwd
@@ -17,6 +18,11 @@ async function main(): Promise<void> {
   const server = createServer(projectRoot);
   const transport = new StdioServerTransport();
   await server.connect(transport);
+
+  // Start dashboard HTTP server (fire-and-forget — never blocks MCP)
+  startDashboard(projectRoot).catch((err) => {
+    console.error("[twining] Dashboard failed to start (non-fatal):", (err as Error).message);
+  });
 }
 
 main().catch((err) => {
