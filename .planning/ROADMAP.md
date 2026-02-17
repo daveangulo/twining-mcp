@@ -71,7 +71,11 @@
   2. A delegation need posted to the blackboard returns suggested matching agents ranked by score
   3. Delegation needs support urgency levels and auto-expire after a configurable timeout
   4. A handoff record can be created with results, context snapshot (referenced decision/warning IDs and summaries), and acknowledged by a consumer
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 12-01-PLAN.md -- Types, scoring algorithm, and CoordinationEngine.discover() (TDD)
+- [ ] 12-02-PLAN.md -- Delegation posting with urgency-based expiry and agent matching (TDD)
+- [ ] 12-03-PLAN.md -- Handoff creation with context snapshot assembly and acknowledgment (TDD)
 
 ### Phase 13: Tools and Assembly
 **Goal**: Agent coordination is accessible through MCP tools and integrated into context assembly and status
