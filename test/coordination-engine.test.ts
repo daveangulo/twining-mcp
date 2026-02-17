@@ -512,3 +512,401 @@ describe("CoordinationEngine.postDelegation()", () => {
     );
   });
 });
+
+// ===== Handoff & Context Snapshot Tests (12-03) =====
+
+/** Seed decisions and blackboard entries for context snapshot testing. */
+async function seedHandoffTestData() {
+  // Create decisions with different scopes
+  const d1 = await decisionStore.create({
+    agent_id: "agent-1",
+    domain: "architecture",
+    scope: "src/auth/",
+    summary: "Use JWT for authentication",
+    context: "Need stateless auth",
+    rationale: "JWT is widely supported",
+    constraints: [],
+    alternatives: [],
+    depends_on: [],
+    confidence: "high",
+    reversible: true,
+    affected_files: ["src/auth/jwt.ts"],
+    affected_symbols: ["JwtMiddleware"],
+  });
+  const d2 = await decisionStore.create({
+    agent_id: "agent-1",
+    domain: "api",
+    scope: "src/api/",
+    summary: "REST over GraphQL",
+    context: "Simpler to implement",
+    rationale: "Better tooling support",
+    constraints: [],
+    alternatives: [],
+    depends_on: [],
+    confidence: "medium",
+    reversible: true,
+    affected_files: ["src/api/router.ts"],
+    affected_symbols: ["Router"],
+  });
+  const d3 = await decisionStore.create({
+    agent_id: "agent-1",
+    domain: "infra",
+    scope: "project",
+    summary: "Use Docker for deployment",
+    context: "Consistency across envs",
+    rationale: "Standard practice",
+    constraints: [],
+    alternatives: [],
+    depends_on: [],
+    confidence: "high",
+    reversible: false,
+    affected_files: ["Dockerfile"],
+    affected_symbols: [],
+  });
+
+  // Post warning and finding entries to blackboard
+  const w1 = await blackboardStore.append({
+    entry_type: "warning",
+    summary: "Auth tokens expire too fast",
+    detail: "Token TTL is 5 minutes",
+    tags: ["auth"],
+    scope: "src/auth/",
+    agent_id: "agent-1",
+  });
+  const w2 = await blackboardStore.append({
+    entry_type: "warning",
+    summary: "API rate limit not configured",
+    detail: "No rate limiting in place",
+    tags: ["api"],
+    scope: "src/api/",
+    agent_id: "agent-1",
+  });
+  const f1 = await blackboardStore.append({
+    entry_type: "finding",
+    summary: "JWT library supports RS256",
+    detail: "jose supports RSA and EC keys",
+    tags: ["auth"],
+    scope: "src/auth/",
+    agent_id: "agent-1",
+  });
+  const f2 = await blackboardStore.append({
+    entry_type: "finding",
+    summary: "Docker image size is 200MB",
+    detail: "Consider multi-stage build",
+    tags: ["infra"],
+    scope: "project",
+    agent_id: "agent-1",
+  });
+  // A status entry (should NOT be collected by snapshot)
+  await blackboardStore.append({
+    entry_type: "status",
+    summary: "Build passed",
+    detail: "CI green",
+    tags: ["ci"],
+    scope: "project",
+    agent_id: "agent-1",
+  });
+
+  return { decisions: [d1, d2, d3], warnings: [w1, w2], findings: [f1, f2] };
+}
+
+describe("CoordinationEngine.createHandoff()", () => {
+  it("creates a handoff record with source_agent, summary, and results", async () => {
+    const result = await engine.createHandoff({
+      source_agent: "agent-builder",
+      summary: "Completed auth module",
+      results: [
+        { description: "Implemented JWT middleware", status: "completed" },
+      ],
+    });
+
+    expect(result.source_agent).toBe("agent-builder");
+    expect(result.summary).toBe("Completed auth module");
+    expect(result.results).toHaveLength(1);
+    expect(result.results[0]!.description).toBe("Implemented JWT middleware");
+    expect(result.results[0]!.status).toBe("completed");
+  });
+
+  it("returns a HandoffRecord with generated id and created_at", async () => {
+    const result = await engine.createHandoff({
+      source_agent: "agent-builder",
+      summary: "Done",
+      results: [],
+    });
+
+    expect(result.id).toBeDefined();
+    expect(typeof result.id).toBe("string");
+    expect(result.id.length).toBeGreaterThan(0);
+    expect(result.created_at).toBeDefined();
+    expect(typeof result.created_at).toBe("string");
+    // Verify it's a valid ISO date
+    expect(new Date(result.created_at).toISOString()).toBe(result.created_at);
+  });
+
+  it("auto-snapshot is the default (context_snapshot populated without explicit opt-in)", async () => {
+    const { decisions } = await seedHandoffTestData();
+
+    const result = await engine.createHandoff({
+      source_agent: "agent-builder",
+      summary: "Completed work",
+      results: [],
+      // No auto_snapshot specified -- should default to true
+    });
+
+    // Context snapshot should have been auto-assembled with some content
+    expect(result.context_snapshot).toBeDefined();
+    expect(result.context_snapshot.decision_ids.length).toBeGreaterThan(0);
+  });
+
+  it("auto_snapshot=false produces handoff with empty context_snapshot arrays", async () => {
+    await seedHandoffTestData();
+
+    const result = await engine.createHandoff({
+      source_agent: "agent-builder",
+      summary: "Quick handoff",
+      results: [],
+      auto_snapshot: false,
+    });
+
+    expect(result.context_snapshot.decision_ids).toEqual([]);
+    expect(result.context_snapshot.warning_ids).toEqual([]);
+    expect(result.context_snapshot.finding_ids).toEqual([]);
+    expect(result.context_snapshot.summaries).toEqual([]);
+  });
+
+  it("explicit context_snapshot overrides auto-assembly", async () => {
+    await seedHandoffTestData();
+
+    const manualSnapshot = {
+      decision_ids: ["manual-d1"],
+      warning_ids: ["manual-w1"],
+      finding_ids: [],
+      summaries: ["Manual context"],
+    };
+
+    const result = await engine.createHandoff({
+      source_agent: "agent-builder",
+      summary: "With manual context",
+      results: [],
+      context_snapshot: manualSnapshot,
+    });
+
+    expect(result.context_snapshot).toEqual(manualSnapshot);
+  });
+
+  it("posts a blackboard 'status' entry with 'handoff' tag on creation", async () => {
+    await engine.createHandoff({
+      source_agent: "agent-builder",
+      summary: "Completed auth module",
+      results: [
+        { description: "JWT middleware done", status: "completed" },
+      ],
+    });
+
+    // Read blackboard entries to find the status entry
+    const { entries } = await blackboardStore.read({
+      entry_types: ["status"],
+      tags: ["handoff"],
+    });
+
+    expect(entries.length).toBeGreaterThanOrEqual(1);
+    const statusEntry = entries.find((e) =>
+      e.summary.startsWith("Handoff created:"),
+    );
+    expect(statusEntry).toBeDefined();
+    expect(statusEntry!.tags).toContain("handoff");
+    expect(statusEntry!.entry_type).toBe("status");
+  });
+
+  it("status entry summary starts with 'Handoff created:' and is truncated to 200 chars", async () => {
+    const longSummary = "A".repeat(250);
+
+    await engine.createHandoff({
+      source_agent: "agent-builder",
+      summary: longSummary,
+      results: [],
+    });
+
+    const { entries } = await blackboardStore.read({
+      entry_types: ["status"],
+      tags: ["handoff"],
+    });
+
+    const statusEntry = entries.find((e) =>
+      e.summary.startsWith("Handoff created:"),
+    );
+    expect(statusEntry).toBeDefined();
+    expect(statusEntry!.summary.length).toBeLessThanOrEqual(200);
+  });
+
+  it("handoff with target_agent specified is persisted correctly", async () => {
+    const result = await engine.createHandoff({
+      source_agent: "agent-builder",
+      target_agent: "agent-reviewer",
+      summary: "Review my code",
+      results: [
+        { description: "Code changes", status: "completed" },
+      ],
+    });
+
+    expect(result.target_agent).toBe("agent-reviewer");
+
+    // Verify persisted in store
+    const stored = await handoffStore.get(result.id);
+    expect(stored).not.toBeNull();
+    expect(stored!.target_agent).toBe("agent-reviewer");
+  });
+
+  it("handoff with scope filters context snapshot to that scope", async () => {
+    const { decisions, warnings, findings } = await seedHandoffTestData();
+
+    const result = await engine.createHandoff({
+      source_agent: "agent-builder",
+      scope: "src/auth/",
+      summary: "Auth work complete",
+      results: [],
+    });
+
+    // Should include auth-scoped decisions (d1 with scope "src/auth/")
+    expect(result.context_snapshot.decision_ids).toContain(decisions[0]!.id);
+    expect(result.context_snapshot.warning_ids).toContain(warnings[0]!.id);
+    expect(result.context_snapshot.finding_ids).toContain(findings[0]!.id);
+
+    // API-scoped items should NOT be included (src/auth/ does not prefix-match src/api/)
+    expect(result.context_snapshot.decision_ids).not.toContain(decisions[1]!.id);
+    expect(result.context_snapshot.warning_ids).not.toContain(warnings[1]!.id);
+  });
+});
+
+describe("assembleContextSnapshot (tested via createHandoff)", () => {
+  it("auto-snapshot collects decision IDs for matching scope (bidirectional prefix)", async () => {
+    const { decisions } = await seedHandoffTestData();
+
+    // Scope "src/" should match "src/auth/" and "src/api/" (src/ is prefix of both)
+    const result = await engine.createHandoff({
+      source_agent: "agent-builder",
+      scope: "src/",
+      summary: "Source-level work",
+      results: [],
+    });
+
+    expect(result.context_snapshot.decision_ids).toContain(decisions[0]!.id); // src/auth/
+    expect(result.context_snapshot.decision_ids).toContain(decisions[1]!.id); // src/api/
+    // "project" scope doesn't match "src/" bidirectionally
+    expect(result.context_snapshot.decision_ids).not.toContain(decisions[2]!.id);
+  });
+
+  it("auto-snapshot collects warning IDs and finding IDs from blackboard for matching scope", async () => {
+    const { warnings, findings } = await seedHandoffTestData();
+
+    const result = await engine.createHandoff({
+      source_agent: "agent-builder",
+      scope: "src/auth/",
+      summary: "Auth work",
+      results: [],
+    });
+
+    expect(result.context_snapshot.warning_ids).toContain(warnings[0]!.id);
+    expect(result.context_snapshot.warning_ids).not.toContain(warnings[1]!.id); // src/api/
+    expect(result.context_snapshot.finding_ids).toContain(findings[0]!.id);
+    expect(result.context_snapshot.finding_ids).not.toContain(findings[1]!.id); // project
+  });
+
+  it("auto-snapshot includes summaries (up to 5 decisions, 3 warnings, 3 findings)", async () => {
+    await seedHandoffTestData();
+
+    const result = await engine.createHandoff({
+      source_agent: "agent-builder",
+      summary: "Full snapshot",
+      results: [],
+      // No scope -- collect all
+    });
+
+    // Should have summaries for decisions, warnings, findings
+    const decisionSummaries = result.context_snapshot.summaries.filter((s) =>
+      s.startsWith("Decision:"),
+    );
+    const warningSummaries = result.context_snapshot.summaries.filter((s) =>
+      s.startsWith("Warning:"),
+    );
+    const findingSummaries = result.context_snapshot.summaries.filter((s) =>
+      s.startsWith("Finding:"),
+    );
+
+    // We have 3 decisions, 2 warnings, 2 findings
+    expect(decisionSummaries.length).toBe(3);
+    expect(warningSummaries.length).toBe(2);
+    expect(findingSummaries.length).toBe(2);
+
+    // Check summary format
+    expect(decisionSummaries[0]).toMatch(/^Decision: /);
+    expect(warningSummaries[0]).toMatch(/^Warning: /);
+    expect(findingSummaries[0]).toMatch(/^Finding: /);
+  });
+
+  it("auto-snapshot with no matching scope returns empty arrays", async () => {
+    await seedHandoffTestData();
+
+    const result = await engine.createHandoff({
+      source_agent: "agent-builder",
+      scope: "nonexistent/path/",
+      summary: "Nothing matches",
+      results: [],
+    });
+
+    expect(result.context_snapshot.decision_ids).toEqual([]);
+    expect(result.context_snapshot.warning_ids).toEqual([]);
+    expect(result.context_snapshot.finding_ids).toEqual([]);
+    expect(result.context_snapshot.summaries).toEqual([]);
+  });
+
+  it("auto-snapshot with no scope (undefined) collects all active decisions and warnings/findings", async () => {
+    const { decisions, warnings, findings } = await seedHandoffTestData();
+
+    const result = await engine.createHandoff({
+      source_agent: "agent-builder",
+      summary: "Collect everything",
+      results: [],
+      // No scope specified
+    });
+
+    // All 3 active decisions should be included
+    expect(result.context_snapshot.decision_ids).toContain(decisions[0]!.id);
+    expect(result.context_snapshot.decision_ids).toContain(decisions[1]!.id);
+    expect(result.context_snapshot.decision_ids).toContain(decisions[2]!.id);
+
+    // All warnings and findings
+    expect(result.context_snapshot.warning_ids).toContain(warnings[0]!.id);
+    expect(result.context_snapshot.warning_ids).toContain(warnings[1]!.id);
+    expect(result.context_snapshot.finding_ids).toContain(findings[0]!.id);
+    expect(result.context_snapshot.finding_ids).toContain(findings[1]!.id);
+  });
+});
+
+describe("CoordinationEngine.acknowledgeHandoff()", () => {
+  it("acknowledges a handoff by ID, returns updated record with acknowledged_by and acknowledged_at", async () => {
+    // Create a handoff first
+    const handoff = await engine.createHandoff({
+      source_agent: "agent-builder",
+      target_agent: "agent-reviewer",
+      summary: "Review this",
+      results: [{ description: "Code ready", status: "completed" }],
+    });
+
+    const acked = await engine.acknowledgeHandoff(handoff.id, "agent-reviewer");
+
+    expect(acked.id).toBe(handoff.id);
+    expect(acked.acknowledged_by).toBe("agent-reviewer");
+    expect(acked.acknowledged_at).toBeDefined();
+    expect(typeof acked.acknowledged_at).toBe("string");
+    // Verify it was persisted
+    const stored = await handoffStore.get(handoff.id);
+    expect(stored!.acknowledged_by).toBe("agent-reviewer");
+  });
+
+  it("returns error/throws for non-existent handoff ID", async () => {
+    await expect(
+      engine.acknowledgeHandoff("nonexistent-id", "agent-reviewer"),
+    ).rejects.toThrow(/not found/i);
+  });
+});
