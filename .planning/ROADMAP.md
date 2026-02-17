@@ -43,7 +43,7 @@
 
 - [x] **Phase 11: Types and Storage** - Agent registry and handoff record data models, storage layer, init extensions (completed 2026-02-17)
 - [x] **Phase 12: Coordination Engine** - Registration, discovery, delegation matching, and handoff logic (completed 2026-02-17)
-- [ ] **Phase 13: Tools and Assembly** - MCP tool surface, context assembler integration, status extension
+- [x] **Phase 13: Tools and Assembly** - MCP tool surface, context assembler integration, status extension (completed 2026-02-17)
 - [ ] **Phase 14: Agent Dashboard** - API endpoints and Agents tab with registry, delegation, and handoff views
 
 ## Phase Details
@@ -120,5 +120,5 @@ Phases execute in numeric order: 11 -> 12 -> 13 -> 14
 | 10. Visualizations and Polish | v1.2 | 3/3 | Complete | 2026-02-17 |
 | 11. Types and Storage | v1.3 | Complete    | 2026-02-17 | - |
 | 12. Coordination Engine | v1.3 | Complete    | 2026-02-17 | - |
-| 13. Tools and Assembly | v1.3 | 0/2 | Not started | - |
+| 13. Tools and Assembly | v1.3 | Complete    | 2026-02-17 | - |
 | 14. Agent Dashboard | v1.3 | 0/? | Not started | - |
