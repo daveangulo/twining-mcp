@@ -13,12 +13,23 @@ import path from "node:path";
 import { BlackboardStore } from "../storage/blackboard-store.js";
 import { DecisionStore } from "../storage/decision-store.js";
 import { GraphStore } from "../storage/graph-store.js";
+import { AgentStore } from "../storage/agent-store.js";
+import { HandoffStore } from "../storage/handoff-store.js";
 import { BlackboardEngine } from "../engine/blackboard.js";
 import { DecisionEngine } from "../engine/decisions.js";
 import { GraphEngine } from "../engine/graph.js";
 import { Embedder } from "../embeddings/embedder.js";
 import { IndexManager } from "../embeddings/index-manager.js";
 import { SearchEngine } from "../embeddings/search.js";
+import {
+  scoreAgent,
+  parseDelegationMetadata,
+  isDelegationExpired,
+} from "../engine/coordination.js";
+import {
+  computeLiveness,
+  DEFAULT_LIVENESS_THRESHOLDS,
+} from "../utils/liveness.js";
 
 /** Send a JSON response with standard headers. */
 function sendJSON(
@@ -50,6 +61,8 @@ export function createApiHandler(
   const blackboardStore = new BlackboardStore(twiningDir);
   const decisionStore = new DecisionStore(twiningDir);
   const graphStore = new GraphStore(twiningDir);
+  const agentStore = new AgentStore(twiningDir);
+  const handoffStore = new HandoffStore(twiningDir);
 
   // Engine layer for search — lazily initialized to avoid creating
   // .twining/embeddings/ directory on uninitialized projects
@@ -266,6 +279,10 @@ export function createApiHandler(
             graph_entities: 0,
             graph_relations: 0,
             last_activity: "none",
+            registered_agents: 0,
+            active_agents: 0,
+            pending_delegations: 0,
+            total_handoffs: 0,
           });
           return true;
         }
@@ -313,6 +330,27 @@ export function createApiHandler(
           last_activity = lastDecisionActivity;
         }
 
+        // Coordination counts
+        const agents = await agentStore.getAll();
+        const registered_agents = agents.length;
+        const now = new Date();
+        const active_agents = agents.filter(
+          (a) =>
+            computeLiveness(a.last_active, now, DEFAULT_LIVENESS_THRESHOLDS) ===
+            "active",
+        ).length;
+
+        const { entries: needEntries } = await blackboardStore.read({
+          entry_types: ["need"],
+        });
+        const pending_delegations = needEntries.filter((entry) => {
+          const meta = parseDelegationMetadata(entry);
+          return meta !== null && !isDelegationExpired(meta, now);
+        }).length;
+
+        const handoffs = await handoffStore.list({});
+        const total_handoffs = handoffs.length;
+
         sendJSON(res, {
           initialized: true,
           blackboard_entries,
@@ -321,6 +359,10 @@ export function createApiHandler(
           graph_entities,
           graph_relations,
           last_activity,
+          registered_agents,
+          active_agents,
+          pending_delegations,
+          total_handoffs,
         });
       } catch (err: unknown) {
         console.error("[twining] API /api/status error:", err);
@@ -398,6 +440,167 @@ export function createApiHandler(
         });
       } catch (err: unknown) {
         console.error("[twining] API /api/decisions error:", err);
+        sendJSON(res, { error: "Internal server error" }, 500);
+      }
+      return true;
+    }
+
+    // GET /api/agents
+    if (url === "/api/agents") {
+      try {
+        if (!fs.existsSync(twiningDir)) {
+          sendJSON(res, { initialized: false, agents: [], total: 0 });
+          return true;
+        }
+
+        const agents = await agentStore.getAll();
+        const now = new Date();
+        const mapped = agents.map((agent) => ({
+          ...agent,
+          liveness: computeLiveness(
+            agent.last_active,
+            now,
+            DEFAULT_LIVENESS_THRESHOLDS,
+          ),
+        }));
+        sendJSON(res, { initialized: true, agents: mapped, total: mapped.length });
+      } catch (err: unknown) {
+        console.error("[twining] API /api/agents error:", err);
+        sendJSON(res, { error: "Internal server error" }, 500);
+      }
+      return true;
+    }
+
+    // GET /api/delegations
+    if (url === "/api/delegations") {
+      try {
+        if (!fs.existsSync(twiningDir)) {
+          sendJSON(res, { initialized: false, delegations: [], total: 0 });
+          return true;
+        }
+
+        const { entries: needEntries } = await blackboardStore.read({
+          entry_types: ["need"],
+        });
+        const agents = await agentStore.getAll();
+        const now = new Date();
+
+        const delegations: Array<{
+          entry_id: string;
+          timestamp: string;
+          summary: string;
+          scope: string;
+          agent_id: string;
+          required_capabilities: string[];
+          urgency: string;
+          expires_at: string;
+          expired: boolean;
+          suggested_agents: Array<{
+            agent_id: string;
+            capabilities: string[];
+            role?: string;
+            liveness: string;
+            total_score: number;
+          }>;
+        }> = [];
+
+        for (const entry of needEntries) {
+          const meta = parseDelegationMetadata(entry);
+          if (!meta) continue;
+
+          const expired = isDelegationExpired(meta, now);
+
+          // Score agents, filter out gone, sort by total_score, take top 5
+          const scored = agents
+            .map((agent) =>
+              scoreAgent(
+                agent,
+                meta.required_capabilities,
+                DEFAULT_LIVENESS_THRESHOLDS,
+                now,
+              ),
+            )
+            .filter((s) => s.liveness !== "gone")
+            .sort((a, b) => b.total_score - a.total_score)
+            .slice(0, 5)
+            .map((s) => ({
+              agent_id: s.agent_id,
+              capabilities: s.capabilities,
+              role: s.role,
+              liveness: s.liveness,
+              total_score: s.total_score,
+            }));
+
+          delegations.push({
+            entry_id: entry.id,
+            timestamp: entry.timestamp,
+            summary: entry.summary,
+            scope: entry.scope,
+            agent_id: entry.agent_id,
+            required_capabilities: meta.required_capabilities,
+            urgency: meta.urgency,
+            expires_at: meta.expires_at,
+            expired,
+            suggested_agents: scored,
+          });
+        }
+
+        sendJSON(res, {
+          initialized: true,
+          delegations,
+          total: delegations.length,
+        });
+      } catch (err: unknown) {
+        console.error("[twining] API /api/delegations error:", err);
+        sendJSON(res, { error: "Internal server error" }, 500);
+      }
+      return true;
+    }
+
+    // GET /api/handoffs/:id (must come before /api/handoffs exact match)
+    if (url.startsWith("/api/handoffs/")) {
+      try {
+        const id = url.slice("/api/handoffs/".length);
+        if (!id) {
+          sendJSON(res, { error: "Handoff ID required" }, 400);
+          return true;
+        }
+
+        if (!fs.existsSync(twiningDir)) {
+          sendJSON(res, { error: "Handoff not found" }, 404);
+          return true;
+        }
+
+        const handoff = await handoffStore.get(id);
+        if (!handoff) {
+          sendJSON(res, { error: "Handoff not found" }, 404);
+          return true;
+        }
+
+        sendJSON(res, handoff);
+      } catch (err: unknown) {
+        console.error("[twining] API /api/handoffs/:id error:", err);
+        sendJSON(res, { error: "Internal server error" }, 500);
+      }
+      return true;
+    }
+
+    // GET /api/handoffs
+    if (url === "/api/handoffs") {
+      try {
+        if (!fs.existsSync(twiningDir)) {
+          sendJSON(res, { initialized: false, handoffs: [], total: 0 });
+          return true;
+        }
+
+        const entries = await handoffStore.list({});
+        sendJSON(res, {
+          initialized: true,
+          handoffs: entries,
+          total: entries.length,
+        });
+      } catch (err: unknown) {
+        console.error("[twining] API /api/handoffs error:", err);
         sendJSON(res, { error: "Internal server error" }, 500);
       }
       return true;
