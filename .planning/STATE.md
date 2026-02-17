@@ -11,8 +11,8 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Phase: 5 of 6 (GSD Bridge)
 Plan: 2 of 2 in current phase
-Status: Phase 5 plan 2 complete
-Last activity: 2026-02-17 — Completed 05-02 (STATE.md sync + Serena docs)
+Status: Phase 5 complete (both plans done)
+Last activity: 2026-02-17 — Completed 05-01 (Planning bridge read-side)
 
 Progress: [██████░░░░] 67% (v1.1)
 
@@ -31,7 +31,7 @@ Progress: [██████░░░░] 67% (v1.1)
 | 2. Intelligence | 2 | — | — |
 | 3. Graph + Lifecycle | 2 | — | — |
 | 4. Git Commit Linking | 2/2 | 5min | 2.5min |
-| 5. GSD Bridge + Serena | 2/2 | 3min | 1.5min |
+| 5. GSD Bridge + Serena | 2/2 | 7min | 3.5min |
 
 **Recent Trend:**
 - v1 completed in 1 day (6 plans)
@@ -54,6 +54,8 @@ v1.1 decisions:
 - ?? [] fallback in why() mapping for backward compatibility with pre-existing decisions
 - Direct fs calls for STATE.md sync (not file-store) because STATE.md is a GSD planning file, not Twining data
 - syncToPlanning is fire-and-forget with try/catch -- never blocks or crashes decide()
+- PlanningState always included as metadata (not subject to token budget) plus synthetic scored finding that IS budget-aware
+- PlanningBridge uses resilient parsing: "unknown" defaults, empty arrays for missing sections, null only when .planning/ absent
 
 ### Pending Todos
 
@@ -66,6 +68,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 05-02-PLAN.md (STATE.md sync + Serena docs) -- Phase 5 complete
+Stopped at: Completed 05-01-PLAN.md (Planning bridge read-side) -- Phase 5 fully complete
 Resume file: None
-Next: Phase 6 or release
+Next: Phase 6 (Search + Export)
