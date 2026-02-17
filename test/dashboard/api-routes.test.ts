@@ -179,6 +179,97 @@ function createTestProject(): { projectRoot: string; publicDir: string } {
     JSON.stringify(decision2, null, 2),
   );
 
+  // Agent registry
+  const agentsDir = path.join(twiningDir, "agents");
+  fs.mkdirSync(agentsDir, { recursive: true });
+  const agentRecords = [
+    {
+      agent_id: "agent-alpha",
+      capabilities: ["typescript", "testing"],
+      role: "developer",
+      description: "Alpha agent",
+      registered_at: "2026-02-17T08:00:00.000Z",
+      last_active: new Date().toISOString(),
+    },
+    {
+      agent_id: "agent-beta",
+      capabilities: ["python", "data"],
+      role: "analyst",
+      description: "Beta agent",
+      registered_at: "2026-02-17T09:00:00.000Z",
+      last_active: "2025-01-01T00:00:00.000Z",
+    },
+  ];
+  fs.writeFileSync(
+    path.join(agentsDir, "registry.json"),
+    JSON.stringify(agentRecords, null, 2),
+  );
+
+  // Handoff data
+  const handoffsDir = path.join(twiningDir, "handoffs");
+  fs.mkdirSync(handoffsDir, { recursive: true });
+  const handoffRecord = {
+    id: "HND001",
+    created_at: "2026-02-17T10:00:00.000Z",
+    source_agent: "agent-alpha",
+    target_agent: "agent-beta",
+    scope: "src/",
+    summary: "Hand off testing work",
+    results: [
+      {
+        description: "Write tests",
+        status: "completed",
+        notes: "All tests pass",
+      },
+    ],
+    context_snapshot: {
+      decision_ids: ["DEC001"],
+      warning_ids: [],
+      finding_ids: [],
+      summaries: ["Use embedded HTTP server"],
+    },
+    acknowledged_by: null,
+    acknowledged_at: null,
+  };
+  fs.writeFileSync(
+    path.join(handoffsDir, "HND001.json"),
+    JSON.stringify(handoffRecord, null, 2),
+  );
+  // Handoff index (JSONL)
+  fs.writeFileSync(
+    path.join(handoffsDir, "index.jsonl"),
+    JSON.stringify({
+      id: "HND001",
+      created_at: "2026-02-17T10:00:00.000Z",
+      source_agent: "agent-alpha",
+      target_agent: "agent-beta",
+      scope: "src/",
+      summary: "Hand off testing work",
+      result_status: "completed",
+      acknowledged: false,
+    }) + "\n",
+  );
+
+  // Add delegation entry to blackboard (BB004)
+  fs.appendFileSync(
+    path.join(twiningDir, "blackboard.jsonl"),
+    JSON.stringify({
+      id: "BB004",
+      timestamp: "2026-02-17T13:00:00.000Z",
+      agent_id: "agent-alpha",
+      entry_type: "need",
+      tags: ["delegation"],
+      scope: "src/api/",
+      summary: "Need typescript expert",
+      detail: JSON.stringify({
+        type: "delegation",
+        required_capabilities: ["typescript"],
+        urgency: "normal",
+        expires_at: "2099-12-31T23:59:59.000Z",
+      }),
+    }) + "\n",
+  );
+
   // Graph data (JSON arrays)
   const entities = [
     {
@@ -258,12 +349,12 @@ describe("API routes - initialized project", () => {
 
     const body = JSON.parse(res.body);
     expect(body.initialized).toBe(true);
-    expect(body.blackboard_entries).toBe(3);
+    expect(body.blackboard_entries).toBe(4);
     expect(body.active_decisions).toBe(1);
     expect(body.provisional_decisions).toBe(1);
     expect(body.graph_entities).toBe(2);
     expect(body.graph_relations).toBe(1);
-    expect(body.last_activity).toBe("2026-02-17T12:00:00.000Z");
+    expect(body.last_activity).toBe("2026-02-17T13:00:00.000Z");
   });
 
   it("GET /api/blackboard returns entries array with total_count", async () => {
@@ -273,8 +364,8 @@ describe("API routes - initialized project", () => {
 
     const body = JSON.parse(res.body);
     expect(body.initialized).toBe(true);
-    expect(body.entries).toHaveLength(3);
-    expect(body.total_count).toBe(3);
+    expect(body.entries).toHaveLength(4);
+    expect(body.total_count).toBe(4);
 
     // Verify entry structure
     const entry = body.entries[0];
@@ -362,6 +453,109 @@ describe("API routes - initialized project", () => {
     expect(res.status).toBe(200);
     expect(res.body).toContain("Dashboard");
     expect(res.headers["content-type"]).toContain("text/html");
+  });
+
+  it("GET /api/agents returns agents with liveness", async () => {
+    const res = await httpGet(port, "/api/agents");
+    expect(res.status).toBe(200);
+    expect(res.headers["content-type"]).toContain("application/json");
+
+    const body = JSON.parse(res.body);
+    expect(body.initialized).toBe(true);
+    expect(body.agents).toHaveLength(2);
+    expect(body.total).toBe(2);
+
+    // Each agent should have expected fields
+    for (const agent of body.agents) {
+      expect(agent).toHaveProperty("agent_id");
+      expect(agent).toHaveProperty("capabilities");
+      expect(agent).toHaveProperty("liveness");
+    }
+
+    // agent-alpha was just active, should be "active"
+    const alpha = body.agents.find(
+      (a: { agent_id: string }) => a.agent_id === "agent-alpha",
+    );
+    expect(alpha.liveness).toBe("active");
+
+    // agent-beta has old last_active, should be "gone"
+    const beta = body.agents.find(
+      (a: { agent_id: string }) => a.agent_id === "agent-beta",
+    );
+    expect(beta.liveness).toBe("gone");
+  });
+
+  it("GET /api/delegations returns delegation needs with scored agents", async () => {
+    const res = await httpGet(port, "/api/delegations");
+    expect(res.status).toBe(200);
+    expect(res.headers["content-type"]).toContain("application/json");
+
+    const body = JSON.parse(res.body);
+    expect(body.initialized).toBe(true);
+    expect(body.delegations.length).toBeGreaterThanOrEqual(1);
+    expect(body.total).toBe(body.delegations.length);
+
+    const delegation = body.delegations[0];
+    expect(delegation).toHaveProperty("entry_id");
+    expect(delegation).toHaveProperty("required_capabilities");
+    expect(delegation).toHaveProperty("urgency");
+    expect(delegation).toHaveProperty("expired");
+    expect(delegation).toHaveProperty("suggested_agents");
+    expect(Array.isArray(delegation.suggested_agents)).toBe(true);
+
+    // Test delegation expires in 2099, so not expired
+    expect(delegation.expired).toBe(false);
+  });
+
+  it("GET /api/handoffs returns handoff index entries", async () => {
+    const res = await httpGet(port, "/api/handoffs");
+    expect(res.status).toBe(200);
+    expect(res.headers["content-type"]).toContain("application/json");
+
+    const body = JSON.parse(res.body);
+    expect(body.initialized).toBe(true);
+    expect(body.handoffs).toHaveLength(1);
+    expect(body.total).toBe(1);
+
+    const handoff = body.handoffs[0];
+    expect(handoff).toHaveProperty("id");
+    expect(handoff).toHaveProperty("source_agent");
+    expect(handoff).toHaveProperty("target_agent");
+    expect(handoff).toHaveProperty("result_status");
+    expect(handoff).toHaveProperty("acknowledged");
+  });
+
+  it("GET /api/handoffs/:id returns full handoff record", async () => {
+    const res = await httpGet(port, "/api/handoffs/HND001");
+    expect(res.status).toBe(200);
+    expect(res.headers["content-type"]).toContain("application/json");
+
+    const body = JSON.parse(res.body);
+    expect(body.id).toBe("HND001");
+    expect(body.results).toBeInstanceOf(Array);
+    expect(body.results.length).toBeGreaterThan(0);
+    expect(body.context_snapshot).toHaveProperty("decision_ids");
+    expect(body.context_snapshot.decision_ids).toContain("DEC001");
+  });
+
+  it("GET /api/handoffs/:id returns 404 for unknown ID", async () => {
+    const res = await httpGet(port, "/api/handoffs/NONEXISTENT");
+    expect(res.status).toBe(404);
+    expect(res.headers["content-type"]).toContain("application/json");
+
+    const body = JSON.parse(res.body);
+    expect(body.error).toBe("Handoff not found");
+  });
+
+  it("GET /api/status includes coordination counts", async () => {
+    const res = await httpGet(port, "/api/status");
+    expect(res.status).toBe(200);
+
+    const body = JSON.parse(res.body);
+    expect(body.registered_agents).toBe(2);
+    expect(body.active_agents).toBeGreaterThanOrEqual(1);
+    expect(typeof body.pending_delegations).toBe("number");
+    expect(body.total_handoffs).toBe(1);
   });
 });
 
@@ -465,6 +659,55 @@ describe("API routes - uninitialized project", () => {
     expect(body.results).toEqual([]);
     expect(body.total).toBe(0);
     expect(body.fallback_mode).toBe(true);
+  });
+
+  it("GET /api/agents returns initialized:false with empty agents", async () => {
+    const res = await httpGet(port, "/api/agents");
+    expect(res.status).toBe(200);
+
+    const body = JSON.parse(res.body);
+    expect(body.initialized).toBe(false);
+    expect(body.agents).toEqual([]);
+    expect(body.total).toBe(0);
+  });
+
+  it("GET /api/delegations returns initialized:false with empty delegations", async () => {
+    const res = await httpGet(port, "/api/delegations");
+    expect(res.status).toBe(200);
+
+    const body = JSON.parse(res.body);
+    expect(body.initialized).toBe(false);
+    expect(body.delegations).toEqual([]);
+    expect(body.total).toBe(0);
+  });
+
+  it("GET /api/handoffs returns initialized:false with empty handoffs", async () => {
+    const res = await httpGet(port, "/api/handoffs");
+    expect(res.status).toBe(200);
+
+    const body = JSON.parse(res.body);
+    expect(body.initialized).toBe(false);
+    expect(body.handoffs).toEqual([]);
+    expect(body.total).toBe(0);
+  });
+
+  it("GET /api/handoffs/:id returns 404 when uninitialized", async () => {
+    const res = await httpGet(port, "/api/handoffs/HND001");
+    expect(res.status).toBe(404);
+
+    const body = JSON.parse(res.body);
+    expect(body.error).toBe("Handoff not found");
+  });
+
+  it("GET /api/status includes zero coordination counts when uninitialized", async () => {
+    const res = await httpGet(port, "/api/status");
+    expect(res.status).toBe(200);
+
+    const body = JSON.parse(res.body);
+    expect(body.registered_agents).toBe(0);
+    expect(body.active_agents).toBe(0);
+    expect(body.pending_delegations).toBe(0);
+    expect(body.total_handoffs).toBe(0);
   });
 });
 
