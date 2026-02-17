@@ -456,4 +456,195 @@ describe("API routes - uninitialized project", () => {
     expect(body.entity_count).toBe(0);
     expect(body.relation_count).toBe(0);
   });
+
+  it("GET /api/search returns empty results for uninitialized project", async () => {
+    const res = await httpGet(port, "/api/search?q=test");
+    expect(res.status).toBe(200);
+
+    const body = JSON.parse(res.body);
+    expect(body.results).toEqual([]);
+    expect(body.total).toBe(0);
+    expect(body.fallback_mode).toBe(true);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* Test suite: GET /api/search                                         */
+/* ------------------------------------------------------------------ */
+
+describe("GET /api/search", () => {
+  let server: http.Server;
+  let port: number;
+  let projectRoot: string;
+
+  beforeAll(async () => {
+    const project = createTestProject();
+    projectRoot = project.projectRoot;
+
+    server = http.createServer(
+      handleRequest(project.publicDir, project.projectRoot),
+    );
+    await new Promise<void>((resolve) => {
+      server.listen(0, "127.0.0.1", () => resolve());
+    });
+    const addr = server.address();
+    port = typeof addr === "object" && addr !== null ? addr.port : 0;
+  });
+
+  afterAll(async () => {
+    await new Promise<void>((resolve) => {
+      server.close(() => resolve());
+    });
+    fs.rmSync(projectRoot, { recursive: true, force: true });
+  });
+
+  it("returns empty results when no query param", async () => {
+    const res = await httpGet(port, "/api/search");
+    expect(res.status).toBe(200);
+    expect(res.headers["content-type"]).toContain("application/json");
+
+    const body = JSON.parse(res.body);
+    expect(body.query).toBe("");
+    expect(body.results).toEqual([]);
+    expect(body.total).toBe(0);
+  });
+
+  it("returns blackboard results for matching query", async () => {
+    // "finding" matches BB001 summary "Test finding" and detail "A test finding..."
+    const res = await httpGet(port, "/api/search?q=finding");
+    expect(res.status).toBe(200);
+
+    const body = JSON.parse(res.body);
+    expect(body.query).toBe("finding");
+    expect(body.total).toBeGreaterThan(0);
+
+    const bbResults = body.results.filter(
+      (r: { type: string }) => r.type === "blackboard",
+    );
+    expect(bbResults.length).toBeGreaterThan(0);
+    expect(bbResults[0]).toHaveProperty("id");
+    expect(bbResults[0]).toHaveProperty("summary");
+    expect(bbResults[0]).toHaveProperty("entry_type");
+    expect(bbResults[0]).toHaveProperty("relevance");
+  });
+
+  it("returns decision results for matching query", async () => {
+    // "embedded HTTP server" matches DEC001 summary
+    const res = await httpGet(port, "/api/search?q=embedded");
+    expect(res.status).toBe(200);
+
+    const body = JSON.parse(res.body);
+    const decResults = body.results.filter(
+      (r: { type: string }) => r.type === "decision",
+    );
+    expect(decResults.length).toBeGreaterThan(0);
+    expect(decResults[0]).toHaveProperty("id");
+    expect(decResults[0]).toHaveProperty("summary");
+    expect(decResults[0]).toHaveProperty("domain");
+    expect(decResults[0]).toHaveProperty("status");
+    expect(decResults[0]).toHaveProperty("relevance");
+  });
+
+  it("returns entity results for matching query", async () => {
+    // "HttpServer" matches ENT001 name
+    const res = await httpGet(port, "/api/search?q=HttpServer");
+    expect(res.status).toBe(200);
+
+    const body = JSON.parse(res.body);
+    const entResults = body.results.filter(
+      (r: { type: string }) => r.type === "entity",
+    );
+    expect(entResults.length).toBeGreaterThan(0);
+    expect(entResults[0]).toHaveProperty("name");
+    expect(entResults[0]).toHaveProperty("entity_type");
+    expect(entResults[0].relevance).toBe(0.5);
+  });
+
+  it("filters by types param — blackboard only", async () => {
+    const res = await httpGet(port, "/api/search?q=API&types=blackboard");
+    expect(res.status).toBe(200);
+
+    const body = JSON.parse(res.body);
+    // Every result should be blackboard type
+    for (const r of body.results) {
+      expect(r.type).toBe("blackboard");
+    }
+    // Should not contain decision or entity results
+    const nonBB = body.results.filter(
+      (r: { type: string }) => r.type !== "blackboard",
+    );
+    expect(nonBB).toHaveLength(0);
+  });
+
+  it("includes fallback_mode in response", async () => {
+    const res = await httpGet(port, "/api/search?q=test");
+    expect(res.status).toBe(200);
+
+    const body = JSON.parse(res.body);
+    expect(typeof body.fallback_mode).toBe("boolean");
+  });
+
+  it("filters by scope prefix", async () => {
+    // scope=src/dashboard/ should only return items scoped under src/dashboard/
+    const res = await httpGet(
+      port,
+      "/api/search?q=API&scope=src/dashboard/",
+    );
+    expect(res.status).toBe(200);
+
+    const body = JSON.parse(res.body);
+    // All blackboard and decision results should have scope starting with src/dashboard/
+    for (const r of body.results) {
+      if (r.scope) {
+        expect(r.scope.startsWith("src/dashboard/")).toBe(true);
+      }
+    }
+  });
+
+  it("filters by status param for decisions", async () => {
+    // status=active should only return active decisions
+    const res = await httpGet(
+      port,
+      "/api/search?q=server&status=active",
+    );
+    expect(res.status).toBe(200);
+
+    const body = JSON.parse(res.body);
+    const decResults = body.results.filter(
+      (r: { type: string }) => r.type === "decision",
+    );
+    for (const r of decResults) {
+      expect(r.status).toBe("active");
+    }
+  });
+
+  it("results are sorted by relevance descending", async () => {
+    // Use a broad query that hits multiple types
+    const res = await httpGet(port, "/api/search?q=API");
+    expect(res.status).toBe(200);
+
+    const body = JSON.parse(res.body);
+    if (body.results.length > 1) {
+      for (let i = 0; i < body.results.length - 1; i++) {
+        expect(body.results[i].relevance).toBeGreaterThanOrEqual(
+          body.results[i + 1].relevance,
+        );
+      }
+    }
+  });
+
+  it("returns correct response structure", async () => {
+    const res = await httpGet(port, "/api/search?q=dashboard");
+    expect(res.status).toBe(200);
+
+    const body = JSON.parse(res.body);
+    expect(body).toHaveProperty("query");
+    expect(body).toHaveProperty("results");
+    expect(body).toHaveProperty("total");
+    expect(body).toHaveProperty("fallback_mode");
+    expect(typeof body.query).toBe("string");
+    expect(Array.isArray(body.results)).toBe(true);
+    expect(typeof body.total).toBe("number");
+    expect(body.total).toBe(body.results.length);
+  });
 });
