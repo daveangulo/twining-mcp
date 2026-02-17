@@ -74,6 +74,11 @@ export function createServer(projectRoot: string): McpServer {
     indexManager,
   );
   const planningBridge = new PlanningBridge(projectRoot);
+
+  // Create coordination stores (before ContextAssembler which depends on them)
+  const agentStore = new AgentStore(twiningDir);
+  const handoffStore = new HandoffStore(twiningDir);
+
   const contextAssembler = new ContextAssembler(
     blackboardStore,
     decisionStore,
@@ -81,11 +86,11 @@ export function createServer(projectRoot: string): McpServer {
     config,
     graphEngine,
     planningBridge,
+    handoffStore,   // for recent handoffs in assembly
+    agentStore,     // for agent suggestions in assembly
   );
 
-  // Create coordination stores and engine
-  const agentStore = new AgentStore(twiningDir);
-  const handoffStore = new HandoffStore(twiningDir);
+  // Create coordination engine
   const coordinationEngine = new CoordinationEngine(
     agentStore,
     handoffStore,
