@@ -33,11 +33,11 @@
   2. Agent can retroactively link a commit hash to an existing decision via `twining_link_commit`
   3. Agent calling `twining_why` on a linked decision sees the associated commit hashes in the output
   4. Agent can query "what decisions drove this commit?" via `twining_commits` and get matching decisions back
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
+- [ ] 04-01-PLAN.md — Data model extension + commit linking (GITL-01, GITL-02)
+- [ ] 04-02-PLAN.md — Query tools + why output enrichment (GITL-03, GITL-04)
 
 ### Phase 5: GSD Planning Bridge + Serena Docs
 **Goal**: Twining is aware of GSD planning state and surfaces it in context assembly and summaries; Serena enrichment workflow is documented for agents
@@ -79,6 +79,6 @@ Phases execute in numeric order: 4 → 5 → 6
 | 1. Foundation + Core Data | v1 | 2/2 | Complete | 2026-02-16 |
 | 2. Intelligence | v1 | 2/2 | Complete | 2026-02-16 |
 | 3. Graph + Lifecycle | v1 | 2/2 | Complete | 2026-02-17 |
-| 4. Git Commit Linking | v1.1 | 0/? | Not started | - |
+| 4. Git Commit Linking | v1.1 | 0/2 | Planned | - |
 | 5. GSD Planning Bridge + Serena Docs | v1.1 | 0/? | Not started | - |
 | 6. Search + Export | v1.1 | 0/? | Not started | - |
