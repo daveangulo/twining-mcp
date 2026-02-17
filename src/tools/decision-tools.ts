@@ -262,6 +262,67 @@ export function registerDecisionTools(
     },
   );
 
+  // twining_search_decisions — Search decisions across all scopes
+  server.registerTool(
+    "twining_search_decisions",
+    {
+      description:
+        "Search decisions across all scopes by keyword or semantic similarity. Returns ranked results without requiring a specific scope. Supports filtering by domain, status, and confidence level.",
+      inputSchema: {
+        query: z
+          .string()
+          .describe(
+            "Search query — keywords or natural language description of what you're looking for",
+          ),
+        domain: z
+          .string()
+          .optional()
+          .describe(
+            "Filter by decision domain (e.g., 'architecture', 'implementation')",
+          ),
+        status: z
+          .enum(["active", "provisional", "superseded", "overridden"])
+          .optional()
+          .describe("Filter by decision status"),
+        confidence: z
+          .enum(["high", "medium", "low"])
+          .optional()
+          .describe("Filter by confidence level"),
+        limit: z
+          .number()
+          .optional()
+          .describe("Maximum results to return (default: 20)"),
+      },
+    },
+    async (args) => {
+      try {
+        const filters: {
+          domain?: string;
+          status?: "active" | "provisional" | "superseded" | "overridden";
+          confidence?: "high" | "medium" | "low";
+        } = {};
+        if (args.domain) filters.domain = args.domain;
+        if (args.status) filters.status = args.status;
+        if (args.confidence) filters.confidence = args.confidence;
+
+        const result = await engine.searchDecisions(
+          args.query,
+          Object.keys(filters).length > 0 ? filters : undefined,
+          args.limit,
+        );
+        return toolResult(result);
+      } catch (e) {
+        if (e instanceof TwiningError) {
+          return toolError(e.message, e.code);
+        }
+        return toolError(
+          e instanceof Error ? e.message : "Unknown error",
+          "INTERNAL_ERROR",
+        );
+      }
+    },
+  );
+
   // twining_link_commit — Link a git commit hash to an existing decision
   server.registerTool(
     "twining_link_commit",
