@@ -150,7 +150,40 @@ export async function startDashboard(
   const server = http.createServer(handleRequest(publicDir));
   const port = await tryListen(server, config.port, 5);
 
-  console.error(`[twining] Dashboard: http://127.0.0.1:${port}`);
+  const url = `http://127.0.0.1:${port}`;
+  console.error(`[twining] Dashboard: ${url}`);
+
+  // Auto-open browser (non-fatal on failure)
+  if (config.autoOpen) {
+    import("open")
+      .then((mod) => mod.default(url))
+      .catch(() => {
+        // open package unavailable or browser launch failed — not critical
+      });
+  }
 
   return { server, port };
+}
+
+/**
+ * Register signal handlers for graceful dashboard shutdown.
+ * Closes the HTTP server on SIGTERM/SIGINT with a 3-second force-exit timeout.
+ */
+export function setupDashboardShutdown(httpServer: http.Server): void {
+  const shutdown = () => {
+    httpServer.close(() => {
+      // Server closed cleanly
+    });
+    // Force exit after 3 seconds if close hangs
+    const timer = setTimeout(() => {
+      process.exit(0);
+    }, 3000);
+    // Don't let the timer keep the process alive
+    if (timer.unref) {
+      timer.unref();
+    }
+  };
+
+  process.on("SIGTERM", shutdown);
+  process.on("SIGINT", shutdown);
 }
