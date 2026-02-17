@@ -537,6 +537,12 @@ function renderDecisions() {
 
   renderPagination("decisions-pagination", sorted.length, ts, renderDecisions);
 
+  // Update timeline if it is visible
+  var timelineView = document.getElementById('decisions-timeline-view');
+  if (timelineView && timelineView.style.display !== 'none' && window.timelineInstance) {
+    updateTimelineData();
+  }
+
   // Check if selected item still exists
   if (ts.selectedId) {
     var found = false;
@@ -557,8 +563,8 @@ function renderDecisions() {
   }
 }
 
-function renderDecisionDetail(decision) {
-  var panel = document.getElementById("decisions-detail");
+function renderDecisionDetail(decision, panelId) {
+  var panel = document.getElementById(panelId || "decisions-detail");
   if (!panel) return;
   clearElement(panel);
 
@@ -1175,10 +1181,99 @@ function toggleView(tab, viewName) {
   }
 }
 
-/* ========== Visualization Stubs (replaced by Plans 10-02 and 10-03) ========== */
+/* ========== Decision Timeline Visualization ========== */
+
+var CONFIDENCE_CLASSES = { high: 'confidence-high', medium: 'confidence-medium', low: 'confidence-low' };
+var STATUS_CLASSES = { provisional: 'status-provisional', superseded: 'status-superseded', overridden: 'status-overridden' };
+
+function getDecisionClassName(d) {
+  if (d.status && d.status !== 'active' && STATUS_CLASSES[d.status]) {
+    return STATUS_CLASSES[d.status];
+  }
+  if (d.confidence && CONFIDENCE_CLASSES[d.confidence]) {
+    return CONFIDENCE_CLASSES[d.confidence];
+  }
+  return '';
+}
+
+function buildTimelineItems(decisions) {
+  var scoped = applyGlobalScope(decisions, 'scope');
+  var items = [];
+  for (var i = 0; i < scoped.length; i++) {
+    var d = scoped[i];
+    items.push({
+      id: d.id,
+      content: truncate(d.summary, 60),
+      start: d.timestamp,
+      className: getDecisionClassName(d),
+      title: d.summary + ' [' + (d.status || 'unknown') + ', ' + (d.confidence || 'unknown') + ']'
+    });
+  }
+  return items;
+}
 
 function initTimeline() {
-  // Stub -- replaced by Plan 10-02
+  if (window.timelineInstance) {
+    updateTimelineData();
+    return;
+  }
+  if (typeof vis === 'undefined' || !vis.Timeline) return;
+
+  var items = buildTimelineItems(state.decisions.data);
+  window.timelineDataSet = new vis.DataSet(items);
+
+  var container = document.getElementById('timeline-container');
+  if (!container) return;
+
+  var options = {
+    zoomMin: 1000 * 60 * 60,
+    zoomMax: 1000 * 60 * 60 * 24 * 365,
+    orientation: { axis: 'top' },
+    selectable: true,
+    tooltip: { followMouse: true },
+    margin: { item: 10 }
+  };
+
+  window.timelineInstance = new vis.Timeline(container, window.timelineDataSet, options);
+
+  window.timelineInstance.on('select', function(properties) {
+    if (properties.items.length > 0) {
+      var id = properties.items[0];
+      state.decisions.selectedId = id;
+      fetchTimelineDecisionDetail(id);
+    }
+  });
+
+  window.timelineInstance.fit();
+}
+
+function updateTimelineData() {
+  if (!window.timelineDataSet) return;
+  var items = buildTimelineItems(state.decisions.data);
+  window.timelineDataSet.clear();
+  window.timelineDataSet.add(items);
+}
+
+function fetchTimelineDecisionDetail(id) {
+  fetch("/api/decisions/" + encodeURIComponent(id))
+    .then(function(res) {
+      if (res.status === 404) {
+        var panel = document.getElementById("decisions-timeline-detail");
+        if (panel) { clearElement(panel); panel.appendChild(el("p", "placeholder", "Decision not found")); }
+        return null;
+      }
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    })
+    .then(function(data) {
+      if (data) {
+        renderDecisionDetail(data, "decisions-timeline-detail");
+      }
+    })
+    .catch(function() {
+      var panel = document.getElementById("decisions-timeline-detail");
+      if (panel) { clearElement(panel); panel.appendChild(el("p", "placeholder", "Decision not found")); }
+    });
 }
 
 function initGraphVis() {
