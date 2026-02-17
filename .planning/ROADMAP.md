@@ -63,11 +63,11 @@ Plans:
   2. `twining_search_decisions` results can be filtered by domain, status, or confidence level
   3. Agent or human can get a single markdown document of all Twining state (blackboard, decisions, graph) via `twining_export`
   4. `twining_export` accepts a `scope` parameter that filters output to only the relevant subset of state
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 06-01: TBD
-- [ ] 06-02: TBD
+- [ ] 06-01-PLAN.md — Decision search tool with semantic/keyword search and filters (SRCH-01, SRCH-02)
+- [ ] 06-02-PLAN.md — Full state export to markdown with scope filtering (XPRT-01, XPRT-02)
 
 ## Progress
 
@@ -81,4 +81,4 @@ Phases execute in numeric order: 4 → 5 → 6
 | 3. Graph + Lifecycle | v1 | 2/2 | Complete | 2026-02-17 |
 | 4. Git Commit Linking | v1.1 | Complete    | 2026-02-17 | - |
 | 5. GSD Planning Bridge + Serena Docs | v1.1 | Complete    | 2026-02-17 | - |
-| 6. Search + Export | v1.1 | 0/? | Not started | - |
+| 6. Search + Export | v1.1 | 0/2 | Not started | - |
