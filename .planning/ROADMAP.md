@@ -99,7 +99,10 @@ Plans:
   1. Dashboard Agents tab shows all registered agents with their status, capabilities, and last activity
   2. Dashboard shows pending delegation needs with which agents match each need
   3. Dashboard shows handoff history with creation time, source/target agents, and acknowledgment status
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 14-01-PLAN.md -- API endpoints for agents, delegations, handoffs + status extension
+- [ ] 14-02-PLAN.md -- Frontend Agents tab with 3 sub-views (Agents, Delegations, Handoffs)
 
 ## Progress
 
