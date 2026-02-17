@@ -14,6 +14,10 @@ var state = {
   decisions: { data: [], sortKey: "timestamp", sortDir: "desc", page: 1, pageSize: 25, selectedId: null },
   graph: { data: [], relations: [], sortKey: "name", sortDir: "asc", page: 1, pageSize: 25, selectedId: null },
   search: { results: [], sortKey: "relevance", sortDir: "desc", page: 1, pageSize: 25, selectedId: null, query: "", fallback_mode: true },
+  agents: { data: [], sortKey: "agent_id", sortDir: "asc", page: 1, pageSize: 25, selectedId: null },
+  delegations: { data: [], sortKey: "timestamp", sortDir: "desc", page: 1, pageSize: 25, selectedId: null },
+  handoffs: { data: [], sortKey: "created_at", sortDir: "desc", page: 1, pageSize: 25, selectedId: null },
+  agentsSubView: "agents-list",
   globalScope: "",
   status: null,
   pollTimer: null,
@@ -194,6 +198,84 @@ function fetchDecisionDetail(id) {
     });
 }
 
+/* ========== Agent Coordination Fetching ========== */
+
+function fetchAgents() {
+  fetch("/api/agents")
+    .then(function(res) {
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    })
+    .then(function(data) {
+      state.agents.data = data.agents || [];
+      state.connected = true;
+      updateConnectionIndicator();
+      renderAgents();
+    })
+    .catch(function() {
+      state.connected = false;
+      updateConnectionIndicator();
+    });
+}
+
+function fetchDelegations() {
+  fetch("/api/delegations")
+    .then(function(res) {
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    })
+    .then(function(data) {
+      state.delegations.data = data.delegations || [];
+      state.connected = true;
+      updateConnectionIndicator();
+      renderDelegations();
+    })
+    .catch(function() {
+      state.connected = false;
+      updateConnectionIndicator();
+    });
+}
+
+function fetchHandoffs() {
+  fetch("/api/handoffs")
+    .then(function(res) {
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    })
+    .then(function(data) {
+      state.handoffs.data = data.handoffs || [];
+      state.connected = true;
+      updateConnectionIndicator();
+      renderHandoffs();
+    })
+    .catch(function() {
+      state.connected = false;
+      updateConnectionIndicator();
+    });
+}
+
+function fetchHandoffDetail(id) {
+  fetch("/api/handoffs/" + encodeURIComponent(id))
+    .then(function(res) {
+      if (res.status === 404) {
+        var panel = document.getElementById("handoffs-detail");
+        if (panel) { clearElement(panel); panel.appendChild(el("p", "placeholder", "Handoff not found")); }
+        return null;
+      }
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    })
+    .then(function(data) {
+      if (data) {
+        renderHandoffDetail(data);
+      }
+    })
+    .catch(function() {
+      var panel = document.getElementById("handoffs-detail");
+      if (panel) { clearElement(panel); panel.appendChild(el("p", "placeholder", "Handoff not found")); }
+    });
+}
+
 /* ========== Polling Lifecycle ========== */
 
 function refreshData() {
@@ -203,6 +285,11 @@ function refreshData() {
   else if (tab === "decisions") fetchDecisions();
   else if (tab === "graph") fetchGraph();
   else if (tab === "search" && state.search.query) fetchSearch();
+  else if (tab === "agents") {
+    if (state.agentsSubView === "agents-list") fetchAgents();
+    else if (state.agentsSubView === "delegations") fetchDelegations();
+    else if (state.agentsSubView === "handoffs") fetchHandoffs();
+  }
 }
 
 function startPolling() {
@@ -243,6 +330,7 @@ function switchTab(tabName) {
   if (tabName === "blackboard" && state.blackboard.data.length === 0) fetchBlackboard();
   if (tabName === "decisions" && state.decisions.data.length === 0) fetchDecisions();
   if (tabName === "graph" && state.graph.data.length === 0) fetchGraph();
+  if (tabName === "agents" && state.agents.data.length === 0) fetchAgents();
 
   stopPolling();
   startPolling();
@@ -282,6 +370,9 @@ function handleSort(tabName, key) {
   else if (tabName === "decisions") renderDecisions();
   else if (tabName === "graph") renderGraph();
   else if (tabName === "search") renderSearchResults();
+  else if (tabName === "agents") renderAgents();
+  else if (tabName === "delegations") renderDelegations();
+  else if (tabName === "handoffs") renderHandoffs();
 }
 
 function updateSortHeaders(tableId, sortKey, sortDir) {
@@ -357,6 +448,10 @@ function renderStatus() {
   setVal("stat-graph-entities", s.graph_entities);
   setVal("stat-graph-relations", s.graph_relations);
   setVal("stat-last-activity", formatTimestamp(s.last_activity));
+  setVal("stat-registered-agents", s.registered_agents);
+  setVal("stat-active-agents", s.active_agents);
+  setVal("stat-pending-delegations", s.pending_delegations);
+  setVal("stat-total-handoffs", s.total_handoffs);
 
   var msgEl = document.getElementById("uninitialized-msg");
   if (msgEl) {
@@ -868,6 +963,502 @@ function renderGraphDetail(entity, panelId) {
   }
 }
 
+/* ========== Render: Agents ========== */
+
+function renderAgents() {
+  var ts = state.agents;
+  var sorted = sortData(ts.data, ts.sortKey, ts.sortDir);
+  var page = paginate(sorted, ts.page, ts.pageSize);
+
+  updateSortHeaders("agents-table", ts.sortKey, ts.sortDir);
+
+  var tbody = document.querySelector("#agents-table tbody");
+  if (!tbody) return;
+  clearElement(tbody);
+
+  for (var i = 0; i < page.length; i++) {
+    var agent = page[i];
+    var tr = el("tr");
+    tr.setAttribute("data-id", agent.agent_id || "");
+    if (ts.selectedId && (agent.agent_id === ts.selectedId)) {
+      tr.classList.add("selected");
+    }
+
+    var tdId = el("td", null, agent.agent_id || "--");
+    var tdStatus = el("td");
+    tdStatus.appendChild(createBadge("liveness-" + (agent.liveness || "gone")));
+    var tdRole = el("td", null, agent.role || "--");
+
+    var tdCaps = el("td");
+    if (agent.capabilities && agent.capabilities.length) {
+      for (var c = 0; c < agent.capabilities.length; c++) {
+        tdCaps.appendChild(el("span", "capability-tag", agent.capabilities[c]));
+      }
+    } else {
+      tdCaps.textContent = "--";
+    }
+
+    var tdActive = el("td", null, formatTimestamp(agent.last_active));
+
+    tr.appendChild(tdId);
+    tr.appendChild(tdStatus);
+    tr.appendChild(tdRole);
+    tr.appendChild(tdCaps);
+    tr.appendChild(tdActive);
+
+    (function(a) {
+      tr.addEventListener("click", function() {
+        ts.selectedId = a.agent_id;
+        renderAgents();
+        renderAgentDetail(a);
+      });
+    })(agent);
+
+    tbody.appendChild(tr);
+  }
+
+  renderPagination("agents-pagination", sorted.length, ts, renderAgents);
+
+  if (ts.selectedId) {
+    var found = null;
+    for (var k = 0; k < ts.data.length; k++) {
+      if (ts.data[k].agent_id === ts.selectedId) { found = ts.data[k]; break; }
+    }
+    if (!found) {
+      var panel = document.getElementById("agents-detail");
+      if (panel) { clearElement(panel); panel.appendChild(el("p", "placeholder", "Agent no longer exists")); ts.selectedId = null; }
+    }
+  }
+}
+
+function renderAgentDetail(agent) {
+  var panel = document.getElementById("agents-detail");
+  if (!panel) return;
+  clearElement(panel);
+
+  panel.appendChild(el("h3", null, "Agent Details"));
+
+  var fields = [
+    { label: "Agent ID", value: agent.agent_id },
+    { label: "Role", value: agent.role },
+    { label: "Description", value: agent.description },
+    { label: "Registered At", value: formatTimestamp(agent.registered_at) },
+    { label: "Last Active", value: formatTimestamp(agent.last_active) }
+  ];
+
+  for (var i = 0; i < fields.length; i++) {
+    var f = fields[i];
+    if (f.value === undefined || f.value === null) continue;
+    var div = el("div", "detail-field");
+    div.appendChild(el("div", "detail-label", f.label));
+    div.appendChild(el("div", "detail-value", String(f.value)));
+    panel.appendChild(div);
+  }
+
+  // Liveness badge
+  var liveDiv = el("div", "detail-field");
+  liveDiv.appendChild(el("div", "detail-label", "Liveness"));
+  var liveVal = el("div", "detail-value");
+  liveVal.appendChild(createBadge("liveness-" + (agent.liveness || "gone")));
+  liveDiv.appendChild(liveVal);
+  panel.appendChild(liveDiv);
+
+  // Capabilities as tags
+  if (agent.capabilities && agent.capabilities.length) {
+    var capsDiv = el("div", "detail-field");
+    capsDiv.appendChild(el("div", "detail-label", "Capabilities"));
+    var capsVal = el("div", "detail-value");
+    for (var c = 0; c < agent.capabilities.length; c++) {
+      capsVal.appendChild(el("span", "capability-tag", agent.capabilities[c]));
+    }
+    capsDiv.appendChild(capsVal);
+    panel.appendChild(capsDiv);
+  }
+}
+
+/* ========== Render: Delegations ========== */
+
+function renderDelegations() {
+  var ts = state.delegations;
+  var scoped = applyGlobalScope(ts.data, "scope");
+  var sorted = sortData(scoped, ts.sortKey, ts.sortDir);
+  var page = paginate(sorted, ts.page, ts.pageSize);
+
+  updateSortHeaders("delegations-table", ts.sortKey, ts.sortDir);
+
+  var tbody = document.querySelector("#delegations-table tbody");
+  if (!tbody) return;
+  clearElement(tbody);
+
+  for (var i = 0; i < page.length; i++) {
+    var del = page[i];
+    var tr = el("tr");
+    tr.setAttribute("data-id", del.entry_id || "");
+    if (del.expired) tr.classList.add("delegation-expired");
+    if (ts.selectedId && (del.entry_id === ts.selectedId)) {
+      tr.classList.add("selected");
+    }
+
+    var tdTime = el("td", null, formatTimestamp(del.timestamp));
+    var tdUrg = el("td");
+    tdUrg.appendChild(createBadge("urgency-" + (del.urgency || "normal")));
+    var tdSummary = el("td", null, truncate(del.summary, 60));
+
+    var tdCaps = el("td");
+    if (del.required_capabilities && del.required_capabilities.length) {
+      for (var c = 0; c < del.required_capabilities.length; c++) {
+        tdCaps.appendChild(el("span", "capability-tag", del.required_capabilities[c]));
+      }
+    } else {
+      tdCaps.textContent = "--";
+    }
+
+    var tdStatus = el("td");
+    if (del.expired) {
+      tdStatus.appendChild(createBadge("liveness-gone"));
+      tdStatus.lastChild.textContent = "Expired";
+    } else {
+      tdStatus.appendChild(createBadge("liveness-active"));
+      tdStatus.lastChild.textContent = "Active";
+    }
+
+    tr.appendChild(tdTime);
+    tr.appendChild(tdUrg);
+    tr.appendChild(tdSummary);
+    tr.appendChild(tdCaps);
+    tr.appendChild(tdStatus);
+
+    (function(d) {
+      tr.addEventListener("click", function() {
+        ts.selectedId = d.entry_id;
+        renderDelegations();
+        renderDelegationDetail(d);
+      });
+    })(del);
+
+    tbody.appendChild(tr);
+  }
+
+  renderPagination("delegations-pagination", sorted.length, ts, renderDelegations);
+
+  if (ts.selectedId) {
+    var found = null;
+    for (var k = 0; k < ts.data.length; k++) {
+      if (ts.data[k].entry_id === ts.selectedId) { found = ts.data[k]; break; }
+    }
+    if (!found) {
+      var panel = document.getElementById("delegations-detail");
+      if (panel) { clearElement(panel); panel.appendChild(el("p", "placeholder", "Delegation no longer exists")); ts.selectedId = null; }
+    }
+  }
+}
+
+function renderDelegationDetail(delegation) {
+  var panel = document.getElementById("delegations-detail");
+  if (!panel) return;
+  clearElement(panel);
+
+  panel.appendChild(el("h3", null, "Delegation Details"));
+
+  // Entry ID (clickable)
+  var idDiv = el("div", "detail-field");
+  idDiv.appendChild(el("div", "detail-label", "Entry ID"));
+  var idVal = el("div", "detail-value");
+  renderIdValue(idVal, delegation.entry_id || "--");
+  idDiv.appendChild(idVal);
+  panel.appendChild(idDiv);
+
+  var fields = [
+    { label: "Timestamp", value: formatTimestamp(delegation.timestamp) },
+    { label: "Summary", value: delegation.summary },
+    { label: "Scope", value: delegation.scope },
+    { label: "Agent ID", value: delegation.agent_id }
+  ];
+
+  for (var i = 0; i < fields.length; i++) {
+    var f = fields[i];
+    if (f.value === undefined || f.value === null) continue;
+    var div = el("div", "detail-field");
+    div.appendChild(el("div", "detail-label", f.label));
+    div.appendChild(el("div", "detail-value", String(f.value)));
+    panel.appendChild(div);
+  }
+
+  // Urgency badge
+  var urgDiv = el("div", "detail-field");
+  urgDiv.appendChild(el("div", "detail-label", "Urgency"));
+  var urgVal = el("div", "detail-value");
+  urgVal.appendChild(createBadge("urgency-" + (delegation.urgency || "normal")));
+  urgDiv.appendChild(urgVal);
+  panel.appendChild(urgDiv);
+
+  // Required capabilities
+  if (delegation.required_capabilities && delegation.required_capabilities.length) {
+    var capsDiv = el("div", "detail-field");
+    capsDiv.appendChild(el("div", "detail-label", "Required Capabilities"));
+    var capsVal = el("div", "detail-value");
+    for (var c = 0; c < delegation.required_capabilities.length; c++) {
+      capsVal.appendChild(el("span", "capability-tag", delegation.required_capabilities[c]));
+    }
+    capsDiv.appendChild(capsVal);
+    panel.appendChild(capsDiv);
+  }
+
+  // Expires At
+  if (delegation.expires_at) {
+    var expDiv = el("div", "detail-field");
+    expDiv.appendChild(el("div", "detail-label", "Expires At"));
+    expDiv.appendChild(el("div", "detail-value", formatTimestamp(delegation.expires_at)));
+    panel.appendChild(expDiv);
+  }
+
+  // Status
+  var statusDiv = el("div", "detail-field");
+  statusDiv.appendChild(el("div", "detail-label", "Status"));
+  var statusVal = el("div", "detail-value");
+  if (delegation.expired) {
+    var expBadge = createBadge("liveness-gone");
+    expBadge.textContent = "Expired";
+    statusVal.appendChild(expBadge);
+  } else {
+    var actBadge = createBadge("liveness-active");
+    actBadge.textContent = "Active";
+    statusVal.appendChild(actBadge);
+  }
+  statusDiv.appendChild(statusVal);
+  panel.appendChild(statusDiv);
+
+  // Suggested Agents
+  if (delegation.suggested_agents && delegation.suggested_agents.length) {
+    var saDiv = el("div", "detail-field");
+    saDiv.appendChild(el("div", "detail-label", "Suggested Agents (" + delegation.suggested_agents.length + ")"));
+    for (var s = 0; s < delegation.suggested_agents.length; s++) {
+      var sa = delegation.suggested_agents[s];
+      var saRow = el("div", "suggested-agent");
+      var saInfo = el("span");
+      saInfo.textContent = sa.agent_id || "--";
+      saRow.appendChild(saInfo);
+
+      var saLive = createBadge("liveness-" + (sa.liveness || "gone"));
+      saRow.appendChild(saLive);
+
+      var saScore = el("span", "agent-score", Math.round((sa.total_score || 0) * 100) + "%");
+      saRow.appendChild(saScore);
+
+      saDiv.appendChild(saRow);
+    }
+    panel.appendChild(saDiv);
+  }
+}
+
+/* ========== Render: Handoffs ========== */
+
+function renderHandoffs() {
+  var ts = state.handoffs;
+  var scoped = applyGlobalScope(ts.data, "scope");
+  var sorted = sortData(scoped, ts.sortKey, ts.sortDir);
+  var page = paginate(sorted, ts.page, ts.pageSize);
+
+  updateSortHeaders("handoffs-table", ts.sortKey, ts.sortDir);
+
+  var tbody = document.querySelector("#handoffs-table tbody");
+  if (!tbody) return;
+  clearElement(tbody);
+
+  for (var i = 0; i < page.length; i++) {
+    var handoff = page[i];
+    var tr = el("tr");
+    tr.setAttribute("data-id", handoff.id || "");
+    if (ts.selectedId && (handoff.id === ts.selectedId)) {
+      tr.classList.add("selected");
+    }
+
+    var tdCreated = el("td", null, formatTimestamp(handoff.created_at));
+    var tdSource = el("td", null, handoff.source_agent || "--");
+    var tdTarget = el("td", null, handoff.target_agent || "--");
+    var tdSummary = el("td", null, truncate(handoff.summary, 50));
+
+    var tdResult = el("td");
+    tdResult.appendChild(createBadge("result-" + (handoff.result_status || "completed")));
+
+    var tdAck = el("td");
+    if (handoff.acknowledged) {
+      tdAck.appendChild(el("span", "ack-yes", "\u2713 Yes"));
+    } else {
+      tdAck.appendChild(el("span", "ack-no", "No"));
+    }
+
+    tr.appendChild(tdCreated);
+    tr.appendChild(tdSource);
+    tr.appendChild(tdTarget);
+    tr.appendChild(tdSummary);
+    tr.appendChild(tdResult);
+    tr.appendChild(tdAck);
+
+    (function(h) {
+      tr.addEventListener("click", function() {
+        ts.selectedId = h.id;
+        renderHandoffs();
+        fetchHandoffDetail(h.id);
+      });
+    })(handoff);
+
+    tbody.appendChild(tr);
+  }
+
+  renderPagination("handoffs-pagination", sorted.length, ts, renderHandoffs);
+
+  if (ts.selectedId) {
+    var found = null;
+    for (var k = 0; k < ts.data.length; k++) {
+      if (ts.data[k].id === ts.selectedId) { found = ts.data[k]; break; }
+    }
+    if (!found) {
+      var panel = document.getElementById("handoffs-detail");
+      if (panel) { clearElement(panel); panel.appendChild(el("p", "placeholder", "Handoff no longer exists")); ts.selectedId = null; }
+    }
+  }
+}
+
+function renderHandoffDetail(handoff) {
+  var panel = document.getElementById("handoffs-detail");
+  if (!panel) return;
+  clearElement(panel);
+
+  panel.appendChild(el("h3", null, "Handoff Details"));
+
+  // ID (clickable)
+  var idDiv = el("div", "detail-field");
+  idDiv.appendChild(el("div", "detail-label", "ID"));
+  var idVal = el("div", "detail-value");
+  renderIdValue(idVal, handoff.id || "--");
+  idDiv.appendChild(idVal);
+  panel.appendChild(idDiv);
+
+  var fields = [
+    { label: "Created At", value: formatTimestamp(handoff.created_at) },
+    { label: "Source Agent", value: handoff.source_agent },
+    { label: "Target Agent", value: handoff.target_agent },
+    { label: "Scope", value: handoff.scope },
+    { label: "Summary", value: handoff.summary }
+  ];
+
+  for (var i = 0; i < fields.length; i++) {
+    var f = fields[i];
+    if (f.value === undefined || f.value === null) continue;
+    var div = el("div", "detail-field");
+    div.appendChild(el("div", "detail-label", f.label));
+    div.appendChild(el("div", "detail-value", String(f.value)));
+    panel.appendChild(div);
+  }
+
+  // Result Status badge
+  var rsDiv = el("div", "detail-field");
+  rsDiv.appendChild(el("div", "detail-label", "Result Status"));
+  var rsVal = el("div", "detail-value");
+  rsVal.appendChild(createBadge("result-" + (handoff.result_status || "completed")));
+  rsDiv.appendChild(rsVal);
+  panel.appendChild(rsDiv);
+
+  // Acknowledged
+  var ackDiv = el("div", "detail-field");
+  ackDiv.appendChild(el("div", "detail-label", "Acknowledged"));
+  var ackVal = el("div", "detail-value");
+  if (handoff.acknowledged) {
+    ackVal.appendChild(el("span", "ack-yes", "\u2713 Yes"));
+    if (handoff.acknowledged_by) {
+      ackVal.appendChild(document.createTextNode(" by " + handoff.acknowledged_by));
+    }
+    if (handoff.acknowledged_at) {
+      ackVal.appendChild(document.createTextNode(" at " + formatTimestamp(handoff.acknowledged_at)));
+    }
+  } else {
+    ackVal.appendChild(el("span", "ack-no", "No"));
+  }
+  ackDiv.appendChild(ackVal);
+  panel.appendChild(ackDiv);
+
+  // Results section
+  if (handoff.results && handoff.results.length) {
+    var resDiv = el("div", "detail-field");
+    resDiv.appendChild(el("div", "detail-label", "Results (" + handoff.results.length + ")"));
+    for (var r = 0; r < handoff.results.length; r++) {
+      var result = handoff.results[r];
+      var resBlock = el("div");
+      resBlock.style.marginBottom = "0.5rem";
+      resBlock.style.paddingLeft = "0.5rem";
+      resBlock.style.borderLeft = "2px solid var(--card-border)";
+
+      if (result.task) {
+        var taskEl = el("div");
+        taskEl.appendChild(el("strong", null, "Task: "));
+        taskEl.appendChild(document.createTextNode(result.task));
+        resBlock.appendChild(taskEl);
+      }
+      if (result.status) {
+        var statusEl = el("div");
+        statusEl.appendChild(el("strong", null, "Status: "));
+        statusEl.appendChild(createBadge("result-" + result.status));
+        resBlock.appendChild(statusEl);
+      }
+      if (result.output) {
+        var outputEl = el("div", "detail-value");
+        var pre = el("pre", null, result.output);
+        outputEl.appendChild(pre);
+        resBlock.appendChild(outputEl);
+      }
+
+      resDiv.appendChild(resBlock);
+    }
+    panel.appendChild(resDiv);
+  }
+
+  // Context Snapshot
+  if (handoff.context_snapshot) {
+    var ctx = handoff.context_snapshot;
+    var ctxDiv = el("div", "detail-field");
+    ctxDiv.appendChild(el("div", "detail-label", "Context Snapshot"));
+
+    // Decision IDs (clickable)
+    if (ctx.decision_ids && ctx.decision_ids.length) {
+      var didsDiv = el("div");
+      didsDiv.appendChild(el("strong", null, "Decision IDs: "));
+      renderIdList(didsDiv, ctx.decision_ids);
+      ctxDiv.appendChild(didsDiv);
+    }
+
+    // Warning IDs (clickable)
+    if (ctx.warning_ids && ctx.warning_ids.length) {
+      var widsDiv = el("div");
+      widsDiv.appendChild(el("strong", null, "Warning IDs: "));
+      renderIdList(widsDiv, ctx.warning_ids);
+      ctxDiv.appendChild(widsDiv);
+    }
+
+    // Finding IDs (clickable)
+    if (ctx.finding_ids && ctx.finding_ids.length) {
+      var fidsDiv = el("div");
+      fidsDiv.appendChild(el("strong", null, "Finding IDs: "));
+      renderIdList(fidsDiv, ctx.finding_ids);
+      ctxDiv.appendChild(fidsDiv);
+    }
+
+    // Summaries
+    if (ctx.summaries && ctx.summaries.length) {
+      var sumDiv = el("div");
+      sumDiv.appendChild(el("strong", null, "Summaries:"));
+      var sumUl = el("ul");
+      for (var si = 0; si < ctx.summaries.length; si++) {
+        sumUl.appendChild(el("li", null, ctx.summaries[si]));
+      }
+      sumDiv.appendChild(sumUl);
+      ctxDiv.appendChild(sumDiv);
+    }
+
+    panel.appendChild(ctxDiv);
+  }
+}
+
 /* ========== Global Scope Filter ========== */
 
 function applyGlobalScope(data, scopeField) {
@@ -1188,6 +1779,15 @@ function toggleView(tab, viewName) {
     document.getElementById('graph-table-view').style.display = viewName === 'table' ? 'block' : 'none';
     document.getElementById('graph-visual-view').style.display = viewName === 'visual' ? 'block' : 'none';
     if (viewName === 'visual' && typeof initGraphVis === 'function') initGraphVis();
+  }
+  if (tab === 'agents') {
+    document.getElementById('agents-list-view').style.display = viewName === 'agents-list' ? 'block' : 'none';
+    document.getElementById('delegations-view').style.display = viewName === 'delegations' ? 'block' : 'none';
+    document.getElementById('handoffs-view').style.display = viewName === 'handoffs' ? 'block' : 'none';
+    state.agentsSubView = viewName;
+    if (viewName === 'agents-list' && state.agents.data.length === 0) fetchAgents();
+    if (viewName === 'delegations' && state.delegations.data.length === 0) fetchDelegations();
+    if (viewName === 'handoffs' && state.handoffs.data.length === 0) fetchHandoffs();
   }
 }
 
@@ -1708,6 +2308,9 @@ document.addEventListener("DOMContentLoaded", function() {
         else if (tableId === "decisions-table") tabName = "decisions";
         else if (tableId === "graph-table") tabName = "graph";
         else if (tableId === "search-table") tabName = "search";
+        else if (tableId === "agents-table") tabName = "agents";
+        else if (tableId === "delegations-table") tabName = "delegations";
+        else if (tableId === "handoffs-table") tabName = "handoffs";
         if (tabName) handleSort(tabName, key);
       });
     })(sortHeaders[j]);
@@ -1767,6 +2370,9 @@ document.addEventListener("DOMContentLoaded", function() {
       state.blackboard.page = 1;
       state.decisions.page = 1;
       state.graph.page = 1;
+      state.agents.page = 1;
+      state.delegations.page = 1;
+      state.handoffs.page = 1;
       refreshData();
     }, 300);
     globalScopeInput.addEventListener("input", debouncedScope);
