@@ -76,10 +76,11 @@ Plans:
   2. User can narrow results using type, status, scope, tags, and date range filters
   3. User can click ID references in detail panels to navigate directly to related entries
   4. User can apply a global scope filter that constrains all dashboard views
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 09-01: TBD
+- [ ] 09-01-PLAN.md -- Unified search API endpoint (engine-based search orchestration across blackboard, decisions, graph)
+- [ ] 09-02-PLAN.md -- Search frontend (search bar, filters, Search tab, clickable ID navigation, global scope filter)
 
 ### Phase 10: Visualizations and Polish
 **Goal**: User can see decisions and graph data as interactive visual representations
