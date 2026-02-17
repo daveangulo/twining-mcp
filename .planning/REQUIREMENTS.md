@@ -1,7 +1,7 @@
 # Requirements: Twining MCP Server
 
 **Defined:** 2026-02-17
-**Core Value:** Agents share *why* decisions were made, not just *what* was done — eliminating information silos across context windows.
+**Core Value:** Agents share *why* decisions were made, not just *what* was done -- eliminating information silos across context windows.
 
 ## v1.3 Requirements
 
@@ -78,33 +78,33 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| REG-01 | — | Pending |
-| REG-02 | — | Pending |
-| REG-03 | — | Pending |
-| REG-04 | — | Pending |
-| DEL-01 | — | Pending |
-| DEL-02 | — | Pending |
-| DEL-03 | — | Pending |
-| DEL-04 | — | Pending |
-| DEL-05 | — | Pending |
-| DEL-06 | — | Pending |
-| DEL-07 | — | Pending |
-| DEL-08 | — | Pending |
-| HND-01 | — | Pending |
-| HND-02 | — | Pending |
-| HND-03 | — | Pending |
-| HND-04 | — | Pending |
-| HND-05 | — | Pending |
-| HND-06 | — | Pending |
-| DASH-01 | — | Pending |
-| DASH-02 | — | Pending |
-| DASH-03 | — | Pending |
+| REG-01 | Phase 11 | Pending |
+| REG-02 | Phase 11 | Pending |
+| REG-03 | Phase 11 | Pending |
+| REG-04 | Phase 11 | Pending |
+| DEL-01 | Phase 12 | Pending |
+| DEL-02 | Phase 12 | Pending |
+| DEL-03 | Phase 12 | Pending |
+| DEL-04 | Phase 13 | Pending |
+| DEL-05 | Phase 13 | Pending |
+| DEL-06 | Phase 12 | Pending |
+| DEL-07 | Phase 12 | Pending |
+| DEL-08 | Phase 12 | Pending |
+| HND-01 | Phase 12 | Pending |
+| HND-02 | Phase 12 | Pending |
+| HND-03 | Phase 13 | Pending |
+| HND-04 | Phase 12 | Pending |
+| HND-05 | Phase 11 | Pending |
+| HND-06 | Phase 13 | Pending |
+| DASH-01 | Phase 14 | Pending |
+| DASH-02 | Phase 14 | Pending |
+| DASH-03 | Phase 14 | Pending |
 
 **Coverage:**
 - v1.3 requirements: 21 total
-- Mapped to phases: 0
-- Unmapped: 21 ⚠️
+- Mapped to phases: 21
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-17*
-*Last updated: 2026-02-17 after initial definition*
+*Last updated: 2026-02-17 after roadmap creation*

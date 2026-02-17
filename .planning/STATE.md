@@ -5,14 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** Agents share *why* decisions were made, not just *what* was done -- eliminating information silos across context windows.
-**Current focus:** v1.3 Agent Coordination
+**Current focus:** Phase 11 - Types and Storage (v1.3 Agent Coordination)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-02-17 — Milestone v1.3 started
+Phase: 11 of 14 (Types and Storage)
+Plan: 0 of ? in current phase
+Status: Ready to plan
+Last activity: 2026-02-17 -- Roadmap created for v1.3 Agent Coordination
+
+Progress: [####################..........] 69% (10/14 phases, 22/22 prior plans complete)
 
 ## Performance Metrics
 
@@ -40,7 +42,12 @@ Last activity: 2026-02-17 — Milestone v1.3 started
 
 ### Decisions
 
-All decisions archived in PROJECT.md Key Decisions table with outcomes.
+All prior decisions archived in PROJECT.md Key Decisions table with outcomes.
+
+Recent decisions for v1.3:
+- Delegations are blackboard entries with structured metadata (not a separate queue)
+- Liveness inferred from last_active timestamp (no heartbeat protocol)
+- Handoff records store IDs and summaries (not full context serialization)
 
 ### Pending Todos
 
@@ -53,6 +60,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Starting milestone v1.3 Agent Coordination
+Stopped at: Roadmap created for v1.3 Agent Coordination (4 phases, 21 requirements)
 Resume file: None
-Next: Define requirements and roadmap
+Next: `/gsd:plan-phase 11`
