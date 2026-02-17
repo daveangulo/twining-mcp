@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-16)
 
 **Core value:** Agents share *why* decisions were made, not just *what* was done -- eliminating information silos across context windows.
-**Current focus:** Phase 4 — Git Commit Linking
+**Current focus:** Phase 5 — GSD Bridge
 
 ## Current Position
 
-Phase: 4 of 6 (Git Commit Linking)
-Plan: 1 of 2 in current phase
-Status: Executing
-Last activity: 2026-02-17 — Completed 04-01 (Decision commit linking)
+Phase: 5 of 6 (GSD Bridge)
+Plan: 0 of 2 in current phase
+Status: Phase 4 complete, ready for Phase 5
+Last activity: 2026-02-17 — Completed 04-02 (Commit query tools)
 
-Progress: [██░░░░░░░░] 17% (v1.1)
+Progress: [███░░░░░░░] 33% (v1.1)
 
 ## Performance Metrics
 
@@ -30,7 +30,7 @@ Progress: [██░░░░░░░░] 17% (v1.1)
 | 1. Foundation | 2 | — | — |
 | 2. Intelligence | 2 | — | — |
 | 3. Graph + Lifecycle | 2 | — | — |
-| 4. Git Commit Linking | 1/2 | 3min | 3min |
+| 4. Git Commit Linking | 2/2 | 5min | 2.5min |
 
 **Recent Trend:**
 - v1 completed in 1 day (6 plans)
@@ -50,6 +50,7 @@ v1.1 decisions:
 - Phase 4 (git linking) before Phase 5 (GSD bridge) because git linking modifies the Decision data model
 - commit_hashes as string[] (not single hash) to support multi-commit decision linkage
 - Index entries mirror commit_hashes for fast lookups without loading full decision files
+- ?? [] fallback in why() mapping for backward compatibility with pre-existing decisions
 
 ### Pending Todos
 
@@ -62,6 +63,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 04-01-PLAN.md (Decision commit linking)
+Stopped at: Completed 04-02-PLAN.md (Commit query tools) -- Phase 4 complete
 Resume file: None
-Next: Execute 04-02-PLAN.md (Commit query tools)
+Next: Plan Phase 5 (GSD Bridge)
