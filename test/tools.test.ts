@@ -9,6 +9,7 @@ import { GraphStore } from "../src/storage/graph-store.js";
 import { BlackboardEngine } from "../src/engine/blackboard.js";
 import { DecisionEngine } from "../src/engine/decisions.js";
 import { Archiver } from "../src/engine/archiver.js";
+import { AgentStore } from "../src/storage/agent-store.js";
 import { DEFAULT_CONFIG } from "../src/config.js";
 import { registerBlackboardTools } from "../src/tools/blackboard-tools.js";
 import { registerDecisionTools } from "../src/tools/decision-tools.js";
@@ -22,6 +23,7 @@ let bbStore: BlackboardStore;
 let dcsnStore: DecisionStore;
 let graphStore: GraphStore;
 let archiver: Archiver;
+let agentStore: AgentStore;
 
 /**
  * Helper to call a registered tool by name.
@@ -53,10 +55,16 @@ beforeEach(() => {
     path.join(tmpDir, "decisions", "index.json"),
     JSON.stringify([]),
   );
+  fs.mkdirSync(path.join(tmpDir, "agents"), { recursive: true });
+  fs.writeFileSync(
+    path.join(tmpDir, "agents", "registry.json"),
+    JSON.stringify([]),
+  );
 
   bbStore = new BlackboardStore(tmpDir);
   dcsnStore = new DecisionStore(tmpDir);
   graphStore = new GraphStore(tmpDir);
+  agentStore = new AgentStore(tmpDir);
   bbEngine = new BlackboardEngine(bbStore);
   dcsnEngine = new DecisionEngine(dcsnStore, bbEngine);
   archiver = new Archiver(tmpDir, bbStore, bbEngine, null);
@@ -64,7 +72,7 @@ beforeEach(() => {
   server = new McpServer({ name: "test-server", version: "1.0.0" });
   registerBlackboardTools(server, bbEngine);
   registerDecisionTools(server, dcsnEngine);
-  registerLifecycleTools(server, tmpDir, bbStore, dcsnStore, graphStore, archiver, DEFAULT_CONFIG);
+  registerLifecycleTools(server, tmpDir, bbStore, dcsnStore, graphStore, archiver, DEFAULT_CONFIG, agentStore);
 });
 
 afterEach(() => {
@@ -215,5 +223,33 @@ describe("twining_status tool", () => {
     expect(data.blackboard_entries).toBe(1);
     expect(data.active_decisions).toBe(0);
     expect(data.needs_archiving).toBe(false);
+  });
+
+  it("includes agent counts when agents are registered", async () => {
+    await agentStore.upsert({
+      agent_id: "test-agent",
+      capabilities: ["testing"],
+      role: "tester",
+    });
+    const response = await callTool("twining_status", {});
+    const data = parseToolResponse(response) as {
+      registered_agents: number;
+      active_agents: number;
+      summary: string;
+    };
+    expect(data.registered_agents).toBe(1);
+    expect(data.active_agents).toBe(1);
+    expect(data.summary).toContain("1 registered agents");
+    expect(data.summary).toContain("1 active");
+  });
+
+  it("shows 0 counts with no agents", async () => {
+    const response = await callTool("twining_status", {});
+    const data = parseToolResponse(response) as {
+      registered_agents: number;
+      active_agents: number;
+    };
+    expect(data.registered_agents).toBe(0);
+    expect(data.active_agents).toBe(0);
   });
 });

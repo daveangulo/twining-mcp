@@ -25,6 +25,10 @@ import { registerLifecycleTools } from "./tools/lifecycle-tools.js";
 import { registerGraphTools } from "./tools/graph-tools.js";
 import { Exporter } from "./engine/exporter.js";
 import { registerExportTools } from "./tools/export-tools.js";
+import { AgentStore } from "./storage/agent-store.js";
+import { HandoffStore } from "./storage/handoff-store.js";
+import { CoordinationEngine } from "./engine/coordination.js";
+import { registerCoordinationTools } from "./tools/coordination-tools.js";
 
 /**
  * Create and configure the Twining MCP server.
@@ -79,6 +83,18 @@ export function createServer(projectRoot: string): McpServer {
     planningBridge,
   );
 
+  // Create coordination stores and engine
+  const agentStore = new AgentStore(twiningDir);
+  const handoffStore = new HandoffStore(twiningDir);
+  const coordinationEngine = new CoordinationEngine(
+    agentStore,
+    handoffStore,
+    blackboardEngine,
+    decisionStore,
+    blackboardStore,
+    config,
+  );
+
   // Create exporter
   const exporter = new Exporter(blackboardStore, decisionStore, graphStore);
 
@@ -100,9 +116,11 @@ export function createServer(projectRoot: string): McpServer {
     graphStore,
     archiver,
     config,
+    agentStore,
   );
   registerGraphTools(server, graphEngine);
   registerExportTools(server, exporter);
+  registerCoordinationTools(server, agentStore, coordinationEngine, config);
 
   return server;
 }

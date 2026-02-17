@@ -8,8 +8,13 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { BlackboardStore } from "../storage/blackboard-store.js";
 import { DecisionStore } from "../storage/decision-store.js";
 import type { GraphStore } from "../storage/graph-store.js";
+import type { AgentStore } from "../storage/agent-store.js";
 import type { Archiver } from "../engine/archiver.js";
 import type { TwiningConfig } from "../utils/types.js";
+import {
+  computeLiveness,
+  DEFAULT_LIVENESS_THRESHOLDS,
+} from "../utils/liveness.js";
 import { toolResult, toolError, TwiningError } from "../utils/errors.js";
 
 export function registerLifecycleTools(
@@ -20,6 +25,7 @@ export function registerLifecycleTools(
   graphStore: GraphStore,
   archiver: Archiver,
   config: TwiningConfig,
+  agentStore: AgentStore | null = null,
 ): void {
   // twining_status — Overall health check of the Twining state
   server.registerTool(
@@ -123,12 +129,28 @@ export function registerLifecycleTools(
           }
         }
 
+        // Agent counts
+        let registered_agents = 0;
+        let active_agents = 0;
+        if (agentStore) {
+          const agents = await agentStore.getAll();
+          registered_agents = agents.length;
+          const thresholds =
+            config.agents?.liveness ?? DEFAULT_LIVENESS_THRESHOLDS;
+          const now = new Date();
+          active_agents = agents.filter(
+            (a) =>
+              computeLiveness(a.last_active, now, thresholds) === "active",
+          ).length;
+        }
+
         // Build summary string
         const healthStatus =
           warnings.length === 0 ? "Healthy" : "Needs attention";
         const warningsSummary =
           warnings.length > 0 ? ` ${warnings.join(". ")}.` : "";
-        const summary = `${healthStatus}. ${blackboard_entries} blackboard entries, ${active_decisions} active decisions, ${graph_entities} graph entities.${warningsSummary}`;
+        const agentSummary = ` ${registered_agents} registered agents (${active_agents} active).`;
+        const summary = `${healthStatus}. ${blackboard_entries} blackboard entries, ${active_decisions} active decisions, ${graph_entities} graph entities.${agentSummary}${warningsSummary}`;
 
         return toolResult({
           project,
@@ -137,6 +159,8 @@ export function registerLifecycleTools(
           provisional_decisions,
           graph_entities,
           graph_relations,
+          registered_agents,
+          active_agents,
           last_activity,
           needs_archiving,
           warnings,
