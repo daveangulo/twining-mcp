@@ -78,6 +78,10 @@ export class ContextAssembler {
     const weights = this.config.context_assembly.priority_weights;
     const now = Date.now();
 
+    // Load all data once upfront to avoid redundant disk reads
+    const { entries: allEntries } = await this.blackboardStore.read();
+    const allIndex = await this.decisionStore.getIndex();
+
     // 1. Retrieve scope-matched decisions
     const scopeDecisions = await this.decisionStore.getByScope(scope);
     const activeDecisions = scopeDecisions.filter(
@@ -87,8 +91,6 @@ export class ContextAssembler {
     // 2. Retrieve semantically relevant decisions (merge by ID, keep highest relevance)
     const decisionRelevance = new Map<string, number>();
     if (this.searchEngine) {
-      const allIndex = await this.decisionStore.getIndex();
-      const allDecisionIds = allIndex.map((e) => e.id);
       const allDecisions: Decision[] = [];
       for (const entry of allIndex) {
         if (entry.status === "active" || entry.status === "provisional") {
@@ -113,7 +115,6 @@ export class ContextAssembler {
       }
     }
     if (this.searchEngine) {
-      const allIndex = await this.decisionStore.getIndex();
       for (const entry of allIndex) {
         if (
           decisionRelevance.has(entry.id) &&
@@ -127,15 +128,14 @@ export class ContextAssembler {
       }
     }
 
-    // 3. Retrieve scope-matched blackboard entries
-    const { entries: scopeEntries } = await this.blackboardStore.read({
-      scope,
-    });
+    // 3. Retrieve scope-matched blackboard entries (filter from cached allEntries)
+    const scopeEntries = allEntries.filter(
+      (e) => e.scope.startsWith(scope) || scope.startsWith(e.scope),
+    );
 
     // 4. Retrieve semantically relevant findings
     const entryRelevance = new Map<string, number>();
     if (this.searchEngine) {
-      const { entries: allEntries } = await this.blackboardStore.read();
       const { results: semanticEntries } =
         await this.searchEngine.searchBlackboard(task, allEntries);
       for (const sr of semanticEntries) {
@@ -152,7 +152,6 @@ export class ContextAssembler {
       }
     }
     if (this.searchEngine) {
-      const { entries: allEntries } = await this.blackboardStore.read();
       for (const e of allEntries) {
         if (entryRelevance.has(e.id) && !mergedEntryMap.has(e.id)) {
           mergedEntryMap.set(e.id, e);

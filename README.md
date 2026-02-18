@@ -66,6 +66,10 @@ Once configured, Twining tools are available in your Claude Code sessions:
 
 All state is stored in a `.twining/` directory in your project root.
 
+### Claude Code Integration
+
+For maximum value with Claude Code, add Twining instructions to your project's `CLAUDE.md`. See **[docs/CLAUDE_TEMPLATE.md](docs/CLAUDE_TEMPLATE.md)** for a ready-to-copy template covering Twining + Serena + GSD integration.
+
 ### Dashboard
 
 The web dashboard starts automatically on port 24282 (configurable via `TWINING_DASHBOARD_PORT`). Open `http://localhost:24282` to browse blackboard entries, decisions, knowledge graph, and agent coordination state.
@@ -119,6 +123,10 @@ The web dashboard starts automatically on port 24282 (configurable via `TWINING_
 | Tool | Description |
 |------|-------------|
 | `twining_agents` | List registered agents with capabilities, liveness status, and filtering |
+| `twining_discover` | Find agents matching required capabilities, ranked by overlap and liveness |
+| `twining_delegate` | Post a delegation request to the blackboard with capability requirements |
+| `twining_handoff` | Create a handoff between agents with work results and auto-assembled context |
+| `twining_acknowledge` | Acknowledge receipt of a handoff |
 
 ## Architecture
 

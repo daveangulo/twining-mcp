@@ -19,6 +19,7 @@ import type {
 import type { Embedder } from "../embeddings/embedder.js";
 import type { IndexManager } from "../embeddings/index-manager.js";
 import type { SearchEngine } from "../embeddings/search.js";
+import type { GraphEngine } from "./graph.js";
 
 /** Entry in a dependency trace chain. */
 export interface TraceEntry {
@@ -36,6 +37,7 @@ export class DecisionEngine {
   private readonly indexManager: IndexManager | null;
   private readonly projectRoot: string | null;
   private readonly searchEngine: SearchEngine | null;
+  private readonly graphEngine: GraphEngine | null;
 
   constructor(
     decisionStore: DecisionStore,
@@ -44,6 +46,7 @@ export class DecisionEngine {
     indexManager?: IndexManager | null,
     projectRoot?: string | null,
     searchEngine?: SearchEngine | null,
+    graphEngine?: GraphEngine | null,
   ) {
     this.decisionStore = decisionStore;
     this.blackboardEngine = blackboardEngine;
@@ -51,6 +54,7 @@ export class DecisionEngine {
     this.indexManager = indexManager ?? null;
     this.projectRoot = projectRoot ?? null;
     this.searchEngine = searchEngine ?? null;
+    this.graphEngine = graphEngine ?? null;
   }
 
   /**
@@ -212,7 +216,7 @@ export class DecisionEngine {
       });
     }
 
-    // Cross-post to blackboard
+    // Cross-post to blackboard (internal — bypasses decision rejection)
     await this.blackboardEngine.post({
       entry_type: "decision",
       summary: decision.summary,
@@ -220,6 +224,7 @@ export class DecisionEngine {
       tags: [decision.domain],
       scope: decision.scope,
       agent_id: decision.agent_id,
+      _internal: true,
     });
 
     // Generate embedding (Phase 2) — never let embedding failure prevent the decide
@@ -242,6 +247,41 @@ export class DecisionEngine {
 
     // Sync decision summary to .planning/STATE.md (Phase 5 GSD bridge)
     this.syncToPlanning(decision.summary);
+
+    // Auto-populate knowledge graph with affected files/symbols (spec §4.2)
+    if (this.graphEngine) {
+      try {
+        for (const filePath of decision.affected_files) {
+          const entity = await this.graphEngine.addEntity({
+            name: filePath,
+            type: "file",
+            properties: { scope: decision.scope },
+          });
+          await this.graphEngine.addRelation({
+            source: entity.name,
+            target: decision.id,
+            type: "decided_by",
+            properties: { decision_summary: decision.summary },
+          });
+        }
+        for (const symbol of decision.affected_symbols) {
+          const entity = await this.graphEngine.addEntity({
+            name: symbol,
+            type: "function",
+            properties: { scope: decision.scope },
+          });
+          await this.graphEngine.addRelation({
+            source: entity.name,
+            target: decision.id,
+            type: "decided_by",
+            properties: { decision_summary: decision.summary },
+          });
+        }
+      } catch (error) {
+        // Non-fatal — graph enrichment is best-effort
+        console.error("[twining] Graph auto-population failed (non-fatal):", error);
+      }
+    }
 
     const result: {
       id: string;
@@ -522,7 +562,7 @@ export class DecisionEngine {
       override_reason: reason,
     });
 
-    // Post override entry to blackboard
+    // Post override entry to blackboard (internal — bypasses decision rejection)
     const overrider = overriddenBy ?? "human";
     await this.blackboardEngine.post({
       entry_type: "decision",
@@ -535,6 +575,7 @@ export class DecisionEngine {
       tags: [decision.domain],
       scope: decision.scope,
       agent_id: overrider,
+      _internal: true,
     });
 
     const result: {

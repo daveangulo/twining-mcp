@@ -48,6 +48,8 @@ Progress: [################################] 100% (14/14 phases, 32/32 plans com
 ### Decisions
 
 All decisions archived in PROJECT.md Key Decisions table with outcomes.
+- Triage of TWINING_ARCH_REVIEW.md — 7 valid gaps, 3 invalid/already-addressed, 3 partial
+- Expose delegation and handoff as MCP tools rather than removing dead CoordinationEngine code
 
 ### Pending Todos
 

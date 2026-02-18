@@ -3,8 +3,12 @@
  * Creates stores, engines, and registers all tools.
  * Phase 3: Adds knowledge graph layer and lifecycle management.
  */
+import { createRequire } from "node:module";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { ensureInitialized } from "./storage/init.js";
+
+const require = createRequire(import.meta.url);
+const { version: PKG_VERSION } = require("../package.json") as { version: string };
 import { loadConfig } from "./config.js";
 import { BlackboardStore } from "./storage/blackboard-store.js";
 import { DecisionStore } from "./storage/decision-store.js";
@@ -58,6 +62,7 @@ export function createServer(projectRoot: string): McpServer {
     indexManager,
     searchEngine,
   );
+  const graphEngine = new GraphEngine(graphStore);
   const decisionEngine = new DecisionEngine(
     decisionStore,
     blackboardEngine,
@@ -65,8 +70,8 @@ export function createServer(projectRoot: string): McpServer {
     indexManager,
     projectRoot,
     searchEngine,
+    graphEngine,
   );
-  const graphEngine = new GraphEngine(graphStore);
   const archiver = new Archiver(
     twiningDir,
     blackboardStore,
@@ -106,7 +111,7 @@ export function createServer(projectRoot: string): McpServer {
   // Create MCP server
   const server = new McpServer({
     name: "twining-mcp",
-    version: "1.0.0",
+    version: PKG_VERSION,
   });
 
   // Register all tools

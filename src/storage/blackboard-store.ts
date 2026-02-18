@@ -65,7 +65,7 @@ export class BlackboardStore {
     const total_count = entries.length;
 
     if (filters?.limit !== undefined && filters.limit > 0) {
-      entries = entries.slice(0, filters.limit);
+      entries = entries.slice(-filters.limit);
     }
 
     return { entries, total_count };
@@ -80,6 +80,6 @@ export class BlackboardStore {
     }
 
     const count = n ?? 20;
-    return entries.slice(-count);
+    return entries.slice(-count).reverse();
   }
 }

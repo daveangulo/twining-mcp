@@ -107,15 +107,20 @@ export class DecisionStore {
     const filePath = path.join(this.decisionsDir, `${id}.json`);
     if (!fs.existsSync(filePath)) return;
 
-    // Update individual file
-    const decision = JSON.parse(
-      fs.readFileSync(filePath, "utf-8"),
-    ) as Decision;
-    decision.status = status;
-    if (extra) {
-      Object.assign(decision, extra);
+    // Lock and update individual file
+    const fileRelease = await lockfile.lock(filePath, INDEX_LOCK_OPTIONS);
+    try {
+      const decision = JSON.parse(
+        fs.readFileSync(filePath, "utf-8"),
+      ) as Decision;
+      decision.status = status;
+      if (extra) {
+        Object.assign(decision, extra);
+      }
+      fs.writeFileSync(filePath, JSON.stringify(decision, null, 2));
+    } finally {
+      await fileRelease();
     }
-    fs.writeFileSync(filePath, JSON.stringify(decision, null, 2));
 
     // Update index
     const release = await lockfile.lock(this.indexPath, INDEX_LOCK_OPTIONS);
@@ -145,17 +150,22 @@ export class DecisionStore {
       throw new Error(`Decision not found: ${id}`);
     }
 
-    // Update individual decision file
-    const decision = JSON.parse(
-      fs.readFileSync(filePath, "utf-8"),
-    ) as Decision;
-    if (!decision.commit_hashes) {
-      decision.commit_hashes = [];
+    // Lock and update individual decision file
+    const fileRelease = await lockfile.lock(filePath, INDEX_LOCK_OPTIONS);
+    try {
+      const decision = JSON.parse(
+        fs.readFileSync(filePath, "utf-8"),
+      ) as Decision;
+      if (!decision.commit_hashes) {
+        decision.commit_hashes = [];
+      }
+      if (!decision.commit_hashes.includes(commitHash)) {
+        decision.commit_hashes.push(commitHash);
+      }
+      fs.writeFileSync(filePath, JSON.stringify(decision, null, 2));
+    } finally {
+      await fileRelease();
     }
-    if (!decision.commit_hashes.includes(commitHash)) {
-      decision.commit_hashes.push(commitHash);
-    }
-    fs.writeFileSync(filePath, JSON.stringify(decision, null, 2));
 
     // Update index
     const release = await lockfile.lock(this.indexPath, INDEX_LOCK_OPTIONS);

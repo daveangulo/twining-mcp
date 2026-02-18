@@ -82,8 +82,15 @@ describe("BlackboardEngine.post", () => {
       "warning",
     ];
     for (const type of types) {
-      const result = await engine.post({ entry_type: type, summary: `Type: ${type}` });
-      expect(result.id).toHaveLength(26);
+      if (type === "decision") {
+        // decision entry_type is rejected — must use twining_decide
+        await expect(
+          engine.post({ entry_type: type, summary: `Type: ${type}` }),
+        ).rejects.toThrow("twining_decide");
+      } else {
+        const result = await engine.post({ entry_type: type, summary: `Type: ${type}` });
+        expect(result.id).toHaveLength(26);
+      }
     }
   });
 });
@@ -119,8 +126,9 @@ describe("BlackboardEngine.recent", () => {
     }
     const { entries } = await engine.recent(3);
     expect(entries).toHaveLength(3);
-    expect(entries[0]!.summary).toBe("E2");
-    expect(entries[2]!.summary).toBe("E4");
+    // Most recent first (reverse chronological)
+    expect(entries[0]!.summary).toBe("E4");
+    expect(entries[2]!.summary).toBe("E2");
   });
 
   it("filters by entry type", async () => {

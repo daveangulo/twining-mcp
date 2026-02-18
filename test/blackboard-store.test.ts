@@ -207,8 +207,9 @@ describe("BlackboardStore.recent", () => {
     }
     const entries = await store.recent(3);
     expect(entries).toHaveLength(3);
-    expect(entries[0]!.summary).toBe("Entry 2");
-    expect(entries[2]!.summary).toBe("Entry 4");
+    // Most recent first (reverse chronological)
+    expect(entries[0]!.summary).toBe("Entry 4");
+    expect(entries[2]!.summary).toBe("Entry 2");
   });
 
   it("filters by entry type before taking recent", async () => {

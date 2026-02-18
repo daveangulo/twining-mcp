@@ -24,7 +24,7 @@ Multi-agent coding workflows suffer from a fundamental tension: fresh context wi
 - **Language:** TypeScript
 - **Runtime:** Node.js (>=18)
 - **MCP SDK:** `@modelcontextprotocol/sdk`
-- **Embeddings:** `onnxruntime-node` with `all-MiniLM-L6-v2` (local, no API calls)
+- **Embeddings:** `@huggingface/transformers` with `Xenova/all-MiniLM-L6-v2` (local, no API calls; chosen over `onnxruntime-node` for better cross-platform WASM/CPU support)
 - **ID Generation:** `ulid` (temporally sortable)
 - **Package Manager:** npm
 - **Package Name:** `twining-mcp`
@@ -669,7 +669,7 @@ Overall health check of the Twining state.
 ## 5. Embedding System
 
 ### 5.1 Model
-Use `all-MiniLM-L6-v2` via `onnxruntime-node`. This model produces 384-dimensional embeddings and runs entirely locally with no API calls. The ONNX model file (~23MB) is bundled or downloaded on first use.
+Use `Xenova/all-MiniLM-L6-v2` via `@huggingface/transformers`. This model produces 384-dimensional embeddings and runs entirely locally with no API calls. The model is downloaded and cached on first use. The `@huggingface/transformers` stack was chosen over the originally-planned `onnxruntime-node` for better cross-platform support (WASM fallback on platforms where native ONNX binaries are unavailable).
 
 ### 5.2 Tokenization
 Use the model's tokenizer (available as a JSON vocabulary file). For token estimation in context assembly, use the approximation of 4 characters per token.
