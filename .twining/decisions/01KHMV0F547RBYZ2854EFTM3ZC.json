@@ -1,0 +1,35 @@
+{
+  "agent_id": "main",
+  "domain": "architecture",
+  "scope": "src/engine/planning-bridge.ts",
+  "summary": "PlanningBridge as separate engine module, not inline in ContextAssembler",
+  "context": "Need to integrate .planning/ state into context assembly and summarization",
+  "rationale": "Keeps .planning/ parsing isolated, testable, and reusable. ContextAssembler receives PlanningBridge via constructor injection.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Inline parsing in ContextAssembler",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Mixes concerns — assembler shouldn't know .planning/ file formats"
+    },
+    {
+      "option": "Storage-layer adapter",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "STATE.md is external GSD state, not .twining/ data — doesn't belong in storage layer"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "src/engine/planning-bridge.ts",
+    "src/engine/context-assembler.ts",
+    "src/server.ts"
+  ],
+  "affected_symbols": [],
+  "id": "01KHMV0F547RBYZ2854EFTM3ZC",
+  "timestamp": "2026-02-17T03:41:23.492Z",
+  "status": "active"
+}

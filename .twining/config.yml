@@ -1,0 +1,15 @@
+version: 1
+project_name: .
+embedding_model: all-MiniLM-L6-v2
+archive:
+  auto_archive_on_commit: true
+  auto_archive_on_context_switch: true
+  max_blackboard_entries_before_archive: 500
+context_assembly:
+  default_max_tokens: 4000
+  priority_weights:
+    recency: 0.3
+    relevance: 0.4
+    decision_confidence: 0.2
+    warning_boost: 0.1
+conflict_resolution: human

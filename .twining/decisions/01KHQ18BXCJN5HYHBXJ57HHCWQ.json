@@ -1,0 +1,25 @@
+{
+  "agent_id": "main",
+  "domain": "architecture",
+  "scope": "src/tools/coordination-tools.ts",
+  "summary": "Expose delegation and handoff as MCP tools rather than removing dead CoordinationEngine code",
+  "context": "CoordinationEngine is fully implemented and tested but has no MCP tool surface. Only twining_agents is exposed. User chose to expose rather than defer.",
+  "rationale": "Code is already written, tested, and the engine is constructed at startup. Exposing it completes the coordination feature set and eliminates the dead-code smell. Removing would waste existing work.",
+  "constraints": [],
+  "alternatives": [],
+  "depends_on": [
+    "01KHQ0ZRG9Q5ZFJVAG0DHCWD4A"
+  ],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "src/tools/coordination-tools.ts",
+    "src/server.ts",
+    "src/engine/coordination-engine.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "id": "01KHQ18BXCJN5HYHBXJ57HHCWQ",
+  "timestamp": "2026-02-18T00:09:02.639Z",
+  "status": "active"
+}

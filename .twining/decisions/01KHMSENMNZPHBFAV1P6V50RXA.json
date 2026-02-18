@@ -1,0 +1,31 @@
+{
+  "agent_id": "main",
+  "domain": "architecture",
+  "scope": "project",
+  "summary": "Use blackboard pattern for agent coordination instead of pipeline/message-passing",
+  "context": "Multi-agent coding workflows lose context across fresh context windows. Need a shared coordination layer.",
+  "rationale": "Blackboard pattern lets agents self-select into work based on visible shared state. Broadcasting needs rather than routing messages avoids coupling agents to each other.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Message-passing pipeline between agents",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Couples agents to each other, requires knowing the topology in advance"
+    },
+    {
+      "option": "Shared database (SQLite/Redis)",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Adds external dependency, not git-trackable, not human-inspectable"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [],
+  "affected_symbols": [],
+  "id": "01KHMSENMNZPHBFAV1P6V50RXA",
+  "timestamp": "2026-02-17T03:14:11.733Z",
+  "status": "active"
+}

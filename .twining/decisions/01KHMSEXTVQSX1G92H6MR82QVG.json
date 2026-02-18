@@ -1,0 +1,21 @@
+{
+  "agent_id": "main",
+  "domain": "architecture",
+  "scope": "src/embeddings/",
+  "summary": "Embeddings must be lazy-loaded and fall back gracefully to keyword search if ONNX/transformers fails",
+  "context": "Semantic search is valuable but ONNX runtime can fail on some platforms. Server must never fail to start.",
+  "rationale": "Key constraint: embedding system is enhancement, not requirement. Lazy loading defers heavy init. Fallback to keyword search (substring matching) ensures all query tools work regardless.",
+  "constraints": [
+    "Server startup must never fail due to embedding issues",
+    "Must work on platforms where ONNX is unavailable"
+  ],
+  "alternatives": [],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [],
+  "affected_symbols": [],
+  "id": "01KHMSEXTVQSX1G92H6MR82QVG",
+  "timestamp": "2026-02-17T03:14:20.123Z",
+  "status": "active"
+}

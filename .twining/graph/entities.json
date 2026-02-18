@@ -1,0 +1,315 @@
+[
+  {
+    "id": "01KHMSD1HMSJHKETQCPW02SSAT",
+    "name": "twining-mcp",
+    "type": "module",
+    "properties": {
+      "description": "Agent coordination MCP server — shared blackboard, decision tracking, context assembly, knowledge graph",
+      "version": "1.0.0",
+      "language": "TypeScript",
+      "runtime": "Node.js >=18"
+    },
+    "created_at": "2026-02-17T03:13:18.388Z",
+    "updated_at": "2026-02-17T03:13:18.388Z"
+  },
+  {
+    "id": "01KHMSD2TJF1FHBRRMD4T9DMCR",
+    "name": "src/storage/file-store.ts",
+    "type": "file",
+    "properties": {
+      "description": "Low-level file I/O with advisory locking — readJSON, writeJSON, readJSONL, appendJSONL, ensureDir",
+      "layer": "storage"
+    },
+    "created_at": "2026-02-17T03:13:19.698Z",
+    "updated_at": "2026-02-17T03:13:19.698Z"
+  },
+  {
+    "id": "01KHMSD3Z8Y1XX32MTH2TQ0J7G",
+    "name": "src/storage/blackboard-store.ts",
+    "type": "file",
+    "properties": {
+      "description": "JSONL-backed blackboard persistence",
+      "layer": "storage"
+    },
+    "created_at": "2026-02-17T03:13:20.872Z",
+    "updated_at": "2026-02-17T03:13:20.872Z"
+  },
+  {
+    "id": "01KHMSD4ZTFQDF508ANNR1T6MH",
+    "name": "src/storage/decision-store.ts",
+    "type": "file",
+    "properties": {
+      "description": "Decision index + individual record persistence",
+      "layer": "storage"
+    },
+    "created_at": "2026-02-17T03:13:21.914Z",
+    "updated_at": "2026-02-17T03:13:21.914Z"
+  },
+  {
+    "id": "01KHMSD5WQ8BBAQ8QPQMQXSMFH",
+    "name": "src/storage/graph-store.ts",
+    "type": "file",
+    "properties": {
+      "description": "Entities and relations JSON persistence",
+      "layer": "storage"
+    },
+    "created_at": "2026-02-17T03:13:22.839Z",
+    "updated_at": "2026-02-17T03:13:22.839Z"
+  },
+  {
+    "id": "01KHMSD7CPGWQFGCRWQTG14168",
+    "name": "BlackboardEngine",
+    "type": "class",
+    "properties": {
+      "file": "src/engine/blackboard.ts",
+      "methods": "post, read, query, recent",
+      "description": "Manages blackboard entries with optional embedding-based semantic search"
+    },
+    "created_at": "2026-02-17T03:13:24.374Z",
+    "updated_at": "2026-02-17T03:13:24.374Z"
+  },
+  {
+    "id": "01KHMSD9312FRZ8WE5H1BGHP67",
+    "name": "DecisionEngine",
+    "type": "class",
+    "properties": {
+      "file": "src/engine/decisions.ts",
+      "methods": "decide, why, trace, reconsider, override, linkCommit, getByCommitHash",
+      "description": "Decision lifecycle — creation, tracing dependency chains, reconsideration, overrides, commit linking"
+    },
+    "created_at": "2026-02-17T03:13:26.113Z",
+    "updated_at": "2026-02-17T03:13:26.113Z"
+  },
+  {
+    "id": "01KHMSDA8RFWGEZ13T5GBP697J",
+    "name": "GraphEngine",
+    "type": "class",
+    "properties": {
+      "file": "src/engine/graph.ts",
+      "methods": "addEntity, addRelation, neighbors, query, resolveEntity",
+      "description": "Lightweight knowledge graph with BFS traversal and entity upsert"
+    },
+    "created_at": "2026-02-17T03:13:27.320Z",
+    "updated_at": "2026-02-17T03:13:27.320Z"
+  },
+  {
+    "id": "01KHMSDBP3TTNQ89EMB48RWGQ1",
+    "name": "ContextAssembler",
+    "type": "class",
+    "properties": {
+      "file": "src/engine/context-assembler.ts",
+      "methods": "assemble, summarize, whatChanged",
+      "description": "Builds tailored context packages for tasks — combines decisions, blackboard, graph within token budget"
+    },
+    "created_at": "2026-02-17T03:13:28.771Z",
+    "updated_at": "2026-02-17T03:13:28.771Z"
+  },
+  {
+    "id": "01KHMSDD1VJKTH8EEPX5WD4PKE",
+    "name": "Embedder",
+    "type": "class",
+    "properties": {
+      "file": "src/embeddings/embedder.ts",
+      "methods": "embed, embedBatch, initialize, isFallbackMode",
+      "description": "Lazy-loaded embedding pipeline using @huggingface/transformers, falls back to keyword search on failure"
+    },
+    "created_at": "2026-02-17T03:13:30.171Z",
+    "updated_at": "2026-02-17T03:13:30.171Z"
+  },
+  {
+    "id": "01KHMSDEJH7CQCE97XA0ZAP52A",
+    "name": "src/server.ts",
+    "type": "file",
+    "properties": {
+      "description": "MCP server setup — createServer() wires all engines and registers tool handlers",
+      "layer": "server"
+    },
+    "created_at": "2026-02-17T03:13:31.729Z",
+    "updated_at": "2026-02-17T03:13:31.729Z"
+  },
+  {
+    "id": "01KHMSDJZEQM1FXSMNYBYTST24",
+    "name": "src/tools/blackboard-tools.ts",
+    "type": "file",
+    "properties": {
+      "description": "MCP tool handlers: twining_post, twining_read, twining_query, twining_recent",
+      "layer": "tools"
+    },
+    "created_at": "2026-02-17T03:13:36.238Z",
+    "updated_at": "2026-02-17T03:13:36.238Z"
+  },
+  {
+    "id": "01KHMSDM44AFAD0VVEK8T9N3TK",
+    "name": "src/tools/decision-tools.ts",
+    "type": "file",
+    "properties": {
+      "description": "MCP tool handlers: twining_decide, twining_why, twining_trace, twining_commits",
+      "layer": "tools"
+    },
+    "created_at": "2026-02-17T03:13:37.412Z",
+    "updated_at": "2026-02-17T03:13:37.412Z"
+  },
+  {
+    "id": "01KHMSDMRQ5HSX2W6SBDT3RND2",
+    "name": "src/tools/context-tools.ts",
+    "type": "file",
+    "properties": {
+      "description": "MCP tool handlers: twining_assemble, twining_summarize, twining_what_changed",
+      "layer": "tools"
+    },
+    "created_at": "2026-02-17T03:13:38.071Z",
+    "updated_at": "2026-02-17T03:13:38.071Z"
+  },
+  {
+    "id": "01KHMSDNP6W0G4PM1EF27453CS",
+    "name": "src/tools/graph-tools.ts",
+    "type": "file",
+    "properties": {
+      "description": "MCP tool handlers: twining_add_entity, twining_add_relation, twining_neighbors, twining_graph_query",
+      "layer": "tools"
+    },
+    "created_at": "2026-02-17T03:13:39.014Z",
+    "updated_at": "2026-02-17T03:13:39.014Z"
+  },
+  {
+    "id": "01KHMSDPPSS0QE5B5RT17WGBN1",
+    "name": "src/tools/lifecycle-tools.ts",
+    "type": "file",
+    "properties": {
+      "description": "MCP tool handlers: twining_reconsider, twining_override, twining_archive, twining_status",
+      "layer": "tools"
+    },
+    "created_at": "2026-02-17T03:13:40.057Z",
+    "updated_at": "2026-02-17T03:13:40.057Z"
+  },
+  {
+    "id": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+    "name": "src/utils/types.ts",
+    "type": "file",
+    "properties": {
+      "description": "Core type definitions: BlackboardEntry, Decision, Entity, Relation, AssembledContext, etc.",
+      "layer": "utils"
+    },
+    "created_at": "2026-02-17T03:13:41.312Z",
+    "updated_at": "2026-02-17T03:13:41.312Z"
+  },
+  {
+    "id": "01KHMSDRVNF06NAA9G7KMZ5K0V",
+    "name": "src/utils/ids.ts",
+    "type": "file",
+    "properties": {
+      "description": "ULID generation for all entity IDs",
+      "layer": "utils"
+    },
+    "created_at": "2026-02-17T03:13:42.261Z",
+    "updated_at": "2026-02-17T03:13:42.261Z"
+  },
+  {
+    "id": "01KHMSDSSBNCJJW5JCJ72RWXRK",
+    "name": "src/utils/tokens.ts",
+    "type": "file",
+    "properties": {
+      "description": "Token estimation for context assembly budget management",
+      "layer": "utils"
+    },
+    "created_at": "2026-02-17T03:13:43.211Z",
+    "updated_at": "2026-02-17T03:13:43.211Z"
+  },
+  {
+    "id": "01KHMSDV08WTQDVVSF4159DVB1",
+    "name": "src/engine/archiver.ts",
+    "type": "file",
+    "properties": {
+      "description": "Archives old blackboard entries, preserves decisions, optional summary posting",
+      "layer": "engine"
+    },
+    "created_at": "2026-02-17T03:13:44.456Z",
+    "updated_at": "2026-02-17T03:13:44.456Z"
+  },
+  {
+    "id": "01KHMSDW5VTTZNG8BD53273GKJ",
+    "name": "@modelcontextprotocol/sdk",
+    "type": "dependency",
+    "properties": {
+      "description": "MCP SDK for server registration and tool handling",
+      "version": "^1.26.0"
+    },
+    "created_at": "2026-02-17T03:13:45.659Z",
+    "updated_at": "2026-02-17T03:13:45.659Z"
+  },
+  {
+    "id": "01KHMSDXCWHDHNX3W5V2ZNKNK3",
+    "name": "@huggingface/transformers",
+    "type": "dependency",
+    "properties": {
+      "description": "Local embedding model (all-MiniLM-L6-v2) for semantic search, lazy-loaded",
+      "version": "^3.8.1"
+    },
+    "created_at": "2026-02-17T03:13:46.908Z",
+    "updated_at": "2026-02-17T03:13:46.908Z"
+  },
+  {
+    "id": "01KHMSG9BY321XXSDXSP4R8KA7",
+    "name": "blackboard-pattern",
+    "type": "pattern",
+    "properties": {
+      "description": "Agents post to and read from shared state. Self-select into work based on visible needs. No routing, no coupling between agents."
+    },
+    "created_at": "2026-02-17T03:15:04.702Z",
+    "updated_at": "2026-02-17T03:15:04.702Z"
+  },
+  {
+    "id": "01KHMSGBNMQE8G2YEZJBVGMMFT",
+    "name": "selective-context-injection",
+    "type": "pattern",
+    "properties": {
+      "description": "Agents query for relevant context via assemble(). Assembler builds tailored packages within token budget using recency/confidence scoring. Not a firehose."
+    },
+    "created_at": "2026-02-17T03:15:07.058Z",
+    "updated_at": "2026-02-17T03:15:07.058Z"
+  },
+  {
+    "id": "01KHMSGCQJ7GKT86AZW160H3KA",
+    "name": "lazy-embedding-fallback",
+    "type": "pattern",
+    "properties": {
+      "description": "Embedder defers heavy ONNX/transformers init until first query. If init fails, falls back to keyword search. Server startup never blocked."
+    },
+    "created_at": "2026-02-17T03:15:08.146Z",
+    "updated_at": "2026-02-17T03:15:08.146Z"
+  },
+  {
+    "id": "01KHMV054KMRR5YY12YA6H7EKQ",
+    "name": "PlanningBridge",
+    "type": "class",
+    "properties": {
+      "file": "src/engine/planning-bridge.ts",
+      "methods": "readPlanningState, isAvailable",
+      "description": "Reads .planning/STATE.md and REQUIREMENTS.md into PlanningState — resilient regex parsing, never throws"
+    },
+    "created_at": "2026-02-17T03:41:13.235Z",
+    "updated_at": "2026-02-17T03:41:13.235Z"
+  },
+  {
+    "id": "01KHMV06A23HR1B5VEBXA830C5",
+    "name": "src/engine/planning-bridge.ts",
+    "type": "file",
+    "properties": {
+      "description": "PlanningBridge engine module — reads .planning/ state for context assembly",
+      "layer": "engine",
+      "lines": "212"
+    },
+    "created_at": "2026-02-17T03:41:14.434Z",
+    "updated_at": "2026-02-17T03:41:14.434Z"
+  },
+  {
+    "id": "01KHMV0V5417QXMX15XK378Z7H",
+    "name": "gsd-planning-bridge",
+    "type": "pattern",
+    "properties": {
+      "description": "Bidirectional bridge: PlanningBridge reads .planning/ state into assemble/summarize (read-side), DecisionEngine.decide() syncs summaries back to STATE.md (write-side)"
+    },
+    "created_at": "2026-02-17T03:41:35.780Z",
+    "updated_at": "2026-02-17T03:41:35.780Z"
+  }
+]

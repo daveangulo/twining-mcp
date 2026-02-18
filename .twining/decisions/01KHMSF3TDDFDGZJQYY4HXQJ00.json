@@ -1,0 +1,20 @@
+{
+  "agent_id": "main",
+  "domain": "architecture",
+  "scope": "project",
+  "summary": "Build bottom-up: utils → storage → engine → embeddings → tools → server",
+  "context": "Need a clear build order that respects dependency layers.",
+  "rationale": "Each layer only depends on layers below it. Storage never calls engine, engine never calls tools. This makes testing straightforward — each layer can be tested in isolation with mocks of the layer below.",
+  "constraints": [],
+  "alternatives": [],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [],
+  "affected_symbols": [],
+  "id": "01KHMSF3TDDFDGZJQYY4HXQJ00",
+  "timestamp": "2026-02-17T03:14:26.253Z",
+  "status": "superseded",
+  "overridden_by": "human",
+  "override_reason": "False-positive conflict detection — build order and coordination pattern are orthogonal. Restoring to active."
+}

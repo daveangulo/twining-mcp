@@ -1,0 +1,46 @@
+{
+  "agent_id": "main",
+  "domain": "architecture",
+  "scope": "project",
+  "summary": "Embedded HTTP dashboard using native Node.js http module, vanilla HTML/JS, cytoscape.js for graph, vis-timeline for timeline",
+  "context": "v1.2 milestone planning — adding web dashboard for observability into Twining state",
+  "rationale": "Serena MCP pattern proven: in-process HTTP server, vanilla frontend, polling updates. Native http module avoids Express dependency. Cytoscape.js (109KB) and vis-timeline (186KB) are mature, zero-framework graph/timeline libraries. No build step required for frontend.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Express.js for HTTP server",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Unnecessary dependency — native http module sufficient for <10 routes"
+    },
+    {
+      "option": "React/Vue for frontend",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Framework overhead unjustified for read-only dashboard; adds build step"
+    },
+    {
+      "option": "WebSockets for real-time updates",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Polling every 2-5s sufficient for local dev tool; WebSockets add connection management complexity"
+    },
+    {
+      "option": "D3.js for graph visualization",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Lower-level API than cytoscape.js; more code for same result in knowledge graph use case"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [],
+  "affected_symbols": [],
+  "commit_hashes": [
+    "431f9ba"
+  ],
+  "id": "01KHN6335P4AVW0ADGVXE30V84",
+  "timestamp": "2026-02-17T06:55:03.863Z",
+  "status": "provisional"
+}

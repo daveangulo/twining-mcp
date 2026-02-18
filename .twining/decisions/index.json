@@ -1,0 +1,177 @@
+[
+  {
+    "id": "01KHMSENMNZPHBFAV1P6V50RXA",
+    "timestamp": "2026-02-17T03:14:11.733Z",
+    "domain": "architecture",
+    "scope": "project",
+    "summary": "Use blackboard pattern for agent coordination instead of pipeline/message-passing",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [],
+    "affected_symbols": []
+  },
+  {
+    "id": "01KHMSETGFP24CH93J2R7KC97A",
+    "timestamp": "2026-02-17T03:14:16.720Z",
+    "domain": "architecture",
+    "scope": "src/storage/",
+    "summary": "All state stored as .jsonl and .json files in .twining/ directory — no external databases",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [],
+    "affected_symbols": []
+  },
+  {
+    "id": "01KHMSEXTVQSX1G92H6MR82QVG",
+    "timestamp": "2026-02-17T03:14:20.123Z",
+    "domain": "architecture",
+    "scope": "src/embeddings/",
+    "summary": "Embeddings must be lazy-loaded and fall back gracefully to keyword search if ONNX/transformers fails",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [],
+    "affected_symbols": []
+  },
+  {
+    "id": "01KHMSF111C2M13V2EM2H91G5E",
+    "timestamp": "2026-02-17T03:14:23.393Z",
+    "domain": "implementation",
+    "scope": "src/utils/ids.ts",
+    "summary": "Use ULIDs for all entity IDs — temporally sortable, globally unique",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [],
+    "affected_symbols": []
+  },
+  {
+    "id": "01KHMSF3TDDFDGZJQYY4HXQJ00",
+    "timestamp": "2026-02-17T03:14:26.253Z",
+    "domain": "architecture",
+    "scope": "project",
+    "summary": "Build bottom-up: utils → storage → engine → embeddings → tools → server",
+    "confidence": "high",
+    "status": "superseded",
+    "affected_files": [],
+    "affected_symbols": []
+  },
+  {
+    "id": "01KHMSF83J0CN3599E4681ER6A",
+    "timestamp": "2026-02-17T03:14:30.644Z",
+    "domain": "implementation",
+    "scope": "src/engine/decisions.ts",
+    "summary": "Decisions track commit hashes to link architectural choices to git history",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "src/utils/types.ts",
+      "src/engine/decisions.ts",
+      "src/storage/decision-store.ts",
+      "src/tools/decision-tools.ts"
+    ],
+    "affected_symbols": []
+  },
+  {
+    "id": "01KHMV0F547RBYZ2854EFTM3ZC",
+    "timestamp": "2026-02-17T03:41:23.492Z",
+    "domain": "architecture",
+    "scope": "src/engine/planning-bridge.ts",
+    "summary": "PlanningBridge as separate engine module, not inline in ContextAssembler",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "src/engine/planning-bridge.ts",
+      "src/engine/context-assembler.ts",
+      "src/server.ts"
+    ],
+    "affected_symbols": []
+  },
+  {
+    "id": "01KHMV0JDABJRSZJD3XX2VQ9AD",
+    "timestamp": "2026-02-17T03:41:26.826Z",
+    "domain": "implementation",
+    "scope": "src/engine/decisions.ts",
+    "summary": "Direct fs calls in DecisionEngine for STATE.md sync — deliberate exception to storage-layer convention",
+    "confidence": "high",
+    "status": "superseded",
+    "affected_files": [
+      "src/engine/decisions.ts"
+    ],
+    "affected_symbols": []
+  },
+  {
+    "id": "01KHN3H7GHVWN89R1WVCHANX2V",
+    "timestamp": "2026-02-17T06:10:21.329Z",
+    "domain": "implementation",
+    "scope": "src/engine/decisions.ts",
+    "summary": "Direct fs calls in DecisionEngine for STATE.md sync — deliberate exception to storage-layer convention",
+    "confidence": "medium",
+    "status": "provisional",
+    "affected_files": [],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KHN3H8FYSQERBRD2D2W6RK7Y",
+    "timestamp": "2026-02-17T06:10:22.334Z",
+    "domain": "architecture",
+    "scope": "project",
+    "summary": "Build bottom-up: utils → storage → engine → embeddings → tools → server",
+    "confidence": "medium",
+    "status": "provisional",
+    "affected_files": [],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KHN6335P4AVW0ADGVXE30V84",
+    "timestamp": "2026-02-17T06:55:03.863Z",
+    "domain": "architecture",
+    "scope": "project",
+    "summary": "Embedded HTTP dashboard using native Node.js http module, vanilla HTML/JS, cytoscape.js for graph, vis-timeline for timeline",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [],
+    "affected_symbols": [],
+    "commit_hashes": [
+      "431f9ba"
+    ]
+  },
+  {
+    "id": "01KHQ0ZRG9Q5ZFJVAG0DHCWD4A",
+    "timestamp": "2026-02-18T00:04:20.617Z",
+    "domain": "architecture",
+    "scope": "project",
+    "summary": "Triage of TWINING_ARCH_REVIEW.md — 7 valid gaps, 3 invalid/already-addressed, 3 partial",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      "src/engine/blackboard.ts",
+      "src/engine/decisions.ts",
+      "src/storage/decision-store.ts",
+      "src/storage/blackboard-store.ts",
+      "src/engine/context-assembler.ts",
+      "src/tools/coordination-tools.ts",
+      "src/server.ts",
+      "src/index.ts",
+      "package.json"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KHQ18BXCJN5HYHBXJ57HHCWQ",
+    "timestamp": "2026-02-18T00:09:02.639Z",
+    "domain": "architecture",
+    "scope": "src/tools/coordination-tools.ts",
+    "summary": "Expose delegation and handoff as MCP tools rather than removing dead CoordinationEngine code",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "src/tools/coordination-tools.ts",
+      "src/server.ts",
+      "src/engine/coordination-engine.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  }
+]

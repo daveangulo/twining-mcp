@@ -1,0 +1,23 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "src/engine/decisions.ts",
+  "summary": "Decisions track commit hashes to link architectural choices to git history",
+  "context": "v1.1 milestone added commit hash tracking to connect decisions to the code changes that implement them.",
+  "rationale": "Enables twining_why to answer 'why was this commit made?' and twining_commits to find decisions by commit hash. Bridges the gap between decision rationale and actual code changes.",
+  "constraints": [],
+  "alternatives": [],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "src/utils/types.ts",
+    "src/engine/decisions.ts",
+    "src/storage/decision-store.ts",
+    "src/tools/decision-tools.ts"
+  ],
+  "affected_symbols": [],
+  "id": "01KHMSF83J0CN3599E4681ER6A",
+  "timestamp": "2026-02-17T03:14:30.644Z",
+  "status": "active"
+}

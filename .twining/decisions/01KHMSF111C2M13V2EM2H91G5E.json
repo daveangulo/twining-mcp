@@ -1,0 +1,31 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "src/utils/ids.ts",
+  "summary": "Use ULIDs for all entity IDs — temporally sortable, globally unique",
+  "context": "Need unique IDs across agents that don't require coordination and sort chronologically.",
+  "rationale": "ULIDs are timestamp-prefixed so they sort chronologically, are globally unique without coordination, and are more readable than UUIDs.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "UUID v4",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Not temporally sortable"
+    },
+    {
+      "option": "Auto-increment integers",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Requires coordination between agents, not globally unique"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [],
+  "affected_symbols": [],
+  "id": "01KHMSF111C2M13V2EM2H91G5E",
+  "timestamp": "2026-02-17T03:14:23.393Z",
+  "status": "active"
+}
