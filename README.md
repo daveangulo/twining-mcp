@@ -29,28 +29,32 @@ Twining provides a shared blackboard, decision tracking with rationale, selectiv
 
 ## Quick Start
 
-### Install
+### Add to Claude Code
 
 ```bash
-npm install -g twining-mcp
+claude mcp add twining -- npx -y twining-mcp --project .
 ```
 
-### Configure in Claude Code
+Or scope it to a single project:
 
-Add to your Claude Code MCP settings (`~/.claude/claude_desktop_config.json` or project `.mcp.json`):
+```bash
+claude mcp add twining -s project -- npx -y twining-mcp --project .
+```
+
+### Manual Configuration
+
+Alternatively, add to your `.mcp.json` directly:
 
 ```json
 {
   "mcpServers": {
     "twining": {
-      "command": "twining-mcp",
-      "args": ["--project", "/path/to/your/project"]
+      "command": "npx",
+      "args": ["-y", "twining-mcp", "--project", "."]
     }
   }
 }
 ```
-
-If `--project` is omitted, Twining uses the current working directory.
 
 ### Usage
 
@@ -73,6 +77,27 @@ For maximum value with Claude Code, add Twining instructions to your project's `
 ### Dashboard
 
 The web dashboard starts automatically on port 24282 (configurable via `TWINING_DASHBOARD_PORT`). Open `http://localhost:24282` to browse blackboard entries, decisions, knowledge graph, and agent coordination state.
+
+## Install
+
+```bash                                                                           
+npm install -g twining-mcp
+```
+
+then update mcp settings file:
+
+```json
+{
+  "mcpServers": {
+    "twining": {
+      "command": "twining-mcp",
+      "args": ["--project", "/path/to/your/project"]
+    }
+  }
+}
+```
+
+If `--project` is omitted, Twining uses the current working directory.
 
 ## Tools
 
