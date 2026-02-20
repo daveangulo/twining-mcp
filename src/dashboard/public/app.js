@@ -134,6 +134,8 @@ function fetchBlackboard() {
       state.connected = true;
       updateConnectionIndicator();
       renderBlackboard();
+      renderActivityBreakdown();
+      renderRecentActivity();
     })
     .catch(function() {
       state.connected = false;
@@ -281,7 +283,8 @@ function fetchHandoffDetail(id) {
 function refreshData() {
   fetchStatus();
   var tab = state.activeTab;
-  if (tab === "blackboard") fetchBlackboard();
+  if (tab === "stats") fetchBlackboard();
+  else if (tab === "blackboard") fetchBlackboard();
   else if (tab === "decisions") fetchDecisions();
   else if (tab === "graph") fetchGraph();
   else if (tab === "search" && state.search.query) fetchSearch();
@@ -456,6 +459,78 @@ function renderStatus() {
   var msgEl = document.getElementById("uninitialized-msg");
   if (msgEl) {
     msgEl.style.display = (s.initialized === false) ? "block" : "none";
+  }
+
+  renderActivityBreakdown();
+  renderRecentActivity();
+}
+
+function renderActivityBreakdown() {
+  var container = document.getElementById('activity-breakdown');
+  if (!container) return;
+
+  var entries = state.blackboard.data || [];
+  var typeCounts = {};
+
+  for (var i = 0; i < entries.length; i++) {
+    var type = entries[i].entry_type || 'unknown';
+    typeCounts[type] = (typeCounts[type] || 0) + 1;
+  }
+
+  clearElement(container);
+
+  var types = Object.keys(typeCounts).sort(function(a, b) {
+    return typeCounts[b] - typeCounts[a];
+  });
+
+  for (var j = 0; j < types.length; j++) {
+    var type = types[j];
+    var count = typeCounts[type];
+
+    var item = el('div', 'activity-item');
+    var label = el('div', 'activity-item-label', type);
+    var countEl = el('div', 'activity-item-count', String(count));
+
+    item.appendChild(label);
+    item.appendChild(countEl);
+    container.appendChild(item);
+  }
+}
+
+function renderRecentActivity() {
+  var container = document.getElementById('recent-activity');
+  if (!container) return;
+
+  var entries = state.blackboard.data || [];
+  var sorted = entries.slice().sort(function(a, b) {
+    return new Date(b.timestamp) - new Date(a.timestamp);
+  });
+
+  var recent = sorted.slice(0, 10);
+  clearElement(container);
+
+  if (recent.length === 0) {
+    container.textContent = 'No recent activity';
+    return;
+  }
+
+  for (var i = 0; i < recent.length; i++) {
+    var entry = recent[i];
+
+    var entryDiv = el('div', 'activity-entry');
+
+    var header = el('div', 'activity-entry-header');
+    var typeSpan = el('div', 'activity-entry-type', entry.entry_type || 'unknown');
+    var timeSpan = el('div', 'activity-entry-time', formatTimestamp(entry.timestamp));
+
+    header.appendChild(typeSpan);
+    header.appendChild(timeSpan);
+
+    var summary = el('div', 'activity-entry-summary', truncate(entry.summary || '', 80));
+
+    entryDiv.appendChild(header);
+    entryDiv.appendChild(summary);
+    container.appendChild(entryDiv);
   }
 }
 
@@ -1841,7 +1916,9 @@ function initTimeline() {
     orientation: { axis: 'top' },
     selectable: true,
     tooltip: { followMouse: true },
-    margin: { item: 10 }
+    margin: { item: { horizontal: 10, vertical: 20 } },
+    stack: true,
+    maxHeight: 600
   };
 
   window.timelineInstance = new vis.Timeline(container, window.timelineDataSet, options);
@@ -1938,12 +2015,14 @@ function buildGraphStyles() {
         'label': 'data(label)',
         'text-valign': 'bottom',
         'text-halign': 'center',
-        'font-size': '10px',
-        'width': 30,
-        'height': 30,
+        'font-size': '11px',
+        'width': 40,
+        'height': 40,
         'color': textColor,
-        'text-margin-y': 4,
-        'background-color': '#6b7280'
+        'text-margin-y': 6,
+        'background-color': '#6b7280',
+        'text-wrap': 'wrap',
+        'text-max-width': '120px'
       }
     },
     {
@@ -2075,10 +2154,19 @@ function initGraphVis() {
   window.cyInstance = cytoscape({
     container: document.getElementById('graph-canvas'),
     elements: elements,
-    layout: { name: 'cose', animate: true, animationDuration: 500, nodeRepulsion: function() { return 8000; } },
+    layout: {
+      name: 'cose',
+      animate: true,
+      animationDuration: 500,
+      nodeRepulsion: function() { return 12000; },
+      idealEdgeLength: function() { return 100; },
+      nodeOverlap: 20,
+      padding: 40
+    },
     style: buildGraphStyles(),
     minZoom: 0.2,
-    maxZoom: 5
+    maxZoom: 5,
+    wheelSensitivity: 0.2
   });
 
   // Click node to show detail and expand neighbors
@@ -2106,6 +2194,49 @@ function initGraphVis() {
   });
 
   renderGraphLegend();
+  setupGraphControls();
+}
+
+function setupGraphControls() {
+  var zoomIn = document.getElementById('graph-zoom-in');
+  var zoomOut = document.getElementById('graph-zoom-out');
+  var fit = document.getElementById('graph-fit');
+  var reset = document.getElementById('graph-reset');
+
+  if (zoomIn) {
+    zoomIn.onclick = function() {
+      if (window.cyInstance) window.cyInstance.zoom(window.cyInstance.zoom() * 1.2);
+    };
+  }
+
+  if (zoomOut) {
+    zoomOut.onclick = function() {
+      if (window.cyInstance) window.cyInstance.zoom(window.cyInstance.zoom() * 0.8);
+    };
+  }
+
+  if (fit) {
+    fit.onclick = function() {
+      if (window.cyInstance) window.cyInstance.fit(null, 40);
+    };
+  }
+
+  if (reset) {
+    reset.onclick = function() {
+      if (window.cyInstance) {
+        var layout = window.cyInstance.layout({
+          name: 'cose',
+          animate: true,
+          animationDuration: 500,
+          nodeRepulsion: function() { return 12000; },
+          idealEdgeLength: function() { return 100; },
+          nodeOverlap: 20,
+          padding: 40
+        });
+        layout.run();
+      }
+    };
+  }
 }
 
 function expandNeighbors(nodeId) {

@@ -115,6 +115,17 @@
           <div class="stat-value" id="stat-total-handoffs">--</div>
         </div>
       </div>
+
+      <div class="stats-section">
+        <h2 class="stats-section-title">Activity Breakdown</h2>
+        <div id="activity-breakdown" class="activity-breakdown"></div>
+      </div>
+
+      <div class="stats-section">
+        <h2 class="stats-section-title">Recent Activity</h2>
+        <div id="recent-activity" class="recent-activity"></div>
+      </div>
+
       <div id="uninitialized-msg" style="display:none">No data yet. Twining will populate as agents use MCP tools.</div>
     </div>
 
@@ -213,7 +224,14 @@
       <div class="view-visual" id="graph-visual-view" style="display:none">
         <div class="content-area">
           <div class="list-panel">
-            <div id="graph-canvas"></div>
+            <div id="graph-canvas">
+              <div class="graph-controls">
+                <button id="graph-zoom-in" title="Zoom in" aria-label="Zoom in">+</button>
+                <button id="graph-zoom-out" title="Zoom out" aria-label="Zoom out">−</button>
+                <button id="graph-fit" title="Fit to screen" aria-label="Fit to screen">⊡</button>
+                <button id="graph-reset" title="Reset layout" aria-label="Reset layout">↻</button>
+              </div>
+            </div>
             <div class="graph-legend" id="graph-legend"></div>
           </div>
           <div class="detail-panel" id="graph-visual-detail">
