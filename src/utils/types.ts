@@ -405,15 +405,28 @@ export interface AssemblyCheck {
 export interface DriftCheck {
   status: "pass" | "warn" | "skip";
   decisions_checked: number;
-  stale: Array<{ decision_id: string; summary: string; reason: string }>;
+  stale: Array<{
+    decision_id: string;
+    summary: string;
+    affected_file: string;
+    decision_timestamp: string;
+    last_file_modification: string;
+    modifying_commit: string;
+  }>;
 }
 
 /** Constraints check (stub for P2) */
 export interface ConstraintsCheck {
-  status: "pass" | "warn" | "skip";
+  status: "pass" | "warn" | "fail" | "skip";
   checkable: number;
   passed: number;
-  failed: Array<{ constraint_id: string; summary: string; reason: string }>;
+  failed: Array<{
+    constraint_id: string;
+    summary: string;
+    check_command: string;
+    actual: string;
+    expected: string;
+  }>;
 }
 
 /** Full verification result from twining_verify */

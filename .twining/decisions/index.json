@@ -173,5 +173,53 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KHT3PGQRF5H019Y1M7DEYJRH",
+    "timestamp": "2026-02-19T04:49:26.781Z",
+    "domain": "architecture",
+    "scope": "docs/",
+    "summary": "Agent integration architecture doc recommends Claude Code + Twining as primary path, blackboard over orchestrator",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "docs/AGENT_INTEGRATION_ARCHITECTURE.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KHT8ZWWCYYH31N4DXZA08H1R",
+    "timestamp": "2026-02-19T06:21:57.006Z",
+    "domain": "architecture",
+    "scope": "docs/AGENT_INTEGRATION_ARCHITECTURE.md",
+    "summary": "Add rigor framework: verify step in agent lifecycle, tested_by traceability, drift detection, checkable constraints",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      "docs/AGENT_INTEGRATION_ARCHITECTURE.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KHW8KE6TG4B54G85CV67VHZK",
+    "timestamp": "2026-02-20T00:53:37.627Z",
+    "domain": "implementation",
+    "scope": "src/engine/verify.ts",
+    "summary": "Implement drift detection via git log and sandboxed constraint checking via execSync",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "src/engine/verify.ts",
+      "src/utils/types.ts",
+      "src/server.ts"
+    ],
+    "affected_symbols": [
+      "VerifyEngine",
+      "DriftCheck",
+      "ConstraintsCheck"
+    ],
+    "commit_hashes": []
   }
 ]

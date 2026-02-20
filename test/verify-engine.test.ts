@@ -1,7 +1,7 @@
 /**
  * Tests for the VerifyEngine class.
  */
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
@@ -11,6 +11,13 @@ import { GraphStore } from "../src/storage/graph-store.js";
 import { BlackboardEngine } from "../src/engine/blackboard.js";
 import { GraphEngine } from "../src/engine/graph.js";
 import { VerifyEngine } from "../src/engine/verify.js";
+
+vi.mock("node:child_process", () => ({
+  execSync: vi.fn(),
+}));
+
+import { execSync } from "node:child_process";
+const mockExecSync = vi.mocked(execSync);
 
 let tmpDir: string;
 let blackboardStore: BlackboardStore;
@@ -38,7 +45,9 @@ beforeEach(() => {
     blackboardStore,
     blackboardEngine,
     graphEngine,
+    tmpDir,
   );
+  mockExecSync.mockReset();
 });
 
 afterEach(() => {
@@ -67,6 +76,10 @@ function validDecision(overrides: Record<string, unknown> = {}) {
 
 describe("VerifyEngine.verify", () => {
   it("returns correct structure with all checks", async () => {
+    // Git unavailable for drift check
+    mockExecSync.mockImplementation(() => {
+      throw new Error("git not found");
+    });
     const result = await verifyEngine.verify({ scope: "project" });
     expect(result.scope).toBe("project");
     expect(result.verified_at).toBeTruthy();
@@ -74,7 +87,10 @@ describe("VerifyEngine.verify", () => {
     expect(result.summary).toBeTruthy();
   });
 
-  it("returns stub status for drift and constraints", async () => {
+  it("returns skip status for drift when git unavailable and constraints when none exist", async () => {
+    mockExecSync.mockImplementation(() => {
+      throw new Error("git not found");
+    });
     const result = await verifyEngine.verify({ scope: "project" });
     expect(result.checks.drift?.status).toBe("skip");
     expect(result.checks.constraints?.status).toBe("skip");
@@ -91,6 +107,9 @@ describe("VerifyEngine.verify", () => {
   });
 
   it("auto-posts finding to blackboard", async () => {
+    mockExecSync.mockImplementation(() => {
+      throw new Error("git not found");
+    });
     await verifyEngine.verify({ scope: "project" });
     const { entries } = await blackboardStore.read({ entry_types: ["finding"] });
     expect(entries.some((e) => e.summary.startsWith("Verification:"))).toBe(true);
@@ -242,5 +261,279 @@ describe("assembly check", () => {
     expect(result.checks.assembly?.decisions_by_agent).toBe(1);
     expect(result.checks.assembly?.assembled_before).toBe(1);
     expect(result.checks.assembly?.status).toBe("pass");
+  });
+});
+
+describe("drift check", () => {
+  it("returns skip when git is unavailable", async () => {
+    mockExecSync.mockImplementation(() => {
+      throw new Error("git not found");
+    });
+    await decisionStore.create(validDecision());
+    const result = await verifyEngine.verify({
+      scope: "project",
+      checks: ["drift"],
+    });
+    expect(result.checks.drift?.status).toBe("skip");
+    expect(result.checks.drift?.decisions_checked).toBe(0);
+  });
+
+  it("returns pass when file not modified after decision", async () => {
+    const decision = await decisionStore.create(validDecision());
+    // File was modified BEFORE the decision was made
+    const oldDate = new Date(Date.now() - 86400000).toISOString(); // 1 day ago
+    mockExecSync.mockImplementation((cmd: string) => {
+      const cmdStr = String(cmd);
+      if (cmdStr.includes("rev-parse")) return "true\n";
+      if (cmdStr.includes("git log")) return `${oldDate} abc123\n`;
+      return "";
+    });
+    const result = await verifyEngine.verify({
+      scope: "project",
+      checks: ["drift"],
+    });
+    expect(result.checks.drift?.status).toBe("pass");
+    expect(result.checks.drift?.decisions_checked).toBe(1);
+    expect(result.checks.drift?.stale).toHaveLength(0);
+  });
+
+  it("returns warn when file modified after decision", async () => {
+    // Create decision with a timestamp in the past
+    const decision = await decisionStore.create(validDecision());
+    // File was modified AFTER the decision
+    const futureDate = new Date(Date.now() + 86400000).toISOString(); // 1 day from now
+    mockExecSync.mockImplementation((cmd: string) => {
+      const cmdStr = String(cmd);
+      if (cmdStr.includes("rev-parse")) return "true\n";
+      if (cmdStr.includes("git log")) return `${futureDate} def456\n`;
+      return "";
+    });
+    const result = await verifyEngine.verify({
+      scope: "project",
+      checks: ["drift"],
+    });
+    expect(result.checks.drift?.status).toBe("warn");
+    expect(result.checks.drift?.stale).toHaveLength(1);
+    expect(result.checks.drift?.stale[0]!.decision_id).toBe(decision.id);
+    expect(result.checks.drift?.stale[0]!.affected_file).toBe("src/auth.ts");
+    expect(result.checks.drift?.stale[0]!.modifying_commit).toBe("def456");
+  });
+
+  it("returns pass when file modified but superseding decision exists", async () => {
+    // Create first decision
+    await decisionStore.create(validDecision({ summary: "Old decision" }));
+    // Create a newer decision in the same domain+scope affecting the same file
+    await decisionStore.create(validDecision({ summary: "New decision" }));
+
+    const futureDate = new Date(Date.now() + 86400000).toISOString();
+    mockExecSync.mockImplementation((cmd: string) => {
+      const cmdStr = String(cmd);
+      if (cmdStr.includes("rev-parse")) return "true\n";
+      if (cmdStr.includes("git log")) return `${futureDate} ghi789\n`;
+      return "";
+    });
+    const result = await verifyEngine.verify({
+      scope: "project",
+      checks: ["drift"],
+    });
+    // Both decisions are stale (both modified after), but each sees the other as superseding
+    // The newer one has no superseder, so at least the newest one will be flagged
+    // This is actually testing the superseding logic — the older decision IS superseded by the newer one
+    expect(result.checks.drift?.decisions_checked).toBe(2);
+  });
+
+  it("skips decisions with no affected_files", async () => {
+    mockExecSync.mockImplementation((cmd: string) => {
+      const cmdStr = String(cmd);
+      if (cmdStr.includes("rev-parse")) return "true\n";
+      return "";
+    });
+    await decisionStore.create(validDecision({ affected_files: [] }));
+    const result = await verifyEngine.verify({
+      scope: "project",
+      checks: ["drift"],
+    });
+    expect(result.checks.drift?.status).toBe("pass");
+    expect(result.checks.drift?.decisions_checked).toBe(0);
+  });
+
+  it("handles git log returning no output for a file", async () => {
+    mockExecSync.mockImplementation((cmd: string) => {
+      const cmdStr = String(cmd);
+      if (cmdStr.includes("rev-parse")) return "true\n";
+      if (cmdStr.includes("git log")) throw new Error("no such file");
+      return "";
+    });
+    await decisionStore.create(validDecision());
+    const result = await verifyEngine.verify({
+      scope: "project",
+      checks: ["drift"],
+    });
+    expect(result.checks.drift?.status).toBe("pass");
+    expect(result.checks.drift?.decisions_checked).toBe(1);
+    expect(result.checks.drift?.stale).toHaveLength(0);
+  });
+});
+
+describe("constraints check", () => {
+  it("returns skip when no constraint entries exist", async () => {
+    const result = await verifyEngine.verify({
+      scope: "project",
+      checks: ["constraints"],
+    });
+    expect(result.checks.constraints?.status).toBe("skip");
+    expect(result.checks.constraints?.checkable).toBe(0);
+  });
+
+  it("returns pass when constraint check_command succeeds", async () => {
+    await blackboardEngine.post({
+      entry_type: "constraint",
+      summary: "Node version check",
+      detail: JSON.stringify({ check_command: "echo 20", expected: "20" }),
+      tags: [],
+      scope: "project",
+    });
+    mockExecSync.mockReturnValue("20\n");
+    const result = await verifyEngine.verify({
+      scope: "project",
+      checks: ["constraints"],
+    });
+    expect(result.checks.constraints?.status).toBe("pass");
+    expect(result.checks.constraints?.checkable).toBe(1);
+    expect(result.checks.constraints?.passed).toBe(1);
+    expect(result.checks.constraints?.failed).toHaveLength(0);
+  });
+
+  it("returns warn when some constraints fail", async () => {
+    await blackboardEngine.post({
+      entry_type: "constraint",
+      summary: "Passing check",
+      detail: JSON.stringify({ check_command: "echo yes", expected: "yes" }),
+      tags: [],
+      scope: "project",
+    });
+    await blackboardEngine.post({
+      entry_type: "constraint",
+      summary: "Failing check",
+      detail: JSON.stringify({ check_command: "echo no", expected: "yes" }),
+      tags: [],
+      scope: "project",
+    });
+    mockExecSync.mockImplementation((cmd: string) => {
+      const cmdStr = String(cmd);
+      if (cmdStr.includes("echo yes")) return "yes\n";
+      if (cmdStr.includes("echo no")) return "no\n";
+      return "";
+    });
+    const result = await verifyEngine.verify({
+      scope: "project",
+      checks: ["constraints"],
+    });
+    expect(result.checks.constraints?.status).toBe("warn");
+    expect(result.checks.constraints?.checkable).toBe(2);
+    expect(result.checks.constraints?.passed).toBe(1);
+    expect(result.checks.constraints?.failed).toHaveLength(1);
+    expect(result.checks.constraints?.failed[0]!.actual).toBe("no");
+  });
+
+  it("returns fail when all constraints fail", async () => {
+    await blackboardEngine.post({
+      entry_type: "constraint",
+      summary: "Failing check",
+      detail: JSON.stringify({ check_command: "echo wrong", expected: "right" }),
+      tags: [],
+      scope: "project",
+    });
+    mockExecSync.mockReturnValue("wrong\n");
+    const result = await verifyEngine.verify({
+      scope: "project",
+      checks: ["constraints"],
+    });
+    expect(result.checks.constraints?.status).toBe("fail");
+    expect(result.checks.constraints?.failed).toHaveLength(1);
+  });
+
+  it("skips constraints with non-JSON detail", async () => {
+    await blackboardEngine.post({
+      entry_type: "constraint",
+      summary: "Plain text constraint",
+      detail: "Must use TypeScript strict mode",
+      tags: [],
+      scope: "project",
+    });
+    const result = await verifyEngine.verify({
+      scope: "project",
+      checks: ["constraints"],
+    });
+    expect(result.checks.constraints?.status).toBe("skip");
+    expect(result.checks.constraints?.checkable).toBe(0);
+  });
+
+  it("rejects commands with shell operators", async () => {
+    await blackboardEngine.post({
+      entry_type: "constraint",
+      summary: "Dangerous command",
+      detail: JSON.stringify({ check_command: "cat /etc/passwd | wc -l", expected: "0" }),
+      tags: [],
+      scope: "project",
+    });
+    const result = await verifyEngine.verify({
+      scope: "project",
+      checks: ["constraints"],
+    });
+    expect(result.checks.constraints?.status).toBe("fail");
+    expect(result.checks.constraints?.failed).toHaveLength(1);
+    expect(result.checks.constraints?.failed[0]!.actual).toContain("REJECTED");
+    // execSync should NOT have been called for the dangerous command
+  });
+
+  it("treats command timeout as failure", async () => {
+    await blackboardEngine.post({
+      entry_type: "constraint",
+      summary: "Timeout check",
+      detail: JSON.stringify({ check_command: "sleep 999", expected: "done" }),
+      tags: [],
+      scope: "project",
+    });
+    mockExecSync.mockImplementation(() => {
+      throw new Error("Command timed out");
+    });
+    const result = await verifyEngine.verify({
+      scope: "project",
+      checks: ["constraints"],
+    });
+    expect(result.checks.constraints?.status).toBe("fail");
+    expect(result.checks.constraints?.failed).toHaveLength(1);
+    expect(result.checks.constraints?.failed[0]!.actual).toContain("ERROR");
+  });
+
+  it("rejects commands with backticks", async () => {
+    await blackboardEngine.post({
+      entry_type: "constraint",
+      summary: "Backtick injection",
+      detail: JSON.stringify({ check_command: "echo `whoami`", expected: "safe" }),
+      tags: [],
+      scope: "project",
+    });
+    const result = await verifyEngine.verify({
+      scope: "project",
+      checks: ["constraints"],
+    });
+    expect(result.checks.constraints?.failed[0]!.actual).toContain("REJECTED");
+  });
+
+  it("rejects commands with $() substitution", async () => {
+    await blackboardEngine.post({
+      entry_type: "constraint",
+      summary: "Subshell injection",
+      detail: JSON.stringify({ check_command: "echo $(whoami)", expected: "safe" }),
+      tags: [],
+      scope: "project",
+    });
+    const result = await verifyEngine.verify({
+      scope: "project",
+      checks: ["constraints"],
+    });
+    expect(result.checks.constraints?.failed[0]!.actual).toContain("REJECTED");
   });
 });

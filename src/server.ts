@@ -119,6 +119,7 @@ export function createServer(projectRoot: string): McpServer {
     blackboardStore,
     blackboardEngine,
     graphEngine,
+    projectRoot,
   );
   verifyEngine.setAssemblyChecker((agentId) =>
     contextAssembler.hasRecentAssembly(agentId),

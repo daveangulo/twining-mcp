@@ -1,0 +1,40 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "src/engine/verify.ts",
+  "summary": "Implement drift detection via git log and sandboxed constraint checking via execSync",
+  "context": "P2 roadmap requires implementing the two remaining verify stubs: drift detection (comparing decision timestamps against git file modification times) and constraint checking (executing check_commands from constraint blackboard entries).",
+  "rationale": "Git log provides file modification timestamps and commit hashes with minimal overhead. execSync with timeout and shell operator rejection provides sandboxed execution. Both follow the existing VerifyEngine pattern of returning structured check results.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Use libgit2/isomorphic-git for drift detection instead of shelling out to git",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Adds a heavy dependency for a simple query; execSync with git CLI is simpler and universally available"
+    },
+    {
+      "option": "Use vm2/isolated-vm for constraint sandboxing instead of execSync with validation",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Over-engineering for the use case; shell operator rejection plus timeout is sufficient security for constraint commands"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "src/engine/verify.ts",
+    "src/utils/types.ts",
+    "src/server.ts"
+  ],
+  "affected_symbols": [
+    "VerifyEngine",
+    "DriftCheck",
+    "ConstraintsCheck"
+  ],
+  "commit_hashes": [],
+  "id": "01KHW8KE6TG4B54G85CV67VHZK",
+  "timestamp": "2026-02-20T00:53:37.627Z",
+  "status": "active"
+}

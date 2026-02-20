@@ -39,6 +39,62 @@ describe("twining_verify", () => {
     expect(parsed.summary).toBeTruthy();
   });
 
+  it("drift returns skip in non-git directory", async () => {
+    const res = await callTool(server, "twining_verify", {
+      scope: "project",
+      checks: ["drift"],
+    });
+    const parsed = parseToolResponse(res) as VerifyResult;
+    expect(parsed.checks.drift?.status).toBe("skip");
+  });
+
+  it("constraints returns skip when no checkable constraints exist", async () => {
+    const res = await callTool(server, "twining_verify", {
+      scope: "project",
+      checks: ["constraints"],
+    });
+    const parsed = parseToolResponse(res) as VerifyResult;
+    expect(parsed.checks.constraints?.status).toBe("skip");
+  });
+
+  it("constraints checks a posted constraint end-to-end", async () => {
+    // Post a checkable constraint
+    await callTool(server, "twining_post", {
+      entry_type: "constraint",
+      summary: "Echo check",
+      detail: JSON.stringify({ check_command: "echo hello", expected: "hello" }),
+      tags: ["test"],
+      scope: "project",
+    });
+
+    const res = await callTool(server, "twining_verify", {
+      scope: "project",
+      checks: ["constraints"],
+    });
+    const parsed = parseToolResponse(res) as VerifyResult;
+    expect(parsed.checks.constraints?.status).toBe("pass");
+    expect(parsed.checks.constraints?.checkable).toBe(1);
+    expect(parsed.checks.constraints?.passed).toBe(1);
+  });
+
+  it("constraints rejects dangerous commands end-to-end", async () => {
+    await callTool(server, "twining_post", {
+      entry_type: "constraint",
+      summary: "Dangerous command",
+      detail: JSON.stringify({ check_command: "rm -rf / && echo ok", expected: "ok" }),
+      tags: ["test"],
+      scope: "project",
+    });
+
+    const res = await callTool(server, "twining_verify", {
+      scope: "project",
+      checks: ["constraints"],
+    });
+    const parsed = parseToolResponse(res) as VerifyResult;
+    expect(parsed.checks.constraints?.status).toBe("fail");
+    expect(parsed.checks.constraints?.failed[0]!.actual).toContain("REJECTED");
+  });
+
   it("runs only requested checks", async () => {
     const res = await callTool(server, "twining_verify", {
       scope: "project",

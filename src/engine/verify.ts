@@ -1,8 +1,9 @@
 /**
  * Verification engine — checks rigor of agent work.
- * Implements 5 checks: test_coverage, warnings, assembly (active), drift, constraints (stubs).
+ * Implements 5 checks: test_coverage, warnings, assembly, drift, constraints.
  * Auto-posts a finding with the verification summary.
  */
+import { execSync } from "node:child_process";
 import type { DecisionStore } from "../storage/decision-store.js";
 import type { BlackboardStore } from "../storage/blackboard-store.js";
 import type { BlackboardEngine } from "./blackboard.js";
@@ -30,6 +31,7 @@ export class VerifyEngine {
   private readonly blackboardStore: BlackboardStore;
   private readonly blackboardEngine: BlackboardEngine;
   private readonly graphEngine: GraphEngine | null;
+  private readonly projectRoot: string;
   private assemblyChecker?: (agentId: string) => boolean;
 
   constructor(
@@ -37,11 +39,13 @@ export class VerifyEngine {
     blackboardStore: BlackboardStore,
     blackboardEngine: BlackboardEngine,
     graphEngine: GraphEngine | null,
+    projectRoot: string,
   ) {
     this.decisionStore = decisionStore;
     this.blackboardStore = blackboardStore;
     this.blackboardEngine = blackboardEngine;
     this.graphEngine = graphEngine;
+    this.projectRoot = projectRoot;
   }
 
   /** Set the function that checks assembly status for an agent. */
@@ -90,11 +94,11 @@ export class VerifyEngine {
     }
 
     if (checksToRun.has("drift")) {
-      result.checks.drift = this.checkDrift();
+      result.checks.drift = await this.checkDrift(activeDecisions, input.scope);
     }
 
     if (checksToRun.has("constraints")) {
-      result.checks.constraints = this.checkConstraints();
+      result.checks.constraints = await this.checkConstraints(input.scope);
     }
 
     // Build summary
@@ -246,20 +250,179 @@ export class VerifyEngine {
     };
   }
 
-  private checkDrift(): DriftCheck {
+  /** Execute a git command in the project root. Returns null on failure. */
+  private execGit(args: string): string | null {
+    try {
+      return execSync(`git ${args}`, {
+        cwd: this.projectRoot,
+        timeout: 5000,
+        encoding: "utf-8",
+        stdio: ["pipe", "pipe", "pipe"],
+      }).trim();
+    } catch {
+      return null;
+    }
+  }
+
+  /** Check whether decisions have drifted from the codebase via git history. */
+  private async checkDrift(
+    decisions: Array<{
+      id: string;
+      summary: string;
+      timestamp: string;
+      affected_files: string[];
+      status: string;
+      domain: string;
+      scope: string;
+    }>,
+    scope: string,
+  ): Promise<DriftCheck> {
+    // Check if git is available
+    const gitCheck = this.execGit("rev-parse --is-inside-work-tree");
+    if (gitCheck === null) {
+      return { status: "skip", decisions_checked: 0, stale: [] };
+    }
+
+    const stale: DriftCheck["stale"] = [];
+    let decisionsChecked = 0;
+
+    for (const decision of decisions) {
+      if (!decision.affected_files || decision.affected_files.length === 0) {
+        continue;
+      }
+      decisionsChecked++;
+
+      for (const file of decision.affected_files) {
+        const logOutput = this.execGit(`log --format="%aI %H" -1 -- "${file}"`);
+        if (!logOutput) continue;
+
+        const spaceIdx = logOutput.indexOf(" ");
+        if (spaceIdx === -1) continue;
+
+        const fileDate = logOutput.substring(0, spaceIdx);
+        const commitHash = logOutput.substring(spaceIdx + 1);
+
+        // Compare: if file was modified after the decision was made
+        if (new Date(fileDate) > new Date(decision.timestamp)) {
+          // Check for superseding decisions — a newer active decision in same domain+scope
+          const allDecisions = await this.decisionStore.getByScope(scope);
+          const superseded = allDecisions.some(
+            (d) =>
+              d.id !== decision.id &&
+              (d.status === "active" || d.status === "provisional") &&
+              d.domain === decision.domain &&
+              new Date(d.timestamp) > new Date(decision.timestamp) &&
+              (d.scope === decision.scope || d.scope.startsWith(decision.scope) || decision.scope.startsWith(d.scope)) &&
+              d.affected_files.some((f) => f === file),
+          );
+
+          if (!superseded) {
+            stale.push({
+              decision_id: decision.id,
+              summary: decision.summary,
+              affected_file: file,
+              decision_timestamp: decision.timestamp,
+              last_file_modification: fileDate,
+              modifying_commit: commitHash,
+            });
+          }
+        }
+      }
+    }
+
     return {
-      status: "skip",
-      decisions_checked: 0,
-      stale: [],
+      status: stale.length > 0 ? "warn" : "pass",
+      decisions_checked: decisionsChecked,
+      stale,
     };
   }
 
-  private checkConstraints(): ConstraintsCheck {
-    return {
-      status: "skip",
-      checkable: 0,
-      passed: 0,
-      failed: [],
-    };
+  /** Dangerous shell operator pattern for command validation. */
+  private static readonly SHELL_OPERATOR_PATTERN = /[|;&`$()><]/;
+
+  /** Check constraints posted to the blackboard. */
+  private async checkConstraints(scope: string): Promise<ConstraintsCheck> {
+    const { entries: constraints } = await this.blackboardStore.read({
+      entry_types: ["constraint"],
+      scope,
+    });
+
+    const failed: ConstraintsCheck["failed"] = [];
+    let checkable = 0;
+    let passed = 0;
+
+    for (const constraint of constraints) {
+      // Try to parse detail as JSON with check_command + expected
+      let parsed: { check_command?: string; expected?: string } | null = null;
+      try {
+        parsed = JSON.parse(constraint.detail || "");
+      } catch {
+        continue; // Not checkable — skip
+      }
+
+      if (!parsed || typeof parsed.check_command !== "string" || typeof parsed.expected !== "string") {
+        continue; // Not checkable
+      }
+
+      const { check_command, expected } = parsed;
+
+      // Security: reject shell operators
+      if (VerifyEngine.SHELL_OPERATOR_PATTERN.test(check_command)) {
+        failed.push({
+          constraint_id: constraint.id,
+          summary: constraint.summary,
+          check_command,
+          actual: "REJECTED: command contains shell operators",
+          expected,
+        });
+        checkable++;
+        continue;
+      }
+
+      checkable++;
+
+      try {
+        const actual = execSync(check_command, {
+          cwd: this.projectRoot,
+          timeout: 5000,
+          encoding: "utf-8",
+          stdio: ["pipe", "pipe", "pipe"],
+        }).trim();
+
+        if (actual === expected) {
+          passed++;
+        } else {
+          failed.push({
+            constraint_id: constraint.id,
+            summary: constraint.summary,
+            check_command,
+            actual,
+            expected,
+          });
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        failed.push({
+          constraint_id: constraint.id,
+          summary: constraint.summary,
+          check_command,
+          actual: `ERROR: ${message}`,
+          expected,
+        });
+      }
+    }
+
+    if (checkable === 0) {
+      return { status: "skip", checkable: 0, passed: 0, failed: [] };
+    }
+
+    const status: ConstraintsCheck["status"] =
+      failed.length === 0
+        ? "pass"
+        : failed.length < checkable
+          ? "warn"
+          : "fail";
+
+    return { status, checkable, passed, failed };
   }
 }
