@@ -115,8 +115,12 @@ export class HandoffStore {
       }
     }
 
-    // Sort by created_at descending (newest first)
-    entries.sort((a, b) => b.created_at.localeCompare(a.created_at));
+    // Sort by created_at descending (newest first), ULID tiebreaker
+    entries.sort(
+      (a, b) =>
+        b.created_at.localeCompare(a.created_at) ||
+        b.id.localeCompare(a.id),
+    );
 
     // Apply limit
     if (filters?.limit !== undefined) {

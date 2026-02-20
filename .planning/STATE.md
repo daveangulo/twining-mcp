@@ -50,6 +50,15 @@ Progress: [################################] 100% (14/14 phases, 32/32 plans com
 All decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Triage of TWINING_ARCH_REVIEW.md — 7 valid gaps, 3 invalid/already-addressed, 3 partial
 - Expose delegation and handoff as MCP tools rather than removing dead CoordinationEngine code
+- Agent integration architecture doc recommends Claude Code + Twining as primary path, blackboard over orchestrator
+- Add rigor framework: verify step in agent lifecycle, tested_by traceability, drift detection, checkable constraints
+- Implement drift detection via git log and sandboxed constraint checking via execSync
+- Create comprehensive demo video plan with realistic multi-agent scenario
+- Build automated demo using playwright browser automation + screenshot capture + narration script
+- Switch execGit to execFileSync with argument arrays; replace broken shell operator blocklist with newline/null-byte validation
+- Fix race conditions by using single index lock for atomic file+index updates in DecisionStore and HandoffStore
+- Move archive file writes inside blackboard lock to prevent data loss on crash
+- Fix token budget accounting: warnings get priority access to full budget, non-warnings capped at 90%
 
 ### Pending Todos
 
