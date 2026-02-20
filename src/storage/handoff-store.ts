@@ -3,7 +3,9 @@
  * Individual JSON files per handoff with a JSONL index for fast listing.
  * Follows DecisionStore's individual-file pattern.
  */
+import fs from "node:fs";
 import path from "node:path";
+import lockfile from "proper-lockfile";
 import {
   readJSON,
   writeJSON,
@@ -18,6 +20,11 @@ import type {
   HandoffResult,
   HandoffIndexEntry,
 } from "../utils/types.js";
+
+const INDEX_LOCK_OPTIONS: lockfile.LockOptions = {
+  retries: { retries: 10, factor: 1.5, minTimeout: 50, maxTimeout: 1000 },
+  stale: 10000,
+};
 
 export class HandoffStore {
   private readonly handoffsDir: string;
@@ -121,35 +128,57 @@ export class HandoffStore {
 
   /**
    * Acknowledge a handoff.
-   * Updates individual file and rewrites index entry.
+   * Updates individual file and rewrites index entry atomically under lock.
    */
   async acknowledge(
     id: string,
     acknowledgedBy: string,
   ): Promise<HandoffRecord> {
     const filePath = path.join(this.handoffsDir, `${id}.json`);
-    let record: HandoffRecord;
-    try {
-      record = await readJSON<HandoffRecord>(filePath);
-    } catch {
-      throw new Error(`Handoff not found: ${id}`);
+
+    // Ensure index file exists for locking (appendJSONL creates lazily)
+    ensureDir(this.handoffsDir);
+    if (!fs.existsSync(this.indexPath)) {
+      fs.writeFileSync(this.indexPath, "");
     }
 
-    // Update acknowledgment fields
-    record.acknowledged_by = acknowledgedBy;
-    record.acknowledged_at = new Date().toISOString();
+    // Lock index for atomic read-modify-write of both file and index.
+    // We do direct fs reads/writes inside the lock to avoid nested locking
+    // (readJSONL/writeJSONL/writeJSON use their own locks internally).
+    const release = await lockfile.lock(this.indexPath, INDEX_LOCK_OPTIONS);
+    try {
+      let record: HandoffRecord;
+      try {
+        record = JSON.parse(fs.readFileSync(filePath, "utf-8")) as HandoffRecord;
+      } catch {
+        throw new Error(`Handoff not found: ${id}`);
+      }
 
-    // Rewrite individual file
-    await writeJSON(filePath, record);
+      // Update acknowledgment fields
+      record.acknowledged_by = acknowledgedBy;
+      record.acknowledged_at = new Date().toISOString();
 
-    // Rewrite index with updated entry
-    const entries = await readJSONL<HandoffIndexEntry>(this.indexPath);
-    const updatedEntries = entries.map((e) =>
-      e.id === id ? { ...e, acknowledged: true } : e,
-    );
-    await writeJSONL(this.indexPath, updatedEntries);
+      // Rewrite individual file (direct write, no nested lock)
+      fs.writeFileSync(filePath, JSON.stringify(record, null, 2));
 
-    return record;
+      // Rewrite index with updated entry (direct read/write, no nested lock)
+      const indexContent = fs.readFileSync(this.indexPath, "utf-8");
+      const entries: HandoffIndexEntry[] = indexContent
+        .split("\n")
+        .filter((line) => line.trim().length > 0)
+        .map((line) => JSON.parse(line) as HandoffIndexEntry);
+      const updatedEntries = entries.map((e) =>
+        e.id === id ? { ...e, acknowledged: true } : e,
+      );
+      const newContent = updatedEntries.length > 0
+        ? updatedEntries.map((e) => JSON.stringify(e)).join("\n") + "\n"
+        : "";
+      fs.writeFileSync(this.indexPath, newContent);
+
+      return record;
+    } finally {
+      await release();
+    }
   }
 
   /**

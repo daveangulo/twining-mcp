@@ -192,9 +192,14 @@ export class SearchEngine {
  * simplifies to the dot product.
  */
 export function cosineSimilarity(a: number[], b: number[]): number {
+  if (a.length !== b.length) {
+    console.error(
+      `[twining] Cosine similarity dimension mismatch: ${a.length} vs ${b.length}. Returning 0.`,
+    );
+    return 0;
+  }
   let sum = 0;
-  const len = Math.min(a.length, b.length);
-  for (let i = 0; i < len; i++) {
+  for (let i = 0; i < a.length; i++) {
     sum += a[i]! * b[i]!;
   }
   return sum;

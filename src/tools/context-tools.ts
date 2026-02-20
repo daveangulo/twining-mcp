@@ -91,6 +91,9 @@ export function registerContextTools(
       inputSchema: {
         since: z
           .string()
+          .refine((val) => !isNaN(Date.parse(val)), {
+            message: "Must be a valid ISO 8601 timestamp",
+          })
           .describe("ISO 8601 timestamp (e.g., 2024-01-15T10:00:00Z)"),
         scope: z.string().optional().describe("Optional scope filter"),
       },

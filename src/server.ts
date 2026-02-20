@@ -54,7 +54,7 @@ export function createServer(projectRoot: string): McpServer {
   const graphStore = new GraphStore(twiningDir);
 
   // Create embedding layer (lazy-loaded — no ONNX init cost at startup)
-  const embedder = new Embedder(twiningDir);
+  const embedder = Embedder.getInstance(twiningDir);
   const indexManager = new IndexManager(twiningDir);
   const searchEngine = new SearchEngine(embedder, indexManager);
 

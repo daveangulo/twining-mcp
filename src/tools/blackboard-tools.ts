@@ -17,7 +17,7 @@ export function registerBlackboardTools(
     "twining_post",
     {
       description:
-        "Post an entry to the shared blackboard. Use this to share findings, needs, warnings, decisions, and other coordination messages with other agents.",
+        "Post an entry to the shared blackboard. Use this to share findings, needs, warnings, status updates, and other coordination messages with other agents. Does NOT accept entry_type 'decision' — use twining_decide instead.",
       inputSchema: {
         entry_type: z.enum(ENTRY_TYPES).describe("Type of blackboard entry"),
         summary: z
@@ -80,6 +80,9 @@ export function registerBlackboardTools(
           .describe("Filter by scope (prefix match)"),
         since: z
           .string()
+          .refine((val) => !isNaN(Date.parse(val)), {
+            message: "Must be a valid ISO 8601 timestamp",
+          })
           .optional()
           .describe("Only entries after this ISO 8601 timestamp"),
         limit: z

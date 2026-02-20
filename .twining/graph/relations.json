@@ -290,5 +290,75 @@
       "decision_summary": "Build automated demo using playwright browser automation + screenshot capture + narration script"
     },
     "created_at": "2026-02-20T02:59:31.249Z"
+  },
+  {
+    "id": "01KHXTWYR3EHQDNFPJ84NQSJ0Y",
+    "source": "01KHW8KED6WW8B8HX0XM3VMGNB",
+    "target": "01KHXTWYQZMQ3YWX4F5VXCKHK4",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Switch execGit to execFileSync with argument arrays; replace broken shell operator blocklist with newline/null-byte validation"
+    },
+    "created_at": "2026-02-20T15:32:38.277Z"
+  },
+  {
+    "id": "01KHXTWYR8ZPY7JMK63BDTWF0A",
+    "source": "01KHXTWYR714E1HAPMTB8GCP5X",
+    "target": "01KHXTWYQZMQ3YWX4F5VXCKHK4",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Switch execGit to execFileSync with argument arrays; replace broken shell operator blocklist with newline/null-byte validation"
+    },
+    "created_at": "2026-02-20T15:32:38.280Z"
+  },
+  {
+    "id": "01KHXTWYRA5Z1C23A376AEFJD6",
+    "source": "01KHXTWYR9D646BT36BCVXA1MY",
+    "target": "01KHXTWYQZMQ3YWX4F5VXCKHK4",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Switch execGit to execFileSync with argument arrays; replace broken shell operator blocklist with newline/null-byte validation"
+    },
+    "created_at": "2026-02-20T15:32:38.282Z"
+  },
+  {
+    "id": "01KHXTX66BRA2WRQRWTCWGTZME",
+    "source": "01KHMSD4ZTFQDF508ANNR1T6MH",
+    "target": "01KHXTX66AHS436C019FC6P0TE",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Fix race conditions by using single index lock for atomic file+index updates in DecisionStore and HandoffStore"
+    },
+    "created_at": "2026-02-20T15:32:45.899Z"
+  },
+  {
+    "id": "01KHXTX66C7PGD6VT0Z8397D7Z",
+    "source": "01KHXTX66C7PGD6VT0Z8397D7Y",
+    "target": "01KHXTX66AHS436C019FC6P0TE",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Fix race conditions by using single index lock for atomic file+index updates in DecisionStore and HandoffStore"
+    },
+    "created_at": "2026-02-20T15:32:45.900Z"
+  },
+  {
+    "id": "01KHXTXC9KGWN7TJ7KSMV1DXFA",
+    "source": "01KHMSDV08WTQDVVSF4159DVB1",
+    "target": "01KHXTXC9JQZ46EH6ZV3Y7SSXN",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Move archive file writes inside blackboard lock to prevent data loss on crash"
+    },
+    "created_at": "2026-02-20T15:32:52.147Z"
+  },
+  {
+    "id": "01KHXTXPP5FV6P19M4S8TXXQYE",
+    "source": "01KHXTXPP31RWYHVGNGXN9REW8",
+    "target": "01KHXTXPP2QH6GPW7GX6NEY0YX",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Fix token budget accounting: warnings get priority access to full budget, non-warnings capped at 90%"
+    },
+    "created_at": "2026-02-20T15:33:02.789Z"
   }
 ]

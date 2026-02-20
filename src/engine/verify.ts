@@ -3,7 +3,7 @@
  * Implements 5 checks: test_coverage, warnings, assembly, drift, constraints.
  * Auto-posts a finding with the verification summary.
  */
-import { execSync } from "node:child_process";
+import { execSync, execFileSync } from "node:child_process";
 import type { DecisionStore } from "../storage/decision-store.js";
 import type { BlackboardStore } from "../storage/blackboard-store.js";
 import type { BlackboardEngine } from "./blackboard.js";
@@ -251,9 +251,9 @@ export class VerifyEngine {
   }
 
   /** Execute a git command in the project root. Returns null on failure. */
-  private execGit(args: string): string | null {
+  private execGit(args: string[]): string | null {
     try {
-      return execSync(`git ${args}`, {
+      return execFileSync("git", args, {
         cwd: this.projectRoot,
         timeout: 5000,
         encoding: "utf-8",
@@ -278,7 +278,7 @@ export class VerifyEngine {
     scope: string,
   ): Promise<DriftCheck> {
     // Check if git is available
-    const gitCheck = this.execGit("rev-parse --is-inside-work-tree");
+    const gitCheck = this.execGit(["rev-parse", "--is-inside-work-tree"]);
     if (gitCheck === null) {
       return { status: "skip", decisions_checked: 0, stale: [] };
     }
@@ -293,7 +293,7 @@ export class VerifyEngine {
       decisionsChecked++;
 
       for (const file of decision.affected_files) {
-        const logOutput = this.execGit(`log --format="%aI %H" -1 -- "${file}"`);
+        const logOutput = this.execGit(["log", "--format=%aI %H", "-1", "--", file]);
         if (!logOutput) continue;
 
         const spaceIdx = logOutput.indexOf(" ");
@@ -337,8 +337,14 @@ export class VerifyEngine {
     };
   }
 
-  /** Dangerous shell operator pattern for command validation. */
-  private static readonly SHELL_OPERATOR_PATTERN = /[|;&`$()><]/;
+  /**
+   * Dangerous characters for command validation.
+   * Rejects null bytes and newlines which could be used for command injection.
+   * Note: shell operators like pipes are intentionally allowed since constraint
+   * check_commands are designed to be shell commands (e.g. grep ... | wc -l).
+   * These commands come from agents/users who already have code execution ability.
+   */
+  private static readonly DANGEROUS_CHAR_PATTERN = /[\x00\n\r]/;
 
   /** Check constraints posted to the blackboard. */
   private async checkConstraints(scope: string): Promise<ConstraintsCheck> {
@@ -366,13 +372,26 @@ export class VerifyEngine {
 
       const { check_command, expected } = parsed;
 
-      // Security: reject shell operators
-      if (VerifyEngine.SHELL_OPERATOR_PATTERN.test(check_command)) {
+      // Security: reject null bytes and newlines (command injection vectors)
+      if (VerifyEngine.DANGEROUS_CHAR_PATTERN.test(check_command)) {
         failed.push({
           constraint_id: constraint.id,
           summary: constraint.summary,
           check_command,
-          actual: "REJECTED: command contains shell operators",
+          actual: "REJECTED: command contains dangerous characters (null bytes or newlines)",
+          expected,
+        });
+        checkable++;
+        continue;
+      }
+
+      // Reject excessively long commands
+      if (check_command.length > 1000) {
+        failed.push({
+          constraint_id: constraint.id,
+          summary: constraint.summary,
+          check_command: check_command.slice(0, 100) + "...",
+          actual: "REJECTED: command exceeds 1000 character limit",
           expected,
         });
         checkable++;

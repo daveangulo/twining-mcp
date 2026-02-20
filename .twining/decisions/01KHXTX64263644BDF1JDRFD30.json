@@ -1,0 +1,36 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "src/storage/",
+  "summary": "Fix race conditions by using single index lock for atomic file+index updates in DecisionStore and HandoffStore",
+  "context": "Code review found that updateStatus, linkCommit (DecisionStore), and acknowledge (HandoffStore) used separate locks for file and index updates, creating a data loss window where the file could be updated but index not, or vice versa.",
+  "rationale": "Using a single index lock for the entire read-modify-write cycle ensures both the individual JSON file and the index are always consistent. The index lock is the natural serialization point since all queries go through the index. For HandoffStore, direct fs reads/writes inside the lock avoid nested locking (since writeJSONL/readJSONL have their own internal locks).",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Lock individual file first then index",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Two separate locks creates a gap where another process could read stale data. Single lock eliminates the race entirely."
+    },
+    {
+      "option": "Optimistic concurrency with version numbers",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Over-engineered for a file-based store with advisory locking. Single lock is simpler and sufficient."
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "src/storage/decision-store.ts",
+    "src/storage/handoff-store.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KHXTX64263644BDF1JDRFD30",
+  "timestamp": "2026-02-20T15:32:45.826Z",
+  "status": "active"
+}

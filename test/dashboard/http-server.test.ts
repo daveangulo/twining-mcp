@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
@@ -153,11 +153,60 @@ describe("startDashboard", () => {
 
   it("returns { server, port } on success", async () => {
     process.env["TWINING_DASHBOARD_PORT"] = "0"; // let OS pick port
+    process.env["TWINING_DASHBOARD_NO_OPEN"] = "1"; // don't open browser in tests
     const result = await startDashboard("/tmp");
     expect(result).not.toBeNull();
     expect(result!.server).toBeInstanceOf(http.Server);
     expect(typeof result!.port).toBe("number");
     servers.push(result!.server);
+  });
+
+  it("calls open() when autoOpen is true", async () => {
+    process.env["TWINING_DASHBOARD_PORT"] = "0";
+    // Do NOT set TWINING_DASHBOARD_NO_OPEN so autoOpen defaults to true
+
+    // Mock the "open" module so it doesn't actually launch a browser
+    const mockOpen = vi.fn().mockResolvedValue(undefined);
+    vi.doMock("open", () => ({ default: mockOpen }));
+
+    // Re-import startDashboard to pick up the mock
+    const { startDashboard: startDashboardFresh } = await import(
+      "../../src/dashboard/http-server.js"
+    );
+    const result = await startDashboardFresh("/tmp");
+    expect(result).not.toBeNull();
+    servers.push(result!.server);
+
+    // Give the fire-and-forget import("open") a tick to resolve
+    await new Promise((r) => setTimeout(r, 50));
+
+    expect(mockOpen).toHaveBeenCalledOnce();
+    expect(mockOpen).toHaveBeenCalledWith(
+      expect.stringContaining("http://127.0.0.1:"),
+    );
+
+    vi.doUnmock("open");
+  });
+
+  it("does not call open() when TWINING_DASHBOARD_NO_OPEN=1", async () => {
+    process.env["TWINING_DASHBOARD_PORT"] = "0";
+    process.env["TWINING_DASHBOARD_NO_OPEN"] = "1";
+
+    const mockOpen = vi.fn().mockResolvedValue(undefined);
+    vi.doMock("open", () => ({ default: mockOpen }));
+
+    const { startDashboard: startDashboardFresh } = await import(
+      "../../src/dashboard/http-server.js"
+    );
+    const result = await startDashboardFresh("/tmp");
+    expect(result).not.toBeNull();
+    servers.push(result!.server);
+
+    await new Promise((r) => setTimeout(r, 50));
+
+    expect(mockOpen).not.toHaveBeenCalled();
+
+    vi.doUnmock("open");
   });
 });
 
@@ -173,6 +222,7 @@ describe("/api/health endpoint", () => {
     saveEnv();
     // Use port 0 to let OS assign a free port
     process.env["TWINING_DASHBOARD_PORT"] = "0";
+    process.env["TWINING_DASHBOARD_NO_OPEN"] = "1"; // don't open browser in tests
     const result = await startDashboard("/tmp");
     expect(result).not.toBeNull();
     server = result!.server;
@@ -349,6 +399,7 @@ describe("port retry", () => {
   it("starts on next available port when preferred port is in use", async () => {
     // Tell dashboard to use the blocked port
     process.env["TWINING_DASHBOARD_PORT"] = String(blockerPort);
+    process.env["TWINING_DASHBOARD_NO_OPEN"] = "1"; // don't open browser in tests
 
     dashboardResult = await startDashboard("/tmp");
     expect(dashboardResult).not.toBeNull();

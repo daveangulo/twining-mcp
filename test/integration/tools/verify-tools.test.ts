@@ -77,11 +77,11 @@ describe("twining_verify", () => {
     expect(parsed.checks.constraints?.passed).toBe(1);
   });
 
-  it("constraints rejects dangerous commands end-to-end", async () => {
+  it("constraints rejects commands with newlines end-to-end", async () => {
     await callTool(server, "twining_post", {
       entry_type: "constraint",
-      summary: "Dangerous command",
-      detail: JSON.stringify({ check_command: "rm -rf / && echo ok", expected: "ok" }),
+      summary: "Newline injection",
+      detail: JSON.stringify({ check_command: "echo safe\nrm -rf /", expected: "safe" }),
       tags: ["test"],
       scope: "project",
     });

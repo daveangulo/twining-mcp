@@ -220,10 +220,12 @@ export class ContextAssembler {
       });
     }
 
-    // 7. Fill token budget in priority order
-    // Reserve 10% for warnings
-    const warningBudget = Math.floor(budget * 0.1);
-    const mainBudget = budget - warningBudget;
+    // 7. Fill token budget in priority order.
+    // Warnings get priority access — they fill first from the full budget.
+    // Non-warnings fill the remaining budget, but are capped at 90% of the
+    // total budget to ensure at least 10% is reserved for warnings.
+    const warningReserve = Math.floor(budget * 0.1);
+    const nonWarningCap = budget - warningReserve;
 
     // Separate warnings and non-warnings
     const warnings = scoredItems.filter((i) => i.type === "warning");
@@ -235,7 +237,7 @@ export class ContextAssembler {
     const selected = new Set<string>();
     let tokensUsed = 0;
 
-    // First: fill warnings with reserved budget
+    // First: fill warnings from the full budget (priority access)
     for (const item of warnings) {
       if (tokensUsed + item.tokenCost <= budget) {
         selected.add(item.id);
@@ -243,11 +245,16 @@ export class ContextAssembler {
       }
     }
 
-    // Then: fill non-warnings with remaining budget
+    // Then: fill non-warnings, capped so they don't starve warnings
+    let nonWarningTokens = 0;
     for (const item of nonWarnings) {
-      if (tokensUsed + item.tokenCost <= budget) {
+      if (
+        tokensUsed + item.tokenCost <= budget &&
+        nonWarningTokens + item.tokenCost <= nonWarningCap
+      ) {
         selected.add(item.id);
         tokensUsed += item.tokenCost;
+        nonWarningTokens += item.tokenCost;
       }
     }
 

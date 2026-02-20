@@ -110,9 +110,10 @@ export class DecisionStore {
     const filePath = path.join(this.decisionsDir, `${id}.json`);
     if (!fs.existsSync(filePath)) return;
 
-    // Lock and update individual file
-    const fileRelease = await lockfile.lock(filePath, INDEX_LOCK_OPTIONS);
+    // Lock index for the full atomic update of both file and index
+    const release = await lockfile.lock(this.indexPath, INDEX_LOCK_OPTIONS);
     try {
+      // Update individual decision file
       const decision = JSON.parse(
         fs.readFileSync(filePath, "utf-8"),
       ) as Decision;
@@ -121,13 +122,8 @@ export class DecisionStore {
         Object.assign(decision, extra);
       }
       fs.writeFileSync(filePath, JSON.stringify(decision, null, 2));
-    } finally {
-      await fileRelease();
-    }
 
-    // Update index
-    const release = await lockfile.lock(this.indexPath, INDEX_LOCK_OPTIONS);
-    try {
+      // Update index
       const index = JSON.parse(
         fs.readFileSync(this.indexPath, "utf-8"),
       ) as DecisionIndexEntry[];
@@ -170,9 +166,10 @@ export class DecisionStore {
       throw new Error(`Decision not found: ${id}`);
     }
 
-    // Lock and update individual decision file
-    const fileRelease = await lockfile.lock(filePath, INDEX_LOCK_OPTIONS);
+    // Lock index for the full atomic update of both file and index
+    const release = await lockfile.lock(this.indexPath, INDEX_LOCK_OPTIONS);
     try {
+      // Update individual decision file
       const decision = JSON.parse(
         fs.readFileSync(filePath, "utf-8"),
       ) as Decision;
@@ -183,13 +180,8 @@ export class DecisionStore {
         decision.commit_hashes.push(commitHash);
       }
       fs.writeFileSync(filePath, JSON.stringify(decision, null, 2));
-    } finally {
-      await fileRelease();
-    }
 
-    // Update index
-    const release = await lockfile.lock(this.indexPath, INDEX_LOCK_OPTIONS);
-    try {
+      // Update index
       const index = JSON.parse(
         fs.readFileSync(this.indexPath, "utf-8"),
       ) as DecisionIndexEntry[];

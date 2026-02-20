@@ -7,7 +7,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import lockfile from "proper-lockfile";
-import { readJSONL, appendJSONL, ensureDir } from "../storage/file-store.js";
+import { ensureDir } from "../storage/file-store.js";
 import type { BlackboardStore } from "../storage/blackboard-store.js";
 import type { BlackboardEngine } from "./blackboard.js";
 import type { IndexManager } from "../embeddings/index-manager.js";
@@ -70,6 +70,7 @@ export class Archiver {
 
     let toArchive: BlackboardEntry[] = [];
     let toKeep: BlackboardEntry[] = [];
+    let archiveFile = "";
 
     try {
       // Read all entries (no lock needed since we hold it)
@@ -104,7 +105,22 @@ export class Archiver {
         return { archived_count: 0, archive_file: "" };
       }
 
-      // Rewrite blackboard with only kept entries
+      // Write archived entries to archive file BEFORE rewriting blackboard.
+      // This ensures entries exist in the archive before being removed from
+      // the blackboard, preventing data loss on crash.
+      const archiveDir = path.join(this.twiningDir, "archive");
+      ensureDir(archiveDir);
+
+      const dateStr = cutoff.slice(0, 10); // YYYY-MM-DD
+      archiveFile = path.join(archiveDir, `${dateStr}-blackboard.jsonl`);
+
+      // Direct append (no nested lock since we already hold the blackboard lock)
+      const archiveContent = toArchive
+        .map((e) => JSON.stringify(e))
+        .join("\n") + "\n";
+      fs.appendFileSync(archiveFile, archiveContent);
+
+      // Now rewrite blackboard with only kept entries
       const keptContent =
         toKeep.length > 0
           ? toKeep.map((e) => JSON.stringify(e)).join("\n") + "\n"
@@ -112,18 +128,6 @@ export class Archiver {
       fs.writeFileSync(bbPath, keptContent);
     } finally {
       await release();
-    }
-
-    // Write archived entries to archive file (outside blackboard lock)
-    const archiveDir = path.join(this.twiningDir, "archive");
-    ensureDir(archiveDir);
-
-    const dateStr = cutoff.slice(0, 10); // YYYY-MM-DD
-    const archiveFile = path.join(archiveDir, `${dateStr}-blackboard.jsonl`);
-
-    // Append each archived entry to the archive file
-    for (const entry of toArchive) {
-      await appendJSONL(archiveFile, entry);
     }
 
     // Remove archived entry embeddings (best-effort)

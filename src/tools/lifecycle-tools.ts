@@ -184,6 +184,9 @@ export function registerLifecycleTools(
       inputSchema: {
         before: z
           .string()
+          .refine((val) => !isNaN(Date.parse(val)), {
+            message: "Must be a valid ISO 8601 timestamp",
+          })
           .optional()
           .describe("ISO timestamp cutoff — archive entries before this time (default: now)"),
         keep_decisions: z

@@ -1,0 +1,29 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "src/engine/archiver.ts",
+  "summary": "Move archive file writes inside blackboard lock to prevent data loss on crash",
+  "context": "Archiver released the blackboard lock before writing entries to the archive file. A crash between lock release and archive write would lose entries (removed from blackboard but not yet in archive).",
+  "rationale": "Write-ahead pattern: entries are written to archive first, then removed from blackboard, all under the same lock. This ensures entries always exist in at least one location. Uses direct fs.appendFileSync instead of appendJSONL to avoid nested locking.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Write archive after lock release but add a recovery journal",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Adds complexity for a problem that's simply solved by reordering operations under the existing lock."
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "src/engine/archiver.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KHXTXC89M8MN7KZ34MG75JWK",
+  "timestamp": "2026-02-20T15:32:52.105Z",
+  "status": "active"
+}

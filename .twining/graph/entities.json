@@ -40,10 +40,11 @@
     "type": "file",
     "properties": {
       "description": "Decision index + individual record persistence",
-      "layer": "storage"
+      "layer": "storage",
+      "scope": "src/storage/"
     },
     "created_at": "2026-02-17T03:13:21.914Z",
-    "updated_at": "2026-02-17T03:13:21.914Z"
+    "updated_at": "2026-02-20T15:32:45.899Z"
   },
   {
     "id": "01KHMSD5WQ8BBAQ8QPQMQXSMFH",
@@ -221,10 +222,11 @@
     "type": "file",
     "properties": {
       "description": "Archives old blackboard entries, preserves decisions, optional summary posting",
-      "layer": "engine"
+      "layer": "engine",
+      "scope": "src/engine/archiver.ts"
     },
     "created_at": "2026-02-17T03:13:44.456Z",
-    "updated_at": "2026-02-17T03:13:44.456Z"
+    "updated_at": "2026-02-20T15:32:52.146Z"
   },
   {
     "id": "01KHMSDW5VTTZNG8BD53273GKJ",
@@ -330,7 +332,7 @@
       "scope": "src/engine/verify.ts"
     },
     "created_at": "2026-02-20T00:53:37.830Z",
-    "updated_at": "2026-02-20T00:53:37.830Z"
+    "updated_at": "2026-02-20T15:32:38.273Z"
   },
   {
     "id": "01KHWFFQA09XT7WX24WW2XJVS1",
@@ -383,5 +385,89 @@
     },
     "created_at": "2026-02-20T02:59:31.247Z",
     "updated_at": "2026-02-20T02:59:31.247Z"
+  },
+  {
+    "id": "01KHXTWYQZMQ3YWX4F5VXCKHK4",
+    "name": "01KHXTWYETCEF91HQD0HMA2SG4",
+    "type": "concept",
+    "properties": {
+      "summary": "Switch execGit to execFileSync with argument arrays; replace broken shell operator blocklist with newline/null-byte validation",
+      "scope": "src/engine/verify.ts"
+    },
+    "created_at": "2026-02-20T15:32:38.271Z",
+    "updated_at": "2026-02-20T15:32:38.271Z"
+  },
+  {
+    "id": "01KHXTWYR714E1HAPMTB8GCP5X",
+    "name": "test/verify-engine.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/engine/verify.ts"
+    },
+    "created_at": "2026-02-20T15:32:38.279Z",
+    "updated_at": "2026-02-20T15:32:38.279Z"
+  },
+  {
+    "id": "01KHXTWYR9D646BT36BCVXA1MY",
+    "name": "test/integration/tools/verify-tools.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/engine/verify.ts"
+    },
+    "created_at": "2026-02-20T15:32:38.281Z",
+    "updated_at": "2026-02-20T15:32:38.281Z"
+  },
+  {
+    "id": "01KHXTX66AHS436C019FC6P0TE",
+    "name": "01KHXTX64263644BDF1JDRFD30",
+    "type": "concept",
+    "properties": {
+      "summary": "Fix race conditions by using single index lock for atomic file+index updates in DecisionStore and HandoffStore",
+      "scope": "src/storage/"
+    },
+    "created_at": "2026-02-20T15:32:45.898Z",
+    "updated_at": "2026-02-20T15:32:45.898Z"
+  },
+  {
+    "id": "01KHXTX66C7PGD6VT0Z8397D7Y",
+    "name": "src/storage/handoff-store.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/storage/"
+    },
+    "created_at": "2026-02-20T15:32:45.900Z",
+    "updated_at": "2026-02-20T15:32:45.900Z"
+  },
+  {
+    "id": "01KHXTXC9JQZ46EH6ZV3Y7SSXN",
+    "name": "01KHXTXC89M8MN7KZ34MG75JWK",
+    "type": "concept",
+    "properties": {
+      "summary": "Move archive file writes inside blackboard lock to prevent data loss on crash",
+      "scope": "src/engine/archiver.ts"
+    },
+    "created_at": "2026-02-20T15:32:52.146Z",
+    "updated_at": "2026-02-20T15:32:52.146Z"
+  },
+  {
+    "id": "01KHXTXPP2QH6GPW7GX6NEY0YX",
+    "name": "01KHXTXPM9EVV02HGF8X0V6ZYX",
+    "type": "concept",
+    "properties": {
+      "summary": "Fix token budget accounting: warnings get priority access to full budget, non-warnings capped at 90%",
+      "scope": "src/engine/context-assembler.ts"
+    },
+    "created_at": "2026-02-20T15:33:02.786Z",
+    "updated_at": "2026-02-20T15:33:02.786Z"
+  },
+  {
+    "id": "01KHXTXPP31RWYHVGNGXN9REW8",
+    "name": "src/engine/context-assembler.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/engine/context-assembler.ts"
+    },
+    "created_at": "2026-02-20T15:33:02.787Z",
+    "updated_at": "2026-02-20T15:33:02.787Z"
   }
 ]

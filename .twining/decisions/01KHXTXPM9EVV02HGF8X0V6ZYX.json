@@ -1,0 +1,29 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "src/engine/context-assembler.ts",
+  "summary": "Fix token budget accounting: warnings get priority access to full budget, non-warnings capped at 90%",
+  "context": "The original code computed warningBudget and mainBudget but both loops compared against the full budget, making the budget split ineffective. Additionally, a strict 10% warning cap was impractical for small budgets.",
+  "rationale": "Warnings fill first from the full budget (priority access). Non-warnings are capped at 90% of the budget to ensure warnings can always get in. This preserves the intent (warnings get priority) while handling edge cases (small budgets where 10% can't hold any entry).",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Strict 10% budget split with minimum token floor",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Minimum floor adds complexity and still fails for very small budgets. Priority access is simpler and more robust."
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "src/engine/context-assembler.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KHXTXPM9EVV02HGF8X0V6ZYX",
+  "timestamp": "2026-02-20T15:33:02.729Z",
+  "status": "active"
+}

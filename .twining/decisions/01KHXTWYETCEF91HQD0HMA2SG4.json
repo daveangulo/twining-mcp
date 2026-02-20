@@ -1,0 +1,37 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "src/engine/verify.ts",
+  "summary": "Switch execGit to execFileSync with argument arrays; replace broken shell operator blocklist with newline/null-byte validation",
+  "context": "Code review found: (1) execGit used string interpolation with decision-sourced file paths, enabling shell injection via malicious filenames. (2) Constraint checker's SHELL_OPERATOR_PATTERN blocked pipes which are needed per docs (grep ... | wc -l), while missing real injection vectors (newlines, null bytes).",
+  "rationale": "execFileSync with argument arrays eliminates shell injection entirely for git commands. For constraint commands, shell features like pipes are intentional (documented in CLAUDE.md). The real threat vectors are newlines and null bytes that could inject additional commands. Added 1000-char length limit as defense-in-depth.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Full shell command sandboxing for constraints",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Constraint check_commands are designed to be shell commands by agents who already have code execution ability. Full sandboxing adds complexity without real security benefit."
+    },
+    {
+      "option": "Keep original blocklist but add more patterns",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Blocklist approach is inherently incomplete and breaks valid commands. Allowlisting safe characters would be too restrictive for legitimate commands."
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "src/engine/verify.ts",
+    "test/verify-engine.test.ts",
+    "test/integration/tools/verify-tools.test.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KHXTWYETCEF91HQD0HMA2SG4",
+  "timestamp": "2026-02-20T15:32:37.980Z",
+  "status": "provisional"
+}

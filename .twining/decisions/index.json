@@ -250,5 +250,64 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KHXTWYETCEF91HQD0HMA2SG4",
+    "timestamp": "2026-02-20T15:32:37.980Z",
+    "domain": "implementation",
+    "scope": "src/engine/verify.ts",
+    "summary": "Switch execGit to execFileSync with argument arrays; replace broken shell operator blocklist with newline/null-byte validation",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      "src/engine/verify.ts",
+      "test/verify-engine.test.ts",
+      "test/integration/tools/verify-tools.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KHXTX64263644BDF1JDRFD30",
+    "timestamp": "2026-02-20T15:32:45.826Z",
+    "domain": "implementation",
+    "scope": "src/storage/",
+    "summary": "Fix race conditions by using single index lock for atomic file+index updates in DecisionStore and HandoffStore",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "src/storage/decision-store.ts",
+      "src/storage/handoff-store.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KHXTXC89M8MN7KZ34MG75JWK",
+    "timestamp": "2026-02-20T15:32:52.105Z",
+    "domain": "implementation",
+    "scope": "src/engine/archiver.ts",
+    "summary": "Move archive file writes inside blackboard lock to prevent data loss on crash",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "src/engine/archiver.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KHXTXPM9EVV02HGF8X0V6ZYX",
+    "timestamp": "2026-02-20T15:33:02.729Z",
+    "domain": "implementation",
+    "scope": "src/engine/context-assembler.ts",
+    "summary": "Fix token budget accounting: warnings get priority access to full budget, non-warnings capped at 90%",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "src/engine/context-assembler.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]

@@ -25,9 +25,13 @@ export function registerGraphTools(
             'Entity type: "module", "function", "class", "file", "concept", "pattern", "dependency", "api_endpoint"',
           ),
         properties: z
-          .record(z.string())
+          .record(z.string().max(1000))
           .optional()
-          .describe("Key-value properties for this entity"),
+          .refine(
+            (obj) => obj === undefined || Object.keys(obj).length <= 50,
+            { message: "Maximum 50 properties per entity" },
+          )
+          .describe("Key-value properties for this entity (max 50 entries, values ≤1000 chars)"),
       },
     },
     async (args) => {
@@ -69,9 +73,13 @@ export function registerGraphTools(
             'Relation type: "depends_on", "implements", "decided_by", "affects", "tested_by", "calls", "imports", "related_to"',
           ),
         properties: z
-          .record(z.string())
+          .record(z.string().max(1000))
           .optional()
-          .describe("Key-value properties for this relation"),
+          .refine(
+            (obj) => obj === undefined || Object.keys(obj).length <= 50,
+            { message: "Maximum 50 properties per relation" },
+          )
+          .describe("Key-value properties for this relation (max 50 entries, values ≤1000 chars)"),
       },
     },
     async (args) => {
