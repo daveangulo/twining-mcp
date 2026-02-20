@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">
-  <strong>Separate threads, stronger together.</strong><br>
-  Agent coordination for Claude Code and other MCP clients.
+  <strong>Your AI agents forget everything. Twining remembers.</strong><br>
+  Persistent project memory for Claude Code and other MCP clients.
 </p>
 
 <p align="center">
@@ -14,18 +14,57 @@
 
 ---
 
-Twining provides a shared blackboard, decision tracking with rationale, selective context assembly, a lightweight knowledge graph, agent coordination with capability-based delegation, and local semantic search — all backed by plain JSONL/JSON files that are git-trackable and human-inspectable. Includes an embedded web dashboard for browsing and visualizing all state.
+## The Problem
 
-## Features
+You spend two hours with Claude Code making architectural decisions. You choose PostgreSQL over MongoDB. You settle on JWT for auth. You flag a race condition in the payment module. Then the session ends.
 
-- **Shared Blackboard** — Append-only message stream for findings, needs, warnings, and questions across agents
-- **Decision Tracking** — Record decisions with rationale, alternatives, confidence, dependency chains, and git commit linking
-- **Context Assembly** — Build tailored context packages for a task within a token budget, with handoff results and agent suggestions
-- **Knowledge Graph** — Lightweight entity-relation graph with traversal, search, and full state export
-- **Semantic Search** — Local embeddings via all-MiniLM-L6-v2 with automatic keyword fallback
-- **Agent Coordination** — Registry with capability-based discovery, delegation matching, structured handoffs, and liveness tracking
-- **Web Dashboard** — Embedded HTTP server with stats, search, decision timeline, interactive graph visualization, and agent coordination views
-- **Archiving** — Move stale entries to archive while preserving decision records
+Tomorrow you start a new session. Claude has no idea what happened. The decisions are gone. The warnings are gone. The rationale is gone. You re-explain everything — or worse, Claude silently contradicts yesterday's choices.
+
+This gets worse with multiple agents. Agent A decides on REST. Agent B picks gRPC for the same service. Neither knows the other exists. You find out when the code doesn't compile.
+
+**Context windows are ephemeral. Your project's decisions shouldn't be.**
+
+## How Twining Fixes It
+
+Twining is an MCP server that gives your AI agents persistent project memory. Decisions survive context resets. New sessions start informed. Multi-agent work stays coordinated.
+
+```
+# Install in 10 seconds
+claude mcp add twining -- npx -y twining-mcp --project .
+```
+
+**Record a decision with rationale:**
+```
+> Use twining_decide to record: chose PostgreSQL over MongoDB for ACID compliance
+```
+Twining captures the decision, rationale, alternatives considered, confidence level, and affected files — as a structured record, not chat history.
+
+**Start a new session. Get caught up instantly:**
+```
+> Use twining_assemble for the database module
+```
+Twining scores every decision, warning, and finding by relevance to your task, then fills a token budget in priority order. You get exactly the context you need — no firehose, no re-explaining.
+
+**Ask why things are the way they are:**
+```
+> Use twining_why src/auth/middleware.ts
+```
+Returns the full decision chain for any file: what was decided, when, why, what alternatives were rejected, and which commit implemented it.
+
+## Why Not Just Use CLAUDE.md?
+
+CLAUDE.md is static. You write it once and update it manually. It doesn't capture decisions *as they happen*, doesn't track rationale or alternatives, doesn't detect conflicts between agents, and can't selectively assemble context within a token budget.
+
+Twining is dynamic. Every `twining_decide` call records a structured decision. Every `twining_post` shares a finding or warning. Every `twining_assemble` scores relevance and delivers precisely what the current task needs. The `.twining/` directory is your project's living institutional memory.
+
+## Why Not an Orchestrator?
+
+Orchestrators (like agent swarms and hierarchical coordinators) route work by *assigning tasks*. Twining coordinates by *sharing state*. The difference matters:
+
+- **Orchestrators** hold coordination context in their own context window — a single point of failure that degrades as the window fills
+- **Twining's blackboard** persists coordination state outside any agent's window, surviving context resets without information loss
+
+Agents self-select into work by reading the blackboard. No central bottleneck. No relay that drops context. Every agent sees every other agent's decisions and warnings, directly.
 
 ## Quick Start
 
@@ -35,7 +74,7 @@ Twining provides a shared blackboard, decision tracking with rationale, selectiv
 claude mcp add twining -- npx -y twining-mcp --project .
 ```
 
-Or scope it to a single project:
+Or scope to a single project:
 
 ```bash
 claude mcp add twining -s project -- npx -y twining-mcp --project .
@@ -43,7 +82,7 @@ claude mcp add twining -s project -- npx -y twining-mcp --project .
 
 ### Manual Configuration
 
-Alternatively, add to your `.mcp.json` directly:
+Add to your `.mcp.json`:
 
 ```json
 {
@@ -56,130 +95,104 @@ Alternatively, add to your `.mcp.json` directly:
 }
 ```
 
-### Usage
+### Get the Most Out of It
 
-Once configured, Twining tools are available in your Claude Code sessions:
-
-```
-> Use twining_post to share a finding about the auth module
-> Use twining_assemble to get context for the refactoring task
-> Use twining_decide to record the database choice with rationale
-> Use twining_why to understand why we chose PostgreSQL
-> Use twining_agents to see which agents are available
-```
-
-All state is stored in a `.twining/` directory in your project root.
-
-### Claude Code Integration
-
-For maximum value with Claude Code, add Twining instructions to your project's `CLAUDE.md`. See **[docs/CLAUDE_TEMPLATE.md](docs/CLAUDE_TEMPLATE.md)** for a ready-to-copy template covering Twining + Serena + GSD integration.
+Add Twining instructions to your project's `CLAUDE.md` so agents use it automatically. See **[docs/CLAUDE_TEMPLATE.md](docs/CLAUDE_TEMPLATE.md)** for a ready-to-copy template.
 
 ### Dashboard
 
-The web dashboard starts automatically on port 24282 (configurable via `TWINING_DASHBOARD_PORT`). Open `http://localhost:24282` to browse blackboard entries, decisions, knowledge graph, and agent coordination state.
+A web dashboard starts automatically at `http://localhost:24282` — browse decisions, blackboard entries, knowledge graph, and agent state. Configurable via `TWINING_DASHBOARD_PORT`.
 
-## Install
+## What's Inside
 
-```bash                                                                           
-npm install -g twining-mcp
-```
+### Persistent Decisions
 
-then update mcp settings file:
-
-```json
-{
-  "mcpServers": {
-    "twining": {
-      "command": "twining-mcp",
-      "args": ["--project", "/path/to/your/project"]
-    }
-  }
-}
-```
-
-If `--project` is omitted, Twining uses the current working directory.
-
-## Tools
-
-### Blackboard
-
-| Tool | Description |
+| Tool | What It Does |
 |------|-------------|
-| `twining_post` | Post an entry (finding, need, warning, question) to the shared blackboard |
-| `twining_read` | Read blackboard entries with optional filters by type, scope, or agent |
-| `twining_query` | Semantic search across blackboard entries, with keyword fallback |
-| `twining_recent` | Get the most recent blackboard entries |
+| `twining_decide` | Record a decision with rationale, alternatives, confidence, and traceability |
+| `twining_why` | Get the full decision chain for any file or scope |
+| `twining_trace` | Trace a decision's dependency chain upstream and downstream |
+| `twining_reconsider` | Flag a decision for reconsideration with impact analysis |
+| `twining_override` | Override a decision, optionally creating a replacement |
+| `twining_search_decisions` | Search decisions by keyword or semantic similarity |
+| `twining_link_commit` | Link a git commit to a decision |
+| `twining_commits` | Find decisions by git commit |
 
-### Decisions
+### Shared Blackboard
 
-| Tool | Description |
+| Tool | What It Does |
 |------|-------------|
-| `twining_decide` | Record a decision with rationale, alternatives, and traceability |
-| `twining_why` | Retrieve all decisions affecting a given scope or file |
-| `twining_trace` | Trace a decision's dependency chain upstream and/or downstream |
-| `twining_reconsider` | Flag a decision for reconsideration with downstream impact analysis |
-| `twining_override` | Override a decision with a reason, optionally creating a replacement |
-| `twining_search_decisions` | Search decisions by keyword or semantic similarity with filters |
-| `twining_link_commit` | Link a git commit hash to an existing decision |
-| `twining_commits` | Query decisions by git commit hash |
+| `twining_post` | Share a finding, warning, need, or question with all agents |
+| `twining_read` | Read entries filtered by type, scope, or agent |
+| `twining_query` | Semantic search across all entries |
+| `twining_recent` | Get the latest entries |
 
-### Context & Lifecycle
+### Context Assembly
 
-| Tool | Description |
+| Tool | What It Does |
 |------|-------------|
 | `twining_assemble` | Build tailored context for a task within a token budget |
-| `twining_summarize` | Get a high-level summary of project state and activity |
-| `twining_what_changed` | Report what changed since a given point in time |
-| `twining_status` | Overall health check — entry counts, agent counts, warnings, and summary |
-| `twining_archive` | Archive old blackboard entries to reduce working set size |
-| `twining_export` | Export full Twining state as a single markdown document |
+| `twining_summarize` | High-level summary of project state |
+| `twining_what_changed` | What changed since a given point in time |
+| `twining_status` | Health check — entry counts, warnings, agent status |
+| `twining_archive` | Move stale entries to archive |
+| `twining_export` | Export full state as markdown |
 
 ### Knowledge Graph
 
-| Tool | Description |
+| Tool | What It Does |
 |------|-------------|
-| `twining_add_entity` | Add or update a knowledge graph entity (upsert semantics) |
-| `twining_add_relation` | Add a relation between two knowledge graph entities |
-| `twining_neighbors` | Traverse the knowledge graph from an entity up to depth 3 |
-| `twining_graph_query` | Search the knowledge graph by name or property substring |
+| `twining_add_entity` | Add or update an entity |
+| `twining_add_relation` | Add a relation between entities |
+| `twining_neighbors` | Traverse from an entity up to depth 3 |
+| `twining_graph_query` | Search by name or property |
+
+Decisions auto-populate the graph: `twining_decide` creates file and function entities with `decided_by` relations for every affected file.
 
 ### Agent Coordination
 
-| Tool | Description |
+| Tool | What It Does |
 |------|-------------|
-| `twining_agents` | List registered agents with capabilities, liveness status, and filtering |
-| `twining_discover` | Find agents matching required capabilities, ranked by overlap and liveness |
-| `twining_delegate` | Post a delegation request to the blackboard with capability requirements |
-| `twining_handoff` | Create a handoff between agents with work results and auto-assembled context |
+| `twining_agents` | List agents with capabilities and liveness |
+| `twining_discover` | Find agents matching required capabilities |
+| `twining_delegate` | Post a delegation request with capability requirements |
+| `twining_handoff` | Hand off work with results and auto-assembled context |
 | `twining_acknowledge` | Acknowledge receipt of a handoff |
 
-## Architecture
+## How It Works
 
-Twining is organized in layers:
+All state lives in `.twining/` as plain files — JSONL for the blackboard, JSON for decisions, graph, agents, and handoffs. Everything is `jq`-queryable, `grep`-able, and git-diffable. No database. No cloud. No accounts.
 
-- **Storage Layer** — File-backed stores for blackboard (JSONL), decisions (JSON index + individual files), knowledge graph (JSON), agent registry, and handoff records. All I/O goes through this layer with file locking for concurrent access.
-- **Engine Layer** — Business logic for each domain: blackboard posting/querying, decision recording/tracing, graph traversal, context assembly with token budgeting, agent coordination with capability-based discovery and delegation, and archiving.
-- **Embeddings Layer** — Lazy-loaded local embeddings using `@huggingface/transformers` with all-MiniLM-L6-v2. Falls back to keyword search if model loading fails. The server never fails to start because of embedding issues.
-- **Dashboard Layer** — Embedded HTTP server running alongside MCP stdio transport. Vanilla HTML/CSS/JS with cytoscape.js for graph visualization and vis-timeline for decision timelines. Read-only observer of Twining state.
-- **Tools Layer** — MCP tool definitions that map 1:1 to the tool surface. Each tool validates input with Zod and returns structured results.
+**Architecture layers:**
 
-All state lives in `.twining/` as plain files — JSONL for the blackboard stream, JSON for decisions, graph, agents, and handoffs. Everything is `jq`-queryable, `grep`-able, and git-diffable.
+- **Storage** — File-backed stores with locking for concurrent access
+- **Engine** — Decision tracking, blackboard, graph traversal, context assembly with token budgeting, agent coordination
+- **Embeddings** — Local all-MiniLM-L6-v2 via `@huggingface/transformers`, lazy-loaded, with keyword fallback. The server never fails to start because of embedding issues.
+- **Dashboard** — Read-only web UI with cytoscape.js graph visualization and vis-timeline
+- **Tools** — MCP tool definitions validated with Zod, mapping 1:1 to the tool surface
 
-See [TWINING-DESIGN-SPEC.md](TWINING-DESIGN-SPEC.md) for the full design specification.
+See [TWINING-DESIGN-SPEC.md](TWINING-DESIGN-SPEC.md) for the full specification.
+
+## FAQ
+
+**Does Twining slow down Claude Code?**
+No. It's a local MCP server — tool calls are local file reads/writes. Semantic search loads lazily on first use.
+
+**Can I use it with Cursor, Windsurf, or other MCP clients?**
+Yes. Twining is a standard MCP server. Any MCP host can connect to it.
+
+**Where does my data go?**
+Nowhere. All state is local in `.twining/`. No telemetry, no cloud, no external calls.
+
+**Is Twining an agent orchestrator?**
+No. It's a coordination state layer. It captures what agents decided and why, and makes that knowledge available to future agents. Use it alongside orchestrators, agent teams, or standalone sessions.
 
 ## Development
 
 ```bash
-# Install dependencies
-npm install
-
-# Build
-npm run build
-
-# Run tests
-npm test
-
-# Watch mode
+npm install       # Install dependencies
+npm run build     # Build
+npm test          # Run tests (444 tests)
 npm run test:watch
 ```
 
