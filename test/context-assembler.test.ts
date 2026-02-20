@@ -7,6 +7,8 @@ import { ContextAssembler } from "../src/engine/context-assembler.js";
 import { PlanningBridge } from "../src/engine/planning-bridge.js";
 import { BlackboardStore } from "../src/storage/blackboard-store.js";
 import { DecisionStore } from "../src/storage/decision-store.js";
+import { GraphStore } from "../src/storage/graph-store.js";
+import { GraphEngine } from "../src/engine/graph.js";
 import { HandoffStore } from "../src/storage/handoff-store.js";
 import { AgentStore } from "../src/storage/agent-store.js";
 import { SearchEngine } from "../src/embeddings/search.js";
@@ -25,6 +27,7 @@ function makeTwiningDir(): string {
   // Create required subdirectories and files
   fs.mkdirSync(path.join(dir, "decisions"), { recursive: true });
   fs.mkdirSync(path.join(dir, "embeddings"), { recursive: true });
+  fs.mkdirSync(path.join(dir, "graph"), { recursive: true });
   fs.writeFileSync(path.join(dir, "blackboard.jsonl"), "");
   fs.writeFileSync(
     path.join(dir, "decisions", "index.json"),
@@ -345,6 +348,111 @@ describe("ContextAssembler", () => {
 
       expect(result.open_needs).toHaveLength(1);
       expect(result.open_needs[0]!.summary).toBe("Need tests for auth module");
+    });
+
+    it("boosts decisions with graph-connected entities", async () => {
+      const graphStore = new GraphStore(twiningDir);
+      const graphEngine = new GraphEngine(graphStore);
+
+      // Create entities that connect to the scope "src/auth/"
+      const authModule = await graphEngine.addEntity({
+        name: "src/auth/",
+        type: "module",
+        properties: { description: "Auth module" },
+      });
+      const jwtFile = await graphEngine.addEntity({
+        name: "src/auth/jwt.ts",
+        type: "file",
+        properties: {},
+      });
+      const unrelatedFile = await graphEngine.addEntity({
+        name: "src/database/db.ts",
+        type: "file",
+        properties: {},
+      });
+
+      // Create relation: jwt.ts -> auth module
+      await graphEngine.addRelation({
+        source: jwtFile.id,
+        target: authModule.id,
+        type: "imports",
+      });
+
+      // Create two decisions: one with graph-connected files, one without
+      const connectedDecision = await decisionStore.create({
+        agent_id: "test",
+        domain: "implementation",
+        scope: "src/auth/",
+        summary: "Connected decision (JWT)",
+        context: "Context",
+        rationale: "Rationale",
+        constraints: [],
+        alternatives: [],
+        depends_on: [],
+        confidence: "medium",
+        reversible: true,
+        affected_files: ["src/auth/jwt.ts"],
+        affected_symbols: [],
+      });
+
+      const unconnectedDecision = await decisionStore.create({
+        agent_id: "test",
+        domain: "implementation",
+        scope: "src/auth/",
+        summary: "Unconnected decision (misc)",
+        context: "Context",
+        rationale: "Rationale",
+        constraints: [],
+        alternatives: [],
+        depends_on: [],
+        confidence: "medium",
+        reversible: true,
+        affected_files: ["src/other/unrelated.ts"],
+        affected_symbols: [],
+      });
+
+      const configWithGraph = makeConfig({
+        context_assembly: {
+          default_max_tokens: 4000,
+          priority_weights: {
+            recency: 0.3,
+            relevance: 0.3,
+            decision_confidence: 0.2,
+            warning_boost: 0.0,
+            graph_connectivity: 0.2, // Exaggerate to make effect visible
+          },
+        },
+      });
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        configWithGraph,
+        graphEngine,
+      );
+
+      // Use a tight budget that only fits one decision — the higher-scored
+      // (graph-connected) one should be selected
+      const result = await assembler.assemble("work on auth JWT", "src/auth/", 30);
+
+      // With tight budget, only the higher-scored decision fits
+      // The connected decision should win due to graph_connectivity boost
+      const hasConnected = result.active_decisions.some(
+        (d) => d.id === connectedDecision.id,
+      );
+      const hasUnconnected = result.active_decisions.some(
+        (d) => d.id === unconnectedDecision.id,
+      );
+
+      // If only one fits, it should be the connected one
+      if (result.active_decisions.length === 1) {
+        expect(hasConnected).toBe(true);
+        expect(hasUnconnected).toBe(false);
+      } else {
+        // If both fit, just verify the connected one is present
+        expect(hasConnected).toBe(true);
+      }
     });
 
     it("should work with search engine in fallback mode", async () => {

@@ -19,9 +19,10 @@ export const DEFAULT_CONFIG: TwiningConfig = {
     default_max_tokens: 4000,
     priority_weights: {
       recency: 0.3,
-      relevance: 0.4,
+      relevance: 0.3,
       decision_confidence: 0.2,
       warning_boost: 0.1,
+      graph_connectivity: 0.1,
     },
   },
   conflict_resolution: "human",

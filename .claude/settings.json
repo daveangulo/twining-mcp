@@ -1,0 +1,24 @@
+{
+  "enabledPlugins": {
+    "github@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true
+  },
+  "hooks": {
+    "SubagentStop": [
+      {
+        "type": "command",
+        "command": "if [ -d .twining ]; then echo '{\"entry_type\":\"status\",\"summary\":\"Subagent completed task\"}' >> .twining/pending-posts.jsonl; fi"
+      }
+    ],
+    "PreCompact": [
+      {
+        "type": "command",
+        "command": "echo '[twining] Context compacting — consider calling twining_archive' >&2"
+      }
+    ]
+  }
+}

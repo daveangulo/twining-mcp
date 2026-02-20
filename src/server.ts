@@ -81,6 +81,10 @@ export function createServer(projectRoot: string): McpServer {
     blackboardEngine,
     indexManager,
   );
+
+  // Wire auto-archive threshold into blackboard engine (spec §6.1.3)
+  blackboardEngine.setArchiver(archiver, config);
+
   const planningBridge = new PlanningBridge(projectRoot);
 
   // Create coordination stores (before ContextAssembler which depends on them)

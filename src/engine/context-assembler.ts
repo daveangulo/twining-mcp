@@ -168,19 +168,28 @@ export class ContextAssembler {
       }
     }
 
-    // 5. Score each item
+    // 5. Compute graph connectivity scores for decisions (spec §5.5)
+    const connectivityScores = await this.computeGraphConnectivity(
+      scope,
+      mergedDecisionMap,
+    );
+
+    // 6. Score each item
     const scoredItems: ScoredItem[] = [];
+    const graphWeight = weights.graph_connectivity ?? 0;
 
     for (const [id, decision] of mergedDecisionMap) {
       const recency = this.recencyScore(decision.timestamp, now);
       const relevance = decisionRelevance.get(id) ?? 0.5;
       const confidence = this.confidenceScore(decision.confidence);
       const warningBoost = 0;
+      const connectivity = connectivityScores.get(id) ?? 0;
       const score =
         recency * weights.recency +
         relevance * weights.relevance +
         confidence * weights.decision_confidence +
-        warningBoost * weights.warning_boost;
+        warningBoost * weights.warning_boost +
+        connectivity * graphWeight;
       const text = `${decision.summary} ${decision.rationale} ${decision.confidence} ${decision.affected_files.join(", ")}`;
       scoredItems.push({
         type: "decision",
@@ -211,7 +220,7 @@ export class ContextAssembler {
       });
     }
 
-    // 6. Fill token budget in priority order
+    // 7. Fill token budget in priority order
     // Reserve 10% for warnings
     const warningBudget = Math.floor(budget * 0.1);
     const mainBudget = budget - warningBudget;
@@ -254,7 +263,7 @@ export class ContextAssembler {
       }
     }
 
-    // 7. Build AssembledContext
+    // 8. Build AssembledContext
     const activeDecisionResults: AssembledContext["active_decisions"] = [];
     const openNeeds: AssembledContext["open_needs"] = [];
     const recentFindings: AssembledContext["recent_findings"] = [];
@@ -324,7 +333,7 @@ export class ContextAssembler {
       }
     }
 
-    // 8. Populate related_entities from knowledge graph
+    // 9. Populate related_entities from knowledge graph
     const relatedEntities = await this.getRelatedEntities(scope);
 
     const result: AssembledContext = {
@@ -340,7 +349,7 @@ export class ContextAssembler {
       related_entities: relatedEntities,
     };
 
-    // 9. Integrate planning state from .planning/ directory
+    // 10. Integrate planning state from .planning/ directory
     const planningState = this.planningBridge?.readPlanningState() ?? null;
     if (planningState) {
       // Always include planning_state as metadata (not subject to token budget)
@@ -371,7 +380,7 @@ export class ContextAssembler {
       }
     }
 
-    // 10. Include recent handoffs matching scope (HND-03)
+    // 11. Include recent handoffs matching scope (HND-03)
     if (this.handoffStore) {
       const handoffEntries = await this.handoffStore.list({ scope, limit: 5 });
       if (handoffEntries.length > 0) {
@@ -388,7 +397,7 @@ export class ContextAssembler {
       }
     }
 
-    // 11. Include suggested agents with matching capabilities (HND-06)
+    // 12. Include suggested agents with matching capabilities (HND-06)
     if (this.agentStore) {
       const allAgents = await this.agentStore.getAll();
       const thresholds = this.config.agents?.liveness ?? DEFAULT_LIVENESS_THRESHOLDS;
@@ -565,6 +574,71 @@ export class ContextAssembler {
       overridden_decisions: overriddenDecisions,
       reconsidered_decisions: reconsideredDecisions,
     };
+  }
+
+  /**
+   * Compute graph connectivity boost for decisions (spec §5.5).
+   * Decisions whose affected_files/symbols have more graph relations
+   * to the scope get a higher boost (0.0 to 1.0).
+   */
+  private async computeGraphConnectivity(
+    scope: string,
+    decisions: Map<string, Decision>,
+  ): Promise<Map<string, number>> {
+    const scores = new Map<string, number>();
+    if (!this.graphEngine) return scores;
+
+    try {
+      // Find entities matching the scope
+      const { entities: scopeEntities } = await this.graphEngine.query(
+        scope,
+        undefined,
+        20,
+      );
+      if (scopeEntities.length === 0) return scores;
+
+      const scopeEntityIds = new Set(scopeEntities.map((e) => e.id));
+      const scopeEntityNames = new Set(scopeEntities.map((e) => e.name));
+
+      for (const [id, decision] of decisions) {
+        let connectionCount = 0;
+        const targets = [
+          ...decision.affected_files,
+          ...decision.affected_symbols,
+        ];
+
+        for (const target of targets) {
+          const { entities: targetEntities } = await this.graphEngine.query(
+            target,
+            undefined,
+            3,
+          );
+          for (const te of targetEntities) {
+            const { neighbors } = await this.graphEngine.neighbors(te.id, 1);
+            for (const n of neighbors) {
+              if (
+                scopeEntityIds.has(n.entity.id) ||
+                scopeEntityNames.has(n.entity.name)
+              ) {
+                connectionCount++;
+              }
+            }
+          }
+        }
+
+        // Normalize: cap at 1.0, use log scale to avoid domination
+        scores.set(
+          id,
+          connectionCount > 0
+            ? Math.min(1.0, Math.log2(connectionCount + 1) / 3)
+            : 0,
+        );
+      }
+    } catch {
+      // Graph errors should never break scoring
+    }
+
+    return scores;
   }
 
   /**

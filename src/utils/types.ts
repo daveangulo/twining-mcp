@@ -175,6 +175,7 @@ export interface TwiningConfig {
       relevance: number;
       decision_confidence: number;
       warning_boost: number;
+      graph_connectivity?: number;
     };
   };
   conflict_resolution: string;

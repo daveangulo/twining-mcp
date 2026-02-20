@@ -1,10 +1,12 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
 import { BlackboardStore } from "../src/storage/blackboard-store.js";
 import { BlackboardEngine } from "../src/engine/blackboard.js";
 import { TwiningError } from "../src/utils/errors.js";
+import type { TwiningConfig } from "../src/utils/types.js";
+import { DEFAULT_CONFIG } from "../src/config.js";
 
 let tmpDir: string;
 let engine: BlackboardEngine;
@@ -136,5 +138,60 @@ describe("BlackboardEngine.recent", () => {
     await engine.post({ entry_type: "warning", summary: "W1" });
     const { entries } = await engine.recent(10, ["warning"]);
     expect(entries).toHaveLength(1);
+  });
+});
+
+describe("BlackboardEngine auto-archive", () => {
+  it("triggers archive when entry count exceeds threshold", async () => {
+    const mockArchiver = {
+      archive: vi.fn().mockResolvedValue({ archived_count: 2, archive_file: "" }),
+    };
+    const config: TwiningConfig = {
+      ...DEFAULT_CONFIG,
+      archive: {
+        ...DEFAULT_CONFIG.archive,
+        max_blackboard_entries_before_archive: 3,
+      },
+    };
+
+    engine.setArchiver(mockArchiver as any, config);
+
+    // Post 3 entries to hit threshold
+    await engine.post({ entry_type: "finding", summary: "Entry 1" });
+    await engine.post({ entry_type: "finding", summary: "Entry 2" });
+    await engine.post({ entry_type: "finding", summary: "Entry 3" });
+
+    // Wait for fire-and-forget to settle
+    await new Promise((r) => setTimeout(r, 50));
+
+    expect(mockArchiver.archive).toHaveBeenCalledWith({ summarize: true });
+  });
+
+  it("does not trigger archive when below threshold", async () => {
+    const mockArchiver = {
+      archive: vi.fn().mockResolvedValue({ archived_count: 0, archive_file: "" }),
+    };
+    const config: TwiningConfig = {
+      ...DEFAULT_CONFIG,
+      archive: {
+        ...DEFAULT_CONFIG.archive,
+        max_blackboard_entries_before_archive: 10,
+      },
+    };
+
+    engine.setArchiver(mockArchiver as any, config);
+
+    await engine.post({ entry_type: "finding", summary: "Entry 1" });
+    await engine.post({ entry_type: "finding", summary: "Entry 2" });
+
+    await new Promise((r) => setTimeout(r, 50));
+
+    expect(mockArchiver.archive).not.toHaveBeenCalled();
+  });
+
+  it("does not trigger archive when no archiver is set", async () => {
+    // No setArchiver call — should work fine
+    await engine.post({ entry_type: "finding", summary: "Entry 1" });
+    // If this doesn't throw, the test passes
   });
 });

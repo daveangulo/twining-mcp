@@ -152,6 +152,6 @@ describe("loadConfig", () => {
     const config = loadConfig(tmpDir);
     expect(config.context_assembly.default_max_tokens).toBe(8000);
     expect(config.context_assembly.priority_weights.recency).toBe(0.3);
-    expect(config.context_assembly.priority_weights.relevance).toBe(0.4);
+    expect(config.context_assembly.priority_weights.relevance).toBe(0.3);
   });
 });

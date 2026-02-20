@@ -5,17 +5,20 @@
  */
 import { BlackboardStore } from "../storage/blackboard-store.js";
 import { ENTRY_TYPES } from "../utils/types.js";
-import type { BlackboardEntry, EntryType } from "../utils/types.js";
+import type { BlackboardEntry, EntryType, TwiningConfig } from "../utils/types.js";
 import { TwiningError } from "../utils/errors.js";
 import type { Embedder } from "../embeddings/embedder.js";
 import type { IndexManager } from "../embeddings/index-manager.js";
 import type { SearchEngine, BlackboardSearchResult } from "../embeddings/search.js";
+import type { Archiver } from "./archiver.js";
 
 export class BlackboardEngine {
   private readonly store: BlackboardStore;
   private readonly embedder: Embedder | null;
   private readonly indexManager: IndexManager | null;
   private readonly searchEngine: SearchEngine | null;
+  private archiver: Archiver | null = null;
+  private archiveThreshold: number | null = null;
 
   constructor(
     store: BlackboardStore,
@@ -27,6 +30,12 @@ export class BlackboardEngine {
     this.embedder = embedder ?? null;
     this.indexManager = indexManager ?? null;
     this.searchEngine = searchEngine ?? null;
+  }
+
+  /** Inject archiver for threshold-based auto-archiving (spec §6.1.3). */
+  setArchiver(archiver: Archiver, config: TwiningConfig): void {
+    this.archiver = archiver;
+    this.archiveThreshold = config.archive.max_blackboard_entries_before_archive;
   }
 
   /** Post a new blackboard entry with validation and defaults. */
@@ -88,6 +97,16 @@ export class BlackboardEngine {
       } catch (error) {
         // Silent failure — embedding is best-effort
         console.error("[twining] Embedding generation failed (non-fatal):", error);
+      }
+    }
+
+    // Auto-archive if threshold exceeded (fire-and-forget, non-fatal) — spec §6.1.3
+    if (this.archiver && this.archiveThreshold) {
+      const { total_count } = await this.store.read();
+      if (total_count >= this.archiveThreshold) {
+        this.archiver.archive({ summarize: true }).catch((err) => {
+          console.error("[twining] Auto-archive failed (non-fatal):", err);
+        });
       }
     }
 
