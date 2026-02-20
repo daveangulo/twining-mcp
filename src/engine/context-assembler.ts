@@ -45,6 +45,9 @@ export class ContextAssembler {
   private readonly handoffStore: HandoffStore | null;
   private readonly agentStore: AgentStore | null;
 
+  /** In-memory log of last assembly time per agent (not persisted across restarts). */
+  private readonly assemblyLog = new Map<string, string>();
+
   constructor(
     blackboardStore: BlackboardStore,
     decisionStore: DecisionStore,
@@ -65,6 +68,11 @@ export class ContextAssembler {
     this.agentStore = agentStore ?? null;
   }
 
+  /** Check if an agent has called assemble() recently (in this session). */
+  hasRecentAssembly(agentId: string): boolean {
+    return this.assemblyLog.has(agentId);
+  }
+
   /**
    * Build tailored context for a specific task within a token budget.
    * Implements spec section 4.3 (twining_assemble).
@@ -73,6 +81,7 @@ export class ContextAssembler {
     task: string,
     scope: string,
     maxTokens?: number,
+    agentId?: string,
   ): Promise<AssembledContext> {
     const budget = maxTokens ?? this.config.context_assembly.default_max_tokens;
     const weights = this.config.context_assembly.priority_weights;
@@ -407,6 +416,9 @@ export class ContextAssembler {
         result.suggested_agents = suggestedAgents;
       }
     }
+
+    // Log assembly for assembly-before-decision tracking
+    this.assemblyLog.set(agentId ?? "main", result.assembled_at);
 
     return result;
   }

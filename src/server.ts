@@ -19,6 +19,8 @@ import { GraphEngine } from "./engine/graph.js";
 import { Archiver } from "./engine/archiver.js";
 import { ContextAssembler } from "./engine/context-assembler.js";
 import { PlanningBridge } from "./engine/planning-bridge.js";
+import { VerifyEngine } from "./engine/verify.js";
+import { PendingProcessor } from "./engine/pending-processor.js";
 import { Embedder } from "./embeddings/embedder.js";
 import { IndexManager } from "./embeddings/index-manager.js";
 import { SearchEngine } from "./embeddings/search.js";
@@ -27,6 +29,7 @@ import { registerDecisionTools } from "./tools/decision-tools.js";
 import { registerContextTools } from "./tools/context-tools.js";
 import { registerLifecycleTools } from "./tools/lifecycle-tools.js";
 import { registerGraphTools } from "./tools/graph-tools.js";
+import { registerVerifyTools } from "./tools/verify-tools.js";
 import { Exporter } from "./engine/exporter.js";
 import { registerExportTools } from "./tools/export-tools.js";
 import { AgentStore } from "./storage/agent-store.js";
@@ -95,6 +98,11 @@ export function createServer(projectRoot: string): McpServer {
     agentStore,     // for agent suggestions in assembly
   );
 
+  // Wire assembly-before-decision tracking
+  decisionEngine.setAssemblyChecker((agentId) =>
+    contextAssembler.hasRecentAssembly(agentId),
+  );
+
   // Create coordination engine
   const coordinationEngine = new CoordinationEngine(
     agentStore,
@@ -105,8 +113,29 @@ export function createServer(projectRoot: string): McpServer {
     config,
   );
 
+  // Create verify engine
+  const verifyEngine = new VerifyEngine(
+    decisionStore,
+    blackboardStore,
+    blackboardEngine,
+    graphEngine,
+  );
+  verifyEngine.setAssemblyChecker((agentId) =>
+    contextAssembler.hasRecentAssembly(agentId),
+  );
+
   // Create exporter
   const exporter = new Exporter(blackboardStore, decisionStore, graphStore);
+
+  // Process pending posts and actions (fire-and-forget, non-fatal)
+  const pendingProcessor = new PendingProcessor(
+    twiningDir,
+    blackboardEngine,
+    archiver,
+  );
+  pendingProcessor.processOnStartup().catch((err) => {
+    console.error("[twining] Pending processor failed (non-fatal):", err);
+  });
 
   // Create MCP server
   const server = new McpServer({
@@ -129,6 +158,7 @@ export function createServer(projectRoot: string): McpServer {
     agentStore,
   );
   registerGraphTools(server, graphEngine);
+  registerVerifyTools(server, verifyEngine);
   registerExportTools(server, exporter);
   registerCoordinationTools(server, agentStore, coordinationEngine, config);
 

@@ -21,6 +21,8 @@ const INDEX_LOCK_OPTIONS: lockfile.LockOptions = {
 export class DecisionStore {
   private readonly decisionsDir: string;
   private readonly indexPath: string;
+  private cachedIndex: DecisionIndexEntry[] | null = null;
+  private cachedIndexMtime: number = 0;
 
   constructor(twiningDir: string) {
     this.decisionsDir = path.join(twiningDir, "decisions");
@@ -57,6 +59,7 @@ export class DecisionStore {
       await release();
     }
 
+    this.cachedIndex = null; // Invalidate index cache
     return decision;
   }
 
@@ -136,10 +139,27 @@ export class DecisionStore {
     } finally {
       await release();
     }
+    this.cachedIndex = null; // Invalidate index cache
   }
 
-  /** Get the full decision index. */
+  /** Get the full decision index, with mtime-based caching. */
   async getIndex(): Promise<DecisionIndexEntry[]> {
+    try {
+      if (fs.existsSync(this.indexPath)) {
+        const stat = fs.statSync(this.indexPath);
+        if (this.cachedIndex !== null && stat.mtimeMs === this.cachedIndexMtime) {
+          return this.cachedIndex;
+        }
+        const index = await readJSON<DecisionIndexEntry[]>(this.indexPath);
+        this.cachedIndex = index;
+        this.cachedIndexMtime = stat.mtimeMs;
+        return index;
+      }
+    } catch {
+      // Fall through to uncached read
+      this.cachedIndex = null;
+      this.cachedIndexMtime = 0;
+    }
     return readJSON<DecisionIndexEntry[]>(this.indexPath);
   }
 
@@ -186,6 +206,7 @@ export class DecisionStore {
     } finally {
       await release();
     }
+    this.cachedIndex = null; // Invalidate index cache
   }
 
   /** Get decisions linked to a specific commit hash. */

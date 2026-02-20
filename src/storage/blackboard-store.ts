@@ -1,7 +1,9 @@
 /**
  * Blackboard CRUD operations.
  * Append-only JSONL storage for shared state entries.
+ * Includes mtime-based caching to avoid redundant disk reads.
  */
+import fs from "node:fs";
 import path from "node:path";
 import { appendJSONL, readJSONL } from "./file-store.js";
 import { generateId } from "../utils/ids.js";
@@ -9,9 +11,35 @@ import type { BlackboardEntry } from "../utils/types.js";
 
 export class BlackboardStore {
   private readonly blackboardPath: string;
+  private cachedEntries: BlackboardEntry[] | null = null;
+  private cachedMtime: number = 0;
 
   constructor(twiningDir: string) {
     this.blackboardPath = path.join(twiningDir, "blackboard.jsonl");
+  }
+
+  /** Read all entries from disk, using mtime cache when possible. */
+  private async readAll(): Promise<BlackboardEntry[]> {
+    try {
+      if (!fs.existsSync(this.blackboardPath)) {
+        this.cachedEntries = [];
+        this.cachedMtime = 0;
+        return [];
+      }
+      const stat = fs.statSync(this.blackboardPath);
+      if (this.cachedEntries !== null && stat.mtimeMs === this.cachedMtime) {
+        return this.cachedEntries;
+      }
+      const entries = await readJSONL<BlackboardEntry>(this.blackboardPath);
+      this.cachedEntries = entries;
+      this.cachedMtime = stat.mtimeMs;
+      return entries;
+    } catch {
+      // On any stat/read error, fall through to uncached read
+      this.cachedEntries = null;
+      this.cachedMtime = 0;
+      return readJSONL<BlackboardEntry>(this.blackboardPath);
+    }
   }
 
   /** Append a new entry, generating ID and timestamp. */
@@ -24,6 +52,8 @@ export class BlackboardStore {
       timestamp: new Date().toISOString(),
     };
     await appendJSONL(this.blackboardPath, full);
+    // Invalidate cache — next read will re-parse
+    this.cachedEntries = null;
     return full;
   }
 
@@ -35,7 +65,7 @@ export class BlackboardStore {
     since?: string;
     limit?: number;
   }): Promise<{ entries: BlackboardEntry[]; total_count: number }> {
-    let entries = await readJSONL<BlackboardEntry>(this.blackboardPath);
+    let entries = await this.readAll();
 
     if (filters?.entry_types && filters.entry_types.length > 0) {
       entries = entries.filter((e) =>
@@ -73,7 +103,7 @@ export class BlackboardStore {
 
   /** Get the N most recent entries, optionally filtered by type. */
   async recent(n?: number, entry_types?: string[]): Promise<BlackboardEntry[]> {
-    let entries = await readJSONL<BlackboardEntry>(this.blackboardPath);
+    let entries = await this.readAll();
 
     if (entry_types && entry_types.length > 0) {
       entries = entries.filter((e) => entry_types.includes(e.entry_type));

@@ -4,7 +4,7 @@
  * Delegates storage operations to GraphStore.
  */
 import type { GraphStore } from "../storage/graph-store.js";
-import type { Entity, Relation } from "../utils/types.js";
+import type { Entity, Relation, TestCoverageResult } from "../utils/types.js";
 import { TwiningError } from "../utils/errors.js";
 
 /** Direction of relation relative to the center entity. */
@@ -172,6 +172,60 @@ export class GraphEngine {
     });
 
     return { entities: matches.slice(0, maxResults) };
+  }
+
+  /**
+   * Check test coverage for decisions by looking at `tested_by` relations
+   * on their affected files/symbols.
+   */
+  async getTestCoverage(
+    decisions: Array<{ id: string; summary: string; affected_files: string[] }>,
+  ): Promise<TestCoverageResult> {
+    const entities = await this.graphStore.getEntities();
+    const relations = await this.graphStore.getRelations();
+
+    // Build set of entity IDs that are sources in `tested_by` relations
+    const coveredEntityIds = new Set<string>();
+    for (const rel of relations) {
+      if (rel.type === "tested_by") {
+        coveredEntityIds.add(rel.source);
+      }
+    }
+
+    // Build name→entity lookup for matching affected files
+    const entityByName = new Map<string, Entity>();
+    for (const e of entities) {
+      entityByName.set(e.name, e);
+    }
+
+    const uncovered: TestCoverageResult["uncovered"] = [];
+    let coveredCount = 0;
+
+    for (const decision of decisions) {
+      let isCovered = false;
+      for (const filePath of decision.affected_files) {
+        const entity = entityByName.get(filePath);
+        if (entity && coveredEntityIds.has(entity.id)) {
+          isCovered = true;
+          break;
+        }
+      }
+      if (isCovered) {
+        coveredCount++;
+      } else {
+        uncovered.push({
+          decision_id: decision.id,
+          summary: decision.summary,
+          affected_files: decision.affected_files,
+        });
+      }
+    }
+
+    return {
+      decisions_in_scope: decisions.length,
+      decisions_with_tested_by: coveredCount,
+      uncovered,
+    };
   }
 
   /** Resolve an entity by ID or name. Returns undefined if not found. */

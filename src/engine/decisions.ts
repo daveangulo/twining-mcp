@@ -38,6 +38,7 @@ export class DecisionEngine {
   private readonly projectRoot: string | null;
   private readonly searchEngine: SearchEngine | null;
   private readonly graphEngine: GraphEngine | null;
+  private assemblyChecker?: (agentId: string) => boolean;
 
   constructor(
     decisionStore: DecisionStore,
@@ -55,6 +56,11 @@ export class DecisionEngine {
     this.projectRoot = projectRoot ?? null;
     this.searchEngine = searchEngine ?? null;
     this.graphEngine = graphEngine ?? null;
+  }
+
+  /** Set the function that checks whether an agent assembled context before deciding. */
+  setAssemblyChecker(checker: (agentId: string) => boolean): void {
+    this.assemblyChecker = checker;
   }
 
   /**
@@ -182,8 +188,14 @@ export class DecisionEngine {
     }));
 
     // Create decision with defaults — provisional if conflicts found
+    // Check if agent assembled context before making this decision
+    const agentId = input.agent_id ?? "main";
+    const assembledBefore = this.assemblyChecker
+      ? this.assemblyChecker(agentId)
+      : undefined;
+
     const decision = await this.decisionStore.create({
-      agent_id: input.agent_id ?? "main",
+      agent_id: agentId,
       domain: input.domain,
       scope: input.scope,
       summary: input.summary,
@@ -198,6 +210,7 @@ export class DecisionEngine {
       affected_files: input.affected_files ?? [],
       affected_symbols: input.affected_symbols ?? [],
       commit_hashes: input.commit_hash ? [input.commit_hash] : [],
+      ...(assembledBefore !== undefined ? { assembled_before: assembledBefore } : {}),
     });
 
     // If conflicts exist, mark new decision as provisional and post warning
@@ -251,6 +264,12 @@ export class DecisionEngine {
     // Auto-populate knowledge graph with affected files/symbols (spec §4.2)
     if (this.graphEngine) {
       try {
+        // Create a concept entity for the decision itself so relations can reference it
+        const decisionEntity = await this.graphEngine.addEntity({
+          name: decision.id,
+          type: "concept",
+          properties: { summary: decision.summary, scope: decision.scope },
+        });
         for (const filePath of decision.affected_files) {
           const entity = await this.graphEngine.addEntity({
             name: filePath,
@@ -259,7 +278,7 @@ export class DecisionEngine {
           });
           await this.graphEngine.addRelation({
             source: entity.name,
-            target: decision.id,
+            target: decisionEntity.name,
             type: "decided_by",
             properties: { decision_summary: decision.summary },
           });
@@ -272,7 +291,7 @@ export class DecisionEngine {
           });
           await this.graphEngine.addRelation({
             source: entity.name,
-            target: decision.id,
+            target: decisionEntity.name,
             type: "decided_by",
             properties: { decision_summary: decision.summary },
           });

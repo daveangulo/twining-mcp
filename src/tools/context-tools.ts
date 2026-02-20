@@ -26,6 +26,10 @@ export function registerContextTools(
           .number()
           .optional()
           .describe("Token budget (default: from config, typically 4000)"),
+        agent_id: z
+          .string()
+          .optional()
+          .describe("Agent identifier for assembly tracking (default: main)"),
       },
     },
     async (args) => {
@@ -34,6 +38,7 @@ export function registerContextTools(
           args.task,
           args.scope,
           args.max_tokens,
+          args.agent_id,
         );
         return toolResult(result);
       } catch (e) {

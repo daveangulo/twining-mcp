@@ -68,6 +68,132 @@ export class PlanningBridge {
   }
 
   /**
+   * Update the progress line in STATE.md.
+   * No-op if .planning/ doesn't exist.
+   */
+  writeProgressUpdate(progress: string): void {
+    try {
+      const statePath = path.join(this.projectRoot, ".planning", "STATE.md");
+      if (!fs.existsSync(statePath)) return;
+
+      let content = fs.readFileSync(statePath, "utf-8");
+      // Replace existing "Progress: ..." line
+      content = content.replace(/^Progress:\s*.+$/m, `Progress: ${progress}`);
+      fs.writeFileSync(statePath, content, "utf-8");
+    } catch {
+      // Resilient: no-op on error
+    }
+  }
+
+  /**
+   * Append a blocker to the Blockers/Concerns section.
+   * No-op if .planning/ doesn't exist.
+   */
+  addBlocker(blocker: string): void {
+    try {
+      const statePath = path.join(this.projectRoot, ".planning", "STATE.md");
+      if (!fs.existsSync(statePath)) return;
+
+      const content = fs.readFileSync(statePath, "utf-8");
+      const lines = content.split("\n");
+
+      // Find the Blockers/Concerns header
+      const headerIdx = lines.findIndex((l) => /^#{1,4}\s*Blockers\/Concerns/i.test(l));
+      if (headerIdx === -1) return;
+
+      // Find the end of this section (next header)
+      let insertIdx = lines.length;
+      for (let i = headerIdx + 1; i < lines.length; i++) {
+        if (/^#{1,4}\s/.test(lines[i]!)) {
+          insertIdx = i;
+          break;
+        }
+      }
+
+      // Check if section currently says "None." — replace it
+      const sectionLines = lines.slice(headerIdx + 1, insertIdx);
+      const noneIdx = sectionLines.findIndex((l) => l.trim().toLowerCase() === "none." || l.trim().toLowerCase() === "none");
+      if (noneIdx !== -1) {
+        lines[headerIdx + 1 + noneIdx] = `- ${blocker}`;
+      } else {
+        // Walk back over blank lines
+        let at = insertIdx;
+        while (at > headerIdx + 1 && lines[at - 1]!.trim() === "") at--;
+        lines.splice(at, 0, `- ${blocker}`);
+      }
+
+      fs.writeFileSync(statePath, lines.join("\n"), "utf-8");
+    } catch {
+      // Resilient: no-op on error
+    }
+  }
+
+  /**
+   * Remove a blocker from the Blockers/Concerns section.
+   * No-op if .planning/ doesn't exist or blocker not found.
+   */
+  removeBlocker(blocker: string): void {
+    try {
+      const statePath = path.join(this.projectRoot, ".planning", "STATE.md");
+      if (!fs.existsSync(statePath)) return;
+
+      const content = fs.readFileSync(statePath, "utf-8");
+      const lines = content.split("\n");
+
+      // Find and remove the line containing this blocker
+      const idx = lines.findIndex((l) => {
+        const match = l.match(/^[-*]\s+(.+)/);
+        return match && match[1]!.trim() === blocker;
+      });
+      if (idx !== -1) {
+        lines.splice(idx, 1);
+        fs.writeFileSync(statePath, lines.join("\n"), "utf-8");
+      }
+    } catch {
+      // Resilient: no-op on error
+    }
+  }
+
+  /**
+   * Mark a phase as complete in STATE.md by updating the Status line.
+   * No-op if .planning/ doesn't exist.
+   */
+  writePhaseCompletion(phase: string, summary: string): void {
+    try {
+      const statePath = path.join(this.projectRoot, ".planning", "STATE.md");
+      if (!fs.existsSync(statePath)) return;
+
+      let content = fs.readFileSync(statePath, "utf-8");
+      // Update Status line
+      content = content.replace(
+        /^Status:\s*.+$/m,
+        `Status: Phase ${phase} complete — ${summary}`,
+      );
+      fs.writeFileSync(statePath, content, "utf-8");
+    } catch {
+      // Resilient: no-op on error
+    }
+  }
+
+  /**
+   * Write a plan file for a phase.
+   * Creates `.planning/phases/<phaseName>/plan.md` with the given content.
+   * No-op if .planning/ doesn't exist.
+   */
+  writePlanFile(phaseName: string, content: string): void {
+    try {
+      const planningDir = path.join(this.projectRoot, ".planning");
+      if (!fs.existsSync(planningDir)) return;
+
+      const phaseDir = path.join(planningDir, "phases", phaseName);
+      fs.mkdirSync(phaseDir, { recursive: true });
+      fs.writeFileSync(path.join(phaseDir, "plan.md"), content, "utf-8");
+    } catch {
+      // Resilient: no-op on error
+    }
+  }
+
+  /**
    * Parse "Phase: N of M (name)" from the Current Position section.
    */
   private parseCurrentPhase(content: string): string {

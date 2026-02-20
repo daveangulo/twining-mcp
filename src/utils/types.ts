@@ -70,6 +70,7 @@ export interface Decision {
   commit_hashes: string[];
   overridden_by?: string;
   override_reason?: string;
+  assembled_before?: boolean;
 }
 
 /** Knowledge Graph Entity — spec section 3.3 */
@@ -370,4 +371,68 @@ export interface CreateHandoffInput {
   results: HandoffResult[];
   auto_snapshot?: boolean; // Auto-assemble context snapshot (default: true)
   context_snapshot?: HandoffRecord["context_snapshot"]; // Manual override
+}
+
+// Verification types — twining_verify tool
+
+/** Test coverage check result */
+export interface TestCoverageCheck {
+  status: "pass" | "warn" | "fail";
+  decisions_in_scope: number;
+  decisions_with_tested_by: number;
+  uncovered: Array<{ decision_id: string; summary: string; affected_files: string[] }>;
+}
+
+/** Warnings check result */
+export interface WarningsCheck {
+  status: "pass" | "warn" | "fail";
+  warnings_in_scope: number;
+  acknowledged: number;
+  resolved: number;
+  silently_ignored: number;
+  ignored_details: Array<{ id: string; summary: string }>;
+}
+
+/** Assembly tracking check result */
+export interface AssemblyCheck {
+  status: "pass" | "warn" | "fail";
+  decisions_by_agent: number;
+  assembled_before: number;
+  blind_decisions: Array<{ decision_id: string; summary: string; agent_id: string }>;
+}
+
+/** Drift detection check (stub for P2) */
+export interface DriftCheck {
+  status: "pass" | "warn" | "skip";
+  decisions_checked: number;
+  stale: Array<{ decision_id: string; summary: string; reason: string }>;
+}
+
+/** Constraints check (stub for P2) */
+export interface ConstraintsCheck {
+  status: "pass" | "warn" | "skip";
+  checkable: number;
+  passed: number;
+  failed: Array<{ constraint_id: string; summary: string; reason: string }>;
+}
+
+/** Full verification result from twining_verify */
+export interface VerifyResult {
+  scope: string;
+  verified_at: string;
+  checks: {
+    test_coverage?: TestCoverageCheck;
+    warnings?: WarningsCheck;
+    assembly?: AssemblyCheck;
+    drift?: DriftCheck;
+    constraints?: ConstraintsCheck;
+  };
+  summary: string;
+}
+
+/** Test coverage result from GraphEngine */
+export interface TestCoverageResult {
+  decisions_in_scope: number;
+  decisions_with_tested_by: number;
+  uncovered: Array<{ decision_id: string; summary: string; affected_files: string[] }>;
 }
