@@ -65,7 +65,12 @@ The single highest-value habit is **context assembly before work, decisions afte
 - `twining_decide` for any architectural or non-trivial implementation choice — always include rationale and at least one rejected alternative
 - `twining_post` with `entry_type: "status"` summarizing what you did
 
-### Tool Reference (27 tools)
+#### Before handing off or completing work:
+- `twining_verify` to check test coverage, unresolved warnings, drift, and assembly hygiene
+- For decisions affecting testable code, link tests via `twining_add_relation` with `type: "tested_by"`
+- Address or explicitly acknowledge any warnings surfaced during assembly
+
+### Tool Reference (28 tools)
 
 #### Blackboard (shared agent communication)
 | Tool | When to use |
@@ -104,6 +109,28 @@ The single highest-value habit is **context assembly before work, decisions afte
 - `low` — Best guess, needs validation, may be revised
 
 **Decision domains** (suggested): `architecture`, `implementation`, `testing`, `deployment`, `security`, `performance`, `api-design`, `data-model`
+
+#### Verification (deterministic rigor for probabilistic agents)
+| Tool | When to use |
+|------|-------------|
+| `twining_verify` | Before handoff or completion. Checks test coverage (decisions with `tested_by` relations), unresolved warnings, drift (decisions vs. git history), assembly hygiene (blind decisions), and checkable constraints. |
+
+**Decision-to-Test Traceability:** Link tests to decisions to create an evidence trail:
+```
+twining_decide(domain="implementation", scope="src/auth/", summary="Use JWT for stateless auth", affected_files=["src/auth/middleware.ts"], ...)
+twining_add_relation(source="src/auth/middleware.ts", target="test/auth.test.ts", type="tested_by", properties={covers: "JWT middleware validation"})
+```
+
+**Conflict Detection:** When `twining_decide` detects a conflict (same domain + overlapping scope + active status), it auto-posts a warning to the blackboard, records `conflicts_with` metadata, and keeps both decisions active. Resolve via `twining_override` or `twining_reconsider`.
+
+**Drift Detection:** `twining_verify` compares decision timestamps to git history for affected files and flags stale decisions (code modified after decision without superseding decision).
+
+**Checkable Constraints:** Post constraints with `check_command` for mechanical verification:
+```
+twining_post(entry_type="constraint", summary="No direct fs calls outside storage/",
+  detail='{"check_command": "grep -r \\"import.*node:fs\\" src/ --include=\\"*.ts\\" | grep -v storage/ | wc -l", "expected": "0"}',
+  scope="src/")
+```
 
 #### Context Assembly (intelligent context injection)
 | Tool | When to use |
@@ -160,6 +187,9 @@ twining_delegate(summary="Optimize slow user query", required_capabilities=["dat
 
 #### Handoff pattern
 ```
+# Agent A verifies work before handing off
+twining_verify(scope="src/auth/", checks=["test_coverage", "warnings"])
+
 # Agent A completes partial work and hands off
 twining_handoff(
   source_agent="agent-a",
@@ -196,9 +226,12 @@ The dashboard provides read-only views of:
 ### Anti-patterns to Avoid
 
 - **Don't use `twining_post` for decisions.** It will be rejected. Use `twining_decide` which captures rationale, detects conflicts, links the knowledge graph, and enables traceability.
-- **Don't skip `twining_assemble` before starting work.** You'll miss decisions, warnings, and context that could prevent wasted effort or contradictory changes.
+- **Don't skip `twining_assemble` before starting work.** You'll miss decisions, warnings, and context that could prevent wasted effort or contradictory changes. Making decisions without context creates "blind decisions" that may conflict with existing work.
+- **Don't skip `twining_verify` before handoff.** Call it to catch uncovered decisions, unresolved warnings, drift, and blind decisions before passing work to the next agent.
 - **Don't use `"project"` scope for everything.** Narrow scopes make assembly results more relevant and reduce noise.
 - **Don't record trivial decisions.** "Renamed variable from x to y" doesn't need a decision record. Reserve decisions for choices with alternatives and tradeoffs.
+- **Don't make decisions without test coverage** (when applicable). Link tests via `tested_by` relations to create an evidence trail.
+- **Don't ignore conflict warnings.** When `twining_decide` detects a conflict, investigate and resolve explicitly via `twining_override` or `twining_reconsider`.
 - **Don't forget `relates_to`.** When posting an answer, link it to the question. When posting a warning about a decision, link it to the decision ID.
 
 ---

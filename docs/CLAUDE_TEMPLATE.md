@@ -30,6 +30,11 @@ Twining is configured as an MCP server. On first use it creates `.twining/` with
 - Post a `status` entry summarizing what you did
 - Use `twining_link_commit` to associate decisions with git commits
 
+#### Before handing off or completing work:
+- Call `twining_verify` to check test coverage, unresolved warnings, drift, and assembly hygiene
+- For decisions affecting testable code, link tests via `twining_add_relation` with `type: "tested_by"`
+- Address or explicitly acknowledge any warnings surfaced during assembly
+
 ### Blackboard Entry Types
 
 Use the right type for each post:
@@ -58,6 +63,77 @@ Use the right type for each post:
 **Domains** (use consistently): `architecture`, `implementation`, `testing`, `deployment`, `security`, `performance`, `api-design`, `data-model`
 
 **Provisional decisions** are flagged for review. Always check decision status before relying on a provisional decision. Use `twining_reconsider` to flag a decision for re-evaluation with new context.
+
+### Verification and Rigor
+
+The verification step ensures decisions are backed by evidence and code hasn't drifted from documented intent.
+
+#### Decision-to-Test Traceability
+
+Link tests to decisions to create an evidence trail:
+
+```
+# After recording the decision
+twining_decide(
+  domain="implementation",
+  scope="src/auth/",
+  summary="Use JWT for stateless auth",
+  affected_files=["src/auth/middleware.ts"],
+  ...
+)
+
+# After writing the test
+twining_add_relation(
+  source="src/auth/middleware.ts",
+  target="test/auth.test.ts",
+  type="tested_by",
+  properties={ covers: "JWT middleware validation" }
+)
+```
+
+The `twining_verify` tool checks for decisions without `tested_by` relations and flags them for review.
+
+#### Decision Conflict Detection
+
+When `twining_decide` detects a conflict (same domain + overlapping scope + active status):
+
+1. **The new decision is recorded normally** — decisions are never blocked by conflicts
+2. **A warning is auto-posted to the blackboard** linking both decision IDs via `relates_to`
+3. **Conflict metadata is recorded** on the new decision: `conflicts_with: [existing_id]`
+4. **Both decisions remain active** until explicitly resolved
+
+Resolution requires explicit action:
+- Use `twining_override` to replace one decision (sets it to `overridden`, optionally creates replacement)
+- Use `twining_reconsider` to flag one for review (sets to `provisional`)
+
+Conflicts surface in the next `twining_assemble` call as high-priority warnings. This design ensures conflicts are **loud** (visible in assembled context) without blocking agent progress.
+
+#### Drift Detection
+
+Decisions capture intent at a point in time. Code evolves. When a file listed in `affected_files` is modified after the decision timestamp without a superseding decision, that's **drift** — the documented rationale no longer matches reality.
+
+`twining_verify` compares decision timestamps against git history for affected files and flags stale decisions. Drift doesn't block work — it surfaces as a warning in the next agent's assembled context.
+
+#### Checkable Constraints
+
+Some constraints can be mechanically verified. Use the structured format:
+
+```
+twining_post(
+  entry_type="constraint",
+  summary="No direct fs calls outside storage/",
+  detail='{"check_command": "grep -r \\"import.*node:fs\\" src/ --include=\\"*.ts\\" | grep -v storage/ | wc -l", "expected": "0"}',
+  scope="src/"
+)
+```
+
+The `twining_verify` tool executes `check_command` (sandboxed to project directory) and compares output against `expected`. This is the strongest form of rigor: the human specifies the invariant, the system checks it continuously, and violations are impossible to miss.
+
+#### Assembly-Before-Decision Tracking
+
+If an agent calls `twining_decide` without having called `twining_assemble` in the same session, the decision was made without shared context. It might still be correct — but it was made blind.
+
+`twining_verify` checks for "blind decisions" (decisions made without prior context assembly) and flags them. This doesn't block decisions — it makes uninformed decision-making visible.
 
 ### Scope Conventions
 
@@ -116,6 +192,11 @@ Note: `twining_decide` auto-creates `file`/`function` entities with `decided_by`
 | `twining_handoff` | Hand off work with results and auto-assembled context snapshot |
 | `twining_acknowledge` | Accept a handoff |
 
+#### Verification
+| Tool | Purpose |
+|------|---------|
+| `twining_verify` | Check test coverage, unresolved warnings, drift, assembly hygiene, and checkable constraints for a scope |
+
 #### Lifecycle
 | Tool | Purpose |
 |------|---------|
@@ -140,6 +221,9 @@ twining_delegate(
 
 #### Handoff (passing work between agents)
 ```
+# Agent A verifies work before handing off
+twining_verify(scope="src/auth/", checks=["test_coverage", "warnings"])
+
 # Agent A completes partial work
 twining_handoff(
   source_agent="agent-a",
@@ -161,10 +245,13 @@ When approaching context limits, use `twining_export` to produce a self-containe
 
 ### Anti-patterns
 
-- **Don't skip `twining_assemble` before starting work.** You'll miss decisions, warnings, and context that prevent wasted effort.
+- **Don't skip `twining_assemble` before starting work.** You'll miss decisions, warnings, and context that prevent wasted effort. Making decisions without context creates "blind decisions" that may conflict with existing work.
+- **Don't skip `twining_verify` before handoff.** Call it to catch uncovered decisions, unresolved warnings, drift, and blind decisions before passing work to the next agent.
 - **Don't use `"project"` scope for everything.** Narrow scopes make assembly relevant and reduce noise.
 - **Don't record trivial decisions.** Variable renames don't need decision records. Reserve for choices with alternatives and tradeoffs.
-- **Don't forget `relates_to`.** Link answers to questions, warnings to decisions.
+- **Don't make decisions without test coverage** (when applicable). Link tests via `tested_by` relations to create an evidence trail.
+- **Don't ignore conflict warnings.** When `twining_decide` detects a conflict, investigate and resolve explicitly via `twining_override` or `twining_reconsider`.
+- **Don't forget `relates_to`.** Link answers to questions, warnings to decisions, conflict resolutions to conflicting decisions.
 - **Don't use `twining_post` for decisions.** Always use `twining_decide`.
 
 ### Dashboard
@@ -276,6 +363,7 @@ Twining has built-in GSD awareness:
 - Post `need` entries for follow-up work outside the current phase scope
 
 #### During `/gsd:verify-work`
+- Use `twining_verify` on the phase scope to check test coverage, warnings, and drift
 - Use `twining_why` on modified files to confirm decisions are documented
 - Use `twining_search_decisions` to verify all phase decisions have been captured
 - Check `twining_status` for any unresolved warnings
