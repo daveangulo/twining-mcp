@@ -260,5 +260,35 @@
     "type": "implements",
     "properties": {},
     "created_at": "2026-02-17T03:41:36.454Z"
+  },
+  {
+    "id": "01KHWFFQA295RGEQ5979BAG1T5",
+    "source": "01KHWFFQA1SGFYXJMVPGER7S2G",
+    "target": "01KHWFFQA09XT7WX24WW2XJVS1",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Create comprehensive demo video plan with realistic multi-agent scenario"
+    },
+    "created_at": "2026-02-20T02:53:55.906Z"
+  },
+  {
+    "id": "01KHWFSYSFS7EHVAXXR7AJ4H86",
+    "source": "01KHWFSYSETHYZ4GGQTZMKR9CA",
+    "target": "01KHWFSYSDV41X3R91BRSRPWA1",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Build automated demo using playwright browser automation + screenshot capture + narration script"
+    },
+    "created_at": "2026-02-20T02:59:31.247Z"
+  },
+  {
+    "id": "01KHWFSYSH861FAHHHKC219HDK",
+    "source": "01KHWFSYSFS7EHVAXXR7AJ4H87",
+    "target": "01KHWFSYSDV41X3R91BRSRPWA1",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Build automated demo using playwright browser automation + screenshot capture + narration script"
+    },
+    "created_at": "2026-02-20T02:59:31.249Z"
   }
 ]

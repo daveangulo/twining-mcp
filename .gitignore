@@ -18,3 +18,5 @@ dist/
 # Internal tooling
 .planning/
 .serena/
+
+demo

@@ -1,0 +1,35 @@
+{
+  "agent_id": "main",
+  "domain": "documentation",
+  "scope": "docs/",
+  "summary": "Create comprehensive demo video plan with realistic multi-agent scenario",
+  "context": "User wants a demo video showcasing all Twining capabilities. We have existing dashboard screenshots and a complete v1.3 implementation (28 MCP tools, web dashboard, agent coordination, verification). Need to demonstrate practical value through a realistic scenario.",
+  "rationale": "Demo should follow a narrative arc showing how agents use Twining throughout a realistic development workflow. Better to show the \"why\" (solving real coordination problems) rather than just feature enumeration. Will use a multi-agent scenario where agents coordinate on adding authentication to a web app, demonstrating blackboard, decisions, knowledge graph, context assembly, verification, and handoffs.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Feature-by-feature walkthrough",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Less compelling than showing features in context of solving real problems"
+    },
+    {
+      "option": "Live coding demo",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Video format better for showcasing asynchronous agent interactions and dashboard visualizations"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "docs/DEMO_SCRIPT.md"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KHWFFQ7PAPJSPTDK10C3PAR2",
+  "timestamp": "2026-02-20T02:53:55.830Z",
+  "status": "active"
+}

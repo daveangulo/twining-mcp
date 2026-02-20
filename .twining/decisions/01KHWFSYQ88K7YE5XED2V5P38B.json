@@ -1,0 +1,42 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "examples/",
+  "summary": "Build automated demo using playwright browser automation + screenshot capture + narration script",
+  "context": "User wants a complete demo video built automatically. Need to demonstrate all 28 Twining tools without manual intervention.",
+  "rationale": "Will create: (1) demo project with real code, (2) automation script that executes Twining commands to populate data, (3) playwright automation to navigate dashboard and capture screenshots, (4) HTML presentation combining screenshots with narration that can be screen-recorded or converted to video with ffmpeg. This approach is fully automated and produces a professional result.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Manual screen recording with user involvement",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "User specifically requested no involvement"
+    },
+    {
+      "option": "Static slide deck only",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Less engaging than seeing real dashboard interactions"
+    },
+    {
+      "option": "Animated explainer video",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Requires video editing software and manual work"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "examples/demo-automation/",
+    "examples/demo-project/"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KHWFSYQ88K7YE5XED2V5P38B",
+  "timestamp": "2026-02-20T02:59:31.176Z",
+  "status": "active"
+}

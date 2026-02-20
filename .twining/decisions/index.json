@@ -221,5 +221,34 @@
       "ConstraintsCheck"
     ],
     "commit_hashes": []
+  },
+  {
+    "id": "01KHWFFQ7PAPJSPTDK10C3PAR2",
+    "timestamp": "2026-02-20T02:53:55.830Z",
+    "domain": "documentation",
+    "scope": "docs/",
+    "summary": "Create comprehensive demo video plan with realistic multi-agent scenario",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "docs/DEMO_SCRIPT.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KHWFSYQ88K7YE5XED2V5P38B",
+    "timestamp": "2026-02-20T02:59:31.176Z",
+    "domain": "implementation",
+    "scope": "examples/",
+    "summary": "Build automated demo using playwright browser automation + screenshot capture + narration script",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "examples/demo-automation/",
+      "examples/demo-project/"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]

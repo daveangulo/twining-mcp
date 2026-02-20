@@ -1,0 +1,35 @@
+{
+  "agent_id": "main",
+  "domain": "architecture",
+  "scope": "docs/AGENT_INTEGRATION_ARCHITECTURE.md",
+  "summary": "Add rigor framework: verify step in agent lifecycle, tested_by traceability, drift detection, checkable constraints",
+  "context": "Chad Fowler's 'Relocating Rigor' identifies that when AI generates code, discipline must move from generation to evaluation — 'probabilistic inside, deterministic at the edges.' The agent integration architecture had a fully advisory lifecycle with no verification gates, meaning coordination could look rigorous while code silently drifted from decisions.",
+  "rationale": "The agent lifecycle needed a verify step as a deterministic edge between decide and handoff. Six mechanisms form a hierarchy from convention (tests pass) through low-effort additions (assembly tracking, tested_by queries) to new tooling (drift detection, checkable constraints). This relocates rigor from 'agents should follow the lifecycle' to 'the system makes failures visible when they don't.' The tested_by relation type already exists in the knowledge graph but was unused — activating it is the highest-leverage change.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Keep lifecycle advisory, add rigor only via CLAUDE.md instructions",
+      "pros": [
+        "Zero code changes",
+        "Works immediately"
+      ],
+      "cons": [
+        "Relies entirely on LLM compliance",
+        "Silent failure when agents skip steps",
+        "No visibility into whether rigor is actually practiced"
+      ],
+      "reason_rejected": "Advisory-only is exactly the 'quiet failure' pattern Fowler warns about — the system must make non-compliance visible, not just request compliance"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "docs/AGENT_INTEGRATION_ARCHITECTURE.md"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "id": "01KHT8ZWWCYYH31N4DXZA08H1R",
+  "timestamp": "2026-02-19T06:21:57.006Z",
+  "status": "provisional"
+}

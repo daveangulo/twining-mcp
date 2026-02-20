@@ -331,5 +331,57 @@
     },
     "created_at": "2026-02-20T00:53:37.830Z",
     "updated_at": "2026-02-20T00:53:37.830Z"
+  },
+  {
+    "id": "01KHWFFQA09XT7WX24WW2XJVS1",
+    "name": "01KHWFFQ7PAPJSPTDK10C3PAR2",
+    "type": "concept",
+    "properties": {
+      "summary": "Create comprehensive demo video plan with realistic multi-agent scenario",
+      "scope": "docs/"
+    },
+    "created_at": "2026-02-20T02:53:55.904Z",
+    "updated_at": "2026-02-20T02:53:55.904Z"
+  },
+  {
+    "id": "01KHWFFQA1SGFYXJMVPGER7S2G",
+    "name": "docs/DEMO_SCRIPT.md",
+    "type": "file",
+    "properties": {
+      "scope": "docs/"
+    },
+    "created_at": "2026-02-20T02:53:55.905Z",
+    "updated_at": "2026-02-20T02:53:55.905Z"
+  },
+  {
+    "id": "01KHWFSYSDV41X3R91BRSRPWA1",
+    "name": "01KHWFSYQ88K7YE5XED2V5P38B",
+    "type": "concept",
+    "properties": {
+      "summary": "Build automated demo using playwright browser automation + screenshot capture + narration script",
+      "scope": "examples/"
+    },
+    "created_at": "2026-02-20T02:59:31.245Z",
+    "updated_at": "2026-02-20T02:59:31.245Z"
+  },
+  {
+    "id": "01KHWFSYSETHYZ4GGQTZMKR9CA",
+    "name": "examples/demo-automation/",
+    "type": "file",
+    "properties": {
+      "scope": "examples/"
+    },
+    "created_at": "2026-02-20T02:59:31.246Z",
+    "updated_at": "2026-02-20T02:59:31.246Z"
+  },
+  {
+    "id": "01KHWFSYSFS7EHVAXXR7AJ4H87",
+    "name": "examples/demo-project/",
+    "type": "file",
+    "properties": {
+      "scope": "examples/"
+    },
+    "created_at": "2026-02-20T02:59:31.247Z",
+    "updated_at": "2026-02-20T02:59:31.247Z"
   }
 ]

@@ -1,0 +1,49 @@
+{
+  "agent_id": "main",
+  "domain": "architecture",
+  "scope": "docs/",
+  "summary": "Agent integration architecture doc recommends Claude Code + Twining as primary path, blackboard over orchestrator",
+  "context": "User asked for research on which agent frameworks work best with Twining. A previous session generated an inaccurate multi-repo orchestrator design that proposed the anti-pattern the user rejected. Needed a grounded, opinionated analysis verified against actual codebase.",
+  "rationale": "Claude Code + Twining MCP scores 15/15 because Claude Code is both MCP host and SWE agent natively, Twining provides persistent shared state through standard MCP tools, and subagents inherit connections automatically. Blackboard coordination fits MCP's request/response model (no push channel for orchestrator assignment), survives context resets (decisions persist in files), and enables token-budgeted selective injection. Academic research (LbMAS 2025) validates blackboard outperforming orchestrator patterns for LLM agents.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Recommend Strands Agents (AWS) as primary host",
+      "pros": [
+        "Production-grade AWS ecosystem",
+        "Native MCP",
+        "Swarm pattern has shared memory"
+      ],
+      "cons": [
+        "General-purpose not SWE-focused",
+        "Shared memory is in-process not persistent",
+        "Requires AWS Bedrock for full value"
+      ],
+      "reason_rejected": "Claude Code already provides the SWE agent loop, MCP hosting, and subagent management — adding Strands would add a layer without clear benefit for the SWE use case"
+    },
+    {
+      "option": "Recommend orchestrator framework (CrewAI/LangGraph) with Twining bolted on",
+      "pros": [
+        "Established multi-agent frameworks",
+        "Role-based or graph-based workflow control"
+      ],
+      "cons": [
+        "Orchestrator model conflicts with blackboard self-selection",
+        "Central coordinator becomes context bottleneck",
+        "Requires adapters to use Twining as shared state"
+      ],
+      "reason_rejected": "Orchestrator coordination model is fundamentally incompatible with blackboard pattern — the user identified this as the key insight"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "docs/AGENT_INTEGRATION_ARCHITECTURE.md"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "id": "01KHT3PGQRF5H019Y1M7DEYJRH",
+  "timestamp": "2026-02-19T04:49:26.781Z",
+  "status": "active"
+}
