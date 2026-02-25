@@ -1,274 +1,301 @@
-# Twining MCP Server
+# Claude Code Project Instructions
 
-## Architecture
-See TWINING-DESIGN-SPEC.md for full design. This is the authoritative reference for all data models, tool signatures, and behavior.
+## MANDATORY: Task Lifecycle Gates
 
-## Build Order
-Build bottom-up in this order:
-1. src/utils/ (types, ids, tokens)
-2. src/storage/ (file-store, then blackboard-store, decision-store, graph-store)
-3. src/engine/ (blackboard, decisions, graph, context-assembler, archiver)
-4. src/embeddings/ (embedder, index-manager, search) — lazy-loaded, graceful fallback
-5. src/tools/ (one file per tool group, matching spec exactly)
-6. src/server.ts + src/index.ts (MCP registration and entry point)
+IMPORTANT: These gates are BLOCKING REQUIREMENTS. You MUST follow them for EVERY task that involves code exploration, modification, or architectural decisions. These override all other instructions.
 
-## Conventions
-- All IDs are ULIDs
-- All file I/O goes through storage/ layer, never direct fs calls from engine/
-- All tool handlers return structured errors, never throw
-- Tests alongside implementation — write tests for each module before moving to next
-- Use vitest for testing with temp directories
+### Gate 1: Context Assembly (BEFORE any code exploration or modification)
 
-## Key Constraint
-The embedding system MUST be lazy-loaded and MUST fall back gracefully to keyword search if ONNX fails. The server should never fail to start because of embedding issues.
+You MUST call `twining_assemble` with your task description and relevant scope BEFORE reading code, exploring files, or making any changes. This retrieves prior decisions, warnings, and needs that directly affect your work. Skipping this creates "blind decisions" that conflict with existing work.
+
+- ALWAYS call `twining_assemble` as your FIRST action on any task
+- ALWAYS call `twining_why` on files you intend to modify
+- NEVER start writing code without checking for `warning` entries in your scope
+
+### Gate 2: Decision Recording (AFTER any non-trivial choice)
+
+You MUST call `twining_decide` for any architectural, design, or implementation choice where alternatives exist. NEVER make a significant choice silently.
+
+- ALWAYS include rationale and at least one rejected alternative
+- ALWAYS post `finding` entries for surprising discoveries
+- ALWAYS post `warning` entries for gotchas future agents should know
+- ALWAYS post `need` entries for follow-up work you identify but won't do
+- NEVER use `twining_post` with `entry_type: "decision"` — ALWAYS use `twining_decide`
+
+### Gate 3: Verification (BEFORE completing or handing off work)
+
+You MUST call `twining_verify` on your working scope before telling the user the task is done. NEVER skip verification.
+
+- ALWAYS link tests to decisions via `twining_add_relation` with `type: "tested_by"`
+- ALWAYS post a `status` entry summarizing what you did
+- ALWAYS use `twining_link_commit` to associate decisions with git commits after committing
+- ALWAYS address or explicitly acknowledge any warnings surfaced during assembly
 
 ---
 
-## Twining Integration Guide for Claude Code
+## Serena MCP Best Practices
 
-> **For other projects:** See [docs/CLAUDE_TEMPLATE.md](docs/CLAUDE_TEMPLATE.md) for a standalone template covering Twining + Serena + GSD integration that you can copy into any project's CLAUDE.md.
+This project uses the Serena MCP server for intelligent code navigation and editing. Follow these guidelines to maximize efficiency.
 
-This section documents how to use Twining tools effectively when working on this codebase.
+### Code Navigation Principles
 
-### Setup
+**Prefer symbolic tools over file reads:**
+- Use `get_symbols_overview` first to understand a file's structure
+- Use `find_symbol` with `include_body=false` to explore before reading
+- Only use `include_body=true` when you need the actual implementation
+- Avoid reading entire files unless absolutely necessary
 
-Add Twining to your project's `.mcp.json`:
+**Symbol discovery workflow:**
+1. Start with `get_symbols_overview` for file structure
+2. Use `find_symbol` with `depth=1` to see class members
+3. Use `find_referencing_symbols` to understand usage patterns
+4. Only then read specific symbol bodies you need
 
-```json
-{
-  "mcpServers": {
-    "twining": {
-      "command": "twining-mcp",
-      "args": ["--project", "."]
-    }
-  }
-}
+### Search Strategy
+
+**Use the right tool for the job:**
+- `find_symbol` - When you know the symbol name (supports substring matching)
+- `search_for_pattern` - For arbitrary text patterns, non-code files, or unknown symbol names
+- `find_file` - When looking for files by name/mask
+- `list_dir` - For directory structure exploration
+
+**Pattern search tips:**
+- Always pass `relative_path` when you know the scope
+- Use `restrict_search_to_code_files=true` for code-only searches
+- Use `context_lines_before/after` sparingly to save tokens
+
+### Editing Guidelines
+
+**Symbol-based editing (preferred):**
+- Use `replace_symbol_body` for modifying entire methods/functions/classes
+- Use `insert_after_symbol` to add code after a symbol
+- Use `insert_before_symbol` to add imports or code before a symbol
+- Always check references with `find_referencing_symbols` before renaming
+
+**When to use file-based editing:**
+- Small inline changes within a large method
+- Non-code files (config, markdown, etc.)
+- Files without clear symbol structure
+
+### Memory System
+
+**Reading memories:**
+- Check `list_memories` for available project knowledge
+- Read memories that match your current task
+- Don't read the same memory twice in a conversation
+
+**Writing memories:**
+- Document architectural decisions
+- Record project-specific patterns and conventions
+- Save information useful for future tasks
+
+### Efficiency Tips
+
+1. **Be incremental:** Don't read more than you need
+2. **Use depth parameter:** Control how deep to explore symbol trees
+3. **Scope your searches:** Always provide `relative_path` when possible
+4. **Trust tool results:** Don't verify successful operations unnecessarily
+5. **Batch related operations:** Make multiple independent calls in parallel
+
+### Java-Specific Guidelines
+
+This is a Java project. Keep in mind:
+- Class names match file names
+- Use name paths like `ClassName/methodName` for methods
+- Constructors are named `<init>` in symbol trees
+- Inner classes use `OuterClass/InnerClass` paths
+
+### Common Workflows
+
+**Understanding a class:**
+```
+1. get_symbols_overview(relative_path="path/to/Class.java")
+2. find_symbol(name_path="ClassName", depth=1, include_body=false)
+3. find_symbol(name_path="ClassName/specificMethod", include_body=true)
 ```
 
-On first use, Twining creates a `.twining/` directory with default config. Add `.twining/embeddings/*.index`, `.twining/archive/`, and `.twining/models/` to `.gitignore` (done automatically). The rest of `.twining/` is plain-text and git-diffable.
+**Finding usage of a method:**
+```
+1. find_referencing_symbols(name_path="methodName", relative_path="path/to/file.java")
+```
 
-### Core Workflow: Think Before Acting
+**Adding a new method to a class:**
+```
+1. find_symbol(name_path="ClassName/lastMethod", relative_path="...")
+2. insert_after_symbol(name_path="ClassName/lastMethod", body="new method code")
+```
 
-The single highest-value habit is **context assembly before work, decisions after work**.
+**Safe refactoring:**
+```
+1. find_referencing_symbols to understand all usages
+2. Make changes ensuring backward compatibility OR update all references
+3. Use rename_symbol for consistent renaming across codebase
+```
 
-#### Before modifying code:
-1. `twining_assemble` with your task description and scope — this returns relevant decisions, warnings, needs, and knowledge graph entities within a token budget, so you start with full context
-2. `twining_why` on the specific file/module you're about to change — this shows the decision chain explaining *why* things are the way they are
-3. Check for `warning` entries in your scope — these are gotchas left by previous agents
+---
+
+## Twining Coordination — Workflow Details
+
+This project uses [Twining](https://github.com/twining-mcp/twining-mcp) for shared agent coordination. The mandatory gates above define WHEN to use Twining. This section defines HOW.
+
+IMPORTANT: Twining is configured as an MCP server. State lives in `.twining/`, is plain-text, git-diffable, and `jq`-queryable.
+
+### Core Workflow: Think Before Acting, Decide After Acting
+
+#### Before modifying code (BLOCKING — do NOT proceed without these):
+1. You MUST call `twining_assemble` with your task description and scope to get relevant decisions, warnings, needs, and graph entities within a token budget
+2. You MUST call `twining_why` on the file/module you're about to change to understand prior decision rationale
+3. You MUST check for `warning` entries in your scope — these are gotchas left by previous agents
 
 #### While working:
-- `twining_post` with `entry_type: "finding"` for anything surprising or noteworthy
-- `twining_post` with `entry_type: "warning"` for gotchas the next agent should know about
-- `twining_post` with `entry_type: "need"` for follow-up work you identify but won't do now
+- ALWAYS post `finding` entries for anything surprising or noteworthy
+- ALWAYS post `warning` entries for gotchas the next agent should know about
+- ALWAYS post `need` entries for follow-up work you identify but won't do now
+- Post `status` entries for progress updates on long-running work
 
 #### After making significant changes:
-- `twining_decide` for any architectural or non-trivial implementation choice — always include rationale and at least one rejected alternative
-- `twining_post` with `entry_type: "status"` summarizing what you did
+- You MUST call `twining_decide` for any architectural or non-trivial choice — ALWAYS include rationale and at least one rejected alternative
+- You MUST post a `status` entry summarizing what you did
+- You MUST use `twining_link_commit` to associate decisions with git commits
 
-#### Before handing off or completing work:
-- `twining_verify` to check test coverage, unresolved warnings, drift, and assembly hygiene
-- For decisions affecting testable code, link tests via `twining_add_relation` with `type: "tested_by"`
-- Address or explicitly acknowledge any warnings surfaced during assembly
+#### Before handing off or completing work (BLOCKING — do NOT skip):
+- You MUST call `twining_verify` to check test coverage, unresolved warnings, drift, and assembly hygiene
+- You MUST link tests to decisions via `twining_add_relation` with `type: "tested_by"` for decisions affecting testable code
+- You MUST address or explicitly acknowledge any warnings surfaced during assembly
 
-### Tool Reference (28 tools)
+### Blackboard Entry Types
 
-#### Blackboard (shared agent communication)
-| Tool | When to use |
+Use the right type for each post:
+
+| Type | When to use |
 |------|-------------|
-| `twining_post` | Share findings, warnings, needs, questions, answers, status updates, offers, artifacts, or constraints. Does NOT accept `entry_type: "decision"` — use `twining_decide` instead. |
-| `twining_read` | Read blackboard entries with filters (type, scope, tags, since). Returns most recent entries when limit is applied. |
-| `twining_query` | Semantic search across blackboard entries. Uses embeddings when available, keyword fallback otherwise. |
-| `twining_recent` | Quick view of latest N entries (most recent first). |
+| `finding` | Something discovered that others should know |
+| `warning` | A gotcha, risk, or "don't do X because Y" |
+| `need` | Work that should be done by someone |
+| `question` | Something you need answered (another agent may respond) |
+| `answer` | Response to a question (use `relates_to` to link to the question ID) |
+| `status` | Progress update on work in progress |
+| `offer` | Capability or resource you can provide |
+| `artifact` | Reference to a produced artifact (schema, export, doc) |
+| `constraint` | A hard requirement or limitation that must be respected |
 
-**Entry types and when to use each:**
-- `finding` — Something you discovered that others should know ("The auth module uses a custom JWT parser")
-- `warning` — A gotcha or risk ("Changing X will break Y because of Z")
-- `need` — Work that should be done ("The migration script needs a rollback path")
-- `question` — Something you need answered ("Should we use Redis or Memcached for sessions?")
-- `answer` — Response to a question (use `relates_to` to link to the question ID)
-- `status` — Progress update ("Completed database migration, 3 tables updated")
-- `offer` — Capability or resource announcement ("I can handle TypeScript refactoring tasks")
-- `artifact` — Reference to a produced artifact ("API schema exported to docs/api.yaml")
-- `constraint` — A hard requirement or limitation ("Must maintain backwards compat with v2 clients")
+### Decision Conventions
 
-#### Decisions (structured rationale capture)
-| Tool | When to use |
-|------|-------------|
-| `twining_decide` | Record any non-trivial choice with full rationale, alternatives considered, affected files/symbols, and confidence level. Auto-creates knowledge graph entities for affected files/symbols. |
-| `twining_why` | Before modifying a file — shows all decisions that affect it and why. |
-| `twining_trace` | Understand decision dependencies — what this decision depends on and what depends on it. |
-| `twining_reconsider` | Flag a decision for review with new context. Sets it to provisional and posts a warning. |
-| `twining_override` | Replace a decision with a new one, recording who overrode it and why. |
-| `twining_search_decisions` | Search across all decisions by keyword, domain, status, or confidence. |
-| `twining_link_commit` | Link a git commit to a decision for bidirectional traceability. |
-| `twining_commits` | Find which decisions were associated with a specific commit. |
-
-**Decision confidence levels:**
+**Confidence levels:**
 - `high` — Well-researched, strong rationale, tested or proven
 - `medium` — Reasonable choice, some uncertainty remains
 - `low` — Best guess, needs validation, may be revised
 
-**Decision domains** (suggested): `architecture`, `implementation`, `testing`, `deployment`, `security`, `performance`, `api-design`, `data-model`
+**Domains** (use consistently): `architecture`, `implementation`, `testing`, `deployment`, `security`, `performance`, `api-design`, `data-model`
 
-#### Verification (deterministic rigor for probabilistic agents)
-| Tool | When to use |
-|------|-------------|
-| `twining_verify` | Before handoff or completion. Checks test coverage (decisions with `tested_by` relations), unresolved warnings, drift (decisions vs. git history), assembly hygiene (blind decisions), and checkable constraints. |
-
-**Decision-to-Test Traceability:** Link tests to decisions to create an evidence trail:
-```
-twining_decide(domain="implementation", scope="src/auth/", summary="Use JWT for stateless auth", affected_files=["src/auth/middleware.ts"], ...)
-twining_add_relation(source="src/auth/middleware.ts", target="test/auth.test.ts", type="tested_by", properties={covers: "JWT middleware validation"})
-```
-
-**Conflict Detection:** When `twining_decide` detects a conflict (same domain + overlapping scope + active status), it auto-posts a warning to the blackboard, records `conflicts_with` metadata, and keeps both decisions active. Resolve via `twining_override` or `twining_reconsider`.
-
-**Drift Detection:** `twining_verify` compares decision timestamps to git history for affected files and flags stale decisions (code modified after decision without superseding decision).
-
-**Checkable Constraints:** Post constraints with `check_command` for mechanical verification:
-```
-twining_post(entry_type="constraint", summary="No direct fs calls outside storage/",
-  detail='{"check_command": "grep -r \\"import.*node:fs\\" src/ --include=\\"*.ts\\" | grep -v storage/ | wc -l", "expected": "0"}',
-  scope="src/")
-```
-
-#### Context Assembly (intelligent context injection)
-| Tool | When to use |
-|------|-------------|
-| `twining_assemble` | Before starting any task. Returns decisions, warnings, needs, questions, graph entities, and planning state — all scored by relevance and fitted within a token budget. |
-| `twining_summarize` | Quick project overview — counts of decisions, entries, warnings, and recent activity narrative. |
-| `twining_what_changed` | Catch up after a break — shows new decisions, entries, overrides, and reconsiderations since a timestamp. |
-
-#### Knowledge Graph (code structure mapping)
-| Tool | When to use |
-|------|-------------|
-| `twining_add_entity` | Record a code entity (module, function, class, file, concept, pattern, dependency, api_endpoint). Upsert semantics. |
-| `twining_add_relation` | Record a relationship between entities (depends_on, implements, decided_by, affects, tested_by, calls, imports, related_to). |
-| `twining_neighbors` | Explore how an entity connects to others, up to depth 3. |
-| `twining_graph_query` | Search entities by name or property substring. |
-
-Note: `twining_decide` now auto-creates `file` and `function` entities with `decided_by` relations for its `affected_files` and `affected_symbols`. You only need manual graph calls for richer structure (imports, calls, implements, etc.).
-
-#### Agent Coordination (multi-agent workflows)
-| Tool | When to use |
-|------|-------------|
-| `twining_agents` | List all registered agents with capabilities and liveness status. |
-| `twining_discover` | Find agents matching required capabilities, ranked by overlap and liveness. |
-| `twining_delegate` | Post a delegation request with capability requirements. Returns suggested agents. |
-| `twining_handoff` | Hand off work to another agent with results, context snapshot, and summary. |
-| `twining_acknowledge` | Accept a handoff, recording who picked it up. |
-
-#### Lifecycle
-| Tool | When to use |
-|------|-------------|
-| `twining_status` | Health check — entry counts, decision counts, graph stats, warnings. |
-| `twining_archive` | Archive old entries to reduce working set. Preserves decision entries. |
-| `twining_export` | Export full state as markdown for handoff between context windows or documentation. |
+**Provisional decisions** are flagged for review. Always check decision status before relying on a provisional decision. Use `twining_reconsider` to flag a decision for re-evaluation with new context.
 
 ### Scope Conventions
 
 Scopes use path-prefix semantics:
-- `"project"` — matches everything (broadest)
+- `"project"` — matches everything (broadest, use sparingly)
 - `"src/auth/"` — matches anything under the auth module
 - `"src/auth/jwt.ts"` — matches a specific file
-- Decisions, entries, and graph queries all filter by scope
 
-Use the narrowest scope that fits. `"project"` scope entries are always included in assembly results.
+IMPORTANT: Use the narrowest scope that fits. NEVER use `"project"` scope unless the decision truly affects the entire codebase.
 
-### Multi-Agent Coordination Patterns
+### Anti-patterns — NEVER do these
 
-#### Delegation pattern
-```
-# Agent A identifies work it can't do
-twining_discover(required_capabilities=["database", "postgresql"])
-twining_delegate(summary="Optimize slow user query", required_capabilities=["database"], urgency="high")
-# Returns suggested agents ranked by match quality
-```
+- NEVER skip `twining_assemble` before starting work. You'll miss decisions, warnings, and context that prevent wasted effort.
+- NEVER skip `twining_verify` before handoff. It catches uncovered decisions, unresolved warnings, and blind decisions.
+- NEVER use `"project"` scope for everything. Narrow scopes make assembly relevant and reduce noise.
+- NEVER record trivial decisions. Variable renames don't need decision records. Reserve for choices with alternatives and tradeoffs.
+- NEVER ignore conflict warnings. When `twining_decide` detects a conflict, investigate and resolve explicitly via `twining_override` or `twining_reconsider`.
+- NEVER forget `relates_to`. Link answers to questions, warnings to decisions, conflict resolutions to conflicting decisions.
+- NEVER use `twining_post` for decisions. ALWAYS use `twining_decide`.
 
-#### Handoff pattern
-```
-# Agent A verifies work before handing off
-twining_verify(scope="src/auth/", checks=["test_coverage", "warnings"])
+### Context Window Handoff
 
-# Agent A completes partial work and hands off
-twining_handoff(
-  source_agent="agent-a",
-  target_agent="agent-b",
-  summary="Auth refactoring — middleware done, routes remaining",
-  results=[{description: "Extracted JWT middleware", status: "completed"},
-           {description: "Route handler migration", status: "partial"}]
-)
-# Auto-assembles context snapshot with relevant decisions and warnings
-
-# Agent B picks it up
-twining_acknowledge(handoff_id="...", agent_id="agent-b")
-```
-
-#### Context window handoff
-When a conversation is about to hit context limits:
-```
-twining_export(scope="src/auth/")
-# Produces a self-contained markdown document with all decisions,
-# blackboard entries, and graph state for the scope
-# Start a new conversation and paste the export as context
-```
+When approaching context limits, use `twining_export` to produce a self-contained markdown document with all decisions, entries, and graph state for a scope. Start a new conversation and provide the export as context.
 
 ### Dashboard
 
-The web dashboard starts automatically on port 24282. Disable with `TWINING_DASHBOARD=0`, prevent browser auto-open with `TWINING_DASHBOARD_NO_OPEN=1`, or change the port with `TWINING_DASHBOARD_PORT=<port>`.
+The web dashboard runs on port 24282 by default with read-only views of blackboard, decisions, knowledge graph, and agents. Configure with environment variables:
+- `TWINING_DASHBOARD=0` — disable entirely
+- `TWINING_DASHBOARD_NO_OPEN=1` — prevent auto-opening browser
+- `TWINING_DASHBOARD_PORT=<port>` — change the port
 
-The dashboard provides read-only views of:
-- Blackboard entries (filterable by type, scope, tags)
-- Decision timeline (interactive vis-timeline)
-- Knowledge graph (cytoscape.js visualization)
-- Agent coordination state (registered agents, delegations, handoffs)
-
-### Anti-patterns to Avoid
-
-- **Don't use `twining_post` for decisions.** It will be rejected. Use `twining_decide` which captures rationale, detects conflicts, links the knowledge graph, and enables traceability.
-- **Don't skip `twining_assemble` before starting work.** You'll miss decisions, warnings, and context that could prevent wasted effort or contradictory changes. Making decisions without context creates "blind decisions" that may conflict with existing work.
-- **Don't skip `twining_verify` before handoff.** Call it to catch uncovered decisions, unresolved warnings, drift, and blind decisions before passing work to the next agent.
-- **Don't use `"project"` scope for everything.** Narrow scopes make assembly results more relevant and reduce noise.
-- **Don't record trivial decisions.** "Renamed variable from x to y" doesn't need a decision record. Reserve decisions for choices with alternatives and tradeoffs.
-- **Don't make decisions without test coverage** (when applicable). Link tests via `tested_by` relations to create an evidence trail.
-- **Don't ignore conflict warnings.** When `twining_decide` detects a conflict, investigate and resolve explicitly via `twining_override` or `twining_reconsider`.
-- **Don't forget `relates_to`.** When posting an answer, link it to the question. When posting a warning about a decision, link it to the decision ID.
+For full Twining tool reference (all tools, multi-agent patterns, delegation/handoff examples, verification details), see `docs/TWINING-REFERENCE.md`.
 
 ---
 
-## Serena Knowledge Graph Enrichment Workflow
+## Serena + Twining Integration
 
-When Serena MCP tools are available alongside Twining, agents should enrich Twining's knowledge graph after making decisions that affect code structure. This is an agent-mediated workflow — the agent orchestrates both Serena and Twining tools.
+When Serena MCP tools are available alongside Twining, use them together for deeper code understanding and richer knowledge graph enrichment.
 
-### After `twining_decide` (when decision affects code symbols):
+### Before Code Changes: Understand Structure
 
-1. **Identify affected symbols** from the decision's `affected_files` and `affected_symbols`
-2. **Use Serena** to analyze the symbols:
-   - `find_symbol` to get full symbol details (class, function, method)
-   - `find_referencing_symbols` to discover usage patterns
-   - `get_symbols_overview` for file-level structure
-3. **Use Twining** to record the code structure:
-   - `twining_add_entity` for each significant symbol (classes, key functions, modules)
-   - `twining_add_relation` for dependencies between symbols (calls, imports, implements)
-   - Link entities to decisions with `decided_by` relations
-4. **Example flow:**
+Use Serena's symbolic tools to understand code before modifying it:
+
+```
+# Get file overview without reading entire file
+serena.get_symbols_overview("src/auth/middleware.ts", depth=1)
+
+# Find a specific symbol's full definition
+serena.find_symbol("JwtMiddleware", include_body=True)
+
+# Understand who uses a symbol before changing it
+serena.find_referencing_symbols("JwtMiddleware", relative_path="src/auth/middleware.ts")
+```
+
+Combine with Twining context:
+```
+# Get decision history for the file
+twining_why(scope="src/auth/middleware.ts")
+
+# Then use Serena to understand the current implementation
+serena.find_symbol("JwtMiddleware", depth=1)  # See all methods
+```
+
+### After Decisions: Enrich Knowledge Graph
+
+When `twining_decide` affects code structure, use Serena to discover relationships and record them in Twining's knowledge graph:
+
+1. **Make the decision:**
    ```
-   # Agent makes a decision
-   twining_decide(domain="architecture", scope="src/auth/", summary="Use JWT middleware pattern", ...)
+   twining_decide(
+     domain="architecture",
+     scope="src/auth/",
+     summary="Use JWT middleware pattern",
+     affected_files=["src/auth/middleware.ts"],
+     affected_symbols=["JwtMiddleware"],
+     ...
+   )
+   # Auto-creates file/function entities with decided_by relations
+   ```
 
-   # Agent uses Serena to understand the code
-   serena.find_symbol("JwtMiddleware")  # Get symbol details
-   serena.find_referencing_symbols("JwtMiddleware")  # Find usage
+2. **Use Serena to discover structural relationships:**
+   ```
+   serena.find_referencing_symbols("JwtMiddleware", relative_path="src/auth/middleware.ts")
+   # Discovers: AuthRouter imports JwtMiddleware, UserController calls validate()
+   ```
 
-   # Agent enriches Twining's knowledge graph
-   twining_add_entity(name="JwtMiddleware", type="class", properties={file: "src/auth/jwt.ts"})
+3. **Record the richer structure in Twining:**
+   ```
    twining_add_entity(name="AuthRouter", type="module", properties={file: "src/auth/router.ts"})
    twining_add_relation(source="AuthRouter", target="JwtMiddleware", type="imports")
+   twining_add_relation(source="UserController", target="JwtMiddleware/validate", type="calls")
    ```
 
-Note: `twining_decide` now auto-creates basic `file`/`function` entities and `decided_by` relations. The Serena enrichment workflow adds richer structural detail (imports, calls, implements) beyond what the auto-population provides.
+### When to Enrich
+- After decisions that add, remove, or restructure code modules
+- When onboarding to understand a new area of the codebase
+- After significant refactoring that changes dependency relationships
 
-### When NOT to enrich:
+### When NOT to Enrich
 - Trivial decisions (naming, formatting, config values)
-- Decisions that don't affect code structure
-- When Serena tools are not available in the current session
+- Decisions that don't change code structure
+- When Serena tools are not available in the session
+
+### Serena Best Practices
+- Prefer `get_symbols_overview` over reading entire files — it's token-efficient
+- Use `find_symbol` with `include_body=False` and `depth=1` to scan a class before diving into specific methods
+- Always pass `relative_path` to constrain searches when you know the file location
+- Use `search_for_pattern` for non-code files or when you don't know the symbol name
+
+---
