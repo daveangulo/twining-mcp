@@ -1,0 +1,42 @@
+{
+  "agent_id": "main",
+  "domain": "deployment",
+  "scope": ".github/workflows/",
+  "summary": "Add CI (build-and-test on PRs) and Publish (npm publish on tags) GitHub Actions workflows",
+  "context": "The project publishes to npm (v1.6.0) but has no automated build/test/publish pipeline. Only Claude Code integration workflows exist. The pending branch adds a prebuild script for PostHog key injection.",
+  "rationale": "CI workflow gates PRs with Node 18/20/22 matrix (minimum supported, current LTS, active release). Publish workflow triggers on v* tags with npm provenance attestations and auto-generated GitHub Releases. POSTHOG_API_KEY is injected only during publish builds. workflow_dispatch with dry-run option enables testing the pipeline without publishing. Tests re-run in publish as defense-in-depth since tag pushes bypass PR CI.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Single workflow with conditional publish job",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Separating CI and Publish keeps concerns clean — CI runs on every PR/push, Publish only on tags. A single workflow would need complex conditionals and permissions scoping."
+    },
+    {
+      "option": "Use GitHub Packages instead of npmjs.com",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Project already publishes to npmjs.com — changing registries would break existing users."
+    },
+    {
+      "option": "Include automated version bumping (e.g. semantic-release)",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Manual versioning is fine for this project size. Adds complexity and removes human control over version numbers."
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    ".github/workflows/ci.yml",
+    ".github/workflows/publish.yml"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KJDZA8MSNPEYHRRSDHQ89EWQ",
+  "timestamp": "2026-02-26T21:57:39.611Z",
+  "status": "active"
+}
