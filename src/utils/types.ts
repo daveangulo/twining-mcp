@@ -192,6 +192,7 @@ export interface TwiningConfig {
       low_ms: number;
     };
   };
+  analytics?: AnalyticsConfig;
 }
 
 /** Summarize result — spec section 4.3 twining_summarize return */
@@ -449,4 +450,89 @@ export interface TestCoverageResult {
   decisions_in_scope: number;
   decisions_with_tested_by: number;
   uncovered: Array<{ decision_id: string; summary: string; affected_files: string[] }>;
+}
+
+// Analytics types — usage analytics and telemetry
+
+/** Single tool call metric entry (appended to metrics.jsonl) */
+export interface MetricEntry {
+  tool_name: string;
+  timestamp: string;
+  duration_ms: number;
+  success: boolean;
+  error_code?: string;
+  agent_id: string;
+}
+
+/** Aggregated tool usage summary */
+export interface ToolUsageSummary {
+  tool_name: string;
+  call_count: number;
+  error_count: number;
+  avg_duration_ms: number;
+  p95_duration_ms: number;
+  last_called: string;
+}
+
+/** Time-bucketed usage data */
+export interface UsageBucket {
+  bucket_start: string;
+  bucket_end: string;
+  call_count: number;
+  error_count: number;
+  avg_duration_ms: number;
+}
+
+/** Value stats computed from existing .twining/ data */
+export interface ValueStats {
+  blind_decisions_prevented: {
+    total_decisions: number;
+    assembled_before: number;
+    prevention_rate: number;
+  };
+  warnings_surfaced: {
+    total: number;
+    acknowledged: number;
+    resolved: number;
+    ignored: number;
+  };
+  test_coverage: {
+    total_decisions: number;
+    with_tested_by: number;
+    coverage_rate: number;
+  };
+  decision_lifecycle: {
+    active: number;
+    provisional: number;
+    superseded: number;
+    overridden: number;
+  };
+  commit_traceability: {
+    total_decisions: number;
+    with_commits: number;
+    traceability_rate: number;
+  };
+  knowledge_graph: {
+    entities: number;
+    relations: number;
+    entities_by_type: Record<string, number>;
+    relations_by_type: Record<string, number>;
+  };
+  agent_coordination: {
+    total_handoffs: number;
+    by_result_status: Record<string, number>;
+    acknowledgment_rate: number;
+  };
+}
+
+/** Analytics configuration section for TwiningConfig */
+export interface AnalyticsConfig {
+  metrics: {
+    enabled: boolean;
+  };
+  telemetry: {
+    enabled: boolean;
+    posthog_api_key: string;
+    posthog_host: string;
+  };
 }

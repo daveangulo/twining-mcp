@@ -49,6 +49,7 @@
     <button class="tab-btn" data-tab="graph">Graph</button>
     <button class="tab-btn" data-tab="search">Search</button>
     <button class="tab-btn" data-tab="agents">Agents</button>
+    <button class="tab-btn" data-tab="insights">Insights</button>
   </nav>
 
   <div class="search-bar">
@@ -348,6 +349,87 @@
             <p class="placeholder">Select a handoff to view details</p>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Insights Tab -->
+    <div class="tab-content" id="tab-insights" style="display:none">
+      <h3 class="insights-heading">Value Metrics</h3>
+      <div class="insights-grid">
+        <div class="insight-card">
+          <div class="insight-icon">&#x1F6E1;</div>
+          <div class="insight-label">Blind Decisions Prevented</div>
+          <div class="insight-value" id="insight-prevention-rate">--</div>
+          <div class="insight-detail" id="insight-prevention-detail"></div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-icon">&#x26A0;</div>
+          <div class="insight-label">Warnings Surfaced</div>
+          <div class="insight-value" id="insight-warnings-total">--</div>
+          <div class="insight-detail" id="insight-warnings-detail"></div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-icon">&#x2705;</div>
+          <div class="insight-label">Test Coverage</div>
+          <div class="insight-value" id="insight-test-coverage">--</div>
+          <div class="insight-detail" id="insight-test-detail"></div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-icon">&#x1F517;</div>
+          <div class="insight-label">Commit Traceability</div>
+          <div class="insight-value" id="insight-traceability">--</div>
+          <div class="insight-detail" id="insight-traceability-detail"></div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-icon">&#x1F4CA;</div>
+          <div class="insight-label">Decision Lifecycle</div>
+          <div class="insight-value" id="insight-lifecycle">--</div>
+          <div class="insight-detail" id="insight-lifecycle-detail"></div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-icon">&#x1F578;</div>
+          <div class="insight-label">Knowledge Graph</div>
+          <div class="insight-value" id="insight-graph">--</div>
+          <div class="insight-detail" id="insight-graph-detail"></div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-icon">&#x1F91D;</div>
+          <div class="insight-label">Agent Coordination</div>
+          <div class="insight-value" id="insight-coordination">--</div>
+          <div class="insight-detail" id="insight-coordination-detail"></div>
+        </div>
+      </div>
+
+      <h3 class="insights-heading">Tool Usage</h3>
+      <div id="insights-tool-usage">
+        <table class="data-table" id="tool-usage-table">
+          <thead>
+            <tr>
+              <th>Tool</th>
+              <th>Calls</th>
+              <th>Errors</th>
+              <th>Avg (ms)</th>
+              <th>P95 (ms)</th>
+              <th>Last Called</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <h3 class="insights-heading">Error Breakdown</h3>
+      <div id="insights-errors">
+        <table class="data-table" id="error-breakdown-table">
+          <thead>
+            <tr>
+              <th>Tool</th>
+              <th>Error Code</th>
+              <th>Count</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <p class="placeholder" id="no-errors-msg" style="display:none">No errors recorded</p>
       </div>
     </div>
   </main>

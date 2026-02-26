@@ -326,6 +326,35 @@
       "test/dashboard/api-routes.test.ts"
     ],
     "affected_symbols": [],
+    "commit_hashes": [
+      "707e490"
+    ]
+  },
+  {
+    "id": "01KJD595ETVSHV91ZBGRKPWWZY",
+    "timestamp": "2026-02-26T14:22:40.608Z",
+    "domain": "architecture",
+    "scope": "src/analytics/",
+    "summary": "Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "src/analytics/analytics-engine.ts",
+      "src/analytics/metrics-collector.ts",
+      "src/analytics/metrics-store.ts",
+      "src/analytics/instrumented-server.ts",
+      "src/analytics/telemetry-client.ts",
+      "src/server.ts",
+      "src/index.ts",
+      "src/utils/types.ts",
+      "src/config.ts",
+      "src/storage/init.ts",
+      "src/dashboard/api-routes.ts",
+      "src/dashboard/public/index.html",
+      "src/dashboard/public/app.js",
+      "src/dashboard/public/style.css"
+    ],
+    "affected_symbols": [],
     "commit_hashes": []
   }
 ]

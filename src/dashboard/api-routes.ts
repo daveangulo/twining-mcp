@@ -30,6 +30,8 @@ import {
   computeLiveness,
   DEFAULT_LIVENESS_THRESHOLDS,
 } from "../utils/liveness.js";
+import { AnalyticsEngine } from "../analytics/analytics-engine.js";
+import { MetricsStore } from "../analytics/metrics-store.js";
 
 /** Send a JSON response with standard headers. */
 function sendJSON(
@@ -63,6 +65,13 @@ export function createApiHandler(
   const graphStore = new GraphStore(twiningDir);
   const agentStore = new AgentStore(twiningDir);
   const handoffStore = new HandoffStore(twiningDir);
+  const analyticsEngine = new AnalyticsEngine(
+    blackboardStore,
+    decisionStore,
+    graphStore,
+    handoffStore,
+  );
+  const metricsStore = new MetricsStore(twiningDir);
 
   // Engine layer for search — lazily initialized to avoid creating
   // .twining/embeddings/ directory on uninitialized projects
@@ -633,6 +642,72 @@ export function createApiHandler(
         });
       } catch (err: unknown) {
         console.error("[twining] API /api/graph error:", err);
+        sendJSON(res, { error: "Internal server error" }, 500);
+      }
+      return true;
+    }
+
+    // GET /api/analytics/value-stats
+    if (url === "/api/analytics/value-stats") {
+      try {
+        if (!fs.existsSync(twiningDir)) {
+          sendJSON(res, {
+            blind_decisions_prevented: { total_decisions: 0, assembled_before: 0, prevention_rate: 0 },
+            warnings_surfaced: { total: 0, acknowledged: 0, resolved: 0, ignored: 0 },
+            test_coverage: { total_decisions: 0, with_tested_by: 0, coverage_rate: 0 },
+            decision_lifecycle: { active: 0, provisional: 0, superseded: 0, overridden: 0 },
+            commit_traceability: { total_decisions: 0, with_commits: 0, traceability_rate: 0 },
+            knowledge_graph: { entities: 0, relations: 0, entities_by_type: {}, relations_by_type: {} },
+            agent_coordination: { total_handoffs: 0, by_result_status: {}, acknowledgment_rate: 0 },
+          });
+          return true;
+        }
+
+        const stats = await analyticsEngine.computeValueStats();
+        sendJSON(res, stats);
+      } catch (err: unknown) {
+        console.error("[twining] API /api/analytics/value-stats error:", err);
+        sendJSON(res, { error: "Internal server error" }, 500);
+      }
+      return true;
+    }
+
+    // GET /api/analytics/tool-usage?since=ISO
+    if (url.startsWith("/api/analytics/tool-usage") && !url.includes("over-time")) {
+      try {
+        const parsed = new URL(url, "http://localhost");
+        const since = parsed.searchParams.get("since") || undefined;
+        const summary = await metricsStore.getToolUsageSummary(since);
+        sendJSON(res, { tools: summary, total: summary.length });
+      } catch (err: unknown) {
+        console.error("[twining] API /api/analytics/tool-usage error:", err);
+        sendJSON(res, { error: "Internal server error" }, 500);
+      }
+      return true;
+    }
+
+    // GET /api/analytics/tool-usage-over-time?bucket=60
+    if (url.startsWith("/api/analytics/tool-usage-over-time")) {
+      try {
+        const parsed = new URL(url, "http://localhost");
+        const bucketParam = parsed.searchParams.get("bucket");
+        const bucketMinutes = bucketParam ? parseInt(bucketParam, 10) : 60;
+        const buckets = await metricsStore.getUsageOverTime(bucketMinutes);
+        sendJSON(res, { buckets, total: buckets.length });
+      } catch (err: unknown) {
+        console.error("[twining] API /api/analytics/tool-usage-over-time error:", err);
+        sendJSON(res, { error: "Internal server error" }, 500);
+      }
+      return true;
+    }
+
+    // GET /api/analytics/errors
+    if (url === "/api/analytics/errors") {
+      try {
+        const errors = await metricsStore.getErrorBreakdown();
+        sendJSON(res, { errors, total: errors.length });
+      } catch (err: unknown) {
+        console.error("[twining] API /api/analytics/errors error:", err);
         sendJSON(res, { error: "Internal server error" }, 500);
       }
       return true;

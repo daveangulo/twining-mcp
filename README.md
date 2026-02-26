@@ -182,17 +182,66 @@ No. It's a local MCP server — tool calls are local file reads/writes. Semantic
 Yes. Twining is a standard MCP server. Any MCP host can connect to it.
 
 **Where does my data go?**
-Nowhere. All state is local in `.twining/`. No telemetry, no cloud, no external calls.
+All coordination state is local in `.twining/`. Tool call metrics are stored locally in `.twining/metrics.jsonl` (gitignored). Optional anonymous telemetry can be enabled — see [Analytics](#analytics) below.
 
 **Is Twining an agent orchestrator?**
 No. It's a coordination state layer. It captures what agents decided and why, and makes that knowledge available to future agents. Use it alongside orchestrators, agent teams, or standalone sessions.
+
+## Analytics
+
+Twining includes a three-layer analytics system to help you understand the value it provides.
+
+### Insights Dashboard Tab
+
+The web dashboard includes an **Insights** tab showing:
+
+- **Value Metrics** — Blind decision prevention rate, warning acknowledgment, test coverage via `tested_by` graph relations, commit traceability, decision lifecycle, knowledge graph stats, and agent coordination metrics
+- **Tool Usage** — Call counts, error rates, average/P95 latency per tool
+- **Error Breakdown** — Errors grouped by tool and error code
+
+All value metrics are computed from existing `.twining/` data — no new data collection needed.
+
+### Tool Call Metrics
+
+Every MCP tool call is automatically instrumented with timing and success/error tracking. Metrics are stored locally in `.twining/metrics.jsonl` (gitignored — operational data, not architectural).
+
+To disable local metrics collection, set in `.twining/config.yml`:
+
+```yaml
+analytics:
+  metrics:
+    enabled: false
+```
+
+### Opt-in Telemetry
+
+Anonymous aggregate usage data can optionally be sent to PostHog to help improve Twining. **Disabled by default.** To enable, add to `.twining/config.yml`:
+
+```yaml
+analytics:
+  telemetry:
+    enabled: true
+```
+
+That's it — the PostHog project key is built into the source code. If you run your own PostHog instance, you can override with `posthog_api_key` and `posthog_host`.
+
+**What is sent:** tool names, call durations, success/failure booleans, server version, OS, architecture.
+
+**What is never sent:** file paths, decision content, agent names, error messages, tool arguments, environment variables.
+
+**Privacy safeguards:**
+- `DO_NOT_TRACK=1` environment variable always overrides config
+- `CI=true` auto-disables telemetry
+- Identity is a SHA-256 hash of hostname + project root (never raw paths)
+- Network failures are silent — no retries
+- `posthog-node` is an optional dependency — graceful no-op if not installed
 
 ## Development
 
 ```bash
 npm install       # Install dependencies
 npm run build     # Build
-npm test          # Run tests (444 tests)
+npm test          # Run tests (570+ tests)
 npm run test:watch
 ```
 

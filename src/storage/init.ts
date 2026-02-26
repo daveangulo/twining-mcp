@@ -55,7 +55,7 @@ export function initTwiningDir(projectRoot: string): void {
   // Gitignore (spec section 2.3 + model cache)
   fs.writeFileSync(
     path.join(twiningDir, ".gitignore"),
-    "embeddings/*.index\narchive/\nmodels/\n",
+    "embeddings/*.index\narchive/\nmodels/\nmetrics.jsonl\n",
   );
 }
 

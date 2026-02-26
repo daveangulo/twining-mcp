@@ -18,7 +18,7 @@ export function createTmpProjectDir(): string {
 
 /** Create a full Twining MCP server against a temp project root. */
 export function createTestServer(tmpDir: string): McpServer {
-  return createServer(tmpDir);
+  return createServer(tmpDir).server;
 }
 
 /** Call a registered tool by name, reaching into McpServer internals. */

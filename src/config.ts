@@ -39,6 +39,16 @@ export const DEFAULT_CONFIG: TwiningConfig = {
       low_ms: 14400000,      // 4 hours
     },
   },
+  analytics: {
+    metrics: {
+      enabled: true,         // Local metrics on by default
+    },
+    telemetry: {
+      enabled: false,        // Opt-in only
+      posthog_api_key: "",
+      posthog_host: "https://us.i.posthog.com",
+    },
+  },
 };
 
 /** Deep merge source into target, returning a new object */

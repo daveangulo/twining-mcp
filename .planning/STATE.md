@@ -60,6 +60,7 @@ All decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Move archive file writes inside blackboard lock to prevent data loss on crash
 - Fix token budget accounting: warnings get priority access to full budget, non-warnings capped at 90%
 - Add project name to dashboard title/header and GitHub icon link — fixes #2 and #3
+- Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry
 
 ### Pending Todos
 

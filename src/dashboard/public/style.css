@@ -986,3 +986,76 @@ tr.delegation-expired td { text-decoration: line-through; }
   font-size: 0.75rem;
   color: var(--muted);
 }
+
+/* ========== Insights Tab ========== */
+
+.insights-heading {
+  margin: 1.5rem 0 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.insights-heading:first-child {
+  margin-top: 0;
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.insight-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+
+.insight-card:hover {
+  border-color: var(--accent);
+}
+
+.insight-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.insight-label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.insight-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 0.25rem;
+}
+
+.insight-detail {
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+#insights-tool-usage,
+#insights-errors {
+  margin-bottom: 1.5rem;
+}
+
+#tool-usage-table td,
+#error-breakdown-table td {
+  padding: 0.5rem 0.75rem;
+}
+
+.error-count {
+  color: var(--error);
+  font-weight: 600;
+}

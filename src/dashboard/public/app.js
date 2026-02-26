@@ -18,6 +18,7 @@ var state = {
   delegations: { data: [], sortKey: "timestamp", sortDir: "desc", page: 1, pageSize: 25, selectedId: null },
   handoffs: { data: [], sortKey: "created_at", sortDir: "desc", page: 1, pageSize: 25, selectedId: null },
   agentsSubView: "agents-list",
+  insights: { valueStats: null, toolUsage: [], errors: [] },
   globalScope: "",
   status: null,
   pollTimer: null,
@@ -278,6 +279,44 @@ function fetchHandoffDetail(id) {
     });
 }
 
+/* ========== Insights Fetching ========== */
+
+function fetchValueStats() {
+  fetch("/api/analytics/value-stats")
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      state.insights.valueStats = data;
+      renderValueStats();
+    })
+    .catch(function() {});
+}
+
+function fetchToolUsage() {
+  fetch("/api/analytics/tool-usage")
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      state.insights.toolUsage = data.tools || [];
+      renderToolUsage();
+    })
+    .catch(function() {});
+}
+
+function fetchErrorBreakdown() {
+  fetch("/api/analytics/errors")
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      state.insights.errors = data.errors || [];
+      renderErrorBreakdown();
+    })
+    .catch(function() {});
+}
+
+function fetchInsights() {
+  fetchValueStats();
+  fetchToolUsage();
+  fetchErrorBreakdown();
+}
+
 /* ========== Polling Lifecycle ========== */
 
 function refreshData() {
@@ -293,6 +332,7 @@ function refreshData() {
     else if (state.agentsSubView === "delegations") fetchDelegations();
     else if (state.agentsSubView === "handoffs") fetchHandoffs();
   }
+  else if (tab === "insights") fetchInsights();
 }
 
 function startPolling() {
@@ -2395,6 +2435,144 @@ function updateGraphData() {
       fit: false,
       nodeRepulsion: function() { return 8000; }
     }).run();
+  }
+}
+
+/* ========== Insights Rendering ========== */
+
+function renderValueStats() {
+  var vs = state.insights.valueStats;
+  if (!vs) return;
+
+  // Blind decisions prevented
+  var prevRate = document.getElementById("insight-prevention-rate");
+  var prevDetail = document.getElementById("insight-prevention-detail");
+  if (prevRate) prevRate.textContent = Math.round(vs.blind_decisions_prevented.prevention_rate * 100) + "%";
+  if (prevDetail) prevDetail.textContent = vs.blind_decisions_prevented.assembled_before + " of " + vs.blind_decisions_prevented.total_decisions + " decisions had context assembled first";
+
+  // Warnings surfaced
+  var warnTotal = document.getElementById("insight-warnings-total");
+  var warnDetail = document.getElementById("insight-warnings-detail");
+  if (warnTotal) warnTotal.textContent = vs.warnings_surfaced.total;
+  if (warnDetail) warnDetail.textContent = vs.warnings_surfaced.acknowledged + " acknowledged, " + vs.warnings_surfaced.resolved + " resolved, " + vs.warnings_surfaced.ignored + " unaddressed";
+
+  // Test coverage
+  var testCov = document.getElementById("insight-test-coverage");
+  var testDetail = document.getElementById("insight-test-detail");
+  if (testCov) testCov.textContent = Math.round(vs.test_coverage.coverage_rate * 100) + "%";
+  if (testDetail) testDetail.textContent = vs.test_coverage.with_tested_by + " of " + vs.test_coverage.total_decisions + " decisions have tested_by relations";
+
+  // Commit traceability
+  var traceVal = document.getElementById("insight-traceability");
+  var traceDetail = document.getElementById("insight-traceability-detail");
+  if (traceVal) traceVal.textContent = Math.round(vs.commit_traceability.traceability_rate * 100) + "%";
+  if (traceDetail) traceDetail.textContent = vs.commit_traceability.with_commits + " of " + vs.commit_traceability.total_decisions + " decisions linked to commits";
+
+  // Decision lifecycle
+  var lcVal = document.getElementById("insight-lifecycle");
+  var lcDetail = document.getElementById("insight-lifecycle-detail");
+  var lc = vs.decision_lifecycle;
+  if (lcVal) lcVal.textContent = (lc.active + lc.provisional + lc.superseded + lc.overridden);
+  if (lcDetail) lcDetail.textContent = lc.active + " active, " + lc.provisional + " provisional, " + lc.superseded + " superseded, " + lc.overridden + " overridden";
+
+  // Knowledge graph
+  var graphVal = document.getElementById("insight-graph");
+  var graphDetail = document.getElementById("insight-graph-detail");
+  if (graphVal) graphVal.textContent = vs.knowledge_graph.entities + " / " + vs.knowledge_graph.relations;
+  if (graphDetail) {
+    var typeStrs = [];
+    var ebt = vs.knowledge_graph.entities_by_type;
+    for (var ek in ebt) { if (ebt.hasOwnProperty(ek)) typeStrs.push(ek + ": " + ebt[ek]); }
+    graphDetail.textContent = typeStrs.length > 0 ? "Entities: " + typeStrs.join(", ") : "No entities";
+  }
+
+  // Agent coordination
+  var coordVal = document.getElementById("insight-coordination");
+  var coordDetail = document.getElementById("insight-coordination-detail");
+  if (coordVal) coordVal.textContent = vs.agent_coordination.total_handoffs;
+  if (coordDetail) coordDetail.textContent = "Acknowledgment rate: " + Math.round(vs.agent_coordination.acknowledgment_rate * 100) + "%";
+}
+
+function renderToolUsage() {
+  var tbody = document.querySelector("#tool-usage-table tbody");
+  if (!tbody) return;
+  clearElement(tbody);
+
+  var tools = state.insights.toolUsage;
+  if (tools.length === 0) {
+    var row = document.createElement("tr");
+    var cell = document.createElement("td");
+    cell.colSpan = 6;
+    cell.textContent = "No tool calls recorded";
+    cell.className = "placeholder";
+    row.appendChild(cell);
+    tbody.appendChild(row);
+    return;
+  }
+
+  for (var i = 0; i < tools.length; i++) {
+    var t = tools[i];
+    var tr = document.createElement("tr");
+
+    var tdName = document.createElement("td");
+    tdName.textContent = t.tool_name;
+    tr.appendChild(tdName);
+
+    var tdCalls = document.createElement("td");
+    tdCalls.textContent = t.call_count;
+    tr.appendChild(tdCalls);
+
+    var tdErrors = document.createElement("td");
+    tdErrors.textContent = t.error_count;
+    if (t.error_count > 0) tdErrors.className = "error-count";
+    tr.appendChild(tdErrors);
+
+    var tdAvg = document.createElement("td");
+    tdAvg.textContent = t.avg_duration_ms;
+    tr.appendChild(tdAvg);
+
+    var tdP95 = document.createElement("td");
+    tdP95.textContent = t.p95_duration_ms;
+    tr.appendChild(tdP95);
+
+    var tdLast = document.createElement("td");
+    tdLast.textContent = formatTime(t.last_called);
+    tr.appendChild(tdLast);
+
+    tbody.appendChild(tr);
+  }
+}
+
+function renderErrorBreakdown() {
+  var tbody = document.querySelector("#error-breakdown-table tbody");
+  var noMsg = document.getElementById("no-errors-msg");
+  if (!tbody) return;
+  clearElement(tbody);
+
+  var errors = state.insights.errors;
+  if (errors.length === 0) {
+    if (noMsg) noMsg.style.display = "block";
+    return;
+  }
+  if (noMsg) noMsg.style.display = "none";
+
+  for (var i = 0; i < errors.length; i++) {
+    var e = errors[i];
+    var tr = document.createElement("tr");
+
+    var tdTool = document.createElement("td");
+    tdTool.textContent = e.tool_name;
+    tr.appendChild(tdTool);
+
+    var tdCode = document.createElement("td");
+    tdCode.textContent = e.error_code;
+    tr.appendChild(tdCode);
+
+    var tdCount = document.createElement("td");
+    tdCount.textContent = e.count;
+    tr.appendChild(tdCount);
+
+    tbody.appendChild(tr);
   }
 }
 

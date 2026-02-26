@@ -1,0 +1,54 @@
+{
+  "agent_id": "main",
+  "domain": "architecture",
+  "scope": "src/analytics/",
+  "summary": "Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry",
+  "context": "Twining-MCP has npm downloads but no visibility into actual adoption, feature usage, or value delivered. Need analytics across three dimensions: showing users their impact (local value stats), tracking tool usage locally (instrumented calls), and understanding adoption (opt-in telemetry).",
+  "rationale": "Layer 1 (value stats) computes from existing .twining/ data with zero new collection. Layer 2 (tool instrumentation) patches registerTool on McpServer instance before tool registration — zero changes to 8 tool files. Layer 3 (PostHog telemetry) is opt-in only, SHA-256 hashed identity, dynamic import for graceful degradation. This separation keeps privacy-sensitive code isolated and makes each layer independently testable.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Instrument each tool file individually with timing wrappers",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Requires modifying all 8 tool files, higher maintenance burden, easy to forget when adding new tools"
+    },
+    {
+      "option": "Use middleware/interceptor at MCP SDK transport level",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "SDK transport layer is not designed for this, would be fragile across SDK version updates"
+    },
+    {
+      "option": "Skip telemetry entirely, local-only analytics",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Loses adoption insights needed for project growth; opt-in with strong privacy safeguards addresses the concern"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "src/analytics/analytics-engine.ts",
+    "src/analytics/metrics-collector.ts",
+    "src/analytics/metrics-store.ts",
+    "src/analytics/instrumented-server.ts",
+    "src/analytics/telemetry-client.ts",
+    "src/server.ts",
+    "src/index.ts",
+    "src/utils/types.ts",
+    "src/config.ts",
+    "src/storage/init.ts",
+    "src/dashboard/api-routes.ts",
+    "src/dashboard/public/index.html",
+    "src/dashboard/public/app.js",
+    "src/dashboard/public/style.css"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KJD595ETVSHV91ZBGRKPWWZY",
+  "timestamp": "2026-02-26T14:22:40.608Z",
+  "status": "active"
+}

@@ -36,12 +36,21 @@ import { AgentStore } from "./storage/agent-store.js";
 import { HandoffStore } from "./storage/handoff-store.js";
 import { CoordinationEngine } from "./engine/coordination.js";
 import { registerCoordinationTools } from "./tools/coordination-tools.js";
+import { MetricsCollector } from "./analytics/metrics-collector.js";
+import { createInstrumentedServer } from "./analytics/instrumented-server.js";
 
 /**
  * Create and configure the Twining MCP server.
  * Auto-creates .twining/ directory on first use.
  */
-export function createServer(projectRoot: string): McpServer {
+export interface ServerContext {
+  server: McpServer;
+  metricsCollector: MetricsCollector;
+  twiningDir: string;
+  config: import("./utils/types.js").TwiningConfig;
+}
+
+export function createServer(projectRoot: string): ServerContext {
   // Ensure .twining/ directory exists
   const twiningDir = ensureInitialized(projectRoot);
 
@@ -148,6 +157,12 @@ export function createServer(projectRoot: string): McpServer {
     version: PKG_VERSION,
   });
 
+  // Instrument tool calls with metrics collection
+  const metricsCollector = new MetricsCollector(twiningDir);
+  if (config.analytics?.metrics?.enabled !== false) {
+    createInstrumentedServer(server, metricsCollector);
+  }
+
   // Register all tools
   registerBlackboardTools(server, blackboardEngine);
   registerDecisionTools(server, decisionEngine);
@@ -167,5 +182,5 @@ export function createServer(projectRoot: string): McpServer {
   registerExportTools(server, exporter);
   registerCoordinationTools(server, agentStore, coordinationEngine, config);
 
-  return server;
+  return { server, metricsCollector, twiningDir, config };
 }

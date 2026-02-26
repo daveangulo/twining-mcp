@@ -410,5 +410,161 @@
       "decision_summary": "Add project name to dashboard title/header and GitHub icon link — fixes #2 and #3"
     },
     "created_at": "2026-02-26T05:20:37.019Z"
+  },
+  {
+    "id": "01KJD595N2ATVKXDWGM96493DG",
+    "source": "01KJD595N0RKSR7M7APP0CWETH",
+    "target": "01KJD595MZJY0FB5ET3GN1CZ66",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry"
+    },
+    "created_at": "2026-02-26T14:22:40.802Z"
+  },
+  {
+    "id": "01KJD595N49ZKVJN71HSBXCRMQ",
+    "source": "01KJD595N35BZSEN3EJ6R55S4W",
+    "target": "01KJD595MZJY0FB5ET3GN1CZ66",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry"
+    },
+    "created_at": "2026-02-26T14:22:40.804Z"
+  },
+  {
+    "id": "01KJD595N5DTVA72Y49771974Y",
+    "source": "01KJD595N49ZKVJN71HSBXCRMR",
+    "target": "01KJD595MZJY0FB5ET3GN1CZ66",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry"
+    },
+    "created_at": "2026-02-26T14:22:40.805Z"
+  },
+  {
+    "id": "01KJD595N79HPJKJ0SM1TAXQM8",
+    "source": "01KJD595N6WRYRMGP4T88TPC67",
+    "target": "01KJD595MZJY0FB5ET3GN1CZ66",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry"
+    },
+    "created_at": "2026-02-26T14:22:40.807Z"
+  },
+  {
+    "id": "01KJD595N9XJ4JNB3TK3NMQFRN",
+    "source": "01KJD595N79HPJKJ0SM1TAXQM9",
+    "target": "01KJD595MZJY0FB5ET3GN1CZ66",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry"
+    },
+    "created_at": "2026-02-26T14:22:40.809Z"
+  },
+  {
+    "id": "01KJD595NARN6CFC2TMW0D38R0",
+    "source": "01KHMSDEJH7CQCE97XA0ZAP52A",
+    "target": "01KJD595MZJY0FB5ET3GN1CZ66",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry"
+    },
+    "created_at": "2026-02-26T14:22:40.810Z"
+  },
+  {
+    "id": "01KJD595NBM3QK28EQJ3JG8QXW",
+    "source": "01KJD595NBM3QK28EQJ3JG8QXV",
+    "target": "01KJD595MZJY0FB5ET3GN1CZ66",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry"
+    },
+    "created_at": "2026-02-26T14:22:40.811Z"
+  },
+  {
+    "id": "01KJD595NCR7M2K35R6CA6KX71",
+    "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+    "target": "01KJD595MZJY0FB5ET3GN1CZ66",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry"
+    },
+    "created_at": "2026-02-26T14:22:40.812Z"
+  },
+  {
+    "id": "01KJD595ND5YACA06PBGYTRRXB",
+    "source": "01KJD595ND5YACA06PBGYTRRXA",
+    "target": "01KJD595MZJY0FB5ET3GN1CZ66",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry"
+    },
+    "created_at": "2026-02-26T14:22:40.813Z"
+  },
+  {
+    "id": "01KJD595NF1HCHK5ZV5BGS6ZH9",
+    "source": "01KJD595NE5JW9DEJ3VGCB4MMD",
+    "target": "01KJD595MZJY0FB5ET3GN1CZ66",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry"
+    },
+    "created_at": "2026-02-26T14:22:40.815Z"
+  },
+  {
+    "id": "01KJD595NG4WGEKEFP6N2JJQWK",
+    "source": "01KJC68M4ME603GFPHY29ANMNE",
+    "target": "01KJD595MZJY0FB5ET3GN1CZ66",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry"
+    },
+    "created_at": "2026-02-26T14:22:40.816Z"
+  },
+  {
+    "id": "01KJD595NHYXVJ16KHC5GH9T7W",
+    "source": "01KJC68M4Q2KAAT3ZEC51JGVJV",
+    "target": "01KJD595MZJY0FB5ET3GN1CZ66",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry"
+    },
+    "created_at": "2026-02-26T14:22:40.817Z"
+  },
+  {
+    "id": "01KJD595NK2QH3KCZ51F3PBSED",
+    "source": "01KJC68M4REPRVABK2MC68D43H",
+    "target": "01KJD595MZJY0FB5ET3GN1CZ66",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry"
+    },
+    "created_at": "2026-02-26T14:22:40.819Z"
+  },
+  {
+    "id": "01KJD595NMAM9S8ZACJVWRC26X",
+    "source": "01KJC68M4SHY3D3VYR8E7V05XC",
+    "target": "01KJD595MZJY0FB5ET3GN1CZ66",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry"
+    },
+    "created_at": "2026-02-26T14:22:40.820Z"
+  },
+  {
+    "id": "01KJD6V03WB9336EHNP91N9J1R",
+    "source": "01KJD595MZJY0FB5ET3GN1CZ66",
+    "target": "01KJD6TW0X2D2TWJFB1KF5GQNR",
+    "type": "tested_by",
+    "properties": {},
+    "created_at": "2026-02-26T14:49:53.532Z"
+  },
+  {
+    "id": "01KJD6X7S936HP7GYSYJZBZKKX",
+    "source": "01KJD595N0RKSR7M7APP0CWETH",
+    "target": "01KJD6TW0X2D2TWJFB1KF5GQNR",
+    "type": "tested_by",
+    "properties": {},
+    "created_at": "2026-02-26T14:51:06.921Z"
   }
 ]
