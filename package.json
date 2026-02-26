@@ -1,6 +1,6 @@
 {
   "name": "twining-mcp",
-  "version": "1.4.3",
+  "version": "1.5.0",
   "description": "Agent coordination MCP server — shared blackboard, decision tracking, and context assembly",
   "main": "dist/index.js",
   "type": "module",
