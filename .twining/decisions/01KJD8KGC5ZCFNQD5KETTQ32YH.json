@@ -1,0 +1,43 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "src/tools/blackboard-tools.ts",
+  "summary": "Add twining_dismiss tool for targeted removal of blackboard entries by ID",
+  "context": "All 8 blackboard warnings were false positives from automatic conflict detection, but there was no tool to remove specific entries. The only removal mechanism was twining_archive which sweeps by timestamp and affects all entry types.",
+  "rationale": "Added dismiss at three layers: BlackboardStore.dismiss (lock, read, filter, rewrite with proper-lockfile), BlackboardEngine.dismiss (delegates to store, cleans up embeddings), and twining_dismiss tool (accepts ids array + optional reason). Follows the same lock-read-rewrite pattern as the archiver. The reason parameter is accepted but not stored — it serves as documentation in the tool call itself.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Add dismiss logic to the archiver",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Archiver's purpose is time-based bulk cleanup. Targeted ID removal is a different concern that belongs on the store/engine."
+    },
+    {
+      "option": "Mark entries as dismissed rather than removing them",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Adds complexity (filter dismissed entries everywhere). The entries are low-value noise — actual removal is simpler and matches user intent."
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "src/storage/blackboard-store.ts",
+    "src/engine/blackboard.ts",
+    "src/tools/blackboard-tools.ts",
+    "test/blackboard-store.test.ts",
+    "test/blackboard-engine.test.ts"
+  ],
+  "affected_symbols": [
+    "BlackboardStore/dismiss",
+    "BlackboardEngine/dismiss",
+    "registerBlackboardTools"
+  ],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KJD8KGC5ZCFNQD5KETTQ32YH",
+  "timestamp": "2026-02-26T15:20:45.196Z",
+  "status": "active"
+}

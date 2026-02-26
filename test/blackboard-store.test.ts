@@ -243,6 +243,72 @@ describe("BlackboardStore.recent", () => {
   });
 });
 
+describe("BlackboardStore.dismiss", () => {
+  it("removes entries by ID and returns dismissed IDs", async () => {
+    const e1 = await store.append({
+      entry_type: "warning",
+      summary: "W1",
+      detail: "",
+      tags: [],
+      scope: "project",
+      agent_id: "main",
+    });
+    const e2 = await store.append({
+      entry_type: "finding",
+      summary: "F1",
+      detail: "",
+      tags: [],
+      scope: "project",
+      agent_id: "main",
+    });
+    const e3 = await store.append({
+      entry_type: "warning",
+      summary: "W2",
+      detail: "",
+      tags: [],
+      scope: "project",
+      agent_id: "main",
+    });
+
+    const result = await store.dismiss([e1.id, e3.id]);
+    expect(result.dismissed).toEqual([e1.id, e3.id]);
+    expect(result.not_found).toEqual([]);
+
+    // Only e2 remains
+    const { entries } = await store.read();
+    expect(entries).toHaveLength(1);
+    expect(entries[0]!.id).toBe(e2.id);
+  });
+
+  it("reports not_found for missing IDs", async () => {
+    const e1 = await store.append({
+      entry_type: "finding",
+      summary: "F1",
+      detail: "",
+      tags: [],
+      scope: "project",
+      agent_id: "main",
+    });
+
+    const result = await store.dismiss([e1.id, "nonexistent-id"]);
+    expect(result.dismissed).toEqual([e1.id]);
+    expect(result.not_found).toEqual(["nonexistent-id"]);
+  });
+
+  it("handles empty blackboard file", async () => {
+    const result = await store.dismiss(["some-id"]);
+    expect(result.dismissed).toEqual([]);
+    expect(result.not_found).toEqual(["some-id"]);
+  });
+
+  it("handles missing blackboard file", async () => {
+    fs.unlinkSync(path.join(tmpDir, "blackboard.jsonl"));
+    const result = await store.dismiss(["some-id"]);
+    expect(result.dismissed).toEqual([]);
+    expect(result.not_found).toEqual(["some-id"]);
+  });
+});
+
 describe("ENTRY_TYPES validation", () => {
   it("all 10 entry types are valid", () => {
     expect(ENTRY_TYPES).toHaveLength(10);

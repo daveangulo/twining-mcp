@@ -29,10 +29,11 @@
     "type": "file",
     "properties": {
       "description": "JSONL-backed blackboard persistence",
-      "layer": "storage"
+      "layer": "storage",
+      "scope": "src/tools/blackboard-tools.ts"
     },
     "created_at": "2026-02-17T03:13:20.872Z",
-    "updated_at": "2026-02-17T03:13:20.872Z"
+    "updated_at": "2026-02-26T15:20:45.409Z"
   },
   {
     "id": "01KHMSD4ZTFQDF508ANNR1T6MH",
@@ -135,10 +136,11 @@
     "type": "file",
     "properties": {
       "description": "MCP tool handlers: twining_post, twining_read, twining_query, twining_recent",
-      "layer": "tools"
+      "layer": "tools",
+      "scope": "src/tools/blackboard-tools.ts"
     },
     "created_at": "2026-02-17T03:13:36.238Z",
-    "updated_at": "2026-02-17T03:13:36.238Z"
+    "updated_at": "2026-02-26T15:20:45.416Z"
   },
   {
     "id": "01KHMSDM44AFAD0VVEK8T9N3TK",
@@ -633,5 +635,76 @@
     },
     "created_at": "2026-02-26T14:49:49.341Z",
     "updated_at": "2026-02-26T14:49:49.341Z"
+  },
+  {
+    "id": "01KJD8KGK041FSET3EBFA8Y460",
+    "name": "01KJD8KGC5ZCFNQD5KETTQ32YH",
+    "type": "concept",
+    "properties": {
+      "summary": "Add twining_dismiss tool for targeted removal of blackboard entries by ID",
+      "scope": "src/tools/blackboard-tools.ts"
+    },
+    "created_at": "2026-02-26T15:20:45.408Z",
+    "updated_at": "2026-02-26T15:20:45.408Z"
+  },
+  {
+    "id": "01KJD8KGK434DH6PX2BNXW4W71",
+    "name": "src/engine/blackboard.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/tools/blackboard-tools.ts"
+    },
+    "created_at": "2026-02-26T15:20:45.412Z",
+    "updated_at": "2026-02-26T15:20:45.412Z"
+  },
+  {
+    "id": "01KJD8KGKABX3Y5E7F8GBKGYGK",
+    "name": "test/blackboard-store.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/tools/blackboard-tools.ts"
+    },
+    "created_at": "2026-02-26T15:20:45.418Z",
+    "updated_at": "2026-02-26T15:20:45.418Z"
+  },
+  {
+    "id": "01KJD8KGKBJK6J5J2FMD7MVA9P",
+    "name": "test/blackboard-engine.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/tools/blackboard-tools.ts"
+    },
+    "created_at": "2026-02-26T15:20:45.419Z",
+    "updated_at": "2026-02-26T15:20:45.419Z"
+  },
+  {
+    "id": "01KJD8KGKDPQ7ZH1Z6BRE3127T",
+    "name": "BlackboardStore/dismiss",
+    "type": "function",
+    "properties": {
+      "scope": "src/tools/blackboard-tools.ts"
+    },
+    "created_at": "2026-02-26T15:20:45.421Z",
+    "updated_at": "2026-02-26T15:20:45.421Z"
+  },
+  {
+    "id": "01KJD8KGKFX473SPAP96PWYEHW",
+    "name": "BlackboardEngine/dismiss",
+    "type": "function",
+    "properties": {
+      "scope": "src/tools/blackboard-tools.ts"
+    },
+    "created_at": "2026-02-26T15:20:45.423Z",
+    "updated_at": "2026-02-26T15:20:45.423Z"
+  },
+  {
+    "id": "01KJD8KGKG4WG4R6WAW2WFJ9TE",
+    "name": "registerBlackboardTools",
+    "type": "function",
+    "properties": {
+      "scope": "src/tools/blackboard-tools.ts"
+    },
+    "created_at": "2026-02-26T15:20:45.424Z",
+    "updated_at": "2026-02-26T15:20:45.424Z"
   }
 ]

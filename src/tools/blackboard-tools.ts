@@ -167,4 +167,37 @@ export function registerBlackboardTools(
       }
     },
   );
+
+  // twining_dismiss — Remove specific blackboard entries by ID
+  server.registerTool(
+    "twining_dismiss",
+    {
+      description:
+        "Remove specific blackboard entries by ID. Use this to clean up false-positive warnings, resolved entries, or other noise. Returns which IDs were dismissed and which were not found.",
+      inputSchema: {
+        ids: z
+          .array(z.string())
+          .min(1)
+          .describe("Entry IDs to remove from the blackboard"),
+        reason: z
+          .string()
+          .optional()
+          .describe("Why these entries are being dismissed (logged but not stored)"),
+      },
+    },
+    async (args) => {
+      try {
+        const result = await engine.dismiss(args.ids);
+        return toolResult(result);
+      } catch (e) {
+        if (e instanceof TwiningError) {
+          return toolError(e.message, e.code);
+        }
+        return toolError(
+          e instanceof Error ? e.message : "Unknown error",
+          "INTERNAL_ERROR",
+        );
+      }
+    },
+  );
 }

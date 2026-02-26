@@ -61,6 +61,7 @@ All decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Fix token budget accounting: warnings get priority access to full budget, non-warnings capped at 90%
 - Add project name to dashboard title/header and GitHub icon link — fixes #2 and #3
 - Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry
+- Add twining_dismiss tool for targeted removal of blackboard entries by ID
 
 ### Pending Todos
 

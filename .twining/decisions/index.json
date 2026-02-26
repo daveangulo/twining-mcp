@@ -355,6 +355,30 @@
       "src/dashboard/public/style.css"
     ],
     "affected_symbols": [],
+    "commit_hashes": [
+      "c56b6f8"
+    ]
+  },
+  {
+    "id": "01KJD8KGC5ZCFNQD5KETTQ32YH",
+    "timestamp": "2026-02-26T15:20:45.196Z",
+    "domain": "implementation",
+    "scope": "src/tools/blackboard-tools.ts",
+    "summary": "Add twining_dismiss tool for targeted removal of blackboard entries by ID",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "src/storage/blackboard-store.ts",
+      "src/engine/blackboard.ts",
+      "src/tools/blackboard-tools.ts",
+      "test/blackboard-store.test.ts",
+      "test/blackboard-engine.test.ts"
+    ],
+    "affected_symbols": [
+      "BlackboardStore/dismiss",
+      "BlackboardEngine/dismiss",
+      "registerBlackboardTools"
+    ],
     "commit_hashes": []
   }
 ]

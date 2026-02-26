@@ -141,6 +141,33 @@ describe("BlackboardEngine.recent", () => {
   });
 });
 
+describe("BlackboardEngine.dismiss", () => {
+  it("removes entries by ID", async () => {
+    const e1 = await engine.post({ entry_type: "warning", summary: "W1" });
+    const e2 = await engine.post({ entry_type: "finding", summary: "F1" });
+    const e3 = await engine.post({ entry_type: "warning", summary: "W2" });
+
+    const result = await engine.dismiss([e1.id, e3.id]);
+    expect(result.dismissed).toEqual([e1.id, e3.id]);
+    expect(result.not_found).toEqual([]);
+
+    const { entries } = await engine.read();
+    expect(entries).toHaveLength(1);
+    expect(entries[0]!.id).toBe(e2.id);
+  });
+
+  it("throws TwiningError for empty IDs array", async () => {
+    await expect(engine.dismiss([])).rejects.toThrow(TwiningError);
+  });
+
+  it("reports not_found for nonexistent IDs", async () => {
+    await engine.post({ entry_type: "finding", summary: "F1" });
+    const result = await engine.dismiss(["nonexistent"]);
+    expect(result.dismissed).toEqual([]);
+    expect(result.not_found).toEqual(["nonexistent"]);
+  });
+});
+
 describe("BlackboardEngine auto-archive", () => {
   it("triggers archive when entry count exceeds threshold", async () => {
     const mockArchiver = {

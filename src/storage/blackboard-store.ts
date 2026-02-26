@@ -112,4 +112,53 @@ export class BlackboardStore {
     const count = n ?? 20;
     return entries.slice(-count).reverse();
   }
+
+  /** Remove entries by ID. Returns the IDs that were actually found and removed. */
+  async dismiss(ids: string[]): Promise<{ dismissed: string[]; not_found: string[] }> {
+    const idSet = new Set(ids);
+    const bbPath = this.blackboardPath;
+
+    if (!fs.existsSync(bbPath)) {
+      return { dismissed: [], not_found: ids };
+    }
+
+    const lockfileModule = await import("proper-lockfile");
+    const release = await lockfileModule.default.lock(bbPath, {
+      retries: { retries: 10, factor: 1.5, minTimeout: 50, maxTimeout: 1000 },
+      stale: 10000,
+    });
+
+    try {
+      const content = fs.readFileSync(bbPath, "utf-8");
+      const lines = content.split("\n").filter((line) => line.trim().length > 0);
+      const kept: string[] = [];
+      const dismissed: string[] = [];
+
+      for (const line of lines) {
+        try {
+          const entry = JSON.parse(line) as BlackboardEntry;
+          if (idSet.has(entry.id)) {
+            dismissed.push(entry.id);
+          } else {
+            kept.push(line);
+          }
+        } catch {
+          kept.push(line); // Preserve unparseable lines
+        }
+      }
+
+      const not_found = ids.filter((id) => !dismissed.includes(id));
+
+      if (dismissed.length > 0) {
+        const newContent = kept.length > 0 ? kept.join("\n") + "\n" : "";
+        fs.writeFileSync(bbPath, newContent);
+        // Invalidate cache
+        this.cachedEntries = null;
+      }
+
+      return { dismissed, not_found };
+    } finally {
+      await release();
+    }
+  }
 }

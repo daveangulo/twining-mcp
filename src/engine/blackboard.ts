@@ -159,4 +159,24 @@ export class BlackboardEngine {
     const entries = await this.store.recent(n, entry_types);
     return { entries };
   }
+
+  /** Dismiss (remove) blackboard entries by ID. Cleans up embeddings if available. */
+  async dismiss(ids: string[]): Promise<{ dismissed: string[]; not_found: string[] }> {
+    if (!ids || ids.length === 0) {
+      throw new TwiningError("At least one entry ID is required", "INVALID_INPUT");
+    }
+
+    const result = await this.store.dismiss(ids);
+
+    // Clean up embeddings for dismissed entries (best-effort)
+    if (this.indexManager && result.dismissed.length > 0) {
+      try {
+        await this.indexManager.removeEntries("blackboard", result.dismissed);
+      } catch {
+        // Best-effort — don't fail dismiss if embedding cleanup fails
+      }
+    }
+
+    return result;
+  }
 }
