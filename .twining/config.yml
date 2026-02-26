@@ -13,3 +13,6 @@ context_assembly:
     decision_confidence: 0.2
     warning_boost: 0.1
 conflict_resolution: human
+analytics:
+  telemetry:
+    enabled: true
