@@ -57,6 +57,16 @@ header h1 {
   font-weight: 600;
 }
 
+.github-link {
+  color: var(--text-secondary, #6b7280);
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+.github-link:hover {
+  color: var(--text);
+}
+
 .header-status {
   display: flex;
   gap: 1.5rem;

@@ -360,5 +360,55 @@
       "decision_summary": "Fix token budget accounting: warnings get priority access to full budget, non-warnings capped at 90%"
     },
     "created_at": "2026-02-20T15:33:02.789Z"
+  },
+  {
+    "id": "01KJC68M4P8SDJGS9PCG6ZRPJ0",
+    "source": "01KJC68M4ME603GFPHY29ANMNE",
+    "target": "01KJC68M4JW78VXAARQMW60KA8",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add project name to dashboard title/header and GitHub icon link — fixes #2 and #3"
+    },
+    "created_at": "2026-02-26T05:20:37.014Z"
+  },
+  {
+    "id": "01KJC68M4REPRVABK2MC68D43G",
+    "source": "01KJC68M4Q2KAAT3ZEC51JGVJV",
+    "target": "01KJC68M4JW78VXAARQMW60KA8",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add project name to dashboard title/header and GitHub icon link — fixes #2 and #3"
+    },
+    "created_at": "2026-02-26T05:20:37.016Z"
+  },
+  {
+    "id": "01KJC68M4SHY3D3VYR8E7V05XB",
+    "source": "01KJC68M4REPRVABK2MC68D43H",
+    "target": "01KJC68M4JW78VXAARQMW60KA8",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add project name to dashboard title/header and GitHub icon link — fixes #2 and #3"
+    },
+    "created_at": "2026-02-26T05:20:37.017Z"
+  },
+  {
+    "id": "01KJC68M4TM0E6XEK1QCBYF5WF",
+    "source": "01KJC68M4SHY3D3VYR8E7V05XC",
+    "target": "01KJC68M4JW78VXAARQMW60KA8",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add project name to dashboard title/header and GitHub icon link — fixes #2 and #3"
+    },
+    "created_at": "2026-02-26T05:20:37.018Z"
+  },
+  {
+    "id": "01KJC68M4VS9JH5JBAFNQY2WZ2",
+    "source": "01KJC68M4TM0E6XEK1QCBYF5WG",
+    "target": "01KJC68M4JW78VXAARQMW60KA8",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add project name to dashboard title/header and GitHub icon link — fixes #2 and #3"
+    },
+    "created_at": "2026-02-26T05:20:37.019Z"
   }
 ]

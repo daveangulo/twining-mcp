@@ -349,6 +349,7 @@ describe("API routes - initialized project", () => {
 
     const body = JSON.parse(res.body);
     expect(body.initialized).toBe(true);
+    expect(body.project_name).toBe(path.basename(projectRoot));
     expect(body.blackboard_entries).toBe(4);
     expect(body.active_decisions).toBe(1);
     expect(body.provisional_decisions).toBe(1);
@@ -603,6 +604,7 @@ describe("API routes - uninitialized project", () => {
 
     const body = JSON.parse(res.body);
     expect(body.initialized).toBe(false);
+    expect(body.project_name).toBe(path.basename(projectRoot));
     expect(body.blackboard_entries).toBe(0);
     expect(body.active_decisions).toBe(0);
     expect(body.provisional_decisions).toBe(0);

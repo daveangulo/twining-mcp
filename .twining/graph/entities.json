@@ -469,5 +469,66 @@
     },
     "created_at": "2026-02-20T15:33:02.787Z",
     "updated_at": "2026-02-20T15:33:02.787Z"
+  },
+  {
+    "id": "01KJC68M4JW78VXAARQMW60KA8",
+    "name": "01KJC68KWE17FYM6D111ZD4PVM",
+    "type": "concept",
+    "properties": {
+      "summary": "Add project name to dashboard title/header and GitHub icon link — fixes #2 and #3",
+      "scope": "src/dashboard/"
+    },
+    "created_at": "2026-02-26T05:20:37.010Z",
+    "updated_at": "2026-02-26T05:20:37.010Z"
+  },
+  {
+    "id": "01KJC68M4ME603GFPHY29ANMNE",
+    "name": "src/dashboard/api-routes.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/dashboard/"
+    },
+    "created_at": "2026-02-26T05:20:37.012Z",
+    "updated_at": "2026-02-26T05:20:37.012Z"
+  },
+  {
+    "id": "01KJC68M4Q2KAAT3ZEC51JGVJV",
+    "name": "src/dashboard/public/index.html",
+    "type": "file",
+    "properties": {
+      "scope": "src/dashboard/"
+    },
+    "created_at": "2026-02-26T05:20:37.015Z",
+    "updated_at": "2026-02-26T05:20:37.015Z"
+  },
+  {
+    "id": "01KJC68M4REPRVABK2MC68D43H",
+    "name": "src/dashboard/public/app.js",
+    "type": "file",
+    "properties": {
+      "scope": "src/dashboard/"
+    },
+    "created_at": "2026-02-26T05:20:37.016Z",
+    "updated_at": "2026-02-26T05:20:37.016Z"
+  },
+  {
+    "id": "01KJC68M4SHY3D3VYR8E7V05XC",
+    "name": "src/dashboard/public/style.css",
+    "type": "file",
+    "properties": {
+      "scope": "src/dashboard/"
+    },
+    "created_at": "2026-02-26T05:20:37.017Z",
+    "updated_at": "2026-02-26T05:20:37.017Z"
+  },
+  {
+    "id": "01KJC68M4TM0E6XEK1QCBYF5WG",
+    "name": "test/dashboard/api-routes.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/dashboard/"
+    },
+    "created_at": "2026-02-26T05:20:37.018Z",
+    "updated_at": "2026-02-26T05:20:37.018Z"
   }
 ]

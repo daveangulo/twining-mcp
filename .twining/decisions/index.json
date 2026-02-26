@@ -309,5 +309,23 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KJC68KWE17FYM6D111ZD4PVM",
+    "timestamp": "2026-02-26T05:20:36.760Z",
+    "domain": "implementation",
+    "scope": "src/dashboard/",
+    "summary": "Add project name to dashboard title/header and GitHub icon link — fixes #2 and #3",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "src/dashboard/api-routes.ts",
+      "src/dashboard/public/index.html",
+      "src/dashboard/public/app.js",
+      "src/dashboard/public/style.css",
+      "test/dashboard/api-routes.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]

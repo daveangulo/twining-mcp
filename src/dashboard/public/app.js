@@ -456,6 +456,13 @@ function renderStatus() {
   setVal("stat-pending-delegations", s.pending_delegations);
   setVal("stat-total-handoffs", s.total_handoffs);
 
+  // Update project name in header and page title
+  if (s.project_name) {
+    var titleEl = document.getElementById("dashboard-title");
+    if (titleEl) titleEl.textContent = s.project_name + " — Twining";
+    document.title = s.project_name + " — Twining Dashboard";
+  }
+
   var msgEl = document.getElementById("uninitialized-msg");
   if (msgEl) {
     msgEl.style.display = (s.initialized === false) ? "block" : "none";

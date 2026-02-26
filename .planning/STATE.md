@@ -59,6 +59,7 @@ All decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Fix race conditions by using single index lock for atomic file+index updates in DecisionStore and HandoffStore
 - Move archive file writes inside blackboard lock to prevent data loss on crash
 - Fix token budget accounting: warnings get priority access to full budget, non-warnings capped at 90%
+- Add project name to dashboard title/header and GitHub icon link — fixes #2 and #3
 
 ### Pending Todos
 

@@ -1,0 +1,33 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "src/dashboard/",
+  "summary": "Add project name to dashboard title/header and GitHub icon link — fixes #2 and #3",
+  "context": "GitHub issues #2 and #3 requested: (1) showing the tracked project name in the dashboard so users can distinguish multiple dashboards, and (2) a GitHub icon link in the header.",
+  "rationale": "Project name is already available via path.basename(projectRoot) in api-routes.ts. Adding it to the /api/status response and rendering it in the header h1 + page title is the minimal change. GitHub icon uses the standard octicon SVG inline to avoid extra dependencies.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Add a separate /api/config endpoint for project metadata",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Over-engineering for a single field — project_name fits naturally in the existing /api/status response"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "src/dashboard/api-routes.ts",
+    "src/dashboard/public/index.html",
+    "src/dashboard/public/app.js",
+    "src/dashboard/public/style.css",
+    "test/dashboard/api-routes.test.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KJC68KWE17FYM6D111ZD4PVM",
+  "timestamp": "2026-02-26T05:20:36.760Z",
+  "status": "active"
+}
