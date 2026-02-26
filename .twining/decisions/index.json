@@ -356,7 +356,8 @@
     ],
     "affected_symbols": [],
     "commit_hashes": [
-      "c56b6f8"
+      "c56b6f8",
+      "a9f1ba4"
     ]
   },
   {
@@ -380,5 +381,22 @@
       "registerBlackboardTools"
     ],
     "commit_hashes": []
+  },
+  {
+    "id": "01KJDWTR95TCGQR2S0X2G86TT7",
+    "timestamp": "2026-02-26T21:14:51.000Z",
+    "domain": "security",
+    "scope": "src/analytics/telemetry-client.ts",
+    "summary": "Remove hardcoded PostHog API key, read from POSTHOG_API_KEY env var or config instead",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "src/analytics/telemetry-client.ts",
+      "test/analytics/telemetry-client.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": [
+      "a9f1ba4"
+    ]
   }
 ]

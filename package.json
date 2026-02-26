@@ -14,6 +14,7 @@
     "README.md"
   ],
   "scripts": {
+    "prebuild": "node scripts/inject-posthog-key.mjs",
     "build": "tsc",
     "postbuild": "rm -rf dist/dashboard/public && cp -r src/dashboard/public dist/dashboard/public",
     "test": "vitest run",

@@ -1,0 +1,32 @@
+{
+  "agent_id": "main",
+  "domain": "security",
+  "scope": "src/analytics/telemetry-client.ts",
+  "summary": "Remove hardcoded PostHog API key, read from POSTHOG_API_KEY env var or config instead",
+  "context": "The PostHog project key phc_AN3caYGFLOajJLbGvCD2RV1d3loFzsOL3onUxzJRsQq was hardcoded in source code committed to a repository.",
+  "rationale": "The PostHog project key phc_AN3caYGFLOajJLbGvCD2RV1d3loFzsOL3onUxzJRsQq was hardcoded in source code. Even though it's a write-only ingest key, hardcoding secrets in source committed to a repository is a security anti-pattern: keys can be scraped, the repo may become public, and rotation requires a code change. Moving to env var / config follows the 12-factor app principle and allows key rotation without code changes.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Keep hardcoded key with comment explaining it's write-only",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Still exposes the key in git history and violates secret management best practices"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "src/analytics/telemetry-client.ts",
+    "test/analytics/telemetry-client.test.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [
+    "a9f1ba4"
+  ],
+  "assembled_before": true,
+  "id": "01KJDWTR95TCGQR2S0X2G86TT7",
+  "timestamp": "2026-02-26T21:14:43.000Z",
+  "status": "active"
+}
