@@ -649,5 +649,36 @@
     },
     "created_at": "2026-02-26T15:20:45.424Z",
     "updated_at": "2026-02-26T15:20:45.424Z"
+  },
+  {
+    "id": "01KJDZA8SRT74H1X7D8EB40P6F",
+    "name": "01KJDZA8MSNPEYHRRSDHQ89EWQ",
+    "type": "concept",
+    "properties": {
+      "summary": "Add CI (build-and-test on PRs) and Publish (npm publish on tags) GitHub Actions workflows",
+      "scope": ".github/workflows/"
+    },
+    "created_at": "2026-02-26T21:57:39.768Z",
+    "updated_at": "2026-02-26T21:57:39.768Z"
+  },
+  {
+    "id": "01KJDZA8SS4QE28SEJGH15YGW4",
+    "name": ".github/workflows/ci.yml",
+    "type": "file",
+    "properties": {
+      "scope": ".github/workflows/"
+    },
+    "created_at": "2026-02-26T21:57:39.769Z",
+    "updated_at": "2026-02-26T21:57:39.769Z"
+  },
+  {
+    "id": "01KJDZA8ST4BQ0MQGRNKQQT1BP",
+    "name": ".github/workflows/publish.yml",
+    "type": "file",
+    "properties": {
+      "scope": ".github/workflows/"
+    },
+    "created_at": "2026-02-26T21:57:39.770Z",
+    "updated_at": "2026-02-26T21:57:39.770Z"
   }
 ]

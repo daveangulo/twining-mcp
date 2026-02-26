@@ -398,5 +398,20 @@
     "commit_hashes": [
       "a9f1ba4"
     ]
+  },
+  {
+    "id": "01KJDZA8MSNPEYHRRSDHQ89EWQ",
+    "timestamp": "2026-02-26T21:57:39.611Z",
+    "domain": "deployment",
+    "scope": ".github/workflows/",
+    "summary": "Add CI (build-and-test on PRs) and Publish (npm publish on tags) GitHub Actions workflows",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      ".github/workflows/ci.yml",
+      ".github/workflows/publish.yml"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]
