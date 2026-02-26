@@ -10,14 +10,22 @@
   "hooks": {
     "SubagentStop": [
       {
-        "type": "command",
-        "command": "if [ -d .twining ]; then echo '{\"entry_type\":\"status\",\"summary\":\"Subagent completed task\"}' >> .twining/pending-posts.jsonl; fi"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -d .twining ]; then echo '{\"entry_type\":\"status\",\"summary\":\"Subagent completed task\"}' >> .twining/pending-posts.jsonl; fi"
+          }
+        ]
       }
     ],
     "PreCompact": [
       {
-        "type": "command",
-        "command": "echo '[twining] Context compacting — consider calling twining_archive' >&2"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[twining] Context compacting — consider calling twining_archive' >&2"
+          }
+        ]
       }
     ]
   }
