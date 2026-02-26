@@ -9,6 +9,7 @@
 
 <p align="center">
   <a href="https://www.npmjs.com/package/twining-mcp"><img src="https://img.shields.io/npm/v/twining-mcp" alt="npm version"></a>
+  <a href="https://github.com/daveangulo/twining-mcp/actions/workflows/ci.yml"><img src="https://github.com/daveangulo/twining-mcp/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License"></a>
 </p>
 
@@ -246,6 +247,35 @@ npm run test:watch
 ```
 
 Requires Node.js >= 18.
+
+### CI/CD
+
+Two GitHub Actions workflows automate build verification and publishing:
+
+**CI** (`.github/workflows/ci.yml`) — runs on every PR and push to `main`:
+- Builds and tests across Node 18, 20, and 22
+- Cancels in-progress runs when a new push arrives on the same branch
+
+**Publish** (`.github/workflows/publish.yml`) — runs on `v*` tag push:
+- Builds with `POSTHOG_API_KEY` baked in for published packages
+- Runs the full test suite as defense-in-depth
+- Publishes to npm with `--provenance` for supply chain attestation
+- Creates a GitHub Release with auto-generated release notes
+- Supports manual trigger via `workflow_dispatch` with a dry-run option
+
+**To publish a new version:**
+
+```bash
+npm version patch   # or minor, major
+git push && git push --tags
+```
+
+**Required secrets** (configured in GitHub repo Settings > Secrets):
+
+| Secret | Purpose |
+|--------|---------|
+| `NPM_TOKEN` | npm access token (granular, scoped to `twining-mcp`) |
+| `POSTHOG_API_KEY` | PostHog ingest key for published packages |
 
 ## License
 
