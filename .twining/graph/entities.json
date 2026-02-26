@@ -1,18 +1,5 @@
 [
   {
-    "id": "01KHMSD1HMSJHKETQCPW02SSAT",
-    "name": "twining-mcp",
-    "type": "module",
-    "properties": {
-      "description": "Agent coordination MCP server — shared blackboard, decision tracking, context assembly, knowledge graph",
-      "version": "1.0.0",
-      "language": "TypeScript",
-      "runtime": "Node.js >=18"
-    },
-    "created_at": "2026-02-17T03:13:18.388Z",
-    "updated_at": "2026-02-17T03:13:18.388Z"
-  },
-  {
     "id": "01KHMSD2TJF1FHBRRMD4T9DMCR",
     "name": "src/storage/file-store.ts",
     "type": "file",
@@ -199,28 +186,6 @@
     "updated_at": "2026-02-26T14:22:40.812Z"
   },
   {
-    "id": "01KHMSDRVNF06NAA9G7KMZ5K0V",
-    "name": "src/utils/ids.ts",
-    "type": "file",
-    "properties": {
-      "description": "ULID generation for all entity IDs",
-      "layer": "utils"
-    },
-    "created_at": "2026-02-17T03:13:42.261Z",
-    "updated_at": "2026-02-17T03:13:42.261Z"
-  },
-  {
-    "id": "01KHMSDSSBNCJJW5JCJ72RWXRK",
-    "name": "src/utils/tokens.ts",
-    "type": "file",
-    "properties": {
-      "description": "Token estimation for context assembly budget management",
-      "layer": "utils"
-    },
-    "created_at": "2026-02-17T03:13:43.211Z",
-    "updated_at": "2026-02-17T03:13:43.211Z"
-  },
-  {
     "id": "01KHMSDV08WTQDVVSF4159DVB1",
     "name": "src/engine/archiver.ts",
     "type": "file",
@@ -297,18 +262,6 @@
     "updated_at": "2026-02-17T03:41:13.235Z"
   },
   {
-    "id": "01KHMV06A23HR1B5VEBXA830C5",
-    "name": "src/engine/planning-bridge.ts",
-    "type": "file",
-    "properties": {
-      "description": "PlanningBridge engine module — reads .planning/ state for context assembly",
-      "layer": "engine",
-      "lines": "212"
-    },
-    "created_at": "2026-02-17T03:41:14.434Z",
-    "updated_at": "2026-02-17T03:41:14.434Z"
-  },
-  {
     "id": "01KHMV0V5417QXMX15XK378Z7H",
     "name": "gsd-planning-bridge",
     "type": "pattern",
@@ -317,16 +270,6 @@
     },
     "created_at": "2026-02-17T03:41:35.780Z",
     "updated_at": "2026-02-17T03:41:35.780Z"
-  },
-  {
-    "id": "01KHT3PHHM3MN340MT968MD5FW",
-    "name": "docs/AGENT_INTEGRATION_ARCHITECTURE.md",
-    "type": "file",
-    "properties": {
-      "scope": "docs/AGENT_INTEGRATION_ARCHITECTURE.md"
-    },
-    "created_at": "2026-02-19T04:49:27.604Z",
-    "updated_at": "2026-02-19T06:21:57.221Z"
   },
   {
     "id": "01KHW8KED6WW8B8HX0XM3VMGNB",

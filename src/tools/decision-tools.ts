@@ -1,6 +1,6 @@
 /**
  * MCP tool handlers for decision operations.
- * Registers twining_decide, twining_why, twining_commits, twining_trace, twining_reconsider, twining_override.
+ * Registers twining_decide, twining_why, twining_commits, twining_trace, twining_reconsider, twining_override, twining_promote.
  */
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -220,6 +220,42 @@ export function registerDecisionTools(
           args.reason,
           args.new_decision,
           args.overridden_by,
+        );
+        return toolResult(result);
+      } catch (e) {
+        if (e instanceof TwiningError) {
+          return toolError(e.message, e.code);
+        }
+        return toolError(
+          e instanceof Error ? e.message : "Unknown error",
+          "INTERNAL_ERROR",
+        );
+      }
+    },
+  );
+
+  // twining_promote — Promote provisional decisions to active
+  server.registerTool(
+    "twining_promote",
+    {
+      description:
+        "Promote one or more provisional decisions to active status. Use this to confirm provisional decisions that have been validated through implementation and testing.",
+      inputSchema: {
+        decision_ids: z
+          .array(z.string())
+          .min(1)
+          .describe("IDs of provisional decisions to promote to active"),
+        promoted_by: z
+          .string()
+          .optional()
+          .describe('Who is promoting (default: "main")'),
+      },
+    },
+    async (args) => {
+      try {
+        const result = await engine.promote(
+          args.decision_ids,
+          args.promoted_by,
         );
         return toolResult(result);
       } catch (e) {

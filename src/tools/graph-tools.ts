@@ -1,6 +1,6 @@
 /**
  * MCP tool handlers for knowledge graph operations.
- * Registers twining_add_entity, twining_add_relation, twining_neighbors, twining_graph_query.
+ * Registers twining_add_entity, twining_add_relation, twining_neighbors, twining_graph_query, twining_prune_graph.
  */
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -167,6 +167,46 @@ export function registerGraphTools(
           args.query,
           args.entity_types,
           args.limit,
+        );
+        return toolResult(result);
+      } catch (e) {
+        if (e instanceof TwiningError) {
+          return toolError(e.message, e.code);
+        }
+        return toolError(
+          e instanceof Error ? e.message : "Unknown error",
+          "INTERNAL_ERROR",
+        );
+      }
+    },
+  );
+
+  // twining_prune_graph — Remove orphaned graph entities
+  server.registerTool(
+    "twining_prune_graph",
+    {
+      description:
+        "Remove orphaned knowledge graph entities that have no relations. Use this to clean up stale or disconnected entities. Optionally filter by entity type to only prune certain kinds.",
+      inputSchema: {
+        entity_types: z
+          .array(z.string())
+          .optional()
+          .describe(
+            'Only prune orphans of these types (e.g., ["concept", "file"]). If omitted, prunes all orphan types.',
+          ),
+        dry_run: z
+          .boolean()
+          .optional()
+          .describe(
+            "If true, report orphans without removing them (default: false)",
+          ),
+      },
+    },
+    async (args) => {
+      try {
+        const result = await engine.prune(
+          args.entity_types,
+          args.dry_run ?? false,
         );
         return toolResult(result);
       } catch (e) {

@@ -105,7 +105,7 @@
     "scope": "src/engine/decisions.ts",
     "summary": "Direct fs calls in DecisionEngine for STATE.md sync — deliberate exception to storage-layer convention",
     "confidence": "medium",
-    "status": "provisional",
+    "status": "active",
     "affected_files": [],
     "affected_symbols": [],
     "commit_hashes": []
@@ -117,7 +117,7 @@
     "scope": "project",
     "summary": "Build bottom-up: utils → storage → engine → embeddings → tools → server",
     "confidence": "medium",
-    "status": "provisional",
+    "status": "active",
     "affected_files": [],
     "affected_symbols": [],
     "commit_hashes": []
@@ -129,7 +129,7 @@
     "scope": "project",
     "summary": "Embedded HTTP dashboard using native Node.js http module, vanilla HTML/JS, cytoscape.js for graph, vis-timeline for timeline",
     "confidence": "high",
-    "status": "provisional",
+    "status": "active",
     "affected_files": [],
     "affected_symbols": [],
     "commit_hashes": [
@@ -143,7 +143,7 @@
     "scope": "project",
     "summary": "Triage of TWINING_ARCH_REVIEW.md — 7 valid gaps, 3 invalid/already-addressed, 3 partial",
     "confidence": "high",
-    "status": "provisional",
+    "status": "active",
     "affected_files": [
       "src/engine/blackboard.ts",
       "src/engine/decisions.ts",
@@ -195,7 +195,7 @@
     "scope": "docs/AGENT_INTEGRATION_ARCHITECTURE.md",
     "summary": "Add rigor framework: verify step in agent lifecycle, tested_by traceability, drift detection, checkable constraints",
     "confidence": "high",
-    "status": "provisional",
+    "status": "active",
     "affected_files": [
       "docs/AGENT_INTEGRATION_ARCHITECTURE.md"
     ],
@@ -258,7 +258,7 @@
     "scope": "src/engine/verify.ts",
     "summary": "Switch execGit to execFileSync with argument arrays; replace broken shell operator blocklist with newline/null-byte validation",
     "confidence": "high",
-    "status": "provisional",
+    "status": "active",
     "affected_files": [
       "src/engine/verify.ts",
       "test/verify-engine.test.ts",

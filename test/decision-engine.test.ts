@@ -925,3 +925,97 @@ describe("DecisionEngine.searchDecisions", () => {
     expect(result.fallback_mode).toBe(true);
   });
 });
+
+describe("DecisionEngine.promote", () => {
+  it("promotes provisional decisions to active", async () => {
+    // Create two decisions in same domain+scope to trigger conflict → provisional
+    const d1 = await decisionEngine.decide(validDecisionInput());
+    const d2 = await decisionEngine.decide(
+      validDecisionInput({ summary: "Use OAuth for auth" }),
+    );
+
+    // d2 should be provisional due to conflict
+    const before = await decisionStore.get(d2.id);
+    expect(before!.status).toBe("provisional");
+
+    const result = await decisionEngine.promote([d2.id]);
+    expect(result.promoted).toEqual([d2.id]);
+    expect(result.already_active).toEqual([]);
+    expect(result.not_found).toEqual([]);
+    expect(result.wrong_status).toEqual([]);
+
+    const after = await decisionStore.get(d2.id);
+    expect(after!.status).toBe("active");
+  });
+
+  it("returns already_active for active decisions", async () => {
+    const d1 = await decisionEngine.decide(validDecisionInput());
+    const result = await decisionEngine.promote([d1.id]);
+    expect(result.already_active).toEqual([d1.id]);
+    expect(result.promoted).toEqual([]);
+  });
+
+  it("returns not_found for missing IDs", async () => {
+    const result = await decisionEngine.promote(["nonexistent"]);
+    expect(result.not_found).toEqual(["nonexistent"]);
+    expect(result.promoted).toEqual([]);
+  });
+
+  it("returns wrong_status for overridden decisions", async () => {
+    const d1 = await decisionEngine.decide(validDecisionInput());
+    await decisionEngine.override(d1.id, "outdated");
+
+    const result = await decisionEngine.promote([d1.id]);
+    expect(result.wrong_status).toEqual([
+      { id: d1.id, status: "overridden" },
+    ]);
+    expect(result.promoted).toEqual([]);
+  });
+
+  it("posts a status entry to blackboard when decisions are promoted", async () => {
+    const d1 = await decisionEngine.decide(validDecisionInput());
+    const d2 = await decisionEngine.decide(
+      validDecisionInput({ summary: "Use OAuth for auth" }),
+    );
+
+    await decisionEngine.promote([d2.id]);
+
+    const { entries } = await blackboardStore.read();
+    const statusEntries = entries.filter((e) => e.entry_type === "status");
+    const promoteEntry = statusEntries.find((e) =>
+      e.summary.includes("Promoted"),
+    );
+    expect(promoteEntry).toBeDefined();
+    expect(promoteEntry!.summary).toContain("1 provisional decision(s)");
+    expect(promoteEntry!.detail).toContain(d2.id);
+  });
+
+  it("does not post status entry when nothing is promoted", async () => {
+    const d1 = await decisionEngine.decide(validDecisionInput());
+    const beforeEntries = (await blackboardStore.read()).entries.length;
+
+    await decisionEngine.promote([d1.id]); // already active
+
+    const afterEntries = (await blackboardStore.read()).entries.length;
+    expect(afterEntries).toBe(beforeEntries);
+  });
+
+  it("handles mixed batch of IDs correctly", async () => {
+    const d1 = await decisionEngine.decide(validDecisionInput());
+    const d2 = await decisionEngine.decide(
+      validDecisionInput({ summary: "Use OAuth for auth" }),
+    );
+    await decisionEngine.override(d1.id, "outdated");
+
+    const result = await decisionEngine.promote([
+      d2.id,
+      d1.id,
+      "nonexistent",
+    ]);
+    expect(result.promoted).toEqual([d2.id]);
+    expect(result.wrong_status).toEqual([
+      { id: d1.id, status: "overridden" },
+    ]);
+    expect(result.not_found).toEqual(["nonexistent"]);
+  });
+});

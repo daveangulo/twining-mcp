@@ -248,3 +248,39 @@ describe("GraphStore.getEntityById / getEntityByName", () => {
     expect(found).toEqual([]);
   });
 });
+
+describe("GraphStore.removeEntities", () => {
+  it("removes entities by ID", async () => {
+    const a = await store.addEntity({ name: "A", type: "class" });
+    const b = await store.addEntity({ name: "B", type: "class" });
+
+    const result = await store.removeEntities(new Set([a.id]));
+    expect(result.removedEntities).toBe(1);
+
+    const remaining = await store.getEntities();
+    expect(remaining).toHaveLength(1);
+    expect(remaining[0]!.name).toBe("B");
+  });
+
+  it("removes relations referencing removed entities", async () => {
+    const a = await store.addEntity({ name: "A", type: "class" });
+    const b = await store.addEntity({ name: "B", type: "class" });
+    const c = await store.addEntity({ name: "C", type: "class" });
+    await store.addRelation({ source: a.id, target: b.id, type: "calls" });
+    await store.addRelation({ source: b.id, target: c.id, type: "calls" });
+
+    const result = await store.removeEntities(new Set([b.id]));
+    expect(result.removedEntities).toBe(1);
+    expect(result.removedRelations).toBe(2);
+
+    const relations = await store.getRelations();
+    expect(relations).toHaveLength(0);
+  });
+
+  it("returns zero counts when no IDs match", async () => {
+    await store.addEntity({ name: "A", type: "class" });
+    const result = await store.removeEntities(new Set(["nonexistent"]));
+    expect(result.removedEntities).toBe(0);
+    expect(result.removedRelations).toBe(0);
+  });
+});

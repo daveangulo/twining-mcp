@@ -218,3 +218,76 @@ describe("GraphEngine.query", () => {
     expect(result.entities).toEqual([]);
   });
 });
+
+describe("GraphEngine.prune", () => {
+  it("removes orphaned entities with no relations", async () => {
+    const a = await engine.addEntity({ name: "A", type: "class" });
+    const b = await engine.addEntity({ name: "B", type: "class" });
+    const c = await engine.addEntity({ name: "C", type: "class" });
+    await engine.addRelation({ source: a.id, target: b.id, type: "calls" });
+    // C is orphaned
+
+    const result = await engine.prune();
+    expect(result.total_orphans_found).toBe(1);
+    expect(result.total_removed).toBe(1);
+    expect(result.pruned).toHaveLength(1);
+    expect(result.pruned[0]!.name).toBe("C");
+    expect(result.dry_run).toBe(false);
+
+    // Verify C is actually gone
+    const remaining = await store.getEntities();
+    expect(remaining.map((e) => e.name).sort()).toEqual(["A", "B"]);
+  });
+
+  it("filters by entity type when specified", async () => {
+    await engine.addEntity({ name: "A", type: "class" });
+    await engine.addEntity({ name: "B", type: "file" });
+    await engine.addEntity({ name: "C", type: "concept" });
+    // All orphaned, but only prune "file" type
+
+    const result = await engine.prune(["file"]);
+    expect(result.total_orphans_found).toBe(3);
+    expect(result.total_removed).toBe(1);
+    expect(result.pruned).toHaveLength(1);
+    expect(result.pruned[0]!.name).toBe("B");
+  });
+
+  it("returns empty result when no orphans exist", async () => {
+    const a = await engine.addEntity({ name: "A", type: "class" });
+    const b = await engine.addEntity({ name: "B", type: "class" });
+    await engine.addRelation({ source: a.id, target: b.id, type: "calls" });
+
+    const result = await engine.prune();
+    expect(result.total_orphans_found).toBe(0);
+    expect(result.total_removed).toBe(0);
+    expect(result.pruned).toEqual([]);
+  });
+
+  it("dry run reports orphans without removing them", async () => {
+    const a = await engine.addEntity({ name: "A", type: "class" });
+    const b = await engine.addEntity({ name: "B", type: "class" });
+    // Both orphaned
+
+    const result = await engine.prune(undefined, true);
+    expect(result.dry_run).toBe(true);
+    expect(result.total_orphans_found).toBe(2);
+    expect(result.total_removed).toBe(0);
+    expect(result.pruned).toHaveLength(2);
+
+    // Entities should still exist
+    const remaining = await store.getEntities();
+    expect(remaining).toHaveLength(2);
+  });
+
+  it("does not remove connected entities", async () => {
+    const a = await engine.addEntity({ name: "A", type: "class" });
+    const b = await engine.addEntity({ name: "B", type: "class" });
+    const c = await engine.addEntity({ name: "C", type: "class" });
+    await engine.addRelation({ source: a.id, target: b.id, type: "calls" });
+    await engine.addRelation({ source: b.id, target: c.id, type: "depends_on" });
+
+    const result = await engine.prune();
+    expect(result.total_orphans_found).toBe(0);
+    expect(result.pruned).toEqual([]);
+  });
+});

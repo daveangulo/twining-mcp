@@ -46,7 +46,9 @@
     "src/dashboard/public/style.css"
   ],
   "affected_symbols": [],
-  "commit_hashes": [],
+  "commit_hashes": [
+    "c56b6f8"
+  ],
   "assembled_before": true,
   "id": "01KJD595ETVSHV91ZBGRKPWWZY",
   "timestamp": "2026-02-26T14:22:40.608Z",

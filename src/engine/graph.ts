@@ -240,4 +240,58 @@ export class GraphEngine {
     const byName = await this.graphStore.getEntityByName(idOrName);
     return byName[0];
   }
+
+  /**
+   * Remove orphaned entities (entities with no relations).
+   * Optionally filter by entity type.
+   */
+  async prune(entityTypes?: string[], dryRun = false): Promise<{
+    pruned: Array<{ id: string; name: string; type: string }>;
+    total_orphans_found: number;
+    total_removed: number;
+    removed_relations: number;
+    dry_run: boolean;
+  }> {
+    const entities = await this.graphStore.getEntities();
+    const relations = await this.graphStore.getRelations();
+
+    // Find all entity IDs that participate in at least one relation
+    const connectedIds = new Set<string>();
+    for (const r of relations) {
+      connectedIds.add(r.source);
+      connectedIds.add(r.target);
+    }
+
+    // Find orphans
+    let orphans = entities.filter((e) => !connectedIds.has(e.id));
+    const total_orphans_found = orphans.length;
+
+    // Filter by type if requested
+    if (entityTypes && entityTypes.length > 0) {
+      const typeSet = new Set(entityTypes);
+      orphans = orphans.filter((e) => typeSet.has(e.type));
+    }
+
+    if (orphans.length === 0 || dryRun) {
+      return {
+        pruned: orphans.map((e) => ({ id: e.id, name: e.name, type: e.type })),
+        total_orphans_found,
+        total_removed: 0,
+        removed_relations: 0,
+        dry_run: dryRun,
+      };
+    }
+
+    const orphanIds = new Set(orphans.map((e) => e.id));
+    const { removedEntities, removedRelations } =
+      await this.graphStore.removeEntities(orphanIds);
+
+    return {
+      pruned: orphans.map((e) => ({ id: e.id, name: e.name, type: e.type })),
+      total_orphans_found,
+      total_removed: removedEntities,
+      removed_relations: removedRelations,
+      dry_run: false,
+    };
+  }
 }

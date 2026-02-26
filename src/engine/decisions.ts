@@ -624,6 +624,70 @@ export class DecisionEngine {
   }
 
   /**
+   * Promote provisional decisions to active status.
+   * Only provisional decisions can be promoted.
+   */
+  async promote(
+    decisionIds: string[],
+    promotedBy?: string,
+  ): Promise<{
+    promoted: string[];
+    already_active: string[];
+    not_found: string[];
+    wrong_status: Array<{ id: string; status: string }>;
+  }> {
+    const result: {
+      promoted: string[];
+      already_active: string[];
+      not_found: string[];
+      wrong_status: Array<{ id: string; status: string }>;
+    } = {
+      promoted: [],
+      already_active: [],
+      not_found: [],
+      wrong_status: [],
+    };
+
+    for (const id of decisionIds) {
+      const decision = await this.decisionStore.get(id);
+      if (!decision) {
+        result.not_found.push(id);
+        continue;
+      }
+
+      if (decision.status === "active") {
+        result.already_active.push(id);
+        continue;
+      }
+
+      if (decision.status !== "provisional") {
+        result.wrong_status.push({ id, status: decision.status });
+        continue;
+      }
+
+      await this.decisionStore.updateStatus(id, "active");
+      result.promoted.push(id);
+    }
+
+    // Post a single status entry if any were promoted
+    if (result.promoted.length > 0) {
+      await this.blackboardEngine.post({
+        entry_type: "status",
+        summary:
+          `Promoted ${result.promoted.length} provisional decision(s) to active`.slice(
+            0,
+            200,
+          ),
+        detail: `Decision IDs: ${result.promoted.join(", ")}`,
+        scope: "project",
+        agent_id: promotedBy ?? "main",
+      });
+    }
+
+    return result;
+  }
+
+  /**
    * Search decisions across all scopes by keyword or semantic similarity.
    * Supports filtering by domain, status, and confidence.
    * Never throws — returns empty results on error.

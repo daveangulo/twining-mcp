@@ -197,4 +197,60 @@ export class GraphStore {
       (e) => e.name === name && (type === undefined || e.type === type),
     );
   }
+
+  /**
+   * Remove entities by ID, along with any relations that reference them.
+   * Returns the count of removed entities and relations.
+   */
+  async removeEntities(
+    entityIds: Set<string>,
+  ): Promise<{ removedEntities: number; removedRelations: number }> {
+    this.ensureFiles();
+
+    let removedEntities = 0;
+    let removedRelations = 0;
+
+    // Lock both files — entities first, then relations
+    const releaseEntities = await lockfile.lock(
+      this.entitiesPath,
+      LOCK_OPTIONS,
+    );
+    try {
+      const entities = JSON.parse(
+        fs.readFileSync(this.entitiesPath, "utf-8"),
+      ) as Entity[];
+      const before = entities.length;
+      const kept = entities.filter((e) => !entityIds.has(e.id));
+      removedEntities = before - kept.length;
+      fs.writeFileSync(
+        this.entitiesPath,
+        JSON.stringify(kept, null, 2),
+      );
+    } finally {
+      await releaseEntities();
+    }
+
+    const releaseRelations = await lockfile.lock(
+      this.relationsPath,
+      LOCK_OPTIONS,
+    );
+    try {
+      const relations = JSON.parse(
+        fs.readFileSync(this.relationsPath, "utf-8"),
+      ) as Relation[];
+      const before = relations.length;
+      const kept = relations.filter(
+        (r) => !entityIds.has(r.source) && !entityIds.has(r.target),
+      );
+      removedRelations = before - kept.length;
+      fs.writeFileSync(
+        this.relationsPath,
+        JSON.stringify(kept, null, 2),
+      );
+    } finally {
+      await releaseRelations();
+    }
+
+    return { removedEntities, removedRelations };
+  }
 }
