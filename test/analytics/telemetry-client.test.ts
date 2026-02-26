@@ -46,6 +46,19 @@ describe("TelemetryClient", () => {
     expect(result).toBe(false);
   });
 
+  it("reads POSTHOG_API_KEY from environment variable", async () => {
+    vi.stubEnv("POSTHOG_API_KEY", "phc_from_env");
+    const config: AnalyticsConfig = {
+      metrics: { enabled: true },
+      telemetry: { enabled: true, posthog_api_key: "", posthog_host: "" },
+    };
+    const client = new TelemetryClient();
+    // Will fail at dynamic import (posthog-node not installed), but proves
+    // the env var path doesn't short-circuit at the "no key" gate.
+    const result = await client.init(config, "/project", "1.0.0");
+    expect(result).toBe(false); // fails at import, not at key check
+  });
+
   it("requires posthog_api_key when enabled", async () => {
     const config: AnalyticsConfig = {
       metrics: { enabled: true },

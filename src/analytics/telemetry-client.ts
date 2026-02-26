@@ -13,12 +13,7 @@ import { createHash } from "node:crypto";
 import os from "node:os";
 import type { AnalyticsConfig } from "../utils/types.js";
 
-// Hardcoded PostHog project API key — this is a write-only ingest key,
-// safe to embed in source (like any client-side analytics key).
-// All opt-in installs report to the Twining project dashboard.
-// Set to empty string until a PostHog project is created.
-const POSTHOG_API_KEY = "phc_AN3caYGFLOajJLbGvCD2RV1d3loFzsOL3onUxzJRsQq";
-const POSTHOG_HOST = "https://us.i.posthog.com";
+const DEFAULT_POSTHOG_HOST = "https://us.i.posthog.com";
 
 interface PostHogLike {
   capture(event: { distinctId: string; event: string; properties?: Record<string, unknown> }): void;
@@ -45,9 +40,9 @@ export class TelemetryClient {
     // Gate: auto-disable in CI
     if (process.env.CI === "true") return false;
 
-    // Use hardcoded key, with config override for self-hosted PostHog
-    const apiKey = config.telemetry.posthog_api_key || POSTHOG_API_KEY;
-    const host = config.telemetry.posthog_host || POSTHOG_HOST;
+    // Read key from env var or config — never hardcoded in source
+    const apiKey = process.env.POSTHOG_API_KEY || config.telemetry.posthog_api_key;
+    const host = config.telemetry.posthog_host || DEFAULT_POSTHOG_HOST;
     if (!apiKey) return false;
 
     // Compute anonymous distinct ID
