@@ -9,6 +9,9 @@ dist/
 .env
 .env.*
 
+# Generated at build time (contains PostHog API key)
+src/analytics/_generated-posthog-key.ts
+
 # OS
 .DS_Store
 

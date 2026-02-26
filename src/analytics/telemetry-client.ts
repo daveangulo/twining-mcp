@@ -12,6 +12,7 @@
 import { createHash } from "node:crypto";
 import os from "node:os";
 import type { AnalyticsConfig } from "../utils/types.js";
+import { POSTHOG_API_KEY as BAKED_POSTHOG_KEY } from "./_generated-posthog-key.js";
 
 const DEFAULT_POSTHOG_HOST = "https://us.i.posthog.com";
 
@@ -40,8 +41,8 @@ export class TelemetryClient {
     // Gate: auto-disable in CI
     if (process.env.CI === "true") return false;
 
-    // Read key from env var or config — never hardcoded in source
-    const apiKey = process.env.POSTHOG_API_KEY || config.telemetry.posthog_api_key;
+    // Priority: env var > config file > build-time baked key
+    const apiKey = process.env.POSTHOG_API_KEY || config.telemetry.posthog_api_key || BAKED_POSTHOG_KEY;
     const host = config.telemetry.posthog_host || DEFAULT_POSTHOG_HOST;
     if (!apiKey) return false;
 
