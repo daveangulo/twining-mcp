@@ -2447,6 +2447,17 @@ function renderStreamThreads(container, entries, visibleIds) {
     if (id) cardElements[id] = cards[i];
   }
 
+  // Use getBoundingClientRect for positioning (offsetTop unreliable with position:relative cards)
+  var containerRect = container.getBoundingClientRect();
+  var scrollTop = container.scrollTop;
+
+  function cardTop(card) {
+    return card.getBoundingClientRect().top - containerRect.top + scrollTop;
+  }
+  function cardBottom(card) {
+    return card.getBoundingClientRect().bottom - containerRect.top + scrollTop;
+  }
+
   // For each entry with relates_to, draw thread to visible targets
   for (var i = 0; i < entries.length; i++) {
     var entry = entries[i];
@@ -2461,17 +2472,17 @@ function renderStreamThreads(container, entries, visibleIds) {
       if (!targetCard) continue;
 
       // Determine which card is higher in the DOM
-      var topCard, bottomCard;
-      if (sourceCard.offsetTop < targetCard.offsetTop) {
-        topCard = sourceCard;
-        bottomCard = targetCard;
+      var topEl, bottomEl;
+      if (cardTop(sourceCard) < cardTop(targetCard)) {
+        topEl = sourceCard;
+        bottomEl = targetCard;
       } else {
-        topCard = targetCard;
-        bottomCard = sourceCard;
+        topEl = targetCard;
+        bottomEl = sourceCard;
       }
 
-      var topBottom = topCard.offsetTop + topCard.offsetHeight;
-      var bottomTop = bottomCard.offsetTop;
+      var topBottom = cardBottom(topEl);
+      var bottomTop = cardTop(bottomEl);
       var height = bottomTop - topBottom;
 
       if (height > 0) {
@@ -2527,7 +2538,7 @@ function renderStreamTypeFilters() {
       var color = ENTRY_TYPE_COLORS[type] || '#6b7280';
       var isActive = streamTypeFilter === null || !!streamTypeFilter[type];
       var chip = document.createElement('button');
-      chip.className = 'stream-type-chip' + (streamTypeFilter !== null && isActive ? ' active' : '');
+      chip.className = 'stream-type-chip' + (isActive ? ' active' : '');
       chip.style.setProperty('--type-color', color);
       var dot = document.createElement('span');
       dot.className = 'chip-dot';
