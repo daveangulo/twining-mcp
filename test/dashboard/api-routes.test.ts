@@ -446,7 +446,8 @@ describe("API routes - initialized project", () => {
     const res = await httpGet(port, "/api/health");
     expect(res.status).toBe(200);
     const body = JSON.parse(res.body);
-    expect(body).toEqual({ ok: true, server: "twining-mcp" });
+    expect(body).toMatchObject({ ok: true, server: "twining-mcp" });
+    expect(body).toHaveProperty("projectRoot");
   });
 
   it("unknown route falls through to static file serving", async () => {
