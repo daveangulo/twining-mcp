@@ -669,7 +669,7 @@
       "scope": ".github/workflows/"
     },
     "created_at": "2026-02-26T21:57:39.769Z",
-    "updated_at": "2026-02-26T21:57:39.769Z"
+    "updated_at": "2026-02-28T13:56:17.692Z"
   },
   {
     "id": "01KJDZA8ST4BQ0MQGRNKQQT1BP",
@@ -697,10 +697,10 @@
     "name": "plugin/.claude-plugin/plugin.json",
     "type": "file",
     "properties": {
-      "scope": "plugin/"
+      "scope": "scripts/"
     },
     "created_at": "2026-02-28T01:19:31.492Z",
-    "updated_at": "2026-02-28T01:19:31.492Z"
+    "updated_at": "2026-02-28T13:56:16.870Z"
   },
   {
     "id": "01KJGX8KN7VXM02PM7RCAR6JE4",
@@ -855,5 +855,47 @@
     },
     "created_at": "2026-02-28T12:29:41.978Z",
     "updated_at": "2026-02-28T12:29:41.978Z"
+  },
+  {
+    "id": "01KJJ8J8SVP6JJKRM8PBDDFASZ",
+    "name": "01KJJ8J83J8E76TTQG8NTC0Q7G",
+    "type": "concept",
+    "properties": {
+      "summary": "Pure bash version bump script with sed for plugin version management",
+      "scope": "scripts/"
+    },
+    "created_at": "2026-02-28T13:56:16.827Z",
+    "updated_at": "2026-02-28T13:56:16.827Z"
+  },
+  {
+    "id": "01KJJ8J8T1E2XVBT66P2VP9N1S",
+    "name": "scripts/bump-plugin-version.sh",
+    "type": "file",
+    "properties": {
+      "scope": "scripts/"
+    },
+    "created_at": "2026-02-28T13:56:16.833Z",
+    "updated_at": "2026-02-28T13:56:16.833Z"
+  },
+  {
+    "id": "01KJJ8J8TFQN00XTFJH3CR9P5P",
+    "name": ".claude-plugin/marketplace.json",
+    "type": "file",
+    "properties": {
+      "scope": "scripts/"
+    },
+    "created_at": "2026-02-28T13:56:16.847Z",
+    "updated_at": "2026-02-28T13:56:16.847Z"
+  },
+  {
+    "id": "01KJJ8J9MV9AJCPQ0706XBYH5Y",
+    "name": "01KJJ8J9H1DEBERV8W05A3XRPP",
+    "type": "concept",
+    "properties": {
+      "summary": "CI job to enforce plugin version bumps on PRs that change plugin/ files",
+      "scope": ".github/workflows/"
+    },
+    "created_at": "2026-02-28T13:56:17.691Z",
+    "updated_at": "2026-02-28T13:56:17.691Z"
   }
 ]

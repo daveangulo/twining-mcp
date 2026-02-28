@@ -67,6 +67,8 @@ All decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Prevent duplicate browser tabs by checking health endpoint before auto-opening
 - Show session-ended overlay after 3 consecutive poll failures instead of attempting window.close()
 - Fix Stop hook to return required JSON decision format for Claude Code validation
+- Pure bash version bump script with sed for plugin version management
+- CI job to enforce plugin version bumps on PRs that change plugin/ files
 
 ### Pending Todos
 

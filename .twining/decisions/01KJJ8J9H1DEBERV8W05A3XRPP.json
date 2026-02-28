@@ -1,0 +1,35 @@
+{
+  "agent_id": "main",
+  "domain": "deployment",
+  "scope": ".github/workflows/",
+  "summary": "CI job to enforce plugin version bumps on PRs that change plugin/ files",
+  "context": "Plugin changes were shipping without version bumps, making it impossible to track what version users have. Need CI enforcement to prevent this.",
+  "rationale": "Added plugin-version-check job that only runs on PRs (not pushes to main, since direct commits happen). Uses git diff to detect plugin/ changes and checks both version files for version line changes. Excludes plugin.json itself from the \"changed files\" check to avoid false positives when only the version is bumped.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Pre-commit hook instead of CI",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Pre-commit hooks are local-only, can be bypassed, and don't protect the main branch"
+    },
+    {
+      "option": "GitHub Action that auto-bumps version",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Auto-bumping removes human intent from version decisions (patch vs minor vs major)"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    ".github/workflows/ci.yml"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": false,
+  "id": "01KJJ8J9H1DEBERV8W05A3XRPP",
+  "timestamp": "2026-02-28T13:56:17.569Z",
+  "status": "provisional"
+}

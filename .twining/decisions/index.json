@@ -510,5 +510,35 @@
     "commit_hashes": [
       "6acead3"
     ]
+  },
+  {
+    "id": "01KJJ8J83J8E76TTQG8NTC0Q7G",
+    "timestamp": "2026-02-28T13:56:16.139Z",
+    "domain": "deployment",
+    "scope": "scripts/",
+    "summary": "Pure bash version bump script with sed for plugin version management",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "scripts/bump-plugin-version.sh",
+      ".claude-plugin/marketplace.json",
+      "plugin/.claude-plugin/plugin.json"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KJJ8J9H1DEBERV8W05A3XRPP",
+    "timestamp": "2026-02-28T13:56:17.569Z",
+    "domain": "deployment",
+    "scope": ".github/workflows/",
+    "summary": "CI job to enforce plugin version bumps on PRs that change plugin/ files",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      ".github/workflows/ci.yml"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]

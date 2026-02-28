@@ -886,5 +886,45 @@
       "decision_summary": "Fix Stop hook to return required JSON decision format for Claude Code validation"
     },
     "created_at": "2026-02-28T12:29:41.980Z"
+  },
+  {
+    "id": "01KJJ8J8T824QXXGSRM6CYGFFW",
+    "source": "01KJJ8J8T1E2XVBT66P2VP9N1S",
+    "target": "01KJJ8J8SVP6JJKRM8PBDDFASZ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Pure bash version bump script with sed for plugin version management"
+    },
+    "created_at": "2026-02-28T13:56:16.840Z"
+  },
+  {
+    "id": "01KJJ8J8V0SBG18MMXMTV051FW",
+    "source": "01KJJ8J8TFQN00XTFJH3CR9P5P",
+    "target": "01KJJ8J8SVP6JJKRM8PBDDFASZ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Pure bash version bump script with sed for plugin version management"
+    },
+    "created_at": "2026-02-28T13:56:16.865Z"
+  },
+  {
+    "id": "01KJJ8J8VDA5CHBBX3YFATM9YW",
+    "source": "01KJGX8KN41B4YP7JVXE9E0K63",
+    "target": "01KJJ8J8SVP6JJKRM8PBDDFASZ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Pure bash version bump script with sed for plugin version management"
+    },
+    "created_at": "2026-02-28T13:56:16.877Z"
+  },
+  {
+    "id": "01KJJ8J9MWC8B6TFCW2MM8CPM6",
+    "source": "01KJDZA8SS4QE28SEJGH15YGW4",
+    "target": "01KJJ8J9MV9AJCPQ0706XBYH5Y",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "CI job to enforce plugin version bumps on PRs that change plugin/ files"
+    },
+    "created_at": "2026-02-28T13:56:17.693Z"
   }
 ]

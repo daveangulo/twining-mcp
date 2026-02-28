@@ -11,6 +11,44 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  plugin-version-check:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for plugin changes without version bump
+        run: |
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+
+          # Check if any plugin/ files changed (excluding plugin.json itself)
+          PLUGIN_CHANGES=$(git diff --name-only "$BASE" "$HEAD" -- 'plugin/' | grep -v 'plugin/.claude-plugin/plugin.json' || true)
+
+          if [[ -z "$PLUGIN_CHANGES" ]]; then
+            echo "No plugin changes detected — skipping version check."
+            exit 0
+          fi
+
+          echo "Plugin files changed:"
+          echo "$PLUGIN_CHANGES"
+          echo ""
+
+          # Check if version was bumped in either file
+          MARKETPLACE_DIFF=$(git diff "$BASE" "$HEAD" -- '.claude-plugin/marketplace.json' || true)
+          PLUGIN_JSON_DIFF=$(git diff "$BASE" "$HEAD" -- 'plugin/.claude-plugin/plugin.json' || true)
+
+          if echo "$MARKETPLACE_DIFF" | grep -q '"version"' && echo "$PLUGIN_JSON_DIFF" | grep -q '"version"'; then
+            echo "Version bump detected — check passed."
+            exit 0
+          fi
+
+          echo "::error::Plugin files changed without a version bump. Run: scripts/bump-plugin-version.sh patch (or minor/major)"
+          exit 1
+
   build-and-test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
