@@ -38,6 +38,7 @@ import { CoordinationEngine } from "./engine/coordination.js";
 import { registerCoordinationTools } from "./tools/coordination-tools.js";
 import { MetricsCollector } from "./analytics/metrics-collector.js";
 import { createInstrumentedServer } from "./analytics/instrumented-server.js";
+import { TWINING_INSTRUCTIONS } from "./instructions.js";
 
 /**
  * Create and configure the Twining MCP server.
@@ -151,11 +152,18 @@ export function createServer(projectRoot: string): ServerContext {
     console.error("[twining] Pending processor failed (non-fatal):", err);
   });
 
-  // Create MCP server
-  const server = new McpServer({
-    name: "twining-mcp",
-    version: PKG_VERSION,
-  });
+  // Create MCP server with workflow instructions for non-plugin clients
+  const server = new McpServer(
+    {
+      name: "twining-mcp",
+      version: PKG_VERSION,
+    },
+    {
+      instructions: config.instructions?.auto_inject !== false
+        ? TWINING_INSTRUCTIONS
+        : undefined,
+    },
+  );
 
   // Instrument tool calls with metrics collection
   const metricsCollector = new MetricsCollector(twiningDir);

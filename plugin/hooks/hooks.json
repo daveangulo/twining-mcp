@@ -1,0 +1,18 @@
+{
+  "hooks": {
+    "SessionStart": [{
+      "matcher": "*",
+      "hooks": [{
+        "type": "command",
+        "command": "echo '{\"message\": \"Twining coordination is active. Use /twining:status for project state.\"}'"
+      }]
+    }],
+    "Stop": [{
+      "matcher": "*",
+      "hooks": [{
+        "type": "prompt",
+        "prompt": "Before finishing: if any significant architectural or implementation decisions were made in this session, record them using twining_decide. Check if there are unresolved blackboard questions that should be answered. If work should continue in another session, create a handoff. If the blackboard has grown large, consider running twining_archive."
+      }]
+    }]
+  }
+}

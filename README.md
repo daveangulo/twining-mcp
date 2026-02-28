@@ -31,7 +31,7 @@ Twining is an MCP server that gives your AI agents persistent project memory. De
 
 ```
 # Install in 10 seconds
-claude mcp add twining -- npx -y twining-mcp --project .
+claude plugin install twining
 ```
 
 **Record a decision with rationale:**
@@ -67,23 +67,37 @@ Orchestrators (like agent swarms and hierarchical coordinators) route work by *a
 
 Agents self-select into work by reading the blackboard. No central bottleneck. No relay that drops context. Every agent sees every other agent's decisions and warnings, directly.
 
-## Quick Start
+## Install
 
-### Add to Claude Code
+### Plugin Install (Recommended)
+
+```bash
+claude plugin install twining
+```
+
+One step. Includes the MCP server, skills, hooks, and commands. Skills teach Claude when and how to use Twining — everything works automatically.
+
+### Team Auto-Install
+
+Commit this to your repo's `.claude/settings.json` so every team member gets Twining on clone:
+
+```json
+{
+  "enabledPlugins": {
+    "twining@daveangulo": true
+  }
+}
+```
+
+### MCP-Only Install
+
+For non-Claude-Code clients (Cursor, Windsurf, etc.):
 
 ```bash
 claude mcp add twining -- npx -y twining-mcp --project .
 ```
 
-Or scope to a single project:
-
-```bash
-claude mcp add twining -s project -- npx -y twining-mcp --project .
-```
-
-### Manual Configuration
-
-Add to your `.mcp.json`:
+Or add to `.mcp.json`:
 
 ```json
 {
@@ -96,9 +110,21 @@ Add to your `.mcp.json`:
 }
 ```
 
+MCP server instructions are included automatically in the initialize response.
+
+### Upgrading from Manual Install
+
+If you previously configured Twining manually, switch to the plugin:
+
+1. Remove manual MCP server: `claude mcp remove twining`
+2. Install plugin: `claude plugin install twining`
+3. Clean up: remove Twining hooks from `.claude/settings.json`, remove `.claude/agents/twining-aware.md` if present, remove Twining sections from `CLAUDE.md` (skills handle this now)
+4. Keep: `.twining/` directory (all state preserved)
+5. Verify: `/twining:status`
+
 ### Get the Most Out of It
 
-Add Twining instructions to your project's `CLAUDE.md` so agents use it automatically. See **[docs/CLAUDE_TEMPLATE.md](docs/CLAUDE_TEMPLATE.md)** for a ready-to-copy template.
+The plugin handles agent instructions automatically via skills. For the MCP-only install path, add Twining instructions to your project's `CLAUDE.md` so agents use it automatically — see **[docs/CLAUDE_TEMPLATE.md](docs/CLAUDE_TEMPLATE.md)** for a ready-to-copy template.
 
 ### Dashboard
 

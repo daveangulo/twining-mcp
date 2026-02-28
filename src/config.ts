@@ -49,6 +49,9 @@ export const DEFAULT_CONFIG: TwiningConfig = {
       posthog_host: "https://us.i.posthog.com",
     },
   },
+  instructions: {
+    auto_inject: true,       // Include workflow instructions in MCP initialize response
+  },
 };
 
 /** Deep merge source into target, returning a new object */

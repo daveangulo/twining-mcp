@@ -1,0 +1,43 @@
+{
+  "agent_id": "main",
+  "domain": "architecture",
+  "scope": "plugin/",
+  "summary": "Implement Twining as a Claude Code plugin with skills, hooks, agents, commands, and MCP server instructions",
+  "context": "Installing Twining currently requires 3+ manual steps. The Claude Code plugin system collapses this into a single install that bundles MCP server, skills, hooks, agents, and commands. Skills teach Claude when to use Twining autonomously.",
+  "rationale": "Plugin provides one-step install, behavioral teaching via skills (not just documentation), auto-starting MCP server, and lifecycle hooks. Skills are mapped to cover all 27 tools across 7 skills. MCP server instructions provide a fallback for non-Claude-Code clients.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Keep manual install only with improved docs",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Requires users to copy CLAUDE.md template, configure hooks, and add MCP server separately — high friction"
+    },
+    {
+      "option": "Ship skills as a separate npm package",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Skills need to be bundled with the MCP server config to provide the one-step install experience"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "plugin/.claude-plugin/plugin.json",
+    "plugin/.mcp.json",
+    "plugin/skills/",
+    "plugin/hooks/hooks.json",
+    "plugin/agents/twining-coordinator.md",
+    "plugin/commands/",
+    "src/server.ts",
+    "src/instructions.ts",
+    "README.md"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KJGX8KGYVHZZWY92KTDM4RK3",
+  "timestamp": "2026-02-28T01:19:31.362Z",
+  "status": "active"
+}

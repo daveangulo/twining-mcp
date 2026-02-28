@@ -112,10 +112,10 @@
     "properties": {
       "description": "MCP server setup — createServer() wires all engines and registers tool handlers",
       "layer": "server",
-      "scope": "src/analytics/"
+      "scope": "plugin/"
     },
     "created_at": "2026-02-17T03:13:31.729Z",
-    "updated_at": "2026-02-26T14:22:40.809Z"
+    "updated_at": "2026-02-28T01:19:31.508Z"
   },
   {
     "id": "01KHMSDJZEQM1FXSMNYBYTST24",
@@ -680,5 +680,106 @@
     },
     "created_at": "2026-02-26T21:57:39.770Z",
     "updated_at": "2026-02-26T21:57:39.770Z"
+  },
+  {
+    "id": "01KJGX8KN41B4YP7JVXE9E0K62",
+    "name": "01KJGX8KGYVHZZWY92KTDM4RK3",
+    "type": "concept",
+    "properties": {
+      "summary": "Implement Twining as a Claude Code plugin with skills, hooks, agents, commands, and MCP server instructions",
+      "scope": "plugin/"
+    },
+    "created_at": "2026-02-28T01:19:31.491Z",
+    "updated_at": "2026-02-28T01:19:31.491Z"
+  },
+  {
+    "id": "01KJGX8KN41B4YP7JVXE9E0K63",
+    "name": "plugin/.claude-plugin/plugin.json",
+    "type": "file",
+    "properties": {
+      "scope": "plugin/"
+    },
+    "created_at": "2026-02-28T01:19:31.492Z",
+    "updated_at": "2026-02-28T01:19:31.492Z"
+  },
+  {
+    "id": "01KJGX8KN7VXM02PM7RCAR6JE4",
+    "name": "plugin/.mcp.json",
+    "type": "file",
+    "properties": {
+      "scope": "plugin/"
+    },
+    "created_at": "2026-02-28T01:19:31.495Z",
+    "updated_at": "2026-02-28T01:19:31.495Z"
+  },
+  {
+    "id": "01KJGX8KNEGEK425RKKX0DSKZ7",
+    "name": "plugin/skills/",
+    "type": "file",
+    "properties": {
+      "scope": "plugin/"
+    },
+    "created_at": "2026-02-28T01:19:31.502Z",
+    "updated_at": "2026-02-28T01:19:31.502Z"
+  },
+  {
+    "id": "01KJGX8KNG4BA8P7PFEXMTW51R",
+    "name": "plugin/hooks/hooks.json",
+    "type": "file",
+    "properties": {
+      "scope": "plugin/"
+    },
+    "created_at": "2026-02-28T01:19:31.504Z",
+    "updated_at": "2026-02-28T01:19:31.504Z"
+  },
+  {
+    "id": "01KJGX8KNHD07T6HE5K3GHZBAK",
+    "name": "plugin/agents/twining-coordinator.md",
+    "type": "file",
+    "properties": {
+      "scope": "plugin/"
+    },
+    "created_at": "2026-02-28T01:19:31.505Z",
+    "updated_at": "2026-02-28T01:19:31.505Z"
+  },
+  {
+    "id": "01KJGX8KNJCN28FVR0PVGK52GK",
+    "name": "plugin/commands/",
+    "type": "file",
+    "properties": {
+      "scope": "plugin/"
+    },
+    "created_at": "2026-02-28T01:19:31.506Z",
+    "updated_at": "2026-02-28T01:19:31.506Z"
+  },
+  {
+    "id": "01KJGX8KNP33M6H286B9GKGQ3X",
+    "name": "src/instructions.ts",
+    "type": "file",
+    "properties": {
+      "scope": "plugin/"
+    },
+    "created_at": "2026-02-28T01:19:31.510Z",
+    "updated_at": "2026-02-28T01:19:31.510Z"
+  },
+  {
+    "id": "01KJGX8KNRTGKE7PVC2GH1QSTE",
+    "name": "README.md",
+    "type": "file",
+    "properties": {
+      "scope": "plugin/"
+    },
+    "created_at": "2026-02-28T01:19:31.512Z",
+    "updated_at": "2026-02-28T01:19:31.512Z"
+  },
+  {
+    "id": "01KJGXW3WKNH9MCE8RNZS33HAN",
+    "name": "test/unit/instructions.test.ts",
+    "type": "file",
+    "properties": {
+      "description": "Tests for TWINING_INSTRUCTIONS and config.instructions.auto_inject"
+    },
+    "created_at": "2026-02-28T01:30:10.707Z",
+    "updated_at": "2026-02-28T01:30:10.707Z"
   }
 ]

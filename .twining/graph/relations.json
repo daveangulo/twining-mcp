@@ -666,5 +666,105 @@
       "decision_summary": "Add CI (build-and-test on PRs) and Publish (npm publish on tags) GitHub Actions workflows"
     },
     "created_at": "2026-02-26T21:57:39.771Z"
+  },
+  {
+    "id": "01KJGX8KN6DW25FF7DJZ3PJ49C",
+    "source": "01KJGX8KN41B4YP7JVXE9E0K63",
+    "target": "01KJGX8KN41B4YP7JVXE9E0K62",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Implement Twining as a Claude Code plugin with skills, hooks, agents, commands, and MCP server instructions"
+    },
+    "created_at": "2026-02-28T01:19:31.494Z"
+  },
+  {
+    "id": "01KJGX8KNAS8XDSZS92D9E8JJ6",
+    "source": "01KJGX8KN7VXM02PM7RCAR6JE4",
+    "target": "01KJGX8KN41B4YP7JVXE9E0K62",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Implement Twining as a Claude Code plugin with skills, hooks, agents, commands, and MCP server instructions"
+    },
+    "created_at": "2026-02-28T01:19:31.498Z"
+  },
+  {
+    "id": "01KJGX8KNF4WFKBSA59887K2BW",
+    "source": "01KJGX8KNEGEK425RKKX0DSKZ7",
+    "target": "01KJGX8KN41B4YP7JVXE9E0K62",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Implement Twining as a Claude Code plugin with skills, hooks, agents, commands, and MCP server instructions"
+    },
+    "created_at": "2026-02-28T01:19:31.503Z"
+  },
+  {
+    "id": "01KJGX8KNG4BA8P7PFEXMTW51S",
+    "source": "01KJGX8KNG4BA8P7PFEXMTW51R",
+    "target": "01KJGX8KN41B4YP7JVXE9E0K62",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Implement Twining as a Claude Code plugin with skills, hooks, agents, commands, and MCP server instructions"
+    },
+    "created_at": "2026-02-28T01:19:31.504Z"
+  },
+  {
+    "id": "01KJGX8KNJCN28FVR0PVGK52GJ",
+    "source": "01KJGX8KNHD07T6HE5K3GHZBAK",
+    "target": "01KJGX8KN41B4YP7JVXE9E0K62",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Implement Twining as a Claude Code plugin with skills, hooks, agents, commands, and MCP server instructions"
+    },
+    "created_at": "2026-02-28T01:19:31.506Z"
+  },
+  {
+    "id": "01KJGX8KNM8FQA5KJW1EMTEHBZ",
+    "source": "01KJGX8KNJCN28FVR0PVGK52GK",
+    "target": "01KJGX8KN41B4YP7JVXE9E0K62",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Implement Twining as a Claude Code plugin with skills, hooks, agents, commands, and MCP server instructions"
+    },
+    "created_at": "2026-02-28T01:19:31.508Z"
+  },
+  {
+    "id": "01KJGX8KNN4K9ZHRDP1H99Z41Y",
+    "source": "01KHMSDEJH7CQCE97XA0ZAP52A",
+    "target": "01KJGX8KN41B4YP7JVXE9E0K62",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Implement Twining as a Claude Code plugin with skills, hooks, agents, commands, and MCP server instructions"
+    },
+    "created_at": "2026-02-28T01:19:31.509Z"
+  },
+  {
+    "id": "01KJGX8KNQF3HVD8T9Z6F2N95R",
+    "source": "01KJGX8KNP33M6H286B9GKGQ3X",
+    "target": "01KJGX8KN41B4YP7JVXE9E0K62",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Implement Twining as a Claude Code plugin with skills, hooks, agents, commands, and MCP server instructions"
+    },
+    "created_at": "2026-02-28T01:19:31.512Z"
+  },
+  {
+    "id": "01KJGX8KNS6S5YCTGETPB9DY76",
+    "source": "01KJGX8KNRTGKE7PVC2GH1QSTE",
+    "target": "01KJGX8KN41B4YP7JVXE9E0K62",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Implement Twining as a Claude Code plugin with skills, hooks, agents, commands, and MCP server instructions"
+    },
+    "created_at": "2026-02-28T01:19:31.513Z"
+  },
+  {
+    "id": "01KJGXWACC399NBXN7DHC7MWY1",
+    "source": "01KJGX8KNP33M6H286B9GKGQ3X",
+    "target": "01KJGXW3WKNH9MCE8RNZS33HAN",
+    "type": "tested_by",
+    "properties": {
+      "covers": "TWINING_INSTRUCTIONS content and config.instructions.auto_inject defaults"
+    },
+    "created_at": "2026-02-28T01:30:17.356Z"
   }
 ]

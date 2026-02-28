@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "twining": {
+      "command": "npx",
+      "args": ["-y", "twining-mcp", "--project", "."]
+    }
+  }
+}

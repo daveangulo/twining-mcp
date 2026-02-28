@@ -193,6 +193,10 @@ export interface TwiningConfig {
     };
   };
   analytics?: AnalyticsConfig;
+  instructions?: {
+    /** Whether to include workflow instructions in the MCP initialize response (default: true) */
+    auto_inject: boolean;
+  };
 }
 
 /** Summarize result — spec section 4.3 twining_summarize return */
