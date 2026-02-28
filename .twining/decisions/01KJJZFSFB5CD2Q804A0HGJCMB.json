@@ -1,0 +1,46 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "src/dashboard/http-server.ts",
+  "summary": "Include projectRoot in health endpoint to distinguish same-project vs different-project dashboard instances",
+  "context": "Dashboard auto-open was broken when multiple MCP instances ran simultaneously. The skipOpen logic checked isExistingDashboard() which only verified server==='twining-mcp', so ANY existing dashboard on the default port prevented auto-open — even for different projects.",
+  "rationale": "Adding projectRoot to the health response lets isExistingDashboard() distinguish same-project dashboards (safe to skip, since they read from the same .twining/ on disk) from different-project dashboards (should auto-open a new tab). This is minimally invasive — only the health response and the dedup check change.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Kill stale instances on startup",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Cannot distinguish stale from legitimately running instances for other repos. Killing another session's dashboard would break their experience."
+    },
+    {
+      "option": "Always auto-open regardless of existing instances",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Would open duplicate browser tabs every time Claude Code reconnects the MCP server for the same project."
+    },
+    {
+      "option": "Use a PID file for dedup",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "More complex, introduces file cleanup concerns, and doesn't solve the multi-project case as cleanly as checking projectRoot in the health response."
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "src/dashboard/http-server.ts",
+    "test/dashboard/http-server.test.ts"
+  ],
+  "affected_symbols": [
+    "isExistingDashboard",
+    "handleRequest",
+    "startDashboard"
+  ],
+  "commit_hashes": [],
+  "assembled_before": false,
+  "id": "01KJJZFSFB5CD2Q804A0HGJCMB",
+  "timestamp": "2026-02-28T20:36:52.847Z",
+  "status": "provisional"
+}

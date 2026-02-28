@@ -660,5 +660,24 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KJJZFSFB5CD2Q804A0HGJCMB",
+    "timestamp": "2026-02-28T20:36:52.847Z",
+    "domain": "implementation",
+    "scope": "src/dashboard/http-server.ts",
+    "summary": "Include projectRoot in health endpoint to distinguish same-project vs different-project dashboard instances",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      "src/dashboard/http-server.ts",
+      "test/dashboard/http-server.test.ts"
+    ],
+    "affected_symbols": [
+      "isExistingDashboard",
+      "handleRequest",
+      "startDashboard"
+    ],
+    "commit_hashes": []
   }
 ]

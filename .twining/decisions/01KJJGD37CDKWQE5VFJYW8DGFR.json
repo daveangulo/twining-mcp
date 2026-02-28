@@ -1,0 +1,46 @@
+{
+  "agent_id": "main",
+  "domain": "architecture",
+  "scope": "src/dashboard/",
+  "summary": "Add Stream View as alternate visualization for Blackboard tab",
+  "context": "The Blackboard tab only has a plain data table, unlike Decisions (Timeline) and Graph (Visual). Blackboard data is fundamentally a multi-agent conversation with 10 entry types, relates_to links, and scope hierarchy — all flattened into rows.",
+  "rationale": "A vertical card-based activity stream best fits the conversational nature of blackboard data. Cards colored by entry type, grouped by time, with CSS thread lines for relates_to connections. Visually distinct from Timeline (horizontal time bands) and Graph (node network). Scales well for dozens-to-hundreds of entries kept active by archival.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Scope Heatmap + Swimlanes — grid with rows as scopes and columns as time buckets",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "More abstract, loses individual entry readability, scope paths don't form clean hierarchy, needs more interaction to reach actual entries"
+    },
+    {
+      "option": "Constellation Map — node layout like graph tab but for blackboard entries positioned by time/scope",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Overlaps with what Graph tab already does, would feel redundant, more complex to build with good UX"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "src/dashboard/public/index.html",
+    "src/dashboard/public/app.js",
+    "src/dashboard/public/style.css"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [
+    "2df4074",
+    "e7947ec",
+    "77910a3",
+    "3b52272",
+    "bedfabb",
+    "4dfeb26",
+    "d0327a4",
+    "26b8f7f"
+  ],
+  "assembled_before": false,
+  "id": "01KJJGD37CDKWQE5VFJYW8DGFR",
+  "timestamp": "2026-02-28T16:13:15.887Z",
+  "status": "active"
+}

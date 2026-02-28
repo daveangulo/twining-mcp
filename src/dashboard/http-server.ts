@@ -13,10 +13,14 @@ import { getDashboardConfig } from "./dashboard-config.js";
 import { createApiHandler } from "./api-routes.js";
 
 /**
- * Check if a Twining dashboard is already running on the given port.
- * Returns true if a health check confirms another instance.
+ * Check if a Twining dashboard for the SAME project is already running on the given port.
+ * Returns true only when another instance serves the same projectRoot.
+ * Different-project dashboards are not considered duplicates.
  */
-function isExistingDashboard(port: number): Promise<boolean> {
+function isExistingDashboard(
+  port: number,
+  projectRoot: string,
+): Promise<boolean> {
   return new Promise((resolve) => {
     const req = http.get(
       { hostname: "127.0.0.1", port, path: "/api/health", timeout: 1000 },
@@ -28,7 +32,10 @@ function isExistingDashboard(port: number): Promise<boolean> {
         res.on("end", () => {
           try {
             const data = JSON.parse(body);
-            resolve(data.server === "twining-mcp");
+            resolve(
+              data.server === "twining-mcp" &&
+                data.projectRoot === projectRoot,
+            );
           } catch {
             resolve(false);
           }
@@ -145,6 +152,7 @@ export function handleRequest(
 ): (req: http.IncomingMessage, res: http.ServerResponse) => void {
   const staticHandler = serveStatic(publicDir);
   const apiHandler = createApiHandler(projectRoot);
+  const resolvedProjectRoot = path.resolve(projectRoot);
 
   return (req: http.IncomingMessage, res: http.ServerResponse) => {
     // Try API routes first (async)
@@ -157,7 +165,13 @@ export function handleRequest(
           res.writeHead(200, {
             "Content-Type": "application/json; charset=utf-8",
           });
-          res.end(JSON.stringify({ ok: true, server: "twining-mcp" }));
+          res.end(
+            JSON.stringify({
+              ok: true,
+              server: "twining-mcp",
+              projectRoot: resolvedProjectRoot,
+            }),
+          );
           return;
         }
 
@@ -204,8 +218,10 @@ export async function startDashboard(
     // If we bound to a different port than requested, check if another
     // dashboard instance is already running on the original port.
     // This prevents opening duplicate tabs when multiple MCP instances start.
+    const resolvedRoot = path.resolve(projectRoot);
     const skipOpen =
-      port !== config.port && (await isExistingDashboard(config.port));
+      port !== config.port &&
+      (await isExistingDashboard(config.port, resolvedRoot));
     if (skipOpen) {
       console.error(
         `[twining] Dashboard already running on port ${config.port}, skipping auto-open`,

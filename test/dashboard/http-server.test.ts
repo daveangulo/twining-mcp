@@ -242,7 +242,11 @@ describe("/api/health endpoint", () => {
     const res = await httpGet(port, "/api/health");
     expect(res.status).toBe(200);
     const body = JSON.parse(res.body);
-    expect(body).toEqual({ ok: true, server: "twining-mcp" });
+    expect(body).toEqual({
+      ok: true,
+      server: "twining-mcp",
+      projectRoot: path.resolve("/tmp"),
+    });
   });
 
   it("returns correct application/json Content-Type", async () => {
