@@ -66,6 +66,7 @@ All decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Redesign dashboard UI with dark-first professional theme using Sora/DM Sans/JetBrains Mono fonts and teal accent color
 - Prevent duplicate browser tabs by checking health endpoint before auto-opening
 - Show session-ended overlay after 3 consecutive poll failures instead of attempting window.close()
+- Fix Stop hook to return required JSON decision format for Claude Code validation
 
 ### Pending Todos
 

@@ -10,8 +10,9 @@
     "Stop": [{
       "matcher": "*",
       "hooks": [{
-        "type": "prompt",
-        "prompt": "Before finishing: if any significant architectural or implementation decisions were made in this session, record them using twining_decide. Check if there are unresolved blackboard questions that should be answered. If work should continue in another session, create a handoff. If the blackboard has grown large, consider running twining_archive.\n\nAfter completing these tasks, you MUST return a JSON response in exactly this format:\n{\"decision\": \"approve\", \"reason\": \"Twining housekeeping complete\"}"
+        "type": "command",
+        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/stop-hook.sh",
+        "timeout": 10
       }]
     }]
   }
