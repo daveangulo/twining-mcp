@@ -2428,6 +2428,120 @@ function renderStreamDetail(entry) {
   }
 }
 
+function renderStreamThreads(container, entries, visibleIds) {
+  // Build map of entry ID -> DOM card element
+  var cardElements = {};
+  var cards = container.querySelectorAll('.stream-card');
+  for (var i = 0; i < cards.length; i++) {
+    var id = cards[i].getAttribute('data-id');
+    if (id) cardElements[id] = cards[i];
+  }
+
+  // For each entry with relates_to, draw thread to visible targets
+  for (var i = 0; i < entries.length; i++) {
+    var entry = entries[i];
+    if (!entry.relates_to || !entry.relates_to.length) continue;
+
+    var sourceCard = cardElements[entry.id];
+    if (!sourceCard) continue;
+
+    for (var r = 0; r < entry.relates_to.length; r++) {
+      var targetId = entry.relates_to[r];
+      var targetCard = cardElements[targetId];
+      if (!targetCard) continue;
+
+      // Determine which card is higher in the DOM
+      var topCard, bottomCard;
+      if (sourceCard.offsetTop < targetCard.offsetTop) {
+        topCard = sourceCard;
+        bottomCard = targetCard;
+      } else {
+        topCard = targetCard;
+        bottomCard = sourceCard;
+      }
+
+      var topBottom = topCard.offsetTop + topCard.offsetHeight;
+      var bottomTop = bottomCard.offsetTop;
+      var height = bottomTop - topBottom;
+
+      if (height > 0) {
+        var thread = el('div', 'stream-thread');
+        var typeColor = ENTRY_TYPE_COLORS[entry.entry_type] || '#6b7280';
+        thread.style.setProperty('--thread-color', typeColor);
+        thread.style.top = topBottom + 'px';
+        thread.style.height = height + 'px';
+        container.appendChild(thread);
+      }
+    }
+  }
+}
+
+function renderStreamTypeFilters() {
+  var container = document.getElementById('stream-type-filters');
+  if (!container) return;
+  clearElement(container);
+
+  // Count entry types from scoped data
+  var scoped = applyGlobalScope(state.blackboard.data || [], 'scope');
+  var typeSet = {};
+  for (var i = 0; i < scoped.length; i++) {
+    var t = scoped[i].entry_type || 'unknown';
+    typeSet[t] = (typeSet[t] || 0) + 1;
+  }
+
+  var types = Object.keys(typeSet).sort(function(a, b) {
+    return typeSet[b] - typeSet[a];
+  });
+
+  if (types.length === 0) return;
+
+  // "All" chip
+  var allChip = document.createElement('button');
+  allChip.className = 'stream-type-chip' + (streamTypeFilter === null ? ' active' : '');
+  allChip.style.setProperty('--type-color', 'var(--accent)');
+  var allDot = document.createElement('span');
+  allDot.className = 'chip-dot';
+  allChip.appendChild(allDot);
+  var allText = document.createElement('span');
+  allText.textContent = 'All';
+  allChip.appendChild(allText);
+  allChip.addEventListener('click', function() {
+    streamTypeFilter = null;
+    renderStream();
+  });
+  container.appendChild(allChip);
+
+  // Per-type chips
+  for (var j = 0; j < types.length; j++) {
+    (function(type) {
+      var color = ENTRY_TYPE_COLORS[type] || '#6b7280';
+      var isActive = streamTypeFilter === null || !!streamTypeFilter[type];
+      var chip = document.createElement('button');
+      chip.className = 'stream-type-chip' + (streamTypeFilter !== null && isActive ? ' active' : '');
+      chip.style.setProperty('--type-color', color);
+      var dot = document.createElement('span');
+      dot.className = 'chip-dot';
+      chip.appendChild(dot);
+      var text = document.createElement('span');
+      text.textContent = type + ' (' + typeSet[type] + ')';
+      chip.appendChild(text);
+      chip.addEventListener('click', function() {
+        if (streamTypeFilter === null) {
+          streamTypeFilter = {};
+          streamTypeFilter[type] = true;
+        } else if (streamTypeFilter[type]) {
+          delete streamTypeFilter[type];
+          if (Object.keys(streamTypeFilter).length === 0) streamTypeFilter = null;
+        } else {
+          streamTypeFilter[type] = true;
+        }
+        renderStream();
+      });
+      container.appendChild(chip);
+    })(types[j]);
+  }
+}
+
 function buildGraphStyles() {
   var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   var textColor = isDark ? '#c8d0e0' : '#1a1a2e';
