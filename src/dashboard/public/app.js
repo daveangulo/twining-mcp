@@ -156,6 +156,11 @@ function fetchBlackboard() {
       state.connected = true;
       updateConnectionIndicator();
       renderBlackboard();
+      // Refresh stream if visible
+      var streamView = document.getElementById('blackboard-stream-view');
+      if (streamView && streamView.style.display !== 'none') {
+        renderStream();
+      }
       renderActivityBreakdown();
       renderRecentActivity();
     })
@@ -430,8 +435,13 @@ function handleSort(tabName, key) {
   }
   tabState.page = 1;
 
-  if (tabName === "blackboard") renderBlackboard();
-  else if (tabName === "decisions") renderDecisions();
+  if (tabName === "blackboard") {
+    renderBlackboard();
+    var streamView = document.getElementById('blackboard-stream-view');
+    if (streamView && streamView.style.display !== 'none') {
+      renderStream();
+    }
+  } else if (tabName === "decisions") renderDecisions();
   else if (tabName === "graph") renderGraph();
   else if (tabName === "search") renderSearchResults();
   else if (tabName === "agents") renderAgents();
@@ -3388,6 +3398,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (indicator2) indicator2.style.display = "none";
       }
       // Reset pagination, re-render active tab
+      streamTypeFilter = null;
       state.blackboard.page = 1;
       state.decisions.page = 1;
       state.graph.page = 1;
