@@ -1106,5 +1106,115 @@
       "decision_summary": "Replace search bar multi-select with toggle chips, add search icon, and style filters to match toolbar design language"
     },
     "created_at": "2026-02-28T15:33:03.863Z"
+  },
+  {
+    "id": "01KJJGD3HFG8CWFT1JK90JXZ48",
+    "source": "01KJC68M4Q2KAAT3ZEC51JGVJV",
+    "target": "01KJJGD3H9Z85JS9MZX7QFGP4J",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add Stream View as alternate visualization for Blackboard tab"
+    },
+    "created_at": "2026-02-28T16:13:16.207Z"
+  },
+  {
+    "id": "01KJJGD3HH80J7XH3X2Y9CMFW4",
+    "source": "01KJC68M4REPRVABK2MC68D43H",
+    "target": "01KJJGD3H9Z85JS9MZX7QFGP4J",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add Stream View as alternate visualization for Blackboard tab"
+    },
+    "created_at": "2026-02-28T16:13:16.209Z"
+  },
+  {
+    "id": "01KJJGD3HJA8NHWC5YBG31PEYE",
+    "source": "01KJC68M4SHY3D3VYR8E7V05XC",
+    "target": "01KJJGD3H9Z85JS9MZX7QFGP4J",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add Stream View as alternate visualization for Blackboard tab"
+    },
+    "created_at": "2026-02-28T16:13:16.210Z"
+  },
+  {
+    "id": "01KJJSJTR3S99FR12TMJHQSY6F",
+    "source": "01KJJSJTQYDBTD49DYMQ2XN7Y6",
+    "target": "01KJJSJTQWS7BE61SWZ0AXDVRC",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add twining_register MCP tool and subagent coordination integration (dispatch skill, SubagentStop hook, aware-worker agent)"
+    },
+    "created_at": "2026-02-28T18:53:40.995Z"
+  },
+  {
+    "id": "01KJJSJTR7DWPFP6R5A9HWSBKS",
+    "source": "01KJGX8KNP33M6H286B9GKGQ3X",
+    "target": "01KJJSJTQWS7BE61SWZ0AXDVRC",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add twining_register MCP tool and subagent coordination integration (dispatch skill, SubagentStop hook, aware-worker agent)"
+    },
+    "created_at": "2026-02-28T18:53:40.999Z"
+  },
+  {
+    "id": "01KJJSJTR98S3GK88N825B3V8H",
+    "source": "01KJGX8KNHD07T6HE5K3GHZBAK",
+    "target": "01KJJSJTQWS7BE61SWZ0AXDVRC",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add twining_register MCP tool and subagent coordination integration (dispatch skill, SubagentStop hook, aware-worker agent)"
+    },
+    "created_at": "2026-02-28T18:53:41.001Z"
+  },
+  {
+    "id": "01KJJSJTRBF010SV8PTDEF4TW3",
+    "source": "01KJJSJTRA0DB2AJR3E6E76332",
+    "target": "01KJJSJTQWS7BE61SWZ0AXDVRC",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add twining_register MCP tool and subagent coordination integration (dispatch skill, SubagentStop hook, aware-worker agent)"
+    },
+    "created_at": "2026-02-28T18:53:41.003Z"
+  },
+  {
+    "id": "01KJJSJTRDRCEGEW8XFBDA8AZR",
+    "source": "01KJJSJTRCZPX53HCXCX4XDR02",
+    "target": "01KJJSJTQWS7BE61SWZ0AXDVRC",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add twining_register MCP tool and subagent coordination integration (dispatch skill, SubagentStop hook, aware-worker agent)"
+    },
+    "created_at": "2026-02-28T18:53:41.005Z"
+  },
+  {
+    "id": "01KJJSJTRFWPNCFR6MYPB61R4Z",
+    "source": "01KJGX8KNG4BA8P7PFEXMTW51R",
+    "target": "01KJJSJTQWS7BE61SWZ0AXDVRC",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add twining_register MCP tool and subagent coordination integration (dispatch skill, SubagentStop hook, aware-worker agent)"
+    },
+    "created_at": "2026-02-28T18:53:41.007Z"
+  },
+  {
+    "id": "01KJJSJTRGK3ZA5R8N3WXVT6YT",
+    "source": "01KJJSJTRGK3ZA5R8N3WXVT6YS",
+    "target": "01KJJSJTQWS7BE61SWZ0AXDVRC",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add twining_register MCP tool and subagent coordination integration (dispatch skill, SubagentStop hook, aware-worker agent)"
+    },
+    "created_at": "2026-02-28T18:53:41.008Z"
+  },
+  {
+    "id": "01KJJSJTRJ53V6MHNTHV5QWF65",
+    "source": "01KJJSJTRHGDMVESS736YZ8599",
+    "target": "01KJJSJTQWS7BE61SWZ0AXDVRC",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add twining_register MCP tool and subagent coordination integration (dispatch skill, SubagentStop hook, aware-worker agent)"
+    },
+    "created_at": "2026-02-28T18:53:41.010Z"
   }
 ]

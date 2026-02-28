@@ -443,30 +443,30 @@
     "name": "src/dashboard/public/index.html",
     "type": "file",
     "properties": {
-      "scope": "src/dashboard/public/"
+      "scope": "src/dashboard/"
     },
     "created_at": "2026-02-26T05:20:37.015Z",
-    "updated_at": "2026-02-28T15:33:03.798Z"
+    "updated_at": "2026-02-28T16:13:16.204Z"
   },
   {
     "id": "01KJC68M4REPRVABK2MC68D43H",
     "name": "src/dashboard/public/app.js",
     "type": "file",
     "properties": {
-      "scope": "src/dashboard/public/"
+      "scope": "src/dashboard/"
     },
     "created_at": "2026-02-26T05:20:37.016Z",
-    "updated_at": "2026-02-28T15:33:03.808Z"
+    "updated_at": "2026-02-28T16:13:16.208Z"
   },
   {
     "id": "01KJC68M4SHY3D3VYR8E7V05XC",
     "name": "src/dashboard/public/style.css",
     "type": "file",
     "properties": {
-      "scope": "src/dashboard/public/"
+      "scope": "src/dashboard/"
     },
     "created_at": "2026-02-26T05:20:37.017Z",
-    "updated_at": "2026-02-28T15:33:03.804Z"
+    "updated_at": "2026-02-28T16:13:16.209Z"
   },
   {
     "id": "01KJC68M4TM0E6XEK1QCBYF5WG",
@@ -727,20 +727,20 @@
     "name": "plugin/hooks/hooks.json",
     "type": "file",
     "properties": {
-      "scope": "plugin/hooks/"
+      "scope": "src/tools/coordination-tools.ts"
     },
     "created_at": "2026-02-28T01:19:31.504Z",
-    "updated_at": "2026-02-28T12:29:41.979Z"
+    "updated_at": "2026-02-28T18:53:41.006Z"
   },
   {
     "id": "01KJGX8KNHD07T6HE5K3GHZBAK",
     "name": "plugin/agents/twining-coordinator.md",
     "type": "file",
     "properties": {
-      "scope": "plugin/"
+      "scope": "src/tools/coordination-tools.ts"
     },
     "created_at": "2026-02-28T01:19:31.505Z",
-    "updated_at": "2026-02-28T01:19:31.505Z"
+    "updated_at": "2026-02-28T18:53:41.000Z"
   },
   {
     "id": "01KJGX8KNJCN28FVR0PVGK52GK",
@@ -757,10 +757,10 @@
     "name": "src/instructions.ts",
     "type": "file",
     "properties": {
-      "scope": "plugin/"
+      "scope": "src/tools/coordination-tools.ts"
     },
     "created_at": "2026-02-28T01:19:31.510Z",
-    "updated_at": "2026-02-28T01:19:31.510Z"
+    "updated_at": "2026-02-28T18:53:40.996Z"
   },
   {
     "id": "01KJGX8KNRTGKE7PVC2GH1QSTE",
@@ -1061,5 +1061,77 @@
     },
     "created_at": "2026-02-28T15:33:03.846Z",
     "updated_at": "2026-02-28T15:33:03.846Z"
+  },
+  {
+    "id": "01KJJGD3H9Z85JS9MZX7QFGP4J",
+    "name": "01KJJGD37CDKWQE5VFJYW8DGFR",
+    "type": "concept",
+    "properties": {
+      "summary": "Add Stream View as alternate visualization for Blackboard tab",
+      "scope": "src/dashboard/"
+    },
+    "created_at": "2026-02-28T16:13:16.201Z",
+    "updated_at": "2026-02-28T16:13:16.201Z"
+  },
+  {
+    "id": "01KJJSJTQWS7BE61SWZ0AXDVRC",
+    "name": "01KJJSJT5XEWWY7AXY29KBCS6N",
+    "type": "concept",
+    "properties": {
+      "summary": "Add twining_register MCP tool and subagent coordination integration (dispatch skill, SubagentStop hook, aware-worker agent)",
+      "scope": "src/tools/coordination-tools.ts"
+    },
+    "created_at": "2026-02-28T18:53:40.988Z",
+    "updated_at": "2026-02-28T18:53:40.988Z"
+  },
+  {
+    "id": "01KJJSJTQYDBTD49DYMQ2XN7Y6",
+    "name": "src/tools/coordination-tools.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/tools/coordination-tools.ts"
+    },
+    "created_at": "2026-02-28T18:53:40.990Z",
+    "updated_at": "2026-02-28T18:53:40.990Z"
+  },
+  {
+    "id": "01KJJSJTRA0DB2AJR3E6E76332",
+    "name": "plugin/agents/twining-aware-worker.md",
+    "type": "file",
+    "properties": {
+      "scope": "src/tools/coordination-tools.ts"
+    },
+    "created_at": "2026-02-28T18:53:41.002Z",
+    "updated_at": "2026-02-28T18:53:41.002Z"
+  },
+  {
+    "id": "01KJJSJTRCZPX53HCXCX4XDR02",
+    "name": "plugin/skills/twining-dispatch/SKILL.md",
+    "type": "file",
+    "properties": {
+      "scope": "src/tools/coordination-tools.ts"
+    },
+    "created_at": "2026-02-28T18:53:41.004Z",
+    "updated_at": "2026-02-28T18:53:41.004Z"
+  },
+  {
+    "id": "01KJJSJTRGK3ZA5R8N3WXVT6YS",
+    "name": "plugin/hooks/subagent-stop-hook.sh",
+    "type": "file",
+    "properties": {
+      "scope": "src/tools/coordination-tools.ts"
+    },
+    "created_at": "2026-02-28T18:53:41.008Z",
+    "updated_at": "2026-02-28T18:53:41.008Z"
+  },
+  {
+    "id": "01KJJSJTRHGDMVESS736YZ8599",
+    "name": "test/coordination-tools.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/tools/coordination-tools.ts"
+    },
+    "created_at": "2026-02-28T18:53:41.009Z",
+    "updated_at": "2026-02-28T18:53:41.009Z"
   }
 ]

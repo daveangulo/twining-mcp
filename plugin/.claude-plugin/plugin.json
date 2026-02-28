@@ -1,6 +1,6 @@
 {
   "name": "twining",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Agent coordination — shared blackboard, decision tracking, and context assembly",
   "author": { "name": "Dave Angulo", "url": "https://github.com/daveangulo" },
   "homepage": "https://github.com/daveangulo/twining-mcp",

@@ -7,6 +7,14 @@
         "command": "echo '{\"message\": \"Twining coordination is active. Use /twining:status for project state.\"}'"
       }]
     }],
+    "SubagentStop": [{
+      "matcher": "*",
+      "hooks": [{
+        "type": "command",
+        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/subagent-stop-hook.sh",
+        "timeout": 10
+      }]
+    }],
     "Stop": [{
       "matcher": "*",
       "hooks": [{

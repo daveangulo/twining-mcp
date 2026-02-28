@@ -1,7 +1,7 @@
 /**
  * MCP tool handlers for agent coordination operations.
- * Registers twining_agents, twining_discover, twining_delegate,
- * twining_handoff, and twining_acknowledge.
+ * Registers twining_agents, twining_register, twining_discover,
+ * twining_delegate, twining_handoff, and twining_acknowledge.
  */
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -65,6 +65,55 @@ export function registerCoordinationTools(
           agents: filtered,
           total_registered: agents.length,
           active_count: activeCount,
+        });
+      } catch (e) {
+        return toolError(
+          e instanceof Error ? e.message : "Unknown error",
+          "INTERNAL_ERROR",
+        );
+      }
+    },
+  );
+
+  // twining_register — Register or update an agent in the registry
+  server.registerTool(
+    "twining_register",
+    {
+      description:
+        "Register a new agent or update an existing one. Merges capabilities on re-registration. Use this to make subagents visible in the coordination dashboard.",
+      inputSchema: {
+        agent_id: z
+          .string()
+          .describe("Unique identifier for the agent (e.g. 'code-reviewer', 'test-runner')"),
+        capabilities: z
+          .array(z.string())
+          .optional()
+          .describe("Agent capabilities (e.g. ['testing', 'typescript'])"),
+        role: z
+          .string()
+          .optional()
+          .describe("Agent role (e.g. 'reviewer', 'implementer')"),
+        description: z
+          .string()
+          .optional()
+          .describe("Human-readable description of what the agent does"),
+      },
+    },
+    async (args) => {
+      try {
+        const record = await agentStore.upsert({
+          agent_id: args.agent_id,
+          capabilities: args.capabilities,
+          role: args.role,
+          description: args.description,
+        });
+        return toolResult({
+          agent_id: record.agent_id,
+          capabilities: record.capabilities,
+          role: record.role,
+          description: record.description,
+          registered_at: record.registered_at,
+          last_active: record.last_active,
         });
       } catch (e) {
         return toolError(

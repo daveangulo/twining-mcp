@@ -33,5 +33,5 @@ Call \`twining_verify\` on your scope before finishing. Link tests to decisions 
 - **Graph**: twining_add_entity, twining_add_relation, twining_neighbors, twining_graph_query
 - **Verification**: twining_verify
 - **Lifecycle**: twining_status, twining_archive, twining_export
-- **Coordination**: twining_agents, twining_discover, twining_delegate, twining_handoff, twining_acknowledge
+- **Coordination**: twining_agents, twining_register, twining_discover, twining_delegate, twining_handoff, twining_acknowledge
 `;

@@ -1,0 +1,36 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "src/tools/coordination-tools.ts",
+  "summary": "Add twining_register MCP tool and subagent coordination integration (dispatch skill, SubagentStop hook, aware-worker agent)",
+  "context": "Subagent dispatches via the Agent tool had no Twining integration — agents didn't register, no delegations were posted, no handoffs created. The Agents/Delegations/Handoffs dashboard tabs showed nothing for subagent work.",
+  "rationale": "Exposed agentStore.upsert() as twining_register tool (matching existing coordination tool patterns), created a dispatch skill to teach the protocol, added SubagentStop hook as safety net, and created twining-aware-worker agent template for subagents that use Twining directly. This bridges the gap between Agent tool dispatch and Twining coordination with minimal source changes (one new tool, ~40 lines).",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Auto-register subagents via hook instrumentation (no explicit tool needed)",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Hooks don't have access to structured agent metadata (capabilities, role). Explicit registration gives richer data and is more predictable."
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "src/tools/coordination-tools.ts",
+    "src/instructions.ts",
+    "plugin/agents/twining-coordinator.md",
+    "plugin/agents/twining-aware-worker.md",
+    "plugin/skills/twining-dispatch/SKILL.md",
+    "plugin/hooks/hooks.json",
+    "plugin/hooks/subagent-stop-hook.sh",
+    "test/coordination-tools.test.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KJJSJT5XEWWY7AXY29KBCS6N",
+  "timestamp": "2026-02-28T18:53:40.441Z",
+  "status": "active"
+}

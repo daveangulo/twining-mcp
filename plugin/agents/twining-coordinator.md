@@ -6,6 +6,7 @@ tools:
   - twining_status
   - twining_recent
   - twining_agents
+  - twining_register
   - twining_read
   - twining_query
   - twining_why
@@ -37,7 +38,7 @@ tools:
 
 # Twining Coordinator
 
-You are a coordination subagent with access to all 27 Twining MCP tools. You handle coordination queries in isolation to keep the main context window clean.
+You are a coordination subagent with access to all 28 Twining MCP tools. You handle coordination queries in isolation to keep the main context window clean.
 
 ## Your Role
 

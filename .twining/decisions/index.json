@@ -614,5 +614,51 @@
       "performSearch"
     ],
     "commit_hashes": []
+  },
+  {
+    "id": "01KJJGD37CDKWQE5VFJYW8DGFR",
+    "timestamp": "2026-02-28T16:13:15.887Z",
+    "domain": "architecture",
+    "scope": "src/dashboard/",
+    "summary": "Add Stream View as alternate visualization for Blackboard tab",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "src/dashboard/public/index.html",
+      "src/dashboard/public/app.js",
+      "src/dashboard/public/style.css"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": [
+      "2df4074",
+      "e7947ec",
+      "77910a3",
+      "3b52272",
+      "bedfabb",
+      "4dfeb26",
+      "d0327a4",
+      "26b8f7f"
+    ]
+  },
+  {
+    "id": "01KJJSJT5XEWWY7AXY29KBCS6N",
+    "timestamp": "2026-02-28T18:53:40.441Z",
+    "domain": "implementation",
+    "scope": "src/tools/coordination-tools.ts",
+    "summary": "Add twining_register MCP tool and subagent coordination integration (dispatch skill, SubagentStop hook, aware-worker agent)",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "src/tools/coordination-tools.ts",
+      "src/instructions.ts",
+      "plugin/agents/twining-coordinator.md",
+      "plugin/agents/twining-aware-worker.md",
+      "plugin/skills/twining-dispatch/SKILL.md",
+      "plugin/hooks/hooks.json",
+      "plugin/hooks/subagent-stop-hook.sh",
+      "test/coordination-tools.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]

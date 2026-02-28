@@ -238,11 +238,6 @@ describe("twining_agents tool", () => {
   });
 
   it("handles errors gracefully (returns toolError)", async () => {
-    // Break the agent store by making the registry file unreadable JSON
-    const registryPath = path.join(tmpDir, "agents", "registry.json");
-    // AgentStore.readRegistry returns [] on any read error, so this won't actually error.
-    // Instead, let's test with a store that will throw:
-    // We need to override agentStore.getAll to throw
     const brokenServer = new McpServer({
       name: "test-broken",
       version: "1.0.0",
@@ -297,6 +292,142 @@ describe("twining_agents tool", () => {
     };
     expect(data.error).toBe(true);
     expect(data.message).toBe("Storage failure");
+    expect(data.code).toBe("INTERNAL_ERROR");
+  });
+});
+
+describe("twining_register tool", () => {
+  it("registers a new agent and returns the record", async () => {
+    const response = await callTool("twining_register", {
+      agent_id: "test-worker",
+      capabilities: ["typescript", "testing"],
+      role: "implementer",
+      description: "A test worker agent",
+    });
+    const data = parseToolResponse(response) as {
+      agent_id: string;
+      capabilities: string[];
+      role: string;
+      description: string;
+      registered_at: string;
+      last_active: string;
+    };
+    expect(data.agent_id).toBe("test-worker");
+    expect(data.capabilities).toEqual(["typescript", "testing"]);
+    expect(data.role).toBe("implementer");
+    expect(data.description).toBe("A test worker agent");
+    expect(data.registered_at).toBeTruthy();
+    expect(data.last_active).toBeTruthy();
+  });
+
+  it("merges capabilities on re-registration", async () => {
+    await callTool("twining_register", {
+      agent_id: "merge-agent",
+      capabilities: ["typescript"],
+    });
+    const response = await callTool("twining_register", {
+      agent_id: "merge-agent",
+      capabilities: ["testing", "debugging"],
+    });
+    const data = parseToolResponse(response) as {
+      agent_id: string;
+      capabilities: string[];
+    };
+    expect(data.agent_id).toBe("merge-agent");
+    expect(data.capabilities).toEqual(
+      expect.arrayContaining(["typescript", "testing", "debugging"]),
+    );
+    expect(data.capabilities).toHaveLength(3);
+  });
+
+  it("registers with no optional fields", async () => {
+    const response = await callTool("twining_register", {
+      agent_id: "minimal-agent",
+    });
+    const data = parseToolResponse(response) as {
+      agent_id: string;
+      capabilities: string[];
+      role: string | undefined;
+      description: string | undefined;
+    };
+    expect(data.agent_id).toBe("minimal-agent");
+    expect(data.capabilities).toEqual([]);
+    expect(data.role).toBeUndefined();
+    expect(data.description).toBeUndefined();
+  });
+
+  it("registered agent appears in twining_agents listing", async () => {
+    await callTool("twining_register", {
+      agent_id: "visible-agent",
+      capabilities: ["coding"],
+      role: "worker",
+    });
+    const response = await callTool("twining_agents", {});
+    const data = parseToolResponse(response) as {
+      agents: Array<{ agent_id: string; capabilities: string[]; role: string }>;
+      total_registered: number;
+    };
+    expect(data.total_registered).toBe(1);
+    expect(data.agents[0]!.agent_id).toBe("visible-agent");
+    expect(data.agents[0]!.capabilities).toEqual(["coding"]);
+    expect(data.agents[0]!.role).toBe("worker");
+  });
+
+  it("handles errors gracefully (returns toolError)", async () => {
+    const brokenServer = new McpServer({
+      name: "test-broken",
+      version: "1.0.0",
+    });
+    const brokenStore = {
+      upsert: async () => {
+        throw new Error("Upsert failure");
+      },
+    } as unknown as AgentStore;
+    const handoffStore = new HandoffStore(tmpDir);
+    const bbStore = new BlackboardStore(tmpDir);
+    const dcsnStore = new DecisionStore(tmpDir);
+    const bbEngine = new BlackboardEngine(bbStore);
+    const brokenEngine = new CoordinationEngine(
+      brokenStore,
+      handoffStore,
+      bbEngine,
+      dcsnStore,
+      bbStore,
+      DEFAULT_CONFIG,
+    );
+
+    registerCoordinationTools(
+      brokenServer,
+      brokenStore,
+      brokenEngine,
+      DEFAULT_CONFIG,
+    );
+
+    const registeredTools = (
+      brokenServer as unknown as {
+        _registeredTools: Record<
+          string,
+          {
+            handler: (
+              args: Record<string, unknown>,
+              extra: unknown,
+            ) => Promise<unknown>;
+          }
+        >;
+      }
+    )._registeredTools;
+    const tool = registeredTools["twining_register"];
+    const result = (await tool!.handler(
+      { agent_id: "fail-agent" },
+      {} as unknown,
+    )) as { content: Array<{ type: string; text: string }> };
+    const data = JSON.parse(result.content[0]!.text) as {
+      error: boolean;
+      message: string;
+      code: string;
+    };
+    expect(data.error).toBe(true);
+    expect(data.message).toBe("Upsert failure");
     expect(data.code).toBe("INTERNAL_ERROR");
   });
 });
