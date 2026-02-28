@@ -2238,6 +2238,196 @@ var ENTRY_TYPE_COLORS = {
 
 var streamTypeFilter = null;
 
+function getTimeGroupLabel(dateStr) {
+  var d = new Date(dateStr);
+  if (isNaN(d.getTime())) return 'Unknown';
+  var now = new Date();
+  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  var yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  var entryDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  if (entryDate.getTime() === today.getTime()) return 'Today';
+  if (entryDate.getTime() === yesterday.getTime()) return 'Yesterday';
+  return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+}
+
+function formatTimeOnly(dateStr) {
+  var d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '--';
+  return d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+}
+
+function renderStream() {
+  var container = document.getElementById('stream-container');
+  if (!container) return;
+  clearElement(container);
+
+  var entries = applyGlobalScope(state.blackboard.data || [], 'scope');
+
+  // Apply type filter
+  if (streamTypeFilter) {
+    entries = entries.filter(function(e) {
+      return !!streamTypeFilter[e.entry_type];
+    });
+  }
+
+  // Sort newest first
+  entries = entries.slice().sort(function(a, b) {
+    return new Date(b.timestamp) - new Date(a.timestamp);
+  });
+
+  if (entries.length === 0) {
+    container.appendChild(el('p', 'placeholder', 'No entries to display'));
+    return;
+  }
+
+  // Build ID lookup for visible entries (for threading)
+  var visibleIds = {};
+  for (var i = 0; i < entries.length; i++) {
+    visibleIds[entries[i].id] = true;
+  }
+
+  // Group by date and render cards
+  var currentGroup = null;
+  for (var i = 0; i < entries.length; i++) {
+    var entry = entries[i];
+    var groupLabel = getTimeGroupLabel(entry.timestamp);
+
+    // Insert time group header if new group
+    if (groupLabel !== currentGroup) {
+      currentGroup = groupLabel;
+      var header = el('div', 'stream-time-group');
+      var headerLine = el('span', 'stream-time-line');
+      var headerLabel = el('span', 'stream-time-label', groupLabel);
+      header.appendChild(headerLine);
+      header.appendChild(headerLabel);
+      header.appendChild(headerLine.cloneNode(true));
+      container.appendChild(header);
+    }
+
+    // Create card
+    var typeColor = ENTRY_TYPE_COLORS[entry.entry_type] || '#6b7280';
+    var card = el('div', 'stream-card');
+    card.setAttribute('data-id', entry.id || '');
+    card.style.setProperty('--card-color', typeColor);
+
+    if (state.blackboard.selectedId && entry.id === state.blackboard.selectedId) {
+      card.classList.add('selected');
+    }
+
+    // Type badge
+    var badge = el('div', 'stream-card-badge');
+    var badgeDot = el('span', 'stream-badge-dot');
+    badge.appendChild(badgeDot);
+    badge.appendChild(document.createTextNode(' ' + (entry.entry_type || 'unknown')));
+    card.appendChild(badge);
+
+    // Summary
+    var summary = el('div', 'stream-card-summary', truncate(entry.summary, 120));
+    card.appendChild(summary);
+
+    // Footer: scope + time
+    var footer = el('div', 'stream-card-footer');
+    if (entry.scope) {
+      footer.appendChild(el('span', 'stream-card-scope', truncate(entry.scope, 40)));
+    }
+    footer.appendChild(el('span', 'stream-card-time', formatTimeOnly(entry.timestamp)));
+
+    // Linked icon for off-screen relates_to
+    if (entry.relates_to && entry.relates_to.length) {
+      var hasOffscreen = false;
+      for (var r = 0; r < entry.relates_to.length; r++) {
+        if (!visibleIds[entry.relates_to[r]]) { hasOffscreen = true; break; }
+      }
+      if (hasOffscreen) {
+        var linkIcon = el('span', 'stream-card-link', '\u{1F517}');
+        linkIcon.title = 'Has related entries not visible in current filter';
+        footer.appendChild(linkIcon);
+      }
+    }
+
+    card.appendChild(footer);
+
+    // Click handler — render detail in stream detail panel
+    (function(e) {
+      card.addEventListener('click', function() {
+        state.blackboard.selectedId = e.id;
+        var allCards = container.querySelectorAll('.stream-card');
+        for (var c = 0; c < allCards.length; c++) {
+          allCards[c].classList.remove('selected');
+        }
+        card.classList.add('selected');
+        // Render detail directly into the stream detail panel
+        renderStreamDetail(e);
+      });
+    })(entry);
+
+    container.appendChild(card);
+  }
+
+  // Render thread lines (stub — implemented in Task 4)
+  if (typeof renderStreamThreads === 'function') {
+    renderStreamThreads(container, entries, visibleIds);
+  }
+
+  // Render type filter chips (stub — implemented in Task 5)
+  if (typeof renderStreamTypeFilters === 'function') {
+    renderStreamTypeFilters();
+  }
+}
+
+function renderStreamDetail(entry) {
+  var panel = document.getElementById('blackboard-stream-detail');
+  if (!panel) return;
+  clearElement(panel);
+
+  panel.appendChild(el('h3', null, 'Entry Details'));
+
+  var fields = [
+    { label: 'ID', value: entry.id },
+    { label: 'Timestamp', value: formatTimestamp(entry.timestamp) },
+    { label: 'Type', value: entry.entry_type },
+    { label: 'Summary', value: entry.summary },
+    { label: 'Scope', value: entry.scope },
+    { label: 'Agent ID', value: entry.agent_id },
+    { label: 'Tags', value: (entry.tags && entry.tags.length) ? entry.tags.join(', ') : null }
+  ];
+
+  for (var i = 0; i < fields.length; i++) {
+    var f = fields[i];
+    if (f.value === undefined || f.value === null) continue;
+    var div = el('div', 'detail-field');
+    div.appendChild(el('div', 'detail-label', f.label));
+    if (f.label === 'ID') {
+      var valDiv = el('div', 'detail-value');
+      renderIdValue(valDiv, String(f.value));
+      div.appendChild(valDiv);
+    } else {
+      div.appendChild(el('div', 'detail-value', String(f.value)));
+    }
+    panel.appendChild(div);
+  }
+
+  // Relates To with clickable IDs
+  if (entry.relates_to && entry.relates_to.length) {
+    var rtDiv = el('div', 'detail-field');
+    rtDiv.appendChild(el('div', 'detail-label', 'Relates To'));
+    var rtVal = el('div', 'detail-value');
+    renderIdList(rtVal, entry.relates_to);
+    rtDiv.appendChild(rtVal);
+    panel.appendChild(rtDiv);
+  }
+
+  // Detail field (long text)
+  if (entry.detail) {
+    var detDiv = el('div', 'detail-field');
+    detDiv.appendChild(el('div', 'detail-label', 'Detail'));
+    var detVal = el('div', 'detail-value detail-long-text', entry.detail);
+    detDiv.appendChild(detVal);
+    panel.appendChild(detDiv);
+  }
+}
+
 function buildGraphStyles() {
   var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   var textColor = isDark ? '#c8d0e0' : '#1a1a2e';
