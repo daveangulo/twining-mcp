@@ -1,0 +1,31 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "plugin/hooks/",
+  "summary": "Fix Stop hook to return required JSON decision format for Claude Code validation",
+  "context": "The Twining plugin Stop hook used type 'prompt' but did not instruct the LLM to return the required JSON format {decision: approve|block, reason: ...}. This caused 'JSON validation failed' errors on every session stop.",
+  "rationale": "Claude Code Stop hooks with type 'prompt' must return a JSON response with a decision field. Added explicit instruction at the end of the prompt telling the LLM to return {decision: approve, reason: Twining housekeeping complete} after completing its tasks.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Switch from prompt to command hook type",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "The Stop hook needs LLM reasoning to decide whether to record decisions, create handoffs, etc. A command hook cannot invoke MCP tools."
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "plugin/hooks/hooks.json"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [
+    "6acead3"
+  ],
+  "assembled_before": false,
+  "id": "01KJJ3KQG24Y0365NBFWXX129W",
+  "timestamp": "2026-02-28T12:29:41.765Z",
+  "status": "active"
+}

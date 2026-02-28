@@ -12,6 +12,37 @@ import { fileURLToPath } from "node:url";
 import { getDashboardConfig } from "./dashboard-config.js";
 import { createApiHandler } from "./api-routes.js";
 
+/**
+ * Check if a Twining dashboard is already running on the given port.
+ * Returns true if a health check confirms another instance.
+ */
+function isExistingDashboard(port: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const req = http.get(
+      { hostname: "127.0.0.1", port, path: "/api/health", timeout: 1000 },
+      (res) => {
+        let body = "";
+        res.on("data", (chunk: Buffer) => {
+          body += chunk.toString();
+        });
+        res.on("end", () => {
+          try {
+            const data = JSON.parse(body);
+            resolve(data.server === "twining-mcp");
+          } catch {
+            resolve(false);
+          }
+        });
+      },
+    );
+    req.on("error", () => resolve(false));
+    req.on("timeout", () => {
+      req.destroy();
+      resolve(false);
+    });
+  });
+}
+
 /** MIME types for static assets served from the public directory. */
 const MIME_TYPES: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
@@ -170,11 +201,22 @@ export async function startDashboard(
 
   // Auto-open browser (non-fatal on failure)
   if (config.autoOpen) {
-    import("open")
-      .then((mod) => mod.default(url))
-      .catch(() => {
-        // open package unavailable or browser launch failed — not critical
-      });
+    // If we bound to a different port than requested, check if another
+    // dashboard instance is already running on the original port.
+    // This prevents opening duplicate tabs when multiple MCP instances start.
+    const skipOpen =
+      port !== config.port && (await isExistingDashboard(config.port));
+    if (skipOpen) {
+      console.error(
+        `[twining] Dashboard already running on port ${config.port}, skipping auto-open`,
+      );
+    } else {
+      import("open")
+        .then((mod) => mod.default(url))
+        .catch(() => {
+          // open package unavailable or browser launch failed — not critical
+        });
+    }
   }
 
   return { server, port };

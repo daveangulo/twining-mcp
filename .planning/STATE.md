@@ -62,6 +62,10 @@ All decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Add project name to dashboard title/header and GitHub icon link — fixes #2 and #3
 - Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry
 - Add twining_dismiss tool for targeted removal of blackboard entries by ID
+- Implement Twining as a Claude Code plugin with skills, hooks, agents, commands, and MCP server instructions
+- Redesign dashboard UI with dark-first professional theme using Sora/DM Sans/JetBrains Mono fonts and teal accent color
+- Prevent duplicate browser tabs by checking health endpoint before auto-opening
+- Show session-ended overlay after 3 consecutive poll failures instead of attempting window.close()
 
 ### Pending Todos
 

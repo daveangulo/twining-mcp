@@ -282,7 +282,7 @@ export function createApiHandler(
         if (!fs.existsSync(twiningDir)) {
           sendJSON(res, {
             initialized: false,
-            project_name: path.basename(projectRoot),
+            project_name: path.basename(path.resolve(projectRoot)),
             blackboard_entries: 0,
             active_decisions: 0,
             provisional_decisions: 0,
@@ -363,7 +363,7 @@ export function createApiHandler(
 
         sendJSON(res, {
           initialized: true,
-          project_name: path.basename(projectRoot),
+          project_name: path.basename(path.resolve(projectRoot)),
           blackboard_entries,
           active_decisions,
           provisional_decisions,

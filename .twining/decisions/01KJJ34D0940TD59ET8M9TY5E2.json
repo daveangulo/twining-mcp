@@ -1,0 +1,39 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "src/dashboard/public/app.js",
+  "summary": "Show session-ended overlay after 3 consecutive poll failures instead of attempting window.close()",
+  "context": "When the MCP process exits, the browser tab stays open with no feedback. Browsers prevent window.close() on tabs not opened via window.open(), so the OS-level 'open' command means we can't programmatically close the tab.",
+  "rationale": "Track wasConnected and disconnectCount state. After 3 consecutive failed polls (~9 seconds), show a fullscreen overlay saying 'Session Ended' with blur backdrop. This avoids false positives from transient network issues while giving clear feedback. window.close() is attempted as a best-effort fallback.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Use Server-Sent Events (SSE) for real-time disconnect detection",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Adds server-side complexity for a marginal improvement over polling-based detection; 9-second delay is acceptable for session end notification"
+    },
+    {
+      "option": "Immediately show overlay on first poll failure",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Would trigger on transient network issues; 3-poll threshold provides robustness"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "src/dashboard/public/app.js",
+    "src/dashboard/public/index.html",
+    "src/dashboard/public/style.css"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [
+    "6acead3"
+  ],
+  "assembled_before": false,
+  "id": "01KJJ34D0940TD59ET8M9TY5E2",
+  "timestamp": "2026-02-28T12:21:19.497Z",
+  "status": "provisional"
+}

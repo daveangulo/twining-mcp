@@ -23,7 +23,10 @@ var state = {
   status: null,
   pollTimer: null,
   pollInterval: 3000,
-  connected: false
+  connected: false,
+  wasConnected: false,
+  disconnectCount: 0,
+  sessionEnded: false
 };
 
 /* ========== Debounce Utility ========== */
@@ -85,10 +88,28 @@ function updateConnectionIndicator() {
   if (state.connected) {
     dot.className = "status-dot connected";
     text.textContent = "Connected";
+    state.wasConnected = true;
+    state.disconnectCount = 0;
   } else {
     dot.className = "status-dot disconnected";
     text.textContent = "Disconnected";
+    if (state.wasConnected) {
+      state.disconnectCount++;
+      // After 3 consecutive failed polls (~9 seconds), show session ended overlay
+      if (state.disconnectCount >= 3 && !state.sessionEnded) {
+        showSessionEnded();
+      }
+    }
   }
+}
+
+function showSessionEnded() {
+  state.sessionEnded = true;
+  stopPolling();
+  var overlay = document.getElementById("session-overlay");
+  if (overlay) overlay.style.display = "flex";
+  // Try to close the tab (works if opened via window.open, otherwise no-op)
+  try { window.close(); } catch(e) {}
 }
 
 function updatePollIndicator(isPolling) {
