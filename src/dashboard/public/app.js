@@ -1930,6 +1930,11 @@ function toggleView(tab, viewName) {
     if (viewName === 'delegations' && state.delegations.data.length === 0) fetchDelegations();
     if (viewName === 'handoffs' && state.handoffs.data.length === 0) fetchHandoffs();
   }
+  if (tab === 'blackboard') {
+    document.getElementById('blackboard-table-view').style.display = viewName === 'table' ? 'block' : 'none';
+    document.getElementById('blackboard-stream-view').style.display = viewName === 'stream' ? 'block' : 'none';
+    if (viewName === 'stream' && typeof renderStream === 'function') renderStream();
+  }
 }
 
 /* ========== Decision Timeline Visualization ========== */
@@ -2215,6 +2220,23 @@ var ENTITY_COLORS = {
 
 // Track which entity types are visible (null = all)
 var graphTypeFilter = null;
+
+/* ========== Blackboard Stream View ========== */
+
+var ENTRY_TYPE_COLORS = {
+  warning:    '#ffaa00',
+  constraint: '#ff4466',
+  need:       '#a78bfa',
+  finding:    '#6366f1',
+  decision:   '#00d4aa',
+  question:   '#22d3ee',
+  answer:     '#2dd4bf',
+  status:     '#8892a8',
+  offer:      '#10b981',
+  artifact:   '#fbbf24'
+};
+
+var streamTypeFilter = null;
 
 function buildGraphStyles() {
   var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
