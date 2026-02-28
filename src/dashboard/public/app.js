@@ -1939,14 +1939,48 @@ function toggleView(tab, viewName) {
 var CONFIDENCE_CLASSES = { high: 'confidence-high', medium: 'confidence-medium', low: 'confidence-low' };
 var STATUS_CLASSES = { provisional: 'status-provisional', superseded: 'status-superseded', overridden: 'status-overridden' };
 
+var DOMAIN_COLORS = {
+  architecture:   '#6366f1',
+  implementation: '#3b82f6',
+  testing:        '#10b981',
+  deployment:     '#f59e0b',
+  security:       '#ef4444',
+  performance:    '#8b5cf6',
+  'api-design':   '#06b6d4',
+  'data-model':   '#ec4899'
+};
+var DOMAIN_COLOR_DEFAULT = '#6b7280';
+
+// Track which domains are active in filters (null = all active)
+var timelineDomainFilter = null;
+
 function getDecisionClassName(d) {
+  var classes = [];
   if (d.status && d.status !== 'active' && STATUS_CLASSES[d.status]) {
-    return STATUS_CLASSES[d.status];
+    classes.push(STATUS_CLASSES[d.status]);
   }
   if (d.confidence && CONFIDENCE_CLASSES[d.confidence]) {
-    return CONFIDENCE_CLASSES[d.confidence];
+    classes.push(CONFIDENCE_CLASSES[d.confidence]);
   }
-  return '';
+  return classes.join(' ');
+}
+
+function buildTimelineGroups(decisions) {
+  var domainSet = {};
+  for (var i = 0; i < decisions.length; i++) {
+    var domain = decisions[i].domain || 'other';
+    domainSet[domain] = true;
+  }
+  var groups = [];
+  var sorted = Object.keys(domainSet).sort();
+  for (var j = 0; j < sorted.length; j++) {
+    groups.push({
+      id: sorted[j],
+      content: sorted[j],
+      style: 'border-left: 3px solid ' + (DOMAIN_COLORS[sorted[j]] || DOMAIN_COLOR_DEFAULT) + '; padding-left: 8px;'
+    });
+  }
+  return groups;
 }
 
 function buildTimelineItems(decisions) {
@@ -1954,12 +1988,22 @@ function buildTimelineItems(decisions) {
   var items = [];
   for (var i = 0; i < scoped.length; i++) {
     var d = scoped[i];
+    var domain = d.domain || 'other';
+    // Apply domain filter
+    if (timelineDomainFilter && !timelineDomainFilter[domain]) continue;
+    var conf = d.confidence || 'unknown';
+    var stat = d.status || 'active';
+    var tooltipParts = [d.summary];
+    tooltipParts.push(conf.charAt(0).toUpperCase() + conf.slice(1) + ' confidence');
+    tooltipParts.push('Status: ' + stat);
+    if (d.scope) tooltipParts.push('Scope: ' + d.scope);
     items.push({
       id: d.id,
-      content: truncate(d.summary, 60),
+      group: domain,
+      content: truncate(d.summary, 50),
       start: d.timestamp,
       className: getDecisionClassName(d),
-      title: d.summary + ' [' + (d.status || 'unknown') + ', ' + (d.confidence || 'unknown') + ']'
+      title: tooltipParts.join('\n')
     });
   }
   return items;
@@ -1972,24 +2016,31 @@ function initTimeline() {
   }
   if (typeof vis === 'undefined' || !vis.Timeline) return;
 
+  var scoped = applyGlobalScope(state.decisions.data, 'scope');
+  var groups = buildTimelineGroups(scoped);
   var items = buildTimelineItems(state.decisions.data);
   window.timelineDataSet = new vis.DataSet(items);
+  window.timelineGroupSet = new vis.DataSet(groups);
 
   var container = document.getElementById('timeline-container');
   if (!container) return;
 
   var options = {
-    zoomMin: 1000 * 60 * 60,
-    zoomMax: 1000 * 60 * 60 * 24 * 365,
+    zoomMin: 1000 * 60 * 5,
+    zoomMax: 1000 * 60 * 60 * 24 * 365 * 2,
     orientation: { axis: 'top' },
     selectable: true,
-    tooltip: { followMouse: true },
-    margin: { item: { horizontal: 10, vertical: 20 } },
+    tooltip: { followMouse: true, delay: 150 },
+    margin: { item: { horizontal: 8, vertical: 5 } },
     stack: true,
-    maxHeight: 600
+    maxHeight: 600,
+    verticalScroll: true,
+    zoomKey: '',
+    showCurrentTime: true,
+    groupOrder: 'content'
   };
 
-  window.timelineInstance = new vis.Timeline(container, window.timelineDataSet, options);
+  window.timelineInstance = new vis.Timeline(container, window.timelineDataSet, window.timelineGroupSet, options);
 
   window.timelineInstance.on('select', function(properties) {
     if (properties.items.length > 0) {
@@ -1999,26 +2050,51 @@ function initTimeline() {
     }
   });
 
-  window.timelineInstance.fit();
+  window.timelineInstance.fit({ animation: { duration: 500, easingFunction: 'easeInOutQuad' } });
+
+  // Wire up controls
+  wireTimelineControls();
   renderTimelineLegend();
+  renderTimelineDomainFilters();
+}
+
+function wireTimelineControls() {
+  var zoomIn = document.getElementById('timeline-zoom-in');
+  var zoomOut = document.getElementById('timeline-zoom-out');
+  var fit = document.getElementById('timeline-fit');
+  var today = document.getElementById('timeline-today');
+
+  if (zoomIn) zoomIn.addEventListener('click', function() {
+    if (window.timelineInstance) window.timelineInstance.zoomIn(0.4, { animation: { duration: 300, easingFunction: 'easeInOutQuad' } });
+  });
+  if (zoomOut) zoomOut.addEventListener('click', function() {
+    if (window.timelineInstance) window.timelineInstance.zoomOut(0.4, { animation: { duration: 300, easingFunction: 'easeInOutQuad' } });
+  });
+  if (fit) fit.addEventListener('click', function() {
+    if (window.timelineInstance) window.timelineInstance.fit({ animation: { duration: 500, easingFunction: 'easeInOutQuad' } });
+  });
+  if (today) today.addEventListener('click', function() {
+    if (window.timelineInstance) window.timelineInstance.moveTo(new Date(), { animation: { duration: 500, easingFunction: 'easeInOutQuad' } });
+  });
 }
 
 function renderTimelineLegend() {
   var legend = document.getElementById('timeline-legend');
-  if (!legend || legend.children.length > 0) return;
+  if (!legend) return;
+  clearElement(legend);
   var items = [
-    { color: '#4caf50', label: 'High confidence' },
-    { color: '#ff9800', label: 'Medium confidence' },
-    { color: '#f44336', label: 'Low confidence' },
-    { color: 'var(--muted)', label: 'Provisional (dashed)', dashed: true },
-    { color: 'var(--muted)', label: 'Superseded (strikethrough)', strike: true }
+    { color: 'var(--success)', label: 'High confidence' },
+    { color: 'var(--warning)', label: 'Medium confidence' },
+    { color: 'var(--error)', label: 'Low confidence' },
+    { color: null, label: 'Provisional', dashed: true },
+    { color: null, label: 'Superseded', strike: true }
   ];
   for (var i = 0; i < items.length; i++) {
     var item = document.createElement('span');
-    item.style.cssText = 'display:inline-flex;align-items:center;gap:4px;margin-right:12px;font-size:0.8rem;';
+    item.className = 'timeline-legend-item';
     var dot = document.createElement('span');
-    dot.style.cssText = 'width:10px;height:10px;border-radius:50%;display:inline-block;background:' + items[i].color;
-    if (items[i].dashed) dot.style.cssText += ';border:2px dashed var(--text);background:transparent';
+    dot.className = 'timeline-legend-dot' + (items[i].dashed ? ' dashed' : '');
+    if (items[i].color) dot.style.background = items[i].color;
     var label = document.createElement('span');
     label.textContent = items[i].label;
     if (items[i].strike) label.style.textDecoration = 'line-through';
@@ -2028,11 +2104,80 @@ function renderTimelineLegend() {
   }
 }
 
+function renderTimelineDomainFilters() {
+  var container = document.getElementById('timeline-domain-filters');
+  if (!container) return;
+  clearElement(container);
+
+  var scoped = applyGlobalScope(state.decisions.data, 'scope');
+  var domainSet = {};
+  for (var i = 0; i < scoped.length; i++) {
+    var domain = scoped[i].domain || 'other';
+    domainSet[domain] = (domainSet[domain] || 0) + 1;
+  }
+
+  var domains = Object.keys(domainSet).sort();
+  if (domains.length <= 1) return; // No point showing filter for 1 domain
+
+  // "All" chip
+  var allChip = document.createElement('button');
+  allChip.className = 'timeline-domain-chip' + (timelineDomainFilter === null ? ' active' : '');
+  allChip.textContent = 'All';
+  allChip.style.setProperty('--domain-color', 'var(--accent)');
+  allChip.addEventListener('click', function() {
+    timelineDomainFilter = null;
+    updateTimelineData();
+    renderTimelineDomainFilters();
+  });
+  container.appendChild(allChip);
+
+  for (var j = 0; j < domains.length; j++) {
+    (function(domain) {
+      var color = DOMAIN_COLORS[domain] || DOMAIN_COLOR_DEFAULT;
+      var isActive = timelineDomainFilter === null || !!timelineDomainFilter[domain];
+      var chip = document.createElement('button');
+      chip.className = 'timeline-domain-chip' + (timelineDomainFilter !== null && isActive ? ' active' : '');
+      chip.style.setProperty('--domain-color', color);
+      var dot = document.createElement('span');
+      dot.className = 'chip-dot';
+      chip.appendChild(dot);
+      var text = document.createElement('span');
+      text.textContent = domain + ' (' + domainSet[domain] + ')';
+      chip.appendChild(text);
+      chip.addEventListener('click', function() {
+        if (timelineDomainFilter === null) {
+          // Switch from "all" to just this domain
+          timelineDomainFilter = {};
+          timelineDomainFilter[domain] = true;
+        } else if (timelineDomainFilter[domain]) {
+          // Toggle off
+          delete timelineDomainFilter[domain];
+          if (Object.keys(timelineDomainFilter).length === 0) {
+            timelineDomainFilter = null; // Back to all
+          }
+        } else {
+          // Toggle on
+          timelineDomainFilter[domain] = true;
+        }
+        updateTimelineData();
+        renderTimelineDomainFilters();
+      });
+      container.appendChild(chip);
+    })(domains[j]);
+  }
+}
+
 function updateTimelineData() {
   if (!window.timelineDataSet) return;
+  var scoped = applyGlobalScope(state.decisions.data, 'scope');
+  var groups = buildTimelineGroups(scoped);
   var items = buildTimelineItems(state.decisions.data);
   window.timelineDataSet.clear();
   window.timelineDataSet.add(items);
+  if (window.timelineGroupSet) {
+    window.timelineGroupSet.clear();
+    window.timelineGroupSet.add(groups);
+  }
 }
 
 function fetchTimelineDecisionDetail(id) {

@@ -570,5 +570,30 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KJJCBK7NW40PQ9RE2625AJ9B",
+    "timestamp": "2026-02-28T15:02:32.455Z",
+    "domain": "implementation",
+    "scope": "src/dashboard/public/",
+    "summary": "Fix timeline zoom by changing overflow:auto to overflow:hidden and add zoom controls toolbar",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      "src/dashboard/public/style.css",
+      "src/dashboard/public/app.js",
+      "src/dashboard/public/index.html"
+    ],
+    "affected_symbols": [
+      "initTimeline",
+      "buildTimelineItems",
+      "buildTimelineGroups",
+      "wireTimelineControls",
+      "renderTimelineLegend",
+      "renderTimelineDomainFilters",
+      "updateTimelineData",
+      "getDecisionClassName"
+    ],
+    "commit_hashes": []
   }
 ]

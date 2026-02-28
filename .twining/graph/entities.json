@@ -443,30 +443,30 @@
     "name": "src/dashboard/public/index.html",
     "type": "file",
     "properties": {
-      "scope": "src/dashboard/public/app.js"
+      "scope": "src/dashboard/public/"
     },
     "created_at": "2026-02-26T05:20:37.015Z",
-    "updated_at": "2026-02-28T12:21:19.640Z"
+    "updated_at": "2026-02-28T15:02:33.367Z"
   },
   {
     "id": "01KJC68M4REPRVABK2MC68D43H",
     "name": "src/dashboard/public/app.js",
     "type": "file",
     "properties": {
-      "scope": "src/dashboard/public/app.js"
+      "scope": "src/dashboard/public/"
     },
     "created_at": "2026-02-26T05:20:37.016Z",
-    "updated_at": "2026-02-28T12:21:19.638Z"
+    "updated_at": "2026-02-28T15:02:33.365Z"
   },
   {
     "id": "01KJC68M4SHY3D3VYR8E7V05XC",
     "name": "src/dashboard/public/style.css",
     "type": "file",
     "properties": {
-      "scope": "src/dashboard/public/app.js"
+      "scope": "src/dashboard/public/"
     },
     "created_at": "2026-02-26T05:20:37.017Z",
-    "updated_at": "2026-02-28T12:21:19.641Z"
+    "updated_at": "2026-02-28T15:02:33.363Z"
   },
   {
     "id": "01KJC68M4TM0E6XEK1QCBYF5WG",
@@ -939,5 +939,96 @@
     },
     "created_at": "2026-02-28T14:38:26.114Z",
     "updated_at": "2026-02-28T14:38:26.114Z"
+  },
+  {
+    "id": "01KJJCBM4J4MHE27MH9VMNEJRH",
+    "name": "01KJJCBK7NW40PQ9RE2625AJ9B",
+    "type": "concept",
+    "properties": {
+      "summary": "Fix timeline zoom by changing overflow:auto to overflow:hidden and add zoom controls toolbar",
+      "scope": "src/dashboard/public/"
+    },
+    "created_at": "2026-02-28T15:02:33.362Z",
+    "updated_at": "2026-02-28T15:02:33.362Z"
+  },
+  {
+    "id": "01KJJCBM4SWTD0EJVJPSWWMKRM",
+    "name": "initTimeline",
+    "type": "function",
+    "properties": {
+      "scope": "src/dashboard/public/"
+    },
+    "created_at": "2026-02-28T15:02:33.369Z",
+    "updated_at": "2026-02-28T15:02:33.369Z"
+  },
+  {
+    "id": "01KJJCBM4XSMNWJRXE15NK8W7P",
+    "name": "buildTimelineItems",
+    "type": "function",
+    "properties": {
+      "scope": "src/dashboard/public/"
+    },
+    "created_at": "2026-02-28T15:02:33.373Z",
+    "updated_at": "2026-02-28T15:02:33.373Z"
+  },
+  {
+    "id": "01KJJCBM5355CDHK7C3MFRMABP",
+    "name": "buildTimelineGroups",
+    "type": "function",
+    "properties": {
+      "scope": "src/dashboard/public/"
+    },
+    "created_at": "2026-02-28T15:02:33.379Z",
+    "updated_at": "2026-02-28T15:02:33.379Z"
+  },
+  {
+    "id": "01KJJCBM5702GBH8T96WWQCW6N",
+    "name": "wireTimelineControls",
+    "type": "function",
+    "properties": {
+      "scope": "src/dashboard/public/"
+    },
+    "created_at": "2026-02-28T15:02:33.383Z",
+    "updated_at": "2026-02-28T15:02:33.383Z"
+  },
+  {
+    "id": "01KJJCBM59HB0CP5SWMW2PSD7P",
+    "name": "renderTimelineLegend",
+    "type": "function",
+    "properties": {
+      "scope": "src/dashboard/public/"
+    },
+    "created_at": "2026-02-28T15:02:33.385Z",
+    "updated_at": "2026-02-28T15:02:33.385Z"
+  },
+  {
+    "id": "01KJJCBM5BF9KJQY24W46S719A",
+    "name": "renderTimelineDomainFilters",
+    "type": "function",
+    "properties": {
+      "scope": "src/dashboard/public/"
+    },
+    "created_at": "2026-02-28T15:02:33.387Z",
+    "updated_at": "2026-02-28T15:02:33.387Z"
+  },
+  {
+    "id": "01KJJCBM5DW8H84A7Y8Z4947XP",
+    "name": "updateTimelineData",
+    "type": "function",
+    "properties": {
+      "scope": "src/dashboard/public/"
+    },
+    "created_at": "2026-02-28T15:02:33.389Z",
+    "updated_at": "2026-02-28T15:02:33.389Z"
+  },
+  {
+    "id": "01KJJCBM5HKQ2YMG75QNQ5GXQR",
+    "name": "getDecisionClassName",
+    "type": "function",
+    "properties": {
+      "scope": "src/dashboard/public/"
+    },
+    "created_at": "2026-02-28T15:02:33.393Z",
+    "updated_at": "2026-02-28T15:02:33.393Z"
   }
 ]
