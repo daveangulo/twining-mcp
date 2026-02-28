@@ -1,0 +1,35 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "plugin/hooks/",
+  "summary": "Stop hook uses line-number comparison for per-commit Twining coverage instead of session-wide counts",
+  "context": "The previous stop hook checked if ANY Twining calls existed in the session. Once one decision was recorded early on, all subsequent code changes passed unchecked. This meant multi-task sessions could have untracked commits.",
+  "rationale": "Compare line numbers of last Edit/Write call vs last twining_decide/post/verify/handoff call in the transcript. If the last code change comes after the last Twining recording, block. Same pure bash+grep approach, no new dependencies — just grep -n with tail -1 instead of grep -c.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Track commit hashes and cross-reference with twining_commits",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Requires git access and Twining MCP server calls from the hook — too complex for a shell script with 10s timeout"
+    },
+    {
+      "option": "Count edits-since-last-twining-call by scanning sections of transcript",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "More complex parsing for same result — line number comparison is simpler and equally accurate"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "plugin/hooks/stop-hook.sh"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": false,
+  "id": "01KJJAZEHG6HTT11SY8GSPM6VX",
+  "timestamp": "2026-02-28T14:38:25.841Z",
+  "status": "provisional"
+}

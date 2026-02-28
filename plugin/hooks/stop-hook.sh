@@ -17,15 +17,18 @@ DECISION="approve"
 REASON="Session complete"
 
 if [[ -n "$TRANSCRIPT_PATH" ]] && [[ -f "$TRANSCRIPT_PATH" ]]; then
-  # Check if session had substantive code changes (Edit, Write, NotebookEdit tool calls)
-  HAS_EDITS=$(grep -c '"Edit"\|"Write"\|"NotebookEdit"' "$TRANSCRIPT_PATH" 2>/dev/null) || HAS_EDITS=0
+  # Find line number of last code change (Edit, Write, NotebookEdit tool calls)
+  LAST_EDIT=$(grep -n '"Edit"\|"Write"\|"NotebookEdit"' "$TRANSCRIPT_PATH" 2>/dev/null | tail -1 | cut -d: -f1) || LAST_EDIT=0
+  LAST_EDIT=${LAST_EDIT:-0}
 
-  # Check if Twining decision/recording tools were used
-  HAS_TWINING=$(grep -c 'twining_decide\|twining_post\|twining_verify\|twining_handoff' "$TRANSCRIPT_PATH" 2>/dev/null) || HAS_TWINING=0
+  # Find line number of last Twining recording tool call
+  LAST_TWINING=$(grep -n 'twining_decide\|twining_post\|twining_verify\|twining_handoff' "$TRANSCRIPT_PATH" 2>/dev/null | tail -1 | cut -d: -f1) || LAST_TWINING=0
+  LAST_TWINING=${LAST_TWINING:-0}
 
-  if [[ "$HAS_EDITS" -gt 0 ]] && [[ "$HAS_TWINING" -eq 0 ]]; then
+  # Block if code changes exist after the last Twining recording
+  if [[ "$LAST_EDIT" -gt 0 ]] && [[ "$LAST_EDIT" -gt "$LAST_TWINING" ]]; then
     DECISION="block"
-    REASON="This session made code changes but no Twining decisions or findings were recorded. Before ending, please: 1) Record any architectural or implementation decisions with twining_decide. 2) Post findings or status with twining_post. 3) If work is unfinished, create a handoff with twining_handoff. 4) Run twining_verify to check completeness."
+    REASON="Code changes detected after last Twining recording. Before ending, please: 1) Record any architectural or implementation decisions with twining_decide. 2) Post findings or status with twining_post. 3) If work is unfinished, create a handoff with twining_handoff. 4) Run twining_verify to check completeness."
   fi
 fi
 

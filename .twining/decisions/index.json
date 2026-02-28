@@ -540,5 +540,35 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KJJAP0N95VJ7YTNDCGH5DX7B",
+    "timestamp": "2026-02-28T14:33:16.714Z",
+    "domain": "testing",
+    "scope": "src/embeddings/",
+    "summary": "Skip ONNX embedding initialization in test environment via process.env.VITEST check",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "src/embeddings/embedder.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": [
+      "3244d54"
+    ]
+  },
+  {
+    "id": "01KJJAZEHG6HTT11SY8GSPM6VX",
+    "timestamp": "2026-02-28T14:38:25.841Z",
+    "domain": "implementation",
+    "scope": "plugin/hooks/",
+    "summary": "Stop hook uses line-number comparison for per-commit Twining coverage instead of session-wide counts",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      "plugin/hooks/stop-hook.sh"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]

@@ -1,0 +1,49 @@
+{
+  "agent_id": "main",
+  "domain": "testing",
+  "scope": "src/embeddings/",
+  "summary": "Skip ONNX embedding initialization in test environment via process.env.VITEST check",
+  "context": "All ~24 integration test failures were 30-second timeouts caused by Hugging Face ONNX model initialization. Each test creates a fresh temp dir, leading to a fresh Embedder singleton that attempts full model download/compilation. No test needs real embeddings.",
+  "rationale": "Single check in doInitialize() for process.env.VITEST (set automatically by Vitest) enables fallback mode immediately. Zero test file changes needed, all 11 failing test files fixed, production behavior unchanged. Test suite dropped from ~3 minutes to ~6 seconds.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Vitest globalSetup file calling Embedder.forceFallback()",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Requires new static method + setup file — more moving parts for same result"
+    },
+    {
+      "option": "Increase test timeout to 120s",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Masks the problem, makes CI slow, still flaky due to network-dependent model downloads"
+    },
+    {
+      "option": "Mock @huggingface/transformers in each test file",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "11 files to change, fragile, easy to forget in new tests"
+    },
+    {
+      "option": "Add opt-in real ONNX smoke test",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "User decided no real ONNX tests needed — thin wrapper around third-party lib, fallback already tested"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "src/embeddings/embedder.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [
+    "3244d54"
+  ],
+  "assembled_before": false,
+  "id": "01KJJAP0N95VJ7YTNDCGH5DX7B",
+  "timestamp": "2026-02-28T14:33:16.714Z",
+  "status": "active"
+}

@@ -897,5 +897,47 @@
     },
     "created_at": "2026-02-28T13:56:17.691Z",
     "updated_at": "2026-02-28T13:56:17.691Z"
+  },
+  {
+    "id": "01KJJAP137SKBA7V52S35HBPXR",
+    "name": "01KJJAP0N95VJ7YTNDCGH5DX7B",
+    "type": "concept",
+    "properties": {
+      "summary": "Skip ONNX embedding initialization in test environment via process.env.VITEST check",
+      "scope": "src/embeddings/"
+    },
+    "created_at": "2026-02-28T14:33:17.159Z",
+    "updated_at": "2026-02-28T14:33:17.159Z"
+  },
+  {
+    "id": "01KJJAP1393ZRMJY1SRKEQVBVQ",
+    "name": "src/embeddings/embedder.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/embeddings/"
+    },
+    "created_at": "2026-02-28T14:33:17.161Z",
+    "updated_at": "2026-02-28T14:33:17.161Z"
+  },
+  {
+    "id": "01KJJAZET1A8PW7KA2P34WB9T6",
+    "name": "01KJJAZEHG6HTT11SY8GSPM6VX",
+    "type": "concept",
+    "properties": {
+      "summary": "Stop hook uses line-number comparison for per-commit Twining coverage instead of session-wide counts",
+      "scope": "plugin/hooks/"
+    },
+    "created_at": "2026-02-28T14:38:26.113Z",
+    "updated_at": "2026-02-28T14:38:26.113Z"
+  },
+  {
+    "id": "01KJJAZET2V22WEVQPJAYE9EQZ",
+    "name": "plugin/hooks/stop-hook.sh",
+    "type": "file",
+    "properties": {
+      "scope": "plugin/hooks/"
+    },
+    "created_at": "2026-02-28T14:38:26.114Z",
+    "updated_at": "2026-02-28T14:38:26.114Z"
   }
 ]
