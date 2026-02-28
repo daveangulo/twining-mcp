@@ -1056,5 +1056,55 @@
       "decision_summary": "Fix timeline zoom by changing overflow:auto to overflow:hidden and add zoom controls toolbar"
     },
     "created_at": "2026-02-28T15:02:33.394Z"
+  },
+  {
+    "id": "01KJJE3FNTRRGSTN2FQNWXJ637",
+    "source": "01KJC68M4Q2KAAT3ZEC51JGVJV",
+    "target": "01KJJE3FNMETWC9QY5A8B5DCSZ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Replace search bar multi-select with toggle chips, add search icon, and style filters to match toolbar design language"
+    },
+    "created_at": "2026-02-28T15:33:03.802Z"
+  },
+  {
+    "id": "01KJJE3FNYRE1HB1DCYG35QC73",
+    "source": "01KJC68M4SHY3D3VYR8E7V05XC",
+    "target": "01KJJE3FNMETWC9QY5A8B5DCSZ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Replace search bar multi-select with toggle chips, add search icon, and style filters to match toolbar design language"
+    },
+    "created_at": "2026-02-28T15:33:03.806Z"
+  },
+  {
+    "id": "01KJJE3FP3F20KQ6T9ZKQNVF75",
+    "source": "01KJC68M4REPRVABK2MC68D43H",
+    "target": "01KJJE3FNMETWC9QY5A8B5DCSZ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Replace search bar multi-select with toggle chips, add search icon, and style filters to match toolbar design language"
+    },
+    "created_at": "2026-02-28T15:33:03.812Z"
+  },
+  {
+    "id": "01KJJE3FPX8E28R58XRFXMJFQG",
+    "source": "01KJJE3FPHKDBKZ84DK2GY486Q",
+    "target": "01KJJE3FNMETWC9QY5A8B5DCSZ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Replace search bar multi-select with toggle chips, add search icon, and style filters to match toolbar design language"
+    },
+    "created_at": "2026-02-28T15:33:03.837Z"
+  },
+  {
+    "id": "01KJJE3FQQSWJMFPGYAW0PEHQ5",
+    "source": "01KJJE3FQ6Q75P7BBM73KXRAG2",
+    "target": "01KJJE3FNMETWC9QY5A8B5DCSZ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Replace search bar multi-select with toggle chips, add search icon, and style filters to match toolbar design language"
+    },
+    "created_at": "2026-02-28T15:33:03.863Z"
   }
 ]

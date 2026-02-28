@@ -815,7 +815,7 @@ footer p {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-sm);
-  padding: var(--space-md) var(--space-xl);
+  padding: var(--space-sm) var(--space-xl);
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border);
   align-items: center;
@@ -824,24 +824,75 @@ footer p {
   margin: 0 auto;
 }
 
-.search-bar input[type="text"] {
+/* -- Search Input with Icon -- */
+
+.search-input-group {
+  position: relative;
   flex: 1;
   min-width: 200px;
-  padding: 0.4rem 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  color: var(--text-tertiary);
+  pointer-events: none;
+  transition: color var(--transition-fast);
+}
+
+.search-input-group:focus-within .search-icon {
+  color: var(--accent);
+}
+
+.search-bar input[type="text"] {
+  width: 100%;
+  padding: 0.45rem 2rem 0.45rem 2rem;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-pill);
   font-family: var(--font-body);
   font-size: 0.8125rem;
   background: var(--bg-primary);
   color: var(--text-primary);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+}
+
+.search-bar input[type="text"]::placeholder {
+  color: var(--text-tertiary);
+  font-size: 0.8rem;
 }
 
 .search-bar input[type="text"]:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 2px var(--accent-subtle);
+  background: var(--bg-surface);
 }
+
+.search-clear-icon {
+  position: absolute;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  padding: 0;
+}
+
+.search-clear-icon:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* -- Search Filters Row -- */
 
 .search-filters {
   display: flex;
@@ -850,44 +901,115 @@ footer p {
   align-items: center;
 }
 
-.search-filters select,
-.search-filters input[type="date"] {
-  padding: 0.35rem 0.5rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: 0.75rem;
-  font-family: var(--font-body);
-  background: var(--bg-primary);
-  color: var(--text-primary);
+.search-filters-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  margin: 0 4px;
+  flex-shrink: 0;
 }
 
-.search-filters button {
-  padding: 0.35rem 0.75rem;
+/* -- Type Toggle Chips -- */
+
+.search-type-chips {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.search-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 0.6875rem;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0.01em;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.search-chip:hover {
+  border-color: var(--border-strong);
+  color: var(--text-secondary);
+  background: var(--bg-hover);
+}
+
+.search-chip.active {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+  color: var(--accent);
+}
+
+/* -- Status Select & Date Inputs -- */
+
+.search-filters select {
+  padding: 3px 24px 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  font-size: 0.6875rem;
+  font-family: var(--font-mono);
+  font-weight: 500;
   background: var(--bg-surface);
   color: var(--text-secondary);
   cursor: pointer;
-  font-family: var(--font-body);
-  font-size: 0.75rem;
   transition: all var(--transition-fast);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%238892a8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
 }
 
-.search-filters button:hover {
-  background: var(--bg-hover);
+.search-filters select:hover {
   border-color: var(--border-strong);
 }
 
-#search-btn {
-  background: var(--accent);
-  color: var(--bg-primary);
+.search-filters select:focus {
+  outline: none;
   border-color: var(--accent);
-  font-weight: 600;
+  box-shadow: 0 0 0 2px var(--accent-subtle);
 }
 
-#search-btn:hover {
-  background: var(--accent-hover);
-  border-color: var(--accent-hover);
+.search-date-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.search-date-label {
+  font-size: 0.625rem;
+  font-family: var(--font-mono);
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.search-filters input[type="date"] {
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  font-size: 0.6875rem;
+  font-family: var(--font-mono);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+  max-width: 130px;
+}
+
+.search-filters input[type="date"]:hover {
+  border-color: var(--border-strong);
+}
+
+.search-filters input[type="date"]:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-subtle);
 }
 
 /* ---------- Search Status & IDs ---------- */

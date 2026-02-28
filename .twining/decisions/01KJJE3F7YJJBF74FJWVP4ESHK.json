@@ -1,0 +1,40 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "src/dashboard/public/",
+  "summary": "Replace search bar multi-select with toggle chips, add search icon, and style filters to match toolbar design language",
+  "context": "The global search bar visible on every dashboard page used a raw HTML select-multiple for type filtering, bare date inputs, and inconsistent styling compared to the refined toolbar patterns established in the timeline and graph views.",
+  "rationale": "Toggle chips match the filter pattern used in timeline domain filters and graph type filters, providing a consistent UX. Pill-shaped input with embedded search/clear icons is more modern. Custom-styled select and labeled date inputs improve visual cohesion. All changes are CSS/HTML/JS only with no new dependencies.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Keep select-multiple but restyle it with CSS",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Multi-select elements have very limited cross-browser styling support; even with CSS overrides the native widget shows through on many browsers"
+    },
+    {
+      "option": "Use a dropdown menu with checkboxes for type selection",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Adds unnecessary interaction complexity (click to open, then check); toggle chips are visible at a glance and match the established pattern in timeline/graph toolbars"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "src/dashboard/public/index.html",
+    "src/dashboard/public/style.css",
+    "src/dashboard/public/app.js"
+  ],
+  "affected_symbols": [
+    "buildSearchUrl",
+    "performSearch"
+  ],
+  "commit_hashes": [],
+  "assembled_before": false,
+  "id": "01KJJE3F7YJJBF74FJWVP4ESHK",
+  "timestamp": "2026-02-28T15:33:03.360Z",
+  "status": "provisional"
+}

@@ -1688,16 +1688,14 @@ function buildSearchUrl() {
   if (!q) return null;
   var params = "q=" + encodeURIComponent(q);
 
-  // Type filter
-  var typesSelect = document.getElementById("filter-types");
-  if (typesSelect) {
+  // Type filter (from chips)
+  var typeChips = document.querySelectorAll(".search-chip.active[data-type]");
+  if (typeChips.length > 0 && typeChips.length < 3) {
     var selectedTypes = [];
-    for (var i = 0; i < typesSelect.options.length; i++) {
-      if (typesSelect.options[i].selected) selectedTypes.push(typesSelect.options[i].value);
+    for (var i = 0; i < typeChips.length; i++) {
+      selectedTypes.push(typeChips[i].getAttribute("data-type"));
     }
-    if (selectedTypes.length > 0 && selectedTypes.length < 3) {
-      params += "&types=" + selectedTypes.join(",");
-    }
+    params += "&types=" + selectedTypes.join(",");
   }
 
   // Status filter
@@ -3001,9 +2999,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // Search input: debounced performSearch on "input" event
   var searchInput = document.getElementById("search-input");
+  var clearBtn = document.getElementById("search-clear-btn");
   if (searchInput) {
     var debouncedSearch = debounce(performSearch, 300);
-    searchInput.addEventListener("input", debouncedSearch);
+    searchInput.addEventListener("input", function() {
+      // Show/hide clear icon based on input content
+      if (clearBtn) clearBtn.style.display = searchInput.value ? "flex" : "none";
+      debouncedSearch();
+    });
     // Enter key: immediate performSearch (bypass debounce)
     searchInput.addEventListener("keydown", function(e) {
       if (e.key === "Enter") {
@@ -3013,18 +3016,12 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  // Search button: performSearch on click
-  var searchBtn = document.getElementById("search-btn");
-  if (searchBtn) {
-    searchBtn.addEventListener("click", performSearch);
-  }
-
   // Clear button: clear search input, reset search state, switch to stats tab
-  var clearBtn = document.getElementById("search-clear-btn");
   if (clearBtn) {
     clearBtn.addEventListener("click", function() {
       var input = document.getElementById("search-input");
       if (input) input.value = "";
+      clearBtn.style.display = "none";
       state.search.query = "";
       state.search.results = [];
       state.search.selectedId = null;
@@ -3032,6 +3029,21 @@ document.addEventListener("DOMContentLoaded", function() {
       renderSearchResults();
       switchTab("stats");
     });
+  }
+
+  // Search type chips: toggle active state
+  var typeChips = document.querySelectorAll(".search-chip[data-type]");
+  for (var tc = 0; tc < typeChips.length; tc++) {
+    (function(chip) {
+      chip.addEventListener("click", function() {
+        chip.classList.toggle("active");
+        // Ensure at least one type remains active
+        var active = document.querySelectorAll(".search-chip.active[data-type]");
+        if (active.length === 0) chip.classList.add("active");
+        // Re-run search if there's a query
+        if (state.search.query) performSearch();
+      });
+    })(typeChips[tc]);
   }
 
   // Global scope filter

@@ -595,5 +595,24 @@
       "getDecisionClassName"
     ],
     "commit_hashes": []
+  },
+  {
+    "id": "01KJJE3F7YJJBF74FJWVP4ESHK",
+    "timestamp": "2026-02-28T15:33:03.360Z",
+    "domain": "implementation",
+    "scope": "src/dashboard/public/",
+    "summary": "Replace search bar multi-select with toggle chips, add search icon, and style filters to match toolbar design language",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      "src/dashboard/public/index.html",
+      "src/dashboard/public/style.css",
+      "src/dashboard/public/app.js"
+    ],
+    "affected_symbols": [
+      "buildSearchUrl",
+      "performSearch"
+    ],
+    "commit_hashes": []
   }
 ]

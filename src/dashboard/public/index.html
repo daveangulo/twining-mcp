@@ -97,13 +97,20 @@
   </nav>
 
   <div class="search-bar">
-    <input type="text" id="search-input" placeholder="Search across all data..." />
+    <div class="search-input-group">
+      <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search-input" placeholder="Search across all data..." />
+      <button id="search-clear-btn" class="search-clear-icon" title="Clear search" aria-label="Clear search" style="display:none">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
     <div class="search-filters">
-      <select id="filter-types" multiple title="Filter by type">
-        <option value="blackboard" selected>Blackboard</option>
-        <option value="decisions" selected>Decisions</option>
-        <option value="entities" selected>Entities</option>
-      </select>
+      <div class="search-type-chips" id="search-type-chips">
+        <button class="search-chip active" data-type="blackboard">Blackboard</button>
+        <button class="search-chip active" data-type="decisions">Decisions</button>
+        <button class="search-chip active" data-type="entities">Entities</button>
+      </div>
+      <span class="search-filters-divider"></span>
       <select id="filter-status" title="Filter by status">
         <option value="">Any status</option>
         <option value="active">Active</option>
@@ -111,10 +118,14 @@
         <option value="superseded">Superseded</option>
         <option value="overridden">Overridden</option>
       </select>
-      <input type="date" id="filter-since" title="From date" />
-      <input type="date" id="filter-until" title="Until date" />
-      <button id="search-btn" title="Search">Search</button>
-      <button id="search-clear-btn" title="Clear search">Clear</button>
+      <div class="search-date-group">
+        <label class="search-date-label">From</label>
+        <input type="date" id="filter-since" title="From date" />
+      </div>
+      <div class="search-date-group">
+        <label class="search-date-label">To</label>
+        <input type="date" id="filter-until" title="Until date" />
+      </div>
     </div>
   </div>
 
