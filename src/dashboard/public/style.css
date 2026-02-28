@@ -975,43 +975,115 @@ footer p {
   border-radius: var(--radius-md);
   background: var(--bg-surface);
   position: relative;
+  overflow: hidden;
 }
 
-.graph-controls {
-  position: absolute;
-  top: var(--space-md);
-  right: var(--space-md);
-  z-index: 100;
+/* ---------- Graph Toolbar ---------- */
+
+.graph-toolbar {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-sm) 0;
+  margin-bottom: var(--space-sm);
 }
 
-.graph-controls button {
-  width: 32px;
-  height: 32px;
+.graph-type-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  align-items: center;
+}
+
+.graph-type-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 0.6875rem;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.graph-type-chip:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+}
+
+.graph-type-chip.active {
+  border-color: var(--type-color, var(--accent));
+  background: color-mix(in srgb, var(--type-color, var(--accent)) 12%, transparent);
+  color: var(--type-color, var(--accent));
+}
+
+.graph-type-chip .chip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--type-color, var(--text-tertiary));
+  flex-shrink: 0;
+}
+
+.graph-type-chip.active .chip-dot {
+  box-shadow: 0 0 6px var(--type-color, var(--accent));
+}
+
+.graph-toolbar-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-shrink: 0;
+}
+
+.graph-toolbar-controls button {
+  width: 30px;
+  height: 30px;
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--text-secondary);
-  font-size: 16px;
-  font-weight: bold;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all var(--transition-fast);
-  backdrop-filter: blur(8px);
 }
 
-.graph-controls button:hover {
+.graph-toolbar-controls button:hover {
   background: var(--accent);
   color: var(--bg-primary);
   border-color: var(--accent);
+  box-shadow: 0 0 12px var(--accent-glow);
 }
 
-.graph-controls button:active {
+.graph-toolbar-controls button:active {
   transform: scale(0.92);
+}
+
+.graph-toolbar-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  margin: 0 2px;
+}
+
+/* Graph entrance animation */
+#graph-visual-view .content-area {
+  animation: graphSlideIn 0.4s ease-out;
+}
+
+@keyframes graphSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ---------- Graph & Timeline Legends ---------- */
@@ -1026,9 +1098,9 @@ footer p {
 }
 
 .graph-legend-item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 5px;
 }
 
 .graph-legend-dot {
@@ -1036,6 +1108,7 @@ footer p {
   width: 8px;
   height: 8px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
 /* ---------- Timeline Toolbar ---------- */

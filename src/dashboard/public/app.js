@@ -2215,11 +2215,16 @@ var ENTITY_COLORS = {
   api_endpoint: '#ec4899'
 };
 
+// Track which entity types are visible (null = all)
+var graphTypeFilter = null;
+
 function buildGraphStyles() {
   var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  var textColor = isDark ? '#e2e8f0' : '#1a1a2e';
-  var edgeColor = isDark ? '#64748b' : '#94a3b8';
-  var accentColor = isDark ? '#60a5fa' : '#3b82f6';
+  var textColor = isDark ? '#c8d0e0' : '#1a1a2e';
+  var textHaloColor = isDark ? 'rgba(11, 15, 26, 0.85)' : 'rgba(255, 255, 255, 0.85)';
+  var edgeColor = isDark ? 'rgba(100, 116, 139, 0.5)' : 'rgba(148, 163, 184, 0.6)';
+  var edgeLabelColor = isDark ? '#64748b' : '#94a3b8';
+  var accentColor = isDark ? '#00d4aa' : '#00a88a';
 
   var styles = [
     {
@@ -2228,36 +2233,112 @@ function buildGraphStyles() {
         'label': 'data(label)',
         'text-valign': 'bottom',
         'text-halign': 'center',
-        'font-size': '11px',
-        'width': 40,
-        'height': 40,
+        'font-size': '10px',
+        'font-weight': 500,
+        'width': 32,
+        'height': 32,
         'color': textColor,
         'text-margin-y': 6,
         'background-color': '#6b7280',
-        'text-wrap': 'wrap',
-        'text-max-width': '120px'
+        'background-opacity': 0.9,
+        'border-width': 2,
+        'border-color': 'rgba(255, 255, 255, 0.08)',
+        'border-opacity': 1,
+        'text-wrap': 'ellipsis',
+        'text-max-width': '100px',
+        'text-outline-width': 0,
+        'text-background-opacity': 0.8,
+        'text-background-color': textHaloColor,
+        'text-background-padding': '2px',
+        'text-background-shape': 'roundrectangle',
+        'overlay-opacity': 0,
+        'transition-property': 'border-width, border-color, width, height, background-opacity',
+        'transition-duration': '0.15s'
+      }
+    },
+    {
+      selector: 'node:active',
+      style: {
+        'overlay-opacity': 0
       }
     },
     {
       selector: 'edge',
       style: {
-        'width': 2,
+        'width': 1.5,
         'line-color': edgeColor,
         'target-arrow-color': edgeColor,
         'target-arrow-shape': 'triangle',
+        'arrow-scale': 0.8,
         'curve-style': 'bezier',
         'label': 'data(label)',
         'font-size': '8px',
-        'color': textColor,
+        'color': edgeLabelColor,
         'text-rotation': 'autorotate',
-        'text-margin-y': -8
+        'text-margin-y': -8,
+        'text-outline-width': 0,
+        'text-background-opacity': 0.75,
+        'text-background-color': textHaloColor,
+        'text-background-padding': '1px',
+        'text-background-shape': 'roundrectangle',
+        'opacity': 0.7,
+        'transition-property': 'opacity, width, line-color',
+        'transition-duration': '0.15s'
       }
     },
     {
       selector: 'node:selected',
       style: {
         'border-width': 3,
-        'border-color': accentColor
+        'border-color': accentColor,
+        'border-opacity': 1,
+        'width': 40,
+        'height': 40,
+        'background-opacity': 1,
+        'overlay-color': accentColor,
+        'overlay-padding': 6,
+        'overlay-opacity': 0.15,
+        'z-index': 10
+      }
+    },
+    {
+      selector: 'node.hover',
+      style: {
+        'border-width': 2.5,
+        'border-color': accentColor,
+        'width': 36,
+        'height': 36,
+        'background-opacity': 1,
+        'z-index': 5
+      }
+    },
+    {
+      selector: 'node.dimmed',
+      style: {
+        'opacity': 0.2,
+        'text-opacity': 0.15
+      }
+    },
+    {
+      selector: 'edge.dimmed',
+      style: {
+        'opacity': 0.08
+      }
+    },
+    {
+      selector: 'node.highlighted',
+      style: {
+        'opacity': 1,
+        'text-opacity': 1
+      }
+    },
+    {
+      selector: 'edge.highlighted',
+      style: {
+        'opacity': 1,
+        'width': 2.5,
+        'line-color': accentColor,
+        'target-arrow-color': accentColor
       }
     }
   ];
@@ -2284,15 +2365,98 @@ function renderGraphLegend() {
   for (var i = 0; i < types.length; i++) {
     var item = document.createElement('span');
     item.className = 'graph-legend-item';
-    item.style.cssText = 'display:inline-flex;align-items:center;gap:4px;margin-right:12px;font-size:0.8rem;';
     var dot = document.createElement('span');
     dot.className = 'graph-legend-dot';
-    dot.style.cssText = 'width:10px;height:10px;border-radius:50%;display:inline-block;background:' + ENTITY_COLORS[types[i]];
+    dot.style.background = ENTITY_COLORS[types[i]];
     var label = document.createElement('span');
     label.textContent = types[i];
     item.appendChild(dot);
     item.appendChild(label);
     legend.appendChild(item);
+  }
+}
+
+function renderGraphTypeFilters() {
+  var container = document.getElementById('graph-type-filters');
+  if (!container) return;
+  clearElement(container);
+
+  // Count entity types
+  var typeSet = {};
+  var scoped = applyGlobalScope(state.graph.data, 'scope');
+  for (var i = 0; i < scoped.length; i++) {
+    var t = scoped[i].type || 'concept';
+    typeSet[t] = (typeSet[t] || 0) + 1;
+  }
+  var types = Object.keys(typeSet).sort();
+  if (types.length <= 1) return;
+
+  // "All" chip
+  var allChip = document.createElement('button');
+  allChip.className = 'graph-type-chip' + (graphTypeFilter === null ? ' active' : '');
+  allChip.textContent = 'All';
+  allChip.style.setProperty('--type-color', 'var(--accent)');
+  allChip.addEventListener('click', function() {
+    graphTypeFilter = null;
+    applyGraphTypeFilter();
+    renderGraphTypeFilters();
+  });
+  container.appendChild(allChip);
+
+  for (var j = 0; j < types.length; j++) {
+    (function(type) {
+      var color = ENTITY_COLORS[type] || '#6b7280';
+      var isActive = graphTypeFilter === null || !!graphTypeFilter[type];
+      var chip = document.createElement('button');
+      chip.className = 'graph-type-chip' + (graphTypeFilter !== null && isActive ? ' active' : '');
+      chip.style.setProperty('--type-color', color);
+      var dot = document.createElement('span');
+      dot.className = 'chip-dot';
+      chip.appendChild(dot);
+      var text = document.createElement('span');
+      text.textContent = type + ' (' + typeSet[type] + ')';
+      chip.appendChild(text);
+      chip.addEventListener('click', function() {
+        if (graphTypeFilter === null) {
+          graphTypeFilter = {};
+          graphTypeFilter[type] = true;
+        } else if (graphTypeFilter[type]) {
+          delete graphTypeFilter[type];
+          if (Object.keys(graphTypeFilter).length === 0) graphTypeFilter = null;
+        } else {
+          graphTypeFilter[type] = true;
+        }
+        applyGraphTypeFilter();
+        renderGraphTypeFilters();
+      });
+      container.appendChild(chip);
+    })(types[j]);
+  }
+}
+
+function applyGraphTypeFilter() {
+  if (!window.cyInstance) return;
+  if (graphTypeFilter === null) {
+    // Show all
+    window.cyInstance.nodes().show();
+    window.cyInstance.edges().show();
+  } else {
+    window.cyInstance.nodes().forEach(function(n) {
+      var type = n.data('type') || 'concept';
+      if (graphTypeFilter[type]) {
+        n.show();
+      } else {
+        n.hide();
+      }
+    });
+    // Only show edges where both endpoints are visible
+    window.cyInstance.edges().forEach(function(e) {
+      if (e.source().visible() && e.target().visible()) {
+        e.show();
+      } else {
+        e.hide();
+      }
+    });
   }
 }
 
@@ -2346,12 +2510,14 @@ function initGraphVis() {
       canvas.appendChild(msg);
     }
     renderGraphLegend();
+    renderGraphTypeFilters();
     return;
   }
 
   // Create-once guard: if already initialized, just update data
   if (window.cyInstance) {
     updateGraphData();
+    renderGraphTypeFilters();
     return;
   }
 
@@ -2370,16 +2536,34 @@ function initGraphVis() {
     layout: {
       name: 'cose',
       animate: true,
-      animationDuration: 500,
-      nodeRepulsion: function() { return 12000; },
-      idealEdgeLength: function() { return 100; },
-      nodeOverlap: 20,
-      padding: 40
+      animationDuration: 600,
+      animationEasing: 'ease-out',
+      nodeRepulsion: function() { return 14000; },
+      idealEdgeLength: function() { return 120; },
+      nodeOverlap: 24,
+      padding: 50
     },
     style: buildGraphStyles(),
-    minZoom: 0.2,
+    minZoom: 0.15,
     maxZoom: 5,
-    wheelSensitivity: 0.2
+    wheelSensitivity: 0.3,
+    pixelRatio: 'auto'
+  });
+
+  // Hover: highlight node and its neighborhood
+  window.cyInstance.on('mouseover', 'node', function(evt) {
+    var node = evt.target;
+    node.addClass('hover');
+    // Dim everything, highlight neighborhood
+    var neighborhood = node.closedNeighborhood();
+    window.cyInstance.elements().not(neighborhood).addClass('dimmed');
+    neighborhood.addClass('highlighted');
+    neighborhood.connectedEdges().addClass('highlighted');
+  });
+
+  window.cyInstance.on('mouseout', 'node', function(evt) {
+    evt.target.removeClass('hover');
+    window.cyInstance.elements().removeClass('dimmed highlighted');
   });
 
   // Click node to show detail and expand neighbors
@@ -2406,7 +2590,15 @@ function initGraphVis() {
     }
   });
 
+  // Click background to clear highlight
+  window.cyInstance.on('tap', function(evt) {
+    if (evt.target === window.cyInstance) {
+      window.cyInstance.elements().removeClass('dimmed highlighted hover');
+    }
+  });
+
   renderGraphLegend();
+  renderGraphTypeFilters();
   setupGraphControls();
 }
 
@@ -2418,33 +2610,42 @@ function setupGraphControls() {
 
   if (zoomIn) {
     zoomIn.onclick = function() {
-      if (window.cyInstance) window.cyInstance.zoom(window.cyInstance.zoom() * 1.2);
+      if (window.cyInstance) {
+        window.cyInstance.animate({ zoom: window.cyInstance.zoom() * 1.3, center: window.cyInstance.extent() }, { duration: 250, easing: 'ease-in-out-quad' });
+      }
     };
   }
 
   if (zoomOut) {
     zoomOut.onclick = function() {
-      if (window.cyInstance) window.cyInstance.zoom(window.cyInstance.zoom() * 0.8);
+      if (window.cyInstance) {
+        window.cyInstance.animate({ zoom: window.cyInstance.zoom() * 0.7, center: window.cyInstance.extent() }, { duration: 250, easing: 'ease-in-out-quad' });
+      }
     };
   }
 
   if (fit) {
     fit.onclick = function() {
-      if (window.cyInstance) window.cyInstance.fit(null, 40);
+      if (window.cyInstance) window.cyInstance.animate({ fit: { padding: 50 } }, { duration: 400, easing: 'ease-in-out-quad' });
     };
   }
 
   if (reset) {
     reset.onclick = function() {
       if (window.cyInstance) {
+        // Reset type filter
+        graphTypeFilter = null;
+        applyGraphTypeFilter();
+        renderGraphTypeFilters();
         var layout = window.cyInstance.layout({
           name: 'cose',
           animate: true,
-          animationDuration: 500,
-          nodeRepulsion: function() { return 12000; },
-          idealEdgeLength: function() { return 100; },
-          nodeOverlap: 20,
-          padding: 40
+          animationDuration: 600,
+          animationEasing: 'ease-out',
+          nodeRepulsion: function() { return 14000; },
+          idealEdgeLength: function() { return 120; },
+          nodeOverlap: 24,
+          padding: 50
         });
         layout.run();
       }
