@@ -240,23 +240,42 @@
 
     <!-- Blackboard Tab -->
     <div class="tab-content" id="tab-blackboard" style="display:none">
-      <div class="content-area">
-        <div class="list-panel">
-          <table class="data-table" id="blackboard-table">
-            <thead>
-              <tr>
-                <th class="sortable-header" data-sort-key="timestamp">Timestamp</th>
-                <th class="sortable-header" data-sort-key="entry_type">Type</th>
-                <th class="sortable-header" data-sort-key="scope">Scope</th>
-                <th class="sortable-header" data-sort-key="summary">Summary</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-          <div class="pagination" id="blackboard-pagination"></div>
+      <div class="view-toggle" id="blackboard-view-toggle">
+        <button class="view-btn active" data-view="table" data-tab="blackboard">Table</button>
+        <button class="view-btn" data-view="stream" data-tab="blackboard">Stream</button>
+      </div>
+      <div class="view-table" id="blackboard-table-view">
+        <div class="content-area">
+          <div class="list-panel">
+            <table class="data-table" id="blackboard-table">
+              <thead>
+                <tr>
+                  <th class="sortable-header" data-sort-key="timestamp">Timestamp</th>
+                  <th class="sortable-header" data-sort-key="entry_type">Type</th>
+                  <th class="sortable-header" data-sort-key="scope">Scope</th>
+                  <th class="sortable-header" data-sort-key="summary">Summary</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <div class="pagination" id="blackboard-pagination"></div>
+          </div>
+          <div class="detail-panel" id="blackboard-detail">
+            <p class="placeholder">Select an entry to view details</p>
+          </div>
         </div>
-        <div class="detail-panel" id="blackboard-detail">
-          <p class="placeholder">Select an entry to view details</p>
+      </div>
+      <div class="view-visual" id="blackboard-stream-view" style="display:none">
+        <div class="stream-toolbar">
+          <div class="stream-type-filters" id="stream-type-filters"></div>
+        </div>
+        <div class="content-area">
+          <div class="list-panel">
+            <div class="stream-container" id="stream-container"></div>
+          </div>
+          <div class="detail-panel" id="blackboard-stream-detail">
+            <p class="placeholder">Select a card to view details</p>
+          </div>
         </div>
       </div>
     </div>
