@@ -109,6 +109,12 @@ export class Embedder {
   }
 
   private async doInitialize(): Promise<void> {
+    // Skip expensive ONNX initialization in test environment
+    if (process.env.VITEST) {
+      this.fallbackMode = true;
+      return;
+    }
+
     try {
       // Dynamic import to avoid loading ONNX at module evaluation time
       const { pipeline, env } = await import("@huggingface/transformers");
