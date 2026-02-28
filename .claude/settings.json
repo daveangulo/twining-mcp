@@ -1,4 +1,12 @@
 {
+  "extraKnownMarketplaces": {
+    "twining-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "daveangulo/twining-mcp"
+      }
+    }
+  },
   "enabledPlugins": {
     "github@claude-plugins-official": true,
     "feature-dev@claude-plugins-official": true,
@@ -6,6 +14,6 @@
     "code-simplifier@claude-plugins-official": true,
     "commit-commands@claude-plugins-official": true,
     "playwright@claude-plugins-official": true,
-    "twining@daveangulo": true
+    "twining@twining-marketplace": true
   }
 }

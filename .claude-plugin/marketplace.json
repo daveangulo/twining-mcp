@@ -1,0 +1,25 @@
+{
+  "name": "twining-marketplace",
+  "owner": {
+    "name": "Dave Angulo",
+    "email": "daveangulo@gmail.com"
+  },
+  "metadata": {
+    "description": "Agent coordination plugins for multi-agent Claude Code workflows"
+  },
+  "plugins": [
+    {
+      "name": "twining",
+      "source": "./plugin",
+      "description": "Shared blackboard, decision tracking, and context assembly for multi-agent workflows",
+      "version": "1.0.0",
+      "author": {
+        "name": "Dave Angulo"
+      },
+      "homepage": "https://github.com/daveangulo/twining-mcp",
+      "license": "MIT",
+      "keywords": ["coordination", "multi-agent", "decisions", "blackboard"],
+      "category": "productivity"
+    }
+  ]
+}

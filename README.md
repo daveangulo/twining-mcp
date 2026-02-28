@@ -31,7 +31,8 @@ Twining is an MCP server that gives your AI agents persistent project memory. De
 
 ```
 # Install in 10 seconds
-claude plugin install twining
+/plugin marketplace add daveangulo/twining-mcp
+/plugin install twining@twining-marketplace
 ```
 
 **Record a decision with rationale:**
@@ -72,10 +73,14 @@ Agents self-select into work by reading the blackboard. No central bottleneck. N
 ### Plugin Install (Recommended)
 
 ```bash
-claude plugin install twining
+# Add the marketplace (one-time)
+/plugin marketplace add daveangulo/twining-mcp
+
+# Install the plugin
+/plugin install twining@twining-marketplace
 ```
 
-One step. Includes the MCP server, skills, hooks, and commands. Skills teach Claude when and how to use Twining — everything works automatically.
+Includes the MCP server, 7 skills, lifecycle hooks, coordinator subagent, and commands. Skills teach Claude when and how to use Twining — everything works automatically.
 
 ### Team Auto-Install
 
@@ -83,11 +88,21 @@ Commit this to your repo's `.claude/settings.json` so every team member gets Twi
 
 ```json
 {
+  "extraKnownMarketplaces": {
+    "twining-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "daveangulo/twining-mcp"
+      }
+    }
+  },
   "enabledPlugins": {
-    "twining@daveangulo": true
+    "twining@twining-marketplace": true
   }
 }
 ```
+
+When team members trust the repository folder, Claude Code automatically installs the marketplace and plugin.
 
 ### MCP-Only Install
 
@@ -117,7 +132,7 @@ MCP server instructions are included automatically in the initialize response.
 If you previously configured Twining manually, switch to the plugin:
 
 1. Remove manual MCP server: `claude mcp remove twining`
-2. Install plugin: `claude plugin install twining`
+2. Install plugin: `/plugin marketplace add daveangulo/twining-mcp` then `/plugin install twining@twining-marketplace`
 3. Clean up: remove Twining hooks from `.claude/settings.json`, remove `.claude/agents/twining-aware.md` if present, remove Twining sections from `CLAUDE.md` (skills handle this now)
 4. Keep: `.twining/` directory (all state preserved)
 5. Verify: `/twining:status`
