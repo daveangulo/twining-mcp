@@ -1,0 +1,72 @@
+[
+  {
+    "id": "01KJNK8FWDFKMNZXPKXPWX0XVY",
+    "source": "01KJNK8FWCT292PVRS6WAEVSS2",
+    "target": "01KJNK8FWBGDZ4A1QF5QGCE519",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Use JWT with HttpOnly cookies for stateless session management"
+    },
+    "created_at": "2026-03-01T21:00:54.029Z"
+  },
+  {
+    "id": "01KJNK8FWFMBBRX59XSZ1QPZD2",
+    "source": "01KJNK8FWDFKMNZXPKXPWX0XVZ",
+    "target": "01KJNK8FWBGDZ4A1QF5QGCE519",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Use JWT with HttpOnly cookies for stateless session management"
+    },
+    "created_at": "2026-03-01T21:00:54.031Z"
+  },
+  {
+    "id": "01KJNK8FWG12GWCZWZPJTEMVHW",
+    "source": "01KJNK8FWFMBBRX59XSZ1QPZD3",
+    "target": "01KJNK8FWBGDZ4A1QF5QGCE519",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Use JWT with HttpOnly cookies for stateless session management"
+    },
+    "created_at": "2026-03-01T21:00:54.032Z"
+  },
+  {
+    "id": "01KJNK8W0Q1PRY50AS82Z73S3E",
+    "source": "01KJNK8PJNGJXJH2PW9YBYGDVS",
+    "target": "01KJNK8KMWAMETWVBRNEF34H7D",
+    "type": "imports",
+    "properties": {
+      "description": "AuthRouter uses JwtMiddleware to protect authenticated routes"
+    },
+    "created_at": "2026-03-01T21:01:06.455Z"
+  },
+  {
+    "id": "01KJNK8YSTN160BZ8VMVKZKF4C",
+    "source": "01KJNK8KMWAMETWVBRNEF34H7D",
+    "target": "01KJNK8SD1F9N5WPBBSE3SN1EN",
+    "type": "calls",
+    "properties": {
+      "description": "JwtMiddleware calls verifyToken to validate incoming request tokens"
+    },
+    "created_at": "2026-03-01T21:01:09.306Z"
+  },
+  {
+    "id": "01KJNKBAWH9D8VFGBNYKBB6DTF",
+    "source": "01KJNKBAWGSW2G1P5APMBRD91M",
+    "target": "01KJNKBAWFMME6RYV9CP9AF8Q8",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Password reset via time-limited signed token sent by email"
+    },
+    "created_at": "2026-03-01T21:02:27.217Z"
+  },
+  {
+    "id": "01KJNKBAWJ6BY0N3536CZ8KSHG",
+    "source": "01KJNKBAWJ6BY0N3536CZ8KSHF",
+    "target": "01KJNKBAWFMME6RYV9CP9AF8Q8",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Password reset via time-limited signed token sent by email"
+    },
+    "created_at": "2026-03-01T21:02:27.218Z"
+  }
+]

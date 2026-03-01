@@ -1,0 +1,33 @@
+[
+  {
+    "id": "01KJNK8FTDGXXG0BK4J6S1TZ8J",
+    "timestamp": "2026-03-01T21:00:53.975Z",
+    "domain": "architecture",
+    "scope": "src/auth/",
+    "summary": "Use JWT with HttpOnly cookies for stateless session management",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "src/auth/middleware.ts",
+      "src/auth/router.ts",
+      "src/auth/tokens.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KJNKBATJ2MGDCXYZPYXPW8QH",
+    "timestamp": "2026-03-01T21:02:27.157Z",
+    "domain": "implementation",
+    "scope": "src/auth/reset/",
+    "summary": "Password reset via time-limited signed token sent by email",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "src/auth/reset/handler.ts",
+      "src/auth/reset/email.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "twining": {
+      "command": "node",
+      "args": ["../../../dist/index.js", "--project", "."],
+      "env": {
+        "TWINING_DASHBOARD": "0"
+      }
+    }
+  }
+}

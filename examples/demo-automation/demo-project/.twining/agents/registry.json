@@ -1,0 +1,24 @@
+[
+  {
+    "agent_id": "agent-alpha",
+    "capabilities": [
+      "typescript",
+      "security",
+      "architecture"
+    ],
+    "role": "architect",
+    "registered_at": "2026-03-01T20:58:19.915Z",
+    "last_active": "2026-03-01T20:58:19.915Z"
+  },
+  {
+    "agent_id": "agent-beta",
+    "capabilities": [
+      "typescript",
+      "testing",
+      "implementation"
+    ],
+    "role": "implementer",
+    "registered_at": "2026-03-01T21:01:35.740Z",
+    "last_active": "2026-03-01T21:01:35.740Z"
+  }
+]

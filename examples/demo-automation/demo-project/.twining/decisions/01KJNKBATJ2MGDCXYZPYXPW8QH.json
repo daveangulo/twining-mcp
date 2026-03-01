@@ -1,0 +1,36 @@
+{
+  "agent_id": "agent-beta",
+  "domain": "implementation",
+  "scope": "src/auth/reset/",
+  "summary": "Password reset via time-limited signed token sent by email",
+  "context": "Building password reset flow for the auth module. Agent Alpha completed architecture review and recorded JWT auth decision. Need to implement reset mechanism that aligns with the existing stateless JWT approach.",
+  "rationale": "Reuses the existing JWT infrastructure from the authentication decision. A short-lived signed token (15 min expiry) is sent via email. The token encodes the user ID and a reset nonce. This avoids storing reset state in the database and stays consistent with the stateless JWT architecture.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Database-stored reset codes",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Requires new database table and cleanup job, contradicts stateless architecture"
+    },
+    {
+      "option": "SMS-based reset with OTP",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Adds SMS provider dependency and cost, phone numbers not yet collected"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "src/auth/reset/handler.ts",
+    "src/auth/reset/email.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KJNKBATJ2MGDCXYZPYXPW8QH",
+  "timestamp": "2026-03-01T21:02:27.157Z",
+  "status": "active"
+}

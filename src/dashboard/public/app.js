@@ -29,6 +29,18 @@ var state = {
   sessionEnded: false
 };
 
+/* URL parameter overrides (e.g. ?poll=1000&demo=1 for faster refresh during demos) */
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var poll = parseInt(params.get('poll'), 10);
+  if (poll && poll >= 500 && poll <= 30000) {
+    state.pollInterval = poll;
+  }
+  if (params.get('demo') === '1') {
+    state.demoMode = true;
+  }
+})();
+
 /* ========== Debounce Utility ========== */
 
 function debounce(fn, delay) {
@@ -96,7 +108,8 @@ function updateConnectionIndicator() {
     if (state.wasConnected) {
       state.disconnectCount++;
       // After 3 consecutive failed polls (~9 seconds), show session ended overlay
-      if (state.disconnectCount >= 3 && !state.sessionEnded) {
+      // In demo mode, never show session ended (server restarts between acts)
+      if (state.disconnectCount >= 3 && !state.sessionEnded && !state.demoMode) {
         showSessionEnded();
       }
     }

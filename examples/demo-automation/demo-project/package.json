@@ -1,0 +1,13 @@
+{
+  "name": "twining-demo-app",
+  "version": "1.0.0",
+  "description": "Demo web application for Twining MCP showcase",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "jest"
+  },
+  "keywords": ["demo", "authentication", "twining"],
+  "author": "Twining Demo",
+  "license": "MIT"
+}
