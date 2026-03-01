@@ -33,7 +33,7 @@ You MUST call `twining_verify` on your working scope before telling the user the
 
 ## Twining Coordination — Workflow Details
 
-This project uses [Twining](https://github.com/twining-mcp/twining-mcp) for shared agent coordination. The mandatory gates above define WHEN to use Twining. This section defines HOW.
+This project uses [Twining](https://github.com/daveangulo/twining-mcp) for shared agent coordination. The mandatory gates above define WHEN to use Twining. This section defines HOW.
 
 IMPORTANT: Twining is configured as an MCP server. State lives in `.twining/`, is plain-text, git-diffable, and `jq`-queryable.
 
