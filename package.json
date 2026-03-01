@@ -36,6 +36,9 @@
   ],
   "author": "Dave Angulo",
   "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/daveangulo/twining-mcp.git"

@@ -1293,19 +1293,110 @@
     "name": "package.json",
     "type": "file",
     "properties": {
-      "scope": "examples/demo-automation/playwright/"
+      "scope": "project"
     },
     "created_at": "2026-03-01T18:31:53.339Z",
-    "updated_at": "2026-03-01T18:31:53.339Z"
+    "updated_at": "2026-03-01T22:07:49.946Z"
   },
   {
     "id": "01KJNAQMQZ9DKYRR1SEP2M3HVX",
     "name": ".gitignore",
     "type": "file",
     "properties": {
-      "scope": "examples/demo-automation/playwright/"
+      "scope": "project"
     },
     "created_at": "2026-03-01T18:31:53.343Z",
-    "updated_at": "2026-03-01T18:31:53.343Z"
+    "updated_at": "2026-03-01T22:07:49.954Z"
+  },
+  {
+    "id": "01KJNQ31NR18P45SPBTJ0EG9Z2",
+    "name": "01KJNQ31D5AQ8QCM8VY75P27GA",
+    "type": "concept",
+    "properties": {
+      "summary": "Add standard open source community files for public announcement readiness",
+      "scope": "project"
+    },
+    "created_at": "2026-03-01T22:07:49.944Z",
+    "updated_at": "2026-03-01T22:07:49.944Z"
+  },
+  {
+    "id": "01KJNQ31NXFQNGNB6TH18JJGGZ",
+    "name": ".twining/config.yml",
+    "type": "file",
+    "properties": {
+      "scope": "project"
+    },
+    "created_at": "2026-03-01T22:07:49.949Z",
+    "updated_at": "2026-03-01T22:07:49.949Z"
+  },
+  {
+    "id": "01KJNQ31P4CWQVHCYFCJS26V7N",
+    "name": "CONTRIBUTING.md",
+    "type": "file",
+    "properties": {
+      "scope": "project"
+    },
+    "created_at": "2026-03-01T22:07:49.956Z",
+    "updated_at": "2026-03-01T22:07:49.956Z"
+  },
+  {
+    "id": "01KJNQ31P8YDS2D8VBAR2Z7MYK",
+    "name": "SECURITY.md",
+    "type": "file",
+    "properties": {
+      "scope": "project"
+    },
+    "created_at": "2026-03-01T22:07:49.960Z",
+    "updated_at": "2026-03-01T22:07:49.960Z"
+  },
+  {
+    "id": "01KJNQ31PCAY0NA5625N5FRC1E",
+    "name": "CODE_OF_CONDUCT.md",
+    "type": "file",
+    "properties": {
+      "scope": "project"
+    },
+    "created_at": "2026-03-01T22:07:49.964Z",
+    "updated_at": "2026-03-01T22:07:49.964Z"
+  },
+  {
+    "id": "01KJNQ31PGFZY8KEKNE6M12TQZ",
+    "name": ".github/ISSUE_TEMPLATE/bug_report.yml",
+    "type": "file",
+    "properties": {
+      "scope": "project"
+    },
+    "created_at": "2026-03-01T22:07:49.968Z",
+    "updated_at": "2026-03-01T22:07:49.968Z"
+  },
+  {
+    "id": "01KJNQ31PJEED6T72T9NZX4XNX",
+    "name": ".github/ISSUE_TEMPLATE/feature_request.yml",
+    "type": "file",
+    "properties": {
+      "scope": "project"
+    },
+    "created_at": "2026-03-01T22:07:49.970Z",
+    "updated_at": "2026-03-01T22:07:49.970Z"
+  },
+  {
+    "id": "01KJNQ31PMDAM8507ZQ4BY930F",
+    "name": ".github/ISSUE_TEMPLATE/config.yml",
+    "type": "file",
+    "properties": {
+      "scope": "project"
+    },
+    "created_at": "2026-03-01T22:07:49.972Z",
+    "updated_at": "2026-03-01T22:07:49.972Z"
+  },
+  {
+    "id": "01KJNQ31PNMDNNAB83SE0H3942",
+    "name": ".github/PULL_REQUEST_TEMPLATE.md",
+    "type": "file",
+    "properties": {
+      "scope": "project"
+    },
+    "created_at": "2026-03-01T22:07:49.973Z",
+    "updated_at": "2026-03-01T22:07:49.973Z"
   }
 ]

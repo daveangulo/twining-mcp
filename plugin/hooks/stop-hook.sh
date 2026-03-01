@@ -18,7 +18,9 @@ REASON="Session complete"
 
 if [[ -n "$TRANSCRIPT_PATH" ]] && [[ -f "$TRANSCRIPT_PATH" ]]; then
   # Find line number of last code change (Edit, Write, NotebookEdit tool calls)
-  LAST_EDIT=$(grep -n '"Edit"\|"Write"\|"NotebookEdit"' "$TRANSCRIPT_PATH" 2>/dev/null | tail -1 | cut -d: -f1) || LAST_EDIT=0
+  # Pattern matches the exact JSON structure: "name":"Edit","input" to avoid
+  # false positives from subagent output or planning text that mentions tool names.
+  LAST_EDIT=$(grep -n '"name":"Edit","input"\|"name":"Write","input"\|"name":"NotebookEdit","input"' "$TRANSCRIPT_PATH" 2>/dev/null | tail -1 | cut -d: -f1) || LAST_EDIT=0
   LAST_EDIT=${LAST_EDIT:-0}
 
   # Find line number of last Twining recording tool call

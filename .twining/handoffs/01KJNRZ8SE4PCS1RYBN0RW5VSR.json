@@ -1,0 +1,142 @@
+{
+  "source_agent": "main",
+  "summary": "Open source readiness: 3/10 items done, 7 community files remaining, plus hook bugfix",
+  "results": [
+    {
+      "description": "Added engines field to package.json (node >=18)",
+      "status": "completed",
+      "artifacts": [
+        "package.json"
+      ]
+    },
+    {
+      "description": "Fixed telemetry default in .twining/config.yml (enabled: true → false)",
+      "status": "completed",
+      "artifacts": [
+        ".twining/config.yml"
+      ]
+    },
+    {
+      "description": "Added *.png, *.mp4, .vscode/ patterns to .gitignore with !assets/** exclusion",
+      "status": "completed",
+      "artifacts": [
+        ".gitignore"
+      ]
+    },
+    {
+      "description": "Fixed stop hook false positive: grep pattern now uses '\"name\":\"Edit\",\"input\"' to match actual tool_use JSON structure instead of bare '\"Edit\"' which matched subagent output and planning text",
+      "status": "completed",
+      "artifacts": [
+        "plugin/hooks/stop-hook.sh"
+      ],
+      "notes": "Copied fix to all installed locations. Requires new session to take effect."
+    },
+    {
+      "description": "Create 7 community files: CONTRIBUTING.md, SECURITY.md, CODE_OF_CONDUCT.md, .github/ISSUE_TEMPLATE/bug_report.yml, .github/ISSUE_TEMPLATE/feature_request.yml, .github/ISSUE_TEMPLATE/config.yml, .github/PULL_REQUEST_TEMPLATE.md",
+      "status": "partial",
+      "notes": "Directory .github/ISSUE_TEMPLATE/ already created. No files written yet. Use plan from transcript 75650ecc for content specs: dave@daveangulo.com for CoC contact, Contributor Covenant v2.1, 48h ack / 14d resolution for security, plugin version bump rule in CONTRIBUTING.md and PR template."
+    },
+    {
+      "description": "Verify build and tests pass after all changes",
+      "status": "partial",
+      "notes": "Run npm test && npm run build to confirm"
+    }
+  ],
+  "context_snapshot": {
+    "decision_ids": [
+      "01KHMSENMNZPHBFAV1P6V50RXA",
+      "01KHMSETGFP24CH93J2R7KC97A",
+      "01KHMSEXTVQSX1G92H6MR82QVG",
+      "01KHMSF111C2M13V2EM2H91G5E",
+      "01KHMSF83J0CN3599E4681ER6A",
+      "01KHMV0F547RBYZ2854EFTM3ZC",
+      "01KHN3H7GHVWN89R1WVCHANX2V",
+      "01KHN3H8FYSQERBRD2D2W6RK7Y",
+      "01KHN6335P4AVW0ADGVXE30V84",
+      "01KHQ0ZRG9Q5ZFJVAG0DHCWD4A",
+      "01KHQ18BXCJN5HYHBXJ57HHCWQ",
+      "01KHT3PGQRF5H019Y1M7DEYJRH",
+      "01KHT8ZWWCYYH31N4DXZA08H1R",
+      "01KHW8KE6TG4B54G85CV67VHZK",
+      "01KHWFFQ7PAPJSPTDK10C3PAR2",
+      "01KHWFSYQ88K7YE5XED2V5P38B",
+      "01KHXTWYETCEF91HQD0HMA2SG4",
+      "01KHXTX64263644BDF1JDRFD30",
+      "01KHXTXC89M8MN7KZ34MG75JWK",
+      "01KHXTXPM9EVV02HGF8X0V6ZYX",
+      "01KJC68KWE17FYM6D111ZD4PVM",
+      "01KJD595ETVSHV91ZBGRKPWWZY",
+      "01KJD8KGC5ZCFNQD5KETTQ32YH",
+      "01KJDWTR95TCGQR2S0X2G86TT7",
+      "01KJDZA8MSNPEYHRRSDHQ89EWQ",
+      "01KJGX8KGYVHZZWY92KTDM4RK3",
+      "01KJJ3KQG24Y0365NBFWXX129W",
+      "01KJJ8J83J8E76TTQG8NTC0Q7G",
+      "01KJJAP0N95VJ7YTNDCGH5DX7B",
+      "01KJJGD37CDKWQE5VFJYW8DGFR",
+      "01KJJSJT5XEWWY7AXY29KBCS6N",
+      "01KJN72BCCSJT7W5N0KNN9K25B"
+    ],
+    "warning_ids": [
+      "01KJDWTR97DT2FT95MSQ1NNY99",
+      "01KJJ340TBCN261Y1BVQM5N2A9",
+      "01KJJ348GMPW6Y275CH60Y2G9T",
+      "01KJJ34D0CM5HJF75BSEXMZEJ7",
+      "01KJJ8J9H5THX304XBE3DJPGQ7",
+      "01KJJAZEHZZP3ESNE22P3JJDQ7",
+      "01KJJCBK8KV0Y00ZENDZ540GKF",
+      "01KJJE3F883V0V8BXM8QN1R1B7",
+      "01KJJZFSFX25D04MFWRTZTSAYJ",
+      "01KJKCCSEQVTJGYNNG7CSP32YQ",
+      "01KJNAQMDGTTDBTFP1QXP1M4PY",
+      "01KJNQ31DHW4SFHRNNWEJQ9V0V"
+    ],
+    "finding_ids": [
+      "01KHMSFFVYER2FTZW8RPJPGCVN",
+      "01KHMSFKJ906YFEG10VHQ0CWBY",
+      "01KHMSFPNQYZBK592NX79MK12R",
+      "01KHMSFRZ42E9A2X0WTM3HY96C",
+      "01KHMSFW4C40C3Y72ESDG5N54E",
+      "01KHMSFZ6SP8RJ4674FXWB2CTE",
+      "01KHMV0A437X10W43V90VYBCB9",
+      "01KHN4N0NZTN77WDK5NK74BFYD",
+      "01KHXT4KVT3QX76XGTGVVN25ED",
+      "01KJD6NKAPB5KXHW5TQMFRFA3V",
+      "01KJD6VJ6QH9WMG8H59QJH69YM",
+      "01KJD6XBM7342DVQC0BSPK0AMG",
+      "01KJDX17CGTTQXXEJXZ9T9BSGE",
+      "01KJDZABT4MPD09WSCJZB9BPWC",
+      "01KJGXVEK588601JT3CB5JQ7XZ",
+      "01KJJ8JRMR78GQZA5DKKYV2BXY",
+      "01KJJ8JZ4X94SGYHVG9BX0MV97",
+      "01KJJCC0PKS39AP70XP4ACFF55",
+      "01KJJE4JS3CBBQN8VC1PDVNPRN",
+      "01KJJJR641HG59KR2H2K0W2SGM",
+      "01KJJJR70PWVZPPRASTEGQ4T09",
+      "01KJJZJPMGZ7GFTAPT8AG8YQK3",
+      "01KJKCD75A0TDDCX0AC8HJCR2C",
+      "01KJN5QX94HX94BZ3RZ97QFDAN",
+      "01KJNAQVRTSE2X2292W7YH0HZQ",
+      "01KJNHQVYCH7K4VHDSZK5JN244",
+      "01KJNJE61CKTS9HP29VZQBNFP4",
+      "01KJNK19YGBHC073ASH4MTC7N5",
+      "01KJNQHG2ZTBAG5V0T9BTAP7N2",
+      "01KJNRN5ZT71AWCG8KDV97NSX1"
+    ],
+    "summaries": [
+      "Decision: Use blackboard pattern for agent coordination instead of pipeline/message-passing",
+      "Decision: All state stored as .jsonl and .json files in .twining/ directory — no external databases",
+      "Decision: Embeddings must be lazy-loaded and fall back gracefully to keyword search if ONNX/transformers fails",
+      "Decision: Use ULIDs for all entity IDs — temporally sortable, globally unique",
+      "Decision: Decisions track commit hashes to link architectural choices to git history",
+      "Warning: PostHog API key exposed in git history — needs rotation",
+      "Warning: Potential conflict: new decision may conflict with 1 existing decision(s)",
+      "Warning: Potential conflict: new decision may conflict with 1 existing decision(s)",
+      "Finding: v1.0 milestone complete — all 3 phases shipped (storage+engine, embeddings+context, graph+lifecycle)",
+      "Finding: v1.1 milestone in progress — commit hash linking implemented (phase 4), further phases TBD",
+      "Finding: 22 MCP tools exposed: 4 blackboard, 4 decision, 3 context, 4 graph, 4 lifecycle, plus twining_commits"
+    ]
+  },
+  "id": "01KJNRZ8SE4PCS1RYBN0RW5VSR",
+  "created_at": "2026-03-01T22:40:43.312Z"
+}

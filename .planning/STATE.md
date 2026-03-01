@@ -69,6 +69,17 @@ All decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Fix Stop hook to return required JSON decision format for Claude Code validation
 - Pure bash version bump script with sed for plugin version management
 - CI job to enforce plugin version bumps on PRs that change plugin/ files
+- Skip ONNX embedding initialization in test environment via process.env.VITEST check
+- Stop hook uses line-number comparison for per-commit Twining coverage instead of session-wide counts
+- Fix timeline zoom by changing overflow:auto to overflow:hidden and add zoom controls toolbar
+- Replace search bar multi-select with toggle chips, add search icon, and style filters to match toolbar design language
+- Add Stream View as alternate visualization for Blackboard tab
+- Add twining_register MCP tool and subagent coordination integration (dispatch skill, SubagentStop hook, aware-worker agent)
+- Include projectRoot in health endpoint to distinguish same-project vs different-project dashboard instances
+- Demo uses claude -p with explicit tool-call prompts for deterministic behavior
+- Separate persistent dashboard server from claude -p tool processes for demo recordings
+- Implement Playwright-based demo orchestrator replacing manual shell + tab-switching workflow
+- Add standard open source community files for public announcement readiness
 
 ### Pending Todos
 

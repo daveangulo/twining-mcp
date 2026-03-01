@@ -731,5 +731,28 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KJNQ31D5AQ8QCM8VY75P27GA",
+    "timestamp": "2026-03-01T22:07:49.671Z",
+    "domain": "architecture",
+    "scope": "project",
+    "summary": "Add standard open source community files for public announcement readiness",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      "package.json",
+      ".twining/config.yml",
+      ".gitignore",
+      "CONTRIBUTING.md",
+      "SECURITY.md",
+      "CODE_OF_CONDUCT.md",
+      ".github/ISSUE_TEMPLATE/bug_report.yml",
+      ".github/ISSUE_TEMPLATE/feature_request.yml",
+      ".github/ISSUE_TEMPLATE/config.yml",
+      ".github/PULL_REQUEST_TEMPLATE.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]

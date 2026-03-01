@@ -1396,5 +1396,105 @@
       "decision_summary": "Implement Playwright-based demo orchestrator replacing manual shell + tab-switching workflow"
     },
     "created_at": "2026-03-01T18:31:53.351Z"
+  },
+  {
+    "id": "01KJNQ31NWEVXCZ8NTK19VCSX4",
+    "source": "01KJNAQMQVGD3TWE905M4KZ1ST",
+    "target": "01KJNQ31NR18P45SPBTJ0EG9Z2",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add standard open source community files for public announcement readiness"
+    },
+    "created_at": "2026-03-01T22:07:49.948Z"
+  },
+  {
+    "id": "01KJNQ31P0D793V2712W7KEG76",
+    "source": "01KJNQ31NXFQNGNB6TH18JJGGZ",
+    "target": "01KJNQ31NR18P45SPBTJ0EG9Z2",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add standard open source community files for public announcement readiness"
+    },
+    "created_at": "2026-03-01T22:07:49.952Z"
+  },
+  {
+    "id": "01KJNQ31P3T7Y9TWFGQ99Q6RP7",
+    "source": "01KJNAQMQZ9DKYRR1SEP2M3HVX",
+    "target": "01KJNQ31NR18P45SPBTJ0EG9Z2",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add standard open source community files for public announcement readiness"
+    },
+    "created_at": "2026-03-01T22:07:49.955Z"
+  },
+  {
+    "id": "01KJNQ31P6KPB669X6HMST2MFP",
+    "source": "01KJNQ31P4CWQVHCYFCJS26V7N",
+    "target": "01KJNQ31NR18P45SPBTJ0EG9Z2",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add standard open source community files for public announcement readiness"
+    },
+    "created_at": "2026-03-01T22:07:49.958Z"
+  },
+  {
+    "id": "01KJNQ31PA9SAEG6M28W542DC9",
+    "source": "01KJNQ31P8YDS2D8VBAR2Z7MYK",
+    "target": "01KJNQ31NR18P45SPBTJ0EG9Z2",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add standard open source community files for public announcement readiness"
+    },
+    "created_at": "2026-03-01T22:07:49.962Z"
+  },
+  {
+    "id": "01KJNQ31PEKTJCD21S9WVHSH4E",
+    "source": "01KJNQ31PCAY0NA5625N5FRC1E",
+    "target": "01KJNQ31NR18P45SPBTJ0EG9Z2",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add standard open source community files for public announcement readiness"
+    },
+    "created_at": "2026-03-01T22:07:49.966Z"
+  },
+  {
+    "id": "01KJNQ31PHQQWKYPTERM2NJ6QY",
+    "source": "01KJNQ31PGFZY8KEKNE6M12TQZ",
+    "target": "01KJNQ31NR18P45SPBTJ0EG9Z2",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add standard open source community files for public announcement readiness"
+    },
+    "created_at": "2026-03-01T22:07:49.969Z"
+  },
+  {
+    "id": "01KJNQ31PK1NX7001NQD7DNAXD",
+    "source": "01KJNQ31PJEED6T72T9NZX4XNX",
+    "target": "01KJNQ31NR18P45SPBTJ0EG9Z2",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add standard open source community files for public announcement readiness"
+    },
+    "created_at": "2026-03-01T22:07:49.971Z"
+  },
+  {
+    "id": "01KJNQ31PNMDNNAB83SE0H3941",
+    "source": "01KJNQ31PMDAM8507ZQ4BY930F",
+    "target": "01KJNQ31NR18P45SPBTJ0EG9Z2",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add standard open source community files for public announcement readiness"
+    },
+    "created_at": "2026-03-01T22:07:49.973Z"
+  },
+  {
+    "id": "01KJNQ31PP3F8G1TFV1B0K3N40",
+    "source": "01KJNQ31PNMDNNAB83SE0H3942",
+    "target": "01KJNQ31NR18P45SPBTJ0EG9Z2",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Add standard open source community files for public announcement readiness"
+    },
+    "created_at": "2026-03-01T22:07:49.974Z"
   }
 ]

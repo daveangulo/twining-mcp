@@ -15,4 +15,4 @@ context_assembly:
 conflict_resolution: human
 analytics:
   telemetry:
-    enabled: true
+    enabled: false

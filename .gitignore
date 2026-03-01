@@ -24,3 +24,11 @@ src/analytics/_generated-posthog-key.ts
 
 demo
 examples/demo-automation/recordings/*.webm
+
+# Screenshots and media (keep assets/ tracked)
+*.png
+*.mp4
+!assets/**
+
+# Editor config
+.vscode/

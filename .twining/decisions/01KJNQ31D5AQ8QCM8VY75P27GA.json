@@ -1,0 +1,44 @@
+{
+  "agent_id": "main",
+  "domain": "architecture",
+  "scope": "project",
+  "summary": "Add standard open source community files for public announcement readiness",
+  "context": "Twining is preparing for public announcement. GitHub community standards files are missing.",
+  "rationale": "GitHub community standards require CONTRIBUTING.md, SECURITY.md, CODE_OF_CONDUCT.md, issue templates, and PR template. Also fixing telemetry default contradiction and adding engines field.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Skip community files, add later",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Blocks public announcement readiness"
+    },
+    {
+      "option": "Use minimal stubs",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Full files are needed for GitHub community standards score"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "package.json",
+    ".twining/config.yml",
+    ".gitignore",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "CODE_OF_CONDUCT.md",
+    ".github/ISSUE_TEMPLATE/bug_report.yml",
+    ".github/ISSUE_TEMPLATE/feature_request.yml",
+    ".github/ISSUE_TEMPLATE/config.yml",
+    ".github/PULL_REQUEST_TEMPLATE.md"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": false,
+  "id": "01KJNQ31D5AQ8QCM8VY75P27GA",
+  "timestamp": "2026-03-01T22:07:49.671Z",
+  "status": "provisional"
+}
