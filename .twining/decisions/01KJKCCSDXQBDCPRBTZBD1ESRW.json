@@ -1,0 +1,37 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "examples/demo-automation/",
+  "summary": "Demo uses claude -p with explicit tool-call prompts for deterministic behavior",
+  "context": "Building a live demo video infrastructure for the 2-Agent Handoff narrative. Need each act to reliably produce specific Twining tool calls with exact parameters.",
+  "rationale": "Each claude -p prompt explicitly lists the tool calls and parameters the agent should execute. This ensures deterministic, reproducible demo runs — the agent doesn't need to reason about what to do, it just executes the prescribed calls. The alternative of letting the agent explore freely would produce inconsistent results across recordings.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Let agents explore freely with open-ended prompts",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Non-deterministic — each run would produce different findings, decisions, and graph entries, making recording unpredictable"
+    },
+    {
+      "option": "Pre-populate .twining/ state directly without running agents",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Loses the live demonstration aspect — the whole point is showing agents interacting with Twining tools in real time"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "examples/demo-automation/run-live-demo.sh",
+    "examples/demo-automation/reset-demo.sh",
+    "examples/demo-automation/RECORDING_GUIDE.md"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": false,
+  "id": "01KJKCCSDXQBDCPRBTZBD1ESRW",
+  "timestamp": "2026-03-01T00:22:25.991Z",
+  "status": "provisional"
+}

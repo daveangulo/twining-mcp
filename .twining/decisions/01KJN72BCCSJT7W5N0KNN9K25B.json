@@ -1,0 +1,37 @@
+{
+  "agent_id": "main",
+  "domain": "architecture",
+  "scope": "examples/demo-automation/",
+  "summary": "Separate persistent dashboard server from claude -p tool processes for demo recordings",
+  "context": "Each claude -p call starts/stops its own MCP server. Between acts the server dies, dashboard detects disconnect, and shows Session Ended overlay. Even with demo mode suppressing the overlay, having the dashboard restart 4 times is messy.",
+  "rationale": "A standalone start-dashboard.sh runs one persistent MCP server for the dashboard HTTP endpoint. The claude -p processes disable their dashboard entirely (TWINING_DASHBOARD=0). Both read/write the same .twining/ files on disk. Dashboard stays live the whole time, no port conflicts, no reconnect flicker.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Keep dashboard embedded in each claude -p process",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Server restarts between acts cause disconnect/reconnect flicker and risk Session Ended overlay"
+    },
+    {
+      "option": "Single long-running claude session instead of separate -p calls",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Loses the narrative of separate agent sessions which is the core demo story"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "examples/demo-automation/start-dashboard.sh",
+    "examples/demo-automation/demo-project/.mcp.json",
+    "examples/demo-automation/run-live-demo.sh"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": false,
+  "id": "01KJN72BCCSJT7W5N0KNN9K25B",
+  "timestamp": "2026-03-01T17:27:49.901Z",
+  "status": "active"
+}

@@ -18,7 +18,9 @@
     "build": "tsc",
     "postbuild": "rm -rf dist/dashboard/public && cp -r src/dashboard/public dist/dashboard/public",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "demo:record": "npx tsx examples/demo-automation/playwright/record-demo.ts",
+    "demo:record:pause": "DEMO_PAUSE=1 npx tsx examples/demo-automation/playwright/record-demo.ts"
   },
   "keywords": [
     "mcp",
@@ -56,6 +58,7 @@
     "posthog-node": "^4.18.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.52.0",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^25.2.3",
     "@types/proper-lockfile": "^4.1.4",

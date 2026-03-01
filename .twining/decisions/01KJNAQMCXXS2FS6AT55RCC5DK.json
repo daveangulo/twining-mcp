@@ -1,0 +1,47 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "examples/demo-automation/playwright/",
+  "summary": "Implement Playwright-based demo orchestrator replacing manual shell + tab-switching workflow",
+  "context": "The shell-based demo (run-live-demo.sh) requires manual dashboard tab switching and can't show task overlays on screen. Need an all-in-one automated recording solution.",
+  "rationale": "Playwright provides headless/headed browser control with built-in video recording, DOM injection for overlays, and programmatic tab/view switching. Using tsx for direct TypeScript execution avoids a separate build step. Data-driven tab switching (polling stat elements) is more reliable than hardcoded delays since claude -p execution time varies.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Puppeteer + ffmpeg screen capture",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "No built-in video recording; would need separate screen capture tool and more complex setup"
+    },
+    {
+      "option": "Cypress component testing framework",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Designed for testing, not orchestration; heavier setup, no child_process spawning pattern"
+    },
+    {
+      "option": "Enhance shell script with AppleScript for tab switching",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "macOS-only, fragile browser automation, no overlay injection capability"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "examples/demo-automation/playwright/record-demo.ts",
+    "examples/demo-automation/playwright/overlays.ts",
+    "examples/demo-automation/playwright/acts.ts",
+    "examples/demo-automation/playwright/claude-runner.ts",
+    "package.json",
+    ".gitignore",
+    "examples/demo-automation/RECORDING_GUIDE.md"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": false,
+  "id": "01KJNAQMCXXS2FS6AT55RCC5DK",
+  "timestamp": "2026-03-01T18:31:52.993Z",
+  "status": "provisional"
+}

@@ -1216,5 +1216,185 @@
       "decision_summary": "Add twining_register MCP tool and subagent coordination integration (dispatch skill, SubagentStop hook, aware-worker agent)"
     },
     "created_at": "2026-02-28T18:53:41.010Z"
+  },
+  {
+    "id": "01KJJZFT4C6D0GDSS82EZX96KT",
+    "source": "01KJJ341TGMA86K2CA4W55S7BP",
+    "target": "01KJJZFT4ACHRMHKM2NZR475YR",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Include projectRoot in health endpoint to distinguish same-project vs different-project dashboard instances"
+    },
+    "created_at": "2026-02-28T20:36:53.516Z"
+  },
+  {
+    "id": "01KJJZFT4EZ3Z3E10D6NCKZ59J",
+    "source": "01KJJZFT4DV91M466VCKNPWGWH",
+    "target": "01KJJZFT4ACHRMHKM2NZR475YR",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Include projectRoot in health endpoint to distinguish same-project vs different-project dashboard instances"
+    },
+    "created_at": "2026-02-28T20:36:53.518Z"
+  },
+  {
+    "id": "01KJJZFT4ME5KGB0WXZAM8J3T4",
+    "source": "01KJJ348MAD3BGG1YPX0K0G360",
+    "target": "01KJJZFT4ACHRMHKM2NZR475YR",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Include projectRoot in health endpoint to distinguish same-project vs different-project dashboard instances"
+    },
+    "created_at": "2026-02-28T20:36:53.524Z"
+  },
+  {
+    "id": "01KJJZFT4XEDXDMSYRWTCXEAS3",
+    "source": "01KJJZFT4VWQDW350EXGMDXWB6",
+    "target": "01KJJZFT4ACHRMHKM2NZR475YR",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Include projectRoot in health endpoint to distinguish same-project vs different-project dashboard instances"
+    },
+    "created_at": "2026-02-28T20:36:53.533Z"
+  },
+  {
+    "id": "01KJJZFT4ZZP68M0HBHJVJAH32",
+    "source": "01KJJ348MECV5069M9Q5EWVS3Z",
+    "target": "01KJJZFT4ACHRMHKM2NZR475YR",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Include projectRoot in health endpoint to distinguish same-project vs different-project dashboard instances"
+    },
+    "created_at": "2026-02-28T20:36:53.535Z"
+  },
+  {
+    "id": "01KJKCCSXS87ZQABNEPBPCT949",
+    "source": "01KJKCCSXR6809D8SKVR2QGKMG",
+    "target": "01KJKCCSXQVHPP6G6X6G37WFC8",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Demo uses claude -p with explicit tool-call prompts for deterministic behavior"
+    },
+    "created_at": "2026-03-01T00:22:26.489Z"
+  },
+  {
+    "id": "01KJKCCSXWVN5HXYV30BQMTFKQ",
+    "source": "01KJKCCSXV3RRYQ7988BXM25AJ",
+    "target": "01KJKCCSXQVHPP6G6X6G37WFC8",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Demo uses claude -p with explicit tool-call prompts for deterministic behavior"
+    },
+    "created_at": "2026-03-01T00:22:26.492Z"
+  },
+  {
+    "id": "01KJKCCSY1C62W5BZN2Z6T30XZ",
+    "source": "01KJKCCSXY8KZ7WRPW0RMG06E2",
+    "target": "01KJKCCSXQVHPP6G6X6G37WFC8",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Demo uses claude -p with explicit tool-call prompts for deterministic behavior"
+    },
+    "created_at": "2026-03-01T00:22:26.497Z"
+  },
+  {
+    "id": "01KJN72BHA1XTQP53WN6C56YYQ",
+    "source": "01KJN72BH7S8HZQ4T7J9HYETTF",
+    "target": "01KJN72BH4VWH330PZFNFVKNAY",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Separate persistent dashboard server from claude -p tool processes for demo recordings"
+    },
+    "created_at": "2026-03-01T17:27:50.058Z"
+  },
+  {
+    "id": "01KJN72BHDM0H87W4JNN8N6Z3G",
+    "source": "01KJN72BHBB32M93HM56AZ5E15",
+    "target": "01KJN72BH4VWH330PZFNFVKNAY",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Separate persistent dashboard server from claude -p tool processes for demo recordings"
+    },
+    "created_at": "2026-03-01T17:27:50.061Z"
+  },
+  {
+    "id": "01KJN72BHGDQG6ZGVD0CY9NQKK",
+    "source": "01KJKCCSXR6809D8SKVR2QGKMG",
+    "target": "01KJN72BH4VWH330PZFNFVKNAY",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Separate persistent dashboard server from claude -p tool processes for demo recordings"
+    },
+    "created_at": "2026-03-01T17:27:50.064Z"
+  },
+  {
+    "id": "01KJNAQMQJHX5SJJXGJJGWCAYS",
+    "source": "01KJNAQMQGRDTJFFM634XVSN2S",
+    "target": "01KJNAQMQF3JE1T8102P2BBK9D",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Implement Playwright-based demo orchestrator replacing manual shell + tab-switching workflow"
+    },
+    "created_at": "2026-03-01T18:31:53.331Z"
+  },
+  {
+    "id": "01KJNAQMQNZTN4J3PN98WBMPWV",
+    "source": "01KJNAQMQM5Y791WPAZM603DJX",
+    "target": "01KJNAQMQF3JE1T8102P2BBK9D",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Implement Playwright-based demo orchestrator replacing manual shell + tab-switching workflow"
+    },
+    "created_at": "2026-03-01T18:31:53.333Z"
+  },
+  {
+    "id": "01KJNAQMQQQC85G3F4CWGWT3YJ",
+    "source": "01KJNAQMQPAS825BBE6VXPDYZQ",
+    "target": "01KJNAQMQF3JE1T8102P2BBK9D",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Implement Playwright-based demo orchestrator replacing manual shell + tab-switching workflow"
+    },
+    "created_at": "2026-03-01T18:31:53.335Z"
+  },
+  {
+    "id": "01KJNAQMQSRRB9BXQVGBBTMSA0",
+    "source": "01KJNAQMQQQC85G3F4CWGWT3YK",
+    "target": "01KJNAQMQF3JE1T8102P2BBK9D",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Implement Playwright-based demo orchestrator replacing manual shell + tab-switching workflow"
+    },
+    "created_at": "2026-03-01T18:31:53.337Z"
+  },
+  {
+    "id": "01KJNAQMQY164SFDR8F4QV0PZS",
+    "source": "01KJNAQMQVGD3TWE905M4KZ1ST",
+    "target": "01KJNAQMQF3JE1T8102P2BBK9D",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Implement Playwright-based demo orchestrator replacing manual shell + tab-switching workflow"
+    },
+    "created_at": "2026-03-01T18:31:53.342Z"
+  },
+  {
+    "id": "01KJNAQMR2AM5TKZDRJMM27FS3",
+    "source": "01KJNAQMQZ9DKYRR1SEP2M3HVX",
+    "target": "01KJNAQMQF3JE1T8102P2BBK9D",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Implement Playwright-based demo orchestrator replacing manual shell + tab-switching workflow"
+    },
+    "created_at": "2026-03-01T18:31:53.347Z"
+  },
+  {
+    "id": "01KJNAQMR7T6EBH5J03X3F61RY",
+    "source": "01KJKCCSXY8KZ7WRPW0RMG06E2",
+    "target": "01KJNAQMQF3JE1T8102P2BBK9D",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Implement Playwright-based demo orchestrator replacing manual shell + tab-switching workflow"
+    },
+    "created_at": "2026-03-01T18:31:53.351Z"
   }
 ]

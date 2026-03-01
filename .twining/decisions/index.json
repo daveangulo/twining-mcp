@@ -679,5 +679,57 @@
       "startDashboard"
     ],
     "commit_hashes": []
+  },
+  {
+    "id": "01KJKCCSDXQBDCPRBTZBD1ESRW",
+    "timestamp": "2026-03-01T00:22:25.991Z",
+    "domain": "implementation",
+    "scope": "examples/demo-automation/",
+    "summary": "Demo uses claude -p with explicit tool-call prompts for deterministic behavior",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      "examples/demo-automation/run-live-demo.sh",
+      "examples/demo-automation/reset-demo.sh",
+      "examples/demo-automation/RECORDING_GUIDE.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KJN72BCCSJT7W5N0KNN9K25B",
+    "timestamp": "2026-03-01T17:27:49.901Z",
+    "domain": "architecture",
+    "scope": "examples/demo-automation/",
+    "summary": "Separate persistent dashboard server from claude -p tool processes for demo recordings",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "examples/demo-automation/start-dashboard.sh",
+      "examples/demo-automation/demo-project/.mcp.json",
+      "examples/demo-automation/run-live-demo.sh"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KJNAQMCXXS2FS6AT55RCC5DK",
+    "timestamp": "2026-03-01T18:31:52.993Z",
+    "domain": "implementation",
+    "scope": "examples/demo-automation/playwright/",
+    "summary": "Implement Playwright-based demo orchestrator replacing manual shell + tab-switching workflow",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      "examples/demo-automation/playwright/record-demo.ts",
+      "examples/demo-automation/playwright/overlays.ts",
+      "examples/demo-automation/playwright/acts.ts",
+      "examples/demo-automation/playwright/claude-runner.ts",
+      "package.json",
+      ".gitignore",
+      "examples/demo-automation/RECORDING_GUIDE.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]

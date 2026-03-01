@@ -801,7 +801,7 @@
       "scope": "src/dashboard/http-server.ts"
     },
     "created_at": "2026-02-28T12:21:08.048Z",
-    "updated_at": "2026-02-28T12:21:15.013Z"
+    "updated_at": "2026-02-28T20:36:53.515Z"
   },
   {
     "id": "01KJJ348M37630Q0SKPMZYGSAK",
@@ -822,7 +822,7 @@
       "scope": "src/dashboard/http-server.ts"
     },
     "created_at": "2026-02-28T12:21:15.018Z",
-    "updated_at": "2026-02-28T12:21:15.018Z"
+    "updated_at": "2026-02-28T20:36:53.521Z"
   },
   {
     "id": "01KJJ348MECV5069M9Q5EWVS3Z",
@@ -832,7 +832,7 @@
       "scope": "src/dashboard/http-server.ts"
     },
     "created_at": "2026-02-28T12:21:15.022Z",
-    "updated_at": "2026-02-28T12:21:15.022Z"
+    "updated_at": "2026-02-28T20:36:53.534Z"
   },
   {
     "id": "01KJJ34D4PHBXWY78VTZTNGX0V",
@@ -1133,5 +1133,179 @@
     },
     "created_at": "2026-02-28T18:53:41.009Z",
     "updated_at": "2026-02-28T18:53:41.009Z"
+  },
+  {
+    "id": "01KJJZFT4ACHRMHKM2NZR475YR",
+    "name": "01KJJZFSFB5CD2Q804A0HGJCMB",
+    "type": "concept",
+    "properties": {
+      "summary": "Include projectRoot in health endpoint to distinguish same-project vs different-project dashboard instances",
+      "scope": "src/dashboard/http-server.ts"
+    },
+    "created_at": "2026-02-28T20:36:53.514Z",
+    "updated_at": "2026-02-28T20:36:53.514Z"
+  },
+  {
+    "id": "01KJJZFT4DV91M466VCKNPWGWH",
+    "name": "test/dashboard/http-server.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/dashboard/http-server.ts"
+    },
+    "created_at": "2026-02-28T20:36:53.517Z",
+    "updated_at": "2026-02-28T20:36:53.517Z"
+  },
+  {
+    "id": "01KJJZFT4VWQDW350EXGMDXWB6",
+    "name": "handleRequest",
+    "type": "function",
+    "properties": {
+      "scope": "src/dashboard/http-server.ts"
+    },
+    "created_at": "2026-02-28T20:36:53.531Z",
+    "updated_at": "2026-02-28T20:36:53.531Z"
+  },
+  {
+    "id": "01KJKCCSXQVHPP6G6X6G37WFC8",
+    "name": "01KJKCCSDXQBDCPRBTZBD1ESRW",
+    "type": "concept",
+    "properties": {
+      "summary": "Demo uses claude -p with explicit tool-call prompts for deterministic behavior",
+      "scope": "examples/demo-automation/"
+    },
+    "created_at": "2026-03-01T00:22:26.487Z",
+    "updated_at": "2026-03-01T00:22:26.487Z"
+  },
+  {
+    "id": "01KJKCCSXR6809D8SKVR2QGKMG",
+    "name": "examples/demo-automation/run-live-demo.sh",
+    "type": "file",
+    "properties": {
+      "scope": "examples/demo-automation/"
+    },
+    "created_at": "2026-03-01T00:22:26.488Z",
+    "updated_at": "2026-03-01T17:27:50.062Z"
+  },
+  {
+    "id": "01KJKCCSXV3RRYQ7988BXM25AJ",
+    "name": "examples/demo-automation/reset-demo.sh",
+    "type": "file",
+    "properties": {
+      "scope": "examples/demo-automation/"
+    },
+    "created_at": "2026-03-01T00:22:26.491Z",
+    "updated_at": "2026-03-01T00:22:26.491Z"
+  },
+  {
+    "id": "01KJKCCSXY8KZ7WRPW0RMG06E2",
+    "name": "examples/demo-automation/RECORDING_GUIDE.md",
+    "type": "file",
+    "properties": {
+      "scope": "examples/demo-automation/playwright/"
+    },
+    "created_at": "2026-03-01T00:22:26.494Z",
+    "updated_at": "2026-03-01T18:31:53.349Z"
+  },
+  {
+    "id": "01KJN72BH4VWH330PZFNFVKNAY",
+    "name": "01KJN72BCCSJT7W5N0KNN9K25B",
+    "type": "concept",
+    "properties": {
+      "summary": "Separate persistent dashboard server from claude -p tool processes for demo recordings",
+      "scope": "examples/demo-automation/"
+    },
+    "created_at": "2026-03-01T17:27:50.052Z",
+    "updated_at": "2026-03-01T17:27:50.052Z"
+  },
+  {
+    "id": "01KJN72BH7S8HZQ4T7J9HYETTF",
+    "name": "examples/demo-automation/start-dashboard.sh",
+    "type": "file",
+    "properties": {
+      "scope": "examples/demo-automation/"
+    },
+    "created_at": "2026-03-01T17:27:50.055Z",
+    "updated_at": "2026-03-01T17:27:50.055Z"
+  },
+  {
+    "id": "01KJN72BHBB32M93HM56AZ5E15",
+    "name": "examples/demo-automation/demo-project/.mcp.json",
+    "type": "file",
+    "properties": {
+      "scope": "examples/demo-automation/"
+    },
+    "created_at": "2026-03-01T17:27:50.059Z",
+    "updated_at": "2026-03-01T17:27:50.059Z"
+  },
+  {
+    "id": "01KJNAQMQF3JE1T8102P2BBK9D",
+    "name": "01KJNAQMCXXS2FS6AT55RCC5DK",
+    "type": "concept",
+    "properties": {
+      "summary": "Implement Playwright-based demo orchestrator replacing manual shell + tab-switching workflow",
+      "scope": "examples/demo-automation/playwright/"
+    },
+    "created_at": "2026-03-01T18:31:53.327Z",
+    "updated_at": "2026-03-01T18:31:53.327Z"
+  },
+  {
+    "id": "01KJNAQMQGRDTJFFM634XVSN2S",
+    "name": "examples/demo-automation/playwright/record-demo.ts",
+    "type": "file",
+    "properties": {
+      "scope": "examples/demo-automation/playwright/"
+    },
+    "created_at": "2026-03-01T18:31:53.328Z",
+    "updated_at": "2026-03-01T18:31:53.328Z"
+  },
+  {
+    "id": "01KJNAQMQM5Y791WPAZM603DJX",
+    "name": "examples/demo-automation/playwright/overlays.ts",
+    "type": "file",
+    "properties": {
+      "scope": "examples/demo-automation/playwright/"
+    },
+    "created_at": "2026-03-01T18:31:53.332Z",
+    "updated_at": "2026-03-01T18:31:53.332Z"
+  },
+  {
+    "id": "01KJNAQMQPAS825BBE6VXPDYZQ",
+    "name": "examples/demo-automation/playwright/acts.ts",
+    "type": "file",
+    "properties": {
+      "scope": "examples/demo-automation/playwright/"
+    },
+    "created_at": "2026-03-01T18:31:53.334Z",
+    "updated_at": "2026-03-01T18:31:53.334Z"
+  },
+  {
+    "id": "01KJNAQMQQQC85G3F4CWGWT3YK",
+    "name": "examples/demo-automation/playwright/claude-runner.ts",
+    "type": "file",
+    "properties": {
+      "scope": "examples/demo-automation/playwright/"
+    },
+    "created_at": "2026-03-01T18:31:53.335Z",
+    "updated_at": "2026-03-01T18:31:53.335Z"
+  },
+  {
+    "id": "01KJNAQMQVGD3TWE905M4KZ1ST",
+    "name": "package.json",
+    "type": "file",
+    "properties": {
+      "scope": "examples/demo-automation/playwright/"
+    },
+    "created_at": "2026-03-01T18:31:53.339Z",
+    "updated_at": "2026-03-01T18:31:53.339Z"
+  },
+  {
+    "id": "01KJNAQMQZ9DKYRR1SEP2M3HVX",
+    "name": ".gitignore",
+    "type": "file",
+    "properties": {
+      "scope": "examples/demo-automation/playwright/"
+    },
+    "created_at": "2026-03-01T18:31:53.343Z",
+    "updated_at": "2026-03-01T18:31:53.343Z"
   }
 ]
