@@ -31,5 +31,6 @@ examples/demo-automation/recordings/*.webm
 *.mp4
 !assets/**
 
-# Editor config
+# Local config
+.mcp.json
 .vscode/
