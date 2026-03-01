@@ -145,6 +145,16 @@ The plugin handles agent instructions automatically via skills. For the MCP-only
 
 A web dashboard starts automatically at `http://localhost:24282` — browse decisions, blackboard entries, knowledge graph, and agent state. Configurable via `TWINING_DASHBOARD_PORT`.
 
+<p align="center">
+  <img src="assets/dashboard-stats.png" alt="Dashboard — Stats overview" width="700"><br>
+  <em>Stats overview: blackboard entries, decisions, graph entities, and activity breakdown</em>
+</p>
+
+<p align="center">
+  <img src="assets/dashboard-graph.png" alt="Dashboard — Knowledge graph" width="700"><br>
+  <em>Interactive knowledge graph: files, decisions, classes, and their relationships</em>
+</p>
+
 ## What's Inside
 
 ### Persistent Decisions
