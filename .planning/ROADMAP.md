@@ -70,11 +70,11 @@
   3. At least 8 workflow scenarios define expected multi-tool sequences (orient, decide, verify, coordinate, handoff, etc.) with named steps
   4. Anti-pattern catalog and quality criteria (scope precision, rationale quality, parameter content quality) are documented with concrete bad/good examples
   5. A `test/eval/behaviors-parser.ts` can parse BEHAVIORS.md into structured TypeScript objects and a test suite validates the parser against the actual file
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 15-01: TBD
-- [ ] 15-02: TBD
+- [ ] 15-01-PLAN.md -- Types and behavioral specification (plugin/BEHAVIORS.md with all 32 tools, workflows, anti-patterns, quality criteria)
+- [ ] 15-02-PLAN.md -- Behaviors parser and test suite (TDD parser for BEHAVIORS.md into structured TypeScript objects)
 
 ### Phase 16: Eval Harness -- Deterministic Core
 **Goal**: A working eval system runs deterministic scorers against synthetic YAML scenarios via vitest, producing pass/fail results with per-scenario breakdown
@@ -156,7 +156,7 @@ Phases execute in numeric order: 15 -> 16 -> 17 -> 18 -> 19
 | 12. Coordination Engine | v1.3 | 3/3 | Complete | 2026-02-17 |
 | 13. Tools and Assembly | v1.3 | 2/2 | Complete | 2026-02-17 |
 | 14. Agent Dashboard | v1.3 | 2/2 | Complete | 2026-02-17 |
-| 15. Behavioral Specification | v1.4 | 0/? | Not started | - |
+| 15. Behavioral Specification | v1.4 | 0/2 | Planning | - |
 | 16. Eval Harness -- Deterministic Core | v1.4 | 0/? | Not started | - |
 | 17. Transcript Analysis | v1.4 | 0/? | Not started | - |
 | 18. LLM-as-Judge Integration | v1.4 | 0/? | Not started | - |
