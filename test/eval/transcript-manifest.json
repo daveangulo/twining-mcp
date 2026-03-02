@@ -1,0 +1,19 @@
+{
+  "fixtures": [
+    {
+      "file": "fixtures/session-good-workflow.jsonl",
+      "description": "Rich session with entity/relation graph building, decisions, blackboard posts, and status checks",
+      "expectedQuality": "good",
+      "tags": ["decide", "entity", "relation", "post", "status", "full-lifecycle"]
+    },
+    {
+      "file": "fixtures/session-poor-workflow.jsonl",
+      "description": "Session with scattered posts, overrides, and missing assemble/verify patterns",
+      "expectedQuality": "poor",
+      "tags": ["incomplete", "missing-assemble", "fire-and-forget"]
+    }
+  ],
+  "thresholds": {
+    "default": 0.6
+  }
+}
