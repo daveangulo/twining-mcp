@@ -43,7 +43,7 @@ function checkWorkflowCompleteness(
 
 export const workflowCompletenessScorer: Scorer = {
   name: "workflow-completeness",
-  score(input: ScorerInput, spec: BehaviorSpec): ScorerResult {
+  async score(input: ScorerInput, spec: BehaviorSpec): Promise<ScorerResult> {
     if (input.calls.length === 0) {
       return { scorer: this.name, score: 1, passed: true, checks: [] };
     }

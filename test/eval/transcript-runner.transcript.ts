@@ -113,8 +113,8 @@ describe("transcript eval suite", () => {
 
         describe(segmentLabel, () => {
           for (const scorer of allScorers) {
-            it(scorer.name, () => {
-              const result = scorer.score(segment, spec);
+            it(scorer.name, async () => {
+              const result = await scorer.score(segment, spec);
 
               // Accumulate result (individual scorer tests always pass --
               // per-scorer threshold enforcement on real transcripts is too

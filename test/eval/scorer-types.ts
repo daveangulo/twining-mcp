@@ -39,6 +39,8 @@ export interface ScorerResult {
   passed: boolean;
   /** Individual rule check outcomes. */
   checks: CheckResult[];
+  /** Scorer type: deterministic (rule-based) or llm (LLM-as-judge). */
+  type?: "deterministic" | "llm";
 }
 
 // ---------------------------------------------------------------------------
@@ -50,7 +52,7 @@ export interface Scorer {
   /** Unique scorer name, e.g. "decision_quality". */
   name: string;
   /** Evaluate a set of tool calls against the behavioral spec. */
-  score(input: ScorerInput, spec: BehaviorSpec): ScorerResult;
+  score(input: ScorerInput, spec: BehaviorSpec): Promise<ScorerResult>;
 }
 
 // ---------------------------------------------------------------------------

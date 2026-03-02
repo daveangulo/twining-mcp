@@ -26,7 +26,7 @@ function isVagueRationale(rationale: string): boolean {
 
 export const argumentQualityScorer: Scorer = {
   name: "argument-quality",
-  score(input: ScorerInput, _spec: BehaviorSpec): ScorerResult {
+  async score(input: ScorerInput, _spec: BehaviorSpec): Promise<ScorerResult> {
     if (input.calls.length === 0) {
       return { scorer: this.name, score: 1, passed: true, checks: [] };
     }

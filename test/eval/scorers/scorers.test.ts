@@ -138,8 +138,8 @@ describe("scorer registry", () => {
 
   it.each(allScorers.map((s) => [s.name, s]))(
     "%s returns properly structured ScorerResult",
-    (_name, scorer) => {
-      const result = scorer.score(happyOrient, spec);
+    async (_name, scorer) => {
+      const result = await scorer.score(happyOrient, spec);
       expect(result).toHaveProperty("scorer");
       expect(result).toHaveProperty("score");
       expect(result).toHaveProperty("passed");
@@ -155,8 +155,8 @@ describe("scorer registry", () => {
 
   it.each(allScorers.map((s) => [s.name, s]))(
     "%s returns score 1.0 for empty sequence (vacuous truth)",
-    (_name, scorer) => {
-      const result = scorer.score(emptySequence, spec);
+    async (_name, scorer) => {
+      const result = await scorer.score(emptySequence, spec);
       expect(result.score).toBe(1);
       expect(result.passed).toBe(true);
     },
@@ -168,13 +168,13 @@ describe("scorer registry", () => {
 // ---------------------------------------------------------------------------
 
 describe("sequencing scorer", () => {
-  it("passes when calls follow workflow step order", () => {
-    const result = sequencingScorer.score(happyOrient, spec);
+  it("passes when calls follow workflow step order", async () => {
+    const result = await sequencingScorer.score(happyOrient, spec);
     expect(result.score).toBe(1);
     expect(result.passed).toBe(true);
   });
 
-  it("fails when calls are out of order", () => {
+  it("fails when calls are out of order", async () => {
     const outOfOrder: ScorerInput = {
       calls: [
         call("why", { scope: "src/" }, 0),
@@ -182,7 +182,7 @@ describe("sequencing scorer", () => {
         call("assemble", { scope: "src/" }, 2),
       ],
     };
-    const result = sequencingScorer.score(outOfOrder, spec);
+    const result = await sequencingScorer.score(outOfOrder, spec);
     expect(result.score).toBeLessThan(1);
   });
 });
@@ -192,14 +192,14 @@ describe("sequencing scorer", () => {
 // ---------------------------------------------------------------------------
 
 describe("scope quality scorer", () => {
-  it("passes when scopes are specific file paths", () => {
-    const result = scopeQualityScorer.score(happyOrient, spec);
+  it("passes when scopes are specific file paths", async () => {
+    const result = await scopeQualityScorer.score(happyOrient, spec);
     expect(result.score).toBe(1);
     expect(result.passed).toBe(true);
   });
 
-  it("fails when scope is overly broad", () => {
-    const result = scopeQualityScorer.score(broadScope, spec);
+  it("fails when scope is overly broad", async () => {
+    const result = await scopeQualityScorer.score(broadScope, spec);
     expect(result.score).toBeLessThan(1);
     expect(result.checks.some((c) => !c.passed)).toBe(true);
   });
@@ -210,14 +210,14 @@ describe("scope quality scorer", () => {
 // ---------------------------------------------------------------------------
 
 describe("argument quality scorer", () => {
-  it("passes when arguments are well-formed", () => {
-    const result = argumentQualityScorer.score(happyDecide, spec);
+  it("passes when arguments are well-formed", async () => {
+    const result = await argumentQualityScorer.score(happyDecide, spec);
     expect(result.score).toBe(1);
     expect(result.passed).toBe(true);
   });
 
-  it("fails when decide call has empty rationale", () => {
-    const result = argumentQualityScorer.score(badDecide, spec);
+  it("fails when decide call has empty rationale", async () => {
+    const result = await argumentQualityScorer.score(badDecide, spec);
     expect(result.score).toBeLessThan(1);
     expect(result.checks.some((c) => !c.passed && c.level === "MUST")).toBe(
       true,
@@ -230,19 +230,19 @@ describe("argument quality scorer", () => {
 // ---------------------------------------------------------------------------
 
 describe("decision hygiene scorer", () => {
-  it("passes when decide has assemble before and link_commit after", () => {
-    const result = decisionHygieneScorer.score(happyDecide, spec);
+  it("passes when decide has assemble before and link_commit after", async () => {
+    const result = await decisionHygieneScorer.score(happyDecide, spec);
     expect(result.score).toBe(1);
     expect(result.passed).toBe(true);
   });
 
-  it("fails when decide has no preceding assemble (blind decision)", () => {
-    const result = decisionHygieneScorer.score(badDecide, spec);
+  it("fails when decide has no preceding assemble (blind decision)", async () => {
+    const result = await decisionHygieneScorer.score(badDecide, spec);
     expect(result.score).toBeLessThan(1);
     expect(result.checks.some((c) => !c.passed)).toBe(true);
   });
 
-  it("fails when decide is not followed by link_commit (fire-and-forget)", () => {
+  it("fails when decide is not followed by link_commit (fire-and-forget)", async () => {
     const noLinkCommit: ScorerInput = {
       calls: [
         call("assemble", { scope: "src/" }, 0),
@@ -257,7 +257,7 @@ describe("decision hygiene scorer", () => {
         ),
       ],
     };
-    const result = decisionHygieneScorer.score(noLinkCommit, spec);
+    const result = await decisionHygieneScorer.score(noLinkCommit, spec);
     expect(result.checks.some((c) => !c.passed)).toBe(true);
   });
 });
@@ -267,17 +267,17 @@ describe("decision hygiene scorer", () => {
 // ---------------------------------------------------------------------------
 
 describe("workflow completeness scorer", () => {
-  it("passes when workflow steps are complete", () => {
-    const result = workflowCompletenessScorer.score(happyOrient, spec);
+  it("passes when workflow steps are complete", async () => {
+    const result = await workflowCompletenessScorer.score(happyOrient, spec);
     expect(result.passed).toBe(true);
   });
 
-  it("detects incomplete workflows", () => {
+  it("detects incomplete workflows", async () => {
     // Only status, missing assemble
     const partial: ScorerInput = {
       calls: [call("status", { scope: "src/" }, 0)],
     };
-    const result = workflowCompletenessScorer.score(partial, spec);
+    const result = await workflowCompletenessScorer.score(partial, spec);
     // Should still run without error even if not all steps present
     expect(result).toHaveProperty("score");
   });
@@ -288,18 +288,18 @@ describe("workflow completeness scorer", () => {
 // ---------------------------------------------------------------------------
 
 describe("anti-patterns scorer", () => {
-  it("passes when no anti-patterns detected", () => {
-    const result = antiPatternsScorer.score(happyDecide, spec);
+  it("passes when no anti-patterns detected", async () => {
+    const result = await antiPatternsScorer.score(happyDecide, spec);
     expect(result.score).toBe(1);
     expect(result.passed).toBe(true);
   });
 
-  it("detects blind-decisions (decide without assemble)", () => {
-    const result = antiPatternsScorer.score(badDecide, spec);
+  it("detects blind-decisions (decide without assemble)", async () => {
+    const result = await antiPatternsScorer.score(badDecide, spec);
     expect(result.checks.some((c) => !c.passed)).toBe(true);
   });
 
-  it("detects fire-and-forget (decide without link_commit)", () => {
+  it("detects fire-and-forget (decide without link_commit)", async () => {
     const fireAndForget: ScorerInput = {
       calls: [
         call("assemble", { scope: "src/" }, 0),
@@ -314,16 +314,16 @@ describe("anti-patterns scorer", () => {
         ),
       ],
     };
-    const result = antiPatternsScorer.score(fireAndForget, spec);
+    const result = await antiPatternsScorer.score(fireAndForget, spec);
     expect(result.checks.some((c) => !c.passed)).toBe(true);
   });
 
-  it("detects scope-inflation", () => {
-    const result = antiPatternsScorer.score(broadScope, spec);
+  it("detects scope-inflation", async () => {
+    const result = await antiPatternsScorer.score(broadScope, spec);
     expect(result.checks.some((c) => !c.passed)).toBe(true);
   });
 
-  it("detects rationale-poverty", () => {
+  it("detects rationale-poverty", async () => {
     const shortRationale: ScorerInput = {
       calls: [
         call("assemble", { scope: "src/" }, 0),
@@ -339,7 +339,7 @@ describe("anti-patterns scorer", () => {
         call("link_commit", { commit_sha: "abc", decision_id: "d1" }, 2),
       ],
     };
-    const result = antiPatternsScorer.score(shortRationale, spec);
+    const result = await antiPatternsScorer.score(shortRationale, spec);
     expect(result.checks.some((c) => !c.passed)).toBe(true);
   });
 });
@@ -349,14 +349,14 @@ describe("anti-patterns scorer", () => {
 // ---------------------------------------------------------------------------
 
 describe("quality criteria scorer", () => {
-  it("passes when quality criteria met", () => {
-    const result = qualityCriteriaScorer.score(happyDecide, spec);
+  it("passes when quality criteria met", async () => {
+    const result = await qualityCriteriaScorer.score(happyDecide, spec);
     expect(result.score).toBe(1);
     expect(result.passed).toBe(true);
   });
 
-  it("fails on broad scope (scope-precision)", () => {
-    const result = qualityCriteriaScorer.score(broadScope, spec);
+  it("fails on broad scope (scope-precision)", async () => {
+    const result = await qualityCriteriaScorer.score(broadScope, spec);
     expect(result.checks.some((c) => !c.passed)).toBe(true);
   });
 });

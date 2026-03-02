@@ -88,7 +88,7 @@ const CHECKERS: Record<string, AntiPatternChecker> = {
 
 export const antiPatternsScorer: Scorer = {
   name: "anti-patterns",
-  score(input: ScorerInput, spec: BehaviorSpec): ScorerResult {
+  async score(input: ScorerInput, spec: BehaviorSpec): Promise<ScorerResult> {
     if (input.calls.length === 0) {
       return { scorer: this.name, score: 1, passed: true, checks: [] };
     }

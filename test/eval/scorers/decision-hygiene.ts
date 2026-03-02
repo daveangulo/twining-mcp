@@ -13,7 +13,7 @@ import type { BehaviorSpec } from "../types.js";
 
 export const decisionHygieneScorer: Scorer = {
   name: "decision-hygiene",
-  score(input: ScorerInput, _spec: BehaviorSpec): ScorerResult {
+  async score(input: ScorerInput, _spec: BehaviorSpec): Promise<ScorerResult> {
     if (input.calls.length === 0) {
       return { scorer: this.name, score: 1, passed: true, checks: [] };
     }

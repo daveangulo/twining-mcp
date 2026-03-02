@@ -20,7 +20,7 @@ function isBroadScope(scope: string): boolean {
 
 export const scopeQualityScorer: Scorer = {
   name: "scope-quality",
-  score(input: ScorerInput, _spec: BehaviorSpec): ScorerResult {
+  async score(input: ScorerInput, _spec: BehaviorSpec): Promise<ScorerResult> {
     if (input.calls.length === 0) {
       return { scorer: this.name, score: 1, passed: true, checks: [] };
     }

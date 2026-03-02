@@ -52,9 +52,9 @@ describe("eval suite", () => {
   for (const scenario of scenarios) {
     describe(scenario.name, () => {
       for (const scorer of allScorers) {
-        it(`${scorer.name}`, () => {
+        it(`${scorer.name}`, async () => {
           const input = normalizeScenario(scenario);
-          const result = scorer.score(input, spec);
+          const result = await scorer.score(input, spec);
 
           // Accumulate result
           if (!accumulated.has(scenario.name)) {
