@@ -39,7 +39,7 @@ Requirements for v1.4 Agent Behavior Quality. Each maps to roadmap phases.
 
 - [x] **TUNE-01**: Skills/hooks/agents iteratively updated based on eval failures
 - [x] **TUNE-02**: Tuned plugin passes eval suite at defined score thresholds
-- [ ] **TUNE-03**: Regression baseline JSON captures eval scores for future CI comparison
+- [x] **TUNE-03**: Regression baseline JSON captures eval scores for future CI comparison
 - [x] **TUNE-04**: Plugin token budget tracked; prompt growth stays under 20% cap
 - [x] **TUNE-05**: Holdout eval set validates tuning doesn't overfit (Goodhart's Law mitigation)
 
@@ -95,7 +95,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EVAL-09 | Phase 16 | Complete |
 | TUNE-01 | Phase 19 | Complete |
 | TUNE-02 | Phase 19 | Complete |
-| TUNE-03 | Phase 19 | Pending |
+| TUNE-03 | Phase 19 | Complete |
 | TUNE-04 | Phase 19 | Complete |
 | TUNE-05 | Phase 19 | Complete |
 

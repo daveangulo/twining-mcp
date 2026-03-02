@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Agent Behavior Quality
-status: unknown
-last_updated: "2026-03-02T18:47:06.645Z"
+status: complete
+last_updated: "2026-03-02T19:15:00.000Z"
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 12
-  completed_plans: 10
+  completed_plans: 12
 ---
 
 # Project State
@@ -23,11 +23,11 @@ See: .planning/PROJECT.md (updated 2026-03-02)
 ## Current Position
 
 Phase: 19 of 19 (Plugin Tuning Cycle)
-Plan: 2 of 3 in current phase (19-02 complete)
-Status: In Progress
-Last activity: 2026-03-02 -- Completed 19-02 (Plugin tuning iterations)
+Plan: 3 of 3 in current phase (19-03 complete)
+Status: Complete
+Last activity: 2026-03-02 -- Completed 19-03 (Regression baseline)
 
-Progress: [███████████████████████████████████████░░] 98% (18/19 phases, 43/44 v1.4 plans through Phase 19-02)
+Progress: [████████████████████████████████████████] 100% (19/19 phases, 44/44 v1.4 plans through Phase 19-03)
 
 ## Performance Metrics
 
@@ -49,6 +49,7 @@ Progress: [███████████████████████
 - 18-02: 2min (2 tasks, 3 files)
 - 19-01: 10min (3 tasks, 15 files)
 - 19-02: 14min (2 tasks, 15 files)
+- 19-03: 5min (2 tasks, 3 files)
 
 ## Accumulated Context
 
@@ -105,6 +106,8 @@ Recent decisions affecting current work:
 - [Phase 19]: Expected negatives declared exhaustively: all 35 violation scenario-scorer pairs marked with expected_scores: false
 - [Phase 19]: Effective pass rate metric: counts expected=false matches as eval passes alongside score>=threshold passes
 - [Phase 19]: No plugin skill modifications needed for tuning: all 6 unexpected failures were scorer false positives, not plugin instruction gaps
+- [Phase 19]: Regression baseline uses pass rate (not overall score) for holdout gap comparison -- synthetic includes violation scenarios
+- [Phase 19]: Token budget 0% growth -- no plugin modifications needed during tuning cycle
 
 ### Pending Todos
 
@@ -119,5 +122,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed 19-02-PLAN.md (Plugin tuning iterations)
-Next: 19-03 (Synthesis and release)
+Stopped at: Completed 19-03-PLAN.md (Regression baseline)
+Next: v1.4 milestone complete -- all 19 phases, 44 plans executed
