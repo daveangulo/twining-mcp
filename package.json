@@ -23,6 +23,7 @@
     "eval:synthetic": "vitest run --config vitest.config.eval.ts",
     "eval:holdout": "vitest run --config vitest.config.eval.ts test/eval/holdout-runner.eval.ts",
     "eval:transcript": "vitest run --config vitest.config.transcript.ts",
+    "eval:baseline": "npx tsx test/eval/regression-baseline.ts",
     "demo:record": "npx tsx examples/demo-automation/playwright/record-demo.ts",
     "demo:record:pause": "DEMO_PAUSE=1 npx tsx examples/demo-automation/playwright/record-demo.ts"
   },
