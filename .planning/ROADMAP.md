@@ -133,10 +133,12 @@ Plans:
   3. A regression baseline JSON file captures eval scores per scenario for future CI comparison
   4. Plugin token budget is measured before and after tuning; total prompt growth stays under 20%
   5. A holdout eval set (scenarios not used during tuning) validates that tuning generalizes and does not overfit to the training scenarios
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 19-01: TBD
+- [ ] 19-01-PLAN.md -- Tuning infrastructure: per-scorer thresholds, holdout schema/loader, token budget script, failure classification, 6 holdout scenarios
+- [ ] 19-02-PLAN.md -- Iterative plugin tuning by workflow category with eval validation and holdout checks
+- [ ] 19-03-PLAN.md -- Regression baseline generator and final validation snapshot
 
 ## Progress
 
@@ -163,4 +165,4 @@ Phases execute in numeric order: 15 -> 16 -> 17 -> 18 -> 19
 | 16. Eval Harness -- Deterministic Core | v1.4 | 3/3 | Complete | 2026-03-02 |
 | 17. Transcript Analysis | v1.4 | 2/2 | Complete | 2026-03-02 |
 | 18. LLM-as-Judge Integration | v1.4 | 2/2 | Complete | 2026-03-02 |
-| 19. Plugin Tuning Cycle | v1.4 | 0/? | Not started | - |
+| 19. Plugin Tuning Cycle | v1.4 | 0/3 | Not started | - |
