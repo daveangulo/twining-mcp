@@ -22,12 +22,12 @@ See: .planning/PROJECT.md (updated 2026-03-02)
 
 ## Current Position
 
-Phase: 16 of 19 (Eval Harness Deterministic Core) -- COMPLETE
-Plan: 3 of 3 in current phase -- COMPLETE
-Status: Phase 16 complete, ready for phase 17
-Last activity: 2026-03-02 -- Completed 16-03 (eval scenarios, runner, reporter)
+Phase: 17 of 19 (Transcript Analysis)
+Plan: 1 of 2 in current phase
+Status: Completed 17-01, proceeding to 17-02
+Last activity: 2026-03-02 -- Completed 17-01 (transcript parser, scrubber, fixtures)
 
-Progress: [██████████████████████████████████░░░░░░░] 84% (16/19 phases, 37/37 v1.4 plans)
+Progress: [███████████████████████████████████░░░░░░] 87% (17/19 phases, 38/39 v1.4 plans)
 
 ## Performance Metrics
 
@@ -43,6 +43,7 @@ Progress: [███████████████████████
 - 16-01: 4min (2 tasks TDD, 8 files)
 - 16-02: 5min (1 task TDD, 9 files)
 - 16-03: 11min (2 tasks, 27 files)
+- 17-01: 5min (2 tasks TDD, 7 files)
 
 ## Accumulated Context
 
@@ -73,6 +74,13 @@ Recent decisions affecting current work:
 - Cross-cutting lifecycle scenarios cannot assert sequencing/completeness due to overlapping workflow definitions
 - Eval harness uses matrix testing: 22 scenarios × 7 scorers = 154 dynamic vitest tests
 - Scorers use weighted severity aggregation: MUST fail=0, SHOULD fail=0.5, pass=1 with DEFAULT_THRESHOLD=0.8
+- Transcript parser extracts both tool_use calls and tool_result blocks, follows subagent parentUuid chains
+- Segment transcripts into workflow chunks and extend NormalizedToolCall with optional result field
+- Separate vitest config and npm script for transcript evals with manifest-based fixture discovery
+- MCP tool name normalization via split('__').pop() handles both prefix patterns (verified against 275 real calls)
+- JSONL parsing uses Zod safeParse per line -- never throws, collects warnings
+- Workflow segmentation at twining_assemble boundaries only; time-gap heuristic deferred to Phase 19
+- Transcript manifest uses 0.6 default threshold vs synthetic's 0.8
 
 ### Pending Todos
 
@@ -87,5 +95,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed 16-03-PLAN.md (eval scenarios, runner, reporter)
-Next: Execute phase 17 (transcript eval)
+Stopped at: Completed 17-01-PLAN.md (transcript parser, scrubber, fixtures)
+Next: Execute 17-02 (transcript eval runner and vitest config)
