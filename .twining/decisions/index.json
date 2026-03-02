@@ -754,5 +754,43 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KJQ647ER90D76DKZJH1RXYB1",
+    "timestamp": "2026-03-02T11:49:51.705Z",
+    "domain": "architecture",
+    "scope": "plugin/",
+    "summary": "v1.4 milestone: Behavioral spec + eval harness + plugin tuning as single release",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      "plugin/BEHAVIORS.md",
+      "plugin/skills/",
+      "plugin/hooks/",
+      "plugin/agents/"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": [
+      "03d537c"
+    ]
+  },
+  {
+    "id": "01KJQBQDJXZAF71P8VBNJW8CF3",
+    "timestamp": "2026-03-02T13:27:43.464Z",
+    "domain": "architecture",
+    "scope": "test/eval/",
+    "summary": "Behavioral spec as single Markdown document parsed by state machine into typed objects",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "plugin/BEHAVIORS.md",
+      "test/eval/types.ts",
+      "test/eval/behaviors-parser.ts",
+      "test/eval/behaviors-parser.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": [
+      "21f70e5"
+    ]
   }
 ]

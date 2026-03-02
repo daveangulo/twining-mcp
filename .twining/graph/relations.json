@@ -1496,5 +1496,95 @@
       "decision_summary": "Add standard open source community files for public announcement readiness"
     },
     "created_at": "2026-03-01T22:07:49.974Z"
+  },
+  {
+    "id": "01KJQ647P3NJ148PNZBZ4WKCJW",
+    "source": "01KJQ647P1MGGRERHA1JH2BE8T",
+    "target": "01KJQ647NYB2T5YPX6RC622QYS",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "v1.4 milestone: Behavioral spec + eval harness + plugin tuning as single release"
+    },
+    "created_at": "2026-03-02T11:49:51.939Z"
+  },
+  {
+    "id": "01KJQ647P7ES6JGYF3H9AMD3PW",
+    "source": "01KJGX8KNEGEK425RKKX0DSKZ7",
+    "target": "01KJQ647NYB2T5YPX6RC622QYS",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "v1.4 milestone: Behavioral spec + eval harness + plugin tuning as single release"
+    },
+    "created_at": "2026-03-02T11:49:51.943Z"
+  },
+  {
+    "id": "01KJQ647PBF7YHM90ZQQHJYR25",
+    "source": "01KJQ647P90Q4H2Y3QZRTBKCQZ",
+    "target": "01KJQ647NYB2T5YPX6RC622QYS",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "v1.4 milestone: Behavioral spec + eval harness + plugin tuning as single release"
+    },
+    "created_at": "2026-03-02T11:49:51.947Z"
+  },
+  {
+    "id": "01KJQ647PDM9VR4WN2XVDAV3G8",
+    "source": "01KJQ647PCCSE8BJB2M1ZKX6PE",
+    "target": "01KJQ647NYB2T5YPX6RC622QYS",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "v1.4 milestone: Behavioral spec + eval harness + plugin tuning as single release"
+    },
+    "created_at": "2026-03-02T11:49:51.949Z"
+  },
+  {
+    "id": "01KJQBQE343N3MQ49X8QKSAAV0",
+    "source": "01KJQ647P1MGGRERHA1JH2BE8T",
+    "target": "01KJQBQE311AR3KRCBRVE175T0",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Behavioral spec as single Markdown document parsed by state machine into typed objects"
+    },
+    "created_at": "2026-03-02T13:27:43.972Z"
+  },
+  {
+    "id": "01KJQBQE37PW7JMV7W6PZ8GB6B",
+    "source": "01KJQBQE35Y4S3A6P8GCJHHJ35",
+    "target": "01KJQBQE311AR3KRCBRVE175T0",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Behavioral spec as single Markdown document parsed by state machine into typed objects"
+    },
+    "created_at": "2026-03-02T13:27:43.975Z"
+  },
+  {
+    "id": "01KJQBQE39AYEQKQSFMT2EFY3W",
+    "source": "01KJQBQE38EAYGT0XHJJQEX50V",
+    "target": "01KJQBQE311AR3KRCBRVE175T0",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Behavioral spec as single Markdown document parsed by state machine into typed objects"
+    },
+    "created_at": "2026-03-02T13:27:43.977Z"
+  },
+  {
+    "id": "01KJQBQE3DRRD0Q511KENATYKZ",
+    "source": "01KJQBQE3BR9Y1AN5G31SRDXEF",
+    "target": "01KJQBQE311AR3KRCBRVE175T0",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Behavioral spec as single Markdown document parsed by state machine into typed objects"
+    },
+    "created_at": "2026-03-02T13:27:43.981Z"
+  },
+  {
+    "id": "01KJQBQZNGAJ67RA5VV2WZQ9SG",
+    "source": "01KJQBQE311AR3KRCBRVE175T0",
+    "target": "01KJQBQE3BR9Y1AN5G31SRDXEF",
+    "type": "tested_by",
+    "properties": {
+      "tests": "18 tests validating parser against real BEHAVIORS.md with Zod schema validation"
+    },
+    "created_at": "2026-03-02T13:28:01.968Z"
   }
 ]

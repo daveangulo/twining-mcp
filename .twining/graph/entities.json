@@ -720,7 +720,7 @@
       "scope": "plugin/"
     },
     "created_at": "2026-02-28T01:19:31.502Z",
-    "updated_at": "2026-02-28T01:19:31.502Z"
+    "updated_at": "2026-03-02T11:49:51.940Z"
   },
   {
     "id": "01KJGX8KNG4BA8P7PFEXMTW51R",
@@ -1398,5 +1398,87 @@
     },
     "created_at": "2026-03-01T22:07:49.973Z",
     "updated_at": "2026-03-01T22:07:49.973Z"
+  },
+  {
+    "id": "01KJQ647NYB2T5YPX6RC622QYS",
+    "name": "01KJQ647ER90D76DKZJH1RXYB1",
+    "type": "concept",
+    "properties": {
+      "summary": "v1.4 milestone: Behavioral spec + eval harness + plugin tuning as single release",
+      "scope": "plugin/"
+    },
+    "created_at": "2026-03-02T11:49:51.934Z",
+    "updated_at": "2026-03-02T11:49:51.934Z"
+  },
+  {
+    "id": "01KJQ647P1MGGRERHA1JH2BE8T",
+    "name": "plugin/BEHAVIORS.md",
+    "type": "file",
+    "properties": {
+      "scope": "test/eval/"
+    },
+    "created_at": "2026-03-02T11:49:51.937Z",
+    "updated_at": "2026-03-02T13:27:43.970Z"
+  },
+  {
+    "id": "01KJQ647P90Q4H2Y3QZRTBKCQZ",
+    "name": "plugin/hooks/",
+    "type": "file",
+    "properties": {
+      "scope": "plugin/"
+    },
+    "created_at": "2026-03-02T11:49:51.945Z",
+    "updated_at": "2026-03-02T11:49:51.945Z"
+  },
+  {
+    "id": "01KJQ647PCCSE8BJB2M1ZKX6PE",
+    "name": "plugin/agents/",
+    "type": "file",
+    "properties": {
+      "scope": "plugin/"
+    },
+    "created_at": "2026-03-02T11:49:51.948Z",
+    "updated_at": "2026-03-02T11:49:51.948Z"
+  },
+  {
+    "id": "01KJQBQE311AR3KRCBRVE175T0",
+    "name": "01KJQBQDJXZAF71P8VBNJW8CF3",
+    "type": "concept",
+    "properties": {
+      "summary": "Behavioral spec as single Markdown document parsed by state machine into typed objects",
+      "scope": "test/eval/"
+    },
+    "created_at": "2026-03-02T13:27:43.969Z",
+    "updated_at": "2026-03-02T13:27:43.969Z"
+  },
+  {
+    "id": "01KJQBQE35Y4S3A6P8GCJHHJ35",
+    "name": "test/eval/types.ts",
+    "type": "file",
+    "properties": {
+      "scope": "test/eval/"
+    },
+    "created_at": "2026-03-02T13:27:43.973Z",
+    "updated_at": "2026-03-02T13:27:43.973Z"
+  },
+  {
+    "id": "01KJQBQE38EAYGT0XHJJQEX50V",
+    "name": "test/eval/behaviors-parser.ts",
+    "type": "file",
+    "properties": {
+      "scope": "test/eval/"
+    },
+    "created_at": "2026-03-02T13:27:43.976Z",
+    "updated_at": "2026-03-02T13:27:43.976Z"
+  },
+  {
+    "id": "01KJQBQE3BR9Y1AN5G31SRDXEF",
+    "name": "test/eval/behaviors-parser.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "test/eval/"
+    },
+    "created_at": "2026-03-02T13:27:43.978Z",
+    "updated_at": "2026-03-02T13:27:43.978Z"
   }
 ]

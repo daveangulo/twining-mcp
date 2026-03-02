@@ -1,0 +1,46 @@
+{
+  "agent_id": "main",
+  "domain": "architecture",
+  "scope": "test/eval/",
+  "summary": "Behavioral spec as single Markdown document parsed by state machine into typed objects",
+  "context": "Phase 15 needed a machine-parseable behavioral specification covering all 32 MCP tools. The spec must be readable by humans (plugin authors) and parseable by the eval harness.",
+  "rationale": "A single BEHAVIORS.md in plugin/ serves as both human documentation and eval input. A state-machine parser in test/eval/ transforms it into typed BehaviorSpec objects using shared Zod-validated interfaces. This avoids duplicating behavioral rules in code and keeps the spec authoritative.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "YAML/JSON specification file",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Less human-readable, harder for plugin authors to maintain, would need separate documentation anyway"
+    },
+    {
+      "option": "TypeScript constants defining behaviors directly",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Couples spec to implementation language, not accessible to non-TS tooling, harder to review as documentation"
+    },
+    {
+      "option": "Multiple smaller spec files per tool category",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Harder to enforce consistency across tools, more complex parser, no clear benefit for 32 tools"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "plugin/BEHAVIORS.md",
+    "test/eval/types.ts",
+    "test/eval/behaviors-parser.ts",
+    "test/eval/behaviors-parser.test.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [
+    "21f70e5"
+  ],
+  "assembled_before": false,
+  "id": "01KJQBQDJXZAF71P8VBNJW8CF3",
+  "timestamp": "2026-03-02T13:27:43.464Z",
+  "status": "active"
+}

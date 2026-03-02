@@ -1,0 +1,46 @@
+{
+  "agent_id": "main",
+  "domain": "architecture",
+  "scope": "plugin/",
+  "summary": "v1.4 milestone: Behavioral spec + eval harness + plugin tuning as single release",
+  "context": "Twining's value depends on agents using the right tools at the right moments. The plugin (skills, hooks, agents) is the behavioral layer that drives this, but there's no definition of \"correct\" behavior and no way to measure it. Need to define expected behaviors, build evaluation infrastructure, and tune the plugin.",
+  "rationale": "All three phases must ship together — a spec alone isn't a release, a harness without a spec has nothing to measure, and tuning without a harness is guesswork. The spec lives at plugin/BEHAVIORS.md since it primarily guides plugin development. Dual eval approach: LLM-as-judge for synthetic scenarios + transcript analysis of real dogfooding sessions.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Ship spec only as v1.4, harness and tuning as v1.5",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "User clarified a release with just a spec doc isn't a real release — value comes from the improved plugin"
+    },
+    {
+      "option": "Skip spec, go straight to eval harness",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Without defining what correct behavior looks like, there's nothing to evaluate against"
+    },
+    {
+      "option": "Manual review instead of automated harness",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Need repeatable, automated evaluation to iterate on plugin tuning — manual review doesn't scale"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "plugin/BEHAVIORS.md",
+    "plugin/skills/",
+    "plugin/hooks/",
+    "plugin/agents/"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [
+    "03d537c"
+  ],
+  "assembled_before": false,
+  "id": "01KJQ647ER90D76DKZJH1RXYB1",
+  "timestamp": "2026-03-02T11:49:51.705Z",
+  "status": "provisional"
+}
