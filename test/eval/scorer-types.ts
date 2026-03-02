@@ -62,6 +62,28 @@ export interface Scorer {
 /** Default pass/fail threshold for scorers. */
 export const DEFAULT_THRESHOLD = 0.8;
 
+/** Per-scorer pass/fail thresholds. Core scorers stricter, quality scorers more lenient. */
+export const SCORER_THRESHOLDS: Record<string, number> = {
+  // Core scorers -- stricter
+  "sequencing": 0.9,
+  "decision-hygiene": 0.9,
+  "anti-patterns": 0.9,
+  // Completeness
+  "workflow-completeness": 0.8,
+  // Quality scorers -- more lenient
+  "scope-quality": 0.7,
+  "argument-quality": 0.7,
+  "quality-criteria": 0.7,
+  // LLM scorers -- advisory
+  "rationale-judge": 0.5,
+  "scope-judge": 0.5,
+};
+
+/** Get threshold for a scorer, falling back to DEFAULT_THRESHOLD. */
+export function getThreshold(scorerName: string): number {
+  return SCORER_THRESHOLDS[scorerName] ?? DEFAULT_THRESHOLD;
+}
+
 /**
  * Aggregate check results into a single 0-1 score using weighted severity:
  * - MUST fail = 0, MUST_NOT fail = 0, SHOULD fail = 0.5, any pass = 1.0

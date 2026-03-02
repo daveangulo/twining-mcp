@@ -18,6 +18,7 @@ export const ScenarioSchema = z.object({
   description: z.string().min(1),
   category: z.enum(["orient", "decide", "verify", "coordinate", "handoff"]),
   tags: z.array(z.string()).default([]),
+  holdout: z.boolean().default(false),
   tool_calls: z
     .array(
       z.object({

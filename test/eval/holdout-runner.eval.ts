@@ -1,12 +1,11 @@
 /**
- * Eval test runner: loads all YAML scenarios and runs every scorer against each.
+ * Holdout eval runner: loads only holdout YAML scenarios and runs every scorer.
  *
- * This is the main entry point for `npm run eval:synthetic`. It:
- * 1. Loads all scenario YAML files from test/eval/scenarios/ (excluding holdout)
- * 2. Parses plugin/BEHAVIORS.md into a BehaviorSpec
- * 3. For each scenario x scorer combination, runs the scorer
- * 4. Asserts against expected_scores when declared (using per-scorer thresholds)
- * 5. Writes accumulated results to test/eval/results/latest.json
+ * This is a separate runner for `npm run eval:holdout`. It mirrors the main
+ * eval-runner but only loads scenarios with `holdout: true`. Results are written
+ * to test/eval/results/holdout-latest.json.
+ *
+ * Holdout scenarios validate generalization -- they are never used for tuning.
  */
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import fs from "node:fs";
@@ -20,10 +19,9 @@ import type { ScorerResult } from "./scorer-types.js";
 import { getThreshold } from "./scorer-types.js";
 
 // ---------------------------------------------------------------------------
-// Load scenarios at collection time (before describe blocks run)
-// Exclude holdout scenarios from the main eval suite
+// Load holdout scenarios only
 // ---------------------------------------------------------------------------
-const scenarios = loadScenarios({ holdout: false });
+const scenarios = loadScenarios({ holdout: true });
 
 // ---------------------------------------------------------------------------
 // Results accumulator
@@ -39,7 +37,7 @@ const accumulated: Map<string, ScenarioResults> = new Map();
 // ---------------------------------------------------------------------------
 // Test suite
 // ---------------------------------------------------------------------------
-describe("eval suite", () => {
+describe("holdout eval suite", () => {
   let spec: BehaviorSpec;
 
   beforeAll(() => {
@@ -62,7 +60,6 @@ describe("eval suite", () => {
           const threshold = getThreshold(scorer.name);
           const passed = result.score >= threshold;
 
-          // Store overridden result for accumulation
           const adjustedResult: ScorerResult = { ...result, passed };
 
           // Accumulate result
@@ -80,7 +77,7 @@ describe("eval suite", () => {
           if (expected !== undefined) {
             expect(
               passed,
-              `Scenario "${scenario.name}" scorer "${scorer.name}": expected passed=${expected}, got passed=${passed} (score=${result.score}, threshold=${threshold})`,
+              `Holdout "${scenario.name}" scorer "${scorer.name}": expected passed=${expected}, got passed=${passed} (score=${result.score}, threshold=${threshold})`,
             ).toBe(expected);
           }
         });
@@ -152,7 +149,7 @@ describe("eval suite", () => {
     if (!fs.existsSync(resultsDir)) {
       fs.mkdirSync(resultsDir, { recursive: true });
     }
-    const resultsPath = path.resolve(resultsDir, "latest.json");
+    const resultsPath = path.resolve(resultsDir, "holdout-latest.json");
     fs.writeFileSync(resultsPath, JSON.stringify(output, null, 2));
   });
 });

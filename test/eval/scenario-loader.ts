@@ -27,16 +27,28 @@ export function loadScenario(filePath: string): Scenario {
   }
 }
 
+/** Options for loadScenarios. */
+export interface LoadScenariosOptions {
+  /** Directory to scan. Defaults to test/eval/scenarios/. */
+  scenarioDir?: string;
+  /** If true, return only holdout scenarios. If false, exclude holdout. If undefined, return all. */
+  holdout?: boolean;
+}
+
 /**
  * Load all .yaml scenario files from a directory.
  * Validates each file against ScenarioSchema.
  * Returns scenarios sorted alphabetically by name.
  *
- * @param scenarioDir - Directory to scan. Defaults to test/eval/scenarios/.
+ * @param options - Directory path string (backward compat) or options object.
  */
-export function loadScenarios(scenarioDir?: string): Scenario[] {
+export function loadScenarios(options?: string | LoadScenariosOptions): Scenario[] {
+  // Backward compat: string arg = scenarioDir
+  const opts: LoadScenariosOptions =
+    typeof options === "string" ? { scenarioDir: options } : (options ?? {});
+
   const dir =
-    scenarioDir ?? path.resolve(import.meta.dirname!, "scenarios");
+    opts.scenarioDir ?? path.resolve(import.meta.dirname!, "scenarios");
 
   if (!fs.existsSync(dir)) {
     return [];
@@ -47,7 +59,15 @@ export function loadScenarios(scenarioDir?: string): Scenario[] {
     .filter((f) => f.endsWith(".yaml"))
     .sort();
 
-  const scenarios = files.map((f) => loadScenario(path.join(dir, f)));
+  let scenarios = files.map((f) => loadScenario(path.join(dir, f)));
+
+  // Apply holdout filter
+  if (opts.holdout === true) {
+    scenarios = scenarios.filter((s) => s.holdout === true);
+  } else if (opts.holdout === false) {
+    scenarios = scenarios.filter((s) => s.holdout !== true);
+  }
+  // opts.holdout === undefined -> return all
 
   return scenarios.sort((a, b) => a.name.localeCompare(b.name));
 }

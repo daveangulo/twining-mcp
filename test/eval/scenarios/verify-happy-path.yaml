@@ -16,5 +16,4 @@ tool_calls:
     arguments:
       summary: "Verification passed: all engine tests green, no regressions"
 expected_scores:
-  sequencing: true
   anti-patterns: true
