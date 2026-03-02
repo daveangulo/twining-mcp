@@ -13,6 +13,8 @@ import { decisionHygieneScorer } from "./decision-hygiene.js";
 import { workflowCompletenessScorer } from "./workflow-completeness.js";
 import { antiPatternsScorer } from "./anti-patterns.js";
 import { qualityCriteriaScorer } from "./quality-criteria.js";
+import { rationaleJudgeScorer } from "./rationale-judge.js";
+import { scopeJudgeScorer } from "./scope-judge.js";
 
 export const deterministicScorers: Scorer[] = [
   sequencingScorer,
@@ -24,9 +26,11 @@ export const deterministicScorers: Scorer[] = [
   qualityCriteriaScorer,
 ];
 
-// LLM scorers loaded conditionally in Plan 18-02
-// For now, export the structure with empty llmScorers
-export const llmScorers: Scorer[] = [];
+// LLM scorers: included in allScorers only when TWINING_EVAL_JUDGE=1
+export const llmScorers: Scorer[] = [
+  rationaleJudgeScorer,
+  scopeJudgeScorer,
+];
 
 export const allScorers: Scorer[] =
   process.env.TWINING_EVAL_JUDGE === "1"
@@ -41,4 +45,6 @@ export {
   workflowCompletenessScorer,
   antiPatternsScorer,
   qualityCriteriaScorer,
+  rationaleJudgeScorer,
+  scopeJudgeScorer,
 };
