@@ -1,0 +1,14 @@
+name: "Verify skipped entirely"
+description: "Agent skips verification entirely and goes straight to handoff"
+category: verify
+tags: [violation]
+tool_calls:
+  - tool: twining_post
+    arguments:
+      summary: "Work done, handing off"
+  - tool: twining_handoff
+    arguments:
+      result_status: "complete"
+      summary: "Finished the auth module"
+expected_scores:
+  workflow-completeness: false

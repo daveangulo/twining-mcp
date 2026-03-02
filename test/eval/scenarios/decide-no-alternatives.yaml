@@ -1,0 +1,20 @@
+name: "Decide without alternatives"
+description: "Agent makes a decision without listing alternatives_considered"
+category: decide
+tags: [violation, tier-1-tools]
+tool_calls:
+  - tool: twining_assemble
+    arguments:
+      scope: "src/auth/"
+  - tool: twining_decide
+    arguments:
+      summary: "Use JWT for authentication"
+      rationale: "Chose JWT over sessions because stateless auth reduces server-side storage and simplifies horizontal scaling."
+      alternatives_considered: ""
+  - tool: twining_link_commit
+    arguments:
+      commit_sha: "abc123"
+      decision_id: "d-001"
+expected_scores:
+  argument-quality: false
+  decision-hygiene: false

@@ -1,0 +1,20 @@
+name: "Coordinate happy path"
+description: "Full coordinate workflow: agents -> discover -> delegate -> recent"
+category: coordinate
+tags: [happy-path, tier-1-tools]
+tool_calls:
+  - tool: twining_agents
+    arguments: {}
+  - tool: twining_discover
+    arguments:
+      capabilities: ["typescript", "testing"]
+  - tool: twining_delegate
+    arguments:
+      task: "Write integration tests for auth module"
+      capabilities: ["typescript", "testing"]
+  - tool: twining_recent
+    arguments: {}
+expected_scores:
+  sequencing: true
+  workflow-completeness: true
+  anti-patterns: true

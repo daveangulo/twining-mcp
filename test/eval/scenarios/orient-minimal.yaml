@@ -1,0 +1,10 @@
+name: "Orient minimal"
+description: "Just a status call with no further actions"
+category: orient
+tags: [happy-path, short, minimal]
+tool_calls:
+  - tool: twining_status
+    arguments: {}
+expected_scores:
+  sequencing: true
+  anti-patterns: true

@@ -1,0 +1,21 @@
+name: "Verify happy path"
+description: "Full verify workflow: verify -> what_changed -> link_commit -> post (log result)"
+category: verify
+tags: [happy-path, tier-1-tools]
+tool_calls:
+  - tool: twining_verify
+    arguments:
+      scope: "src/engine/"
+  - tool: twining_what_changed
+    arguments: {}
+  - tool: twining_link_commit
+    arguments:
+      commit_sha: "def456"
+      decision_id: "d-002"
+  - tool: twining_post
+    arguments:
+      summary: "Verification passed: all engine tests green, no regressions"
+expected_scores:
+  sequencing: true
+  workflow-completeness: true
+  anti-patterns: true

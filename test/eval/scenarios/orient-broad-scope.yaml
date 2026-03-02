@@ -1,0 +1,16 @@
+name: "Orient broad scope"
+description: "Agent assembles with overly broad scope 'project' instead of a specific path"
+category: orient
+tags: [violation, scope]
+tool_calls:
+  - tool: twining_status
+    arguments: {}
+  - tool: twining_assemble
+    arguments:
+      scope: "project"
+  - tool: twining_why
+    arguments:
+      path: "src/auth/"
+expected_scores:
+  scope-quality: false
+  quality-criteria: false

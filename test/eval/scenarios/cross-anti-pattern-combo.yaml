@@ -1,0 +1,29 @@
+name: "Cross-cutting anti-pattern combo"
+description: "Multiple anti-patterns: decide without assemble (blind), no rationale (poverty), broad scope, no link_commit (fire-and-forget)"
+category: decide
+tags: [violation, long, anti-patterns]
+tool_calls:
+  - tool: twining_status
+    arguments: {}
+  - tool: twining_decide
+    arguments:
+      summary: "Use JWT"
+      rationale: "done"
+      alternatives_considered: ""
+  - tool: twining_assemble
+    arguments:
+      scope: "project"
+  - tool: twining_post
+    arguments:
+      summary: "updated"
+  - tool: twining_handoff
+    arguments:
+      result_status: ""
+      summary: "done"
+expected_scores:
+  sequencing: false
+  scope-quality: false
+  argument-quality: false
+  decision-hygiene: false
+  anti-patterns: false
+  quality-criteria: false

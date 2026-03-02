@@ -1,0 +1,9 @@
+name: "Coordinate minimal"
+description: "Just an agents call to check available agents"
+category: coordinate
+tags: [happy-path, short, minimal]
+tool_calls:
+  - tool: twining_agents
+    arguments: {}
+expected_scores:
+  anti-patterns: true

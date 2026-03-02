@@ -1,0 +1,17 @@
+name: "Handoff inaccurate status"
+description: "Handoff with empty/vague result_status providing no useful information"
+category: handoff
+tags: [violation]
+tool_calls:
+  - tool: twining_verify
+    arguments:
+      scope: "src/auth/"
+  - tool: twining_handoff
+    arguments:
+      result_status: ""
+      summary: "updated"
+  - tool: twining_acknowledge
+    arguments:
+      handoff_id: "h-001"
+expected_scores:
+  argument-quality: false

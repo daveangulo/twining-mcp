@@ -1,0 +1,18 @@
+name: "Verify early complete"
+description: "Agent declares work complete by posting and handing off before running verify"
+category: verify
+tags: [violation]
+tool_calls:
+  - tool: twining_post
+    arguments:
+      summary: "All work complete"
+  - tool: twining_handoff
+    arguments:
+      result_status: "complete"
+      summary: "Task finished"
+  - tool: twining_verify
+    arguments:
+      scope: "src/engine/"
+expected_scores:
+  workflow-completeness: false
+  sequencing: false

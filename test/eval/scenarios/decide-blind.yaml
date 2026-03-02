@@ -1,0 +1,18 @@
+name: "Decide blind"
+description: "Agent makes a decision without prior assemble (blind decision)"
+category: decide
+tags: [violation, tier-1-tools]
+tool_calls:
+  - tool: twining_decide
+    arguments:
+      summary: "Use JWT for authentication"
+      rationale: "Chose JWT over sessions because stateless auth reduces server-side storage and simplifies horizontal scaling."
+      alternatives_considered: "Considered sessions and API keys; JWT chosen for stateless scaling"
+  - tool: twining_link_commit
+    arguments:
+      commit_sha: "abc123"
+      decision_id: "d-001"
+expected_scores:
+  decision-hygiene: false
+  anti-patterns: false
+  sequencing: false

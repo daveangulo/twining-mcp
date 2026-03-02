@@ -1,0 +1,21 @@
+name: "Decide without rationale"
+description: "Agent makes a decision with empty/trivial rationale"
+category: decide
+tags: [violation, tier-1-tools]
+tool_calls:
+  - tool: twining_assemble
+    arguments:
+      scope: "src/auth/"
+  - tool: twining_decide
+    arguments:
+      summary: "Use JWT for authentication"
+      rationale: "done"
+      alternatives_considered: "Considered sessions and API keys"
+  - tool: twining_link_commit
+    arguments:
+      commit_sha: "abc123"
+      decision_id: "d-001"
+expected_scores:
+  argument-quality: false
+  quality-criteria: false
+  anti-patterns: false

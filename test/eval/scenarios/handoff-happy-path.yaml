@@ -1,0 +1,20 @@
+name: "Handoff happy path"
+description: "Full handoff workflow: verify -> handoff (accurate status) -> acknowledge"
+category: handoff
+tags: [happy-path, tier-1-tools, gate-1]
+tool_calls:
+  - tool: twining_verify
+    arguments:
+      scope: "src/auth/"
+  - tool: twining_handoff
+    arguments:
+      result_status: "complete"
+      summary: "Implemented JWT authentication with refresh token rotation. All 12 tests pass. Token expiry set to 15 minutes with 7-day refresh window."
+  - tool: twining_acknowledge
+    arguments:
+      handoff_id: "h-001"
+expected_scores:
+  sequencing: true
+  workflow-completeness: true
+  argument-quality: true
+  anti-patterns: true

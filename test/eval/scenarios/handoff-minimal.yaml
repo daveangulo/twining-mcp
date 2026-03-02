@@ -1,0 +1,11 @@
+name: "Handoff minimal"
+description: "Just a handoff call with no prior verification or follow-up"
+category: handoff
+tags: [violation, short, minimal]
+tool_calls:
+  - tool: twining_handoff
+    arguments:
+      result_status: "complete"
+      summary: "Done"
+expected_scores:
+  workflow-completeness: false

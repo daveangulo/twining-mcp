@@ -1,0 +1,10 @@
+name: "Verify incomplete"
+description: "Verify is called but no follow-up action (what_changed, post) taken"
+category: verify
+tags: [violation, short]
+tool_calls:
+  - tool: twining_verify
+    arguments:
+      scope: "src/engine/"
+expected_scores:
+  workflow-completeness: false

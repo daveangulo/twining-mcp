@@ -1,0 +1,15 @@
+name: "Handoff without verify"
+description: "Agent hands off work without running verification first"
+category: handoff
+tags: [violation]
+tool_calls:
+  - tool: twining_handoff
+    arguments:
+      result_status: "complete"
+      summary: "Auth module done"
+  - tool: twining_acknowledge
+    arguments:
+      handoff_id: "h-001"
+expected_scores:
+  workflow-completeness: false
+  sequencing: false

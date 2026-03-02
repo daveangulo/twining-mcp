@@ -1,0 +1,23 @@
+name: "Decide happy path"
+description: "Full decide workflow: assemble -> decide (with rationale, alternatives) -> link_commit"
+category: decide
+tags: [happy-path, tier-1-tools, gate-1]
+tool_calls:
+  - tool: twining_assemble
+    arguments:
+      scope: "src/auth/"
+  - tool: twining_decide
+    arguments:
+      summary: "Use JWT for authentication"
+      rationale: "Chose JWT over sessions because stateless auth reduces server-side storage and simplifies horizontal scaling. Sessions considered but rejected due to sticky-session requirement."
+      alternatives_considered: "Considered sessions and API keys; JWT chosen for stateless scaling"
+      affected_files: ["src/auth/jwt.ts", "src/auth/middleware.ts"]
+  - tool: twining_link_commit
+    arguments:
+      commit_sha: "abc123"
+      decision_id: "d-001"
+expected_scores:
+  decision-hygiene: true
+  argument-quality: true
+  anti-patterns: true
+  sequencing: true
