@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Agent Behavior Quality
 status: unknown
-last_updated: "2026-03-02T15:51:19.865Z"
+last_updated: "2026-03-02T16:41:35.250Z"
 progress:
-  total_phases: 2
-  completed_phases: 2
-  total_plans: 5
-  completed_plans: 5
+  total_phases: 3
+  completed_phases: 3
+  total_plans: 7
+  completed_plans: 7
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-02)
 
 **Core value:** Agents share *why* decisions were made, not just *what* was done -- eliminating information silos across context windows.
-**Current focus:** Phase 16: Eval Harness Deterministic Core (v1.4 Agent Behavior Quality)
+**Current focus:** Phase 18: LLM Judge (v1.4 Agent Behavior Quality)
 
 ## Current Position
 
-Phase: 17 of 19 (Transcript Analysis)
-Plan: 1 of 2 in current phase
-Status: Completed 17-01, proceeding to 17-02
-Last activity: 2026-03-02 -- Completed 17-01 (transcript parser, scrubber, fixtures)
+Phase: 17 of 19 (Transcript Analysis) -- COMPLETE
+Plan: 2 of 2 in current phase (all done)
+Status: Phase 17 complete, ready for Phase 18
+Last activity: 2026-03-02 -- Completed 17-02 (transcript eval runner, vitest config, npm scripts)
 
-Progress: [███████████████████████████████████░░░░░░] 87% (17/19 phases, 38/39 v1.4 plans)
+Progress: [████████████████████████████████████░░░░░] 90% (17/19 phases, 39/39 v1.4 plans through Phase 17)
 
 ## Performance Metrics
 
@@ -44,6 +44,7 @@ Progress: [███████████████████████
 - 16-02: 5min (1 task TDD, 9 files)
 - 16-03: 11min (2 tasks, 27 files)
 - 17-01: 5min (2 tasks TDD, 7 files)
+- 17-02: 3min (1 task, 4 files)
 
 ## Accumulated Context
 
@@ -81,6 +82,9 @@ Recent decisions affecting current work:
 - JSONL parsing uses Zod safeParse per line -- never throws, collects warnings
 - Workflow segmentation at twining_assemble boundaries only; time-gap heuristic deferred to Phase 19
 - Transcript manifest uses 0.6 default threshold vs synthetic's 0.8
+- Aggregate assertions (avg across scorers) for transcript eval -- per-scorer too strict for real sessions
+- Same allScorers array proven on both synthetic and real transcripts (EVAL-05)
+- [Phase 17]: Aggregate assertions (avg across all scorers) for transcript eval instead of per-scorer threshold -- real sessions have inherent scorer variance
 
 ### Pending Todos
 
@@ -95,5 +99,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed 17-01-PLAN.md (transcript parser, scrubber, fixtures)
-Next: Execute 17-02 (transcript eval runner and vitest config)
+Stopped at: Completed 17-02-PLAN.md (transcript eval runner, vitest config, npm scripts)
+Next: Execute Phase 18 (LLM Judge)
