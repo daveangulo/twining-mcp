@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Agent Behavior Quality
-status: in-progress
-last_updated: "2026-03-02T15:41:09.000Z"
+status: unknown
+last_updated: "2026-03-02T15:51:19.865Z"
 progress:
-  total_phases: 5
-  completed_phases: 1
-  total_plans: 9
+  total_phases: 2
+  completed_phases: 2
+  total_plans: 5
   completed_plans: 5
 ---
 
