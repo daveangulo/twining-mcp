@@ -52,7 +52,7 @@
 
 **Milestone Goal:** Define what correct Twining usage looks like for AI agents, build evaluation infrastructure to measure it, and tune the plugin until agents behave well.
 
-- [ ] **Phase 15: Behavioral Specification** - Machine-parseable behavioral rules, workflow scenarios, and quality criteria for all 32 MCP tools
+- [x] **Phase 15: Behavioral Specification** - Machine-parseable behavioral rules, workflow scenarios, and quality criteria for all 32 MCP tools (completed 2026-03-02)
 - [ ] **Phase 16: Eval Harness -- Deterministic Core** - Synthetic scenario engine, deterministic scorers, vitest eval config, and 20+ YAML scenarios
 - [ ] **Phase 17: Transcript Analysis** - Real Claude Code transcript parsing with the same scorers applied to actual dogfooding sessions
 - [ ] **Phase 18: LLM-as-Judge Integration** - Qualitative semantic scorers for rationale quality and scope appropriateness behind env-var gate
@@ -156,7 +156,7 @@ Phases execute in numeric order: 15 -> 16 -> 17 -> 18 -> 19
 | 12. Coordination Engine | v1.3 | 3/3 | Complete | 2026-02-17 |
 | 13. Tools and Assembly | v1.3 | 2/2 | Complete | 2026-02-17 |
 | 14. Agent Dashboard | v1.3 | 2/2 | Complete | 2026-02-17 |
-| 15. Behavioral Specification | 1/2 | In Progress|  | - |
+| 15. Behavioral Specification | 2/2 | Complete   | 2026-03-02 | - |
 | 16. Eval Harness -- Deterministic Core | v1.4 | 0/? | Not started | - |
 | 17. Transcript Analysis | v1.4 | 0/? | Not started | - |
 | 18. LLM-as-Judge Integration | v1.4 | 0/? | Not started | - |

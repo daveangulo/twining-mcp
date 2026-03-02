@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-03-02)
 
 ## Current Position
 
-Phase: 15 of 19 (Behavioral Specification)
-Plan: 1 of 2 in current phase
-Status: Executing
-Last activity: 2026-03-02 -- Completed 15-01 (behavioral spec + eval types)
+Phase: 15 of 19 (Behavioral Specification) -- COMPLETE
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-03-02 -- Completed 15-02 (behaviors parser)
 
-Progress: [████████████████████████████░░░░░░░░░░░░░] 72% (14/19 phases, 33/34 v1.4 plans)
+Progress: [██████████████████████████████░░░░░░░░░░░] 76% (15/19 phases, 34/34 v1.4 plans)
 
 ## Performance Metrics
 
@@ -26,6 +26,7 @@ Progress: [███████████████████████
 
 **v1.4:**
 - 15-01: 6min (2 tasks, 2 files)
+- 15-02: 3min (1 task TDD, 2 files)
 
 ## Accumulated Context
 
@@ -40,6 +41,8 @@ Recent decisions affecting current work:
 - Hard cap: 8-12 MUST rules across all 32 tools to prevent over-specification
 - Holdout eval set for Goodhart's Law mitigation
 - MUST rule allocation: 10 total (9 MUST + 1 MUST_NOT) across DECIDE(3), POST(2), ASSEMBLE(1), HANDOFF(1), VERIFY(1), ENTITY(1), RELATION(1)
+- State machine parser for BEHAVIORS.md -- no markdown AST library, format-specific extraction
+- Eval tests use real BEHAVIORS.md, not fixtures -- single source of truth
 
 ### Pending Todos
 
@@ -54,5 +57,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed 15-01-PLAN.md (behavioral specification + eval types)
-Next: Execute 15-02 (behaviors parser)
+Stopped at: Completed 15-02-PLAN.md (behaviors parser)
+Next: Execute Phase 16 (eval harness)
