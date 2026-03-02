@@ -44,6 +44,8 @@ export interface NormalizedToolCall {
   arguments: Record<string, unknown>;
   /** Zero-based index of this call in the sequence. */
   index: number;
+  /** Optional tool result, present when parsed from transcripts. */
+  result?: { content: string | null; isError: boolean };
 }
 
 /** Input to a scorer -- decoupled from scenario file format. */
