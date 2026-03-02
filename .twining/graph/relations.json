@@ -1746,5 +1746,225 @@
       "decision_summary": "Scorers use weighted severity aggregation: MUST fail=0, SHOULD fail=0.5, pass=1 with DEFAULT_THRESHOLD=0.8"
     },
     "created_at": "2026-03-02T15:51:58.555Z"
+  },
+  {
+    "id": "01KJQMBPKMR0D9S7JV3B9NP8H5",
+    "source": "01KJQMBPKHX62F4KGE07VP2PDN",
+    "target": "01KJQMBPK533Q6KDMM8B7926G3",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Transcript parser extracts both tool_use calls and tool_result blocks, follows subagent parentUuid chains"
+    },
+    "created_at": "2026-03-02T15:58:36.660Z"
+  },
+  {
+    "id": "01KJQMBPKPJ7K6JC2VRS3D6HSR",
+    "source": "01KJQKZ9SPR7G49R81Z2JAV3V0",
+    "target": "01KJQMBPK533Q6KDMM8B7926G3",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Transcript parser extracts both tool_use calls and tool_result blocks, follows subagent parentUuid chains"
+    },
+    "created_at": "2026-03-02T15:58:36.662Z"
+  },
+  {
+    "id": "01KJQMBWZRRYFQ3CK952Z6434Z",
+    "source": "01KJQKZ9SPR7G49R81Z2JAV3V0",
+    "target": "01KJQMBWZG421JJW18480WFV63",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Segment transcripts into workflow chunks and extend NormalizedToolCall with optional result field"
+    },
+    "created_at": "2026-03-02T15:58:43.192Z"
+  },
+  {
+    "id": "01KJQMBX06A8E3MXWYBJKKXPBB",
+    "source": "01KJQMBPKHX62F4KGE07VP2PDN",
+    "target": "01KJQMBWZG421JJW18480WFV63",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Segment transcripts into workflow chunks and extend NormalizedToolCall with optional result field"
+    },
+    "created_at": "2026-03-02T15:58:43.206Z"
+  },
+  {
+    "id": "01KJQMC21KGD9Q1GYDZJDEWKPJ",
+    "source": "01KJQMC21HV0NT9GJW0TM9KG82",
+    "target": "01KJQMC21G0PZPWAXGBSV29EEJ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Separate vitest config and npm script for transcript evals with manifest-based fixture discovery"
+    },
+    "created_at": "2026-03-02T15:58:48.371Z"
+  },
+  {
+    "id": "01KJQMC21S4BDXCDHX2C27H62D",
+    "source": "01KJNAQMQVGD3TWE905M4KZ1ST",
+    "target": "01KJQMC21G0PZPWAXGBSV29EEJ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Separate vitest config and npm script for transcript evals with manifest-based fixture discovery"
+    },
+    "created_at": "2026-03-02T15:58:48.377Z"
+  },
+  {
+    "id": "01KJQQ3X47M80MRMDBHM4ZD4AJ",
+    "source": "01KJQMBPKHX62F4KGE07VP2PDN",
+    "target": "01KJQQ3X4454AH02SZDP07J5BZ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Transcript parser uses two-pass JSONL extraction with workflow segmentation at twining_assemble boundaries"
+    },
+    "created_at": "2026-03-02T16:46:46.919Z"
+  },
+  {
+    "id": "01KJQQ3X4EKBSWYYMNFQPSTCKS",
+    "source": "01KJQQ3X48T4PYAX2WDFDNZH7J",
+    "target": "01KJQQ3X4454AH02SZDP07J5BZ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Transcript parser uses two-pass JSONL extraction with workflow segmentation at twining_assemble boundaries"
+    },
+    "created_at": "2026-03-02T16:46:46.926Z"
+  },
+  {
+    "id": "01KJQQ3X4HJRE55JHTDSY6XP6F",
+    "source": "01KJQKZ9SPR7G49R81Z2JAV3V0",
+    "target": "01KJQQ3X4454AH02SZDP07J5BZ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Transcript parser uses two-pass JSONL extraction with workflow segmentation at twining_assemble boundaries"
+    },
+    "created_at": "2026-03-02T16:46:46.929Z"
+  },
+  {
+    "id": "01KJQQ4410JE2NNHP7T0VAYH1S",
+    "source": "01KJQQ440Z1V7NMMXK8R238RK4",
+    "target": "01KJQQ440YP4EZN1NMV7SPM3QJ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Transcript eval uses 0.6 threshold (vs 0.8 for synthetic) with aggregate average assertions instead of per-scorer"
+    },
+    "created_at": "2026-03-02T16:46:53.984Z"
+  },
+  {
+    "id": "01KJQQ44123X5HSEV3MNXYVDCA",
+    "source": "01KJQQ44113F8XZ1VNR3ZMTYZA",
+    "target": "01KJQQ440YP4EZN1NMV7SPM3QJ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Transcript eval uses 0.6 threshold (vs 0.8 for synthetic) with aggregate average assertions instead of per-scorer"
+    },
+    "created_at": "2026-03-02T16:46:53.986Z"
+  },
+  {
+    "id": "01KJR0251NRAVP0ENRQ8YS0CKQ",
+    "source": "01KJQKZHTE8YAM8DTCB1DYK37V",
+    "target": "01KJR0251G20Q6S3BD2XJEJ88D",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Category-aware scorer filtering eliminates false positives instead of modifying plugin skills"
+    },
+    "created_at": "2026-03-02T19:23:06.677Z"
+  },
+  {
+    "id": "01KJR0251S3E1JXK4948K8VGYF",
+    "source": "01KJQKZHTP48VSB04E0GQAYMFP",
+    "target": "01KJR0251G20Q6S3BD2XJEJ88D",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Category-aware scorer filtering eliminates false positives instead of modifying plugin skills"
+    },
+    "created_at": "2026-03-02T19:23:06.681Z"
+  },
+  {
+    "id": "01KJR0251WB74GHWHA70BDD4Y2",
+    "source": "01KJR0251V0W792H87Q6D9YG2R",
+    "target": "01KJR0251G20Q6S3BD2XJEJ88D",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Category-aware scorer filtering eliminates false positives instead of modifying plugin skills"
+    },
+    "created_at": "2026-03-02T19:23:06.684Z"
+  },
+  {
+    "id": "01KJR02B9F6RXZH44XC2T7BWC6",
+    "source": "01KJR02B9EM2893YHSJ3KQ75ZQ",
+    "target": "01KJR02B9DCGJ1B45Z8DE8GGT4",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Regression baseline captures full eval state as JSON for CI comparison"
+    },
+    "created_at": "2026-03-02T19:23:13.071Z"
+  },
+  {
+    "id": "01KJR02B9HCJ0V9J9EFT5KAV48",
+    "source": "01KJR02B9G77MQXQ01KQTQ3NMG",
+    "target": "01KJR02B9DCGJ1B45Z8DE8GGT4",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Regression baseline captures full eval state as JSON for CI comparison"
+    },
+    "created_at": "2026-03-02T19:23:13.073Z"
+  },
+  {
+    "id": "01KJR02B9MFZECXSAKA8RY16AW",
+    "source": "01KJNAQMQVGD3TWE905M4KZ1ST",
+    "target": "01KJR02B9DCGJ1B45Z8DE8GGT4",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Regression baseline captures full eval state as JSON for CI comparison"
+    },
+    "created_at": "2026-03-02T19:23:13.076Z"
+  },
+  {
+    "id": "01KJR25AV5J9GQR49T3CB20SWP",
+    "source": "01KJR25AV2MRJJEF4F7CGVWE2W",
+    "target": "01KJR25AV0E8ZQ8J355P7VTNAT",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Fix LLM judge model ID and increase eval timeouts for LLM scorer runs"
+    },
+    "created_at": "2026-03-02T19:59:48.069Z"
+  },
+  {
+    "id": "01KJR25AVB5G1SADY42CHCVYWH",
+    "source": "01KJQKZ9T5VWREK2XPFYFFA2FB",
+    "target": "01KJR25AV0E8ZQ8J355P7VTNAT",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Fix LLM judge model ID and increase eval timeouts for LLM scorer runs"
+    },
+    "created_at": "2026-03-02T19:59:48.075Z"
+  },
+  {
+    "id": "01KJR25AVT6YK4DP13G84ZC5QY",
+    "source": "01KJQMC21HV0NT9GJW0TM9KG82",
+    "target": "01KJR25AV0E8ZQ8J355P7VTNAT",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Fix LLM judge model ID and increase eval timeouts for LLM scorer runs"
+    },
+    "created_at": "2026-03-02T19:59:48.090Z"
+  },
+  {
+    "id": "01KJRD6H567JBPXGAYXDAC5835",
+    "source": "01KJRD6H53K6RWQVPQMEWKBDMJ",
+    "target": "01KJRD6H523HFZ9NEF631KDBK5",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Use current live session as third eval fixture — captures post-instruction-fix behavior for A/B comparison"
+    },
+    "created_at": "2026-03-02T23:12:41.638Z"
+  },
+  {
+    "id": "01KJRD6H5CQ33VSG5J6JB3KF9R",
+    "source": "01KJQQ44113F8XZ1VNR3ZMTYZA",
+    "target": "01KJRD6H523HFZ9NEF631KDBK5",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Use current live session as third eval fixture — captures post-instruction-fix behavior for A/B comparison"
+    },
+    "created_at": "2026-03-02T23:12:41.644Z"
   }
 ]

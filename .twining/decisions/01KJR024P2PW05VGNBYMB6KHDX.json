@@ -1,0 +1,39 @@
+{
+  "agent_id": "main",
+  "domain": "testing",
+  "scope": "test/eval/",
+  "summary": "Category-aware scorer filtering eliminates false positives instead of modifying plugin skills",
+  "context": "Phase 19 tuning cycle analyzed 41 eval failures. 35 were expected negatives (violation scenarios correctly not exhibiting behaviors). 6 were false positives where sequencing and workflow-completeness scorers triggered on scenarios outside their category scope.",
+  "rationale": "The failures were scorer precision issues, not plugin instruction gaps. Fixing scorers to respect scenario categories (only checking sequencing/completeness for the workflow matching the scenario's declared category) is more correct than warping plugin instructions to avoid triggering cross-category checks.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Modify plugin skill descriptions to avoid triggering cross-category scorer matches",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Would degrade skill quality to work around scorer imprecision — wrong layer to fix"
+    },
+    {
+      "option": "Lower scorer thresholds to tolerate false positives",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Masks real failures, reduces eval sensitivity"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "test/eval/scorers/sequencing.ts",
+    "test/eval/scorers/workflow-completeness.ts",
+    "test/eval/scenarios/*.yaml"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [
+    "32baf60"
+  ],
+  "assembled_before": false,
+  "id": "01KJR024P2PW05VGNBYMB6KHDX",
+  "timestamp": "2026-03-02T19:23:06.307Z",
+  "status": "provisional"
+}

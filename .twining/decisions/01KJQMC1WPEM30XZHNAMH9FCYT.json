@@ -1,0 +1,38 @@
+{
+  "agent_id": "main",
+  "domain": "testing",
+  "scope": "test/eval/",
+  "summary": "Separate vitest config and npm script for transcript evals with manifest-based fixture discovery",
+  "context": "Phase 17 success criteria requires npm run eval:transcript as a separate command. Need a way to discover and describe fixture files.",
+  "rationale": "Separate config keeps synthetic and transcript runs independent per success criteria. Manifest file allows annotating fixtures with metadata (description, expected quality) for richer reporting vs bare glob discovery.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Shared vitest.config.eval.ts for both synthetic and transcript",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Success criteria explicitly requires separate npm run eval:transcript command"
+    },
+    {
+      "option": "Glob-based fixture discovery",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "No way to attach metadata (expected quality, description) to bare files"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "vitest.config.transcript.ts",
+    "package.json"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [
+    "0378e9d"
+  ],
+  "assembled_before": false,
+  "id": "01KJQMC1WPEM30XZHNAMH9FCYT",
+  "timestamp": "2026-03-02T15:58:48.216Z",
+  "status": "active"
+}

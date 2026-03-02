@@ -1,0 +1,37 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "test/eval/",
+  "summary": "Fix LLM judge model ID and increase eval timeouts for LLM scorer runs",
+  "context": "Running eval suite with TWINING_EVAL_JUDGE=1 for the first time revealed two issues: (1) hardcoded model ID claude-haiku-4-5-20250929 no longer exists (404), (2) default 30s vitest timeout insufficient for k=3 consensus API calls, especially on transcript fixtures with 79 tool calls.",
+  "rationale": "Updated model to claude-haiku-4-5-20251001 (current Haiku). Increased eval timeout to 60s (synthetic — most scenarios need only 2-8s per LLM call) and transcript timeout to 120s (real transcripts have many more tool calls requiring many more judge API calls).",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Use env var TWINING_EVAL_MODEL to override at runtime instead of fixing default",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "The default should work out of the box — requiring env var override for basic functionality is poor DX"
+    },
+    {
+      "option": "Set timeout to 300s for both configs",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Overly generous timeout masks real performance issues — 60s/120s are calibrated to observed API response times with margin"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "test/eval/judge.ts",
+    "vitest.config.eval.ts",
+    "vitest.config.transcript.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": false,
+  "id": "01KJR25A2NDZY2Q5WTE6QT3TXN",
+  "timestamp": "2026-03-02T19:59:47.330Z",
+  "status": "provisional"
+}

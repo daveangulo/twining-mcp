@@ -1,0 +1,38 @@
+{
+  "agent_id": "main",
+  "domain": "architecture",
+  "scope": "test/eval/",
+  "summary": "Segment transcripts into workflow chunks and extend NormalizedToolCall with optional result field",
+  "context": "Real sessions contain multiple workflows (orient, decide, verify cycles). Scorers currently evaluate single workflow sequences. Need to bridge the gap between long sessions and scorer input format.",
+  "rationale": "Workflow segmentation gives granular per-workflow scores rather than one blunt session score. Extending NormalizedToolCall with optional result field is backward-compatible — existing scorers ignore it, Phase 18 LLM judge uses it.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Score entire transcript as single ScorerInput",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Partial workflows would unfairly penalize sessions; one bad segment drowns good ones"
+    },
+    {
+      "option": "Separate results array in ScorerInput instead of extending NormalizedToolCall",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Pairing by index is fragile; co-locating result with its call is cleaner"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "test/eval/scenario-schema.ts",
+    "test/eval/transcript-analyzer.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [
+    "0378e9d"
+  ],
+  "assembled_before": false,
+  "id": "01KJQMBWPYBSX70PS3XTG77HW5",
+  "timestamp": "2026-03-02T15:58:42.918Z",
+  "status": "provisional"
+}

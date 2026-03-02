@@ -1,5 +1,30 @@
 # Milestones
 
+## v1.4 Agent Behavior Quality (Shipped: 2026-03-02)
+
+**Phases completed:** 5 phases, 12 plans
+**Tests:** 723 passing across 48+ suites (+109 eval tests)
+**LOC:** ~9,674 production + 5,959 frontend + 12,137 test (eval: +15,076 lines added)
+**Timeline:** 2026-03-02 (~10 hours)
+**Git range:** 22959eb..4268312 (60 commits)
+**Eval:** 154 synthetic + 16 transcript + 42 holdout = 212 eval tests
+
+**Key accomplishments:**
+- Comprehensive behavioral specification (plugin/BEHAVIORS.md) with machine-parseable MUST/SHOULD/MUST_NOT rules for all 32 MCP tools, 8 workflow scenarios, anti-pattern catalog, and tiered tool coverage
+- Deterministic eval harness with 7 category scorers (sequencing, scope, argument, decision hygiene, workflow completeness, anti-patterns, quality criteria) and 22 YAML scenarios producing 154 vitest tests
+- Transcript analysis pipeline parsing real Claude Code JSONL session logs into normalized tool calls scored by the same 7 scorers, with manifest-based fixture discovery
+- LLM-as-judge integration with rationale quality and scope appropriateness scorers behind TWINING_EVAL_JUDGE=1 env-var gate, k=3 consensus scoring, Anthropic SDK wrapper
+- Plugin tuning achieving 100% effective pass rate with 0% token budget growth, category-aware scorer filtering eliminating false positives, and holdout set confirming no overfitting (97.6% holdout pass rate)
+
+**Tech debt carried forward:**
+- eval:baseline crashes if latest.json missing (no prior eval:synthetic run)
+- scripts/measure-plugin-tokens.sh has no npm script entry
+- vitest.config.eval.ts pattern matches holdout-runner.eval.ts (holdout scores visible in console during eval:synthetic)
+- eval-reporter.ts reads synthetic latest.json, not transcript-latest.json
+- LLM scorer execution with real API key requires manual human verification
+
+---
+
 ## v1 Twining MCP Server (Shipped: 2026-02-17)
 
 **Phases completed:** 3 phases, 6 plans

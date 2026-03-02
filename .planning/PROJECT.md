@@ -56,16 +56,16 @@ Agents share *why* decisions were made, not just *what* was done — eliminating
 - ✓ Demo project and Playwright-based demo orchestrator — post-v1.3
 - ✓ Open source community files (LICENSE, CONTRIBUTING, CODE_OF_CONDUCT, etc.) — post-v1.3
 
+- ✓ Behavioral specification (BEHAVIORS.md) with MUST/SHOULD/MUST_NOT rules for all 32 MCP tools, 8 workflow scenarios, anti-patterns — v1.4
+- ✓ Deterministic eval harness with 7 category scorers, 22 YAML scenarios, vitest eval config — v1.4
+- ✓ LLM-as-judge scorers (rationale quality, scope appropriateness) behind env-var gate with consensus scoring — v1.4
+- ✓ Transcript analysis pipeline parsing real Claude Code JSONL sessions with same scorer pipeline — v1.4
+- ✓ Plugin tuning validated against eval suite at defined thresholds with regression baseline — v1.4
+- ✓ Holdout eval set for overfitting detection (Goodhart's Law mitigation) — v1.4
+
 ### Active
 
-## Current Milestone: v1.4 Agent Behavior Quality
-
-**Goal:** Define what correct Twining usage looks like for AI agents, build evaluation infrastructure to measure it, and tune the plugin until agents behave well.
-
-**Target features:**
-- Comprehensive behavioral specification for all 32 MCP tools (when to use, when not to, workflow scenarios, anti-patterns)
-- Test harness with dual evaluation: LLM-as-judge synthetic scenarios + real transcript analysis
-- Tuned plugin (skills, hooks, agents) validated against the harness
+(No active milestone — planning next)
 
 ### Out of Scope
 
@@ -83,6 +83,10 @@ Agents share *why* decisions were made, not just *what* was done — eliminating
 - Heartbeat/keepalive protocol — wastes tokens; liveness inferred from last_active timestamp
 - Full context serialization in handoffs — store IDs and summaries instead
 - Agent orchestrator/supervisor — human + blackboard pattern already coordinates
+- Eval dashboard UI — vitest terminal output sufficient; visual dashboard is post-v1.4
+- CI-blocking eval gate — establish baselines first; gate after scores stabilize
+- Model training/fine-tuning — plugin tuning modifies prompt text, not model weights
+- Real-time session monitoring — eval is offline analysis, not live observation
 
 ## Context
 
@@ -94,8 +98,9 @@ Agents share *why* decisions were made, not just *what* was done — eliminating
 - **Package:** `twining-mcp` on npm
 - **Design spec:** `TWINING-DESIGN-SPEC.md` is the authoritative reference for all data models, tool signatures, and behavior
 - **Build order:** utils → storage → engine → embeddings → dashboard → tools → server/index (bottom-up)
-- **Testing:** vitest with temp directories, 614 tests across 48 suites
-- **Current state:** npm v1.8.2, plugin v1.1.3 — 32 MCP tools, ~9,674 LOC production TypeScript + 5,959 LOC frontend (HTML/CSS/JS) + 12,137 LOC tests
+- **Testing:** vitest with temp directories, 723 tests across 48+ suites; eval: 154 synthetic + 16 transcript + 42 holdout tests
+- **Eval:** plugin/BEHAVIORS.md + test/eval/ — behavioral spec, 7 deterministic scorers, 2 LLM-judge scorers, YAML scenarios, transcript parser, regression baseline
+- **Current state:** npm v1.8.2, plugin v1.1.3 — 32 MCP tools, ~9,674 LOC production TypeScript + 5,959 LOC frontend (HTML/CSS/JS) + 12,137 LOC tests + eval infrastructure
 - **Dashboard port:** Default 24282, configurable via TWINING_DASHBOARD_PORT
 - **Plugin:** Claude Code plugin with 8 skills, 2 agents, 2 commands, 3 hooks (stop, subagent-stop, session-start)
 - **Analytics:** Three-layer — local value stats, tool call instrumentation, opt-in PostHog telemetry
@@ -152,6 +157,15 @@ Agents share *why* decisions were made, not just *what* was done — eliminating
 | Playwright demo orchestrator | Deterministic demo recording vs manual shell scripting | ✓ Good |
 | Expose delegation/handoff as MCP tools | Full coordination surface via MCP; not just internal engine methods | ✓ Good |
 | Single index lock for atomic file+index updates | Prevents race conditions in DecisionStore and HandoffStore | ✓ Good |
+| Behavioral spec as single Markdown document | Machine-parseable by state machine parser; no markdown AST library needed | ✓ Good — format-specific extraction is fast and reliable |
+| Hard cap: 8-12 MUST rules across all 32 tools | Prevents over-specification that degrades agent performance | ✓ Good — 10 MUST rules sufficient |
+| Eval scenarios use flat tool call lists | Per-scorer pass/fail expectations; matrix testing (scenarios x scorers) | ✓ Good — 154 dynamic vitest tests |
+| Deterministic scorers only in CI | LLM judge behind TWINING_EVAL_JUDGE=1 env-var gate | ✓ Good — CI stays fast and reproducible |
+| Holdout scenarios via YAML field (holdout:true) | No separate directory; loader filtering handles isolation | ✓ Good — holdout pass rate validates no overfitting |
+| Category-aware scorer filtering | Sequencing/completeness scorers check only primary workflow matching scenario category | ✓ Good — eliminates false positives without modifying plugin |
+| Weighted severity aggregation for scorers | MUST fail=0, SHOULD fail=0.5, pass=1 with configurable thresholds | ✓ Good — principled scoring hierarchy |
+| Transcript parser uses two-pass JSONL extraction | Workflow segmentation at twining_assemble boundaries; handles subagent chains | ✓ Good — works on real session data |
+| Async scorer interface | All scorers return Promise<ScorerResult>; enables LLM scorers alongside deterministic | ✓ Good — clean extension point |
 
 ---
-*Last updated: 2026-03-02 after post-v1.3 context update*
+*Last updated: 2026-03-02 after v1.4 milestone completion*

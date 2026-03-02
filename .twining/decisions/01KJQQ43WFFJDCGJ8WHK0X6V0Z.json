@@ -1,0 +1,38 @@
+{
+  "agent_id": "main",
+  "domain": "testing",
+  "scope": "test/eval/",
+  "summary": "Transcript eval uses 0.6 threshold (vs 0.8 for synthetic) with aggregate average assertions instead of per-scorer",
+  "context": "Real session transcripts have higher variance than synthetic scenarios — individual scorer results fluctuate because real usage patterns don't follow ideal workflows. Needed a meaningful quality signal without excessive false failures.",
+  "rationale": "Lower threshold (0.6) accounts for real-world messiness while still differentiating good vs poor sessions. Aggregate average assertions (rather than per-scorer) prevent flaky tests from natural variance in individual dimensions. Phase 19 will tune thresholds with more data.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Same 0.8 threshold as synthetic",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Real transcripts consistently score lower due to natural usage patterns — would cause constant failures without actionable signal"
+    },
+    {
+      "option": "Per-scorer threshold assertions",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Individual scorer variance on real data too high — would create flaky tests that don't indicate real quality issues"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "medium",
+  "reversible": true,
+  "affected_files": [
+    "test/eval/transcript-runner.transcript.ts",
+    "test/eval/transcript-manifest.json"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [
+    "20cded2"
+  ],
+  "assembled_before": false,
+  "id": "01KJQQ43WFFJDCGJ8WHK0X6V0Z",
+  "timestamp": "2026-03-02T16:46:53.839Z",
+  "status": "provisional"
+}

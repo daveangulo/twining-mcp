@@ -864,5 +864,158 @@
     "commit_hashes": [
       "d8588c9"
     ]
+  },
+  {
+    "id": "01KJQMBPC9DJGGS68591W3STWD",
+    "timestamp": "2026-03-02T15:58:36.426Z",
+    "domain": "architecture",
+    "scope": "test/eval/",
+    "summary": "Transcript parser extracts both tool_use calls and tool_result blocks, follows subagent parentUuid chains",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      "test/eval/transcript-analyzer.ts",
+      "test/eval/scenario-schema.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": [
+      "0378e9d"
+    ]
+  },
+  {
+    "id": "01KJQMBWPYBSX70PS3XTG77HW5",
+    "timestamp": "2026-03-02T15:58:42.918Z",
+    "domain": "architecture",
+    "scope": "test/eval/",
+    "summary": "Segment transcripts into workflow chunks and extend NormalizedToolCall with optional result field",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      "test/eval/scenario-schema.ts",
+      "test/eval/transcript-analyzer.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": [
+      "0378e9d"
+    ]
+  },
+  {
+    "id": "01KJQMC1WPEM30XZHNAMH9FCYT",
+    "timestamp": "2026-03-02T15:58:48.216Z",
+    "domain": "testing",
+    "scope": "test/eval/",
+    "summary": "Separate vitest config and npm script for transcript evals with manifest-based fixture discovery",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "vitest.config.transcript.ts",
+      "package.json"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": [
+      "0378e9d"
+    ]
+  },
+  {
+    "id": "01KJQQ3WS0JNQQNSBPD1Y0GN3T",
+    "timestamp": "2026-03-02T16:46:46.563Z",
+    "domain": "architecture",
+    "scope": "test/eval/",
+    "summary": "Transcript parser uses two-pass JSONL extraction with workflow segmentation at twining_assemble boundaries",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      "test/eval/transcript-analyzer.ts",
+      "test/eval/transcript-analyzer.test.ts",
+      "test/eval/scenario-schema.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": [
+      "54bbef2"
+    ]
+  },
+  {
+    "id": "01KJQQ43WFFJDCGJ8WHK0X6V0Z",
+    "timestamp": "2026-03-02T16:46:53.839Z",
+    "domain": "testing",
+    "scope": "test/eval/",
+    "summary": "Transcript eval uses 0.6 threshold (vs 0.8 for synthetic) with aggregate average assertions instead of per-scorer",
+    "confidence": "medium",
+    "status": "provisional",
+    "affected_files": [
+      "test/eval/transcript-runner.transcript.ts",
+      "test/eval/transcript-manifest.json"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": [
+      "20cded2"
+    ]
+  },
+  {
+    "id": "01KJR024P2PW05VGNBYMB6KHDX",
+    "timestamp": "2026-03-02T19:23:06.307Z",
+    "domain": "testing",
+    "scope": "test/eval/",
+    "summary": "Category-aware scorer filtering eliminates false positives instead of modifying plugin skills",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      "test/eval/scorers/sequencing.ts",
+      "test/eval/scorers/workflow-completeness.ts",
+      "test/eval/scenarios/*.yaml"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": [
+      "32baf60"
+    ]
+  },
+  {
+    "id": "01KJR02B54GDWZQSH2EQJEH23C",
+    "timestamp": "2026-03-02T19:23:12.935Z",
+    "domain": "testing",
+    "scope": "test/eval/",
+    "summary": "Regression baseline captures full eval state as JSON for CI comparison",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      "test/eval/regression-baseline.ts",
+      "test/eval/results/regression-baseline.json",
+      "package.json"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": [
+      "3e208db"
+    ]
+  },
+  {
+    "id": "01KJR25A2NDZY2Q5WTE6QT3TXN",
+    "timestamp": "2026-03-02T19:59:47.330Z",
+    "domain": "implementation",
+    "scope": "test/eval/",
+    "summary": "Fix LLM judge model ID and increase eval timeouts for LLM scorer runs",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      "test/eval/judge.ts",
+      "vitest.config.eval.ts",
+      "vitest.config.transcript.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KJRD6GYQS9389FYNG6804Z82",
+    "timestamp": "2026-03-02T23:12:41.438Z",
+    "domain": "testing",
+    "scope": "test/eval/fixtures/",
+    "summary": "Use current live session as third eval fixture — captures post-instruction-fix behavior for A/B comparison",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      "test/eval/fixtures/session-post-tuning.jsonl",
+      "test/eval/transcript-manifest.json"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]

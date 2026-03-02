@@ -1,0 +1,48 @@
+{
+  "agent_id": "main",
+  "domain": "testing",
+  "scope": "test/eval/fixtures/",
+  "summary": "Use current live session as third eval fixture — captures post-instruction-fix behavior for A/B comparison",
+  "context": "After commit 4268312 strengthened plugin instructions (SessionStart hook prompts for twining_assemble, decide skill requires link_commit, adds blind-decisions warning), we need a new fixture from a session running with the updated plugin to measure whether scores improve. The current session (a6821693) is the first session after that commit.",
+  "rationale": "Using the live session transcript captures real dogfooding behavior with the updated instructions. Adding it as a third 'good' fixture provides an A/B comparison: session-good-workflow (pre-fix) vs this session (post-fix). The scrub script already handles in-progress JSONL files correctly since it processes line-by-line. Three fixtures (2 good, 1 poor) give better signal than two.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Wait for a separate dedicated dogfood session",
+      "pros": [
+        "Cleaner separation of concerns",
+        "Full session from start to finish"
+      ],
+      "cons": [
+        "Extra time/effort",
+        "No guarantee that session would be richer"
+      ],
+      "reason_rejected": "Adds delay with no benefit — this session already has rich Twining usage and runs with updated plugin"
+    },
+    {
+      "option": "Use the pre-commit session 264ff13a instead",
+      "pros": [
+        "Already complete",
+        "Large transcript (1.8MB, 80 twining refs)"
+      ],
+      "cons": [
+        "Used old plugin instructions",
+        "Cannot show improvement from instruction changes"
+      ],
+      "reason_rejected": "That session started before commit 4268312, so it used old plugin instructions — defeats the purpose of measuring instruction improvements"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "test/eval/fixtures/session-post-tuning.jsonl",
+    "test/eval/transcript-manifest.json"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KJRD6GYQS9389FYNG6804Z82",
+  "timestamp": "2026-03-02T23:12:41.438Z",
+  "status": "provisional"
+}

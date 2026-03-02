@@ -11,6 +11,12 @@
       "description": "Session with scattered posts, overrides, and missing assemble/verify patterns",
       "expectedQuality": "poor",
       "tags": ["incomplete", "missing-assemble", "fire-and-forget"]
+    },
+    {
+      "file": "fixtures/session-post-tuning.jsonl",
+      "description": "Post-instruction-fix session with assemble-first workflow, decision with alternatives, and verify gate",
+      "expectedQuality": "good",
+      "tags": ["assemble-first", "decide", "why", "post", "verify", "post-tuning"]
     }
   ],
   "thresholds": {

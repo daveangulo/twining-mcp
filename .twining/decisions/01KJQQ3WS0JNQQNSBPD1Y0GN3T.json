@@ -1,0 +1,39 @@
+{
+  "agent_id": "main",
+  "domain": "architecture",
+  "scope": "test/eval/",
+  "summary": "Transcript parser uses two-pass JSONL extraction with workflow segmentation at twining_assemble boundaries",
+  "context": "Phase 17 needed to parse real Claude Code session JSONL logs into the same ScorerInput format used by synthetic scenarios. JSONL files contain tool_use blocks in assistant messages and tool_result blocks in user messages, linked by tool_use_id.",
+  "rationale": "Two-pass extraction (first collect tool_use, then match tool_result) handles the JSONL structure where calls and results are in separate messages. Segmentation at twining_assemble boundaries creates natural workflow units matching how agents actually work. MCP name normalization via split('__').pop() handles both prefix patterns observed in real transcripts.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Single-pass streaming parser",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "tool_result blocks appear after tool_use in separate messages — would need lookahead or buffering that adds complexity without benefit"
+    },
+    {
+      "option": "parentUuid-based subagent traversal",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Research showed all tool calls appear in the same JSONL file regardless of parentUuid — traversal is unnecessary overhead"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "test/eval/transcript-analyzer.ts",
+    "test/eval/transcript-analyzer.test.ts",
+    "test/eval/scenario-schema.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [
+    "54bbef2"
+  ],
+  "assembled_before": false,
+  "id": "01KJQQ3WS0JNQQNSBPD1Y0GN3T",
+  "timestamp": "2026-03-02T16:46:46.563Z",
+  "status": "provisional"
+}

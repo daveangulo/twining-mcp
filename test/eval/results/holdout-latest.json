@@ -1,10 +1,10 @@
 {
-  "timestamp": "2026-03-02T19:12:11.906Z",
+  "timestamp": "2026-03-02T22:54:23.323Z",
   "summary": {
     "total_scenarios": 6,
-    "total_checks": 78,
-    "passed_checks": 76,
-    "overall_score": 0.9937
+    "total_checks": 89,
+    "passed_checks": 87,
+    "overall_score": 0.9951
   },
   "scenarios": [
     {
@@ -57,6 +57,20 @@
           "score": 1,
           "passed": true,
           "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "rationale-judge": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.5,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "scope-judge": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.5,
           "checks_passed": 1,
           "checks_total": 1
         }
@@ -114,6 +128,20 @@
           "threshold": 0.7,
           "checks_passed": 4,
           "checks_total": 4
+        },
+        "rationale-judge": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.5,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "scope-judge": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.5,
+          "checks_passed": 2,
+          "checks_total": 2
         }
       }
     },
@@ -169,6 +197,20 @@
           "threshold": 0.7,
           "checks_passed": 4,
           "checks_total": 4
+        },
+        "rationale-judge": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.5,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "scope-judge": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.5,
+          "checks_passed": 1,
+          "checks_total": 1
         }
       }
     },
@@ -222,6 +264,20 @@
           "score": 1,
           "passed": true,
           "threshold": 0.7,
+          "checks_passed": 2,
+          "checks_total": 2
+        },
+        "rationale-judge": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.5,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "scope-judge": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.5,
           "checks_passed": 2,
           "checks_total": 2
         }
@@ -279,6 +335,20 @@
           "threshold": 0.7,
           "checks_passed": 2,
           "checks_total": 2
+        },
+        "rationale-judge": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.5,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "scope-judge": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.5,
+          "checks_passed": 1,
+          "checks_total": 1
         }
       }
     },
@@ -332,6 +402,20 @@
           "score": 1,
           "passed": true,
           "threshold": 0.7,
+          "checks_passed": 2,
+          "checks_total": 2
+        },
+        "rationale-judge": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.5,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "scope-judge": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.5,
           "checks_passed": 2,
           "checks_total": 2
         }
