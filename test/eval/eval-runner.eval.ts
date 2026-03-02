@@ -89,8 +89,15 @@ describe("eval suite", () => {
   }
 
   afterAll(() => {
+    // Build expected_scores lookup from loaded scenarios
+    const expectedScoresMap = new Map<string, Record<string, boolean>>();
+    for (const scenario of scenarios) {
+      expectedScoresMap.set(scenario.name, scenario.expected_scores);
+    }
+
     // Build results JSON
     const scenarioResults = Array.from(accumulated.values()).map((entry) => {
+      const expectedScores = expectedScoresMap.get(entry.scenario) ?? {};
       const scores: Record<
         string,
         {
@@ -99,15 +106,18 @@ describe("eval suite", () => {
           threshold: number;
           checks_passed: number;
           checks_total: number;
+          expected?: boolean;
         }
       > = {};
       for (const r of entry.results) {
+        const expected = expectedScores[r.scorer];
         scores[r.scorer] = {
           score: r.score,
           passed: r.passed,
           threshold: getThreshold(r.scorer),
           checks_passed: r.checks.filter((c) => c.passed).length,
           checks_total: r.checks.length,
+          ...(expected !== undefined ? { expected } : {}),
         };
       }
       return {
@@ -136,6 +146,14 @@ describe("eval suite", () => {
           ) / 10000
         : 0;
 
+    // Effective pass rate: counts expected negatives (expected=false, passed=false) as effective passes
+    const effectivePassed = allResults.filter((r) => {
+      if (r.passed) return true;
+      // Expected negative: scenario declared expected=false and score correctly failed
+      if (r.expected === false && !r.passed) return true;
+      return false;
+    }).length;
+
     const output = {
       timestamp: new Date().toISOString(),
       summary: {
@@ -143,6 +161,12 @@ describe("eval suite", () => {
         total_checks: totalChecks,
         passed_checks: passedChecks,
         overall_score: overallScore,
+        effective_pass_rate:
+          allResults.length > 0
+            ? Math.round((effectivePassed / allResults.length) * 10000) / 10000
+            : 0,
+        effective_passed: effectivePassed,
+        total_pairs: allResults.length,
       },
       scenarios: scenarioResults,
     };

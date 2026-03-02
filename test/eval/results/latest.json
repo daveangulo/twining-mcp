@@ -1,0 +1,1285 @@
+{
+  "timestamp": "2026-03-02T18:57:47.114Z",
+  "summary": {
+    "total_scenarios": 22,
+    "total_checks": 257,
+    "passed_checks": 189,
+    "overall_score": 0.8812,
+    "effective_pass_rate": 1,
+    "effective_passed": 154,
+    "total_pairs": 154
+  },
+  "scenarios": [
+    {
+      "name": "Coordinate happy path",
+      "category": "coordinate",
+      "scores": {
+        "sequencing": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 1,
+          "checks_total": 1,
+          "expected": true
+        },
+        "scope-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "argument-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "decision-hygiene": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "workflow-completeness": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.8,
+          "checks_passed": 1,
+          "checks_total": 1,
+          "expected": true
+        },
+        "anti-patterns": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 5,
+          "checks_total": 5,
+          "expected": true
+        },
+        "quality-criteria": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 0
+        }
+      }
+    },
+    {
+      "name": "Coordinate minimal",
+      "category": "coordinate",
+      "scores": {
+        "sequencing": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "scope-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "argument-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "decision-hygiene": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "workflow-completeness": {
+          "score": 0.5,
+          "passed": false,
+          "threshold": 0.8,
+          "checks_passed": 0,
+          "checks_total": 1,
+          "expected": false
+        },
+        "anti-patterns": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 5,
+          "checks_total": 5,
+          "expected": true
+        },
+        "quality-criteria": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 0
+        }
+      }
+    },
+    {
+      "name": "Coordinate without capability check",
+      "category": "coordinate",
+      "scores": {
+        "sequencing": {
+          "score": 0.5,
+          "passed": false,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 1,
+          "expected": false
+        },
+        "scope-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "argument-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "decision-hygiene": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "workflow-completeness": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.8,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "anti-patterns": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 5,
+          "checks_total": 5
+        },
+        "quality-criteria": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 0
+        }
+      }
+    },
+    {
+      "name": "Cross-cutting anti-pattern combo",
+      "category": "decide",
+      "scores": {
+        "sequencing": {
+          "score": 0.5,
+          "passed": false,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 1,
+          "expected": false
+        },
+        "scope-quality": {
+          "score": 0.5,
+          "passed": false,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 1,
+          "expected": false
+        },
+        "argument-quality": {
+          "score": 0.6667,
+          "passed": false,
+          "threshold": 0.7,
+          "checks_passed": 2,
+          "checks_total": 3,
+          "expected": false
+        },
+        "decision-hygiene": {
+          "score": 0.1667,
+          "passed": false,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 3,
+          "expected": false
+        },
+        "workflow-completeness": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.8,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "anti-patterns": {
+          "score": 0.6,
+          "passed": false,
+          "threshold": 0.9,
+          "checks_passed": 1,
+          "checks_total": 5,
+          "expected": false
+        },
+        "quality-criteria": {
+          "score": 0.625,
+          "passed": false,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 4,
+          "expected": false
+        }
+      }
+    },
+    {
+      "name": "Cross-cutting full lifecycle",
+      "category": "orient",
+      "scores": {
+        "sequencing": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "scope-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 2,
+          "checks_total": 2,
+          "expected": true
+        },
+        "argument-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 3,
+          "checks_total": 3,
+          "expected": true
+        },
+        "decision-hygiene": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 3,
+          "checks_total": 3,
+          "expected": true
+        },
+        "workflow-completeness": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.8,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "anti-patterns": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 5,
+          "checks_total": 5,
+          "expected": true
+        },
+        "quality-criteria": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 4,
+          "checks_total": 4,
+          "expected": true
+        }
+      }
+    },
+    {
+      "name": "Decide blind",
+      "category": "decide",
+      "scores": {
+        "sequencing": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "scope-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "argument-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 2,
+          "checks_total": 2
+        },
+        "decision-hygiene": {
+          "score": 0.6667,
+          "passed": false,
+          "threshold": 0.9,
+          "checks_passed": 2,
+          "checks_total": 3,
+          "expected": false
+        },
+        "workflow-completeness": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.8,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "anti-patterns": {
+          "score": 0.9,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 4,
+          "checks_total": 5
+        },
+        "quality-criteria": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 3,
+          "checks_total": 3
+        }
+      }
+    },
+    {
+      "name": "Decide fire and forget",
+      "category": "decide",
+      "scores": {
+        "sequencing": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "scope-quality": {
+          "score": 0.5,
+          "passed": false,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 1,
+          "expected": false
+        },
+        "argument-quality": {
+          "score": 0,
+          "passed": false,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 2,
+          "expected": false
+        },
+        "decision-hygiene": {
+          "score": 0.5,
+          "passed": false,
+          "threshold": 0.9,
+          "checks_passed": 1,
+          "checks_total": 3,
+          "expected": false
+        },
+        "workflow-completeness": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.8,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "anti-patterns": {
+          "score": 0.7,
+          "passed": false,
+          "threshold": 0.9,
+          "checks_passed": 2,
+          "checks_total": 5,
+          "expected": false
+        },
+        "quality-criteria": {
+          "score": 0.625,
+          "passed": false,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 4,
+          "expected": false
+        }
+      }
+    },
+    {
+      "name": "Decide happy path",
+      "category": "decide",
+      "scores": {
+        "sequencing": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 1,
+          "checks_total": 1,
+          "expected": true
+        },
+        "scope-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "argument-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 2,
+          "checks_total": 2,
+          "expected": true
+        },
+        "decision-hygiene": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 3,
+          "checks_total": 3,
+          "expected": true
+        },
+        "workflow-completeness": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.8,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "anti-patterns": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 5,
+          "checks_total": 5,
+          "expected": true
+        },
+        "quality-criteria": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 4,
+          "checks_total": 4
+        }
+      }
+    },
+    {
+      "name": "Decide without alternatives",
+      "category": "decide",
+      "scores": {
+        "sequencing": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "scope-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "argument-quality": {
+          "score": 0.5,
+          "passed": false,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 2,
+          "expected": false
+        },
+        "decision-hygiene": {
+          "score": 0.6667,
+          "passed": false,
+          "threshold": 0.9,
+          "checks_passed": 2,
+          "checks_total": 3,
+          "expected": false
+        },
+        "workflow-completeness": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.8,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "anti-patterns": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 5,
+          "checks_total": 5
+        },
+        "quality-criteria": {
+          "score": 0.875,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 3,
+          "checks_total": 4
+        }
+      }
+    },
+    {
+      "name": "Decide without rationale",
+      "category": "decide",
+      "scores": {
+        "sequencing": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "scope-quality": {
+          "score": 0.5,
+          "passed": false,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 1,
+          "expected": false
+        },
+        "argument-quality": {
+          "score": 0.5,
+          "passed": false,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 2,
+          "expected": false
+        },
+        "decision-hygiene": {
+          "score": 0.8333,
+          "passed": false,
+          "threshold": 0.9,
+          "checks_passed": 2,
+          "checks_total": 3,
+          "expected": false
+        },
+        "workflow-completeness": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.8,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "anti-patterns": {
+          "score": 0.7,
+          "passed": false,
+          "threshold": 0.9,
+          "checks_passed": 2,
+          "checks_total": 5,
+          "expected": false
+        },
+        "quality-criteria": {
+          "score": 0.625,
+          "passed": false,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 4,
+          "expected": false
+        }
+      }
+    },
+    {
+      "name": "Handoff happy path",
+      "category": "handoff",
+      "scores": {
+        "sequencing": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 1,
+          "checks_total": 1,
+          "expected": true
+        },
+        "scope-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "argument-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 1,
+          "expected": true
+        },
+        "decision-hygiene": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "workflow-completeness": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.8,
+          "checks_passed": 1,
+          "checks_total": 1,
+          "expected": true
+        },
+        "anti-patterns": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 5,
+          "checks_total": 5,
+          "expected": true
+        },
+        "quality-criteria": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 2,
+          "checks_total": 2
+        }
+      }
+    },
+    {
+      "name": "Handoff inaccurate status",
+      "category": "handoff",
+      "scores": {
+        "sequencing": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "scope-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "argument-quality": {
+          "score": 0,
+          "passed": false,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 2,
+          "expected": false
+        },
+        "decision-hygiene": {
+          "score": 0.1667,
+          "passed": false,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 3,
+          "expected": false
+        },
+        "workflow-completeness": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.8,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "anti-patterns": {
+          "score": 0.7,
+          "passed": false,
+          "threshold": 0.9,
+          "checks_passed": 2,
+          "checks_total": 5,
+          "expected": false
+        },
+        "quality-criteria": {
+          "score": 0.75,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 2,
+          "checks_total": 4
+        }
+      }
+    },
+    {
+      "name": "Handoff minimal",
+      "category": "handoff",
+      "scores": {
+        "sequencing": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "scope-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "argument-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "decision-hygiene": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "workflow-completeness": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.8,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "anti-patterns": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 5,
+          "checks_total": 5,
+          "expected": true
+        },
+        "quality-criteria": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 0
+        }
+      }
+    },
+    {
+      "name": "Handoff without verify",
+      "category": "handoff",
+      "scores": {
+        "sequencing": {
+          "score": 0.5,
+          "passed": false,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 1,
+          "expected": false
+        },
+        "scope-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "argument-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "decision-hygiene": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "workflow-completeness": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.8,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "anti-patterns": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 5,
+          "checks_total": 5
+        },
+        "quality-criteria": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 1
+        }
+      }
+    },
+    {
+      "name": "Orient broad scope",
+      "category": "orient",
+      "scores": {
+        "sequencing": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "scope-quality": {
+          "score": 0.5,
+          "passed": false,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 1,
+          "expected": false
+        },
+        "argument-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "decision-hygiene": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "workflow-completeness": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.8,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "anti-patterns": {
+          "score": 0.9,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 4,
+          "checks_total": 5
+        },
+        "quality-criteria": {
+          "score": 0.5,
+          "passed": false,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 1,
+          "expected": false
+        }
+      }
+    },
+    {
+      "name": "Orient happy path",
+      "category": "orient",
+      "scores": {
+        "sequencing": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 1,
+          "checks_total": 1,
+          "expected": true
+        },
+        "scope-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 1,
+          "expected": true
+        },
+        "argument-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "decision-hygiene": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "workflow-completeness": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.8,
+          "checks_passed": 1,
+          "checks_total": 1,
+          "expected": true
+        },
+        "anti-patterns": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 5,
+          "checks_total": 5,
+          "expected": true
+        },
+        "quality-criteria": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 1
+        }
+      }
+    },
+    {
+      "name": "Orient minimal",
+      "category": "orient",
+      "scores": {
+        "sequencing": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 0,
+          "expected": true
+        },
+        "scope-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "argument-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "decision-hygiene": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "workflow-completeness": {
+          "score": 0.5,
+          "passed": false,
+          "threshold": 0.8,
+          "checks_passed": 0,
+          "checks_total": 1,
+          "expected": false
+        },
+        "anti-patterns": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 5,
+          "checks_total": 5,
+          "expected": true
+        },
+        "quality-criteria": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 0
+        }
+      }
+    },
+    {
+      "name": "Orient skips assemble",
+      "category": "orient",
+      "scores": {
+        "sequencing": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "scope-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "argument-quality": {
+          "score": 0,
+          "passed": false,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 2,
+          "expected": false
+        },
+        "decision-hygiene": {
+          "score": 0.1667,
+          "passed": false,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 3,
+          "expected": false
+        },
+        "workflow-completeness": {
+          "score": 0.5,
+          "passed": false,
+          "threshold": 0.8,
+          "checks_passed": 0,
+          "checks_total": 1,
+          "expected": false
+        },
+        "anti-patterns": {
+          "score": 0.7,
+          "passed": false,
+          "threshold": 0.9,
+          "checks_passed": 2,
+          "checks_total": 5,
+          "expected": false
+        },
+        "quality-criteria": {
+          "score": 0.6667,
+          "passed": false,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 3,
+          "expected": false
+        }
+      }
+    },
+    {
+      "name": "Verify early complete",
+      "category": "verify",
+      "scores": {
+        "sequencing": {
+          "score": 0.5,
+          "passed": false,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 1,
+          "expected": false
+        },
+        "scope-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "argument-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "decision-hygiene": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "workflow-completeness": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.8,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "anti-patterns": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 5,
+          "checks_total": 5
+        },
+        "quality-criteria": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 2,
+          "checks_total": 2
+        }
+      }
+    },
+    {
+      "name": "Verify happy path",
+      "category": "verify",
+      "scores": {
+        "sequencing": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "scope-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "argument-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "decision-hygiene": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "workflow-completeness": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.8,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "anti-patterns": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 5,
+          "checks_total": 5,
+          "expected": true
+        },
+        "quality-criteria": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 2,
+          "checks_total": 2
+        }
+      }
+    },
+    {
+      "name": "Verify incomplete",
+      "category": "verify",
+      "scores": {
+        "sequencing": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "scope-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "argument-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "decision-hygiene": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "workflow-completeness": {
+          "score": 0.5,
+          "passed": false,
+          "threshold": 0.8,
+          "checks_passed": 0,
+          "checks_total": 1,
+          "expected": false
+        },
+        "anti-patterns": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 5,
+          "checks_total": 5
+        },
+        "quality-criteria": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 1
+        }
+      }
+    },
+    {
+      "name": "Verify skipped entirely",
+      "category": "verify",
+      "scores": {
+        "sequencing": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "scope-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "argument-quality": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 1
+        },
+        "decision-hygiene": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "workflow-completeness": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.8,
+          "checks_passed": 0,
+          "checks_total": 0
+        },
+        "anti-patterns": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.9,
+          "checks_passed": 5,
+          "checks_total": 5,
+          "expected": true
+        },
+        "quality-criteria": {
+          "score": 1,
+          "passed": true,
+          "threshold": 0.7,
+          "checks_passed": 1,
+          "checks_total": 1
+        }
+      }
+    }
+  ]
+}

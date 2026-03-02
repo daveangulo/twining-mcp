@@ -14,6 +14,7 @@ interface ScenarioScore {
   passed: boolean;
   checks_passed: number;
   checks_total: number;
+  expected?: boolean;
 }
 
 interface ScenarioResult {
@@ -29,6 +30,9 @@ interface EvalResults {
     total_checks: number;
     passed_checks: number;
     overall_score: number;
+    effective_pass_rate?: number;
+    effective_passed?: number;
+    total_pairs?: number;
   };
   scenarios: ScenarioResult[];
 }
@@ -138,6 +142,14 @@ export default class EvalReporter implements Reporter {
     console.log(
       `  Checks: ${summary.passed_checks}/${summary.total_checks} passed`,
     );
+
+    // Effective pass rate (counts expected negatives as passes)
+    if (summary.effective_pass_rate !== undefined) {
+      const effPct = (summary.effective_pass_rate * 100).toFixed(1);
+      console.log(
+        `  Effective pass rate: ${effPct}% (${summary.effective_passed}/${summary.total_pairs} -- includes expected negatives)`,
+      );
+    }
     console.log("");
 
     // Worst performers

@@ -15,4 +15,3 @@ tool_calls:
       scope: "src/auth/"
 expected_scores:
   sequencing: false
-  workflow-completeness: false

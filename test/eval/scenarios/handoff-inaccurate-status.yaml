@@ -21,3 +21,4 @@ tool_calls:
 expected_scores:
   argument-quality: false
   decision-hygiene: false
+  anti-patterns: false

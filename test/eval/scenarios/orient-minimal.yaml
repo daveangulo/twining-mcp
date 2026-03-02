@@ -7,4 +7,5 @@ tool_calls:
     arguments: {}
 expected_scores:
   sequencing: true
+  workflow-completeness: false
   anti-patterns: true

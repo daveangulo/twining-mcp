@@ -63,7 +63,7 @@ export interface ScorerInput {
 
 /**
  * Converts a Scenario's tool_calls into a ScorerInput,
- * adding zero-based index to each call.
+ * adding zero-based index to each call and scenario metadata.
  */
 export function normalizeScenario(scenario: Scenario): ScorerInput {
   return {
@@ -72,5 +72,9 @@ export function normalizeScenario(scenario: Scenario): ScorerInput {
       arguments: tc.arguments,
       index,
     })),
+    metadata: {
+      category: scenario.category,
+      tags: scenario.tags,
+    },
   };
 }

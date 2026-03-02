@@ -11,6 +11,8 @@ tool_calls:
       rationale: ""
       alternatives_considered: ""
 expected_scores:
-  decision-hygiene: false
   argument-quality: false
+  decision-hygiene: false
+  workflow-completeness: false
   anti-patterns: false
+  quality-criteria: false

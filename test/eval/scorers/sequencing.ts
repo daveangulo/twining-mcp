@@ -5,6 +5,10 @@
  * that match workflow step tools appear in the correct relative order.
  * Not all workflow steps need to be present, but those that ARE present
  * must be in order.
+ *
+ * Category-aware: when metadata.category is present, only the primary workflow
+ * matching the category is checked. This prevents cross-workflow false positives
+ * where tools shared across workflows have different ordering expectations.
  */
 import type { Scorer, ScorerResult, CheckResult } from "../scorer-types.js";
 import { aggregateChecks, DEFAULT_THRESHOLD } from "../scorer-types.js";
@@ -64,6 +68,24 @@ function checkWorkflowOrder(
   };
 }
 
+/**
+ * Filter workflows to check based on scenario category.
+ * When category metadata is available, only check the primary workflow
+ * matching that category to avoid cross-workflow false positives.
+ * Falls back to checking all workflows when no category is set
+ * (e.g., transcript evals).
+ */
+function getRelevantWorkflows(
+  spec: BehaviorSpec,
+  metadata?: Record<string, unknown>,
+): WorkflowScenario[] {
+  const category = metadata?.category as string | undefined;
+  if (!category) return spec.workflows;
+
+  const primary = spec.workflows.filter((w) => w.name === category);
+  return primary.length > 0 ? primary : spec.workflows;
+}
+
 export const sequencingScorer: Scorer = {
   name: "sequencing",
   async score(input: ScorerInput, spec: BehaviorSpec): Promise<ScorerResult> {
@@ -72,8 +94,9 @@ export const sequencingScorer: Scorer = {
     }
 
     const checks: CheckResult[] = [];
+    const workflows = getRelevantWorkflows(spec, input.metadata);
 
-    for (const workflow of spec.workflows) {
+    for (const workflow of workflows) {
       const result = checkWorkflowOrder(input, workflow);
       if (result) {
         checks.push(result);

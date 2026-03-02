@@ -5,6 +5,10 @@
  * by checking if the first tool of any workflow appears. For each detected
  * workflow, checks how many of its expected steps appear. Score based on
  * completeness ratio.
+ *
+ * Category-aware: when metadata.category is present, only the primary workflow
+ * matching the category is checked. This prevents cross-workflow false positives
+ * where tools shared across workflows cause spurious incomplete-workflow detections.
  */
 import type { Scorer, ScorerResult, CheckResult } from "../scorer-types.js";
 import { aggregateChecks, DEFAULT_THRESHOLD } from "../scorer-types.js";
@@ -41,6 +45,24 @@ function checkWorkflowCompleteness(
   };
 }
 
+/**
+ * Filter workflows to check based on scenario category.
+ * When category metadata is available, only check the primary workflow
+ * matching that category to avoid cross-workflow false positives.
+ * Falls back to checking all workflows when no category is set
+ * (e.g., transcript evals).
+ */
+function getRelevantWorkflows(
+  spec: BehaviorSpec,
+  metadata?: Record<string, unknown>,
+): WorkflowScenario[] {
+  const category = metadata?.category as string | undefined;
+  if (!category) return spec.workflows;
+
+  const primary = spec.workflows.filter((w) => w.name === category);
+  return primary.length > 0 ? primary : spec.workflows;
+}
+
 export const workflowCompletenessScorer: Scorer = {
   name: "workflow-completeness",
   async score(input: ScorerInput, spec: BehaviorSpec): Promise<ScorerResult> {
@@ -49,8 +71,9 @@ export const workflowCompletenessScorer: Scorer = {
     }
 
     const checks: CheckResult[] = [];
+    const workflows = getRelevantWorkflows(spec, input.metadata);
 
-    for (const workflow of spec.workflows) {
+    for (const workflow of workflows) {
       const result = checkWorkflowCompleteness(input, workflow);
       if (result) {
         checks.push(result);

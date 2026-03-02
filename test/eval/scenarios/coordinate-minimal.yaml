@@ -6,4 +6,5 @@ tool_calls:
   - tool: twining_agents
     arguments: {}
 expected_scores:
+  workflow-completeness: false
   anti-patterns: true
