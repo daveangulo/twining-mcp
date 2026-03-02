@@ -1,0 +1,35 @@
+{
+  "agent_id": "main",
+  "domain": "architecture",
+  "scope": "test/eval/",
+  "summary": "7 category scorers with hybrid rule mapping: metadata from BehaviorSpec, custom check logic inline",
+  "context": "Phase 16 context gathering: designing how scorers map to BEHAVIORS.md rules and produce results",
+  "rationale": "Category scorers (sequencing, scope quality, argument quality, decision hygiene, workflow completeness, anti-patterns, quality criteria) group logically. Hybrid approach gives traceability back to BEHAVIORS.md rule IDs while allowing sophisticated check logic that can't be expressed as rule strings. Scorers return both numeric 0-1 and pass/fail checks for thresholds and diagnostics respectively.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "One micro-scorer per BEHAVIORS.md rule (40+ scorers)",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Too many scorers to manage, aggregation complexity, most rules are better evaluated in context of their category"
+    },
+    {
+      "option": "Fully dynamic scorers that parse rule text into checks at runtime",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Rule text is natural language -- can't reliably generate check logic from it. Custom logic needed for pattern matching."
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "test/eval/"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": false,
+  "id": "01KJQGD6V5SXMG7SJSQQWVXMVZ",
+  "timestamp": "2026-03-02T14:49:31.749Z",
+  "status": "provisional"
+}

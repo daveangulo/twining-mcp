@@ -120,3 +120,11 @@
 {"tool_name":"twining_post","timestamp":"2026-03-02T13:27:47.673Z","duration_ms":82,"success":true,"agent_id":"unknown"}
 {"tool_name":"twining_verify","timestamp":"2026-03-02T13:27:50.534Z","duration_ms":182,"success":true,"agent_id":"unknown"}
 {"tool_name":"twining_add_relation","timestamp":"2026-03-02T13:28:01.969Z","duration_ms":4,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_decide","timestamp":"2026-03-02T14:49:25.383Z","duration_ms":627,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_decide","timestamp":"2026-03-02T14:49:31.915Z","duration_ms":167,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_post","timestamp":"2026-03-02T14:49:35.314Z","duration_ms":49,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_verify","timestamp":"2026-03-02T14:49:39.880Z","duration_ms":409,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_decide","timestamp":"2026-03-02T15:51:50.343Z","duration_ms":484,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_decide","timestamp":"2026-03-02T15:51:58.555Z","duration_ms":122,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_post","timestamp":"2026-03-02T15:52:02.498Z","duration_ms":146,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_verify","timestamp":"2026-03-02T15:52:06.275Z","duration_ms":392,"success":true,"agent_id":"unknown"}

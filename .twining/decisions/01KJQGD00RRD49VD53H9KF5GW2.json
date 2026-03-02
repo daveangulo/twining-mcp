@@ -1,0 +1,36 @@
+{
+  "agent_id": "main",
+  "domain": "architecture",
+  "scope": "test/eval/",
+  "summary": "Eval scenarios use flat tool call lists with per-scorer pass/fail expectations",
+  "context": "Phase 16 context gathering: designing the YAML scenario format for the deterministic eval harness",
+  "rationale": "Flat tool lists are simpler to write and maintain. Scorers infer patterns from sequences rather than relying on annotated step metadata. Per-scorer expectations (vs single pass/fail) allow scenarios to test mixed quality -- good sequencing but bad scope, for example.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Annotated steps with rule references per tool call",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "More verbose, couples scenario format to rule IDs, harder to maintain as BEHAVIORS.md evolves"
+    },
+    {
+      "option": "Single expected_outcome: pass/fail per scenario",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Too coarse -- can't express scenarios that are good on some dimensions and bad on others"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "test/eval/scenarios/",
+    "test/eval/types.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": false,
+  "id": "01KJQGD00RRD49VD53H9KF5GW2",
+  "timestamp": "2026-03-02T14:49:24.769Z",
+  "status": "provisional"
+}

@@ -1,0 +1,44 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "test/eval/scorers/",
+  "summary": "Scorers use weighted severity aggregation: MUST fail=0, SHOULD fail=0.5, pass=1 with DEFAULT_THRESHOLD=0.8",
+  "context": "7 deterministic scorers needed a consistent scoring model that distinguishes critical failures from soft recommendations while producing a normalized 0-1 score.",
+  "rationale": "Weighted aggregation via aggregateChecks helper gives MUST/MUST_NOT checks veto power (score 0) while SHOULD checks degrade gracefully (0.5). Threshold of 0.8 means a scenario can fail one SHOULD check and still pass, but any MUST failure is an automatic fail. Rule IDs trace to BEHAVIORS.md for auditability.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Binary pass/fail per check without weighting",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Too strict — SHOULD-level checks would cause false failures on reasonable agent behavior"
+    },
+    {
+      "option": "Configurable per-scorer thresholds",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Premature complexity; DEFAULT_THRESHOLD covers all current cases and can be overridden per-scenario in YAML"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "test/eval/scorer-types.ts",
+    "test/eval/scorers/sequencing.ts",
+    "test/eval/scorers/scope-quality.ts",
+    "test/eval/scorers/argument-quality.ts",
+    "test/eval/scorers/decision-hygiene.ts",
+    "test/eval/scorers/workflow-completeness.ts",
+    "test/eval/scorers/anti-patterns.ts",
+    "test/eval/scorers/quality-criteria.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [
+    "d8588c9"
+  ],
+  "assembled_before": false,
+  "id": "01KJQKZHQ24A55CE8HPGPAFXV6",
+  "timestamp": "2026-03-02T15:51:58.436Z",
+  "status": "active"
+}

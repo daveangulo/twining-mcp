@@ -1586,5 +1586,165 @@
       "tests": "18 tests validating parser against real BEHAVIORS.md with Zod schema validation"
     },
     "created_at": "2026-03-02T13:28:01.968Z"
+  },
+  {
+    "id": "01KJQGD0M359QJ1Q3J0D3QAW06",
+    "source": "01KJQGD0M1SC235ES5APQRKH16",
+    "target": "01KJQGD0M0HCTNMDV6PXPRWXPR",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Eval scenarios use flat tool call lists with per-scorer pass/fail expectations"
+    },
+    "created_at": "2026-03-02T14:49:25.379Z"
+  },
+  {
+    "id": "01KJQGD0M6Y63H0S83W0BS7EFW",
+    "source": "01KJQBQE35Y4S3A6P8GCJHHJ35",
+    "target": "01KJQGD0M0HCTNMDV6PXPRWXPR",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Eval scenarios use flat tool call lists with per-scorer pass/fail expectations"
+    },
+    "created_at": "2026-03-02T14:49:25.382Z"
+  },
+  {
+    "id": "01KJQGD70BRTWRRX7E8RTV2GXV",
+    "source": "01KJQGD709X1PF0TK5GQ338A0Z",
+    "target": "01KJQGD708ZXV87SXESXG37BSS",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "7 category scorers with hybrid rule mapping: metadata from BehaviorSpec, custom check logic inline"
+    },
+    "created_at": "2026-03-02T14:49:31.915Z"
+  },
+  {
+    "id": "01KJQKZ9SN65RMV5532RS7VH0R",
+    "source": "01KJQKZ9SM5M5FR81MH6NSMND9",
+    "target": "01KJQKZ9SH2JEGQTTD8GY3AMR6",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Eval harness uses matrix testing: 22 scenarios × 7 scorers = 154 dynamic vitest tests"
+    },
+    "created_at": "2026-03-02T15:51:50.325Z"
+  },
+  {
+    "id": "01KJQKZ9STNZDEN21XNRAZDGC4",
+    "source": "01KJQKZ9SPR7G49R81Z2JAV3V0",
+    "target": "01KJQKZ9SH2JEGQTTD8GY3AMR6",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Eval harness uses matrix testing: 22 scenarios × 7 scorers = 154 dynamic vitest tests"
+    },
+    "created_at": "2026-03-02T15:51:50.330Z"
+  },
+  {
+    "id": "01KJQKZ9SXVT7T3VX1YE6AV4CE",
+    "source": "01KJQKZ9SVSTFXZ8F9P0Z4KWZZ",
+    "target": "01KJQKZ9SH2JEGQTTD8GY3AMR6",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Eval harness uses matrix testing: 22 scenarios × 7 scorers = 154 dynamic vitest tests"
+    },
+    "created_at": "2026-03-02T15:51:50.333Z"
+  },
+  {
+    "id": "01KJQKZ9T3RQ7TGB5H7DQQCD5C",
+    "source": "01KJQKZ9SZT7621S9DAR2C2BHQ",
+    "target": "01KJQKZ9SH2JEGQTTD8GY3AMR6",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Eval harness uses matrix testing: 22 scenarios × 7 scorers = 154 dynamic vitest tests"
+    },
+    "created_at": "2026-03-02T15:51:50.339Z"
+  },
+  {
+    "id": "01KJQKZ9T6RCG97298RKM6958D",
+    "source": "01KJQKZ9T5VWREK2XPFYFFA2FB",
+    "target": "01KJQKZ9SH2JEGQTTD8GY3AMR6",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Eval harness uses matrix testing: 22 scenarios × 7 scorers = 154 dynamic vitest tests"
+    },
+    "created_at": "2026-03-02T15:51:50.343Z"
+  },
+  {
+    "id": "01KJQKZHTE8YAM8DTCB1DYK37T",
+    "source": "01KJQKZ9SVSTFXZ8F9P0Z4KWZZ",
+    "target": "01KJQKZHTCEKYS3H35CGJRN5H0",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Scorers use weighted severity aggregation: MUST fail=0, SHOULD fail=0.5, pass=1 with DEFAULT_THRESHOLD=0.8"
+    },
+    "created_at": "2026-03-02T15:51:58.542Z"
+  },
+  {
+    "id": "01KJQKZHTGR0EC014C8W7QKXG1",
+    "source": "01KJQKZHTE8YAM8DTCB1DYK37V",
+    "target": "01KJQKZHTCEKYS3H35CGJRN5H0",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Scorers use weighted severity aggregation: MUST fail=0, SHOULD fail=0.5, pass=1 with DEFAULT_THRESHOLD=0.8"
+    },
+    "created_at": "2026-03-02T15:51:58.544Z"
+  },
+  {
+    "id": "01KJQKZHTH0DHDGREHD9063B3W",
+    "source": "01KJQKZHTGR0EC014C8W7QKXG2",
+    "target": "01KJQKZHTCEKYS3H35CGJRN5H0",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Scorers use weighted severity aggregation: MUST fail=0, SHOULD fail=0.5, pass=1 with DEFAULT_THRESHOLD=0.8"
+    },
+    "created_at": "2026-03-02T15:51:58.545Z"
+  },
+  {
+    "id": "01KJQKZHTKPGHB0ZCZDRFD52SN",
+    "source": "01KJQKZHTJ934AXMM8STAY0QZ3",
+    "target": "01KJQKZHTCEKYS3H35CGJRN5H0",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Scorers use weighted severity aggregation: MUST fail=0, SHOULD fail=0.5, pass=1 with DEFAULT_THRESHOLD=0.8"
+    },
+    "created_at": "2026-03-02T15:51:58.547Z"
+  },
+  {
+    "id": "01KJQKZHTNBP0NRFP1D9TNDC85",
+    "source": "01KJQKZHTMTNKX39QZ4M11M8A3",
+    "target": "01KJQKZHTCEKYS3H35CGJRN5H0",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Scorers use weighted severity aggregation: MUST fail=0, SHOULD fail=0.5, pass=1 with DEFAULT_THRESHOLD=0.8"
+    },
+    "created_at": "2026-03-02T15:51:58.549Z"
+  },
+  {
+    "id": "01KJQKZHTQ74NWGRMR9ZDECE3P",
+    "source": "01KJQKZHTP48VSB04E0GQAYMFP",
+    "target": "01KJQKZHTCEKYS3H35CGJRN5H0",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Scorers use weighted severity aggregation: MUST fail=0, SHOULD fail=0.5, pass=1 with DEFAULT_THRESHOLD=0.8"
+    },
+    "created_at": "2026-03-02T15:51:58.551Z"
+  },
+  {
+    "id": "01KJQKZHTSKE60T6J57KFV96NT",
+    "source": "01KJQKZHTRFDN5PBTY4J83GAPF",
+    "target": "01KJQKZHTCEKYS3H35CGJRN5H0",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Scorers use weighted severity aggregation: MUST fail=0, SHOULD fail=0.5, pass=1 with DEFAULT_THRESHOLD=0.8"
+    },
+    "created_at": "2026-03-02T15:51:58.553Z"
+  },
+  {
+    "id": "01KJQKZHTTHKMCE1TDQFQAR62X",
+    "source": "01KJQKZHTSKE60T6J57KFV96NV",
+    "target": "01KJQKZHTCEKYS3H35CGJRN5H0",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Scorers use weighted severity aggregation: MUST fail=0, SHOULD fail=0.5, pass=1 with DEFAULT_THRESHOLD=0.8"
+    },
+    "created_at": "2026-03-02T15:51:58.555Z"
   }
 ]

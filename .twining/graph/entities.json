@@ -1459,7 +1459,7 @@
       "scope": "test/eval/"
     },
     "created_at": "2026-03-02T13:27:43.973Z",
-    "updated_at": "2026-03-02T13:27:43.973Z"
+    "updated_at": "2026-03-02T14:49:25.380Z"
   },
   {
     "id": "01KJQBQE38EAYGT0XHJJQEX50V",
@@ -1480,5 +1480,189 @@
     },
     "created_at": "2026-03-02T13:27:43.978Z",
     "updated_at": "2026-03-02T13:27:43.978Z"
+  },
+  {
+    "id": "01KJQGD0M0HCTNMDV6PXPRWXPR",
+    "name": "01KJQGD00RRD49VD53H9KF5GW2",
+    "type": "concept",
+    "properties": {
+      "summary": "Eval scenarios use flat tool call lists with per-scorer pass/fail expectations",
+      "scope": "test/eval/"
+    },
+    "created_at": "2026-03-02T14:49:25.376Z",
+    "updated_at": "2026-03-02T14:49:25.376Z"
+  },
+  {
+    "id": "01KJQGD0M1SC235ES5APQRKH16",
+    "name": "test/eval/scenarios/",
+    "type": "file",
+    "properties": {
+      "scope": "test/eval/"
+    },
+    "created_at": "2026-03-02T14:49:25.377Z",
+    "updated_at": "2026-03-02T14:49:25.377Z"
+  },
+  {
+    "id": "01KJQGD708ZXV87SXESXG37BSS",
+    "name": "01KJQGD6V5SXMG7SJSQQWVXMVZ",
+    "type": "concept",
+    "properties": {
+      "summary": "7 category scorers with hybrid rule mapping: metadata from BehaviorSpec, custom check logic inline",
+      "scope": "test/eval/"
+    },
+    "created_at": "2026-03-02T14:49:31.912Z",
+    "updated_at": "2026-03-02T14:49:31.912Z"
+  },
+  {
+    "id": "01KJQGD709X1PF0TK5GQ338A0Z",
+    "name": "test/eval/",
+    "type": "file",
+    "properties": {
+      "scope": "test/eval/"
+    },
+    "created_at": "2026-03-02T14:49:31.913Z",
+    "updated_at": "2026-03-02T14:49:31.913Z"
+  },
+  {
+    "id": "01KJQKZ9SH2JEGQTTD8GY3AMR6",
+    "name": "01KJQKZ9BMM5N15H1EQWAAGFDJ",
+    "type": "concept",
+    "properties": {
+      "summary": "Eval harness uses matrix testing: 22 scenarios × 7 scorers = 154 dynamic vitest tests",
+      "scope": "test/eval/"
+    },
+    "created_at": "2026-03-02T15:51:50.321Z",
+    "updated_at": "2026-03-02T15:51:50.321Z"
+  },
+  {
+    "id": "01KJQKZ9SM5M5FR81MH6NSMND9",
+    "name": "test/eval/eval-runner.eval.ts",
+    "type": "file",
+    "properties": {
+      "scope": "test/eval/"
+    },
+    "created_at": "2026-03-02T15:51:50.323Z",
+    "updated_at": "2026-03-02T15:51:50.323Z"
+  },
+  {
+    "id": "01KJQKZ9SPR7G49R81Z2JAV3V0",
+    "name": "test/eval/scenario-schema.ts",
+    "type": "file",
+    "properties": {
+      "scope": "test/eval/"
+    },
+    "created_at": "2026-03-02T15:51:50.326Z",
+    "updated_at": "2026-03-02T15:51:50.326Z"
+  },
+  {
+    "id": "01KJQKZ9SVSTFXZ8F9P0Z4KWZZ",
+    "name": "test/eval/scorer-types.ts",
+    "type": "file",
+    "properties": {
+      "scope": "test/eval/scorers/"
+    },
+    "created_at": "2026-03-02T15:51:50.331Z",
+    "updated_at": "2026-03-02T15:51:58.541Z"
+  },
+  {
+    "id": "01KJQKZ9SZT7621S9DAR2C2BHQ",
+    "name": "test/eval/scorers/index.ts",
+    "type": "file",
+    "properties": {
+      "scope": "test/eval/"
+    },
+    "created_at": "2026-03-02T15:51:50.335Z",
+    "updated_at": "2026-03-02T15:51:50.335Z"
+  },
+  {
+    "id": "01KJQKZ9T5VWREK2XPFYFFA2FB",
+    "name": "vitest.config.eval.ts",
+    "type": "file",
+    "properties": {
+      "scope": "test/eval/"
+    },
+    "created_at": "2026-03-02T15:51:50.341Z",
+    "updated_at": "2026-03-02T15:51:50.341Z"
+  },
+  {
+    "id": "01KJQKZHTCEKYS3H35CGJRN5H0",
+    "name": "01KJQKZHQ24A55CE8HPGPAFXV6",
+    "type": "concept",
+    "properties": {
+      "summary": "Scorers use weighted severity aggregation: MUST fail=0, SHOULD fail=0.5, pass=1 with DEFAULT_THRESHOLD=0.8",
+      "scope": "test/eval/scorers/"
+    },
+    "created_at": "2026-03-02T15:51:58.540Z",
+    "updated_at": "2026-03-02T15:51:58.540Z"
+  },
+  {
+    "id": "01KJQKZHTE8YAM8DTCB1DYK37V",
+    "name": "test/eval/scorers/sequencing.ts",
+    "type": "file",
+    "properties": {
+      "scope": "test/eval/scorers/"
+    },
+    "created_at": "2026-03-02T15:51:58.542Z",
+    "updated_at": "2026-03-02T15:51:58.542Z"
+  },
+  {
+    "id": "01KJQKZHTGR0EC014C8W7QKXG2",
+    "name": "test/eval/scorers/scope-quality.ts",
+    "type": "file",
+    "properties": {
+      "scope": "test/eval/scorers/"
+    },
+    "created_at": "2026-03-02T15:51:58.544Z",
+    "updated_at": "2026-03-02T15:51:58.544Z"
+  },
+  {
+    "id": "01KJQKZHTJ934AXMM8STAY0QZ3",
+    "name": "test/eval/scorers/argument-quality.ts",
+    "type": "file",
+    "properties": {
+      "scope": "test/eval/scorers/"
+    },
+    "created_at": "2026-03-02T15:51:58.546Z",
+    "updated_at": "2026-03-02T15:51:58.546Z"
+  },
+  {
+    "id": "01KJQKZHTMTNKX39QZ4M11M8A3",
+    "name": "test/eval/scorers/decision-hygiene.ts",
+    "type": "file",
+    "properties": {
+      "scope": "test/eval/scorers/"
+    },
+    "created_at": "2026-03-02T15:51:58.548Z",
+    "updated_at": "2026-03-02T15:51:58.548Z"
+  },
+  {
+    "id": "01KJQKZHTP48VSB04E0GQAYMFP",
+    "name": "test/eval/scorers/workflow-completeness.ts",
+    "type": "file",
+    "properties": {
+      "scope": "test/eval/scorers/"
+    },
+    "created_at": "2026-03-02T15:51:58.550Z",
+    "updated_at": "2026-03-02T15:51:58.550Z"
+  },
+  {
+    "id": "01KJQKZHTRFDN5PBTY4J83GAPF",
+    "name": "test/eval/scorers/anti-patterns.ts",
+    "type": "file",
+    "properties": {
+      "scope": "test/eval/scorers/"
+    },
+    "created_at": "2026-03-02T15:51:58.552Z",
+    "updated_at": "2026-03-02T15:51:58.552Z"
+  },
+  {
+    "id": "01KJQKZHTSKE60T6J57KFV96NV",
+    "name": "test/eval/scorers/quality-criteria.ts",
+    "type": "file",
+    "properties": {
+      "scope": "test/eval/scorers/"
+    },
+    "created_at": "2026-03-02T15:51:58.553Z",
+    "updated_at": "2026-03-02T15:51:58.553Z"
   }
 ]

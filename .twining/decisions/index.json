@@ -792,5 +792,77 @@
     "commit_hashes": [
       "21f70e5"
     ]
+  },
+  {
+    "id": "01KJQGD00RRD49VD53H9KF5GW2",
+    "timestamp": "2026-03-02T14:49:24.769Z",
+    "domain": "architecture",
+    "scope": "test/eval/",
+    "summary": "Eval scenarios use flat tool call lists with per-scorer pass/fail expectations",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      "test/eval/scenarios/",
+      "test/eval/types.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KJQGD6V5SXMG7SJSQQWVXMVZ",
+    "timestamp": "2026-03-02T14:49:31.749Z",
+    "domain": "architecture",
+    "scope": "test/eval/",
+    "summary": "7 category scorers with hybrid rule mapping: metadata from BehaviorSpec, custom check logic inline",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      "test/eval/"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KJQKZ9BMM5N15H1EQWAAGFDJ",
+    "timestamp": "2026-03-02T15:51:49.882Z",
+    "domain": "architecture",
+    "scope": "test/eval/",
+    "summary": "Eval harness uses matrix testing: 22 scenarios × 7 scorers = 154 dynamic vitest tests",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      "test/eval/eval-runner.eval.ts",
+      "test/eval/scenario-schema.ts",
+      "test/eval/scorer-types.ts",
+      "test/eval/scorers/index.ts",
+      "vitest.config.eval.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": [
+      "a5124b3"
+    ]
+  },
+  {
+    "id": "01KJQKZHQ24A55CE8HPGPAFXV6",
+    "timestamp": "2026-03-02T15:51:58.436Z",
+    "domain": "implementation",
+    "scope": "test/eval/scorers/",
+    "summary": "Scorers use weighted severity aggregation: MUST fail=0, SHOULD fail=0.5, pass=1 with DEFAULT_THRESHOLD=0.8",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "test/eval/scorer-types.ts",
+      "test/eval/scorers/sequencing.ts",
+      "test/eval/scorers/scope-quality.ts",
+      "test/eval/scorers/argument-quality.ts",
+      "test/eval/scorers/decision-hygiene.ts",
+      "test/eval/scorers/workflow-completeness.ts",
+      "test/eval/scorers/anti-patterns.ts",
+      "test/eval/scorers/quality-criteria.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": [
+      "d8588c9"
+    ]
   }
 ]
