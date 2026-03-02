@@ -56,6 +56,7 @@ Recent decisions affecting current work:
 - MUST rule allocation: 10 total (9 MUST + 1 MUST_NOT) across DECIDE(3), POST(2), ASSEMBLE(1), HANDOFF(1), VERIFY(1), ENTITY(1), RELATION(1)
 - State machine parser for BEHAVIORS.md -- no markdown AST library, format-specific extraction
 - Eval tests use real BEHAVIORS.md, not fixtures -- single source of truth
+- Behavioral spec as single Markdown document parsed by state machine into typed objects
 
 ### Pending Todos
 
