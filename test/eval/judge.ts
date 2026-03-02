@@ -135,7 +135,7 @@ export async function callJudge(
   prompt: string,
 ): Promise<JudgeResult> {
   const model =
-    process.env.TWINING_EVAL_MODEL ?? "claude-haiku-4-5-20250929";
+    process.env.TWINING_EVAL_MODEL ?? "claude-haiku-4-5-20251001";
 
   const response = await client.messages.create({
     model,

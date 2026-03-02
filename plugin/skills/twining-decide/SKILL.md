@@ -60,20 +60,26 @@ If `twining_decide` detects a conflict with an existing decision:
    - `twining_override` — replace the old decision (records who and why)
    - `twining_reconsider` — flag the old decision for review (sets it to provisional)
 
-### 5. Link to Commits
+### 5. Link to Commits (REQUIRED)
 
-After committing code that implements a decision, call `twining_link_commit` with:
+After committing code that implements a decision, you MUST call `twining_link_commit` with:
 - `decision_id`: The decision ID returned by `twining_decide`
 - `commit_hash`: The git commit hash
 
-This creates traceability from decisions to code changes.
+This is NOT optional — unlinking decisions from commits breaks traceability and is flagged as the "fire-and-forget-decisions" anti-pattern.
 
 ### 6. Promote Provisional Decisions
 
 If you made a `low` or `medium` confidence decision that's now validated (tests pass, design confirmed), use `twining_promote` to upgrade it to `active` with `high` confidence.
 
+## Pre-requisite
+
+Before recording a decision, you MUST have called `twining_assemble` earlier in this session. Making decisions without assembling context first is the "blind-decisions" anti-pattern — you risk contradicting existing decisions you don't know about.
+
 ## Anti-patterns
 
+- NEVER decide without first calling `twining_assemble` ("blind-decisions" anti-pattern)
+- NEVER skip `twining_link_commit` after committing ("fire-and-forget-decisions" anti-pattern)
 - NEVER use `twining_post` with `entry_type: "decision"` — always use `twining_decide`
 - NEVER skip alternatives — even "do nothing" is a valid rejected alternative
 - NEVER use `"project"` scope for a decision that only affects one module

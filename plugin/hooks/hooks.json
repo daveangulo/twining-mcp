@@ -3,8 +3,8 @@
     "SessionStart": [{
       "matcher": "*",
       "hooks": [{
-        "type": "command",
-        "command": "echo '{\"message\": \"Twining coordination is active. Use /twining:status for project state.\"}'"
+        "type": "prompt",
+        "prompt": "Twining coordination is active. BEFORE reading code or making changes, you MUST call `twining_assemble` with your task description and scope. This gathers prior decisions, warnings, and context that prevent repeated mistakes."
       }]
     }],
     "SubagentStop": [{

@@ -50,8 +50,10 @@ export const decisionHygieneScorer: Scorer = {
           : "Fire-and-forget: no twining_link_commit after twining_decide",
       });
 
-      // Check alternatives_considered populated
-      const alternatives = decide.arguments["alternatives_considered"];
+      // Check alternatives populated (tool parameter is "alternatives")
+      const alternatives =
+        decide.arguments["alternatives"] ??
+        decide.arguments["alternatives_considered"];
       const hasAlternatives =
         (Array.isArray(alternatives) && alternatives.length > 0) ||
         (typeof alternatives === "string" && alternatives.trim().length > 0);
