@@ -156,7 +156,7 @@ Phases execute in numeric order: 15 -> 16 -> 17 -> 18 -> 19
 | 12. Coordination Engine | v1.3 | 3/3 | Complete | 2026-02-17 |
 | 13. Tools and Assembly | v1.3 | 2/2 | Complete | 2026-02-17 |
 | 14. Agent Dashboard | v1.3 | 2/2 | Complete | 2026-02-17 |
-| 15. Behavioral Specification | v1.4 | 0/2 | Planning | - |
+| 15. Behavioral Specification | 1/2 | In Progress|  | - |
 | 16. Eval Harness -- Deterministic Core | v1.4 | 0/? | Not started | - |
 | 17. Transcript Analysis | v1.4 | 0/? | Not started | - |
 | 18. LLM-as-Judge Integration | v1.4 | 0/? | Not started | - |

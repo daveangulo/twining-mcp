@@ -9,19 +9,19 @@ Requirements for v1.4 Agent Behavior Quality. Each maps to roadmap phases.
 
 ### Behavioral Specification
 
-- [ ] **SPEC-01**: plugin/BEHAVIORS.md contains behavioral rules (MUST/SHOULD/MUST_NOT) for all 32 MCP tools
-- [ ] **SPEC-02**: Each tool has usage context, correct usage examples, and incorrect usage examples
-- [ ] **SPEC-03**: 8+ workflow scenarios define expected multi-tool sequences for common patterns (orient->work->decide->verify, coordination, handoff, etc.)
-- [ ] **SPEC-04**: Anti-pattern catalog documents when NOT to use Twining and what constitutes misuse
-- [ ] **SPEC-05**: Tools tiered by importance (Tier 1 core, Tier 2 supporting) with proportional spec depth
-- [ ] **SPEC-06**: Spec uses structured markdown conventions that are machine-parseable by the eval harness
+- [x] **SPEC-01**: plugin/BEHAVIORS.md contains behavioral rules (MUST/SHOULD/MUST_NOT) for all 32 MCP tools
+- [x] **SPEC-02**: Each tool has usage context, correct usage examples, and incorrect usage examples
+- [x] **SPEC-03**: 8+ workflow scenarios define expected multi-tool sequences for common patterns (orient->work->decide->verify, coordination, handoff, etc.)
+- [x] **SPEC-04**: Anti-pattern catalog documents when NOT to use Twining and what constitutes misuse
+- [x] **SPEC-05**: Tools tiered by importance (Tier 1 core, Tier 2 supporting) with proportional spec depth
+- [x] **SPEC-06**: Spec uses structured markdown conventions that are machine-parseable by the eval harness
 
 ### Data Quality
 
-- [ ] **QUAL-01**: Per-tool quality criteria define what "good" parameter content looks like vs. garbage
-- [ ] **QUAL-02**: Scope precision rules defined (narrowest-fit path prefix, never "project" when more specific exists)
-- [ ] **QUAL-03**: Rationale quality criteria defined (must reference alternatives, must be specific enough to be useful in future sessions)
-- [ ] **QUAL-04**: Quality anti-patterns documented (vague rationale, overly broad scope, missing context, redundant entries)
+- [x] **QUAL-01**: Per-tool quality criteria define what "good" parameter content looks like vs. garbage
+- [x] **QUAL-02**: Scope precision rules defined (narrowest-fit path prefix, never "project" when more specific exists)
+- [x] **QUAL-03**: Rationale quality criteria defined (must reference alternatives, must be specific enough to be useful in future sessions)
+- [x] **QUAL-04**: Quality anti-patterns documented (vague rationale, overly broad scope, missing context, redundant entries)
 
 ### Evaluation Harness
 
@@ -74,16 +74,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SPEC-01 | Phase 15 | Pending |
-| SPEC-02 | Phase 15 | Pending |
-| SPEC-03 | Phase 15 | Pending |
-| SPEC-04 | Phase 15 | Pending |
-| SPEC-05 | Phase 15 | Pending |
-| SPEC-06 | Phase 15 | Pending |
-| QUAL-01 | Phase 15 | Pending |
-| QUAL-02 | Phase 15 | Pending |
-| QUAL-03 | Phase 15 | Pending |
-| QUAL-04 | Phase 15 | Pending |
+| SPEC-01 | Phase 15 | Complete |
+| SPEC-02 | Phase 15 | Complete |
+| SPEC-03 | Phase 15 | Complete |
+| SPEC-04 | Phase 15 | Complete |
+| SPEC-05 | Phase 15 | Complete |
+| SPEC-06 | Phase 15 | Complete |
+| QUAL-01 | Phase 15 | Complete |
+| QUAL-02 | Phase 15 | Complete |
+| QUAL-03 | Phase 15 | Complete |
+| QUAL-04 | Phase 15 | Complete |
 | EVAL-01 | Phase 16 | Pending |
 | EVAL-02 | Phase 16 | Pending |
 | EVAL-03 | Phase 18 | Pending |
