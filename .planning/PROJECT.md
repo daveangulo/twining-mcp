@@ -58,9 +58,14 @@ Agents share *why* decisions were made, not just *what* was done — eliminating
 
 ### Active
 
-<!-- No active milestone — planning next -->
+## Current Milestone: v1.4 Agent Behavior Quality
 
-(No active requirements — next milestone not yet defined)
+**Goal:** Define what correct Twining usage looks like for AI agents, build evaluation infrastructure to measure it, and tune the plugin until agents behave well.
+
+**Target features:**
+- Comprehensive behavioral specification for all 32 MCP tools (when to use, when not to, workflow scenarios, anti-patterns)
+- Test harness with dual evaluation: LLM-as-judge synthetic scenarios + real transcript analysis
+- Tuned plugin (skills, hooks, agents) validated against the harness
 
 ### Out of Scope
 
