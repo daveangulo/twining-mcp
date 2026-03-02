@@ -71,6 +71,8 @@ Recent decisions affecting current work:
 - Scenario expected_scores only assert scorers the scenario specifically tests; undeclared scorers pass vacuously
 - Anti-patterns SHOULD-level aggregation requires 3+ violations to breach 0.8 threshold
 - Cross-cutting lifecycle scenarios cannot assert sequencing/completeness due to overlapping workflow definitions
+- Eval harness uses matrix testing: 22 scenarios × 7 scorers = 154 dynamic vitest tests
+- Scorers use weighted severity aggregation: MUST fail=0, SHOULD fail=0.5, pass=1 with DEFAULT_THRESHOLD=0.8
 
 ### Pending Todos
 
