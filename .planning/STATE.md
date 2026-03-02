@@ -23,11 +23,11 @@ See: .planning/PROJECT.md (updated 2026-03-02)
 ## Current Position
 
 Phase: 19 of 19 (Plugin Tuning Cycle)
-Plan: 1 of 3 in current phase (19-01 complete)
+Plan: 2 of 3 in current phase (19-02 complete)
 Status: In Progress
-Last activity: 2026-03-02 -- Completed 19-01 (Tuning infrastructure setup)
+Last activity: 2026-03-02 -- Completed 19-02 (Plugin tuning iterations)
 
-Progress: [██████████████████████████████████████░░░] 97% (18/19 phases, 42/44 v1.4 plans through Phase 19-01)
+Progress: [███████████████████████████████████████░░] 98% (18/19 phases, 43/44 v1.4 plans through Phase 19-02)
 
 ## Performance Metrics
 
@@ -48,6 +48,7 @@ Progress: [███████████████████████
 - 18-01: 4min (2 tasks, 14 files)
 - 18-02: 2min (2 tasks, 3 files)
 - 19-01: 10min (3 tasks, 15 files)
+- 19-02: 14min (2 tasks, 15 files)
 
 ## Accumulated Context
 
@@ -100,6 +101,10 @@ Recent decisions affecting current work:
 - [Phase 19]: Per-scorer thresholds: core=0.9, completeness=0.8, quality=0.7, LLM advisory=0.5 (replaces flat DEFAULT_THRESHOLD)
 - [Phase 19]: Holdout scenarios use YAML field (holdout:true) with loader filtering -- no separate directory
 - [Phase 19]: Failure classification: 35/41 expected negatives (violation scenarios), 6 unexpected needing Plan 19-02 investigation
+- [Phase 19]: Category-aware scorer filtering: sequencing/completeness scorers check only the primary workflow matching the scenario category
+- [Phase 19]: Expected negatives declared exhaustively: all 35 violation scenario-scorer pairs marked with expected_scores: false
+- [Phase 19]: Effective pass rate metric: counts expected=false matches as eval passes alongside score>=threshold passes
+- [Phase 19]: No plugin skill modifications needed for tuning: all 6 unexpected failures were scorer false positives, not plugin instruction gaps
 
 ### Pending Todos
 
@@ -114,5 +119,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed 19-01-PLAN.md (Tuning infrastructure setup)
-Next: 19-02 (Plugin tuning iterations)
+Stopped at: Completed 19-02-PLAN.md (Plugin tuning iterations)
+Next: 19-03 (Synthesis and release)
