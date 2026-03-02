@@ -105,8 +105,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 17-01-PLAN.md -- Transcript parser, scrubbing script, and real session fixtures
-- [ ] 17-02-PLAN.md -- Transcript eval runner with vitest config and npm scripts
+- [x] 17-01-PLAN.md -- Transcript parser, scrubbing script, and real session fixtures
+- [x] 17-02-PLAN.md -- Transcript eval runner with vitest config and npm scripts
 
 ### Phase 18: LLM-as-Judge Integration
 **Goal**: Qualitative aspects that deterministic scorers cannot check (rationale specificity, scope appropriateness) are evaluated by an LLM judge, gated behind an env var so they never run in CI
@@ -117,10 +117,11 @@ Plans:
   2. Two LLM-based scorers exist (rationale quality, scope appropriateness) and integrate into the existing scorer pipeline
   3. LLM judge scorers only execute when `TWINING_EVAL_JUDGE=1` is set; without it, eval suite runs deterministic scorers only
   4. Non-deterministic scenarios run k>=3 trials with consensus scoring (2/3 agreement) to handle LLM variability
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 18-01: TBD
+- [ ] 18-01-PLAN.md -- Judge wrapper, async scorer interface, conditional registry, runner updates
+- [ ] 18-02-PLAN.md -- Two LLM scorers (rationale quality, scope appropriateness) with consensus scoring
 
 ### Phase 19: Plugin Tuning Cycle
 **Goal**: Plugin artifacts (skills, hooks, agents) are iteratively refined based on eval failures until the suite passes at target thresholds, with a regression baseline captured for future comparison
@@ -160,6 +161,6 @@ Phases execute in numeric order: 15 -> 16 -> 17 -> 18 -> 19
 | 14. Agent Dashboard | v1.3 | 2/2 | Complete | 2026-02-17 |
 | 15. Behavioral Specification | v1.4 | 2/2 | Complete | 2026-03-02 |
 | 16. Eval Harness -- Deterministic Core | v1.4 | 3/3 | Complete | 2026-03-02 |
-| 17. Transcript Analysis | 2/2 | Complete    | 2026-03-02 | - |
-| 18. LLM-as-Judge Integration | v1.4 | 0/? | Not started | - |
+| 17. Transcript Analysis | v1.4 | 2/2 | Complete | 2026-03-02 |
+| 18. LLM-as-Judge Integration | v1.4 | 0/2 | Not started | - |
 | 19. Plugin Tuning Cycle | v1.4 | 0/? | Not started | - |
