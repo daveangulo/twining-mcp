@@ -236,3 +236,77 @@ Score distribution across happy-path scenarios (scores for each scorer):
 | 1 | 2026-03-02 | Category-aware scorer filtering | sequencing, workflow-completeness | scorers/sequencing.ts, scorers/workflow-completeness.ts, scenario-schema.ts | +0 | 6 false positives eliminated |
 | 2 | 2026-03-02 | Expected negative declarations | All violation scorers | 7 scenario YAML files | +0 | 35 expected negatives declared |
 | 3 | 2026-03-02 | Effective pass rate calculation | N/A | eval-runner.eval.ts, eval-reporter.ts | +0 | 100% effective pass rate |
+
+---
+
+## Holdout Validation
+
+**Date:** 2026-03-02
+**Training pass rate (happy-path only):** 96.8% (61/63 pairs)
+**Training pass rate (all scenarios, raw):** 77.3% (119/154 pairs)
+**Training pass rate (effective, with expected negatives):** 100% (154/154 pairs)
+**Holdout pass rate:** 97.6% (41/42 pairs)
+**Gap (happy-path training vs holdout):** -0.8 pp (holdout slightly higher)
+**Overfitting threshold:** 10 pp
+**Status:** PASS -- no overfitting detected
+
+**Note:** Raw training pass rate (77.3%) includes violation scenarios that intentionally fail scorers. The correct comparison is happy-path training (96.8%) vs holdout (97.6%), both containing only happy-path scenarios.
+
+| Holdout Scenario | Scorer | Score | Threshold | Passed |
+|------------------|--------|-------|-----------|--------|
+| Holdout coordinate capability first | sequencing | 1.0 | 0.9 | Yes |
+| Holdout coordinate capability first | scope-quality | 1.0 | 0.7 | Yes |
+| Holdout coordinate capability first | argument-quality | 1.0 | 0.7 | Yes |
+| Holdout coordinate capability first | decision-hygiene | 1.0 | 0.9 | Yes |
+| Holdout coordinate capability first | workflow-completeness | 1.0 | 0.8 | Yes |
+| Holdout coordinate capability first | anti-patterns | 1.0 | 0.9 | Yes |
+| Holdout coordinate capability first | quality-criteria | 1.0 | 0.7 | Yes |
+| Holdout cross orient-decide-verify | sequencing | 1.0 | 0.9 | Yes |
+| Holdout cross orient-decide-verify | scope-quality | 1.0 | 0.7 | Yes |
+| Holdout cross orient-decide-verify | argument-quality | 1.0 | 0.7 | Yes |
+| Holdout cross orient-decide-verify | decision-hygiene | 0.8333 | 0.9 | No |
+| Holdout cross orient-decide-verify | workflow-completeness | 1.0 | 0.8 | Yes |
+| Holdout cross orient-decide-verify | anti-patterns | 0.9 | 0.9 | Yes |
+| Holdout cross orient-decide-verify | quality-criteria | 1.0 | 0.7 | Yes |
+| Holdout decide multi-step | sequencing | 1.0 | 0.9 | Yes |
+| Holdout decide multi-step | scope-quality | 1.0 | 0.7 | Yes |
+| Holdout decide multi-step | argument-quality | 1.0 | 0.7 | Yes |
+| Holdout decide multi-step | decision-hygiene | 1.0 | 0.9 | Yes |
+| Holdout decide multi-step | workflow-completeness | 1.0 | 0.8 | Yes |
+| Holdout decide multi-step | anti-patterns | 1.0 | 0.9 | Yes |
+| Holdout decide multi-step | quality-criteria | 1.0 | 0.7 | Yes |
+| Holdout handoff full cycle | sequencing | 1.0 | 0.9 | Yes |
+| Holdout handoff full cycle | scope-quality | 1.0 | 0.7 | Yes |
+| Holdout handoff full cycle | argument-quality | 1.0 | 0.7 | Yes |
+| Holdout handoff full cycle | decision-hygiene | 1.0 | 0.9 | Yes |
+| Holdout handoff full cycle | workflow-completeness | 1.0 | 0.8 | Yes |
+| Holdout handoff full cycle | anti-patterns | 1.0 | 0.9 | Yes |
+| Holdout handoff full cycle | quality-criteria | 1.0 | 0.7 | Yes |
+| Holdout orient delayed assembly | sequencing | 1.0 | 0.9 | Yes |
+| Holdout orient delayed assembly | scope-quality | 1.0 | 0.7 | Yes |
+| Holdout orient delayed assembly | argument-quality | 1.0 | 0.7 | Yes |
+| Holdout orient delayed assembly | decision-hygiene | 1.0 | 0.9 | Yes |
+| Holdout orient delayed assembly | workflow-completeness | 1.0 | 0.8 | Yes |
+| Holdout orient delayed assembly | anti-patterns | 1.0 | 0.9 | Yes |
+| Holdout orient delayed assembly | quality-criteria | 1.0 | 0.7 | Yes |
+| Holdout verify with post | sequencing | 1.0 | 0.9 | Yes |
+| Holdout verify with post | scope-quality | 1.0 | 0.7 | Yes |
+| Holdout verify with post | argument-quality | 1.0 | 0.7 | Yes |
+| Holdout verify with post | decision-hygiene | 1.0 | 0.9 | Yes |
+| Holdout verify with post | workflow-completeness | 1.0 | 0.8 | Yes |
+| Holdout verify with post | anti-patterns | 1.0 | 0.9 | Yes |
+| Holdout verify with post | quality-criteria | 1.0 | 0.7 | Yes |
+
+**Single holdout failure:** Holdout cross orient-decide-verify / decision-hygiene (0.8333 < 0.9). This is a SHOULD-level failure: the scenario omits `twining_link_commit` after `twining_decide`, which the decision-hygiene scorer detects as a "fire-and-forget" pattern. This is a pre-existing condition -- the scenario tests orient->decide->verify flow, not commit linkage. The vitest assertion passes because decision-hygiene is not in expected_scores.
+
+## Transcript Eval Baseline
+
+**Date:** 2026-03-02
+**Results:** 2 scenarios, 16 tests, all vitest tests pass
+**Overall score:** 0.6745 (threshold: 0.6)
+**Note:** Transcript scores reflect real session behavior and are not expected to change from plugin tuning since transcripts are historical.
+
+| Transcript | Avg Score | Sequencing | Scope | Args | Hygiene | Completeness | Anti-patterns | Quality |
+|------------|-----------|------------|-------|------|---------|--------------|---------------|---------|
+| session-good-workflow (79 calls) | 0.7109 | 0.75 | 0.8333 | 0.8431 | 0.1667 | 0.8333 | 0.6 | 0.75 |
+| session-poor-workflow (9 calls) | 0.6381 | 0.625 | 0.625 | 0.8 | 0.1667 | 1.0 | 0.7 | 0.75 |
