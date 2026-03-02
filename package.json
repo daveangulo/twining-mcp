@@ -21,7 +21,7 @@
     "test:watch": "vitest",
     "eval": "vitest run --config vitest.config.eval.ts",
     "eval:synthetic": "vitest run --config vitest.config.eval.ts",
-    "eval:transcript": "echo 'Transcript eval not yet implemented (Phase 17)'",
+    "eval:transcript": "vitest run --config vitest.config.transcript.ts",
     "demo:record": "npx tsx examples/demo-automation/playwright/record-demo.ts",
     "demo:record:pause": "DEMO_PAUSE=1 npx tsx examples/demo-automation/playwright/record-demo.ts"
   },

@@ -37,3 +37,4 @@ examples/demo-automation/recordings/*.webm
 
 # Eval results (generated)
 test/eval/results/latest.json
+test/eval/results/transcript-latest.json
