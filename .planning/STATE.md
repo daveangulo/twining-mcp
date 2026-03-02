@@ -85,6 +85,8 @@ Recent decisions affecting current work:
 - Aggregate assertions (avg across scorers) for transcript eval -- per-scorer too strict for real sessions
 - Same allScorers array proven on both synthetic and real transcripts (EVAL-05)
 - [Phase 17]: Aggregate assertions (avg across all scorers) for transcript eval instead of per-scorer threshold -- real sessions have inherent scorer variance
+- Transcript parser uses two-pass JSONL extraction with workflow segmentation at twining_assemble boundaries
+- Transcript eval uses 0.6 threshold (vs 0.8 for synthetic) with aggregate average assertions instead of per-scorer
 
 ### Pending Todos
 
