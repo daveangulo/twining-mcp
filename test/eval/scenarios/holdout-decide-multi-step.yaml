@@ -1,0 +1,23 @@
+name: "Holdout decide multi-step"
+description: "Full decide cycle with assemble, decide (complete args including affected_files), and link_commit. Tests richer decide flow with thorough arguments."
+category: decide
+tags: [happy-path, holdout]
+holdout: true
+tool_calls:
+  - tool: twining_assemble
+    arguments:
+      scope: "src/engine/graph.ts"
+  - tool: twining_decide
+    arguments:
+      summary: "Switch from adjacency list to adjacency map for O(1) neighbor lookup"
+      rationale: "Current adjacency list requires O(n) scan for neighbor queries. With 500+ entities in production graphs, this causes visible latency. Adjacency map provides O(1) lookup with minimal memory overhead since edges are already stored as objects."
+      alternatives_considered: "Considered indexed adjacency list (O(log n) but complex) and separate hash index (redundant storage). Adjacency map chosen for simplicity and performance."
+      affected_files: ["src/engine/graph.ts", "src/engine/neighbors.ts"]
+  - tool: twining_link_commit
+    arguments:
+      commit_sha: "f8a2c1d"
+      decision_id: "d-042"
+expected_scores:
+  decision-hygiene: true
+  argument-quality: true
+  sequencing: true

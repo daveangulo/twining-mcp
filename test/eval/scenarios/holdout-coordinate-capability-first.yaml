@@ -1,0 +1,21 @@
+name: "Holdout coordinate capability first"
+description: "Coordination workflow: assemble context, discover agents with capabilities, then delegate task. Tests capability discovery before delegation."
+category: coordinate
+tags: [happy-path, holdout]
+holdout: true
+tool_calls:
+  - tool: twining_assemble
+    arguments:
+      scope: "src/tools/"
+  - tool: twining_agents
+    arguments: {}
+  - tool: twining_discover
+    arguments:
+      capabilities: ["typescript", "mcp-tools", "testing"]
+  - tool: twining_delegate
+    arguments:
+      task: "Add input validation to all MCP tool handlers in src/tools/"
+      capabilities: ["typescript", "mcp-tools"]
+expected_scores:
+  sequencing: true
+  anti-patterns: true

@@ -1,0 +1,17 @@
+name: "Holdout orient delayed assembly"
+description: "Agent checks project status first, then assembles narrow scope, then posts observations. Tests status-first orient pattern."
+category: orient
+tags: [happy-path, holdout]
+holdout: true
+tool_calls:
+  - tool: twining_status
+    arguments: {}
+  - tool: twining_assemble
+    arguments:
+      scope: "src/storage/sqlite.ts"
+  - tool: twining_post
+    arguments:
+      summary: "Storage layer uses SQLite with WAL mode. 3 migrations pending. No schema conflicts with proposed changes."
+expected_scores:
+  sequencing: true
+  anti-patterns: true

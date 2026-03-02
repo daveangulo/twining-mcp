@@ -1,0 +1,23 @@
+name: "Holdout cross orient-decide-verify"
+description: "Three-phase workflow: orient (assemble+post), decide (with rationale), then verify. Tests cross-cutting orient->decide->verify flow."
+category: orient
+tags: [happy-path, holdout, cross-cutting]
+holdout: true
+tool_calls:
+  - tool: twining_assemble
+    arguments:
+      scope: "src/engine/decisions.ts"
+  - tool: twining_post
+    arguments:
+      summary: "Decision engine analysis: current implementation uses linear scan for decision lookup. 47 decisions in production DB. Index on decision_id exists but compound query on tags+status is unindexed."
+  - tool: twining_decide
+    arguments:
+      summary: "Add compound index on (tags, status) to decisions table"
+      rationale: "Tag-filtered status queries are the most common dashboard operation (called on every page load). Without index, query time grows linearly with decision count. Compound index provides O(log n) for filtered queries."
+      alternatives_considered: "Considered separate indexes on tags and status (less efficient for compound queries) and denormalized status cache (added complexity). Compound index chosen for simplicity."
+      affected_files: ["src/engine/decisions.ts", "src/storage/migrations/005-decision-index.ts"]
+  - tool: twining_verify
+    arguments:
+      scope: "src/engine/decisions.ts"
+expected_scores:
+  anti-patterns: true

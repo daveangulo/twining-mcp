@@ -1,0 +1,25 @@
+name: "Holdout handoff full cycle"
+description: "Complete handoff preparation: assemble context, verify work, what_changed, then create handoff with full arguments. Tests verify-before-handoff pattern."
+category: handoff
+tags: [happy-path, holdout]
+holdout: true
+tool_calls:
+  - tool: twining_assemble
+    arguments:
+      scope: "src/dashboard/"
+  - tool: twining_verify
+    arguments:
+      scope: "src/dashboard/"
+  - tool: twining_what_changed
+    arguments: {}
+  - tool: twining_post
+    arguments:
+      summary: "Dashboard verification complete. Cytoscape graph rendering, vis-timeline, agents tab all functional. 8 tests green."
+  - tool: twining_handoff
+    arguments:
+      result_status: "complete"
+      summary: "Dashboard redesign complete. Added cytoscape.js graph view, vis-timeline for decisions, and agents tab. All 8 dashboard tests pass. Port 24282 confirmed working."
+expected_scores:
+  sequencing: true
+  workflow-completeness: true
+  argument-quality: true

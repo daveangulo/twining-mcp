@@ -1,0 +1,20 @@
+name: "Holdout verify with post"
+description: "Verify workflow with assemble context first, then verify, then post findings. Tests verify preceded by context assembly."
+category: verify
+tags: [happy-path, holdout]
+holdout: true
+tool_calls:
+  - tool: twining_assemble
+    arguments:
+      scope: "src/engine/blackboard.ts"
+  - tool: twining_verify
+    arguments:
+      scope: "src/engine/blackboard.ts"
+  - tool: twining_what_changed
+    arguments: {}
+  - tool: twining_post
+    arguments:
+      summary: "Blackboard engine verification complete. All 18 unit tests pass. Concurrent write locking works correctly under load. No regressions from recent refactor."
+expected_scores:
+  sequencing: true
+  anti-patterns: true
