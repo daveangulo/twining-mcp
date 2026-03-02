@@ -25,7 +25,7 @@ Requirements for v1.4 Agent Behavior Quality. Each maps to roadmap phases.
 
 ### Evaluation Harness
 
-- [ ] **EVAL-01**: Synthetic scenario engine loads YAML definitions and runs through scorer pipeline
+- [x] **EVAL-01**: Synthetic scenario engine loads YAML definitions and runs through scorer pipeline
 - [ ] **EVAL-02**: 7+ deterministic scorers check structural behavioral patterns (sequencing, arguments, ordering)
 - [ ] **EVAL-03**: 2 LLM-as-judge scorers evaluate semantic quality (rationale specificity, scope appropriateness)
 - [ ] **EVAL-04**: Transcript parser extracts twining_* tool calls from Claude Code JSONL session logs
@@ -33,7 +33,7 @@ Requirements for v1.4 Agent Behavior Quality. Each maps to roadmap phases.
 - [ ] **EVAL-06**: LLM judge behind TWINING_EVAL_JUDGE=1 env-var gate, local-only
 - [ ] **EVAL-07**: Multiple trials (k>=3) for non-deterministic scenarios
 - [ ] **EVAL-08**: 20+ synthetic scenarios across all workflow categories
-- [ ] **EVAL-09**: Separate vitest config (vitest.config.eval.ts) and npm scripts (eval, eval:synthetic, eval:transcript)
+- [x] **EVAL-09**: Separate vitest config (vitest.config.eval.ts) and npm scripts (eval, eval:synthetic, eval:transcript)
 
 ### Plugin Tuning
 
@@ -84,7 +84,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | QUAL-02 | Phase 15 | Complete |
 | QUAL-03 | Phase 15 | Complete |
 | QUAL-04 | Phase 15 | Complete |
-| EVAL-01 | Phase 16 | Pending |
+| EVAL-01 | Phase 16 | Complete |
 | EVAL-02 | Phase 16 | Pending |
 | EVAL-03 | Phase 18 | Pending |
 | EVAL-04 | Phase 17 | Pending |
@@ -92,7 +92,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EVAL-06 | Phase 18 | Pending |
 | EVAL-07 | Phase 18 | Pending |
 | EVAL-08 | Phase 16 | Pending |
-| EVAL-09 | Phase 16 | Pending |
+| EVAL-09 | Phase 16 | Complete |
 | TUNE-01 | Phase 19 | Pending |
 | TUNE-02 | Phase 19 | Pending |
 | TUNE-03 | Phase 19 | Pending |

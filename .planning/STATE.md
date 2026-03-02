@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Agent Behavior Quality
-status: unknown
-last_updated: "2026-03-02T13:27:13.638Z"
+status: in-progress
+last_updated: "2026-03-02T15:20:00.000Z"
 progress:
-  total_phases: 1
+  total_phases: 5
   completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
+  total_plans: 9
+  completed_plans: 3
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-02)
 
 **Core value:** Agents share *why* decisions were made, not just *what* was done -- eliminating information silos across context windows.
-**Current focus:** Phase 15: Behavioral Specification (v1.4 Agent Behavior Quality)
+**Current focus:** Phase 16: Eval Harness Deterministic Core (v1.4 Agent Behavior Quality)
 
 ## Current Position
 
-Phase: 15 of 19 (Behavioral Specification) -- COMPLETE
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-03-02 -- Completed 15-02 (behaviors parser)
+Phase: 16 of 19 (Eval Harness Deterministic Core)
+Plan: 1 of 3 in current phase -- COMPLETE
+Status: Executing phase 16
+Last activity: 2026-03-02 -- Completed 16-01 (eval foundation)
 
-Progress: [██████████████████████████████░░░░░░░░░░░] 76% (15/19 phases, 34/34 v1.4 plans)
+Progress: [████████████████████████████████░░░░░░░░░] 80% (16/19 phases, 35/37 v1.4 plans)
 
 ## Performance Metrics
 
@@ -40,6 +40,7 @@ Progress: [███████████████████████
 **v1.4:**
 - 15-01: 6min (2 tasks, 2 files)
 - 15-02: 3min (1 task TDD, 2 files)
+- 16-01: 4min (2 tasks TDD, 8 files)
 
 ## Accumulated Context
 
@@ -57,6 +58,11 @@ Recent decisions affecting current work:
 - State machine parser for BEHAVIORS.md -- no markdown AST library, format-specific extraction
 - Eval tests use real BEHAVIORS.md, not fixtures -- single source of truth
 - Behavioral spec as single Markdown document parsed by state machine into typed objects
+- Eval scenarios use flat tool call lists with per-scorer pass/fail expectations
+- 7 category scorers with hybrid rule mapping: metadata from BehaviorSpec, custom check logic inline
+- Scorer interface decoupled from scenario format: takes ScorerInput + BehaviorSpec, returns ScorerResult
+- aggregateChecks weighted severity: MUST/MUST_NOT fail=0, SHOULD fail=0.5, pass=1, mean of all
+- DEFAULT_THRESHOLD=0.8 for scorer pass/fail
 
 ### Pending Todos
 
@@ -71,5 +77,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed 15-02-PLAN.md (behaviors parser)
-Next: Execute Phase 16 (eval harness)
+Stopped at: Completed 16-01-PLAN.md (eval foundation)
+Next: Execute 16-02 (category scorers)
