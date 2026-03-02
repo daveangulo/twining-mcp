@@ -80,7 +80,7 @@ Agents self-select into work by reading the blackboard. No central bottleneck. N
 /plugin install twining@twining-marketplace
 ```
 
-Includes the MCP server, 7 skills, lifecycle hooks, coordinator subagent, and commands. Skills teach Claude when and how to use Twining — everything works automatically.
+Includes the MCP server, 8 skills, lifecycle hooks, coordinator subagent, and commands. Skills teach Claude when and how to use Twining — everything works automatically.
 
 ### Team Auto-Install
 
@@ -166,6 +166,7 @@ A web dashboard starts automatically at `http://localhost:24282` — browse deci
 | `twining_trace` | Trace a decision's dependency chain upstream and downstream |
 | `twining_reconsider` | Flag a decision for reconsideration with impact analysis |
 | `twining_override` | Override a decision, optionally creating a replacement |
+| `twining_promote` | Promote provisional decisions to active after validation |
 | `twining_search_decisions` | Search decisions by keyword or semantic similarity |
 | `twining_link_commit` | Link a git commit to a decision |
 | `twining_commits` | Find decisions by git commit |
@@ -178,6 +179,7 @@ A web dashboard starts automatically at `http://localhost:24282` — browse deci
 | `twining_read` | Read entries filtered by type, scope, or agent |
 | `twining_query` | Semantic search across all entries |
 | `twining_recent` | Get the latest entries |
+| `twining_dismiss` | Remove resolved or false-positive entries by ID |
 
 ### Context Assembly
 
@@ -186,9 +188,6 @@ A web dashboard starts automatically at `http://localhost:24282` — browse deci
 | `twining_assemble` | Build tailored context for a task within a token budget |
 | `twining_summarize` | High-level summary of project state |
 | `twining_what_changed` | What changed since a given point in time |
-| `twining_status` | Health check — entry counts, warnings, agent status |
-| `twining_archive` | Move stale entries to archive |
-| `twining_export` | Export full state as markdown |
 
 ### Knowledge Graph
 
@@ -198,6 +197,7 @@ A web dashboard starts automatically at `http://localhost:24282` — browse deci
 | `twining_add_relation` | Add a relation between entities |
 | `twining_neighbors` | Traverse from an entity up to depth 3 |
 | `twining_graph_query` | Search by name or property |
+| `twining_prune_graph` | Remove orphaned entities with no relations |
 
 Decisions auto-populate the graph: `twining_decide` creates file and function entities with `decided_by` relations for every affected file.
 
@@ -205,11 +205,21 @@ Decisions auto-populate the graph: `twining_decide` creates file and function en
 
 | Tool | What It Does |
 |------|-------------|
+| `twining_register` | Register or update an agent in the coordination registry |
 | `twining_agents` | List agents with capabilities and liveness |
 | `twining_discover` | Find agents matching required capabilities |
 | `twining_delegate` | Post a delegation request with capability requirements |
 | `twining_handoff` | Hand off work with results and auto-assembled context |
 | `twining_acknowledge` | Acknowledge receipt of a handoff |
+
+### Verification & Lifecycle
+
+| Tool | What It Does |
+|------|-------------|
+| `twining_verify` | Run verification checks — test coverage, warnings, assembly tracking |
+| `twining_status` | Health check — entry counts, warnings, agent status |
+| `twining_archive` | Move stale entries to archive |
+| `twining_export` | Export full state as markdown |
 
 ## How It Works
 
@@ -293,7 +303,7 @@ That's it — the PostHog project key is built into the source code. If you run 
 ```bash
 npm install       # Install dependencies
 npm run build     # Build
-npm test          # Run tests (570+ tests)
+npm test          # Run tests (600+ tests)
 npm run test:watch
 ```
 
