@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Agent Behavior Quality
 status: unknown
-last_updated: "2026-03-02T17:55:37.555Z"
+last_updated: "2026-03-02T18:47:06.645Z"
 progress:
-  total_phases: 4
+  total_phases: 5
   completed_phases: 4
-  total_plans: 9
-  completed_plans: 9
+  total_plans: 12
+  completed_plans: 10
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-02)
 
 **Core value:** Agents share *why* decisions were made, not just *what* was done -- eliminating information silos across context windows.
-**Current focus:** Phase 18: LLM Judge (v1.4 Agent Behavior Quality)
+**Current focus:** Phase 19: Plugin Tuning Cycle (v1.4 Agent Behavior Quality)
 
 ## Current Position
 
-Phase: 18 of 19 (LLM Judge Integration -- COMPLETE)
-Plan: 2 of 2 in current phase (18-02 complete, phase done)
-Status: Phase 18 Complete
-Last activity: 2026-03-02 -- Completed 18-02 (LLM scorer implementations)
+Phase: 19 of 19 (Plugin Tuning Cycle)
+Plan: 1 of 3 in current phase (19-01 complete)
+Status: In Progress
+Last activity: 2026-03-02 -- Completed 19-01 (Tuning infrastructure setup)
 
-Progress: [██████████████████████████████████████░░░] 95% (18/19 phases, 41/41 v1.4 plans through Phase 18-02)
+Progress: [██████████████████████████████████████░░░] 97% (18/19 phases, 42/44 v1.4 plans through Phase 19-01)
 
 ## Performance Metrics
 
@@ -47,6 +47,7 @@ Progress: [███████████████████████
 - 17-02: 3min (1 task, 4 files)
 - 18-01: 4min (2 tasks, 14 files)
 - 18-02: 2min (2 tasks, 3 files)
+- 19-01: 10min (3 tasks, 15 files)
 
 ## Accumulated Context
 
@@ -96,6 +97,9 @@ Recent decisions affecting current work:
 - [Phase 18]: SHOULD-level checks for LLM judge results: semantic quality is advisory, not mandatory
 - [Phase 18]: 0.5 score threshold per individual judge call (acceptable or good passes)
 - [Phase 18]: Per-call LLM evaluation: one judge call per tool call, not batched across calls
+- [Phase 19]: Per-scorer thresholds: core=0.9, completeness=0.8, quality=0.7, LLM advisory=0.5 (replaces flat DEFAULT_THRESHOLD)
+- [Phase 19]: Holdout scenarios use YAML field (holdout:true) with loader filtering -- no separate directory
+- [Phase 19]: Failure classification: 35/41 expected negatives (violation scenarios), 6 unexpected needing Plan 19-02 investigation
 
 ### Pending Todos
 
@@ -110,5 +114,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed 18-02-PLAN.md (LLM scorer implementations)
-Next: Phase 19 (Plugin Tuning)
+Stopped at: Completed 19-01-PLAN.md (Tuning infrastructure setup)
+Next: 19-02 (Plugin tuning iterations)
