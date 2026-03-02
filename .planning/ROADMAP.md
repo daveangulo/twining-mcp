@@ -120,8 +120,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 18-01-PLAN.md -- Judge wrapper, async scorer interface, conditional registry, runner updates
-- [ ] 18-02-PLAN.md -- Two LLM scorers (rationale quality, scope appropriateness) with consensus scoring
+- [x] 18-01-PLAN.md -- Judge wrapper, async scorer interface, conditional registry, runner updates
+- [x] 18-02-PLAN.md -- Two LLM scorers (rationale quality, scope appropriateness) with consensus scoring
 
 ### Phase 19: Plugin Tuning Cycle
 **Goal**: Plugin artifacts (skills, hooks, agents) are iteratively refined based on eval failures until the suite passes at target thresholds, with a regression baseline captured for future comparison
@@ -162,5 +162,5 @@ Phases execute in numeric order: 15 -> 16 -> 17 -> 18 -> 19
 | 15. Behavioral Specification | v1.4 | 2/2 | Complete | 2026-03-02 |
 | 16. Eval Harness -- Deterministic Core | v1.4 | 3/3 | Complete | 2026-03-02 |
 | 17. Transcript Analysis | v1.4 | 2/2 | Complete | 2026-03-02 |
-| 18. LLM-as-Judge Integration | 2/2 | Complete    | 2026-03-02 | - |
+| 18. LLM-as-Judge Integration | v1.4 | 2/2 | Complete | 2026-03-02 |
 | 19. Plugin Tuning Cycle | v1.4 | 0/? | Not started | - |
