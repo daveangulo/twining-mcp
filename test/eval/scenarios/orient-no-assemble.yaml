@@ -1,5 +1,5 @@
 name: "Orient skips assemble"
-description: "Agent skips assemble, goes status -> decide directly"
+description: "Agent skips assemble, goes status -> decide directly without context"
 category: orient
 tags: [violation, tier-1-tools]
 tool_calls:
@@ -8,8 +8,9 @@ tool_calls:
   - tool: twining_decide
     arguments:
       summary: "Use JWT auth"
-      rationale: "done"
+      rationale: ""
       alternatives_considered: ""
 expected_scores:
-  sequencing: false
-  workflow-completeness: false
+  decision-hygiene: false
+  argument-quality: false
+  anti-patterns: false

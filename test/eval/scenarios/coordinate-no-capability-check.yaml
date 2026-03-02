@@ -1,5 +1,5 @@
 name: "Coordinate without capability check"
-description: "Agent delegates without first discovering available agents"
+description: "Agent delegates before listing agents (wrong order)"
 category: coordinate
 tags: [violation]
 tool_calls:
@@ -7,6 +7,8 @@ tool_calls:
     arguments:
       task: "Write integration tests for auth module"
       capabilities: ["typescript", "testing"]
+  - tool: twining_agents
+    arguments: {}
   - tool: twining_recent
     arguments: {}
 expected_scores:

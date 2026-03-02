@@ -34,3 +34,6 @@ examples/demo-automation/recordings/*.webm
 # Local config
 .mcp.json
 .vscode/
+
+# Eval results (generated)
+test/eval/results/latest.json

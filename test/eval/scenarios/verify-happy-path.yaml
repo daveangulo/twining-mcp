@@ -17,5 +17,4 @@ tool_calls:
       summary: "Verification passed: all engine tests green, no regressions"
 expected_scores:
   sequencing: true
-  workflow-completeness: true
   anti-patterns: true

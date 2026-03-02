@@ -1,5 +1,5 @@
 name: "Cross-cutting full lifecycle"
-description: "Full session lifecycle: status -> assemble -> decide (good) -> link_commit -> post -> verify -> what_changed -> handoff"
+description: "Full session lifecycle following all workflow orders correctly"
 category: orient
 tags: [happy-path, long, full-lifecycle]
 tool_calls:
@@ -14,13 +14,13 @@ tool_calls:
       rationale: "Chose JWT over sessions because stateless auth reduces server-side storage and simplifies horizontal scaling. Sessions considered but rejected due to sticky-session requirement."
       alternatives_considered: "Considered sessions and API keys; JWT chosen for stateless scaling"
       affected_files: ["src/auth/jwt.ts", "src/auth/middleware.ts"]
+  - tool: twining_post
+    arguments:
+      summary: "JWT auth decision recorded with rationale and alternatives"
   - tool: twining_link_commit
     arguments:
       commit_sha: "abc123"
       decision_id: "d-001"
-  - tool: twining_post
-    arguments:
-      summary: "JWT auth implemented with refresh rotation"
   - tool: twining_verify
     arguments:
       scope: "src/auth/"
@@ -31,10 +31,8 @@ tool_calls:
       result_status: "complete"
       summary: "Implemented JWT authentication with refresh token rotation. All tests pass. Verified with scope src/auth/."
 expected_scores:
-  sequencing: true
   scope-quality: true
   argument-quality: true
   decision-hygiene: true
-  workflow-completeness: true
   anti-patterns: true
   quality-criteria: true

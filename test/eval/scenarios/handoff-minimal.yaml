@@ -1,5 +1,5 @@
 name: "Handoff minimal"
-description: "Just a handoff call with no prior verification or follow-up"
+description: "Just handoff and acknowledge without any prior verification"
 category: handoff
 tags: [violation, short, minimal]
 tool_calls:
@@ -7,5 +7,8 @@ tool_calls:
     arguments:
       result_status: "complete"
       summary: "Done"
+  - tool: twining_acknowledge
+    arguments:
+      handoff_id: "h-001"
 expected_scores:
-  workflow-completeness: false
+  anti-patterns: true

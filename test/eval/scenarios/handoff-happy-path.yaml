@@ -1,11 +1,16 @@
 name: "Handoff happy path"
-description: "Full handoff workflow: verify -> handoff (accurate status) -> acknowledge"
+description: "Full handoff workflow: verify -> what_changed -> post -> handoff -> acknowledge"
 category: handoff
 tags: [happy-path, tier-1-tools, gate-1]
 tool_calls:
   - tool: twining_verify
     arguments:
       scope: "src/auth/"
+  - tool: twining_what_changed
+    arguments: {}
+  - tool: twining_post
+    arguments:
+      summary: "Auth module verified, all 12 tests pass"
   - tool: twining_handoff
     arguments:
       result_status: "complete"

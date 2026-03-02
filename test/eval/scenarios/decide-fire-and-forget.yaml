@@ -1,16 +1,16 @@
 name: "Decide fire and forget"
-description: "Agent makes a decision with assemble but never follows up with link_commit"
+description: "Agent decides with broad scope assemble, no link_commit, empty rationale, and no alternatives"
 category: decide
 tags: [violation, tier-1-tools]
 tool_calls:
   - tool: twining_assemble
     arguments:
-      scope: "src/auth/"
+      scope: "project"
   - tool: twining_decide
     arguments:
       summary: "Use JWT for authentication"
-      rationale: "Chose JWT over sessions because stateless auth reduces server-side storage and simplifies horizontal scaling."
-      alternatives_considered: "Considered sessions and API keys; JWT chosen for stateless scaling"
+      rationale: ""
+      alternatives_considered: ""
 expected_scores:
   decision-hygiene: false
   anti-patterns: false

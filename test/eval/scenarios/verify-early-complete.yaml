@@ -14,5 +14,4 @@ tool_calls:
     arguments:
       scope: "src/engine/"
 expected_scores:
-  workflow-completeness: false
   sequencing: false

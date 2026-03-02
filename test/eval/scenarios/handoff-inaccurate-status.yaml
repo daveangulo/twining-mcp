@@ -1,17 +1,23 @@
 name: "Handoff inaccurate status"
-description: "Handoff with empty/vague result_status providing no useful information"
+description: "Handoff preceded by a decide with vague rationale, demonstrating poor argument quality in handoff context"
 category: handoff
 tags: [violation]
 tool_calls:
   - tool: twining_verify
     arguments:
       scope: "src/auth/"
+  - tool: twining_decide
+    arguments:
+      summary: "Changed approach"
+      rationale: ""
+      alternatives_considered: ""
   - tool: twining_handoff
     arguments:
       result_status: ""
-      summary: "updated"
+      summary: "done"
   - tool: twining_acknowledge
     arguments:
       handoff_id: "h-001"
 expected_scores:
   argument-quality: false
+  decision-hygiene: false

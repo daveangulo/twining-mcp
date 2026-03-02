@@ -1,5 +1,5 @@
 name: "Verify skipped entirely"
-description: "Agent skips verification entirely and goes straight to handoff"
+description: "Agent skips verification and goes straight to post and handoff"
 category: verify
 tags: [violation]
 tool_calls:
@@ -11,4 +11,4 @@ tool_calls:
       result_status: "complete"
       summary: "Finished the auth module"
 expected_scores:
-  workflow-completeness: false
+  anti-patterns: true

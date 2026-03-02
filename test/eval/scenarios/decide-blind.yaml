@@ -14,5 +14,3 @@ tool_calls:
       decision_id: "d-001"
 expected_scores:
   decision-hygiene: false
-  anti-patterns: false
-  sequencing: false

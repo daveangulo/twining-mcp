@@ -1,5 +1,5 @@
 name: "Handoff without verify"
-description: "Agent hands off work without running verification first"
+description: "Agent hands off work then verifies after (wrong order)"
 category: handoff
 tags: [violation]
 tool_calls:
@@ -10,6 +10,9 @@ tool_calls:
   - tool: twining_acknowledge
     arguments:
       handoff_id: "h-001"
+  - tool: twining_verify
+    arguments:
+      scope: "src/auth/"
 expected_scores:
-  workflow-completeness: false
   sequencing: false
+  workflow-completeness: false
