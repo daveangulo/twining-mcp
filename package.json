@@ -64,6 +64,7 @@
     "posthog-node": "^4.18.0"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.78.0",
     "@playwright/test": "^1.52.0",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^25.2.3",
