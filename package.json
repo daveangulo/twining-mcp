@@ -19,6 +19,9 @@
     "postbuild": "rm -rf dist/dashboard/public && cp -r src/dashboard/public dist/dashboard/public",
     "test": "vitest run",
     "test:watch": "vitest",
+    "eval": "vitest run --config vitest.config.eval.ts",
+    "eval:synthetic": "vitest run --config vitest.config.eval.ts",
+    "eval:transcript": "echo 'Transcript eval not yet implemented (Phase 17)'",
     "demo:record": "npx tsx examples/demo-automation/playwright/record-demo.ts",
     "demo:record:pause": "DEMO_PAUSE=1 npx tsx examples/demo-automation/playwright/record-demo.ts"
   },
