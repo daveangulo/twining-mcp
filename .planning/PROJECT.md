@@ -40,6 +40,21 @@ Agents share *why* decisions were made, not just *what* was done — eliminating
 - ✓ Context assembly integration for handoff results and agent suggestions — v1.3
 - ✓ Agent liveness tracking via last-activity inference (active/idle/gone) — v1.3
 - ✓ Dashboard Agents tab with registry, delegation, and handoff views — v1.3
+- ✓ `twining_verify` tool — scope-level verification with test coverage and decision hygiene checks — post-v1.3
+- ✓ `twining_dismiss` tool — targeted removal of blackboard entries by ID — post-v1.3
+- ✓ `twining_promote` tool — promote blackboard findings to decisions — post-v1.3
+- ✓ `twining_prune_graph` tool — remove stale entities and relations — post-v1.3
+- ✓ `twining_register` tool — explicit agent registration with capabilities — post-v1.3
+- ✓ 4 additional coordination tools (delegate, handoff, acknowledge, discover as MCP tools) — post-v1.3
+- ✓ Three-layer usage analytics (value stats, tool call metrics, opt-in PostHog telemetry) — post-v1.3
+- ✓ Dashboard redesign — dark-first theme, Sora/DM Sans/JetBrains Mono fonts, teal accent — post-v1.3
+- ✓ Blackboard Stream View — time-grouped cards with thread lines and relates_to visualization — post-v1.3
+- ✓ Timeline/graph/search UI overhauls — zoom controls, type filters, toggle chips — post-v1.3
+- ✓ Claude Code plugin — skills, hooks, agents, commands, MCP server instructions — post-v1.3
+- ✓ Drift detection via git log and sandboxed constraint checking — post-v1.3
+- ✓ Multi-instance dashboard — auto-open correct project when multiple instances run — post-v1.3
+- ✓ Demo project and Playwright-based demo orchestrator — post-v1.3
+- ✓ Open source community files (LICENSE, CONTRIBUTING, CODE_OF_CONDUCT, etc.) — post-v1.3
 
 ### Active
 
@@ -49,7 +64,6 @@ Agents share *why* decisions were made, not just *what* was done — eliminating
 
 ### Out of Scope
 
-- Multi-agent registration and capability matching (formal protocol) — future milestone
 - Learned relevance weights for delegation matching — future milestone
 - Cross-repo Twining state — future milestone
 - Decision impact analysis across agent boundaries — future milestone
@@ -75,9 +89,12 @@ Agents share *why* decisions were made, not just *what* was done — eliminating
 - **Package:** `twining-mcp` on npm
 - **Design spec:** `TWINING-DESIGN-SPEC.md` is the authoritative reference for all data models, tool signatures, and behavior
 - **Build order:** utils → storage → engine → embeddings → dashboard → tools → server/index (bottom-up)
-- **Testing:** vitest with temp directories, 444 tests across 27 files
-- **Current state:** v1.3 shipped — 23 MCP tools, ~6,943 LOC production TypeScript + 3,155 LOC frontend (HTML/CSS/JS) + 8,762 LOC tests
+- **Testing:** vitest with temp directories, 614 tests across 48 suites
+- **Current state:** npm v1.8.2, plugin v1.1.3 — 32 MCP tools, ~9,674 LOC production TypeScript + 5,959 LOC frontend (HTML/CSS/JS) + 12,137 LOC tests
 - **Dashboard port:** Default 24282, configurable via TWINING_DASHBOARD_PORT
+- **Plugin:** Claude Code plugin with 8 skills, 2 agents, 2 commands, 3 hooks (stop, subagent-stop, session-start)
+- **Analytics:** Three-layer — local value stats, tool call instrumentation, opt-in PostHog telemetry
+- **Demo:** Demo project with Playwright orchestrator for automated demo recording
 
 ## Constraints
 
@@ -121,6 +138,15 @@ Agents share *why* decisions were made, not just *what* was done — eliminating
 | JSONL index for handoff listing | Append-friendly; avoids loading every individual JSON handoff file | ✓ Good |
 | Handoff/agent data outside token budget in assembly | Like planning_state, always included as metadata; doesn't compete for budget | ✓ Good |
 | Substring matching for capability-to-task matching | Bidirectional includes(); simple and sufficient for free-form tags | ✓ Good |
+| Three-layer analytics (stats/metrics/telemetry) | Local value stats always on; tool metrics opt-in; PostHog requires explicit key | ✓ Good |
+| Claude Code plugin distribution | Skills + hooks + agents as plugin alongside npm MCP server | ✓ Good |
+| Dark-first dashboard redesign | Professional theme with Sora/DM Sans/JetBrains Mono; teal accent | ✓ Good |
+| Blackboard Stream View | Card-based chronological view with time groups and thread lines | ✓ Good |
+| Skip ONNX in test environment | process.env.VITEST check eliminates 30s test timeouts | ✓ Good |
+| Per-commit Twining coverage in stop hook | Line-number comparison vs session-wide counts for accurate coverage | ✓ Good |
+| Playwright demo orchestrator | Deterministic demo recording vs manual shell scripting | ✓ Good |
+| Expose delegation/handoff as MCP tools | Full coordination surface via MCP; not just internal engine methods | ✓ Good |
+| Single index lock for atomic file+index updates | Prevents race conditions in DecisionStore and HandoffStore | ✓ Good |
 
 ---
-*Last updated: 2026-02-17 after v1.3 milestone*
+*Last updated: 2026-03-02 after post-v1.3 context update*

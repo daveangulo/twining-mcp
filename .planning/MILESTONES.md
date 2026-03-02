@@ -90,3 +90,32 @@
 
 ---
 
+## Post-v1.3 Hardening & Polish (Shipped: 2026-02-17 → 2026-03-02)
+
+**Unplanned work** — ad-hoc improvements, bug fixes, and new features outside formal GSD milestones.
+
+**Commits:** 81 (224b81f..f50f9e4)
+**Tests:** 614 passing across 48 suites (up from 444/27)
+**LOC:** ~9,674 production TypeScript + 5,959 frontend (HTML/CSS/JS) + 12,137 test
+**MCP tools:** 32 (up from 23)
+**npm version:** 1.8.2, plugin version: 1.1.3
+
+**Key accomplishments:**
+- Architecture review: closed 9 gaps, added 4 coordination MCP tools (delegate, handoff, acknowledge, discover)
+- Verify engine: `twining_verify` tool with scope-level verification, test coverage, and decision hygiene
+- New tools: `twining_dismiss`, `twining_promote`, `twining_prune_graph`, `twining_register`
+- Three-layer analytics: local value stats, tool call instrumentation, opt-in PostHog telemetry
+- Dashboard redesign: dark-first professional theme (Sora/DM Sans/JetBrains Mono, teal accent)
+- Blackboard Stream View: time-grouped cards with thread lines and relates_to visualization
+- Timeline/graph/search UI overhauls: zoom controls, type filters, toggle chips
+- Claude Code plugin: 8 skills, 2 agents, 2 commands, 3 hooks
+- Security fixes: race condition fixes (single index lock), git command injection prevention
+- Demo: project scaffolding + Playwright-based automated demo orchestrator
+- Open source readiness: LICENSE, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, issue templates
+- Multi-instance dashboard: auto-open correct project, health endpoint projectRoot
+
+**Tech debt carried forward:**
+- None identified
+
+---
+
