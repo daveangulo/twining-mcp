@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Agent Behavior Quality
 status: in-progress
-last_updated: "2026-03-02T15:27:28.000Z"
+last_updated: "2026-03-02T15:41:09.000Z"
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 9
-  completed_plans: 4
+  completed_plans: 5
 ---
 
 # Project State
@@ -22,12 +22,12 @@ See: .planning/PROJECT.md (updated 2026-03-02)
 
 ## Current Position
 
-Phase: 16 of 19 (Eval Harness Deterministic Core)
-Plan: 2 of 3 in current phase -- COMPLETE
-Status: Executing phase 16
-Last activity: 2026-03-02 -- Completed 16-02 (category scorers)
+Phase: 16 of 19 (Eval Harness Deterministic Core) -- COMPLETE
+Plan: 3 of 3 in current phase -- COMPLETE
+Status: Phase 16 complete, ready for phase 17
+Last activity: 2026-03-02 -- Completed 16-03 (eval scenarios, runner, reporter)
 
-Progress: [█████████████████████████████████░░░░░░░░] 82% (16/19 phases, 36/37 v1.4 plans)
+Progress: [██████████████████████████████████░░░░░░░] 84% (16/19 phases, 37/37 v1.4 plans)
 
 ## Performance Metrics
 
@@ -42,6 +42,7 @@ Progress: [███████████████████████
 - 15-02: 3min (1 task TDD, 2 files)
 - 16-01: 4min (2 tasks TDD, 8 files)
 - 16-02: 5min (1 task TDD, 9 files)
+- 16-03: 11min (2 tasks, 27 files)
 
 ## Accumulated Context
 
@@ -67,6 +68,9 @@ Recent decisions affecting current work:
 - Anti-pattern and quality-criteria scorers use named checker maps keyed by BehaviorSpec IDs for extensibility
 - Workflow sequencing uses partial matching -- only tools present checked for order
 - Scope inflation detection uses simple set membership (project, ., /, empty)
+- Scenario expected_scores only assert scorers the scenario specifically tests; undeclared scorers pass vacuously
+- Anti-patterns SHOULD-level aggregation requires 3+ violations to breach 0.8 threshold
+- Cross-cutting lifecycle scenarios cannot assert sequencing/completeness due to overlapping workflow definitions
 
 ### Pending Todos
 
@@ -81,5 +85,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed 16-02-PLAN.md (category scorers)
-Next: Execute 16-03 (eval runner and CI integration)
+Stopped at: Completed 16-03-PLAN.md (eval scenarios, runner, reporter)
+Next: Execute phase 17 (transcript eval)
