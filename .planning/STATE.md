@@ -5,14 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-03-02)
 
 **Core value:** Agents share *why* decisions were made, not just *what* was done -- eliminating information silos across context windows.
-**Current focus:** Planning next milestone
+**Current focus:** Phase 15: Behavioral Specification (v1.4 Agent Behavior Quality)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-03-02 — Milestone v1.4 started
+Phase: 15 of 19 (Behavioral Specification)
+Plan: 0 of ? in current phase
+Status: Ready to plan
+Last activity: 2026-03-02 -- Roadmap created for v1.4 milestone
+
+Progress: [████████████████████████████░░░░░░░░░░░░░] 70% (14/19 phases, 32/32 prior plans)
 
 ## Performance Metrics
 
@@ -22,43 +24,20 @@ Last activity: 2026-03-02 — Milestone v1.4 started
 
 **Post-v1.3 (unplanned):** 81 commits of hardening, new tools, dashboard redesign, plugin, demo, open source prep
 
+**v1.4:** Not started
+
 ## Accumulated Context
 
 ### Decisions
 
 All decisions archived in PROJECT.md Key Decisions table with outcomes.
-- Triage of TWINING_ARCH_REVIEW.md — 7 valid gaps, 3 invalid/already-addressed, 3 partial
-- Expose delegation and handoff as MCP tools rather than removing dead CoordinationEngine code
-- Agent integration architecture doc recommends Claude Code + Twining as primary path, blackboard over orchestrator
-- Add rigor framework: verify step in agent lifecycle, tested_by traceability, drift detection, checkable constraints
-- Implement drift detection via git log and sandboxed constraint checking via execSync
-- Create comprehensive demo video plan with realistic multi-agent scenario
-- Build automated demo using playwright browser automation + screenshot capture + narration script
-- Switch execGit to execFileSync with argument arrays; replace broken shell operator blocklist with newline/null-byte validation
-- Fix race conditions by using single index lock for atomic file+index updates in DecisionStore and HandoffStore
-- Move archive file writes inside blackboard lock to prevent data loss on crash
-- Fix token budget accounting: warnings get priority access to full budget, non-warnings capped at 90%
-- Add project name to dashboard title/header and GitHub icon link — fixes #2 and #3
-- Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry
-- Add twining_dismiss tool for targeted removal of blackboard entries by ID
-- Implement Twining as a Claude Code plugin with skills, hooks, agents, commands, and MCP server instructions
-- Redesign dashboard UI with dark-first professional theme using Sora/DM Sans/JetBrains Mono fonts and teal accent color
-- Prevent duplicate browser tabs by checking health endpoint before auto-opening
-- Show session-ended overlay after 3 consecutive poll failures instead of attempting window.close()
-- Fix Stop hook to return required JSON decision format for Claude Code validation
-- Pure bash version bump script with sed for plugin version management
-- CI job to enforce plugin version bumps on PRs that change plugin/ files
-- Skip ONNX embedding initialization in test environment via process.env.VITEST check
-- Stop hook uses line-number comparison for per-commit Twining coverage instead of session-wide counts
-- Fix timeline zoom by changing overflow:auto to overflow:hidden and add zoom controls toolbar
-- Replace search bar multi-select with toggle chips, add search icon, and style filters to match toolbar design language
-- Add Stream View as alternate visualization for Blackboard tab
-- Add twining_register MCP tool and subagent coordination integration (dispatch skill, SubagentStop hook, aware-worker agent)
-- Include projectRoot in health endpoint to distinguish same-project vs different-project dashboard instances
-- Demo uses claude -p with explicit tool-call prompts for deterministic behavior
-- Separate persistent dashboard server from claude -p tool processes for demo recordings
-- Implement Playwright-based demo orchestrator replacing manual shell + tab-switching workflow
-- Add standard open source community files for public announcement readiness
+Recent decisions affecting current work:
+
+- v1.4 milestone: Behavioral spec + eval harness + plugin tuning as single release
+- Eval system is orthogonal to MCP server -- zero imports from src/tools/, src/engine/, src/storage/
+- Deterministic scorers only in CI; LLM judge behind TWINING_EVAL_JUDGE=1 env-var gate
+- Hard cap: 8-12 MUST rules across all 32 tools to prevent over-specification
+- Holdout eval set for Goodhart's Law mitigation
 
 ### Pending Todos
 
@@ -66,10 +45,12 @@ None.
 
 ### Blockers/Concerns
 
-None.
+- vitest-evals vitest 4.x compatibility unverified -- 30-line fallback ready (Phase 16)
+- Claude Code headless JSON output reliability needs smoke-testing (Phase 18)
+- Transcript JSONL exact field structure not officially documented by Anthropic (Phase 17)
 
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Updated GSD context with current repo state
-Next: Define next milestone goals and requirements
+Stopped at: Created v1.4 roadmap (5 phases, 24 requirements mapped)
+Next: `/gsd:plan-phase 15` to plan Behavioral Specification phase

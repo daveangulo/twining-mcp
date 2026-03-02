@@ -1,7 +1,7 @@
 # Requirements: Twining MCP
 
 **Defined:** 2026-03-02
-**Core Value:** Agents share *why* decisions were made, not just *what* was done — eliminating the information silos that degrade multi-agent coding workflows across context windows.
+**Core Value:** Agents share *why* decisions were made, not just *what* was done -- eliminating the information silos that degrade multi-agent coding workflows across context windows.
 
 ## v1.4 Requirements
 
@@ -11,7 +11,7 @@ Requirements for v1.4 Agent Behavior Quality. Each maps to roadmap phases.
 
 - [ ] **SPEC-01**: plugin/BEHAVIORS.md contains behavioral rules (MUST/SHOULD/MUST_NOT) for all 32 MCP tools
 - [ ] **SPEC-02**: Each tool has usage context, correct usage examples, and incorrect usage examples
-- [ ] **SPEC-03**: 8+ workflow scenarios define expected multi-tool sequences for common patterns (orient→work→decide→verify, coordination, handoff, etc.)
+- [ ] **SPEC-03**: 8+ workflow scenarios define expected multi-tool sequences for common patterns (orient->work->decide->verify, coordination, handoff, etc.)
 - [ ] **SPEC-04**: Anti-pattern catalog documents when NOT to use Twining and what constitutes misuse
 - [ ] **SPEC-05**: Tools tiered by importance (Tier 1 core, Tier 2 supporting) with proportional spec depth
 - [ ] **SPEC-06**: Spec uses structured markdown conventions that are machine-parseable by the eval harness
@@ -74,36 +74,36 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SPEC-01 | — | Pending |
-| SPEC-02 | — | Pending |
-| SPEC-03 | — | Pending |
-| SPEC-04 | — | Pending |
-| SPEC-05 | — | Pending |
-| SPEC-06 | — | Pending |
-| QUAL-01 | — | Pending |
-| QUAL-02 | — | Pending |
-| QUAL-03 | — | Pending |
-| QUAL-04 | — | Pending |
-| EVAL-01 | — | Pending |
-| EVAL-02 | — | Pending |
-| EVAL-03 | — | Pending |
-| EVAL-04 | — | Pending |
-| EVAL-05 | — | Pending |
-| EVAL-06 | — | Pending |
-| EVAL-07 | — | Pending |
-| EVAL-08 | — | Pending |
-| EVAL-09 | — | Pending |
-| TUNE-01 | — | Pending |
-| TUNE-02 | — | Pending |
-| TUNE-03 | — | Pending |
-| TUNE-04 | — | Pending |
-| TUNE-05 | — | Pending |
+| SPEC-01 | Phase 15 | Pending |
+| SPEC-02 | Phase 15 | Pending |
+| SPEC-03 | Phase 15 | Pending |
+| SPEC-04 | Phase 15 | Pending |
+| SPEC-05 | Phase 15 | Pending |
+| SPEC-06 | Phase 15 | Pending |
+| QUAL-01 | Phase 15 | Pending |
+| QUAL-02 | Phase 15 | Pending |
+| QUAL-03 | Phase 15 | Pending |
+| QUAL-04 | Phase 15 | Pending |
+| EVAL-01 | Phase 16 | Pending |
+| EVAL-02 | Phase 16 | Pending |
+| EVAL-03 | Phase 18 | Pending |
+| EVAL-04 | Phase 17 | Pending |
+| EVAL-05 | Phase 17 | Pending |
+| EVAL-06 | Phase 18 | Pending |
+| EVAL-07 | Phase 18 | Pending |
+| EVAL-08 | Phase 16 | Pending |
+| EVAL-09 | Phase 16 | Pending |
+| TUNE-01 | Phase 19 | Pending |
+| TUNE-02 | Phase 19 | Pending |
+| TUNE-03 | Phase 19 | Pending |
+| TUNE-04 | Phase 19 | Pending |
+| TUNE-05 | Phase 19 | Pending |
 
 **Coverage:**
 - v1.4 requirements: 24 total
-- Mapped to phases: 0
-- Unmapped: 24 ⚠️
+- Mapped to phases: 24
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-02*
-*Last updated: 2026-03-02 after initial definition*
+*Last updated: 2026-03-02 after roadmap creation*
