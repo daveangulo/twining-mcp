@@ -73,8 +73,8 @@
 **Plans**: 2 plans
 
 Plans:
-- [ ] 15-01-PLAN.md -- Types and behavioral specification (plugin/BEHAVIORS.md with all 32 tools, workflows, anti-patterns, quality criteria)
-- [ ] 15-02-PLAN.md -- Behaviors parser and test suite (TDD parser for BEHAVIORS.md into structured TypeScript objects)
+- [x] 15-01-PLAN.md -- Types and behavioral specification (plugin/BEHAVIORS.md with all 32 tools, workflows, anti-patterns, quality criteria)
+- [x] 15-02-PLAN.md -- Behaviors parser and test suite (TDD parser for BEHAVIORS.md into structured TypeScript objects)
 
 ### Phase 16: Eval Harness -- Deterministic Core
 **Goal**: A working eval system runs deterministic scorers against synthetic YAML scenarios via vitest, producing pass/fail results with per-scenario breakdown
@@ -86,11 +86,12 @@ Plans:
   3. At least 7 deterministic scorers check structural behavioral patterns (sequencing, argument quality, ordering, scope narrowness, etc.) and produce numeric scores
   4. 20+ synthetic scenarios exist across all workflow categories (orient, decide, verify, coordinate, handoff, etc.)
   5. Scorer interface is format-agnostic -- accepts a normalized tool call sequence, not scenario-specific types -- so the same scorers can later consume transcript data
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 16-01: TBD
-- [ ] 16-02: TBD
+- [ ] 16-01-PLAN.md -- Eval foundation: normalized types, scenario schema, scenario loader, vitest eval config, npm scripts
+- [ ] 16-02-PLAN.md -- 7 deterministic category scorers with unit tests (sequencing, scope, argument, decision hygiene, workflow, anti-patterns, quality)
+- [ ] 16-03-PLAN.md -- 22+ YAML scenarios, eval test runner, custom reporter, end-to-end eval pipeline
 
 ### Phase 17: Transcript Analysis
 **Goal**: Real Claude Code session transcripts are parsed and scored by the same deterministic scorers, validating that synthetic scenarios match actual behavior patterns
@@ -156,8 +157,8 @@ Phases execute in numeric order: 15 -> 16 -> 17 -> 18 -> 19
 | 12. Coordination Engine | v1.3 | 3/3 | Complete | 2026-02-17 |
 | 13. Tools and Assembly | v1.3 | 2/2 | Complete | 2026-02-17 |
 | 14. Agent Dashboard | v1.3 | 2/2 | Complete | 2026-02-17 |
-| 15. Behavioral Specification | 2/2 | Complete    | 2026-03-02 | - |
-| 16. Eval Harness -- Deterministic Core | v1.4 | 0/? | Not started | - |
+| 15. Behavioral Specification | v1.4 | 2/2 | Complete | 2026-03-02 |
+| 16. Eval Harness -- Deterministic Core | v1.4 | 0/3 | Planned | - |
 | 17. Transcript Analysis | v1.4 | 0/? | Not started | - |
 | 18. LLM-as-Judge Integration | v1.4 | 0/? | Not started | - |
 | 19. Plugin Tuning Cycle | v1.4 | 0/? | Not started | - |
