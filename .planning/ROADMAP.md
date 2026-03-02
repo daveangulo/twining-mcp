@@ -55,7 +55,7 @@
 - [x] **Phase 15: Behavioral Specification** - Machine-parseable behavioral rules, workflow scenarios, and quality criteria for all 32 MCP tools (completed 2026-03-02)
 - [x] **Phase 16: Eval Harness -- Deterministic Core** - Synthetic scenario engine, deterministic scorers, vitest eval config, and 20+ YAML scenarios (completed 2026-03-02)
 - [x] **Phase 17: Transcript Analysis** - Real Claude Code transcript parsing with the same scorers applied to actual dogfooding sessions (completed 2026-03-02)
-- [ ] **Phase 18: LLM-as-Judge Integration** - Qualitative semantic scorers for rationale quality and scope appropriateness behind env-var gate
+- [x] **Phase 18: LLM-as-Judge Integration** - Qualitative semantic scorers for rationale quality and scope appropriateness behind env-var gate (completed 2026-03-02)
 - [ ] **Phase 19: Plugin Tuning Cycle** - Iterative skill/hook/agent refinement validated against the eval suite with regression baseline
 
 ## Phase Details
@@ -162,5 +162,5 @@ Phases execute in numeric order: 15 -> 16 -> 17 -> 18 -> 19
 | 15. Behavioral Specification | v1.4 | 2/2 | Complete | 2026-03-02 |
 | 16. Eval Harness -- Deterministic Core | v1.4 | 3/3 | Complete | 2026-03-02 |
 | 17. Transcript Analysis | v1.4 | 2/2 | Complete | 2026-03-02 |
-| 18. LLM-as-Judge Integration | 1/2 | In Progress|  | - |
+| 18. LLM-as-Judge Integration | 2/2 | Complete   | 2026-03-02 | - |
 | 19. Plugin Tuning Cycle | v1.4 | 0/? | Not started | - |

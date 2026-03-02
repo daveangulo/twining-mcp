@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Agent Behavior Quality
-status: unknown
-last_updated: "2026-03-02T17:46:59.635Z"
+status: executing
+last_updated: "2026-03-02T17:50:24Z"
 progress:
   total_phases: 4
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 9
-  completed_plans: 8
+  completed_plans: 9
 ---
 
 # Project State
@@ -22,12 +22,12 @@ See: .planning/PROJECT.md (updated 2026-03-02)
 
 ## Current Position
 
-Phase: 18 of 19 (LLM Judge Integration)
-Plan: 1 of 2 in current phase (18-01 complete)
-Status: Executing Phase 18
-Last activity: 2026-03-02 -- Completed 18-01 (SDK + async scorer foundation)
+Phase: 18 of 19 (LLM Judge Integration -- COMPLETE)
+Plan: 2 of 2 in current phase (18-02 complete, phase done)
+Status: Phase 18 Complete
+Last activity: 2026-03-02 -- Completed 18-02 (LLM scorer implementations)
 
-Progress: [█████████████████████████████████████░░░░] 92% (18/19 phases, 40/41 v1.4 plans through Phase 18-01)
+Progress: [██████████████████████████████████████░░░] 95% (18/19 phases, 41/41 v1.4 plans through Phase 18-02)
 
 ## Performance Metrics
 
@@ -46,6 +46,7 @@ Progress: [███████████████████████
 - 17-01: 5min (2 tasks TDD, 7 files)
 - 17-02: 3min (1 task, 4 files)
 - 18-01: 4min (2 tasks, 14 files)
+- 18-02: 2min (2 tasks, 3 files)
 
 ## Accumulated Context
 
@@ -92,6 +93,9 @@ Recent decisions affecting current work:
 - [Phase 18]: createJudgeClient returns null when ANTHROPIC_API_KEY unset -- graceful degradation, not crash
 - [Phase 18]: Async Scorer interface: all scorers return Promise<ScorerResult>, enabling future LLM scorers
 - [Phase 18]: Conditional scorer composition: deterministicScorers always, llmScorers only when TWINING_EVAL_JUDGE=1
+- [Phase 18]: SHOULD-level checks for LLM judge results: semantic quality is advisory, not mandatory
+- [Phase 18]: 0.5 score threshold per individual judge call (acceptable or good passes)
+- [Phase 18]: Per-call LLM evaluation: one judge call per tool call, not batched across calls
 
 ### Pending Todos
 
@@ -106,5 +110,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed 18-01-PLAN.md (SDK + async scorer foundation)
-Next: Execute 18-02-PLAN.md (LLM scorer implementations)
+Stopped at: Completed 18-02-PLAN.md (LLM scorer implementations)
+Next: Phase 19 (Plugin Tuning)

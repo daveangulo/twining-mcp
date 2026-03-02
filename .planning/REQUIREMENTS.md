@@ -27,7 +27,7 @@ Requirements for v1.4 Agent Behavior Quality. Each maps to roadmap phases.
 
 - [x] **EVAL-01**: Synthetic scenario engine loads YAML definitions and runs through scorer pipeline
 - [x] **EVAL-02**: 7+ deterministic scorers check structural behavioral patterns (sequencing, arguments, ordering)
-- [ ] **EVAL-03**: 2 LLM-as-judge scorers evaluate semantic quality (rationale specificity, scope appropriateness)
+- [x] **EVAL-03**: 2 LLM-as-judge scorers evaluate semantic quality (rationale specificity, scope appropriateness)
 - [x] **EVAL-04**: Transcript parser extracts twining_* tool calls from Claude Code JSONL session logs
 - [x] **EVAL-05**: Same scorers work on both synthetic scenarios and real transcripts
 - [x] **EVAL-06**: LLM judge behind TWINING_EVAL_JUDGE=1 env-var gate, local-only
@@ -86,7 +86,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | QUAL-04 | Phase 15 | Complete |
 | EVAL-01 | Phase 16 | Complete |
 | EVAL-02 | Phase 16 | Complete |
-| EVAL-03 | Phase 18 | Pending |
+| EVAL-03 | Phase 18 | Complete |
 | EVAL-04 | Phase 17 | Complete |
 | EVAL-05 | Phase 17 | Complete |
 | EVAL-06 | Phase 18 | Complete |
