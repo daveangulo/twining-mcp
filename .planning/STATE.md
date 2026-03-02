@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Agent Behavior Quality
 status: unknown
-last_updated: "2026-03-02T16:45:44.007Z"
+last_updated: "2026-03-02T17:46:59.635Z"
 progress:
-  total_phases: 3
+  total_phases: 4
   completed_phases: 3
-  total_plans: 7
-  completed_plans: 7
+  total_plans: 9
+  completed_plans: 8
 ---
 
 # Project State
@@ -22,12 +22,12 @@ See: .planning/PROJECT.md (updated 2026-03-02)
 
 ## Current Position
 
-Phase: 17 of 19 (Transcript Analysis) -- COMPLETE
-Plan: 2 of 2 in current phase (all done)
-Status: Phase 17 complete, ready for Phase 18
-Last activity: 2026-03-02 -- Completed 17-02 (transcript eval runner, vitest config, npm scripts)
+Phase: 18 of 19 (LLM Judge Integration)
+Plan: 1 of 2 in current phase (18-01 complete)
+Status: Executing Phase 18
+Last activity: 2026-03-02 -- Completed 18-01 (SDK + async scorer foundation)
 
-Progress: [████████████████████████████████████░░░░░] 90% (17/19 phases, 39/39 v1.4 plans through Phase 17)
+Progress: [█████████████████████████████████████░░░░] 92% (18/19 phases, 40/41 v1.4 plans through Phase 18-01)
 
 ## Performance Metrics
 
@@ -45,6 +45,7 @@ Progress: [███████████████████████
 - 16-03: 11min (2 tasks, 27 files)
 - 17-01: 5min (2 tasks TDD, 7 files)
 - 17-02: 3min (1 task, 4 files)
+- 18-01: 4min (2 tasks, 14 files)
 
 ## Accumulated Context
 
@@ -87,6 +88,10 @@ Recent decisions affecting current work:
 - [Phase 17]: Aggregate assertions (avg across all scorers) for transcript eval instead of per-scorer threshold -- real sessions have inherent scorer variance
 - Transcript parser uses two-pass JSONL extraction with workflow segmentation at twining_assemble boundaries
 - Transcript eval uses 0.6 threshold (vs 0.8 for synthetic) with aggregate average assertions instead of per-scorer
+- [Phase 18]: Anthropic SDK as devDependency -- only used in eval, not shipped in production
+- [Phase 18]: createJudgeClient returns null when ANTHROPIC_API_KEY unset -- graceful degradation, not crash
+- [Phase 18]: Async Scorer interface: all scorers return Promise<ScorerResult>, enabling future LLM scorers
+- [Phase 18]: Conditional scorer composition: deterministicScorers always, llmScorers only when TWINING_EVAL_JUDGE=1
 
 ### Pending Todos
 
@@ -101,5 +106,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed 17-02-PLAN.md (transcript eval runner, vitest config, npm scripts)
-Next: Execute Phase 18 (LLM Judge)
+Stopped at: Completed 18-01-PLAN.md (SDK + async scorer foundation)
+Next: Execute 18-02-PLAN.md (LLM scorer implementations)
