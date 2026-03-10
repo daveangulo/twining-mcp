@@ -1,0 +1,29 @@
+{
+  "agent_id": "main",
+  "domain": "deployment",
+  "scope": ".planning/",
+  "summary": "No git tag for v1.4 — plugin-only milestones don't get npm release tags",
+  "context": "v1.4 Agent Behavior Quality is entirely plugin-side work (behavioral spec, eval harness, plugin tuning). Git tags trigger the GitHub Actions Publish workflow for npm releases.",
+  "rationale": "Git tags (v1.x.x) are reserved for npm MCP server releases that trigger CI/CD publish. Plugin milestones are internal development milestones that don't correspond to npm version bumps.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Tag as v1.4.0 anyway",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Would trigger npm publish workflow for a release with no server changes; confusing version semantics"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [],
+  "affected_symbols": [],
+  "commit_hashes": [
+    "eb505b9"
+  ],
+  "assembled_before": false,
+  "id": "01KJRFT871403GCBS9RYWT1P4R",
+  "timestamp": "2026-03-02T23:58:24.995Z",
+  "status": "active"
+}

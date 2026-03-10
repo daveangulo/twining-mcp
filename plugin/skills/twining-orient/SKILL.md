@@ -16,6 +16,14 @@ You are starting work on a task in a project that uses Twining for agent coordin
 
 ## Workflow
 
+### 0. Register Yourself
+
+Call `twining_register` with:
+- `agent_id`: A descriptive identifier for your role (e.g., `"refactoring-agent"`, `"bug-fixer"`, `"feature-builder"`)
+- `capabilities`: What you can do (e.g., `["typescript", "refactoring", "testing"]`)
+
+This makes you visible to other agents and enables traceable handoffs.
+
 ### 1. Check Project Status
 
 Call `twining_status` to get a health overview:
@@ -50,13 +58,19 @@ For files you plan to modify, call `twining_why` with the file path as scope. Th
 - Why those choices were made
 - What alternatives were rejected
 
-### 5. Check for Agent Handoffs
+### 5. Search for Related Decisions
+
+Call `twining_search_decisions` with keywords relevant to your task. This finds decisions that `twining_assemble` might miss because they're in a different scope but still relevant.
+
+For example, if you're adding caching, search for "cache", "performance", "data access" to find prior decisions about data patterns.
+
+### 6. Check for Agent Handoffs
 
 If the assembly includes `recent_handoffs`, review them. Another agent may have left partial work or blockers for you.
 
 If `suggested_agents` appears, other agents with relevant capabilities are available for delegation.
 
-### 6. Search for Specific Context (Optional)
+### 7. Search for Specific Context (Optional)
 
 - Use `twining_query` for semantic search when you need to find entries by meaning rather than exact filters
 - Use `twining_read` with filters (`entry_type`, `scope`, `tags`, `since`) for precise lookups

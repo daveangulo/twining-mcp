@@ -10,10 +10,13 @@ You're transferring work to another agent, ending a session with incomplete work
 
 ## When to Invoke
 
+- **ALWAYS** when ending a session that made code changes — even if your work is complete
 - When completing partial work that another agent should continue
 - When delegating a subtask to a specialized agent
 - When approaching context window limits and need to continue in a new session
 - When the user explicitly asks to hand off or pass work along
+
+**Important:** In multi-agent workflows, always create a handoff. The next agent needs to know what you did, what state the codebase is in, and what decisions you made. The Stop hook will block if you try to end without a handoff after making code changes.
 
 ## Workflow
 
@@ -63,13 +66,13 @@ Call `twining_summarize` with the scope to get a compact overview:
 
 Provide the export markdown to the new session as context. The new session should begin with `twining_assemble` (orient skill) to get the latest state.
 
-### Session End (No Continuation)
+### Session End
 
-If work is complete and no handoff is needed, just run the verify skill instead. But if there IS unfinished work:
+Always create a handoff when ending a session that made code changes:
 
-1. Post a `need` entry: `twining_post(entry_type="need", summary="<what needs doing>", scope="<area>")`
-2. Post a `status` entry summarizing what you completed
-3. The Stop hook will remind you to do this if you forget
+1. Call `twining_handoff` with `result_status: "completed"` (or `"partial"` if work remains)
+2. If work is incomplete, also post a `need` entry: `twining_post(entry_type="need", summary="<what needs doing>", scope="<area>")`
+3. The Stop hook will block exit if you skip the handoff after making code changes
 
 ## Handoff Quality Checklist
 

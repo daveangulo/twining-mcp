@@ -727,10 +727,10 @@
     "name": "plugin/hooks/hooks.json",
     "type": "file",
     "properties": {
-      "scope": "src/tools/coordination-tools.ts"
+      "scope": "plugin/"
     },
     "created_at": "2026-02-28T01:19:31.504Z",
-    "updated_at": "2026-02-28T18:53:41.006Z"
+    "updated_at": "2026-03-10T13:03:56.463Z"
   },
   {
     "id": "01KJGX8KNHD07T6HE5K3GHZBAK",
@@ -935,10 +935,10 @@
     "name": "plugin/hooks/stop-hook.sh",
     "type": "file",
     "properties": {
-      "scope": "plugin/hooks/"
+      "scope": "plugin/"
     },
     "created_at": "2026-02-28T14:38:26.114Z",
-    "updated_at": "2026-02-28T14:38:26.114Z"
+    "updated_at": "2026-03-10T13:03:56.465Z"
   },
   {
     "id": "01KJJCBM4J4MHE27MH9VMNEJRH",
@@ -1415,10 +1415,10 @@
     "name": "plugin/BEHAVIORS.md",
     "type": "file",
     "properties": {
-      "scope": "test/eval/"
+      "scope": "plugin/"
     },
     "created_at": "2026-03-02T11:49:51.937Z",
-    "updated_at": "2026-03-02T13:27:43.970Z"
+    "updated_at": "2026-03-10T13:03:56.459Z"
   },
   {
     "id": "01KJQ647P90Q4H2Y3QZRTBKCQZ",
@@ -1863,5 +1863,36 @@
     },
     "created_at": "2026-03-02T23:12:41.635Z",
     "updated_at": "2026-03-02T23:12:41.635Z"
+  },
+  {
+    "id": "01KKBXHM19830H3XB5RFF712FF",
+    "name": "01KKBXHKFZHNT41AF3RQHF47GN",
+    "type": "concept",
+    "properties": {
+      "summary": "Enforce mandatory agent registration and handoff in plugin v1.1.5",
+      "scope": "plugin/"
+    },
+    "created_at": "2026-03-10T13:03:56.457Z",
+    "updated_at": "2026-03-10T13:03:56.457Z"
+  },
+  {
+    "id": "01KKBXHM1MRJ60VFD848BGT3R0",
+    "name": "plugin/skills/twining-handoff/SKILL.md",
+    "type": "file",
+    "properties": {
+      "scope": "plugin/"
+    },
+    "created_at": "2026-03-10T13:03:56.468Z",
+    "updated_at": "2026-03-10T13:03:56.468Z"
+  },
+  {
+    "id": "01KKBXHM1Q9RFE1BC2Q3W77M9H",
+    "name": "plugin/skills/twining-orient/SKILL.md",
+    "type": "file",
+    "properties": {
+      "scope": "plugin/"
+    },
+    "created_at": "2026-03-10T13:03:56.471Z",
+    "updated_at": "2026-03-10T13:03:56.471Z"
   }
 ]

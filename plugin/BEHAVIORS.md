@@ -8,6 +8,19 @@ This document defines correct usage patterns for all 32 Twining MCP tools. It is
 
 ---
 
+## General Principles
+
+### Task Completion Priority
+
+| ID | Level | Rule |
+|----|-------|------|
+| GEN-01 | MUST | Prioritize task completion over coordination thoroughness. Complete your assigned work first, then record decisions and post status. A completed task with minimal coordination is better than an incomplete task with perfect coordination records. |
+| GEN-02 | SHOULD | Keep coordination calls concise. Use short summaries and minimal detail fields. Don't spend significant time composing elaborate blackboard entries at the expense of productive work. |
+| GEN-03 | MUST | Always call `twining_register` at session start before `twining_assemble`. This makes you discoverable and enables traceable handoffs. |
+| GEN-04 | MUST | Always call `twining_handoff` before ending a session that made code changes. The next agent needs to know what you did. |
+
+---
+
 ## Tool Behaviors
 
 ### twining_post
@@ -444,8 +457,8 @@ Register a new agent or update an existing one. Merges capabilities on re-regist
 #### Rules
 | ID | Level | Rule |
 |----|-------|------|
-| REGISTER-01 | SHOULD | Use descriptive, kebab-case agent_id values that reflect what the agent does (e.g., "code-reviewer", not "agent1") |
-| REGISTER-02 | SHOULD | Include capabilities and role to enable capability-based discovery via twining_discover |
+| REGISTER-01 | MUST | Call twining_register at the start of every session before twining_assemble. Use descriptive, kebab-case agent_id values that reflect what the agent does (e.g., "code-reviewer", not "agent1") |
+| REGISTER-02 | MUST | Include capabilities and role to enable capability-based discovery via twining_discover |
 
 ### twining_discover
 <!-- tier: 2 -->

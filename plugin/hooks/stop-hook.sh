@@ -32,6 +32,15 @@ if [[ -n "$TRANSCRIPT_PATH" ]] && [[ -f "$TRANSCRIPT_PATH" ]]; then
     DECISION="block"
     REASON="Code changes detected after last Twining recording. Before ending, please: 1) Record any architectural or implementation decisions with twining_decide. 2) Post findings or status with twining_post. 3) If work is unfinished, create a handoff with twining_handoff. 4) Run twining_verify to check completeness."
   fi
+
+  # Also block if no handoff was created (multi-agent coordination requires handoff)
+  if [[ "$DECISION" = "approve" ]] && [[ "$LAST_EDIT" -gt 0 ]]; then
+    HAS_HANDOFF=$(grep -c 'twining_handoff' "$TRANSCRIPT_PATH" 2>/dev/null) || HAS_HANDOFF=0
+    if [[ "$HAS_HANDOFF" -eq 0 ]]; then
+      DECISION="block"
+      REASON="No twining_handoff found. Create a handoff before ending so the next agent knows what you did, the current state, and what remains. Call twining_handoff with a summary of your results."
+    fi
+  fi
 fi
 
 # Output JSON using printf — no jq dependency
