@@ -147,6 +147,49 @@ export class VerifyEngine {
       };
     }
 
+    // Auto-extract tested_by relations: scan for test file entities matching affected files
+    try {
+      for (const decision of decisions) {
+        for (const filePath of decision.affected_files) {
+          // Derive potential test file names from the source file
+          const baseName = filePath.replace(/\.\w+$/, "");
+          const testPatterns = [
+            `${baseName}.test.ts`,
+            `${baseName}.spec.ts`,
+            `${baseName}.test.js`,
+            `${baseName}.spec.js`,
+          ];
+
+          for (const testPattern of testPatterns) {
+            const { entities: testEntities } = await this.graphEngine.query(
+              testPattern,
+              ["file"],
+              3,
+            );
+            if (testEntities.length > 0) {
+              // Auto-create tested_by relation from source file to test file
+              const { entities: sourceEntities } = await this.graphEngine.query(
+                filePath,
+                ["file"],
+                1,
+              );
+              const sourceEntity = sourceEntities[0];
+              const testEntity = testEntities[0];
+              if (sourceEntity && testEntity) {
+                await this.graphEngine.addRelation({
+                  source: sourceEntity.name,
+                  target: testEntity.name,
+                  type: "tested_by",
+                });
+              }
+            }
+          }
+        }
+      }
+    } catch {
+      // Auto-extraction is best-effort
+    }
+
     const coverage = await this.graphEngine.getTestCoverage(decisions);
 
     let status: "pass" | "warn" | "fail" = "pass";

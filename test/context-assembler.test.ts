@@ -379,6 +379,8 @@ describe("ContextAssembler", () => {
       });
 
       // Create two decisions: one with graph-connected files, one without
+      // The connected decision will have a concept entity + decided_by relation
+      // (simulating what GraphAutoPopulator.onDecide creates)
       const connectedDecision = await decisionStore.create({
         agent_id: "test",
         domain: "implementation",
@@ -393,6 +395,18 @@ describe("ContextAssembler", () => {
         reversible: true,
         affected_files: ["src/auth/jwt.ts"],
         affected_symbols: [],
+      });
+
+      // Create concept entity for the connected decision and link via decided_by
+      const decisionConcept = await graphEngine.addEntity({
+        name: connectedDecision.id,
+        type: "concept",
+        properties: { summary: "Connected decision (JWT)" },
+      });
+      await graphEngine.addRelation({
+        source: jwtFile.name,
+        target: decisionConcept.name,
+        type: "decided_by",
       });
 
       const unconnectedDecision = await decisionStore.create({
@@ -419,7 +433,7 @@ describe("ContextAssembler", () => {
             relevance: 0.3,
             decision_confidence: 0.2,
             warning_boost: 0.0,
-            graph_connectivity: 0.2, // Exaggerate to make effect visible
+            graph_reachability: 0.2, // Exaggerate to make effect visible
           },
         },
       });

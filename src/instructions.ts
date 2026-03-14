@@ -17,7 +17,7 @@ Call \`twining_assemble\` with your task description and scope BEFORE reading co
 Call \`twining_decide\` for any architectural or implementation choice where alternatives exist. Include rationale and at least one rejected alternative. Post \`finding\`, \`warning\`, and \`need\` entries via \`twining_post\` for discoveries, gotchas, and follow-up work.
 
 ### Gate 3: Verification (BEFORE completing)
-Call \`twining_verify\` on your scope before finishing. Link tests to decisions via \`twining_add_relation\` with type \`tested_by\`. Post a \`status\` entry summarizing what you did. Link commits via \`twining_link_commit\`.
+Call \`twining_verify\` on your scope before finishing. Post a \`status\` entry summarizing what you did. Link commits via \`twining_link_commit\`.
 
 ## Key Conventions
 - **Scopes** use path-prefix semantics: \`"src/auth/"\` not \`"project"\` — use the narrowest scope that fits

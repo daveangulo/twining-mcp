@@ -2238,7 +2238,9 @@ var ENTITY_COLORS = {
   concept: '#f59e0b',
   pattern: '#10b981',
   dependency: '#ef4444',
-  api_endpoint: '#ec4899'
+  api_endpoint: '#ec4899',
+  agent: '#14b8a6',
+  commit: '#a855f7'
 };
 
 // Track which entity types are visible (null = all)

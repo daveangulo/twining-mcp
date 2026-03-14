@@ -1049,5 +1049,44 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KKNE772KYNY55NZ3N6PM0D2H",
+    "timestamp": "2026-03-14T05:48:31.193Z",
+    "domain": "architecture",
+    "scope": "src/engine/",
+    "summary": "Auto-populate knowledge graph from tool calls via GraphAutoPopulator",
+    "confidence": "high",
+    "status": "provisional",
+    "affected_files": [
+      "src/engine/graph-auto-populator.ts",
+      "src/engine/decisions.ts",
+      "src/engine/blackboard.ts",
+      "src/tools/coordination-tools.ts",
+      "src/server.ts",
+      "src/utils/types.ts"
+    ],
+    "affected_symbols": [
+      "GraphAutoPopulator",
+      "DecisionEngine",
+      "BlackboardEngine"
+    ],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KKNE7FA2Q7EFFPGX34K7RPHH",
+    "timestamp": "2026-03-14T05:48:39.618Z",
+    "domain": "architecture",
+    "scope": "src/engine/context-assembler.ts",
+    "summary": "Replace computeGraphConnectivity with computeGraphReachability using typed BFS and adaptive weight fallback",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/engine/context-assembler.ts",
+      "src/config.ts",
+      "src/utils/types.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]

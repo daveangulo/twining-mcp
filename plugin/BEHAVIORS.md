@@ -16,8 +16,8 @@ This document defines correct usage patterns for all 32 Twining MCP tools. It is
 |----|-------|------|
 | GEN-01 | MUST | Prioritize task completion over coordination thoroughness. Complete your assigned work first, then record decisions and post status. A completed task with minimal coordination is better than an incomplete task with perfect coordination records. |
 | GEN-02 | SHOULD | Keep coordination calls concise. Use short summaries and minimal detail fields. Don't spend significant time composing elaborate blackboard entries at the expense of productive work. |
-| GEN-03 | MUST | Always call `twining_register` at session start before `twining_assemble`. This makes you discoverable and enables traceable handoffs. |
-| GEN-04 | MUST | Always call `twining_handoff` before ending a session that made code changes. The next agent needs to know what you did. |
+| GEN-03 | MUST | Always call `twining_assemble` at session start before making decisions. This gathers prior context and prevents repeated mistakes. When working with other agents, also call `twining_register` to make yourself discoverable. |
+| GEN-04 | SHOULD | Call `twining_handoff` before ending a session that made code changes. The next agent benefits from knowing what you did. A `twining_post` with entry_type "status" is the minimum requirement. |
 
 ---
 
@@ -457,7 +457,7 @@ Register a new agent or update an existing one. Merges capabilities on re-regist
 #### Rules
 | ID | Level | Rule |
 |----|-------|------|
-| REGISTER-01 | MUST | Call twining_register at the start of every session before twining_assemble. Use descriptive, kebab-case agent_id values that reflect what the agent does (e.g., "code-reviewer", not "agent1") |
+| REGISTER-01 | SHOULD | Call twining_register when working with other agents or subagents. Use descriptive, kebab-case agent_id values that reflect what the agent does (e.g., "code-reviewer", not "agent1") |
 | REGISTER-02 | MUST | Include capabilities and role to enable capability-based discovery via twining_discover |
 
 ### twining_discover
@@ -665,14 +665,6 @@ Export full Twining state as a single markdown document. Includes blackboard ent
 | 3 | twining_delegate | Post delegation request with capability requirements and urgency |
 | 4 | twining_recent | Monitor for acknowledgment and progress updates |
 
-### workflow: map
-| Step | Tool | Purpose |
-|------|------|---------|
-| 1 | twining_add_entity | Record significant code components as graph entities |
-| 2 | twining_add_relation | Capture structural relationships between entities |
-| 3 | twining_neighbors | Verify the graph captures intended relationships |
-| 4 | twining_prune_graph | Clean up orphaned entities from exploratory work |
-
 ### workflow: review
 | Step | Tool | Purpose |
 |------|------|---------|
@@ -708,6 +700,20 @@ Export full Twining state as a single markdown document. Includes blackboard ent
 | 3 | twining_reconsider | Flag the weaker decision for reconsideration |
 | 4 | twining_decide | Record the resolution as a new decision that supersedes |
 | 5 | twining_override | Override the old decision with reference to the new one |
+
+---
+
+## Power User Workflows
+
+These workflows are optional — the knowledge graph is auto-populated from tool calls (`twining_decide`, `twining_post`, `twining_handoff`, `twining_link_commit`). Manual graph building is only needed for advanced structural mapping.
+
+### workflow: map
+| Step | Tool | Purpose |
+|------|------|---------|
+| 1 | twining_add_entity | Record significant code components as graph entities |
+| 2 | twining_add_relation | Capture structural relationships between entities |
+| 3 | twining_neighbors | Verify the graph captures intended relationships |
+| 4 | twining_prune_graph | Clean up orphaned entities from exploratory work |
 
 ---
 

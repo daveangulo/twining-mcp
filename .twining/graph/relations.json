@@ -2016,5 +2016,105 @@
       "decision_summary": "Enforce mandatory agent registration and handoff in plugin v1.1.5"
     },
     "created_at": "2026-03-10T13:03:56.472Z"
+  },
+  {
+    "id": "01KKNE77Z8532PKKY6TWVY4VNC",
+    "source": "01KKNE77Z5ZR4YZA92Q52HKRJ2",
+    "target": "01KKNE77Z4XVAP74EWJX0YW6SE",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Auto-populate knowledge graph from tool calls via GraphAutoPopulator"
+    },
+    "created_at": "2026-03-14T05:48:32.104Z"
+  },
+  {
+    "id": "01KKNE77ZCQNCQTNYSSE8N74D1",
+    "source": "01KKNE77ZAW1943XPGMREM997R",
+    "target": "01KKNE77Z4XVAP74EWJX0YW6SE",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Auto-populate knowledge graph from tool calls via GraphAutoPopulator"
+    },
+    "created_at": "2026-03-14T05:48:32.108Z"
+  },
+  {
+    "id": "01KKNE77ZGWSK9Q9BF53WZD4Q3",
+    "source": "01KJD8KGK434DH6PX2BNXW4W71",
+    "target": "01KKNE77Z4XVAP74EWJX0YW6SE",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Auto-populate knowledge graph from tool calls via GraphAutoPopulator"
+    },
+    "created_at": "2026-03-14T05:48:32.112Z"
+  },
+  {
+    "id": "01KKNE77ZM4XY44B0R2ACEKYCA",
+    "source": "01KJJSJTQYDBTD49DYMQ2XN7Y6",
+    "target": "01KKNE77Z4XVAP74EWJX0YW6SE",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Auto-populate knowledge graph from tool calls via GraphAutoPopulator"
+    },
+    "created_at": "2026-03-14T05:48:32.116Z"
+  },
+  {
+    "id": "01KKNE77ZP90WSGA020K5WNWJT",
+    "source": "01KHMSDEJH7CQCE97XA0ZAP52A",
+    "target": "01KKNE77Z4XVAP74EWJX0YW6SE",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Auto-populate knowledge graph from tool calls via GraphAutoPopulator"
+    },
+    "created_at": "2026-03-14T05:48:32.118Z"
+  },
+  {
+    "id": "01KKNE77ZSSGQ380FNXG3M1MYN",
+    "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+    "target": "01KKNE77Z4XVAP74EWJX0YW6SE",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Auto-populate knowledge graph from tool calls via GraphAutoPopulator"
+    },
+    "created_at": "2026-03-14T05:48:32.121Z"
+  },
+  {
+    "id": "01KKNE77ZYXDCDXDMJZ5TE5Z9Z",
+    "source": "01KKNE77ZVVMYK85M8D45XSR9D",
+    "target": "01KKNE77Z4XVAP74EWJX0YW6SE",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Auto-populate knowledge graph from tool calls via GraphAutoPopulator"
+    },
+    "created_at": "2026-03-14T05:48:32.126Z"
+  },
+  {
+    "id": "01KKNE7FDBTV1QD5VJHZZS31YN",
+    "source": "01KHXTXPP31RWYHVGNGXN9REW8",
+    "target": "01KKNE7FD9ST5B9VAYEDCR08QN",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Replace computeGraphConnectivity with computeGraphReachability using typed BFS and adaptive weight fallback"
+    },
+    "created_at": "2026-03-14T05:48:39.723Z"
+  },
+  {
+    "id": "01KKNE7FDDNE3FKM10VVJR6BRX",
+    "source": "01KJD595ND5YACA06PBGYTRRXA",
+    "target": "01KKNE7FD9ST5B9VAYEDCR08QN",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Replace computeGraphConnectivity with computeGraphReachability using typed BFS and adaptive weight fallback"
+    },
+    "created_at": "2026-03-14T05:48:39.725Z"
+  },
+  {
+    "id": "01KKNE7FDGBM7E7XTQMN5CTNNA",
+    "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+    "target": "01KKNE7FD9ST5B9VAYEDCR08QN",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Replace computeGraphConnectivity with computeGraphReachability using typed BFS and adaptive weight fallback"
+    },
+    "created_at": "2026-03-14T05:48:39.728Z"
   }
 ]

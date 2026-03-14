@@ -43,6 +43,10 @@ All 5 milestones complete: v1 + v1.1 + v1.2 + v1.3 + v1.4 (19 phases, 44 plans)
 ### Decisions
 
 All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
+- No git tag for v1.4 — plugin-only milestones don't get npm release tags
+- Enforce mandatory agent registration and handoff in plugin v1.1.5
+- Auto-populate knowledge graph from tool calls via GraphAutoPopulator
+- Replace computeGraphConnectivity with computeGraphReachability using typed BFS and adaptive weight fallback
 
 ### Pending Todos
 

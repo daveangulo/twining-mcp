@@ -39,6 +39,7 @@ import { registerCoordinationTools } from "./tools/coordination-tools.js";
 import { MetricsCollector } from "./analytics/metrics-collector.js";
 import { createInstrumentedServer } from "./analytics/instrumented-server.js";
 import { TWINING_INSTRUCTIONS } from "./instructions.js";
+import { GraphAutoPopulator } from "./engine/graph-auto-populator.js";
 
 /**
  * Create and configure the Twining MCP server.
@@ -91,6 +92,12 @@ export function createServer(projectRoot: string): ServerContext {
     blackboardEngine,
     indexManager,
   );
+
+  // Create graph auto-populator for relation extraction from tool calls
+  const graphPopulator = new GraphAutoPopulator(graphEngine);
+
+  // Wire graph auto-populator into blackboard engine for post extraction
+  blackboardEngine.setGraphPopulator(graphPopulator);
 
   // Wire auto-archive threshold into blackboard engine (spec §6.1.3)
   blackboardEngine.setArchiver(archiver, config);
@@ -171,24 +178,31 @@ export function createServer(projectRoot: string): ServerContext {
     createInstrumentedServer(server, metricsCollector);
   }
 
-  // Register all tools
+  // Register tools — lite mode only registers core tools
+  const toolMode = config.tools?.mode ?? "full";
+
+  // Core tools (always registered in both full and lite modes)
   registerBlackboardTools(server, blackboardEngine);
   registerDecisionTools(server, decisionEngine);
   registerContextTools(server, contextAssembler);
-  registerLifecycleTools(
-    server,
-    twiningDir,
-    blackboardStore,
-    decisionStore,
-    graphStore,
-    archiver,
-    config,
-    agentStore,
-  );
-  registerGraphTools(server, graphEngine);
   registerVerifyTools(server, verifyEngine);
   registerExportTools(server, exporter);
-  registerCoordinationTools(server, agentStore, coordinationEngine, config);
+  registerCoordinationTools(server, agentStore, coordinationEngine, config, graphPopulator);
+
+  // Extended tools (full mode only)
+  if (toolMode === "full") {
+    registerLifecycleTools(
+      server,
+      twiningDir,
+      blackboardStore,
+      decisionStore,
+      graphStore,
+      archiver,
+      config,
+      agentStore,
+    );
+    registerGraphTools(server, graphEngine);
+  }
 
   return { server, metricsCollector, twiningDir, config };
 }

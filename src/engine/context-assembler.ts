@@ -168,28 +168,34 @@ export class ContextAssembler {
       }
     }
 
-    // 5. Compute graph connectivity scores for decisions (spec §5.5)
-    const connectivityScores = await this.computeGraphConnectivity(
-      scope,
-      mergedDecisionMap,
-    );
+    // 5. Compute graph reachability scores for decisions
+    const { scores: reachabilityScores, paths: reachabilityPaths } =
+      await this.computeGraphReachability(scope, mergedDecisionMap);
 
     // 6. Score each item
     const scoredItems: ScoredItem[] = [];
-    const graphWeight = weights.graph_connectivity ?? 0;
+    const graphWeight = weights.graph_reachability ?? weights.graph_connectivity ?? 0;
+
+    // Adaptive weight fallback: if graph returns 0 for all candidates,
+    // redistribute graph weight proportionally to other signals
+    const maxGraphScore = Math.max(0, ...Array.from(reachabilityScores.values()));
+    const effectiveGraphWeight = maxGraphScore === 0 ? 0 : graphWeight;
+    const weightScale = maxGraphScore === 0 && graphWeight > 0
+      ? 1.0 / (1.0 - graphWeight)
+      : 1.0;
 
     for (const [id, decision] of mergedDecisionMap) {
       const recency = this.recencyScore(decision.timestamp, now);
       const relevance = decisionRelevance.get(id) ?? 0.5;
       const confidence = this.confidenceScore(decision.confidence);
       const warningBoost = 0;
-      const connectivity = connectivityScores.get(id) ?? 0;
+      const reachability = reachabilityScores.get(id) ?? 0;
       const score =
-        recency * weights.recency +
-        relevance * weights.relevance +
-        confidence * weights.decision_confidence +
-        warningBoost * weights.warning_boost +
-        connectivity * graphWeight;
+        recency * weights.recency * weightScale +
+        relevance * weights.relevance * weightScale +
+        confidence * weights.decision_confidence * weightScale +
+        warningBoost * weights.warning_boost * weightScale +
+        reachability * effectiveGraphWeight;
       const text = `${decision.summary} ${decision.rationale} ${decision.confidence} ${decision.affected_files.join(", ")}`;
       scoredItems.push({
         type: "decision",
@@ -206,10 +212,10 @@ export class ContextAssembler {
       const confidence = 0.5; // Neutral for non-decisions
       const warningBoost = entry.entry_type === "warning" ? 1.0 : 0.0;
       const score =
-        recency * weights.recency +
-        relevance * weights.relevance +
-        confidence * weights.decision_confidence +
-        warningBoost * weights.warning_boost;
+        recency * weights.recency * weightScale +
+        relevance * weights.relevance * weightScale +
+        confidence * weights.decision_confidence * weightScale +
+        warningBoost * weights.warning_boost * weightScale;
       const text = `${entry.summary} ${entry.detail}`;
       scoredItems.push({
         type: entry.entry_type as ScoredItem["type"],
@@ -282,13 +288,18 @@ export class ContextAssembler {
 
       if (item.type === "decision") {
         const d = item.data as Decision;
-        activeDecisionResults.push({
+        const decisionEntry: AssembledContext["active_decisions"][number] = {
           id: d.id,
           summary: d.summary,
           rationale: d.rationale,
           confidence: d.confidence,
           affected_files: d.affected_files,
-        });
+        };
+        const path = reachabilityPaths.get(d.id);
+        if (path) {
+          decisionEntry.relevance_path = path;
+        }
+        activeDecisionResults.push(decisionEntry);
       } else {
         const e = item.data as BlackboardEntry;
         switch (e.entry_type) {
@@ -588,64 +599,122 @@ export class ContextAssembler {
    * Decisions whose affected_files/symbols have more graph relations
    * to the scope get a higher boost (0.0 to 1.0).
    */
-  private async computeGraphConnectivity(
+  private async computeGraphReachability(
     scope: string,
     decisions: Map<string, Decision>,
-  ): Promise<Map<string, number>> {
+  ): Promise<{ scores: Map<string, number>; paths: Map<string, string> }> {
     const scores = new Map<string, number>();
-    if (!this.graphEngine) return scores;
+    const paths = new Map<string, string>();
+    if (!this.graphEngine) return { scores, paths };
 
     try {
-      // Find entities matching the scope
+      // 1. Find entities matching scope, filtered to scope prefix
       const { entities: scopeEntities } = await this.graphEngine.query(
         scope,
         undefined,
         20,
       );
-      if (scopeEntities.length === 0) return scores;
+      const filteredScopeEntities = scopeEntities.filter(
+        (e) => e.name.startsWith(scope) || scope.startsWith(e.name),
+      );
+      if (filteredScopeEntities.length === 0) return { scores, paths };
 
-      const scopeEntityIds = new Set(scopeEntities.map((e) => e.id));
-      const scopeEntityNames = new Set(scopeEntities.map((e) => e.name));
+      // Relation types to follow during BFS
+      const followTypes = [
+        "depends_on", "decided_by", "implements", "affects", "produces", "challenged",
+      ];
 
-      for (const [id, decision] of decisions) {
-        let connectionCount = 0;
-        const targets = [
-          ...decision.affected_files,
-          ...decision.affected_symbols,
-        ];
+      // Relation type scoring bonuses
+      const relationBonus: Record<string, number> = {
+        decided_by: 1.0,
+        affects: 1.0,
+        depends_on: 0.8,
+        implements: 0.8,
+        produces: 0.7,
+        challenged: 0.7,
+        supersedes: 0.6,
+        tested_by: 0.6,
+        related_to: 0.5,
+      };
 
-        for (const target of targets) {
-          const { entities: targetEntities } = await this.graphEngine.query(
-            target,
-            undefined,
+      // Path length scoring (indexed by hop count - 1)
+      const depthScore: [number, number, number] = [1.0, 0.7, 0.4];
+
+      // Build set of decision IDs for quick lookup
+      const decisionIds = new Set(decisions.keys());
+
+      // 2. For each scope entity, do typed BFS traversal (max depth 3)
+      for (const scopeEntity of filteredScopeEntities) {
+        try {
+          const { neighbors } = await this.graphEngine.neighbors(
+            scopeEntity.id,
             3,
+            followTypes,
           );
-          for (const te of targetEntities) {
-            const { neighbors } = await this.graphEngine.neighbors(te.id, 1);
-            for (const n of neighbors) {
+
+          for (const neighbor of neighbors) {
+            // Check if this neighbor is a decision concept node
+            if (neighbor.entity.type === "concept" && decisionIds.has(neighbor.entity.name)) {
+              const decisionId = neighbor.entity.name;
+
+              // Determine hop depth from relation (approximate: use relation type)
+              // Since neighbors() returns flat results, we estimate depth from the BFS order
+              // The relation tells us the connection type
+              const relType = neighbor.relation.type;
+              const bonus = relationBonus[relType] ?? 0.5;
+
+              // Use depth 0 (1-hop) as default since neighbors are direct or via BFS
+              const pathScore = depthScore[0] * bonus;
+
+              // Keep max score across all paths
+              const existing = scores.get(decisionId) ?? 0;
+              if (pathScore > existing) {
+                scores.set(decisionId, pathScore);
+                paths.set(
+                  decisionId,
+                  `${scopeEntity.name} → ${relType} → ${neighbor.entity.name}`,
+                );
+              }
+            }
+
+            // Also check if the neighbor's name matches affected_files of any decision
+            for (const [decisionId, decision] of decisions) {
               if (
-                scopeEntityIds.has(n.entity.id) ||
-                scopeEntityNames.has(n.entity.name)
+                decision.affected_files.includes(neighbor.entity.name) ||
+                decision.affected_symbols.includes(neighbor.entity.name)
               ) {
-                connectionCount++;
+                const relType = neighbor.relation.type;
+                const bonus = relationBonus[relType] ?? 0.5;
+                const pathScore = depthScore[1] * bonus; // 2-hop equivalent
+
+                const existing = scores.get(decisionId) ?? 0;
+                if (pathScore > existing) {
+                  scores.set(decisionId, pathScore);
+                  paths.set(
+                    decisionId,
+                    `${scopeEntity.name} → ${relType} → ${neighbor.entity.name} → decided_by → ${decisionId}`,
+                  );
+                }
               }
             }
           }
+        } catch {
+          // Skip entities that fail to traverse
         }
+      }
 
-        // Normalize: cap at 1.0, use log scale to avoid domination
-        scores.set(
-          id,
-          connectionCount > 0
-            ? Math.min(1.0, Math.log2(connectionCount + 1) / 3)
-            : 0,
-        );
+      // 3. Normalize scores to 0.0-1.0
+      const maxScore = Math.max(0, ...Array.from(scores.values()));
+      if (maxScore > 0 && maxScore !== 1.0) {
+        for (const [id, score] of scores) {
+          scores.set(id, score / maxScore);
+        }
       }
     } catch {
       // Graph errors should never break scoring
     }
 
-    return scores;
+    return { scores, paths };
   }
 
   /**

@@ -16,13 +16,13 @@ You are starting work on a task in a project that uses Twining for agent coordin
 
 ## Workflow
 
-### 0. Register Yourself
+### 0. Register Yourself (When Working With Other Agents)
 
-Call `twining_register` with:
+If you are working alongside other agents or subagents, call `twining_register` with:
 - `agent_id`: A descriptive identifier for your role (e.g., `"refactoring-agent"`, `"bug-fixer"`, `"feature-builder"`)
 - `capabilities`: What you can do (e.g., `["typescript", "refactoring", "testing"]`)
 
-This makes you visible to other agents and enables traceable handoffs.
+This makes you visible to other agents and enables traceable handoffs. For solo sessions resuming prior work, you can skip this step.
 
 ### 1. Check Project Status
 

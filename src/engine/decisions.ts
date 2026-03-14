@@ -20,6 +20,7 @@ import type { Embedder } from "../embeddings/embedder.js";
 import type { IndexManager } from "../embeddings/index-manager.js";
 import type { SearchEngine } from "../embeddings/search.js";
 import type { GraphEngine } from "./graph.js";
+import { GraphAutoPopulator } from "./graph-auto-populator.js";
 
 /** Entry in a dependency trace chain. */
 export interface TraceEntry {
@@ -37,7 +38,7 @@ export class DecisionEngine {
   private readonly indexManager: IndexManager | null;
   private readonly projectRoot: string | null;
   private readonly searchEngine: SearchEngine | null;
-  private readonly graphEngine: GraphEngine | null;
+  private readonly graphPopulator: GraphAutoPopulator | null;
   private assemblyChecker?: (agentId: string) => boolean;
 
   constructor(
@@ -55,7 +56,7 @@ export class DecisionEngine {
     this.indexManager = indexManager ?? null;
     this.projectRoot = projectRoot ?? null;
     this.searchEngine = searchEngine ?? null;
-    this.graphEngine = graphEngine ?? null;
+    this.graphPopulator = graphEngine ? new GraphAutoPopulator(graphEngine) : null;
   }
 
   /** Set the function that checks whether an agent assembled context before deciding. */
@@ -261,45 +262,20 @@ export class DecisionEngine {
     // Sync decision summary to .planning/STATE.md (Phase 5 GSD bridge)
     this.syncToPlanning(decision.summary);
 
-    // Auto-populate knowledge graph with affected files/symbols (spec §4.2)
-    if (this.graphEngine) {
-      try {
-        // Create a concept entity for the decision itself so relations can reference it
-        const decisionEntity = await this.graphEngine.addEntity({
-          name: decision.id,
-          type: "concept",
-          properties: { summary: decision.summary, scope: decision.scope },
-        });
-        for (const filePath of decision.affected_files) {
-          const entity = await this.graphEngine.addEntity({
-            name: filePath,
-            type: "file",
-            properties: { scope: decision.scope },
-          });
-          await this.graphEngine.addRelation({
-            source: entity.name,
-            target: decisionEntity.name,
-            type: "decided_by",
-            properties: { decision_summary: decision.summary },
-          });
-        }
-        for (const symbol of decision.affected_symbols) {
-          const entity = await this.graphEngine.addEntity({
-            name: symbol,
-            type: "function",
-            properties: { scope: decision.scope },
-          });
-          await this.graphEngine.addRelation({
-            source: entity.name,
-            target: decisionEntity.name,
-            type: "decided_by",
-            properties: { decision_summary: decision.summary },
-          });
-        }
-      } catch (error) {
-        // Non-fatal — graph enrichment is best-effort
-        console.error("[twining] Graph auto-population failed (non-fatal):", error);
-      }
+    // Auto-populate knowledge graph (delegated to GraphAutoPopulator)
+    if (this.graphPopulator) {
+      await this.graphPopulator.onDecide(
+        {
+          affected_files: decision.affected_files,
+          affected_symbols: decision.affected_symbols,
+          depends_on: input.depends_on,
+          supersedes: input.supersedes,
+          commit_hash: input.commit_hash,
+          scope: decision.scope,
+          summary: decision.summary,
+        },
+        decision.id,
+      );
     }
 
     const result: {
@@ -383,6 +359,11 @@ export class DecisionEngine {
       scope: decision.scope,
       agent_id: agentId ?? "main",
     });
+
+    // Auto-populate graph with commit → decision link
+    if (this.graphPopulator) {
+      await this.graphPopulator.onLinkCommit(decisionId, commitHash);
+    }
 
     return { linked: true, decision_summary: decision.summary };
   }
@@ -551,6 +532,11 @@ export class DecisionEngine {
       agent_id: agentId ?? "main",
     });
 
+    // Auto-populate graph with challenged relation
+    if (this.graphPopulator) {
+      await this.graphPopulator.onChallenge(agentId ?? "main", decisionId, "reconsider");
+    }
+
     return { flagged, decision_summary: decision.summary };
   }
 
@@ -596,6 +582,11 @@ export class DecisionEngine {
       agent_id: overrider,
       _internal: true,
     });
+
+    // Auto-populate graph with challenged relation
+    if (this.graphPopulator) {
+      await this.graphPopulator.onChallenge(overriddenBy ?? "human", decisionId, "override");
+    }
 
     const result: {
       overridden: boolean;

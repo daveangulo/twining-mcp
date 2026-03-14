@@ -4,7 +4,7 @@
       "matcher": "*",
       "hooks": [{
         "type": "prompt",
-        "prompt": "Twining coordination is active. BEFORE reading code or making changes: 1) Call `twining_register` with a descriptive agent_id and your capabilities so other agents can discover you. 2) Call `twining_assemble` with your task description and scope to gather prior decisions, warnings, and context that prevent repeated mistakes."
+        "prompt": "Twining project memory is active. BEFORE reading code or making changes, call `twining_assemble` with your task description and scope to check for prior decisions, warnings, and context from previous sessions. This prevents redoing work and repeating mistakes."
       }]
     }],
     "SubagentStop": [{

@@ -11,6 +11,7 @@ import type { Embedder } from "../embeddings/embedder.js";
 import type { IndexManager } from "../embeddings/index-manager.js";
 import type { SearchEngine, BlackboardSearchResult } from "../embeddings/search.js";
 import type { Archiver } from "./archiver.js";
+import type { GraphAutoPopulator } from "./graph-auto-populator.js";
 
 export class BlackboardEngine {
   private readonly store: BlackboardStore;
@@ -19,6 +20,7 @@ export class BlackboardEngine {
   private readonly searchEngine: SearchEngine | null;
   private archiver: Archiver | null = null;
   private archiveThreshold: number | null = null;
+  private graphPopulator: GraphAutoPopulator | null = null;
 
   constructor(
     store: BlackboardStore,
@@ -36,6 +38,11 @@ export class BlackboardEngine {
   setArchiver(archiver: Archiver, config: TwiningConfig): void {
     this.archiver = archiver;
     this.archiveThreshold = config.archive.max_blackboard_entries_before_archive;
+  }
+
+  /** Inject graph auto-populator for relation extraction from posts. */
+  setGraphPopulator(populator: GraphAutoPopulator): void {
+    this.graphPopulator = populator;
   }
 
   /** Post a new blackboard entry with validation and defaults. */
@@ -85,6 +92,11 @@ export class BlackboardEngine {
       relates_to: input.relates_to,
       agent_id: input.agent_id ?? "main",
     });
+
+    // Auto-populate graph with scope/relation entities (best-effort)
+    if (this.graphPopulator) {
+      await this.graphPopulator.onPost(entry);
+    }
 
     // Generate embedding (Phase 2) — never let embedding failure prevent the post
     if (this.embedder && this.indexManager) {

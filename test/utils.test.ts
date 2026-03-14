@@ -151,7 +151,7 @@ describe("loadConfig", () => {
     fs.writeFileSync(path.join(tmpDir, "config.yml"), yaml.dump(partial));
     const config = loadConfig(tmpDir);
     expect(config.context_assembly.default_max_tokens).toBe(8000);
-    expect(config.context_assembly.priority_weights.recency).toBe(0.3);
-    expect(config.context_assembly.priority_weights.relevance).toBe(0.3);
+    expect(config.context_assembly.priority_weights.recency).toBe(0.2);
+    expect(config.context_assembly.priority_weights.relevance).toBe(0.2);
   });
 });

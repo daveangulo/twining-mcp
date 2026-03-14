@@ -13,12 +13,14 @@ import {
   DEFAULT_LIVENESS_THRESHOLDS,
 } from "../utils/liveness.js";
 import { toolResult, toolError } from "../utils/errors.js";
+import type { GraphAutoPopulator } from "../engine/graph-auto-populator.js";
 
 export function registerCoordinationTools(
   server: McpServer,
   agentStore: AgentStore,
   coordinationEngine: CoordinationEngine,
   config: TwiningConfig,
+  graphPopulator?: GraphAutoPopulator | null,
 ): void {
   // twining_agents — List all registered agents with liveness status
   server.registerTool(
@@ -107,6 +109,10 @@ export function registerCoordinationTools(
           role: args.role,
           description: args.description,
         });
+        // Auto-populate graph with agent entity
+        if (graphPopulator) {
+          await graphPopulator.onRegister(args.agent_id, args.capabilities, args.role);
+        }
         return toolResult({
           agent_id: record.agent_id,
           capabilities: record.capabilities,
@@ -272,6 +278,15 @@ export function registerCoordinationTools(
           results: args.results,
           auto_snapshot: args.auto_snapshot,
         });
+        // Auto-populate graph with handoff entities/relations
+        if (graphPopulator) {
+          await graphPopulator.onHandoff({
+            source_agent: args.source_agent,
+            target_agent: args.target_agent,
+            scope: args.scope,
+            results: args.results,
+          });
+        }
         return toolResult({
           id: record.id,
           created_at: record.created_at,

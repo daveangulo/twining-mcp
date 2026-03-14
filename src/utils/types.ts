@@ -85,7 +85,9 @@ export interface Entity {
     | "concept"
     | "pattern"
     | "dependency"
-    | "api_endpoint";
+    | "api_endpoint"
+    | "agent"
+    | "commit";
   properties: Record<string, string>;
   created_at: string;
   updated_at: string;
@@ -104,7 +106,10 @@ export interface Relation {
     | "tested_by"
     | "calls"
     | "imports"
-    | "related_to";
+    | "related_to"
+    | "supersedes"
+    | "produces"
+    | "challenged";
   properties: Record<string, string>;
   created_at: string;
 }
@@ -121,6 +126,7 @@ export interface AssembledContext {
     rationale: string;
     confidence: string;
     affected_files: string[];
+    relevance_path?: string;
   }[];
   open_needs: Pick<BlackboardEntry, "id" | "summary" | "scope" | "timestamp">[];
   recent_findings: Pick<
@@ -176,6 +182,7 @@ export interface TwiningConfig {
       decision_confidence: number;
       warning_boost: number;
       graph_connectivity?: number;
+      graph_reachability?: number;
     };
   };
   conflict_resolution: string;
@@ -196,6 +203,9 @@ export interface TwiningConfig {
   instructions?: {
     /** Whether to include workflow instructions in the MCP initialize response (default: true) */
     auto_inject: boolean;
+  };
+  tools?: {
+    mode: "full" | "lite";
   };
 }
 

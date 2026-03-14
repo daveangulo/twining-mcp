@@ -1,0 +1,44 @@
+{
+  "agent_id": "main",
+  "domain": "architecture",
+  "scope": "src/engine/",
+  "summary": "Auto-populate knowledge graph from tool calls via GraphAutoPopulator",
+  "context": "Benchmark run 4005bc41 showed agents spend 28% of coordination calls on manual graph-building that nothing queries. The graph was write-only overhead.",
+  "rationale": "Centralizing auto-extraction in GraphAutoPopulator removes manual overhead while making the graph useful. Each engine method (decide, post, handoff, linkCommit, register, reconsider, override) calls the populator after its primary operation. All calls are try/catch wrapped — graph is an optimization layer, not correctness requirement.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Keep manual graph-building via agent instructions",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Agents waste 28% of coordination calls on graph bookkeeping that nothing downstream queries"
+    },
+    {
+      "option": "Remove the knowledge graph entirely",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Graph-powered retrieval in assemble finds structurally connected decisions that embedding similarity misses — the graph has value when auto-populated and queried"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "src/engine/graph-auto-populator.ts",
+    "src/engine/decisions.ts",
+    "src/engine/blackboard.ts",
+    "src/tools/coordination-tools.ts",
+    "src/server.ts",
+    "src/utils/types.ts"
+  ],
+  "affected_symbols": [
+    "GraphAutoPopulator",
+    "DecisionEngine",
+    "BlackboardEngine"
+  ],
+  "commit_hashes": [],
+  "assembled_before": false,
+  "id": "01KKNE772KYNY55NZ3N6PM0D2H",
+  "timestamp": "2026-03-14T05:48:31.193Z",
+  "status": "provisional"
+}

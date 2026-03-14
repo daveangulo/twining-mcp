@@ -18,11 +18,11 @@ export const DEFAULT_CONFIG: TwiningConfig = {
   context_assembly: {
     default_max_tokens: 4000,
     priority_weights: {
-      recency: 0.3,
-      relevance: 0.3,
-      decision_confidence: 0.2,
+      recency: 0.2,
+      relevance: 0.2,
+      decision_confidence: 0.15,
       warning_boost: 0.1,
-      graph_connectivity: 0.1,
+      graph_reachability: 0.35,
     },
   },
   conflict_resolution: "human",
@@ -51,6 +51,9 @@ export const DEFAULT_CONFIG: TwiningConfig = {
   },
   instructions: {
     auto_inject: true,       // Include workflow instructions in MCP initialize response
+  },
+  tools: {
+    mode: "full",            // "full" or "lite" — lite registers only core tools
   },
 };
 
@@ -97,8 +100,20 @@ export function loadConfig(twiningDir: string): TwiningConfig {
   if (parsed === null || parsed === undefined || typeof parsed !== "object") {
     return { ...DEFAULT_CONFIG };
   }
-  return deepMerge(
+  const config = deepMerge(
     DEFAULT_CONFIG as unknown as Record<string, unknown>,
     parsed as Record<string, unknown>,
   ) as unknown as TwiningConfig;
+
+  // Validate priority weights sum to 1.0
+  const weights = config.context_assembly.priority_weights;
+  const weightSum = Object.values(weights).reduce((a, b) => (a ?? 0) + (b ?? 0), 0) as number;
+  if (Math.abs(weightSum - 1.0) > 0.01) {
+    console.error(
+      `[twining] Warning: priority_weights sum to ${weightSum}, expected 1.0. Using defaults.`,
+    );
+    config.context_assembly.priority_weights = { ...DEFAULT_CONFIG.context_assembly.priority_weights };
+  }
+
+  return config;
 }

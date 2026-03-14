@@ -1,0 +1,37 @@
+{
+  "agent_id": "main",
+  "domain": "architecture",
+  "scope": "src/engine/context-assembler.ts",
+  "summary": "Replace computeGraphConnectivity with computeGraphReachability using typed BFS and adaptive weight fallback",
+  "context": "The old graph scoring did substring entity matching + 1-hop BFS overlap counting at 10% weight. The graph's typed relations were wasted. Increasing weight to 35% risks breaking retrieval for users with empty graphs.",
+  "rationale": "Typed BFS traversal follows specific relation types (decided_by, affects, depends_on, etc.) with depth-based path scoring and relation type bonuses. Adaptive weight fallback redistributes the 35% graph weight proportionally when all graph scores are 0, preventing score compression for sparse/empty graphs. Relevance paths annotate assembled decisions with how they were found.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Keep old computeGraphConnectivity at higher weight",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Substring matching + neighbor overlap doesn't leverage typed relations — misses structurally connected decisions"
+    },
+    {
+      "option": "Fixed weights without adaptive fallback",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "35% of score would be zero for upgrading users with empty graphs, compressing effective score range"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "medium",
+  "reversible": true,
+  "affected_files": [
+    "src/engine/context-assembler.ts",
+    "src/config.ts",
+    "src/utils/types.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": false,
+  "id": "01KKNE7FA2Q7EFFPGX34K7RPHH",
+  "timestamp": "2026-03-14T05:48:39.618Z",
+  "status": "active"
+}
