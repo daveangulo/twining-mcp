@@ -4850,5 +4850,155 @@
       "decision_summary": "Used null sentinel from listLocalBranches() to distinguish 'enumeration failed' from 'legitimately empty branch set'"
     },
     "created_at": "2026-05-05T16:22:14.171Z"
+  },
+  {
+    "id": "01KQWJMWCJS2ERA7F9CD9EMC51",
+    "source": "01KQWJMWCHMNXZCF41K3JQSG11",
+    "target": "01KQWJMWCGK6ZWW3EGD6661PTG",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Don't distinguish merged-and-deleted from force-deleted branches"
+    },
+    "created_at": "2026-05-05T17:23:21.618Z"
+  },
+  {
+    "id": "01KQWJMWCN32TTBQT9QQ5J3VCT",
+    "source": "01KQWJMWCKVJHND6Z53D18ZVMS",
+    "target": "01KQWJMWCGK6ZWW3EGD6661PTG",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Don't distinguish merged-and-deleted from force-deleted branches"
+    },
+    "created_at": "2026-05-05T17:23:21.621Z"
+  },
+  {
+    "id": "01KQWJMWCPB7XY3SMZMW84VK88",
+    "source": "01KQWE98BCW4SXZR7KP8QNPNJK",
+    "target": "01KQWJMWCGK6ZWW3EGD6661PTG",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Don't distinguish merged-and-deleted from force-deleted branches"
+    },
+    "created_at": "2026-05-05T17:23:21.622Z"
+  },
+  {
+    "id": "01KQWJMWCRKK1BZDSAM52XWM85",
+    "source": "01KQWE98BE5GC6Q3Q99F2HXCJX",
+    "target": "01KQWJMWCGK6ZWW3EGD6661PTG",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Don't distinguish merged-and-deleted from force-deleted branches"
+    },
+    "created_at": "2026-05-05T17:23:21.624Z"
+  },
+  {
+    "id": "01KQWJMWCVXYD14YGWJ9S1G942",
+    "source": "01KQWE98BJDY12CMM0EBPTF7BN",
+    "target": "01KQWJMWCGK6ZWW3EGD6661PTG",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Don't distinguish merged-and-deleted from force-deleted branches"
+    },
+    "created_at": "2026-05-05T17:23:21.627Z"
+  },
+  {
+    "id": "01KQWJMWEYX4K01FCQVPVFGF6K",
+    "source": "01KQWJMWCHMNXZCF41K3JQSG11",
+    "target": "01KQWJMWEW2EDR4F5DA8QXV5M1",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Snapshot file lives at .twining/.last-known-branches.json"
+    },
+    "created_at": "2026-05-05T17:23:21.694Z"
+  },
+  {
+    "id": "01KQWJMWF0NM3TFP03FCY309VY",
+    "source": "01KQWJMWCKVJHND6Z53D18ZVMS",
+    "target": "01KQWJMWEW2EDR4F5DA8QXV5M1",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Snapshot file lives at .twining/.last-known-branches.json"
+    },
+    "created_at": "2026-05-05T17:23:21.696Z"
+  },
+  {
+    "id": "01KQWJMWF2Q949QFDFNNGCJKTF",
+    "source": "01KQWE98BCW4SXZR7KP8QNPNJK",
+    "target": "01KQWJMWEW2EDR4F5DA8QXV5M1",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Snapshot file lives at .twining/.last-known-branches.json"
+    },
+    "created_at": "2026-05-05T17:23:21.698Z"
+  },
+  {
+    "id": "01KQWJMWF4YPG1F025NNKB4CWR",
+    "source": "01KQWE98BE5GC6Q3Q99F2HXCJX",
+    "target": "01KQWJMWEW2EDR4F5DA8QXV5M1",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Snapshot file lives at .twining/.last-known-branches.json"
+    },
+    "created_at": "2026-05-05T17:23:21.700Z"
+  },
+  {
+    "id": "01KQWJMWF7X22PMJ6PBFAQX983",
+    "source": "01KQWE98BJDY12CMM0EBPTF7BN",
+    "target": "01KQWJMWEW2EDR4F5DA8QXV5M1",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Snapshot file lives at .twining/.last-known-branches.json"
+    },
+    "created_at": "2026-05-05T17:23:21.703Z"
+  },
+  {
+    "id": "01KQWJMWHWGT9HMVG2B6F26J7M",
+    "source": "01KQWJMWCHMNXZCF41K3JQSG11",
+    "target": "01KQWJMWHTQK2V6Z0GQMXZNTV0",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "First-run is a no-op for archival"
+    },
+    "created_at": "2026-05-05T17:23:21.788Z"
+  },
+  {
+    "id": "01KQWJMWHY0NT1RQHB433BGXBV",
+    "source": "01KQWJMWCKVJHND6Z53D18ZVMS",
+    "target": "01KQWJMWHTQK2V6Z0GQMXZNTV0",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "First-run is a no-op for archival"
+    },
+    "created_at": "2026-05-05T17:23:21.790Z"
+  },
+  {
+    "id": "01KQWJMWJ05GQ7S05SZGPJRZFE",
+    "source": "01KQWE98BCW4SXZR7KP8QNPNJK",
+    "target": "01KQWJMWHTQK2V6Z0GQMXZNTV0",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "First-run is a no-op for archival"
+    },
+    "created_at": "2026-05-05T17:23:21.792Z"
+  },
+  {
+    "id": "01KQWJMWJ3TJP8XXBT82X56RPV",
+    "source": "01KQWE98BE5GC6Q3Q99F2HXCJX",
+    "target": "01KQWJMWHTQK2V6Z0GQMXZNTV0",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "First-run is a no-op for archival"
+    },
+    "created_at": "2026-05-05T17:23:21.795Z"
+  },
+  {
+    "id": "01KQWJMWJ5CZKD7CSFKHQFG4P7",
+    "source": "01KQWE98BJDY12CMM0EBPTF7BN",
+    "target": "01KQWJMWHTQK2V6Z0GQMXZNTV0",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "First-run is a no-op for archival"
+    },
+    "created_at": "2026-05-05T17:23:21.797Z"
   }
 ]

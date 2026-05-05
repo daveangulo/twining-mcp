@@ -39,6 +39,12 @@ export function registerHousekeepingTools(
           .describe(
             "Set to true to scan blackboard entries and decisions for staleness — flags items whose scope path, affected files, or originating branch no longer exist. Returns candidates only; use twining_archive_stale to act on them.",
           ),
+        merge_sweep: z
+          .boolean()
+          .optional()
+          .describe(
+            "Set to true to detect branches deleted since the last housekeeping run (typically post-merge cleanup) and flag entries provenance-stamped with those branches. First call records the initial branch snapshot and returns no candidates. Returns candidates only; use twining_archive_stale to act on them.",
+          ),
         stale_days: z
           .number()
           .optional()
@@ -55,6 +61,7 @@ export function registerHousekeepingTools(
           execute: args.execute,
           promote_provisionals: args.promote_provisionals,
           staleness_review: args.staleness_review,
+          merge_sweep: args.merge_sweep,
           stale_days: args.stale_days,
           metrics_retention_days: args.metrics_retention_days,
         });

@@ -2,3 +2,4 @@ embeddings/*.index
 archive/
 models/
 .last-record
+.last-known-branches.json

@@ -1,0 +1,26 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "src/engine/",
+  "summary": "First-run is a no-op for archival",
+  "context": "PR B (Phase 4 of #7): twining_housekeeping merge_sweep flag — diff branches against .twining/.last-known-branches.json, flag entries provenance-stamped with deleted branches.",
+  "rationale": "records initial snapshot, returns initial_record=true. Avoids spurious deletions on first install.",
+  "constraints": [],
+  "alternatives": [],
+  "depends_on": [],
+  "confidence": "medium",
+  "reversible": true,
+  "affected_files": [
+    "src/utils/git-branches.ts",
+    "src/engine/branch-watcher.ts",
+    "src/engine/staleness.ts",
+    "src/engine/housekeeping.ts",
+    "src/tools/housekeeping-tools.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KQWJMWF88JGQRDRKFC6F6P8Y",
+  "timestamp": "2026-05-05T17:23:21.704Z",
+  "status": "active"
+}

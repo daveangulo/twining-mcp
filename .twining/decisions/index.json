@@ -2224,5 +2224,59 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KQWJMW9NKDHKDCZYDP968RPJ",
+    "timestamp": "2026-05-05T17:23:21.525Z",
+    "domain": "implementation",
+    "scope": "src/engine/",
+    "summary": "Don't distinguish merged-and-deleted from force-deleted branches",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/utils/git-branches.ts",
+      "src/engine/branch-watcher.ts",
+      "src/engine/staleness.ts",
+      "src/engine/housekeeping.ts",
+      "src/tools/housekeeping-tools.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQWJMWCVXYD14YGWJ9S1G943",
+    "timestamp": "2026-05-05T17:23:21.627Z",
+    "domain": "architecture",
+    "scope": "src/engine/",
+    "summary": "Snapshot file lives at .twining/.last-known-branches.json",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/utils/git-branches.ts",
+      "src/engine/branch-watcher.ts",
+      "src/engine/staleness.ts",
+      "src/engine/housekeeping.ts",
+      "src/tools/housekeeping-tools.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQWJMWF88JGQRDRKFC6F6P8Y",
+    "timestamp": "2026-05-05T17:23:21.704Z",
+    "domain": "implementation",
+    "scope": "src/engine/",
+    "summary": "First-run is a no-op for archival",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/utils/git-branches.ts",
+      "src/engine/branch-watcher.ts",
+      "src/engine/staleness.ts",
+      "src/engine/housekeeping.ts",
+      "src/tools/housekeeping-tools.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]
