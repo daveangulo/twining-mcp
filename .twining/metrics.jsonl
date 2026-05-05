@@ -64,3 +64,6 @@
 {"tool_name":"twining_record","timestamp":"2026-05-05T15:42:31.481Z","duration_ms":14,"success":true,"agent_id":"unknown"}
 {"tool_name":"twining_record","timestamp":"2026-05-05T16:07:06.560Z","duration_ms":299,"success":true,"agent_id":"unknown"}
 {"tool_name":"twining_record","timestamp":"2026-05-05T16:22:14.171Z","duration_ms":164,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_assemble","timestamp":"2026-05-05T17:16:59.499Z","duration_ms":52,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_record","timestamp":"2026-05-05T17:23:14.249Z","duration_ms":0,"success":false,"error_code":"INVALID_INPUT","agent_id":"unknown"}
+{"tool_name":"twining_record","timestamp":"2026-05-05T17:23:21.797Z","duration_ms":301,"success":true,"agent_id":"unknown"}

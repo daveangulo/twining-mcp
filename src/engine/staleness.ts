@@ -15,10 +15,10 @@
  * Semantic-content review (LLM-judged "Wave 3 / HMS Lancaster" cases) is out
  * of scope here — see follow-up issue.
  */
-import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import type { BlackboardEntry, Decision } from "../utils/types.js";
+import { listLocalBranches } from "../utils/git-branches.js";
 
 export interface StalenessReason {
   signal: "scope_path_missing" | "affected_files_missing" | "branch_gone";
@@ -130,34 +130,6 @@ export function buildProbes(projectRoot: string): {
     branchKnown: (branch: string) =>
       listingFailed ? true : branches.has(branch),
   };
-}
-
-/**
- * Returns the local branch set, or `null` when enumeration fails (git absent,
- * non-repo, or `for-each-ref` errors). The `null` sentinel lets callers
- * distinguish "we can't check" from "the repo legitimately has no branches".
- */
-function listLocalBranches(projectRoot: string): Set<string> | null {
-  try {
-    const out = execFileSync(
-      "git",
-      ["for-each-ref", "--format=%(refname:short)", "refs/heads"],
-      {
-        cwd: projectRoot,
-        encoding: "utf-8",
-        timeout: 2000,
-        stdio: ["ignore", "pipe", "ignore"],
-      },
-    );
-    return new Set(
-      out
-        .split("\n")
-        .map((s) => s.trim())
-        .filter(Boolean),
-    );
-  } catch {
-    return null;
-  }
 }
 
 export function auditStaleness(

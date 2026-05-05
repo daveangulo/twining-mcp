@@ -74,6 +74,121 @@ describe("twining_housekeeping with staleness_review", () => {
   });
 });
 
+describe("twining_housekeeping with merge_sweep", () => {
+  it("first call records the branch snapshot and returns initial_record=true", async () => {
+    gitInit(tmpDir);
+    execFileSync("git", ["branch", "feature/x"], { cwd: tmpDir });
+    server = createTestServer(tmpDir);
+
+    const res = await callTool(server, "twining_housekeeping", {
+      merge_sweep: true,
+      execute: true,
+    });
+    const parsed = parseToolResponse(res) as {
+      merge_sweep?: {
+        initial_record: boolean;
+        enumerated: boolean;
+        current_branches: string[];
+        deleted_branches: string[];
+        candidates: unknown[];
+      };
+    };
+    expect(parsed.merge_sweep).toBeDefined();
+    expect(parsed.merge_sweep!.initial_record).toBe(true);
+    expect(parsed.merge_sweep!.enumerated).toBe(true);
+    expect(parsed.merge_sweep!.current_branches).toContain("feature/x");
+    expect(parsed.merge_sweep!.candidates).toEqual([]);
+  });
+
+  it("flags entries from a branch deleted between two housekeeping runs", async () => {
+    gitInit(tmpDir);
+    execFileSync("git", ["branch", "feature/short-lived"], { cwd: tmpDir });
+    execFileSync("git", ["checkout", "-q", "feature/short-lived"], { cwd: tmpDir });
+    server = createTestServer(tmpDir);
+
+    // Record a decision while we're on the short-lived branch.
+    const recordRes = await callTool(server, "twining_record", {
+      summary: "Spike on short-lived branch",
+      decisions: [{ summary: "Tried approach X for the spike", rationale: "spike-only" }],
+      scope: "project",
+    });
+    const recorded = parseToolResponse(recordRes) as {
+      decisions_created: Array<{ id: string }>;
+    };
+    const decisionId = recorded.decisions_created[0]!.id;
+
+    // First housekeeping pass — execute=true advances the baseline.
+    await callTool(server, "twining_housekeeping", {
+      merge_sweep: true,
+      execute: true,
+    });
+
+    // Switch back to main and delete the spike branch.
+    execFileSync("git", ["checkout", "-q", "main"], { cwd: tmpDir });
+    execFileSync("git", ["branch", "-D", "feature/short-lived"], { cwd: tmpDir });
+
+    // Second housekeeping pass — feature/short-lived is gone now.
+    const sweepRes = await callTool(server, "twining_housekeeping", {
+      merge_sweep: true,
+    });
+    const sweep = parseToolResponse(sweepRes) as {
+      merge_sweep?: {
+        initial_record: boolean;
+        deleted_branches: string[];
+        candidates: Array<{ id: string; branch: string; kind: string }>;
+      };
+    };
+
+    expect(sweep.merge_sweep!.initial_record).toBe(false);
+    expect(sweep.merge_sweep!.deleted_branches).toContain("feature/short-lived");
+    const cand = sweep.merge_sweep!.candidates.find((c) => c.id === decisionId);
+    expect(cand).toBeDefined();
+    expect(cand!.branch).toBe("feature/short-lived");
+    expect(cand!.kind).toBe("decision");
+  });
+
+  it("preview-mode (execute=false) does NOT advance the baseline — deletions persist across previews", async () => {
+    // Regression for the dry-run silently advances bug. If a preview pass
+    // were to consume the deletion, sweep2 below would return [].
+    gitInit(tmpDir);
+    execFileSync("git", ["branch", "feature/preview-target"], { cwd: tmpDir });
+    server = createTestServer(tmpDir);
+
+    // Seed baseline (execute=true).
+    await callTool(server, "twining_housekeeping", {
+      merge_sweep: true,
+      execute: true,
+    });
+
+    execFileSync("git", ["branch", "-D", "feature/preview-target"], {
+      cwd: tmpDir,
+    });
+
+    const sweep1 = parseToolResponse(
+      await callTool(server, "twining_housekeeping", { merge_sweep: true }),
+    ) as { merge_sweep: { deleted_branches: string[] } };
+    expect(sweep1.merge_sweep.deleted_branches).toContain("feature/preview-target");
+
+    // Second preview must still see the same deletion (not consumed).
+    const sweep2 = parseToolResponse(
+      await callTool(server, "twining_housekeeping", { merge_sweep: true }),
+    ) as { merge_sweep: { deleted_branches: string[] } };
+    expect(sweep2.merge_sweep.deleted_branches).toContain("feature/preview-target");
+  });
+
+  it("returns enumerated=false in a non-git project and does not flag anything", async () => {
+    // No gitInit — tmpDir is not a git repo.
+    server = createTestServer(tmpDir);
+    const res = await callTool(server, "twining_housekeeping", { merge_sweep: true });
+    const parsed = parseToolResponse(res) as {
+      merge_sweep?: { enumerated: boolean; deleted_branches: string[]; candidates: unknown[] };
+    };
+    expect(parsed.merge_sweep!.enumerated).toBe(false);
+    expect(parsed.merge_sweep!.deleted_branches).toEqual([]);
+    expect(parsed.merge_sweep!.candidates).toEqual([]);
+  });
+});
+
 describe("twining_archive_stale", () => {
   it("archives a decision (status -> archived) and a blackboard entry by ID", async () => {
     gitInit(tmpDir);

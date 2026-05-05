@@ -13,6 +13,7 @@ import type { Archiver } from "./archiver.js";
 import type { GraphEngine } from "./graph.js";
 import type { BlackboardEntry, Decision } from "../utils/types.js";
 import { auditStaleness, type StaleItem } from "./staleness.js";
+import { detectDeletedBranches } from "./branch-watcher.js";
 
 /** Default: flag provisionals older than 7 days. */
 const STALE_PROVISIONAL_DAYS = 7;
@@ -49,6 +50,22 @@ export interface HousekeepingResult {
     threshold: number;
     candidates: StaleItem[];
   };
+  merge_sweep?: {
+    initial_record: boolean;
+    enumerated: boolean;
+    current_branches: string[];
+    deleted_branches: string[];
+    since: string | null;
+    candidates: Array<{
+      id: string;
+      kind: "decision" | "blackboard";
+      summary: string;
+      scope: string;
+      branch: string;
+      commit_sha?: string;
+      recorded_at?: string;
+    }>;
+  };
   dry_run: boolean;
   summary: string;
 }
@@ -70,12 +87,14 @@ export class HousekeepingEngine {
     execute?: boolean;
     promote_provisionals?: boolean;
     staleness_review?: boolean;
+    merge_sweep?: boolean;
   }): Promise<HousekeepingResult> {
     const staleDays = options?.stale_days ?? STALE_PROVISIONAL_DAYS;
     const metricsRetentionDays = options?.metrics_retention_days ?? METRICS_RETENTION_DAYS;
     const execute = options?.execute ?? false;
     const promoteProvisionals = options?.promote_provisionals ?? false;
     const stalenessReview = options?.staleness_review ?? false;
+    const mergeSweep = options?.merge_sweep ?? false;
 
     const result: HousekeepingResult = {
       archived: { count: 0, file: "" },
@@ -236,6 +255,81 @@ export class HousekeepingEngine {
       }
     }
 
+    // 8. Merge sweep — opt-in (branch-watcher diff vs last housekeeping snapshot).
+    // Snapshot file is only updated when execute=true; dry-runs compute the
+    // diff against the existing baseline without advancing it, so a preview
+    // can never silently consume deletions before the user acts.
+    if (mergeSweep && this.projectRoot) {
+      try {
+        const sweep = detectDeletedBranches(
+          this.twiningDir,
+          this.projectRoot,
+          execute,
+        );
+        const candidates: NonNullable<HousekeepingResult["merge_sweep"]>["candidates"] = [];
+
+        if (sweep.deleted_branches.length > 0) {
+          const deletedSet = new Set(sweep.deleted_branches);
+          // Active decisions only — archived ones are already off the books.
+          const decisionIndex = await this.decisionStore.getIndex();
+          for (const idx of decisionIndex) {
+            if (idx.status !== "active") continue;
+            const d = await this.decisionStore.get(idx.id);
+            if (!d?.provenance?.branch) continue;
+            if (!deletedSet.has(d.provenance.branch)) continue;
+            const item: NonNullable<HousekeepingResult["merge_sweep"]>["candidates"][number] = {
+              id: d.id,
+              kind: "decision",
+              summary: d.summary,
+              scope: d.scope,
+              branch: d.provenance.branch,
+            };
+            if (d.provenance.commit_sha) item.commit_sha = d.provenance.commit_sha;
+            if (d.provenance.recorded_at) item.recorded_at = d.provenance.recorded_at;
+            candidates.push(item);
+          }
+
+          const { entries: bbEntries } = await this.blackboardStore.read();
+          for (const e of bbEntries) {
+            if (!e.provenance?.branch) continue;
+            if (!deletedSet.has(e.provenance.branch)) continue;
+            const item: NonNullable<HousekeepingResult["merge_sweep"]>["candidates"][number] = {
+              id: e.id,
+              kind: "blackboard",
+              summary: e.summary,
+              scope: e.scope,
+              branch: e.provenance.branch,
+            };
+            if (e.provenance.commit_sha) item.commit_sha = e.provenance.commit_sha;
+            if (e.provenance.recorded_at) item.recorded_at = e.provenance.recorded_at;
+            candidates.push(item);
+          }
+        }
+
+        result.merge_sweep = {
+          initial_record: sweep.initial_record,
+          enumerated: sweep.enumerated,
+          current_branches: sweep.current_branches,
+          deleted_branches: sweep.deleted_branches,
+          since: sweep.state_recorded_at,
+          candidates,
+        };
+      } catch {
+        // Non-fatal — merge sweep is opt-in and shouldn't break housekeeping
+      }
+    }
+
+    // Dedupe: if both staleness_review and merge_sweep ran, an entry from a
+    // recently-deleted branch will appear in both candidate lists (branch_gone
+    // signal vs deleted-branch sweep). Remove the staleness duplicate so the
+    // caller doesn't see the same ID framed two different ways. merge_sweep
+    // wins because it's the more specific signal.
+    if (result.staleness_review && result.merge_sweep) {
+      const sweepIds = new Set(result.merge_sweep.candidates.map((c) => c.id));
+      result.staleness_review.candidates =
+        result.staleness_review.candidates.filter((c) => !sweepIds.has(c.id));
+    }
+
     // Build summary
     const prefix = execute ? "" : "[preview] ";
     const verb = execute ? "" : "would ";
@@ -249,6 +343,13 @@ export class HousekeepingEngine {
     if (result.metrics_rotated.removed > 0) parts.push(`${verb}rotate ${result.metrics_rotated.removed} old metrics`);
     if (result.staleness_review && result.staleness_review.candidates.length > 0) {
       parts.push(`${result.staleness_review.candidates.length} items ≥ score ${result.staleness_review.threshold} flagged stale`);
+    }
+    if (result.merge_sweep) {
+      if (result.merge_sweep.initial_record) {
+        parts.push(`merge_sweep: recorded initial branch snapshot (${result.merge_sweep.current_branches?.length ?? 0} branches)`);
+      } else if (result.merge_sweep.deleted_branches.length > 0) {
+        parts.push(`merge_sweep: ${result.merge_sweep.deleted_branches.length} deleted branch(es), ${result.merge_sweep.candidates.length} entries from them`);
+      }
     }
     result.summary = parts.length > 0
       ? prefix + parts.join(", ")
