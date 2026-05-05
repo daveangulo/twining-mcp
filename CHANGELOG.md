@@ -2,6 +2,16 @@
 
 All notable changes to Twining MCP are documented here.
 
+## [1.19.0] - 2026-04-29
+
+### Added
+- `TWINING_DISABLED` env var (#10). Set `TWINING_DISABLED=true` (e.g. in `.claude/settings.json` `env` block) to disable Twining for a project — the MCP server exits cleanly before registering tools, so no Twining tools appear in Claude's list. Use case: per-project opt-out without uninstalling the plugin globally. Restart Claude Code to re-enable.
+
+### Plugin v1.9.0
+- Fixed: `SessionStart:resume` hook crash (#8). The `prompt`-type SessionStart hook was failing with "ToolUseContext is required for prompt hooks" on session resume. Replaced with a `command`-type hook (`session-start-context.sh`) that emits the gate reminder via `additionalContext` JSON; works on both startup and resume.
+- Fixed: `ensure-claude-md-gates.sh` no longer re-stomps `CLAUDE.md` (#9). The hook now searches for the "Twining Lifecycle Gates" marker in `~/.claude/CLAUDE.md`, project `CLAUDE.md`, project `CLAUDE.local.md`, and `.claude/CLAUDE.local.md`, skipping the append if the marker is found anywhere. An explicit opt-out flag `.twining/.no-claude-md-gates` silences the hook regardless of marker location.
+- Added: `TWINING_DISABLED=true` causes all hook scripts (`pre-commit-hook.sh`, `stop-hook.sh`, `subagent-stop-hook.sh`, `ensure-claude-md-gates.sh`, and the new `session-start-context.sh`) to no-op silently. Pairs with the server-side gate above.
+
 ## [1.18.0] - 2026-04-24
 
 ### Fixed

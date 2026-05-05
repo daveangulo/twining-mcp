@@ -3,6 +3,7 @@
 # Safety net: if the orchestrator forgets coordination, at least a status entry is recorded
 # No external dependencies — pure bash only
 set -euo pipefail
+[[ "${TWINING_DISABLED:-}" = "true" ]] && exit 0
 
 # Read hook input from stdin (contains agent_id, transcript_path, etc.)
 HOOK_INPUT=$(cat)

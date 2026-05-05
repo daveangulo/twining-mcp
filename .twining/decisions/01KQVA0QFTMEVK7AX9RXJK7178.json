@@ -1,0 +1,25 @@
+{
+  "agent_id": "main",
+  "domain": "architecture",
+  "scope": "project",
+  "summary": "Replaced tmpTranscript naming from Date.now() pattern to mkdtempSync in pre-commit-hook.test.ts and stop-hook.test.ts for parallel-safe temp file handling",
+  "context": "Fixed 3 test-quality issues: strengthened server-startup signal assertions, added bash non-true case, replaced temp naming with mkdtempSync",
+  "rationale": "Replaced tmpTranscript naming from Date.now() pattern to mkdtempSync in pre-commit-hook.test.ts and stop-hook.test.ts for parallel-safe temp file handling",
+  "constraints": [],
+  "alternatives": [],
+  "depends_on": [],
+  "confidence": "medium",
+  "reversible": true,
+  "affected_files": [
+    "test/server-startup.test.ts",
+    "test/hooks/session-start-context.test.ts",
+    "test/hooks/pre-commit-hook.test.ts",
+    "test/hooks/stop-hook.test.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KQVA0QFTMEVK7AX9RXJK7178",
+  "timestamp": "2026-05-05T05:33:18.202Z",
+  "status": "active"
+}

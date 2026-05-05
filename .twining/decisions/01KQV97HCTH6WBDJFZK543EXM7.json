@@ -1,0 +1,32 @@
+{
+  "agent_id": "main",
+  "domain": "testing",
+  "scope": "plugin/hooks",
+  "summary": "Structured tests to verify disabled mode bypasses all enforcement: pre-commit blocks commits without recording, stop blocks sessions without recording, both disabled exit 0 silently",
+  "context": "Phase 3 TDD loop: Added TWINING_DISABLED=true guard to 3 bash hook scripts with comprehensive test coverage. All 6 test cases pass, full suite clean at 845 tests.",
+  "rationale": "Structured tests to verify disabled mode bypasses all enforcement: pre-commit blocks commits without recording, stop blocks sessions without recording, both disabled exit 0 silently",
+  "constraints": [],
+  "alternatives": [],
+  "depends_on": [],
+  "confidence": "medium",
+  "reversible": true,
+  "affected_files": [
+    "plugin/hooks/pre-commit-hook.sh",
+    "plugin/hooks/stop-hook.sh",
+    "plugin/hooks/subagent-stop-hook.sh",
+    "test/hooks/pre-commit-hook.test.ts",
+    "test/hooks/stop-hook.test.ts",
+    "test/hooks/subagent-stop-hook.test.ts"
+  ],
+  "affected_symbols": [],
+  "assumptions": [
+    "run-hook.ts helper already available and working for hook testing",
+    "TWINING_DISABLED env var is the agreed pattern for opt-out across server + hooks",
+    "All 3 hooks should exhibit same guard behavior (exit immediately, no processing)"
+  ],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KQV97HCTH6WBDJFZK543EXM7",
+  "timestamp": "2026-05-05T05:19:32.762Z",
+  "status": "active"
+}

@@ -4,6 +4,7 @@
 # Detects whether decisions are needed (architectural changes) vs just a status post.
 # No external dependencies — pure bash + grep only
 set -euo pipefail
+[[ "${TWINING_DISABLED:-}" = "true" ]] && exit 0
 
 # Read hook input from stdin
 HOOK_INPUT=$(cat)

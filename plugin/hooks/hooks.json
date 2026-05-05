@@ -7,8 +7,9 @@
         "command": "${CLAUDE_PLUGIN_ROOT}/hooks/ensure-claude-md-gates.sh",
         "timeout": 5
       }, {
-        "type": "prompt",
-        "prompt": "Twining MCP tools are available. Two gates: (1) `twining_assemble` FIRST — before reading code. (2) `twining_record` LAST — before committing or ending. See CLAUDE.md \"Twining Lifecycle Gates\" for details."
+        "type": "command",
+        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/session-start-context.sh",
+        "timeout": 5
       }]
     }],
     "PreToolUse": [{

@@ -1,0 +1,29 @@
+{
+  "agent_id": "main",
+  "domain": "testing",
+  "scope": "docs/superpowers/plans/",
+  "summary": "Chose Vitest with child_process.spawnSync for hook tests over bats/shell-only",
+  "context": "Wrote implementation plan for plugin hygiene fixes at docs/superpowers/plans/2026-04-29-plugin-hygiene.md. 25 tasks across 7 phases.",
+  "rationale": "keeps everything in the existing test runner so npm test catches hook regressions, and avoids introducing a new test dependency. Single shared test/hooks/run-hook.ts helper keeps hook tests DRY.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "bats/shell-only",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "medium",
+  "reversible": true,
+  "affected_files": [
+    "docs/superpowers/plans/2026-04-29-plugin-hygiene.md"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": false,
+  "id": "01KQV88TKHG29D06K6B40WV2CV",
+  "timestamp": "2026-05-05T05:02:46.385Z",
+  "status": "active"
+}

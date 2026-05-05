@@ -1,0 +1,32 @@
+{
+  "agent_id": "main",
+  "domain": "testing",
+  "scope": "project",
+  "summary": "Switched server-startup.test.ts tests 2 & 3 from spawnSync with input='' to spawn with manually-piped Readable stream that never sends EOF, allowing processes to hang to timeout and be killed with SIGTERM, which discriminates between gate firing (status 0) vs gate not firing (signal SIGTERM)",
+  "context": "Fixed 3 test-quality issues: strengthened server-startup signal assertions, added bash non-true case, replaced temp naming with mkdtempSync",
+  "rationale": "Switched server-startup.test.ts tests 2 & 3 from spawnSync with input='' to spawn with manually-piped Readable stream that never sends EOF, allowing processes to hang to timeout and be killed with SIGTERM, which discriminates between gate firing (status 0) vs gate not firing (signal SIGTERM)",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "firing (signal SIGTERM)",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "medium",
+  "reversible": true,
+  "affected_files": [
+    "test/server-startup.test.ts",
+    "test/hooks/session-start-context.test.ts",
+    "test/hooks/pre-commit-hook.test.ts",
+    "test/hooks/stop-hook.test.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KQVA0QBMFJ2CAQWNWQGE4Q49",
+  "timestamp": "2026-05-05T05:33:18.068Z",
+  "status": "active"
+}

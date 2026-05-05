@@ -1639,5 +1639,392 @@
       "buildFromStructured"
     ],
     "commit_hashes": []
+  },
+  {
+    "id": "01KQTRRN0CFQCAT0N3KSXRNXW8",
+    "timestamp": "2026-05-05T00:31:47.724Z",
+    "domain": "testing",
+    "scope": "docs/superpowers/specs/",
+    "summary": "Chose two specs over one combined spec",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/specs/2026-04-29-plugin-hygiene-design.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQTRRN1BN7VK7P363XRY45EE",
+    "timestamp": "2026-05-05T00:31:47.755Z",
+    "domain": "security",
+    "scope": "docs/superpowers/specs/",
+    "summary": "Chose to keep CLAUDE.md gate authority over reporter's prompt-injection-only alternative for issue #9",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/specs/2026-04-29-plugin-hygiene-design.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQTRRN2NFVP78RYAYG3EMS0Q",
+    "timestamp": "2026-05-05T00:31:47.797Z",
+    "domain": "deployment",
+    "scope": "docs/superpowers/specs/",
+    "summary": "Chose broad marker search across 4 files (~/.claude/CLAUDE.md, project CLAUDE.md, project CLAUDE.local.md, project .claude/CLAUDE.local.md) plus opt-out flag .twining/.no-claude-md-gates for issue #9",
+    "confidence": "medium",
+    "status": "superseded",
+    "affected_files": [
+      "docs/superpowers/specs/2026-04-29-plugin-hygiene-design.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQTRRN3VE2S5D3B9ZRZGX752",
+    "timestamp": "2026-05-05T00:31:47.835Z",
+    "domain": "architecture",
+    "scope": "docs/superpowers/specs/",
+    "summary": "Chose two-layer disable for TWINING_DISABLED (hooks no-op + MCP server early-exit before tool registration)",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/specs/2026-04-29-plugin-hygiene-design.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQTRRN4VEXME5DNAY93Y8B8J",
+    "timestamp": "2026-05-05T00:31:47.867Z",
+    "domain": "implementation",
+    "scope": "docs/superpowers/specs/",
+    "summary": "Chose to convert SessionStart prompt-type hook to command-type hook for issue #8",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/specs/2026-04-29-plugin-hygiene-design.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQV88TKHG29D06K6B40WV2CV",
+    "timestamp": "2026-05-05T05:02:46.385Z",
+    "domain": "testing",
+    "scope": "docs/superpowers/plans/",
+    "summary": "Chose Vitest with child_process.spawnSync for hook tests over bats/shell-only",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/plans/2026-04-29-plugin-hygiene.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQV88TMGHE6ENP9EP7W0Z1HY",
+    "timestamp": "2026-05-05T05:02:46.416Z",
+    "domain": "testing",
+    "scope": "docs/superpowers/plans/",
+    "summary": "Chose to phase the work as: verifications first → test helper → server gate → simple hook guards → ensure-claude-md-gates (compound changes) → SessionStart command hook → versions → manual smoke test → release. Foundation-first ordering means each phase's tests can rely on infrastructure from prior phases.",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/plans/2026-04-29-plugin-hygiene.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQV8Q0HZWMTRNS2NYFACCKY4",
+    "timestamp": "2026-05-05T05:10:31.231Z",
+    "domain": "implementation",
+    "scope": "project",
+    "summary": "Adapted import style from 'import path' to 'import * as path' to satisfy TypeScript strict ESM rules (verbatimModuleSyntax: true)",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQV935XB6AMVC404F344S6GY",
+    "timestamp": "2026-05-05T05:17:09.931Z",
+    "domain": "implementation",
+    "scope": "src/index.ts, test/server-startup.test.ts",
+    "summary": "Implemented strict equality check (=== 'true') for TWINING_DISABLED gate",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/index.ts",
+      "test/server-startup.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQV935Y7CWQWW12XRZ9CGH37",
+    "timestamp": "2026-05-05T05:17:09.959Z",
+    "domain": "implementation",
+    "scope": "src/index.ts, test/server-startup.test.ts",
+    "summary": "Placed gate at line 21-23 in main() before any server initialization",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/index.ts",
+      "test/server-startup.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQV935ZDSEV81DRC75NZW77T",
+    "timestamp": "2026-05-05T05:17:09.997Z",
+    "domain": "testing",
+    "scope": "src/index.ts, test/server-startup.test.ts",
+    "summary": "Updated test expectations to match actual server behavior: tests verify TWINING_DISABLED=true exits cleanly within 300ms while other cases attempt normal startup",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/index.ts",
+      "test/server-startup.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQV97HA9KV7TWC8YHBDF2FJF",
+    "timestamp": "2026-05-05T05:19:32.681Z",
+    "domain": "architecture",
+    "scope": "plugin/hooks",
+    "summary": "Added TWINING_DISABLED guard immediately after set -euo pipefail in all 3 hooks (pre-commit-hook.sh, stop-hook.sh, subagent-stop-hook.sh)",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "plugin/hooks/pre-commit-hook.sh",
+      "plugin/hooks/stop-hook.sh",
+      "plugin/hooks/subagent-stop-hook.sh",
+      "test/hooks/pre-commit-hook.test.ts",
+      "test/hooks/stop-hook.test.ts",
+      "test/hooks/subagent-stop-hook.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQV97HBM0CF30TX3R2MY8794",
+    "timestamp": "2026-05-05T05:19:32.724Z",
+    "domain": "testing",
+    "scope": "plugin/hooks",
+    "summary": "Created 3 test files (pre-commit-hook.test.ts, stop-hook.test.ts, subagent-stop-hook.test.ts) using existing run-hook helper",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "plugin/hooks/pre-commit-hook.sh",
+      "plugin/hooks/stop-hook.sh",
+      "plugin/hooks/subagent-stop-hook.sh",
+      "test/hooks/pre-commit-hook.test.ts",
+      "test/hooks/stop-hook.test.ts",
+      "test/hooks/subagent-stop-hook.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQV97HCTH6WBDJFZK543EXM7",
+    "timestamp": "2026-05-05T05:19:32.762Z",
+    "domain": "testing",
+    "scope": "plugin/hooks",
+    "summary": "Structured tests to verify disabled mode bypasses all enforcement: pre-commit blocks commits without recording, stop blocks sessions without recording, both disabled exit 0 silently",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "plugin/hooks/pre-commit-hook.sh",
+      "plugin/hooks/stop-hook.sh",
+      "plugin/hooks/subagent-stop-hook.sh",
+      "test/hooks/pre-commit-hook.test.ts",
+      "test/hooks/stop-hook.test.ts",
+      "test/hooks/subagent-stop-hook.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQV9B7VA60ZGGZM1SMR0DVME",
+    "timestamp": "2026-05-05T05:21:34.058Z",
+    "domain": "implementation",
+    "scope": "project",
+    "summary": "Added TWINING_DISABLED guard immediately after set -euo pipefail to bypass hook when disabled at server level",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "plugin/hooks/ensure-claude-md-gates.sh",
+      "test/hooks/ensure-claude-md-gates.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQV9B7WR6J71JFGHN5EDCA3E",
+    "timestamp": "2026-05-05T05:21:34.104Z",
+    "domain": "deployment",
+    "scope": "project",
+    "summary": "Added opt-out flag check that exits silently if $PROJECT_ROOT/.twining/.no-claude-md-gates exists, giving projects explicit control",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "plugin/hooks/ensure-claude-md-gates.sh",
+      "test/hooks/ensure-claude-md-gates.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQV9B7XSEREAPTSG3Y67N0BV",
+    "timestamp": "2026-05-05T05:21:34.137Z",
+    "domain": "deployment",
+    "scope": "project",
+    "summary": "Replaced single-file marker check with broad search across 4 locations (project CLAUDE.md, CLAUDE.local.md, .claude/CLAUDE.local.md, global $HOME/.claude/CLAUDE.md) before deciding to append, avoiding duplicate markers",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "plugin/hooks/ensure-claude-md-gates.sh",
+      "test/hooks/ensure-claude-md-gates.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQV9EH7AGBH6QYHXYTFRKPHY",
+    "timestamp": "2026-05-05T05:23:21.962Z",
+    "domain": "testing",
+    "scope": "plugin/hooks",
+    "summary": "Chose command-type hook with additionalContext JSON output over prompt-type hook because Claude Code does NOT support prompt-type hooks on SessionStart at all and crashes on resume",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "plugin/hooks/session-start-context.sh",
+      "plugin/hooks/hooks.json",
+      "test/hooks/session-start-context.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQV9EH97F1RYJTE9NKYB27PS",
+    "timestamp": "2026-05-05T05:23:22.023Z",
+    "domain": "architecture",
+    "scope": "plugin/hooks",
+    "summary": "Implemented session-start-context.sh with set -euo pipefail safety and TWINING_DISABLED guard to match pattern from phases 3-4 hooks.",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "plugin/hooks/session-start-context.sh",
+      "plugin/hooks/hooks.json",
+      "test/hooks/session-start-context.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQV9EHAWVCAENCYJKYYG8YZ9",
+    "timestamp": "2026-05-05T05:23:22.076Z",
+    "domain": "implementation",
+    "scope": "plugin/hooks",
+    "summary": "Placed the new session-start-context.sh",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "plugin/hooks/session-start-context.sh",
+      "plugin/hooks/hooks.json",
+      "test/hooks/session-start-context.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQV9J89WBT2W8WXKA1T7T85X",
+    "timestamp": "2026-05-05T05:25:23.900Z",
+    "domain": "testing",
+    "scope": "plugin/.claude-plugin/plugin.json, .claude-plugin/marketplace.json, package.json, CHANGELOG.md",
+    "summary": "Executed phase plan as specified without deviations",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "package.json",
+      "plugin/.claude-plugin/plugin.json",
+      ".claude-plugin/marketplace.json",
+      "CHANGELOG.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQVA0QBMFJ2CAQWNWQGE4Q49",
+    "timestamp": "2026-05-05T05:33:18.068Z",
+    "domain": "testing",
+    "scope": "project",
+    "summary": "Switched server-startup.test.ts tests 2 & 3 from spawnSync with input='' to spawn with manually-piped Readable stream that never sends EOF, allowing processes to hang to timeout and be killed with SIGTERM, which discriminates between gate firing (status 0) vs gate not firing (signal SIGTERM)",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "test/server-startup.test.ts",
+      "test/hooks/session-start-context.test.ts",
+      "test/hooks/pre-commit-hook.test.ts",
+      "test/hooks/stop-hook.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQVA0QDZ5G1N8K65E5C17RFN",
+    "timestamp": "2026-05-05T05:33:18.143Z",
+    "domain": "testing",
+    "scope": "project",
+    "summary": "Added third test to session-start-context.test.ts verifying TWINING_DISABLED='1' does NOT trigger gate and hook emits JSON normally",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "test/server-startup.test.ts",
+      "test/hooks/session-start-context.test.ts",
+      "test/hooks/pre-commit-hook.test.ts",
+      "test/hooks/stop-hook.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQVA0QFTMEVK7AX9RXJK7178",
+    "timestamp": "2026-05-05T05:33:18.202Z",
+    "domain": "architecture",
+    "scope": "project",
+    "summary": "Replaced tmpTranscript naming from Date.now() pattern to mkdtempSync in pre-commit-hook.test.ts and stop-hook.test.ts for parallel-safe temp file handling",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "test/server-startup.test.ts",
+      "test/hooks/session-start-context.test.ts",
+      "test/hooks/pre-commit-hook.test.ts",
+      "test/hooks/stop-hook.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQVA2PWT7HWDEVH04MNXDM8S",
+    "timestamp": "2026-05-05T05:34:23.130Z",
+    "domain": "testing",
+    "scope": "docs/superpowers/specs/",
+    "summary": "Reconsidered SEARCH_PATHS marker-search order in ensure-claude-md-gates.sh. Original spec said global-first (cheapest,",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/specs/2026-04-29-plugin-hygiene-design.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]
