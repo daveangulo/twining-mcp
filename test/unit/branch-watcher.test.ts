@@ -105,4 +105,30 @@ describe("detectDeletedBranches", () => {
     expect(r.initial_record).toBe(true);
     expect(r.deleted_branches).toEqual([]);
   });
+
+  it("commit=false (dry-run) does NOT advance the snapshot, so deletions persist across previews", () => {
+    const { project, twiningDir } = makeRepo();
+    execFileSync("git", ["branch", "feature/preview-target"], { cwd: project });
+
+    // Establish baseline.
+    detectDeletedBranches(twiningDir, project, true);
+
+    // Delete the branch.
+    execFileSync("git", ["branch", "-D", "feature/preview-target"], { cwd: project });
+
+    // First preview — sees the deletion.
+    const preview1 = detectDeletedBranches(twiningDir, project, false);
+    expect(preview1.deleted_branches).toEqual(["feature/preview-target"]);
+
+    // Second preview — must still see the same deletion. If the first preview
+    // had silently advanced the baseline, this would return [] and the user
+    // would lose the candidate without ever acting on it.
+    const preview2 = detectDeletedBranches(twiningDir, project, false);
+    expect(preview2.deleted_branches).toEqual(["feature/preview-target"]);
+
+    // Now commit — advances baseline. After this, the deletion is consumed.
+    detectDeletedBranches(twiningDir, project, true);
+    const after = detectDeletedBranches(twiningDir, project, true);
+    expect(after.deleted_branches).toEqual([]);
+  });
 });

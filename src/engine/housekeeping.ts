@@ -256,9 +256,16 @@ export class HousekeepingEngine {
     }
 
     // 8. Merge sweep — opt-in (branch-watcher diff vs last housekeeping snapshot).
+    // Snapshot file is only updated when execute=true; dry-runs compute the
+    // diff against the existing baseline without advancing it, so a preview
+    // can never silently consume deletions before the user acts.
     if (mergeSweep && this.projectRoot) {
       try {
-        const sweep = detectDeletedBranches(this.twiningDir, this.projectRoot);
+        const sweep = detectDeletedBranches(
+          this.twiningDir,
+          this.projectRoot,
+          execute,
+        );
         const candidates: NonNullable<HousekeepingResult["merge_sweep"]>["candidates"] = [];
 
         if (sweep.deleted_branches.length > 0) {
@@ -310,6 +317,17 @@ export class HousekeepingEngine {
       } catch {
         // Non-fatal — merge sweep is opt-in and shouldn't break housekeeping
       }
+    }
+
+    // Dedupe: if both staleness_review and merge_sweep ran, an entry from a
+    // recently-deleted branch will appear in both candidate lists (branch_gone
+    // signal vs deleted-branch sweep). Remove the staleness duplicate so the
+    // caller doesn't see the same ID framed two different ways. merge_sweep
+    // wins because it's the more specific signal.
+    if (result.staleness_review && result.merge_sweep) {
+      const sweepIds = new Set(result.merge_sweep.candidates.map((c) => c.id));
+      result.staleness_review.candidates =
+        result.staleness_review.candidates.filter((c) => !sweepIds.has(c.id));
     }
 
     // Build summary

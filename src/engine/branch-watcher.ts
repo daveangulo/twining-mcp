@@ -65,10 +65,15 @@ function writeKnownBranches(twiningDir: string, branches: Set<string>): void {
 }
 
 /**
- * Diff current branches against the recorded snapshot, then update the
- * snapshot to reflect "now". Returns the deletion set (possibly empty).
+ * Diff current branches against the recorded snapshot. The state file is
+ * updated only when `commit: true` — preview passes ({ execute: false } in
+ * housekeeping) compute the diff but leave the snapshot untouched, otherwise
+ * a dry-run would silently advance the baseline and consume deletions
+ * before the user has a chance to act on them.
  *
- * - First-ever run: writes the snapshot, returns initial_record=true with no deletions.
+ * - First-ever run, commit=true: writes the snapshot, initial_record=true, no deletions.
+ * - First-ever run, commit=false: still reports initial_record=true (so callers
+ *   know there's no prior baseline) but does NOT write the file.
  * - Subsequent run with no changes: returns empty deletion set.
  * - Subsequent run with deletions: returns the deleted branches.
  * - Branch enumeration failure (non-git, git missing): returns enumerated=false
@@ -77,6 +82,7 @@ function writeKnownBranches(twiningDir: string, branches: Set<string>): void {
 export function detectDeletedBranches(
   twiningDir: string,
   projectRoot: string,
+  commit: boolean = true,
 ): BranchSweepResult {
   const current = listLocalBranches(projectRoot);
   if (current === null) {
@@ -91,7 +97,7 @@ export function detectDeletedBranches(
 
   const previous = readKnownBranches(twiningDir);
   if (previous === null) {
-    writeKnownBranches(twiningDir, current);
+    if (commit) writeKnownBranches(twiningDir, current);
     return {
       initial_record: true,
       current_branches: [...current].sort(),
@@ -103,7 +109,7 @@ export function detectDeletedBranches(
 
   const previousSet = new Set(previous.branches);
   const deleted = [...previousSet].filter((b) => !current.has(b)).sort();
-  writeKnownBranches(twiningDir, current);
+  if (commit) writeKnownBranches(twiningDir, current);
 
   return {
     initial_record: false,

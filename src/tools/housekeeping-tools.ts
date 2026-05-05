@@ -43,7 +43,7 @@ export function registerHousekeepingTools(
           .boolean()
           .optional()
           .describe(
-            "Set to true to detect branches deleted since the last housekeeping run (typically post-merge cleanup) and flag entries provenance-stamped with those branches. First call records the initial branch snapshot and returns no candidates. Returns candidates only; use twining_archive_stale to act on them.",
+            "Set to true to detect branches deleted since the last housekeeping run (typically post-merge cleanup) and flag entries provenance-stamped with those branches. First call records the initial branch snapshot and returns no candidates. The branch snapshot is advanced only when execute=true; preview passes leave the baseline untouched so deletions stay visible across multiple previews. Returns candidates only; use twining_archive_stale to act on them. When run alongside staleness_review, branch-gone duplicates are removed from staleness_review (merge_sweep is the more specific signal).",
           ),
         stale_days: z
           .number()
