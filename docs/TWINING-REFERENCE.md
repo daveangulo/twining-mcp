@@ -12,7 +12,8 @@ Full reference for all Twining MCP tools. See `CLAUDE.md` for mandatory workflow
 | `twining_record` | Gate 2 | Record what you did and choices made — natural language parsed into structured decisions |
 | `twining_post` | During work | Share findings, warnings, needs, or status updates |
 | `twining_why` | Gate 1 | Check what decisions constrain a file before modifying it |
-| `twining_housekeeping` | Maintenance | Archive, deduplicate, surface stale state (dry-run by default) |
+| `twining_housekeeping` | Maintenance | Archive, deduplicate, surface stale state (dry-run by default). Add `staleness_review: true` for orphan detection (missing scope/files/branch) or `merge_sweep: true` to flag entries from branches deleted since the last run |
+| `twining_archive_stale` | Maintenance | Archive caller-confirmed IDs from `staleness_review` or `merge_sweep`. Decisions move to `archived` status; blackboard entries are dismissed. Provenance preserved |
 | `twining_dismiss` | During work | Remove resolved or false-positive entries |
 | `twining_decide` | During work | Record a structured decision directly (also called internally by `twining_record`) |
 | `twining_search_decisions` | During work | Search decisions by keyword or semantic similarity |

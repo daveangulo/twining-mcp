@@ -172,7 +172,8 @@ These are the tools agents use in every session:
 | `twining_record` | **Gate 2:** Record what you did and any choices made — natural language in, structured decisions out |
 | `twining_post` | Share findings, warnings, needs, or status during work |
 | `twining_why` | Check what decisions constrain a file before modifying it |
-| `twining_housekeeping` | Periodic maintenance — archive, deduplicate, surface stale decisions (dry-run by default) |
+| `twining_housekeeping` | Periodic maintenance — archive, deduplicate, surface stale decisions (dry-run by default). Optional `staleness_review` and `merge_sweep` flags surface orphans and post-merge cleanup candidates |
+| `twining_archive_stale` | Archive caller-confirmed candidate IDs from staleness or merge-sweep review. Decisions move to `archived` status; entries are dismissed. Provenance preserved |
 
 `twining_record` accepts natural language decisions like `"Chose Redis over Memcached — need persistence"` and automatically parses them into structured records with rationale, rejected alternatives, and inferred domain. It also accepts assumptions, constraints, affected files, and dependency chains — everything the decision store needs for high-fidelity context assembly.
 
