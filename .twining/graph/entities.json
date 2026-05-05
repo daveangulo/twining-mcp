@@ -548,10 +548,10 @@
     "name": "src/index.ts",
     "type": "file",
     "properties": {
-      "scope": "src/analytics/"
+      "scope": "src/index.ts, test/server-startup.test.ts"
     },
     "created_at": "2026-02-26T14:22:40.811Z",
-    "updated_at": "2026-02-26T14:22:40.811Z"
+    "updated_at": "2026-05-05T05:17:10.017Z"
   },
   {
     "id": "01KJD595ND5YACA06PBGYTRRXA",
@@ -701,10 +701,10 @@
     "name": "plugin/.claude-plugin/plugin.json",
     "type": "file",
     "properties": {
-      "scope": "scripts/"
+      "scope": "plugin/.claude-plugin/plugin.json, .claude-plugin/marketplace.json, package.json, CHANGELOG.md"
     },
     "created_at": "2026-02-28T01:19:31.492Z",
-    "updated_at": "2026-02-28T13:56:16.870Z"
+    "updated_at": "2026-05-05T05:25:23.936Z"
   },
   {
     "id": "01KJGX8KN7VXM02PM7RCAR6JE4",
@@ -731,10 +731,10 @@
     "name": "plugin/hooks/hooks.json",
     "type": "file",
     "properties": {
-      "scope": "plugin/"
+      "scope": "plugin/hooks"
     },
     "created_at": "2026-02-28T01:19:31.504Z",
-    "updated_at": "2026-03-28T11:33:26.069Z"
+    "updated_at": "2026-05-05T05:23:22.120Z"
   },
   {
     "id": "01KJGX8KNHD07T6HE5K3GHZBAK",
@@ -886,10 +886,10 @@
     "name": ".claude-plugin/marketplace.json",
     "type": "file",
     "properties": {
-      "scope": "scripts/"
+      "scope": "plugin/.claude-plugin/plugin.json, .claude-plugin/marketplace.json, package.json, CHANGELOG.md"
     },
     "created_at": "2026-02-28T13:56:16.847Z",
-    "updated_at": "2026-02-28T13:56:16.847Z"
+    "updated_at": "2026-05-05T05:25:23.938Z"
   },
   {
     "id": "01KJJ8J9MV9AJCPQ0706XBYH5Y",
@@ -939,10 +939,10 @@
     "name": "plugin/hooks/stop-hook.sh",
     "type": "file",
     "properties": {
-      "scope": "plugin/"
+      "scope": "plugin/hooks"
     },
     "created_at": "2026-02-28T14:38:26.114Z",
-    "updated_at": "2026-03-10T13:03:56.465Z"
+    "updated_at": "2026-05-05T05:19:32.806Z"
   },
   {
     "id": "01KJJCBM4J4MHE27MH9VMNEJRH",
@@ -1123,10 +1123,10 @@
     "name": "plugin/hooks/subagent-stop-hook.sh",
     "type": "file",
     "properties": {
-      "scope": "src/tools/coordination-tools.ts"
+      "scope": "plugin/hooks"
     },
     "created_at": "2026-02-28T18:53:41.008Z",
-    "updated_at": "2026-02-28T18:53:41.008Z"
+    "updated_at": "2026-05-05T05:19:32.807Z"
   },
   {
     "id": "01KJJSJTRHGDMVESS736YZ8599",
@@ -1297,10 +1297,10 @@
     "name": "package.json",
     "type": "file",
     "properties": {
-      "scope": "test/eval/"
+      "scope": "plugin/.claude-plugin/plugin.json, .claude-plugin/marketplace.json, package.json, CHANGELOG.md"
     },
     "created_at": "2026-03-01T18:31:53.339Z",
-    "updated_at": "2026-03-02T19:23:13.075Z"
+    "updated_at": "2026-05-05T05:25:23.934Z"
   },
   {
     "id": "01KJNAQMQZ9DKYRR1SEP2M3HVX",
@@ -2341,10 +2341,10 @@
     "name": "plugin/hooks/ensure-claude-md-gates.sh",
     "type": "file",
     "properties": {
-      "scope": "plugin/"
+      "scope": "project"
     },
     "created_at": "2026-03-28T11:09:32.466Z",
-    "updated_at": "2026-03-28T11:33:26.070Z"
+    "updated_at": "2026-05-05T05:21:34.188Z"
   },
   {
     "id": "01KMT3GDJYZWYW23H93CTQTM6K",
@@ -2634,7 +2634,7 @@
       "scope": "docs/superpowers/specs/"
     },
     "created_at": "2026-05-05T00:31:47.753Z",
-    "updated_at": "2026-05-05T00:31:47.895Z"
+    "updated_at": "2026-05-05T05:34:23.197Z"
   },
   {
     "id": "01KQTRRN2JN2KGHX81A3ZWMMQW",
@@ -2711,5 +2711,293 @@
     },
     "created_at": "2026-05-05T05:02:46.467Z",
     "updated_at": "2026-05-05T05:02:46.467Z"
+  },
+  {
+    "id": "01KQV8Q0JRFQD4V5MX83QKYZ2G",
+    "name": "01KQV8Q0HZWMTRNS2NYFACCKY4",
+    "type": "concept",
+    "properties": {
+      "summary": "Adapted import style from 'import path' to 'import * as path' to satisfy TypeScript strict ESM rules (verbatimModuleSyntax: true)",
+      "scope": "project"
+    },
+    "created_at": "2026-05-05T05:10:31.256Z",
+    "updated_at": "2026-05-05T05:10:31.256Z"
+  },
+  {
+    "id": "01KQV935Y3C3C4KBFF6MT6QWY6",
+    "name": "01KQV935XB6AMVC404F344S6GY",
+    "type": "concept",
+    "properties": {
+      "summary": "Implemented strict equality check (=== 'true') for TWINING_DISABLED gate",
+      "scope": "src/index.ts, test/server-startup.test.ts"
+    },
+    "created_at": "2026-05-05T05:17:09.955Z",
+    "updated_at": "2026-05-05T05:17:09.955Z"
+  },
+  {
+    "id": "01KQV935Y6BSXE7V7HN5Z2KRM7",
+    "name": "test/server-startup.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "project"
+    },
+    "created_at": "2026-05-05T05:17:09.958Z",
+    "updated_at": "2026-05-05T05:33:18.266Z"
+  },
+  {
+    "id": "01KQV935Z9QS6HYWNRTZ2CN09A",
+    "name": "01KQV935Y7CWQWW12XRZ9CGH37",
+    "type": "concept",
+    "properties": {
+      "summary": "Placed gate at line 21-23 in main() before any server initialization",
+      "scope": "src/index.ts, test/server-startup.test.ts"
+    },
+    "created_at": "2026-05-05T05:17:09.993Z",
+    "updated_at": "2026-05-05T05:17:09.993Z"
+  },
+  {
+    "id": "01KQV9360125X4FVW8PZSR7TZ6",
+    "name": "01KQV935ZDSEV81DRC75NZW77T",
+    "type": "concept",
+    "properties": {
+      "summary": "Updated test expectations to match actual server behavior: tests verify TWINING_DISABLED=true exits cleanly within 300ms while other cases attempt normal startup",
+      "scope": "src/index.ts, test/server-startup.test.ts"
+    },
+    "created_at": "2026-05-05T05:17:10.017Z",
+    "updated_at": "2026-05-05T05:17:10.017Z"
+  },
+  {
+    "id": "01KQV97HB7S4PEWE3T7MCR6ET8",
+    "name": "01KQV97HA9KV7TWC8YHBDF2FJF",
+    "type": "concept",
+    "properties": {
+      "summary": "Added TWINING_DISABLED guard immediately after set -euo pipefail in all 3 hooks (pre-commit-hook.sh, stop-hook.sh, subagent-stop-hook.sh)",
+      "scope": "plugin/hooks"
+    },
+    "created_at": "2026-05-05T05:19:32.711Z",
+    "updated_at": "2026-05-05T05:19:32.711Z"
+  },
+  {
+    "id": "01KQV97HB8G0AQ7RE6ZARYNBW2",
+    "name": "plugin/hooks/pre-commit-hook.sh",
+    "type": "file",
+    "properties": {
+      "scope": "plugin/hooks"
+    },
+    "created_at": "2026-05-05T05:19:32.712Z",
+    "updated_at": "2026-05-05T05:19:32.804Z"
+  },
+  {
+    "id": "01KQV97HBEPZG7C8DQVQN1GQZJ",
+    "name": "test/hooks/pre-commit-hook.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "project"
+    },
+    "created_at": "2026-05-05T05:19:32.718Z",
+    "updated_at": "2026-05-05T05:33:18.270Z"
+  },
+  {
+    "id": "01KQV97HBHXC8MNSX8C2949584",
+    "name": "test/hooks/stop-hook.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "project"
+    },
+    "created_at": "2026-05-05T05:19:32.721Z",
+    "updated_at": "2026-05-05T05:33:18.272Z"
+  },
+  {
+    "id": "01KQV97HBKPSMMWW1TKM28C4WG",
+    "name": "test/hooks/subagent-stop-hook.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "plugin/hooks"
+    },
+    "created_at": "2026-05-05T05:19:32.723Z",
+    "updated_at": "2026-05-05T05:19:32.813Z"
+  },
+  {
+    "id": "01KQV97HCFNE92QRC4WAWT5D2T",
+    "name": "01KQV97HBM0CF30TX3R2MY8794",
+    "type": "concept",
+    "properties": {
+      "summary": "Created 3 test files (pre-commit-hook.test.ts, stop-hook.test.ts, subagent-stop-hook.test.ts) using existing run-hook helper",
+      "scope": "plugin/hooks"
+    },
+    "created_at": "2026-05-05T05:19:32.751Z",
+    "updated_at": "2026-05-05T05:19:32.751Z"
+  },
+  {
+    "id": "01KQV97HE3Y6NN056WMPCBCZ24",
+    "name": "01KQV97HCTH6WBDJFZK543EXM7",
+    "type": "concept",
+    "properties": {
+      "summary": "Structured tests to verify disabled mode bypasses all enforcement: pre-commit blocks commits without recording, stop blocks sessions without recording, both disabled exit 0 silently",
+      "scope": "plugin/hooks"
+    },
+    "created_at": "2026-05-05T05:19:32.803Z",
+    "updated_at": "2026-05-05T05:19:32.803Z"
+  },
+  {
+    "id": "01KQV9B7WMNFDBQXES1CTGM6QY",
+    "name": "01KQV9B7VA60ZGGZM1SMR0DVME",
+    "type": "concept",
+    "properties": {
+      "summary": "Added TWINING_DISABLED guard immediately after set -euo pipefail to bypass hook when disabled at server level",
+      "scope": "project"
+    },
+    "created_at": "2026-05-05T05:21:34.100Z",
+    "updated_at": "2026-05-05T05:21:34.100Z"
+  },
+  {
+    "id": "01KQV9B7WP5NCNV1T2638MECMM",
+    "name": "test/hooks/ensure-claude-md-gates.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "project"
+    },
+    "created_at": "2026-05-05T05:21:34.102Z",
+    "updated_at": "2026-05-05T05:21:34.190Z"
+  },
+  {
+    "id": "01KQV9B7XNSEVWMYPXTP8EPVXF",
+    "name": "01KQV9B7WR6J71JFGHN5EDCA3E",
+    "type": "concept",
+    "properties": {
+      "summary": "Added opt-out flag check that exits silently if $PROJECT_ROOT/.twining/.no-claude-md-gates exists, giving projects explicit control",
+      "scope": "project"
+    },
+    "created_at": "2026-05-05T05:21:34.132Z",
+    "updated_at": "2026-05-05T05:21:34.132Z"
+  },
+  {
+    "id": "01KQV9B7ZB84Q4SQY8SCS6PE2C",
+    "name": "01KQV9B7XSEREAPTSG3Y67N0BV",
+    "type": "concept",
+    "properties": {
+      "summary": "Replaced single-file marker check with broad search across 4 locations (project CLAUDE.md, CLAUDE.local.md, .claude/CLAUDE.local.md, global $HOME/.claude/CLAUDE.md) before deciding to append, avoiding duplicate markers",
+      "scope": "project"
+    },
+    "created_at": "2026-05-05T05:21:34.187Z",
+    "updated_at": "2026-05-05T05:21:34.187Z"
+  },
+  {
+    "id": "01KQV9EH91B4HH0PP09XKTCG45",
+    "name": "01KQV9EH7AGBH6QYHXYTFRKPHY",
+    "type": "concept",
+    "properties": {
+      "summary": "Chose command-type hook with additionalContext JSON output over prompt-type hook because Claude Code does NOT support prompt-type hooks on SessionStart at all and crashes on resume",
+      "scope": "plugin/hooks"
+    },
+    "created_at": "2026-05-05T05:23:22.017Z",
+    "updated_at": "2026-05-05T05:23:22.017Z"
+  },
+  {
+    "id": "01KQV9EH92VV4MD0D9FHCB94FB",
+    "name": "plugin/hooks/session-start-context.sh",
+    "type": "file",
+    "properties": {
+      "scope": "plugin/hooks"
+    },
+    "created_at": "2026-05-05T05:23:22.018Z",
+    "updated_at": "2026-05-05T05:23:22.118Z"
+  },
+  {
+    "id": "01KQV9EH95BH7JBT22VFFKS03Y",
+    "name": "test/hooks/session-start-context.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "project"
+    },
+    "created_at": "2026-05-05T05:23:22.021Z",
+    "updated_at": "2026-05-05T05:33:18.268Z"
+  },
+  {
+    "id": "01KQV9EHAP07P5TFHBBG3HARYH",
+    "name": "01KQV9EH97F1RYJTE9NKYB27PS",
+    "type": "concept",
+    "properties": {
+      "summary": "Implemented session-start-context.sh with set -euo pipefail safety and TWINING_DISABLED guard to match pattern from phases 3-4 hooks.",
+      "scope": "plugin/hooks"
+    },
+    "created_at": "2026-05-05T05:23:22.070Z",
+    "updated_at": "2026-05-05T05:23:22.070Z"
+  },
+  {
+    "id": "01KQV9EHC55YKN8G77D1DF50WJ",
+    "name": "01KQV9EHAWVCAENCYJKYYG8YZ9",
+    "type": "concept",
+    "properties": {
+      "summary": "Placed the new session-start-context.sh",
+      "scope": "plugin/hooks"
+    },
+    "created_at": "2026-05-05T05:23:22.117Z",
+    "updated_at": "2026-05-05T05:23:22.117Z"
+  },
+  {
+    "id": "01KQV9J8AX36VFGDMY342VC16R",
+    "name": "01KQV9J89WBT2W8WXKA1T7T85X",
+    "type": "concept",
+    "properties": {
+      "summary": "Executed phase plan as specified without deviations",
+      "scope": "plugin/.claude-plugin/plugin.json, .claude-plugin/marketplace.json, package.json, CHANGELOG.md"
+    },
+    "created_at": "2026-05-05T05:25:23.933Z",
+    "updated_at": "2026-05-05T05:25:23.933Z"
+  },
+  {
+    "id": "01KQV9J8B49121D9ZY3ZNPCK77",
+    "name": "CHANGELOG.md",
+    "type": "file",
+    "properties": {
+      "scope": "plugin/.claude-plugin/plugin.json, .claude-plugin/marketplace.json, package.json, CHANGELOG.md"
+    },
+    "created_at": "2026-05-05T05:25:23.940Z",
+    "updated_at": "2026-05-05T05:25:23.940Z"
+  },
+  {
+    "id": "01KQVA0QDQVNFSMSF6V0XHKKXJ",
+    "name": "01KQVA0QBMFJ2CAQWNWQGE4Q49",
+    "type": "concept",
+    "properties": {
+      "summary": "Switched server-startup.test.ts tests 2 & 3 from spawnSync with input='' to spawn with manually-piped Readable stream that never sends EOF, allowing processes to hang to timeout and be killed with SIGTERM, which discriminates between gate firing (status 0) vs gate not firing (signal SIGTERM)",
+      "scope": "project"
+    },
+    "created_at": "2026-05-05T05:33:18.135Z",
+    "updated_at": "2026-05-05T05:33:18.135Z"
+  },
+  {
+    "id": "01KQVA0QFJWV4Q2Y4YSZBXNHJ4",
+    "name": "01KQVA0QDZ5G1N8K65E5C17RFN",
+    "type": "concept",
+    "properties": {
+      "summary": "Added third test to session-start-context.test.ts verifying TWINING_DISABLED='1' does NOT trigger gate and hook emits JSON normally",
+      "scope": "project"
+    },
+    "created_at": "2026-05-05T05:33:18.194Z",
+    "updated_at": "2026-05-05T05:33:18.194Z"
+  },
+  {
+    "id": "01KQVA0QHS4EJE68TDA1X547FN",
+    "name": "01KQVA0QFTMEVK7AX9RXJK7178",
+    "type": "concept",
+    "properties": {
+      "summary": "Replaced tmpTranscript naming from Date.now() pattern to mkdtempSync in pre-commit-hook.test.ts and stop-hook.test.ts for parallel-safe temp file handling",
+      "scope": "project"
+    },
+    "created_at": "2026-05-05T05:33:18.265Z",
+    "updated_at": "2026-05-05T05:33:18.265Z"
+  },
+  {
+    "id": "01KQVA2PYW82T6P0E70JVR0GR2",
+    "name": "01KQVA2PWT7HWDEVH04MNXDM8S",
+    "type": "concept",
+    "properties": {
+      "summary": "Reconsidered SEARCH_PATHS marker-search order in ensure-claude-md-gates.sh. Original spec said global-first (cheapest,",
+      "scope": "docs/superpowers/specs/"
+    },
+    "created_at": "2026-05-05T05:34:23.196Z",
+    "updated_at": "2026-05-05T05:34:23.196Z"
   }
 ]

@@ -1,0 +1,24 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "plugin/hooks",
+  "summary": "Placed the new session-start-context.sh",
+  "context": "Phase 5 complete: Fixed SessionStart prompt-type hook crash on session resume (issue #8). Replaced broken prompt hook with command hook that emits additionalContext JSON.",
+  "rationale": "second entry in SessionStart hooks array, after ensure-claude-md-gates.sh, so both hooks execute in order at session start.",
+  "constraints": [],
+  "alternatives": [],
+  "depends_on": [],
+  "confidence": "medium",
+  "reversible": true,
+  "affected_files": [
+    "plugin/hooks/session-start-context.sh",
+    "plugin/hooks/hooks.json",
+    "test/hooks/session-start-context.test.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KQV9EHAWVCAENCYJKYYG8YZ9",
+  "timestamp": "2026-05-05T05:23:22.076Z",
+  "status": "active"
+}

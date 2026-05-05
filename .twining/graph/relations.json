@@ -3602,5 +3602,573 @@
       "decision_summary": "Chose to phase the work as: verifications first → test helper → server gate → simple hook guards → ensure-claude-md-gates (compound changes) → SessionStart command hook → versions → manual smoke test → release. Foundation-first ordering means each phase's tests can rely on infrastructure from prior phases."
     },
     "created_at": "2026-05-05T05:02:46.469Z"
+  },
+  {
+    "id": "01KQV935Y5R4Z2KSYPMP5EHESS",
+    "source": "01KJD595NBM3QK28EQJ3JG8QXV",
+    "target": "01KQV935Y3C3C4KBFF6MT6QWY6",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Implemented strict equality check (=== 'true') for TWINING_DISABLED gate"
+    },
+    "created_at": "2026-05-05T05:17:09.957Z"
+  },
+  {
+    "id": "01KQV935Y7CWQWW12XRZ9CGH36",
+    "source": "01KQV935Y6BSXE7V7HN5Z2KRM7",
+    "target": "01KQV935Y3C3C4KBFF6MT6QWY6",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Implemented strict equality check (=== 'true') for TWINING_DISABLED gate"
+    },
+    "created_at": "2026-05-05T05:17:09.959Z"
+  },
+  {
+    "id": "01KQV935ZBVKNBK67J67DBATX2",
+    "source": "01KJD595NBM3QK28EQJ3JG8QXV",
+    "target": "01KQV935Z9QS6HYWNRTZ2CN09A",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Placed gate at line 21-23 in main() before any server initialization"
+    },
+    "created_at": "2026-05-05T05:17:09.995Z"
+  },
+  {
+    "id": "01KQV935ZC4WQX2GK7BT9NYRRS",
+    "source": "01KQV935Y6BSXE7V7HN5Z2KRM7",
+    "target": "01KQV935Z9QS6HYWNRTZ2CN09A",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Placed gate at line 21-23 in main() before any server initialization"
+    },
+    "created_at": "2026-05-05T05:17:09.996Z"
+  },
+  {
+    "id": "01KQV93602NPN8GZZSN307QJ66",
+    "source": "01KJD595NBM3QK28EQJ3JG8QXV",
+    "target": "01KQV9360125X4FVW8PZSR7TZ6",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Updated test expectations to match actual server behavior: tests verify TWINING_DISABLED=true exits cleanly within 300ms while other cases attempt normal startup"
+    },
+    "created_at": "2026-05-05T05:17:10.018Z"
+  },
+  {
+    "id": "01KQV93604NG3GE8ST98G1T0R5",
+    "source": "01KQV935Y6BSXE7V7HN5Z2KRM7",
+    "target": "01KQV9360125X4FVW8PZSR7TZ6",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Updated test expectations to match actual server behavior: tests verify TWINING_DISABLED=true exits cleanly within 300ms while other cases attempt normal startup"
+    },
+    "created_at": "2026-05-05T05:17:10.020Z"
+  },
+  {
+    "id": "01KQV97HB9ZN3CEQ6SWSACQ9Y6",
+    "source": "01KQV97HB8G0AQ7RE6ZARYNBW2",
+    "target": "01KQV97HB7S4PEWE3T7MCR6ET8",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added TWINING_DISABLED guard immediately after set -euo pipefail in all 3 hooks (pre-commit-hook.sh, stop-hook.sh, subagent-stop-hook.sh)"
+    },
+    "created_at": "2026-05-05T05:19:32.713Z"
+  },
+  {
+    "id": "01KQV97HBBQB7RB8142SRZG01Q",
+    "source": "01KJJAZET2V22WEVQPJAYE9EQZ",
+    "target": "01KQV97HB7S4PEWE3T7MCR6ET8",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added TWINING_DISABLED guard immediately after set -euo pipefail in all 3 hooks (pre-commit-hook.sh, stop-hook.sh, subagent-stop-hook.sh)"
+    },
+    "created_at": "2026-05-05T05:19:32.715Z"
+  },
+  {
+    "id": "01KQV97HBD6CX9Q5X8TCAYCNXG",
+    "source": "01KJJSJTRGK3ZA5R8N3WXVT6YS",
+    "target": "01KQV97HB7S4PEWE3T7MCR6ET8",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added TWINING_DISABLED guard immediately after set -euo pipefail in all 3 hooks (pre-commit-hook.sh, stop-hook.sh, subagent-stop-hook.sh)"
+    },
+    "created_at": "2026-05-05T05:19:32.717Z"
+  },
+  {
+    "id": "01KQV97HBF6PQ07MK58MMEEC6C",
+    "source": "01KQV97HBEPZG7C8DQVQN1GQZJ",
+    "target": "01KQV97HB7S4PEWE3T7MCR6ET8",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added TWINING_DISABLED guard immediately after set -euo pipefail in all 3 hooks (pre-commit-hook.sh, stop-hook.sh, subagent-stop-hook.sh)"
+    },
+    "created_at": "2026-05-05T05:19:32.719Z"
+  },
+  {
+    "id": "01KQV97HBJYT76BANFVMY5VXG7",
+    "source": "01KQV97HBHXC8MNSX8C2949584",
+    "target": "01KQV97HB7S4PEWE3T7MCR6ET8",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added TWINING_DISABLED guard immediately after set -euo pipefail in all 3 hooks (pre-commit-hook.sh, stop-hook.sh, subagent-stop-hook.sh)"
+    },
+    "created_at": "2026-05-05T05:19:32.722Z"
+  },
+  {
+    "id": "01KQV97HBM0CF30TX3R2MY8793",
+    "source": "01KQV97HBKPSMMWW1TKM28C4WG",
+    "target": "01KQV97HB7S4PEWE3T7MCR6ET8",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added TWINING_DISABLED guard immediately after set -euo pipefail in all 3 hooks (pre-commit-hook.sh, stop-hook.sh, subagent-stop-hook.sh)"
+    },
+    "created_at": "2026-05-05T05:19:32.724Z"
+  },
+  {
+    "id": "01KQV97HCH09501VABYYTXHA7Y",
+    "source": "01KQV97HB8G0AQ7RE6ZARYNBW2",
+    "target": "01KQV97HCFNE92QRC4WAWT5D2T",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Created 3 test files (pre-commit-hook.test.ts, stop-hook.test.ts, subagent-stop-hook.test.ts) using existing run-hook helper"
+    },
+    "created_at": "2026-05-05T05:19:32.753Z"
+  },
+  {
+    "id": "01KQV97HCKNB7XT14MBJXAPNHX",
+    "source": "01KJJAZET2V22WEVQPJAYE9EQZ",
+    "target": "01KQV97HCFNE92QRC4WAWT5D2T",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Created 3 test files (pre-commit-hook.test.ts, stop-hook.test.ts, subagent-stop-hook.test.ts) using existing run-hook helper"
+    },
+    "created_at": "2026-05-05T05:19:32.755Z"
+  },
+  {
+    "id": "01KQV97HCM6JFG1J6CGXVD3EAD",
+    "source": "01KJJSJTRGK3ZA5R8N3WXVT6YS",
+    "target": "01KQV97HCFNE92QRC4WAWT5D2T",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Created 3 test files (pre-commit-hook.test.ts, stop-hook.test.ts, subagent-stop-hook.test.ts) using existing run-hook helper"
+    },
+    "created_at": "2026-05-05T05:19:32.756Z"
+  },
+  {
+    "id": "01KQV97HCPTQC0P870NZ5J5020",
+    "source": "01KQV97HBEPZG7C8DQVQN1GQZJ",
+    "target": "01KQV97HCFNE92QRC4WAWT5D2T",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Created 3 test files (pre-commit-hook.test.ts, stop-hook.test.ts, subagent-stop-hook.test.ts) using existing run-hook helper"
+    },
+    "created_at": "2026-05-05T05:19:32.758Z"
+  },
+  {
+    "id": "01KQV97HCRKQETS926DKDR4PAP",
+    "source": "01KQV97HBHXC8MNSX8C2949584",
+    "target": "01KQV97HCFNE92QRC4WAWT5D2T",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Created 3 test files (pre-commit-hook.test.ts, stop-hook.test.ts, subagent-stop-hook.test.ts) using existing run-hook helper"
+    },
+    "created_at": "2026-05-05T05:19:32.760Z"
+  },
+  {
+    "id": "01KQV97HCSDR0VZWX5KRN281DG",
+    "source": "01KQV97HBKPSMMWW1TKM28C4WG",
+    "target": "01KQV97HCFNE92QRC4WAWT5D2T",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Created 3 test files (pre-commit-hook.test.ts, stop-hook.test.ts, subagent-stop-hook.test.ts) using existing run-hook helper"
+    },
+    "created_at": "2026-05-05T05:19:32.762Z"
+  },
+  {
+    "id": "01KQV97HE5E1PZ6J11Q8E47Y2Q",
+    "source": "01KQV97HB8G0AQ7RE6ZARYNBW2",
+    "target": "01KQV97HE3Y6NN056WMPCBCZ24",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Structured tests to verify disabled mode bypasses all enforcement: pre-commit blocks commits without recording, stop blocks sessions without recording, both disabled exit 0 silently"
+    },
+    "created_at": "2026-05-05T05:19:32.805Z"
+  },
+  {
+    "id": "01KQV97HE75YFF0AS62KY7ZC5S",
+    "source": "01KJJAZET2V22WEVQPJAYE9EQZ",
+    "target": "01KQV97HE3Y6NN056WMPCBCZ24",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Structured tests to verify disabled mode bypasses all enforcement: pre-commit blocks commits without recording, stop blocks sessions without recording, both disabled exit 0 silently"
+    },
+    "created_at": "2026-05-05T05:19:32.807Z"
+  },
+  {
+    "id": "01KQV97HE8J8DAPXXMF85NE4AB",
+    "source": "01KJJSJTRGK3ZA5R8N3WXVT6YS",
+    "target": "01KQV97HE3Y6NN056WMPCBCZ24",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Structured tests to verify disabled mode bypasses all enforcement: pre-commit blocks commits without recording, stop blocks sessions without recording, both disabled exit 0 silently"
+    },
+    "created_at": "2026-05-05T05:19:32.808Z"
+  },
+  {
+    "id": "01KQV97HEAC5T855ZEHP2SJQCG",
+    "source": "01KQV97HBEPZG7C8DQVQN1GQZJ",
+    "target": "01KQV97HE3Y6NN056WMPCBCZ24",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Structured tests to verify disabled mode bypasses all enforcement: pre-commit blocks commits without recording, stop blocks sessions without recording, both disabled exit 0 silently"
+    },
+    "created_at": "2026-05-05T05:19:32.810Z"
+  },
+  {
+    "id": "01KQV97HECMFY7FW4XJ969CA2E",
+    "source": "01KQV97HBHXC8MNSX8C2949584",
+    "target": "01KQV97HE3Y6NN056WMPCBCZ24",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Structured tests to verify disabled mode bypasses all enforcement: pre-commit blocks commits without recording, stop blocks sessions without recording, both disabled exit 0 silently"
+    },
+    "created_at": "2026-05-05T05:19:32.812Z"
+  },
+  {
+    "id": "01KQV97HEETRF7Y7XS8B74BAT0",
+    "source": "01KQV97HBKPSMMWW1TKM28C4WG",
+    "target": "01KQV97HE3Y6NN056WMPCBCZ24",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Structured tests to verify disabled mode bypasses all enforcement: pre-commit blocks commits without recording, stop blocks sessions without recording, both disabled exit 0 silently"
+    },
+    "created_at": "2026-05-05T05:19:32.814Z"
+  },
+  {
+    "id": "01KQV9B7WP5NCNV1T2638MECMK",
+    "source": "01KMT252XJ0BQPNM732439HQZB",
+    "target": "01KQV9B7WMNFDBQXES1CTGM6QY",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added TWINING_DISABLED guard immediately after set -euo pipefail to bypass hook when disabled at server level"
+    },
+    "created_at": "2026-05-05T05:21:34.102Z"
+  },
+  {
+    "id": "01KQV9B7WQVR2DVTYZZ771XKYM",
+    "source": "01KQV9B7WP5NCNV1T2638MECMM",
+    "target": "01KQV9B7WMNFDBQXES1CTGM6QY",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added TWINING_DISABLED guard immediately after set -euo pipefail to bypass hook when disabled at server level"
+    },
+    "created_at": "2026-05-05T05:21:34.103Z"
+  },
+  {
+    "id": "01KQV9B7XPE540CYX4JZ6G29P8",
+    "source": "01KMT252XJ0BQPNM732439HQZB",
+    "target": "01KQV9B7XNSEVWMYPXTP8EPVXF",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added opt-out flag check that exits silently if $PROJECT_ROOT/.twining/.no-claude-md-gates exists, giving projects explicit control"
+    },
+    "created_at": "2026-05-05T05:21:34.134Z"
+  },
+  {
+    "id": "01KQV9B7XRJHN4ECH33EGHYWC4",
+    "source": "01KQV9B7WP5NCNV1T2638MECMM",
+    "target": "01KQV9B7XNSEVWMYPXTP8EPVXF",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added opt-out flag check that exits silently if $PROJECT_ROOT/.twining/.no-claude-md-gates exists, giving projects explicit control"
+    },
+    "created_at": "2026-05-05T05:21:34.136Z"
+  },
+  {
+    "id": "01KQV9B7ZD33K55BGTT08D1W4D",
+    "source": "01KMT252XJ0BQPNM732439HQZB",
+    "target": "01KQV9B7ZB84Q4SQY8SCS6PE2C",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Replaced single-file marker check with broad search across 4 locations (project CLAUDE.md, CLAUDE.local.md, .claude/CLAUDE.local.md, global $HOME/.claude/CLAUDE.md) before deciding to append, avoiding duplicate markers"
+    },
+    "created_at": "2026-05-05T05:21:34.189Z"
+  },
+  {
+    "id": "01KQV9B7ZFG9TVJ276Q7F03VDC",
+    "source": "01KQV9B7WP5NCNV1T2638MECMM",
+    "target": "01KQV9B7ZB84Q4SQY8SCS6PE2C",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Replaced single-file marker check with broad search across 4 locations (project CLAUDE.md, CLAUDE.local.md, .claude/CLAUDE.local.md, global $HOME/.claude/CLAUDE.md) before deciding to append, avoiding duplicate markers"
+    },
+    "created_at": "2026-05-05T05:21:34.191Z"
+  },
+  {
+    "id": "01KQV9EH93839QWFCKWJ5NCWY3",
+    "source": "01KQV9EH92VV4MD0D9FHCB94FB",
+    "target": "01KQV9EH91B4HH0PP09XKTCG45",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose command-type hook with additionalContext JSON output over prompt-type hook because Claude Code does NOT support prompt-type hooks on SessionStart at all and crashes on resume"
+    },
+    "created_at": "2026-05-05T05:23:22.019Z"
+  },
+  {
+    "id": "01KQV9EH94X6M8R5XQTEFN8K1F",
+    "source": "01KJGX8KNG4BA8P7PFEXMTW51R",
+    "target": "01KQV9EH91B4HH0PP09XKTCG45",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose command-type hook with additionalContext JSON output over prompt-type hook because Claude Code does NOT support prompt-type hooks on SessionStart at all and crashes on resume"
+    },
+    "created_at": "2026-05-05T05:23:22.020Z"
+  },
+  {
+    "id": "01KQV9EH96S2R5AWECFQYJG227",
+    "source": "01KQV9EH95BH7JBT22VFFKS03Y",
+    "target": "01KQV9EH91B4HH0PP09XKTCG45",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose command-type hook with additionalContext JSON output over prompt-type hook because Claude Code does NOT support prompt-type hooks on SessionStart at all and crashes on resume"
+    },
+    "created_at": "2026-05-05T05:23:22.022Z"
+  },
+  {
+    "id": "01KQV9EHARAJ5GZSFDXVX08XYA",
+    "source": "01KQV9EH92VV4MD0D9FHCB94FB",
+    "target": "01KQV9EHAP07P5TFHBBG3HARYH",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Implemented session-start-context.sh with set -euo pipefail safety and TWINING_DISABLED guard to match pattern from phases 3-4 hooks."
+    },
+    "created_at": "2026-05-05T05:23:22.072Z"
+  },
+  {
+    "id": "01KQV9EHATCTV8PW9VBR4SRPYK",
+    "source": "01KJGX8KNG4BA8P7PFEXMTW51R",
+    "target": "01KQV9EHAP07P5TFHBBG3HARYH",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Implemented session-start-context.sh with set -euo pipefail safety and TWINING_DISABLED guard to match pattern from phases 3-4 hooks."
+    },
+    "created_at": "2026-05-05T05:23:22.074Z"
+  },
+  {
+    "id": "01KQV9EHAVKNKQ9XKBD2J2EHWD",
+    "source": "01KQV9EH95BH7JBT22VFFKS03Y",
+    "target": "01KQV9EHAP07P5TFHBBG3HARYH",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Implemented session-start-context.sh with set -euo pipefail safety and TWINING_DISABLED guard to match pattern from phases 3-4 hooks."
+    },
+    "created_at": "2026-05-05T05:23:22.075Z"
+  },
+  {
+    "id": "01KQV9EHC78JDTDNCRNJHWQMYF",
+    "source": "01KQV9EH92VV4MD0D9FHCB94FB",
+    "target": "01KQV9EHC55YKN8G77D1DF50WJ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Placed the new session-start-context.sh"
+    },
+    "created_at": "2026-05-05T05:23:22.119Z"
+  },
+  {
+    "id": "01KQV9EHC9ZZD4BW4SC3GAD48N",
+    "source": "01KJGX8KNG4BA8P7PFEXMTW51R",
+    "target": "01KQV9EHC55YKN8G77D1DF50WJ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Placed the new session-start-context.sh"
+    },
+    "created_at": "2026-05-05T05:23:22.121Z"
+  },
+  {
+    "id": "01KQV9EHCAW0MFKV57YJWWHFH9",
+    "source": "01KQV9EH95BH7JBT22VFFKS03Y",
+    "target": "01KQV9EHC55YKN8G77D1DF50WJ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Placed the new session-start-context.sh"
+    },
+    "created_at": "2026-05-05T05:23:22.122Z"
+  },
+  {
+    "id": "01KQV9J8AZNBXDNA3XCTKK7Q50",
+    "source": "01KJNAQMQVGD3TWE905M4KZ1ST",
+    "target": "01KQV9J8AX36VFGDMY342VC16R",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Executed phase plan as specified without deviations"
+    },
+    "created_at": "2026-05-05T05:25:23.935Z"
+  },
+  {
+    "id": "01KQV9J8B1BEK66HD9ACYARNMN",
+    "source": "01KJGX8KN41B4YP7JVXE9E0K63",
+    "target": "01KQV9J8AX36VFGDMY342VC16R",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Executed phase plan as specified without deviations"
+    },
+    "created_at": "2026-05-05T05:25:23.937Z"
+  },
+  {
+    "id": "01KQV9J8B354RF5BM6R4M2SS65",
+    "source": "01KJJ8J8TFQN00XTFJH3CR9P5P",
+    "target": "01KQV9J8AX36VFGDMY342VC16R",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Executed phase plan as specified without deviations"
+    },
+    "created_at": "2026-05-05T05:25:23.939Z"
+  },
+  {
+    "id": "01KQV9J8B5D5A3GHQC9Y41364E",
+    "source": "01KQV9J8B49121D9ZY3ZNPCK77",
+    "target": "01KQV9J8AX36VFGDMY342VC16R",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Executed phase plan as specified without deviations"
+    },
+    "created_at": "2026-05-05T05:25:23.941Z"
+  },
+  {
+    "id": "01KQVA0QDRX1D3H0WVNW21KH83",
+    "source": "01KQV935Y6BSXE7V7HN5Z2KRM7",
+    "target": "01KQVA0QDQVNFSMSF6V0XHKKXJ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Switched server-startup.test.ts tests 2 & 3 from spawnSync with input='' to spawn with manually-piped Readable stream that never sends EOF, allowing processes to hang to timeout and be killed with SIGTERM, which discriminates between gate firing (status 0) vs gate not firing (signal SIGTERM)"
+    },
+    "created_at": "2026-05-05T05:33:18.136Z"
+  },
+  {
+    "id": "01KQVA0QDTEQRG6F0X0GKV6JN7",
+    "source": "01KQV9EH95BH7JBT22VFFKS03Y",
+    "target": "01KQVA0QDQVNFSMSF6V0XHKKXJ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Switched server-startup.test.ts tests 2 & 3 from spawnSync with input='' to spawn with manually-piped Readable stream that never sends EOF, allowing processes to hang to timeout and be killed with SIGTERM, which discriminates between gate firing (status 0) vs gate not firing (signal SIGTERM)"
+    },
+    "created_at": "2026-05-05T05:33:18.138Z"
+  },
+  {
+    "id": "01KQVA0QDWKGY66QF5YE8KVJVW",
+    "source": "01KQV97HBEPZG7C8DQVQN1GQZJ",
+    "target": "01KQVA0QDQVNFSMSF6V0XHKKXJ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Switched server-startup.test.ts tests 2 & 3 from spawnSync with input='' to spawn with manually-piped Readable stream that never sends EOF, allowing processes to hang to timeout and be killed with SIGTERM, which discriminates between gate firing (status 0) vs gate not firing (signal SIGTERM)"
+    },
+    "created_at": "2026-05-05T05:33:18.140Z"
+  },
+  {
+    "id": "01KQVA0QDYEXGH7F2HAE74BKKH",
+    "source": "01KQV97HBHXC8MNSX8C2949584",
+    "target": "01KQVA0QDQVNFSMSF6V0XHKKXJ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Switched server-startup.test.ts tests 2 & 3 from spawnSync with input='' to spawn with manually-piped Readable stream that never sends EOF, allowing processes to hang to timeout and be killed with SIGTERM, which discriminates between gate firing (status 0) vs gate not firing (signal SIGTERM)"
+    },
+    "created_at": "2026-05-05T05:33:18.142Z"
+  },
+  {
+    "id": "01KQVA0QFMCHWZXZPBVQZJPJ6X",
+    "source": "01KQV935Y6BSXE7V7HN5Z2KRM7",
+    "target": "01KQVA0QFJWV4Q2Y4YSZBXNHJ4",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added third test to session-start-context.test.ts verifying TWINING_DISABLED='1' does NOT trigger gate and hook emits JSON normally"
+    },
+    "created_at": "2026-05-05T05:33:18.196Z"
+  },
+  {
+    "id": "01KQVA0QFNHHESH972VPNEBVKV",
+    "source": "01KQV9EH95BH7JBT22VFFKS03Y",
+    "target": "01KQVA0QFJWV4Q2Y4YSZBXNHJ4",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added third test to session-start-context.test.ts verifying TWINING_DISABLED='1' does NOT trigger gate and hook emits JSON normally"
+    },
+    "created_at": "2026-05-05T05:33:18.197Z"
+  },
+  {
+    "id": "01KQVA0QFQ8PMN7XBPW5SK5ACX",
+    "source": "01KQV97HBEPZG7C8DQVQN1GQZJ",
+    "target": "01KQVA0QFJWV4Q2Y4YSZBXNHJ4",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added third test to session-start-context.test.ts verifying TWINING_DISABLED='1' does NOT trigger gate and hook emits JSON normally"
+    },
+    "created_at": "2026-05-05T05:33:18.199Z"
+  },
+  {
+    "id": "01KQVA0QFSXRA8GVH8ZGMNPYXB",
+    "source": "01KQV97HBHXC8MNSX8C2949584",
+    "target": "01KQVA0QFJWV4Q2Y4YSZBXNHJ4",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added third test to session-start-context.test.ts verifying TWINING_DISABLED='1' does NOT trigger gate and hook emits JSON normally"
+    },
+    "created_at": "2026-05-05T05:33:18.201Z"
+  },
+  {
+    "id": "01KQVA0QHVE4AAZBTYVZX88QDN",
+    "source": "01KQV935Y6BSXE7V7HN5Z2KRM7",
+    "target": "01KQVA0QHS4EJE68TDA1X547FN",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Replaced tmpTranscript naming from Date.now() pattern to mkdtempSync in pre-commit-hook.test.ts and stop-hook.test.ts for parallel-safe temp file handling"
+    },
+    "created_at": "2026-05-05T05:33:18.267Z"
+  },
+  {
+    "id": "01KQVA0QHX24GR65SF1MK6XNRY",
+    "source": "01KQV9EH95BH7JBT22VFFKS03Y",
+    "target": "01KQVA0QHS4EJE68TDA1X547FN",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Replaced tmpTranscript naming from Date.now() pattern to mkdtempSync in pre-commit-hook.test.ts and stop-hook.test.ts for parallel-safe temp file handling"
+    },
+    "created_at": "2026-05-05T05:33:18.269Z"
+  },
+  {
+    "id": "01KQVA0QHZSW862TGP8ZGFYAMY",
+    "source": "01KQV97HBEPZG7C8DQVQN1GQZJ",
+    "target": "01KQVA0QHS4EJE68TDA1X547FN",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Replaced tmpTranscript naming from Date.now() pattern to mkdtempSync in pre-commit-hook.test.ts and stop-hook.test.ts for parallel-safe temp file handling"
+    },
+    "created_at": "2026-05-05T05:33:18.271Z"
+  },
+  {
+    "id": "01KQVA0QJ1QD8F0C9P9A2H459D",
+    "source": "01KQV97HBHXC8MNSX8C2949584",
+    "target": "01KQVA0QHS4EJE68TDA1X547FN",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Replaced tmpTranscript naming from Date.now() pattern to mkdtempSync in pre-commit-hook.test.ts and stop-hook.test.ts for parallel-safe temp file handling"
+    },
+    "created_at": "2026-05-05T05:33:18.273Z"
+  },
+  {
+    "id": "01KQVA2PYYF47YDKTHB7YTJEWY",
+    "source": "01KQTRRN19FPSG5PNV4QB0Y34P",
+    "target": "01KQVA2PYW82T6P0E70JVR0GR2",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Reconsidered SEARCH_PATHS marker-search order in ensure-claude-md-gates.sh. Original spec said global-first (cheapest,"
+    },
+    "created_at": "2026-05-05T05:34:23.198Z"
+  },
+  {
+    "id": "01KQVA2PYZKMNQP5N7X6WBNJ6R",
+    "source": "01KQVA2PYW82T6P0E70JVR0GR2",
+    "target": "01KQTRRN3SFR10D7N7BPSFCA5K",
+    "type": "supersedes",
+    "properties": {},
+    "created_at": "2026-05-05T05:34:23.200Z"
   }
 ]

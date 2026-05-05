@@ -1,0 +1,28 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "project",
+  "summary": "Added TWINING_DISABLED guard immediately after set -euo pipefail to bypass hook when disabled at server level",
+  "context": "Implemented Phase 4 of plugin hygiene plan: added TWINING_DISABLED guard, opt-out flag check, and broad marker search to ensure-claude-md-gates.sh with comprehensive test coverage",
+  "rationale": "Added TWINING_DISABLED guard immediately after set -euo pipefail to bypass hook when disabled at server level",
+  "constraints": [],
+  "alternatives": [],
+  "depends_on": [],
+  "confidence": "medium",
+  "reversible": true,
+  "affected_files": [
+    "plugin/hooks/ensure-claude-md-gates.sh",
+    "test/hooks/ensure-claude-md-gates.test.ts"
+  ],
+  "affected_symbols": [],
+  "assumptions": [
+    "All three test groups pass (disabled guard, opt-out flag, broad marker search)",
+    "Test helper run-hook.ts already available and working",
+    "Existing 845 tests still pass after new implementation"
+  ],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KQV9B7VA60ZGGZM1SMR0DVME",
+  "timestamp": "2026-05-05T05:21:34.058Z",
+  "status": "active"
+}
