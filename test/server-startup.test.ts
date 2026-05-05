@@ -2,7 +2,6 @@ import { describe, it, expect, beforeAll } from "vitest";
 import { spawnSync, spawn } from "node:child_process";
 import path from "node:path";
 import fs from "node:fs";
-import { Readable } from "node:stream";
 
 const ENTRY = path.resolve(__dirname, "..", "dist", "index.js");
 
@@ -27,67 +26,48 @@ describe("MCP server startup gate", () => {
   });
 
   it("does NOT exit early when TWINING_DISABLED is unset", () => {
-    // Without the gate firing, the server starts normally.
-    // To verify the gate doesn't fire, we keep the process alive past startup
-    // using a manually-piped stdin that never sends EOF. When the timeout kills it,
-    // we expect SIGTERM, indicating the server was running normally.
-    const proc = spawn("node", [ENTRY], {
-      env: { ...Object.fromEntries(Object.entries(process.env).filter(([k]) => k !== "TWINING_DISABLED")) },
-      stdio: ["pipe", "pipe", "pipe"],
-    });
-
-    // Pipe a stream that never ends and never sends EOF — keeps stdin open
-    const neverEndingStream = new Readable({
-      read() {
-        // Never send data or EOF
-      }
-    });
-    neverEndingStream.pipe(proc.stdin);
-
-    return new Promise<void>((resolve) => {
-      const timeout = setTimeout(() => {
-        proc.kill("SIGTERM");
-      }, 1500);
-
-      proc.on("exit", (code, signal) => {
-        clearTimeout(timeout);
-        neverEndingStream.destroy();
-        // Server ran to timeout and was killed by SIGTERM, not exited early
-        expect(code).toBe(null);
-        expect(signal).toBe("SIGTERM");
-        resolve();
-      });
+    return runWithLiveStdin({
+      env: Object.fromEntries(Object.entries(process.env).filter(([k]) => k !== "TWINING_DISABLED")),
     });
   });
 
   it("does NOT exit early when TWINING_DISABLED is set to a non-true value", () => {
-    // Only the literal string "true" triggers the gate.
-    // With "1" (or other non-true values), the server starts normally.
-    // Same test as above: keep it alive and verify SIGTERM on timeout.
-    const proc = spawn("node", [ENTRY], {
+    return runWithLiveStdin({
       env: { ...process.env, TWINING_DISABLED: "1" },
-      stdio: ["pipe", "pipe", "pipe"],
-    });
-
-    const neverEndingStream = new Readable({
-      read() {
-        // Never send data or EOF
-      }
-    });
-    neverEndingStream.pipe(proc.stdin);
-
-    return new Promise<void>((resolve) => {
-      const timeout = setTimeout(() => {
-        proc.kill("SIGTERM");
-      }, 1500);
-
-      proc.on("exit", (code, signal) => {
-        clearTimeout(timeout);
-        neverEndingStream.destroy();
-        expect(code).toBe(null);
-        expect(signal).toBe("SIGTERM");
-        resolve();
-      });
     });
   });
 });
+
+// Spawn the server with stdin held open (no Readable.pipe — that triggers EOF
+// on Linux when the source Readable enters 'end' state). The pipe stays open
+// for the lifetime of the parent process. After 1500ms we SIGTERM the child
+// and verify it was actually running (code: null, signal: "SIGTERM"), proving
+// the gate did NOT fire.
+function runWithLiveStdin(opts: { env: Record<string, string | undefined> }): Promise<void> {
+  const proc = spawn("node", [ENTRY], {
+    env: opts.env as NodeJS.ProcessEnv,
+    stdio: ["pipe", "pipe", "pipe"],
+  });
+
+  return new Promise<void>((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      proc.kill("SIGTERM");
+    }, 1500);
+
+    proc.on("exit", (code, signal) => {
+      clearTimeout(timeout);
+      try {
+        expect(code).toBe(null);
+        expect(signal).toBe("SIGTERM");
+        resolve();
+      } catch (e) {
+        reject(e as Error);
+      }
+    });
+
+    proc.on("error", (err) => {
+      clearTimeout(timeout);
+      reject(err);
+    });
+  });
+}
