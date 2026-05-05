@@ -23,4 +23,14 @@ describe("session-start-context.sh", () => {
     expect(result.exitCode).toBe(0);
     expect(result.stdout.trim()).toBe("");
   });
+
+  it("emits the JSON envelope when TWINING_DISABLED is set to a non-true value (e.g. '1')", () => {
+    const result = runHook({
+      script: "session-start-context.sh",
+      env: { TWINING_DISABLED: "1" },
+    });
+    expect(result.exitCode).toBe(0);
+    const payload = JSON.parse(result.stdout);
+    expect(payload.hookSpecificOutput.hookEventName).toBe("SessionStart");
+  });
 });

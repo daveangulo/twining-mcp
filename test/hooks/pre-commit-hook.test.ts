@@ -6,7 +6,8 @@ import { runHook } from "./run-hook";
 
 describe("pre-commit-hook.sh", () => {
   it("exits 0 with no deny JSON when TWINING_DISABLED=true even with a transcript that would otherwise deny", () => {
-    const tmpTranscript = path.join(os.tmpdir(), `twining-test-${Date.now()}.jsonl`);
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "twining-pre-commit-"));
+    const tmpTranscript = path.join(tmpDir, "transcript.jsonl");
     // A transcript with a git commit but no twining_record after — would normally deny
     fs.writeFileSync(tmpTranscript, '{"toolUse":{"name":"Bash","input":"git commit -m old"}}\n');
     const stdin = JSON.stringify({
@@ -22,7 +23,7 @@ describe("pre-commit-hook.sh", () => {
       expect(result.exitCode).toBe(0);
       expect(result.stdout).not.toContain("permissionDecision");
     } finally {
-      fs.unlinkSync(tmpTranscript);
+      fs.rmSync(tmpDir, { recursive: true, force: true });
     }
   });
 

@@ -6,7 +6,8 @@ import { runHook } from "./run-hook";
 
 describe("stop-hook.sh", () => {
   it("exits 0 with no output when TWINING_DISABLED=true", () => {
-    const tmpTranscript = path.join(os.tmpdir(), `twining-stop-test-${Date.now()}.jsonl`);
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "twining-stop-"));
+    const tmpTranscript = path.join(tmpDir, "transcript.jsonl");
     // Transcript with an Edit — would normally trigger record-required check
     fs.writeFileSync(tmpTranscript, '{"toolUse":{"name":"Edit","input":{"file_path":"/tmp/x"}}}\n');
     try {
@@ -18,7 +19,7 @@ describe("stop-hook.sh", () => {
       expect(result.exitCode).toBe(0);
       expect(result.stdout.trim()).toBe("");
     } finally {
-      fs.unlinkSync(tmpTranscript);
+      fs.rmSync(tmpDir, { recursive: true, force: true });
     }
   });
 
