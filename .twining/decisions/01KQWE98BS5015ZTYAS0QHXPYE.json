@@ -1,0 +1,32 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "src/",
+  "summary": "Branch_gone signal is auto-neutralized when listLocalBranches() returns an empty set",
+  "context": "PR A complete: provenance stamping (Phase 1) + staleness detection (Phase 2) + housekeeping review flow (Phase 3) for issue #7. 887 tests pass. Server-only change; no plugin bump.",
+  "rationale": "ensures non-git projects don't false-flag every provenance-stamped entry.",
+  "constraints": [],
+  "alternatives": [],
+  "depends_on": [],
+  "confidence": "medium",
+  "reversible": true,
+  "affected_files": [
+    "src/utils/provenance.ts",
+    "src/utils/types.ts",
+    "src/engine/blackboard.ts",
+    "src/engine/decisions.ts",
+    "src/engine/staleness.ts",
+    "src/engine/housekeeping.ts",
+    "src/engine/exporter.ts",
+    "src/tools/housekeeping-tools.ts",
+    "src/tools/decision-tools.ts",
+    "src/server.ts",
+    "src/config.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KQWE98BS5015ZTYAS0QHXPYE",
+  "timestamp": "2026-05-05T16:07:06.361Z",
+  "status": "active"
+}

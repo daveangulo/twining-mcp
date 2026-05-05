@@ -59,6 +59,9 @@ export const DEFAULT_CONFIG: TwiningConfig = {
   graph: {
     auto_populate: false,    // when false, skip auto-graph-population from tool calls
   },
+  housekeeping: {
+    staleness_threshold: 0.95,
+  },
 };
 
 /** Deep merge source into target, returning a new object */

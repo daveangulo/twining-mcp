@@ -325,7 +325,7 @@ export function registerDecisionTools(
             "Filter by decision domain (e.g., 'architecture', 'implementation')",
           ),
         status: z
-          .enum(["active", "provisional", "superseded", "overridden"])
+          .enum(["active", "provisional", "superseded", "overridden", "archived"])
           .optional()
           .describe("Filter by decision status"),
         confidence: z
@@ -342,7 +342,7 @@ export function registerDecisionTools(
       try {
         const filters: {
           domain?: string;
-          status?: "active" | "provisional" | "superseded" | "overridden";
+          status?: "active" | "provisional" | "superseded" | "overridden" | "archived";
           confidence?: "high" | "medium" | "low";
         } = {};
         if (args.domain) filters.domain = args.domain;

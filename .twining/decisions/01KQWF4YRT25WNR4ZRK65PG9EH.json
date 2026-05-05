@@ -1,0 +1,26 @@
+{
+  "agent_id": "main",
+  "domain": "data-model",
+  "scope": "src/engine/",
+  "summary": "Reverted single-call git rev-parse optimization",
+  "context": "PR A review fixes: replaced knownBranchesEmpty heuristic with explicit null sentinel; added archived to ValueStats lifecycle; regression test for blackboard-only branch_gone audit.",
+  "rationale": "--abbrev-ref is global so the two-positional-arg form returns branch twice. Two execFileSync calls remain canonical; cost is ~1ms each which is acceptable. Will revisit via .git/HEAD parsing only if profiling shows it as a hot path.",
+  "constraints": [],
+  "alternatives": [],
+  "depends_on": [],
+  "confidence": "medium",
+  "reversible": true,
+  "affected_files": [
+    "src/utils/provenance.ts",
+    "src/engine/staleness.ts",
+    "src/analytics/analytics-engine.ts",
+    "src/utils/types.ts",
+    "test/unit/staleness.test.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KQWF4YRT25WNR4ZRK65PG9EH",
+  "timestamp": "2026-05-05T16:22:14.042Z",
+  "status": "active"
+}

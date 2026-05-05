@@ -118,6 +118,7 @@ export class Exporter {
       provisional: 0,
       superseded: 0,
       overridden: 0,
+      archived: 0,
     };
     for (const d of decisions) {
       statusCounts[d.status]++;

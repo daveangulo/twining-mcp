@@ -2,6 +2,7 @@
  * Core TypeScript interfaces for Twining MCP Server.
  * Matches TWINING-DESIGN-SPEC.md section 3 exactly.
  */
+import type { Provenance } from "./provenance.js";
 
 // Blackboard entry types — all 10 from spec section 3.1
 export const ENTRY_TYPES = [
@@ -31,6 +32,8 @@ export interface BlackboardEntry {
   summary: string;
   detail: string;
   embedding_id?: string;
+  /** Branch + commit at time of recording; used for staleness detection. */
+  provenance?: Provenance;
 }
 
 /** Decision alternative — nested in Decision */
@@ -46,7 +49,8 @@ export type DecisionStatus =
   | "active"
   | "provisional"
   | "superseded"
-  | "overridden";
+  | "overridden"
+  | "archived";
 
 /** Decision — spec section 3.2 */
 export interface Decision {
@@ -72,6 +76,8 @@ export interface Decision {
   overridden_by?: string;
   override_reason?: string;
   assembled_before?: boolean;
+  /** Branch + commit at time of recording; used for staleness detection. */
+  provenance?: Provenance;
 }
 
 /** Knowledge Graph Entity — spec section 3.3 */
@@ -219,6 +225,10 @@ export interface TwiningConfig {
   graph?: {
     /** When true, auto-populate knowledge graph from tool calls (default: false) */
     auto_populate: boolean;
+  };
+  housekeeping?: {
+    /** Score threshold (0-1) above which entries are flagged stale during staleness_review. Default 0.95. */
+    staleness_threshold: number;
   };
 }
 
@@ -533,6 +543,7 @@ export interface ValueStats {
     provisional: number;
     superseded: number;
     overridden: number;
+    archived: number;
   };
   commit_traceability: {
     total_decisions: number;

@@ -7,6 +7,7 @@ import { BlackboardStore } from "../storage/blackboard-store.js";
 import { ENTRY_TYPES } from "../utils/types.js";
 import type { BlackboardEntry, EntryType, TwiningConfig } from "../utils/types.js";
 import { TwiningError } from "../utils/errors.js";
+import { captureProvenance } from "../utils/provenance.js";
 import type { Embedder } from "../embeddings/embedder.js";
 import type { IndexManager } from "../embeddings/index-manager.js";
 import type { SearchEngine, BlackboardSearchResult } from "../embeddings/search.js";
@@ -18,6 +19,7 @@ export class BlackboardEngine {
   private readonly embedder: Embedder | null;
   private readonly indexManager: IndexManager | null;
   private readonly searchEngine: SearchEngine | null;
+  private readonly projectRoot: string | null;
   private archiver: Archiver | null = null;
   private archiveThreshold: number | null = null;
   private graphPopulator: GraphAutoPopulator | null = null;
@@ -27,11 +29,13 @@ export class BlackboardEngine {
     embedder?: Embedder | null,
     indexManager?: IndexManager | null,
     searchEngine?: SearchEngine | null,
+    projectRoot?: string | null,
   ) {
     this.store = store;
     this.embedder = embedder ?? null;
     this.indexManager = indexManager ?? null;
     this.searchEngine = searchEngine ?? null;
+    this.projectRoot = projectRoot ?? null;
   }
 
   /** Inject archiver for threshold-based auto-archiving (spec §6.1.3). */
@@ -91,6 +95,7 @@ export class BlackboardEngine {
       scope: input.scope ?? "project",
       relates_to: input.relates_to,
       agent_id: input.agent_id ?? "main",
+      provenance: captureProvenance(this.projectRoot),
     });
 
     // Auto-populate graph with scope/relation entities (best-effort)

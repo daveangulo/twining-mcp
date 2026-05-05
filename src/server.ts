@@ -78,6 +78,7 @@ export function createServer(projectRoot: string): ServerContext {
     embedder,
     indexManager,
     searchEngine,
+    projectRoot,
   );
   const graphEngine = new GraphEngine(graphStore);
   const decisionEngine = new DecisionEngine(
@@ -159,6 +160,8 @@ export function createServer(projectRoot: string): ServerContext {
     decisionStore,
     archiver,
     graphEngine,
+    projectRoot,
+    config.housekeeping?.staleness_threshold,
   );
 
   // Create exporter
@@ -200,7 +203,7 @@ export function createServer(projectRoot: string): ServerContext {
 
   // Core tools (always registered in both full and lite modes)
   registerRecordTools(server, blackboardEngine, decisionEngine, projectRoot, twiningDir);
-  registerHousekeepingTools(server, housekeepingEngine);
+  registerHousekeepingTools(server, housekeepingEngine, blackboardEngine, decisionStore);
   registerBlackboardTools(server, blackboardEngine, twiningDir, { fullSurface });
   registerDecisionTools(server, decisionEngine, twiningDir, { fullSurface });
   registerContextTools(server, contextAssembler, { fullSurface });

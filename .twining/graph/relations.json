@@ -4420,5 +4420,435 @@
       "decision_summary": "Token-aware trigger: argv[0]=='git' && argv[1]=='commit' after stripping pipes"
     },
     "created_at": "2026-05-05T15:34:07.613Z"
+  },
+  {
+    "id": "01KQWE98B54SA05X4KWHNB79T5",
+    "source": "01KQWE98B24MA1W5FB1FEVKCE7",
+    "target": "01KQWE98B1G1Y5T2DKQZEGFMH6",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added archived to DecisionStatus union rather than moving decision JSON files"
+    },
+    "created_at": "2026-05-05T16:07:06.341Z"
+  },
+  {
+    "id": "01KQWE98B7T16C3ED90E0PQNY6",
+    "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+    "target": "01KQWE98B1G1Y5T2DKQZEGFMH6",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added archived to DecisionStatus union rather than moving decision JSON files"
+    },
+    "created_at": "2026-05-05T16:07:06.343Z"
+  },
+  {
+    "id": "01KQWE98B9HVS23REA51TJK6RR",
+    "source": "01KJD8KGK434DH6PX2BNXW4W71",
+    "target": "01KQWE98B1G1Y5T2DKQZEGFMH6",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added archived to DecisionStatus union rather than moving decision JSON files"
+    },
+    "created_at": "2026-05-05T16:07:06.345Z"
+  },
+  {
+    "id": "01KQWE98BB1R3P0E6G96VP1QRK",
+    "source": "01KKNE77ZAW1943XPGMREM997R",
+    "target": "01KQWE98B1G1Y5T2DKQZEGFMH6",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added archived to DecisionStatus union rather than moving decision JSON files"
+    },
+    "created_at": "2026-05-05T16:07:06.347Z"
+  },
+  {
+    "id": "01KQWE98BDBC76EWVRBVYK96BQ",
+    "source": "01KQWE98BCW4SXZR7KP8QNPNJK",
+    "target": "01KQWE98B1G1Y5T2DKQZEGFMH6",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added archived to DecisionStatus union rather than moving decision JSON files"
+    },
+    "created_at": "2026-05-05T16:07:06.349Z"
+  },
+  {
+    "id": "01KQWE98BFCQYH5487VS3ZBMJ8",
+    "source": "01KQWE98BE5GC6Q3Q99F2HXCJX",
+    "target": "01KQWE98B1G1Y5T2DKQZEGFMH6",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added archived to DecisionStatus union rather than moving decision JSON files"
+    },
+    "created_at": "2026-05-05T16:07:06.351Z"
+  },
+  {
+    "id": "01KQWE98BH5GW8TY8GRGNDRDC3",
+    "source": "01KQWE98BGMNJN5VTQFS2WRE2C",
+    "target": "01KQWE98B1G1Y5T2DKQZEGFMH6",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added archived to DecisionStatus union rather than moving decision JSON files"
+    },
+    "created_at": "2026-05-05T16:07:06.353Z"
+  },
+  {
+    "id": "01KQWE98BKPKQRR9JWEX7T5Z5Q",
+    "source": "01KQWE98BJDY12CMM0EBPTF7BN",
+    "target": "01KQWE98B1G1Y5T2DKQZEGFMH6",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added archived to DecisionStatus union rather than moving decision JSON files"
+    },
+    "created_at": "2026-05-05T16:07:06.355Z"
+  },
+  {
+    "id": "01KQWE98BNXTVQQWVFJ7Y3ZNYS",
+    "source": "01KHMSDM44AFAD0VVEK8T9N3TK",
+    "target": "01KQWE98B1G1Y5T2DKQZEGFMH6",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added archived to DecisionStatus union rather than moving decision JSON files"
+    },
+    "created_at": "2026-05-05T16:07:06.357Z"
+  },
+  {
+    "id": "01KQWE98BPCRDXTEQYW4PYKHWQ",
+    "source": "01KHMSDEJH7CQCE97XA0ZAP52A",
+    "target": "01KQWE98B1G1Y5T2DKQZEGFMH6",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added archived to DecisionStatus union rather than moving decision JSON files"
+    },
+    "created_at": "2026-05-05T16:07:06.358Z"
+  },
+  {
+    "id": "01KQWE98BRRAP1JH9EX3HR5VZM",
+    "source": "01KJD595ND5YACA06PBGYTRRXA",
+    "target": "01KQWE98B1G1Y5T2DKQZEGFMH6",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Added archived to DecisionStatus union rather than moving decision JSON files"
+    },
+    "created_at": "2026-05-05T16:07:06.360Z"
+  },
+  {
+    "id": "01KQWE98EF44AN54TRP6S70Z7X",
+    "source": "01KQWE98B24MA1W5FB1FEVKCE7",
+    "target": "01KQWE98EDH17JEW3FP97XA2V9",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Branch_gone signal is auto-neutralized when listLocalBranches() returns an empty set"
+    },
+    "created_at": "2026-05-05T16:07:06.447Z"
+  },
+  {
+    "id": "01KQWE98EHWTK5D6Y709WGB0VF",
+    "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+    "target": "01KQWE98EDH17JEW3FP97XA2V9",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Branch_gone signal is auto-neutralized when listLocalBranches() returns an empty set"
+    },
+    "created_at": "2026-05-05T16:07:06.449Z"
+  },
+  {
+    "id": "01KQWE98EK22NKXF1GJYCF72X4",
+    "source": "01KJD8KGK434DH6PX2BNXW4W71",
+    "target": "01KQWE98EDH17JEW3FP97XA2V9",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Branch_gone signal is auto-neutralized when listLocalBranches() returns an empty set"
+    },
+    "created_at": "2026-05-05T16:07:06.451Z"
+  },
+  {
+    "id": "01KQWE98ENWZSA6EDNB29FN4ZX",
+    "source": "01KKNE77ZAW1943XPGMREM997R",
+    "target": "01KQWE98EDH17JEW3FP97XA2V9",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Branch_gone signal is auto-neutralized when listLocalBranches() returns an empty set"
+    },
+    "created_at": "2026-05-05T16:07:06.453Z"
+  },
+  {
+    "id": "01KQWE98EQYHD8JJYJVB31DA8E",
+    "source": "01KQWE98BCW4SXZR7KP8QNPNJK",
+    "target": "01KQWE98EDH17JEW3FP97XA2V9",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Branch_gone signal is auto-neutralized when listLocalBranches() returns an empty set"
+    },
+    "created_at": "2026-05-05T16:07:06.455Z"
+  },
+  {
+    "id": "01KQWE98ESC1WPBY99D9NJ37ZX",
+    "source": "01KQWE98BE5GC6Q3Q99F2HXCJX",
+    "target": "01KQWE98EDH17JEW3FP97XA2V9",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Branch_gone signal is auto-neutralized when listLocalBranches() returns an empty set"
+    },
+    "created_at": "2026-05-05T16:07:06.457Z"
+  },
+  {
+    "id": "01KQWE98EV6TS11XT6MQPW6XD4",
+    "source": "01KQWE98BGMNJN5VTQFS2WRE2C",
+    "target": "01KQWE98EDH17JEW3FP97XA2V9",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Branch_gone signal is auto-neutralized when listLocalBranches() returns an empty set"
+    },
+    "created_at": "2026-05-05T16:07:06.459Z"
+  },
+  {
+    "id": "01KQWE98EXVZYQZBP6YDTBAP46",
+    "source": "01KQWE98BJDY12CMM0EBPTF7BN",
+    "target": "01KQWE98EDH17JEW3FP97XA2V9",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Branch_gone signal is auto-neutralized when listLocalBranches() returns an empty set"
+    },
+    "created_at": "2026-05-05T16:07:06.461Z"
+  },
+  {
+    "id": "01KQWE98EZZ6H0RE7179A91FD9",
+    "source": "01KHMSDM44AFAD0VVEK8T9N3TK",
+    "target": "01KQWE98EDH17JEW3FP97XA2V9",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Branch_gone signal is auto-neutralized when listLocalBranches() returns an empty set"
+    },
+    "created_at": "2026-05-05T16:07:06.463Z"
+  },
+  {
+    "id": "01KQWE98F17KAA8CM05BT3989K",
+    "source": "01KHMSDEJH7CQCE97XA0ZAP52A",
+    "target": "01KQWE98EDH17JEW3FP97XA2V9",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Branch_gone signal is auto-neutralized when listLocalBranches() returns an empty set"
+    },
+    "created_at": "2026-05-05T16:07:06.465Z"
+  },
+  {
+    "id": "01KQWE98F39T70H7Y3KN4EKT0F",
+    "source": "01KJD595ND5YACA06PBGYTRRXA",
+    "target": "01KQWE98EDH17JEW3FP97XA2V9",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Branch_gone signal is auto-neutralized when listLocalBranches() returns an empty set"
+    },
+    "created_at": "2026-05-05T16:07:06.467Z"
+  },
+  {
+    "id": "01KQWE98HB4CWY72606N23C3H0",
+    "source": "01KQWE98B24MA1W5FB1FEVKCE7",
+    "target": "01KQWE98H9DVZ6Z81XFB981GHM",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Staleness threshold is global-only (config.yml housekeeping.staleness_threshold, default 0.95). Per-decision sunset overrides not added"
+    },
+    "created_at": "2026-05-05T16:07:06.539Z"
+  },
+  {
+    "id": "01KQWE98HDYWARRQB6T5897K5P",
+    "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+    "target": "01KQWE98H9DVZ6Z81XFB981GHM",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Staleness threshold is global-only (config.yml housekeeping.staleness_threshold, default 0.95). Per-decision sunset overrides not added"
+    },
+    "created_at": "2026-05-05T16:07:06.541Z"
+  },
+  {
+    "id": "01KQWE98HFMKSQK7G5F7JKB84Z",
+    "source": "01KJD8KGK434DH6PX2BNXW4W71",
+    "target": "01KQWE98H9DVZ6Z81XFB981GHM",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Staleness threshold is global-only (config.yml housekeeping.staleness_threshold, default 0.95). Per-decision sunset overrides not added"
+    },
+    "created_at": "2026-05-05T16:07:06.543Z"
+  },
+  {
+    "id": "01KQWE98HHX22D5PTQ235SRHZA",
+    "source": "01KKNE77ZAW1943XPGMREM997R",
+    "target": "01KQWE98H9DVZ6Z81XFB981GHM",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Staleness threshold is global-only (config.yml housekeeping.staleness_threshold, default 0.95). Per-decision sunset overrides not added"
+    },
+    "created_at": "2026-05-05T16:07:06.545Z"
+  },
+  {
+    "id": "01KQWE98HKAK0KDTQG8VX13B7H",
+    "source": "01KQWE98BCW4SXZR7KP8QNPNJK",
+    "target": "01KQWE98H9DVZ6Z81XFB981GHM",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Staleness threshold is global-only (config.yml housekeeping.staleness_threshold, default 0.95). Per-decision sunset overrides not added"
+    },
+    "created_at": "2026-05-05T16:07:06.547Z"
+  },
+  {
+    "id": "01KQWE98HNCKYSKYM6S59VM7JX",
+    "source": "01KQWE98BE5GC6Q3Q99F2HXCJX",
+    "target": "01KQWE98H9DVZ6Z81XFB981GHM",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Staleness threshold is global-only (config.yml housekeeping.staleness_threshold, default 0.95). Per-decision sunset overrides not added"
+    },
+    "created_at": "2026-05-05T16:07:06.549Z"
+  },
+  {
+    "id": "01KQWE98HQMGG5R350ZBHM4NEC",
+    "source": "01KQWE98BGMNJN5VTQFS2WRE2C",
+    "target": "01KQWE98H9DVZ6Z81XFB981GHM",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Staleness threshold is global-only (config.yml housekeeping.staleness_threshold, default 0.95). Per-decision sunset overrides not added"
+    },
+    "created_at": "2026-05-05T16:07:06.551Z"
+  },
+  {
+    "id": "01KQWE98HSB8FHN2NWT9A0Y8D0",
+    "source": "01KQWE98BJDY12CMM0EBPTF7BN",
+    "target": "01KQWE98H9DVZ6Z81XFB981GHM",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Staleness threshold is global-only (config.yml housekeeping.staleness_threshold, default 0.95). Per-decision sunset overrides not added"
+    },
+    "created_at": "2026-05-05T16:07:06.553Z"
+  },
+  {
+    "id": "01KQWE98HW5K45AEZPH4B3FB70",
+    "source": "01KHMSDM44AFAD0VVEK8T9N3TK",
+    "target": "01KQWE98H9DVZ6Z81XFB981GHM",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Staleness threshold is global-only (config.yml housekeeping.staleness_threshold, default 0.95). Per-decision sunset overrides not added"
+    },
+    "created_at": "2026-05-05T16:07:06.556Z"
+  },
+  {
+    "id": "01KQWE98HYWJ0F7W7B0HM4FD9K",
+    "source": "01KHMSDEJH7CQCE97XA0ZAP52A",
+    "target": "01KQWE98H9DVZ6Z81XFB981GHM",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Staleness threshold is global-only (config.yml housekeeping.staleness_threshold, default 0.95). Per-decision sunset overrides not added"
+    },
+    "created_at": "2026-05-05T16:07:06.558Z"
+  },
+  {
+    "id": "01KQWE98J08G2ECZ1H4W66V9NB",
+    "source": "01KJD595ND5YACA06PBGYTRRXA",
+    "target": "01KQWE98H9DVZ6Z81XFB981GHM",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Staleness threshold is global-only (config.yml housekeeping.staleness_threshold, default 0.95). Per-decision sunset overrides not added"
+    },
+    "created_at": "2026-05-05T16:07:06.560Z"
+  },
+  {
+    "id": "01KQWF4YT3TSMXQWK7T0AXZR6Z",
+    "source": "01KQWE98B24MA1W5FB1FEVKCE7",
+    "target": "01KQWF4YT079WV3V3WTRDQQK2D",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Reverted single-call git rev-parse optimization"
+    },
+    "created_at": "2026-05-05T16:22:14.083Z"
+  },
+  {
+    "id": "01KQWF4YT5EX5MPQQ0KE76R5W9",
+    "source": "01KQWE98BCW4SXZR7KP8QNPNJK",
+    "target": "01KQWF4YT079WV3V3WTRDQQK2D",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Reverted single-call git rev-parse optimization"
+    },
+    "created_at": "2026-05-05T16:22:14.085Z"
+  },
+  {
+    "id": "01KQWF4YT8BXB3BFV4HEH5RCA0",
+    "source": "01KJD595N0RKSR7M7APP0CWETH",
+    "target": "01KQWF4YT079WV3V3WTRDQQK2D",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Reverted single-call git rev-parse optimization"
+    },
+    "created_at": "2026-05-05T16:22:14.088Z"
+  },
+  {
+    "id": "01KQWF4YTANAJAGJJGMERD0ZD5",
+    "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+    "target": "01KQWF4YT079WV3V3WTRDQQK2D",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Reverted single-call git rev-parse optimization"
+    },
+    "created_at": "2026-05-05T16:22:14.090Z"
+  },
+  {
+    "id": "01KQWF4YTCDN10MMPRHPEHX2M1",
+    "source": "01KQWF4YTB64EZNZ2Z2WQSDP22",
+    "target": "01KQWF4YT079WV3V3WTRDQQK2D",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Reverted single-call git rev-parse optimization"
+    },
+    "created_at": "2026-05-05T16:22:14.092Z"
+  },
+  {
+    "id": "01KQWF4YWJQHKMZB2A5W7CMRAD",
+    "source": "01KQWE98B24MA1W5FB1FEVKCE7",
+    "target": "01KQWF4YWFWJEP453B2Y84MDJ1",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Used null sentinel from listLocalBranches() to distinguish 'enumeration failed' from 'legitimately empty branch set'"
+    },
+    "created_at": "2026-05-05T16:22:14.162Z"
+  },
+  {
+    "id": "01KQWF4YWMM4V5J09ACPT6Y376",
+    "source": "01KQWE98BCW4SXZR7KP8QNPNJK",
+    "target": "01KQWF4YWFWJEP453B2Y84MDJ1",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Used null sentinel from listLocalBranches() to distinguish 'enumeration failed' from 'legitimately empty branch set'"
+    },
+    "created_at": "2026-05-05T16:22:14.164Z"
+  },
+  {
+    "id": "01KQWF4YWQ1C6ABAH5JKRPVWMH",
+    "source": "01KJD595N0RKSR7M7APP0CWETH",
+    "target": "01KQWF4YWFWJEP453B2Y84MDJ1",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Used null sentinel from listLocalBranches() to distinguish 'enumeration failed' from 'legitimately empty branch set'"
+    },
+    "created_at": "2026-05-05T16:22:14.167Z"
+  },
+  {
+    "id": "01KQWF4YWSHRPY6GDCN6VH78MR",
+    "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+    "target": "01KQWF4YWFWJEP453B2Y84MDJ1",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Used null sentinel from listLocalBranches() to distinguish 'enumeration failed' from 'legitimately empty branch set'"
+    },
+    "created_at": "2026-05-05T16:22:14.169Z"
+  },
+  {
+    "id": "01KQWF4YWVN5Q5NA83E1EQKZGM",
+    "source": "01KQWF4YTB64EZNZ2Z2WQSDP22",
+    "target": "01KQWF4YWFWJEP453B2Y84MDJ1",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Used null sentinel from listLocalBranches() to distinguish 'enumeration failed' from 'legitimately empty branch set'"
+    },
+    "created_at": "2026-05-05T16:22:14.171Z"
   }
 ]

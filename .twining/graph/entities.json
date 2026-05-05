@@ -112,10 +112,10 @@
     "properties": {
       "description": "MCP server setup — createServer() wires all engines and registers tool handlers",
       "layer": "server",
-      "scope": "plugin/hooks/"
+      "scope": "src/"
     },
     "created_at": "2026-02-17T03:13:31.729Z",
-    "updated_at": "2026-05-05T15:34:07.612Z"
+    "updated_at": "2026-05-05T16:07:06.557Z"
   },
   {
     "id": "01KHMSDJZEQM1FXSMNYBYTST24",
@@ -136,10 +136,10 @@
     "properties": {
       "description": "MCP tool handlers: twining_decide, twining_why, twining_trace, twining_commits",
       "layer": "tools",
-      "scope": "plugin/hooks/"
+      "scope": "src/"
     },
     "created_at": "2026-02-17T03:13:37.412Z",
-    "updated_at": "2026-05-05T15:34:07.610Z"
+    "updated_at": "2026-05-05T16:07:06.555Z"
   },
   {
     "id": "01KHMSDMRQ5HSX2W6SBDT3RND2",
@@ -184,10 +184,10 @@
     "properties": {
       "description": "Core type definitions: BlackboardEntry, Decision, Entity, Relation, AssembledContext, etc.",
       "layer": "utils",
-      "scope": "src/engine/context-assembler.ts"
+      "scope": "src/engine/"
     },
     "created_at": "2026-02-17T03:13:41.312Z",
-    "updated_at": "2026-03-21T19:28:24.446Z"
+    "updated_at": "2026-05-05T16:22:14.167Z"
   },
   {
     "id": "01KHMSDV08WTQDVVSF4159DVB1",
@@ -498,10 +498,10 @@
     "name": "src/analytics/analytics-engine.ts",
     "type": "file",
     "properties": {
-      "scope": "src/analytics/"
+      "scope": "src/engine/"
     },
     "created_at": "2026-02-26T14:22:40.800Z",
-    "updated_at": "2026-02-26T14:22:40.800Z"
+    "updated_at": "2026-05-05T16:22:14.165Z"
   },
   {
     "id": "01KJD595N35BZSEN3EJ6R55S4W",
@@ -558,10 +558,10 @@
     "name": "src/config.ts",
     "type": "file",
     "properties": {
-      "scope": "src/tools/"
+      "scope": "src/"
     },
     "created_at": "2026-02-26T14:22:40.813Z",
-    "updated_at": "2026-04-24T17:50:20.725Z"
+    "updated_at": "2026-05-05T16:07:06.559Z"
   },
   {
     "id": "01KJD595NE5JW9DEJ3VGCB4MMD",
@@ -599,10 +599,10 @@
     "name": "src/engine/blackboard.ts",
     "type": "file",
     "properties": {
-      "scope": "src/engine/"
+      "scope": "src/"
     },
     "created_at": "2026-02-26T15:20:45.412Z",
-    "updated_at": "2026-03-14T05:48:32.110Z"
+    "updated_at": "2026-05-05T16:07:06.542Z"
   },
   {
     "id": "01KJD8KGKABX3Y5E7F8GBKGYGK",
@@ -1925,10 +1925,10 @@
     "name": "src/engine/decisions.ts",
     "type": "file",
     "properties": {
-      "scope": "src/engine/record-parser.ts"
+      "scope": "src/"
     },
     "created_at": "2026-03-14T05:48:32.106Z",
-    "updated_at": "2026-04-24T22:57:00.355Z"
+    "updated_at": "2026-05-05T16:07:06.544Z"
   },
   {
     "id": "01KKNE77ZVVMYK85M8D45XSR9D",
@@ -3053,5 +3053,120 @@
     },
     "created_at": "2026-05-05T15:34:07.601Z",
     "updated_at": "2026-05-05T15:34:07.601Z"
+  },
+  {
+    "id": "01KQWE98B1G1Y5T2DKQZEGFMH6",
+    "name": "01KQWE989N68PA3ARWEMRGQ5C4",
+    "type": "concept",
+    "properties": {
+      "summary": "Added archived to DecisionStatus union rather than moving decision JSON files",
+      "scope": "src/"
+    },
+    "created_at": "2026-05-05T16:07:06.337Z",
+    "updated_at": "2026-05-05T16:07:06.337Z"
+  },
+  {
+    "id": "01KQWE98B24MA1W5FB1FEVKCE7",
+    "name": "src/utils/provenance.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/engine/"
+    },
+    "created_at": "2026-05-05T16:07:06.338Z",
+    "updated_at": "2026-05-05T16:22:14.161Z"
+  },
+  {
+    "id": "01KQWE98BCW4SXZR7KP8QNPNJK",
+    "name": "src/engine/staleness.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/engine/"
+    },
+    "created_at": "2026-05-05T16:07:06.348Z",
+    "updated_at": "2026-05-05T16:22:14.163Z"
+  },
+  {
+    "id": "01KQWE98BE5GC6Q3Q99F2HXCJX",
+    "name": "src/engine/housekeeping.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/"
+    },
+    "created_at": "2026-05-05T16:07:06.350Z",
+    "updated_at": "2026-05-05T16:07:06.548Z"
+  },
+  {
+    "id": "01KQWE98BGMNJN5VTQFS2WRE2C",
+    "name": "src/engine/exporter.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/"
+    },
+    "created_at": "2026-05-05T16:07:06.352Z",
+    "updated_at": "2026-05-05T16:07:06.550Z"
+  },
+  {
+    "id": "01KQWE98BJDY12CMM0EBPTF7BN",
+    "name": "src/tools/housekeeping-tools.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/"
+    },
+    "created_at": "2026-05-05T16:07:06.354Z",
+    "updated_at": "2026-05-05T16:07:06.552Z"
+  },
+  {
+    "id": "01KQWE98EDH17JEW3FP97XA2V9",
+    "name": "01KQWE98BS5015ZTYAS0QHXPYE",
+    "type": "concept",
+    "properties": {
+      "summary": "Branch_gone signal is auto-neutralized when listLocalBranches() returns an empty set",
+      "scope": "src/"
+    },
+    "created_at": "2026-05-05T16:07:06.445Z",
+    "updated_at": "2026-05-05T16:07:06.445Z"
+  },
+  {
+    "id": "01KQWE98H9DVZ6Z81XFB981GHM",
+    "name": "01KQWE98F42J3FJKQW1Q6T0PFF",
+    "type": "concept",
+    "properties": {
+      "summary": "Staleness threshold is global-only (config.yml housekeeping.staleness_threshold, default 0.95). Per-decision sunset overrides not added",
+      "scope": "src/"
+    },
+    "created_at": "2026-05-05T16:07:06.537Z",
+    "updated_at": "2026-05-05T16:07:06.537Z"
+  },
+  {
+    "id": "01KQWF4YT079WV3V3WTRDQQK2D",
+    "name": "01KQWF4YRT25WNR4ZRK65PG9EH",
+    "type": "concept",
+    "properties": {
+      "summary": "Reverted single-call git rev-parse optimization",
+      "scope": "src/engine/"
+    },
+    "created_at": "2026-05-05T16:22:14.080Z",
+    "updated_at": "2026-05-05T16:22:14.080Z"
+  },
+  {
+    "id": "01KQWF4YTB64EZNZ2Z2WQSDP22",
+    "name": "test/unit/staleness.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/engine/"
+    },
+    "created_at": "2026-05-05T16:22:14.091Z",
+    "updated_at": "2026-05-05T16:22:14.170Z"
+  },
+  {
+    "id": "01KQWF4YWFWJEP453B2Y84MDJ1",
+    "name": "01KQWF4YTD4ZZ0WKVV61V77KV6",
+    "type": "concept",
+    "properties": {
+      "summary": "Used null sentinel from listLocalBranches() to distinguish 'enumeration failed' from 'legitimately empty branch set'",
+      "scope": "src/engine/"
+    },
+    "created_at": "2026-05-05T16:22:14.159Z",
+    "updated_at": "2026-05-05T16:22:14.159Z"
   }
 ]
