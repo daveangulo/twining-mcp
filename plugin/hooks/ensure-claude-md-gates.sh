@@ -4,6 +4,7 @@
 # so that gates have persistent CLAUDE.md authority, not just transient prompt weight.
 # No external dependencies — pure bash + grep only
 set -euo pipefail
+[[ "${TWINING_DISABLED:-}" = "true" ]] && exit 0
 
 # Find project root by walking up from CWD
 PROJECT_ROOT="$PWD"
@@ -18,13 +19,28 @@ if [[ "$PROJECT_ROOT" = "/" ]]; then
   exit 0  # Not in a recognizable project, skip silently
 fi
 
+# Opt-out flag — explicit user choice to keep this hook silent for this project
+if [[ -f "$PROJECT_ROOT/.twining/.no-claude-md-gates" ]]; then
+  exit 0
+fi
+
 CLAUDE_MD="$PROJECT_ROOT/CLAUDE.md"
 MARKER="Twining Lifecycle Gates"
 
-# Already present — nothing to do
-if [[ -f "$CLAUDE_MD" ]] && grep -q "$MARKER" "$CLAUDE_MD" 2>/dev/null; then
-  exit 0
-fi
+# Marker may live in any of these locations — check all before deciding to write.
+# Order: cheapest first, project files before global file.
+SEARCH_PATHS=(
+  "$PROJECT_ROOT/CLAUDE.md"
+  "$PROJECT_ROOT/CLAUDE.local.md"
+  "$PROJECT_ROOT/.claude/CLAUDE.local.md"
+  "$HOME/.claude/CLAUDE.md"
+)
+
+for candidate in "${SEARCH_PATHS[@]}"; do
+  if [[ -f "$candidate" ]] && grep -q "$MARKER" "$candidate" 2>/dev/null; then
+    exit 0
+  fi
+done
 
 # Append the gates section (creates CLAUDE.md if it doesn't exist)
 cat >> "$CLAUDE_MD" << 'GATES'
