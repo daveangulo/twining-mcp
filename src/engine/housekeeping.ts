@@ -11,10 +11,14 @@ import type { BlackboardStore } from "../storage/blackboard-store.js";
 import type { DecisionStore } from "../storage/decision-store.js";
 import type { Archiver } from "./archiver.js";
 import type { GraphEngine } from "./graph.js";
-import type { BlackboardEntry } from "../utils/types.js";
+import type { BlackboardEntry, Decision } from "../utils/types.js";
+import { auditStaleness, type StaleItem } from "./staleness.js";
 
 /** Default: flag provisionals older than 7 days. */
 const STALE_PROVISIONAL_DAYS = 7;
+
+/** Default: flag at score >= this when the user explicitly requests staleness review. */
+const DEFAULT_STALENESS_THRESHOLD = 0.95;
 
 /** Default: keep metrics for 30 days. */
 const METRICS_RETENTION_DAYS = 30;
@@ -41,6 +45,10 @@ export interface HousekeepingResult {
   dangling_warnings: { count: number; items: DanglingWarning[] };
   graph_pruned: { removed: number };
   metrics_rotated: { removed: number };
+  staleness_review?: {
+    threshold: number;
+    candidates: StaleItem[];
+  };
   dry_run: boolean;
   summary: string;
 }
@@ -52,6 +60,8 @@ export class HousekeepingEngine {
     private readonly decisionStore: DecisionStore,
     private readonly archiver: Archiver,
     private readonly graphEngine: GraphEngine | null,
+    private readonly projectRoot: string | null = null,
+    private readonly stalenessThreshold: number = DEFAULT_STALENESS_THRESHOLD,
   ) {}
 
   async run(options?: {
@@ -59,11 +69,13 @@ export class HousekeepingEngine {
     metrics_retention_days?: number;
     execute?: boolean;
     promote_provisionals?: boolean;
+    staleness_review?: boolean;
   }): Promise<HousekeepingResult> {
     const staleDays = options?.stale_days ?? STALE_PROVISIONAL_DAYS;
     const metricsRetentionDays = options?.metrics_retention_days ?? METRICS_RETENTION_DAYS;
     const execute = options?.execute ?? false;
     const promoteProvisionals = options?.promote_provisionals ?? false;
+    const stalenessReview = options?.staleness_review ?? false;
 
     const result: HousekeepingResult = {
       archived: { count: 0, file: "" },
@@ -203,6 +215,27 @@ export class HousekeepingEngine {
       // Non-fatal
     }
 
+    // 7. Staleness review — opt-in (provenance-aware orphan detection).
+    if (stalenessReview && this.projectRoot) {
+      try {
+        const allDecisionEntries = await this.decisionStore.getIndex();
+        const decisions: Decision[] = [];
+        for (const entry of allDecisionEntries) {
+          if (entry.status !== "active") continue;
+          const d = await this.decisionStore.get(entry.id);
+          if (d) decisions.push(d);
+        }
+        const { entries: bbEntries } = await this.blackboardStore.read();
+        const audit = auditStaleness(decisions, bbEntries, {
+          threshold: this.stalenessThreshold,
+          projectRoot: this.projectRoot,
+        });
+        result.staleness_review = audit;
+      } catch {
+        // Non-fatal — staleness review is opt-in and shouldn't break housekeeping
+      }
+    }
+
     // Build summary
     const prefix = execute ? "" : "[preview] ";
     const verb = execute ? "" : "would ";
@@ -214,6 +247,9 @@ export class HousekeepingEngine {
     if (result.promoted_provisionals.count > 0) parts.push(`promoted ${result.promoted_provisionals.count} provisionals`);
     if (result.graph_pruned.removed > 0) parts.push(`${verb}prune ${result.graph_pruned.removed} orphaned entities`);
     if (result.metrics_rotated.removed > 0) parts.push(`${verb}rotate ${result.metrics_rotated.removed} old metrics`);
+    if (result.staleness_review && result.staleness_review.candidates.length > 0) {
+      parts.push(`${result.staleness_review.candidates.length} items ≥ score ${result.staleness_review.threshold} flagged stale`);
+    }
     result.summary = parts.length > 0
       ? prefix + parts.join(", ")
       : "Nothing to clean up";

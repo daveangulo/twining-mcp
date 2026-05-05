@@ -11,6 +11,7 @@ import path from "node:path";
 import { DecisionStore } from "../storage/decision-store.js";
 import { BlackboardEngine } from "./blackboard.js";
 import { TwiningError } from "../utils/errors.js";
+import { captureProvenance } from "../utils/provenance.js";
 import type {
   Decision,
   DecisionConfidence,
@@ -215,6 +216,7 @@ export class DecisionEngine {
       assumptions: input.assumptions,
       commit_hashes: input.commit_hash ? [input.commit_hash] : [],
       ...(assembledBefore !== undefined ? { assembled_before: assembledBefore } : {}),
+      provenance: captureProvenance(this.projectRoot),
     });
 
     // If conflicts exist, post an informational finding (not a warning — warnings get

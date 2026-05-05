@@ -2116,5 +2116,77 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KQWE989N68PA3ARWEMRGQ5C4",
+    "timestamp": "2026-05-05T16:07:06.293Z",
+    "domain": "security",
+    "scope": "src/",
+    "summary": "Added archived to DecisionStatus union rather than moving decision JSON files",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/utils/provenance.ts",
+      "src/utils/types.ts",
+      "src/engine/blackboard.ts",
+      "src/engine/decisions.ts",
+      "src/engine/staleness.ts",
+      "src/engine/housekeeping.ts",
+      "src/engine/exporter.ts",
+      "src/tools/housekeeping-tools.ts",
+      "src/tools/decision-tools.ts",
+      "src/server.ts",
+      "src/config.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQWE98BS5015ZTYAS0QHXPYE",
+    "timestamp": "2026-05-05T16:07:06.361Z",
+    "domain": "implementation",
+    "scope": "src/",
+    "summary": "Branch_gone signal is auto-neutralized when listLocalBranches() returns an empty set",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/utils/provenance.ts",
+      "src/utils/types.ts",
+      "src/engine/blackboard.ts",
+      "src/engine/decisions.ts",
+      "src/engine/staleness.ts",
+      "src/engine/housekeeping.ts",
+      "src/engine/exporter.ts",
+      "src/tools/housekeeping-tools.ts",
+      "src/tools/decision-tools.ts",
+      "src/server.ts",
+      "src/config.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQWE98F42J3FJKQW1Q6T0PFF",
+    "timestamp": "2026-05-05T16:07:06.468Z",
+    "domain": "deployment",
+    "scope": "src/",
+    "summary": "Staleness threshold is global-only (config.yml housekeeping.staleness_threshold, default 0.95). Per-decision sunset overrides not added",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/utils/provenance.ts",
+      "src/utils/types.ts",
+      "src/engine/blackboard.ts",
+      "src/engine/decisions.ts",
+      "src/engine/staleness.ts",
+      "src/engine/housekeeping.ts",
+      "src/engine/exporter.ts",
+      "src/tools/housekeeping-tools.ts",
+      "src/tools/decision-tools.ts",
+      "src/server.ts",
+      "src/config.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]

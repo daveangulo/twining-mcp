@@ -2,6 +2,16 @@
 
 All notable changes to Twining MCP are documented here.
 
+## [Unreleased]
+
+### Added
+- **Provenance stamping** on all blackboard entries and decisions. `BlackboardEngine.post()` and `DecisionEngine.decide()` now capture `{ recorded_at, branch?, commit_sha? }` synchronously at write time via `git rev-parse`. Stored as the optional `provenance` field on each entry / decision. Detached-HEAD and non-git directories are tolerated (fields omitted).
+- **Staleness detection** in `twining_housekeeping`. Pass `staleness_review: true` to scan blackboard entries and active decisions for three deterministic orphan signals: scope path no longer exists on disk, affected files no longer on disk (proportionally scored), or originating branch has been deleted. Items scoring at or above the configurable threshold (`housekeeping.staleness_threshold` in `config.yml`, default `0.95`) are returned as candidates. Branch-gone is automatically neutralized when branch enumeration fails (non-git project) so the signal never false-flags.
+- **`twining_archive_stale` tool** — accepts an array of IDs (typically the candidate list from `staleness_review`) and archives them with provenance preserved. Decisions move to a new `archived` status (excluded from `twining_assemble` / `twining_why`); blackboard entries are dismissed. A finding is posted to the audit trail summarizing what was archived and why. Supports first-pass GC (#7) without deleting anything irreversibly.
+
+### Changed
+- `DecisionStatus` gains `archived` as a valid value alongside `active | provisional | superseded | overridden`.
+
 ## Plugin [1.9.1] - 2026-05-05
 
 Plugin-only release. The npm package stays at 1.19.0 — server protocol is unchanged.
