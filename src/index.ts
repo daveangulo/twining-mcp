@@ -18,6 +18,10 @@ if (process.argv.includes("--version") || process.argv.includes("-v")) {
 }
 
 async function main(): Promise<void> {
+  if (process.env.TWINING_DISABLED === "true") {
+    process.exit(0);
+  }
+
   // Parse --project argument, default to cwd
   let projectRoot = process.cwd();
   const projectArgIndex = process.argv.indexOf("--project");
