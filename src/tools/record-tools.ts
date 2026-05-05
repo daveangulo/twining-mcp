@@ -10,6 +10,7 @@ import type { BlackboardEngine } from "../engine/blackboard.js";
 import type { DecisionEngine } from "../engine/decisions.js";
 import { parseDecision } from "../engine/record-parser.js";
 import { toolResult, toolError, TwiningError } from "../utils/errors.js";
+import { writeRecordSentinel } from "../utils/record-sentinel.js";
 
 /**
  * Infer scope from git diff when not explicitly provided.
@@ -131,6 +132,7 @@ export function registerRecordTools(
   blackboardEngine: BlackboardEngine,
   decisionEngine: DecisionEngine,
   projectRoot: string,
+  twiningDir: string,
 ): void {
   server.registerTool(
     "twining_record",
@@ -362,6 +364,7 @@ export function registerRecordTools(
           message: parts.join(" + "),
         };
         if (decisionErrors.length > 0) response.decision_errors = decisionErrors;
+        writeRecordSentinel(twiningDir);
         return toolResult(response);
       } catch (e) {
         if (e instanceof TwiningError) {

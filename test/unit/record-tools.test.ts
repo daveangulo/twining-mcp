@@ -56,7 +56,7 @@ beforeEach(() => {
   dcsnEngine = new DecisionEngine(dcsnStore, bbEngine);
 
   server = new McpServer({ name: "test-server", version: "1.0.0" });
-  registerRecordTools(server, bbEngine, dcsnEngine, tmpDir);
+  registerRecordTools(server, bbEngine, dcsnEngine, tmpDir, tmpDir);
 });
 
 afterEach(() => {
@@ -347,5 +347,17 @@ describe("twining_record — regression (existing NL path)", () => {
     expect(stored.alternatives.length).toBe(4);
     expect(stored.alternatives[0]!.option).toContain("Exploration-efficiency ROI");
     expect(stored.alternatives[3]!.option).toContain("Agent Teams");
+  });
+});
+
+describe("twining_record — sentinel for pre-commit hook", () => {
+  it("writes .last-record with a current unix timestamp on success", async () => {
+    const before = Math.floor(Date.now() / 1000);
+    await callTool("twining_record", { summary: "did some work" });
+    const sentinelPath = path.join(tmpDir, ".last-record");
+    expect(fs.existsSync(sentinelPath)).toBe(true);
+    const ts = parseInt(fs.readFileSync(sentinelPath, "utf-8"), 10);
+    expect(ts).toBeGreaterThanOrEqual(before);
+    expect(ts).toBeLessThanOrEqual(Math.floor(Date.now() / 1000) + 1);
   });
 });

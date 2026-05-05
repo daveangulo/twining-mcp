@@ -1,0 +1,27 @@
+{
+  "agent_id": "main",
+  "domain": "security",
+  "scope": "plugin/hooks/",
+  "summary": "Token-aware trigger: argv[0]=='git' && argv[1]=='commit' after stripping pipes",
+  "context": "Fixed pre-commit hook false-block (#11, #13). Sentinel file replaces transcript-grep; node JSON parse replaces bash regex; argv-tokenized trigger. Plugin 1.9.0→1.9.1.",
+  "rationale": "fixes substring false-positives.",
+  "constraints": [],
+  "alternatives": [],
+  "depends_on": [],
+  "confidence": "medium",
+  "reversible": true,
+  "affected_files": [
+    "plugin/hooks/pre-commit-hook.sh",
+    "src/utils/record-sentinel.ts",
+    "src/tools/record-tools.ts",
+    "src/tools/blackboard-tools.ts",
+    "src/tools/decision-tools.ts",
+    "src/server.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KQWCCVYVV7F36EEZZYE4V6E4",
+  "timestamp": "2026-05-05T15:34:07.579Z",
+  "status": "active"
+}

@@ -56,3 +56,8 @@
 {"tool_name":"twining_housekeeping","timestamp":"2026-05-05T14:11:35.527Z","duration_ms":4,"success":true,"agent_id":"unknown"}
 {"tool_name":"twining_housekeeping","timestamp":"2026-05-05T14:11:46.338Z","duration_ms":19,"success":true,"agent_id":"unknown"}
 {"tool_name":"twining_record","timestamp":"2026-05-05T14:12:04.807Z","duration_ms":14,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_record","timestamp":"2026-05-05T14:21:25.888Z","duration_ms":14,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_assemble","timestamp":"2026-05-05T14:55:10.182Z","duration_ms":173,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_record","timestamp":"2026-05-05T15:33:54.351Z","duration_ms":0,"success":false,"error_code":"INVALID_INPUT","agent_id":"unknown"}
+{"tool_name":"twining_record","timestamp":"2026-05-05T15:34:01.869Z","duration_ms":0,"success":false,"error_code":"INVALID_INPUT","agent_id":"unknown"}
+{"tool_name":"twining_record","timestamp":"2026-05-05T15:34:07.614Z","duration_ms":201,"success":true,"agent_id":"unknown"}

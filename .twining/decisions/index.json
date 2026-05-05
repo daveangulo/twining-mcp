@@ -2040,5 +2040,81 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KQWCCVTVHC192K5759DSNSJH",
+    "timestamp": "2026-05-05T15:34:07.451Z",
+    "domain": "performance",
+    "scope": "plugin/hooks/",
+    "summary": "Chose sentinel-file + git-log-HEAD over transcript-grep",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "plugin/hooks/pre-commit-hook.sh",
+      "src/utils/record-sentinel.ts",
+      "src/tools/record-tools.ts",
+      "src/tools/blackboard-tools.ts",
+      "src/tools/decision-tools.ts",
+      "src/server.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQWCCVW5Y2403MVP42NTRAP1",
+    "timestamp": "2026-05-05T15:34:07.493Z",
+    "domain": "deployment",
+    "scope": "plugin/hooks/",
+    "summary": "Wired sentinel into the three explicit recording tool handlers, not into engine methods",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "plugin/hooks/pre-commit-hook.sh",
+      "src/utils/record-sentinel.ts",
+      "src/tools/record-tools.ts",
+      "src/tools/blackboard-tools.ts",
+      "src/tools/decision-tools.ts",
+      "src/server.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQWCCVX48E3NFJ5NVCJXZKGS",
+    "timestamp": "2026-05-05T15:34:07.524Z",
+    "domain": "implementation",
+    "scope": "plugin/hooks/",
+    "summary": "Used node -e for JSON parsing in the hook",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "plugin/hooks/pre-commit-hook.sh",
+      "src/utils/record-sentinel.ts",
+      "src/tools/record-tools.ts",
+      "src/tools/blackboard-tools.ts",
+      "src/tools/decision-tools.ts",
+      "src/server.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQWCCVYVV7F36EEZZYE4V6E4",
+    "timestamp": "2026-05-05T15:34:07.579Z",
+    "domain": "security",
+    "scope": "plugin/hooks/",
+    "summary": "Token-aware trigger: argv[0]=='git' && argv[1]=='commit' after stripping pipes",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "plugin/hooks/pre-commit-hook.sh",
+      "src/utils/record-sentinel.ts",
+      "src/tools/record-tools.ts",
+      "src/tools/blackboard-tools.ts",
+      "src/tools/decision-tools.ts",
+      "src/server.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]

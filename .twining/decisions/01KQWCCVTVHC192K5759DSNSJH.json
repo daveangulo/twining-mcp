@@ -1,0 +1,34 @@
+{
+  "agent_id": "main",
+  "domain": "performance",
+  "scope": "plugin/hooks/",
+  "summary": "Chose sentinel-file + git-log-HEAD over transcript-grep",
+  "context": "Fixed pre-commit hook false-block (#11, #13). Sentinel file replaces transcript-grep; node JSON parse replaces bash regex; argv-tokenized trigger. Plugin 1.9.0→1.9.1.",
+  "rationale": "immune to transcript text noise and same-turn flush latency. Rejected anchored transcript matching and file mtime.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "transcript-grep",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "medium",
+  "reversible": true,
+  "affected_files": [
+    "plugin/hooks/pre-commit-hook.sh",
+    "src/utils/record-sentinel.ts",
+    "src/tools/record-tools.ts",
+    "src/tools/blackboard-tools.ts",
+    "src/tools/decision-tools.ts",
+    "src/server.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KQWCCVTVHC192K5759DSNSJH",
+  "timestamp": "2026-05-05T15:34:07.451Z",
+  "status": "active"
+}

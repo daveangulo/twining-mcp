@@ -1,55 +1,75 @@
 #!/bin/bash
-# Twining PreToolUse Hook — enforces decision recording before git commit
-# Fires on Bash tool calls, checks if it's a git commit, and verifies
-# that twining_decide or twining_post was called since the last commit.
-# No external dependencies — pure bash + grep only
+# Twining PreToolUse hook — enforces decision recording before `git commit`.
+#
+# Compares .twining/.last-record (written synchronously by twining_record /
+# twining_decide / twining_post) against the HEAD commit timestamp. The
+# pre-1.9 implementation grepped the JSONL transcript for "git commit" and
+# "twining_record" lines, which produced false blocks from (a) failed-attempt
+# command bodies still in the transcript, (b) assistant prose containing
+# the literal string "git commit", (c) heredoc commit-message bodies, and
+# (d) transcript flush latency when record + commit batched in one model
+# turn. See issues #11 and #13 for reproductions.
 set -euo pipefail
 [[ "${TWINING_DISABLED:-}" = "true" ]] && exit 0
 
-# Read hook input from stdin
 HOOK_INPUT=$(cat)
 
-# Extract the command being run
-COMMAND=""
-if [[ "$HOOK_INPUT" =~ \"command\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" ]]; then
-  COMMAND="${BASH_REMATCH[1]}"
-fi
+# Parse JSON via node — bash regex extraction (#13) truncates commands
+# containing escaped quotes. Node is a hard dep of the MCP server already.
+COMMAND=$(node -e '
+let s = "";
+process.stdin.on("data", (d) => { s += d; });
+process.stdin.on("end", () => {
+  try {
+    const j = JSON.parse(s);
+    const cmd = (j.tool_input && j.tool_input.command) || j.command || "";
+    process.stdout.write(cmd);
+  } catch {
+    process.stdout.write("");
+  }
+});
+' <<<"$HOOK_INPUT" 2>/dev/null) || COMMAND=""
 
-# Only check git commit commands
-if [[ -z "$COMMAND" ]] || ! echo "$COMMAND" | grep -q 'git commit'; then
-  # Not a git commit — allow silently (no JSON output = allow)
+# Empty / unparseable input — allow rather than block on parser failure.
+[[ -z "$COMMAND" ]] && exit 0
+
+# Take only the leading clause before the first pipe / && / ; / ||. This
+# stops `echo "...git commit..." | pbcopy` and heredocs from triggering (#11 Bug 2).
+LEADING=$(printf '%s' "$COMMAND" | sed -E 's/[|;&].*//')
+
+# Token-aware trigger: argv[0] must be exactly `git`, argv[1] exactly `commit`.
+# Substring grep would match `git commit-tree`, `git --work-tree=… commit-graph`,
+# release-note prose containing the phrase, etc.
+read -r CMD0 CMD1 _REST <<<"$LEADING" || true
+if [[ "${CMD0:-}" != "git" || "${CMD1:-}" != "commit" ]]; then
   exit 0
 fi
 
-# Skip if this is an amend (likely fixing a prior commit, not new work)
-if echo "$COMMAND" | grep -q '\-\-amend'; then
+# `--amend` is editing an existing commit, not creating new work — skip.
+for tok in $LEADING; do
+  [[ "$tok" == "--amend" ]] && exit 0
+done
+
+# Not a twining-managed project (no .twining/ in cwd) — silent allow so the
+# hook doesn't break commits in unrelated repos when the plugin is global.
+[[ ! -d ".twining" ]] && exit 0
+
+SENTINEL=".twining/.last-record"
+LAST_RECORD=0
+if [[ -f "$SENTINEL" ]]; then
+  raw=$(cat "$SENTINEL" 2>/dev/null || true)
+  # Strip non-digits to guard against partial writes / corruption.
+  raw="${raw//[^0-9]/}"
+  [[ -n "$raw" ]] && LAST_RECORD="$raw"
+fi
+
+LAST_COMMIT_TIME=$(git log -1 --format=%ct HEAD 2>/dev/null || true)
+LAST_COMMIT_TIME="${LAST_COMMIT_TIME//[^0-9]/}"
+LAST_COMMIT_TIME="${LAST_COMMIT_TIME:-0}"
+
+if (( LAST_RECORD > LAST_COMMIT_TIME )); then
   exit 0
 fi
 
-# Extract transcript path
-TRANSCRIPT_PATH=""
-if [[ "$HOOK_INPUT" =~ \"transcript_path\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" ]]; then
-  TRANSCRIPT_PATH="${BASH_REMATCH[1]}"
-fi
-
-if [[ -z "$TRANSCRIPT_PATH" ]] || [[ ! -f "$TRANSCRIPT_PATH" ]]; then
-  # No transcript available — allow (don't break commits)
-  exit 0
-fi
-
-# Find last git commit in transcript (previous commits in this session)
-LAST_COMMIT=$(grep -n 'git commit' "$TRANSCRIPT_PATH" 2>/dev/null | grep -v 'git commit.*--amend' | tail -1 | cut -d: -f1) || LAST_COMMIT=0
-LAST_COMMIT=${LAST_COMMIT:-0}
-
-# Find last Twining recording call (record, decide, or post) in transcript
-LAST_TWINING=$(grep -n 'twining_record\|twining_decide\|twining_post' "$TRANSCRIPT_PATH" 2>/dev/null | tail -1 | cut -d: -f1) || LAST_TWINING=0
-LAST_TWINING=${LAST_TWINING:-0}
-
-# Allow if Twining recording happened after the last commit (or no prior commits)
-if [[ "$LAST_TWINING" -gt "$LAST_COMMIT" ]]; then
-  exit 0
-fi
-
-# Block — no Twining recording since last commit
 printf '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"Call twining_record before committing — summarize what you did and any choices you made."}}\n'
 exit 0

@@ -6,10 +6,12 @@ import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { DecisionEngine } from "../engine/decisions.js";
 import { toolResult, toolError, TwiningError } from "../utils/errors.js";
+import { writeRecordSentinel } from "../utils/record-sentinel.js";
 
 export function registerDecisionTools(
   server: McpServer,
   engine: DecisionEngine,
+  twiningDir: string,
   options: { fullSurface?: boolean } = {},
 ): void {
   // twining_decide — Record a decision with full rationale (full surface only — use twining_record instead)
@@ -94,6 +96,7 @@ export function registerDecisionTools(
     async (args) => {
       try {
         const result = await engine.decide(args);
+        writeRecordSentinel(twiningDir);
         return toolResult(result);
       } catch (e) {
         if (e instanceof TwiningError) {

@@ -1,0 +1,34 @@
+{
+  "agent_id": "main",
+  "domain": "deployment",
+  "scope": "plugin/hooks/",
+  "summary": "Wired sentinel into the three explicit recording tool handlers, not into engine methods",
+  "context": "Fixed pre-commit hook false-block (#11, #13). Sentinel file replaces transcript-grep; node JSON parse replaces bash regex; argv-tokenized trigger. Plugin 1.9.0→1.9.1.",
+  "rationale": "preserves gate semantics so internal posts don't reset.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "into engine methods",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "medium",
+  "reversible": true,
+  "affected_files": [
+    "plugin/hooks/pre-commit-hook.sh",
+    "src/utils/record-sentinel.ts",
+    "src/tools/record-tools.ts",
+    "src/tools/blackboard-tools.ts",
+    "src/tools/decision-tools.ts",
+    "src/server.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "id": "01KQWCCVW5Y2403MVP42NTRAP1",
+  "timestamp": "2026-05-05T15:34:07.493Z",
+  "status": "active"
+}

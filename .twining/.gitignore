@@ -1,3 +1,4 @@
 embeddings/*.index
 archive/
 models/
+.last-record

@@ -70,8 +70,8 @@ beforeEach(() => {
   archiver = new Archiver(tmpDir, bbStore, bbEngine, null);
 
   server = new McpServer({ name: "test-server", version: "1.0.0" });
-  registerBlackboardTools(server, bbEngine, { fullSurface: true });
-  registerDecisionTools(server, dcsnEngine, { fullSurface: true });
+  registerBlackboardTools(server, bbEngine, tmpDir, { fullSurface: true });
+  registerDecisionTools(server, dcsnEngine, tmpDir, { fullSurface: true });
   registerLifecycleTools(server, tmpDir, bbStore, dcsnStore, graphStore, archiver, DEFAULT_CONFIG, agentStore);
 });
 

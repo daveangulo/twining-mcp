@@ -7,10 +7,12 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { BlackboardEngine } from "../engine/blackboard.js";
 import { ENTRY_TYPES } from "../utils/types.js";
 import { toolResult, toolError, TwiningError } from "../utils/errors.js";
+import { writeRecordSentinel } from "../utils/record-sentinel.js";
 
 export function registerBlackboardTools(
   server: McpServer,
   engine: BlackboardEngine,
+  twiningDir: string,
   options: { fullSurface?: boolean } = {},
 ): void {
   // twining_post — Post an entry to the shared blackboard
@@ -47,6 +49,7 @@ export function registerBlackboardTools(
     async (args) => {
       try {
         const result = await engine.post(args);
+        writeRecordSentinel(twiningDir);
         return toolResult(result);
       } catch (e) {
         if (e instanceof TwiningError) {

@@ -199,10 +199,10 @@ export function createServer(projectRoot: string): ServerContext {
   const fullSurface = config.tools?.full_surface ?? false;
 
   // Core tools (always registered in both full and lite modes)
-  registerRecordTools(server, blackboardEngine, decisionEngine, projectRoot);
+  registerRecordTools(server, blackboardEngine, decisionEngine, projectRoot, twiningDir);
   registerHousekeepingTools(server, housekeepingEngine);
-  registerBlackboardTools(server, blackboardEngine, { fullSurface });
-  registerDecisionTools(server, decisionEngine, { fullSurface });
+  registerBlackboardTools(server, blackboardEngine, twiningDir, { fullSurface });
+  registerDecisionTools(server, decisionEngine, twiningDir, { fullSurface });
   registerContextTools(server, contextAssembler, { fullSurface });
   if (fullSurface) {
     registerVerifyTools(server, verifyEngine);
