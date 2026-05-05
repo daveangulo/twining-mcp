@@ -4,6 +4,7 @@
 # that twining_decide or twining_post was called since the last commit.
 # No external dependencies — pure bash + grep only
 set -euo pipefail
+[[ "${TWINING_DISABLED:-}" = "true" ]] && exit 0
 
 # Read hook input from stdin
 HOOK_INPUT=$(cat)
