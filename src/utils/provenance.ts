@@ -17,6 +17,10 @@ export function captureProvenance(projectRoot: string | null | undefined): Prove
   const recorded_at = new Date().toISOString();
   if (!projectRoot) return { recorded_at };
 
+  // Two `git rev-parse` calls — `--abbrev-ref` is a global flag, so it can't
+  // be combined with a plain HEAD lookup in a single invocation. Each call is
+  // ~1ms; if profiling later shows this as a hot path we can cache or move
+  // to direct .git/HEAD parsing.
   const result: Provenance = { recorded_at };
   const branch = safeGit(projectRoot, ["rev-parse", "--abbrev-ref", "HEAD"]);
   if (branch && branch !== "HEAD") result.branch = branch;

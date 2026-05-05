@@ -2188,5 +2188,41 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KQWF4YRT25WNR4ZRK65PG9EH",
+    "timestamp": "2026-05-05T16:22:14.042Z",
+    "domain": "data-model",
+    "scope": "src/engine/",
+    "summary": "Reverted single-call git rev-parse optimization",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/utils/provenance.ts",
+      "src/engine/staleness.ts",
+      "src/analytics/analytics-engine.ts",
+      "src/utils/types.ts",
+      "test/unit/staleness.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQWF4YTD4ZZ0WKVV61V77KV6",
+    "timestamp": "2026-05-05T16:22:14.093Z",
+    "domain": "deployment",
+    "scope": "src/engine/",
+    "summary": "Used null sentinel from listLocalBranches() to distinguish 'enumeration failed' from 'legitimately empty branch set'",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/utils/provenance.ts",
+      "src/engine/staleness.ts",
+      "src/analytics/analytics-engine.ts",
+      "src/utils/types.ts",
+      "test/unit/staleness.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]

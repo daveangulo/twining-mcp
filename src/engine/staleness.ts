@@ -107,6 +107,11 @@ export function buildProbes(projectRoot: string): {
   branchKnown: (branch: string) => boolean;
 } {
   const knownBranches = listLocalBranches(projectRoot);
+  // Distinguish "branch listing failed" (return null) from "listing succeeded
+  // but returned empty" (legitimately empty repo). When listing fails the
+  // probe always returns true so branch_gone never fires.
+  const listingFailed = knownBranches === null;
+  const branches = knownBranches ?? new Set<string>();
 
   return {
     scopePathExists: (scope: string) => {
@@ -122,11 +127,17 @@ export function buildProbes(projectRoot: string): {
       if (!file) return true;
       return fs.existsSync(path.join(projectRoot, file));
     },
-    branchKnown: (branch: string) => knownBranches.has(branch),
+    branchKnown: (branch: string) =>
+      listingFailed ? true : branches.has(branch),
   };
 }
 
-function listLocalBranches(projectRoot: string): Set<string> {
+/**
+ * Returns the local branch set, or `null` when enumeration fails (git absent,
+ * non-repo, or `for-each-ref` errors). The `null` sentinel lets callers
+ * distinguish "we can't check" from "the repo legitimately has no branches".
+ */
+function listLocalBranches(projectRoot: string): Set<string> | null {
   try {
     const out = execFileSync(
       "git",
@@ -145,8 +156,7 @@ function listLocalBranches(projectRoot: string): Set<string> {
         .filter(Boolean),
     );
   } catch {
-    // Not a git repo or git unavailable — return empty set, branch_gone never fires.
-    return new Set();
+    return null;
   }
 }
 
@@ -155,26 +165,11 @@ export function auditStaleness(
   blackboardEntries: BlackboardEntry[],
   options: StalenessAuditOptions,
 ): StalenessAuditResult {
-  // If no probes can fire (not a git repo, no FS), still score deterministic
-  // signals. branch_gone naturally returns false when the known set is empty
-  // because we treat empty as "can't tell" — adjust below.
   const probes = buildProbes(options.projectRoot);
-  const knownBranchesEmpty = probes.branchKnown("__sentinel_does_not_exist__") === false
-    && !probes.branchKnown(decisions[0]?.provenance?.branch ?? "")
-    && !decisions.some((d) => d.provenance?.branch && probes.branchKnown(d.provenance.branch));
-  // If branch listing failed, neutralize the branch_gone signal so we don't
-  // false-flag every provenance-stamped entry.
-  const safeProbes = {
-    ...probes,
-    branchKnown: knownBranchesEmpty
-      ? () => true // can't check → assume known (no false flag)
-      : probes.branchKnown,
-  };
-
   const candidates: StaleItem[] = [];
 
   for (const d of decisions) {
-    const { score, reasons } = scoreItem(d, safeProbes);
+    const { score, reasons } = scoreItem(d, probes);
     if (score >= options.threshold && reasons.length > 0) {
       const item: StaleItem = {
         id: d.id,
@@ -194,7 +189,7 @@ export function auditStaleness(
   for (const e of blackboardEntries) {
     const { score, reasons } = scoreItem(
       { scope: e.scope, provenance: e.provenance },
-      safeProbes,
+      probes,
     );
     if (score >= options.threshold && reasons.length > 0) {
       const item: StaleItem = {

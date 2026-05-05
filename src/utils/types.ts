@@ -543,6 +543,7 @@ export interface ValueStats {
     provisional: number;
     superseded: number;
     overridden: number;
+    archived: number;
   };
   commit_traceability: {
     total_decisions: number;

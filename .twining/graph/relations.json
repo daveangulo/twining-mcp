@@ -4750,5 +4750,105 @@
       "decision_summary": "Staleness threshold is global-only (config.yml housekeeping.staleness_threshold, default 0.95). Per-decision sunset overrides not added"
     },
     "created_at": "2026-05-05T16:07:06.560Z"
+  },
+  {
+    "id": "01KQWF4YT3TSMXQWK7T0AXZR6Z",
+    "source": "01KQWE98B24MA1W5FB1FEVKCE7",
+    "target": "01KQWF4YT079WV3V3WTRDQQK2D",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Reverted single-call git rev-parse optimization"
+    },
+    "created_at": "2026-05-05T16:22:14.083Z"
+  },
+  {
+    "id": "01KQWF4YT5EX5MPQQ0KE76R5W9",
+    "source": "01KQWE98BCW4SXZR7KP8QNPNJK",
+    "target": "01KQWF4YT079WV3V3WTRDQQK2D",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Reverted single-call git rev-parse optimization"
+    },
+    "created_at": "2026-05-05T16:22:14.085Z"
+  },
+  {
+    "id": "01KQWF4YT8BXB3BFV4HEH5RCA0",
+    "source": "01KJD595N0RKSR7M7APP0CWETH",
+    "target": "01KQWF4YT079WV3V3WTRDQQK2D",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Reverted single-call git rev-parse optimization"
+    },
+    "created_at": "2026-05-05T16:22:14.088Z"
+  },
+  {
+    "id": "01KQWF4YTANAJAGJJGMERD0ZD5",
+    "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+    "target": "01KQWF4YT079WV3V3WTRDQQK2D",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Reverted single-call git rev-parse optimization"
+    },
+    "created_at": "2026-05-05T16:22:14.090Z"
+  },
+  {
+    "id": "01KQWF4YTCDN10MMPRHPEHX2M1",
+    "source": "01KQWF4YTB64EZNZ2Z2WQSDP22",
+    "target": "01KQWF4YT079WV3V3WTRDQQK2D",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Reverted single-call git rev-parse optimization"
+    },
+    "created_at": "2026-05-05T16:22:14.092Z"
+  },
+  {
+    "id": "01KQWF4YWJQHKMZB2A5W7CMRAD",
+    "source": "01KQWE98B24MA1W5FB1FEVKCE7",
+    "target": "01KQWF4YWFWJEP453B2Y84MDJ1",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Used null sentinel from listLocalBranches() to distinguish 'enumeration failed' from 'legitimately empty branch set'"
+    },
+    "created_at": "2026-05-05T16:22:14.162Z"
+  },
+  {
+    "id": "01KQWF4YWMM4V5J09ACPT6Y376",
+    "source": "01KQWE98BCW4SXZR7KP8QNPNJK",
+    "target": "01KQWF4YWFWJEP453B2Y84MDJ1",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Used null sentinel from listLocalBranches() to distinguish 'enumeration failed' from 'legitimately empty branch set'"
+    },
+    "created_at": "2026-05-05T16:22:14.164Z"
+  },
+  {
+    "id": "01KQWF4YWQ1C6ABAH5JKRPVWMH",
+    "source": "01KJD595N0RKSR7M7APP0CWETH",
+    "target": "01KQWF4YWFWJEP453B2Y84MDJ1",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Used null sentinel from listLocalBranches() to distinguish 'enumeration failed' from 'legitimately empty branch set'"
+    },
+    "created_at": "2026-05-05T16:22:14.167Z"
+  },
+  {
+    "id": "01KQWF4YWSHRPY6GDCN6VH78MR",
+    "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+    "target": "01KQWF4YWFWJEP453B2Y84MDJ1",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Used null sentinel from listLocalBranches() to distinguish 'enumeration failed' from 'legitimately empty branch set'"
+    },
+    "created_at": "2026-05-05T16:22:14.169Z"
+  },
+  {
+    "id": "01KQWF4YWVN5Q5NA83E1EQKZGM",
+    "source": "01KQWF4YTB64EZNZ2Z2WQSDP22",
+    "target": "01KQWF4YWFWJEP453B2Y84MDJ1",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Used null sentinel from listLocalBranches() to distinguish 'enumeration failed' from 'legitimately empty branch set'"
+    },
+    "created_at": "2026-05-05T16:22:14.171Z"
   }
 ]

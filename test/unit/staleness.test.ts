@@ -182,6 +182,30 @@ describe("auditStaleness — end to end", () => {
     // branch_gone is neutralized when we can't enumerate branches.
     expect(result.candidates).toEqual([]);
   });
+
+  it("flags branch_gone for blackboard entries even when no decisions are passed (regression)", () => {
+    // Pre-fix bug: knownBranchesEmpty heuristic mis-fired on empty decisions[]
+    // and silently neutralized branch_gone for all blackboard entries in a
+    // healthy git repo. A blackboard-only audit must still detect dead branches.
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), "twining-audit-bb-"));
+    execFileSync("git", ["init", "-q", "-b", "main"], { cwd: dir });
+    execFileSync("git", ["config", "user.email", "t@x"], { cwd: dir });
+    execFileSync("git", ["config", "user.name", "t"], { cwd: dir });
+    execFileSync("git", ["config", "commit.gpgsign", "false"], { cwd: dir });
+    execFileSync("git", ["commit", "-q", "-m", "init", "--allow-empty"], { cwd: dir });
+    // Repo has only `main`; entry references a branch that doesn't exist.
+
+    const entries: BlackboardEntry[] = [
+      makeEntry("e-dead-branch", "project", { branch: "feature/long-gone" }),
+    ];
+
+    const result = auditStaleness([], entries, {
+      threshold: 0.95,
+      projectRoot: dir,
+    });
+    expect(result.candidates.map((c) => c.id)).toEqual(["e-dead-branch"]);
+    expect(result.candidates[0]!.reasons[0]?.signal).toBe("branch_gone");
+  });
 });
 
 function makeDecision(

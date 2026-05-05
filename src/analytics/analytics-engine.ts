@@ -68,7 +68,7 @@ export class AnalyticsEngine {
     const coverageRate = totalDecisions > 0 ? withTestedBy / totalDecisions : 0;
 
     // Decision lifecycle
-    const lifecycle = { active: 0, provisional: 0, superseded: 0, overridden: 0 };
+    const lifecycle = { active: 0, provisional: 0, superseded: 0, overridden: 0, archived: 0 };
     for (const dec of decisionIndex) {
       if (dec.status in lifecycle) {
         lifecycle[dec.status as keyof typeof lifecycle]++;
