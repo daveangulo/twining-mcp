@@ -82,12 +82,12 @@ This avoids the `prompt`-type entirely. Command hooks don't need `ToolUseContext
 
 **Part 1 — Broader marker search**. Before appending, check the marker in these locations (in this order, short-circuit on first match):
 
-- `$HOME/.claude/CLAUDE.md` — user-global file; if gates live here, they're already loaded for every project
 - `$PROJECT_ROOT/CLAUDE.md`
 - `$PROJECT_ROOT/CLAUDE.local.md`
 - `$PROJECT_ROOT/.claude/CLAUDE.local.md`
+- `$HOME/.claude/CLAUDE.md` — user-global file; if gates live here, they're already loaded for every project
 
-If the marker is found in any of them, skip. The reporter's exact setup (`.claude/CLAUDE.local.md`) is covered. Search order is cheapest first (global file is small and on a fast path).
+If the marker is found in any of them, skip. The reporter's exact setup (`.claude/CLAUDE.local.md`) is covered. Search order is project-first then global — most users have the marker in a project file, so the project paths short-circuit fastest in the common case. Original spec ordering (global first, "cheapest") was reconsidered during implementation: the read-cost difference is negligible (microseconds across all four paths), but hit-rate ordering matters, and project files are far more likely to contain the marker for the active project than the global file. **Supersedes** the global-first ordering recorded earlier in this spec.
 
 **Part 2 — Opt-out flag**. If `$PROJECT_ROOT/.twining/.no-claude-md-gates` exists, skip without checking anything. Empty file is enough; presence is the signal. This is the explicit user-controlled escape hatch for cases where the gates live somewhere we don't search (rare team-specific patterns), or where the user just doesn't want Twining touching CLAUDE.md regardless.
 
