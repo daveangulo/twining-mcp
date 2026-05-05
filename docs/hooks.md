@@ -11,6 +11,8 @@ The Twining plugin includes four hooks that enforce the lifecycle gates:
 ### PreToolUse (on `Bash`)
 Blocks `git commit` commands if the agent hasn't called `twining_record`, `twining_decide`, or `twining_post` since the last commit. This enforces Gate 2 at the natural checkpoint — when code is being committed.
 
+The check compares `.twining/.last-record` (a unix timestamp written synchronously by the three recording tools) against `git log -1 --format=%ct HEAD`. The sentinel write is synchronous, so same-turn record→commit batches work correctly and the hook is immune to transcript content. Trigger detection is argv-aware: `git commit-tree`, pipelines that mention "git commit", and `git commit --amend` are all skipped. The hook silently allows in repos without a `.twining/` directory.
+
 ### Stop
 Blocks session exit if code changes (Edit/Write calls) occurred after the last Twining recording call. Asks for one action: "Call `twining_record` before ending."
 

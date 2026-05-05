@@ -112,10 +112,10 @@
     "properties": {
       "description": "MCP server setup — createServer() wires all engines and registers tool handlers",
       "layer": "server",
-      "scope": "src/tools/"
+      "scope": "plugin/hooks/"
     },
     "created_at": "2026-02-17T03:13:31.729Z",
-    "updated_at": "2026-04-24T17:50:20.722Z"
+    "updated_at": "2026-05-05T15:34:07.612Z"
   },
   {
     "id": "01KHMSDJZEQM1FXSMNYBYTST24",
@@ -124,10 +124,10 @@
     "properties": {
       "description": "MCP tool handlers: twining_post, twining_read, twining_query, twining_recent",
       "layer": "tools",
-      "scope": "src/tools/"
+      "scope": "plugin/hooks/"
     },
     "created_at": "2026-02-17T03:13:36.238Z",
-    "updated_at": "2026-04-24T17:40:31.628Z"
+    "updated_at": "2026-05-05T15:34:07.608Z"
   },
   {
     "id": "01KHMSDM44AFAD0VVEK8T9N3TK",
@@ -136,10 +136,10 @@
     "properties": {
       "description": "MCP tool handlers: twining_decide, twining_why, twining_trace, twining_commits",
       "layer": "tools",
-      "scope": "src/tools/"
+      "scope": "plugin/hooks/"
     },
     "created_at": "2026-02-17T03:13:37.412Z",
-    "updated_at": "2026-04-24T17:40:31.629Z"
+    "updated_at": "2026-05-05T15:34:07.610Z"
   },
   {
     "id": "01KHMSDMRQ5HSX2W6SBDT3RND2",
@@ -2497,10 +2497,10 @@
     "name": "src/tools/record-tools.ts",
     "type": "file",
     "properties": {
-      "scope": "src/engine/record-parser.ts"
+      "scope": "plugin/hooks/"
     },
     "created_at": "2026-04-24T22:57:00.136Z",
-    "updated_at": "2026-04-24T22:57:00.357Z"
+    "updated_at": "2026-05-05T15:34:07.605Z"
   },
   {
     "id": "01KQ0VBWQAKWPFTYMPNE3X364C",
@@ -2771,10 +2771,10 @@
     "name": "plugin/hooks/pre-commit-hook.sh",
     "type": "file",
     "properties": {
-      "scope": "plugin/hooks"
+      "scope": "plugin/hooks/"
     },
     "created_at": "2026-05-05T05:19:32.712Z",
-    "updated_at": "2026-05-05T05:19:32.804Z"
+    "updated_at": "2026-05-05T15:34:07.602Z"
   },
   {
     "id": "01KQV97HBEPZG7C8DQVQN1GQZJ",
@@ -2999,5 +2999,59 @@
     },
     "created_at": "2026-05-05T14:05:42.779Z",
     "updated_at": "2026-05-05T14:05:42.779Z"
+  },
+  {
+    "id": "01KQWCCVVRYRSB9QWDEFCYX551",
+    "name": "01KQWCCVTVHC192K5759DSNSJH",
+    "type": "concept",
+    "properties": {
+      "summary": "Chose sentinel-file + git-log-HEAD over transcript-grep",
+      "scope": "plugin/hooks/"
+    },
+    "created_at": "2026-05-05T15:34:07.480Z",
+    "updated_at": "2026-05-05T15:34:07.480Z"
+  },
+  {
+    "id": "01KQWCCVVV864JRQVQCHHZTCNR",
+    "name": "src/utils/record-sentinel.ts",
+    "type": "file",
+    "properties": {
+      "scope": "plugin/hooks/"
+    },
+    "created_at": "2026-05-05T15:34:07.483Z",
+    "updated_at": "2026-05-05T15:34:07.604Z"
+  },
+  {
+    "id": "01KQWCCVWRYFVRDDTE4AJXYM4Q",
+    "name": "01KQWCCVW5Y2403MVP42NTRAP1",
+    "type": "concept",
+    "properties": {
+      "summary": "Wired sentinel into the three explicit recording tool handlers, not into engine methods",
+      "scope": "plugin/hooks/"
+    },
+    "created_at": "2026-05-05T15:34:07.512Z",
+    "updated_at": "2026-05-05T15:34:07.512Z"
+  },
+  {
+    "id": "01KQWCCVYEZJP1BTBMVX8P81G2",
+    "name": "01KQWCCVX48E3NFJ5NVCJXZKGS",
+    "type": "concept",
+    "properties": {
+      "summary": "Used node -e for JSON parsing in the hook",
+      "scope": "plugin/hooks/"
+    },
+    "created_at": "2026-05-05T15:34:07.566Z",
+    "updated_at": "2026-05-05T15:34:07.566Z"
+  },
+  {
+    "id": "01KQWCCVZHYM753YH00BCBSMQT",
+    "name": "01KQWCCVYVV7F36EEZZYE4V6E4",
+    "type": "concept",
+    "properties": {
+      "summary": "Token-aware trigger: argv[0]=='git' && argv[1]=='commit' after stripping pipes",
+      "scope": "plugin/hooks/"
+    },
+    "created_at": "2026-05-05T15:34:07.601Z",
+    "updated_at": "2026-05-05T15:34:07.601Z"
   }
 ]

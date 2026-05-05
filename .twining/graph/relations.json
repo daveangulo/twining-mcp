@@ -4180,5 +4180,245 @@
       "decision_summary": "Rewrote server-startup test discrimination from signal/exit-code to stderr content. Empirical observation: with EOF stdin, both gate-firing and gate-not-firing exit with code 0 (no signal), but only the gate-not-firing path produces [twining] stderr output (dashboard startup, config warnings). The signal-based test was attempting to keep stdin open with a Readable.pipe to force SIGTERM on timeout, but Linux closes the pipe early when the source Readable enters end state. Stderr-content discrimination is platform-independent and 10x faster (343ms vs 3155ms). Rejected: increasing test timeout (doesn't fix root cause), holding stdin open differently with raw fd manipulation (fragile, more code)."
     },
     "created_at": "2026-05-05T14:05:42.781Z"
+  },
+  {
+    "id": "01KQWCCVVT78MC53S09Y2DFCFY",
+    "source": "01KQV97HB8G0AQ7RE6ZARYNBW2",
+    "target": "01KQWCCVVRYRSB9QWDEFCYX551",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose sentinel-file + git-log-HEAD over transcript-grep"
+    },
+    "created_at": "2026-05-05T15:34:07.482Z"
+  },
+  {
+    "id": "01KQWCCVVWQGTPG6K0D8ZEN52Y",
+    "source": "01KQWCCVVV864JRQVQCHHZTCNR",
+    "target": "01KQWCCVVRYRSB9QWDEFCYX551",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose sentinel-file + git-log-HEAD over transcript-grep"
+    },
+    "created_at": "2026-05-05T15:34:07.484Z"
+  },
+  {
+    "id": "01KQWCCVVYJQB49KZJ57W65F7R",
+    "source": "01KQ0VBWQ83J4NGF3K4XWAMT14",
+    "target": "01KQWCCVVRYRSB9QWDEFCYX551",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose sentinel-file + git-log-HEAD over transcript-grep"
+    },
+    "created_at": "2026-05-05T15:34:07.486Z"
+  },
+  {
+    "id": "01KQWCCVW05AZNR7MHTX59WPSN",
+    "source": "01KHMSDJZEQM1FXSMNYBYTST24",
+    "target": "01KQWCCVVRYRSB9QWDEFCYX551",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose sentinel-file + git-log-HEAD over transcript-grep"
+    },
+    "created_at": "2026-05-05T15:34:07.488Z"
+  },
+  {
+    "id": "01KQWCCVW2XGHWBT4PCHWW4WZR",
+    "source": "01KHMSDM44AFAD0VVEK8T9N3TK",
+    "target": "01KQWCCVVRYRSB9QWDEFCYX551",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose sentinel-file + git-log-HEAD over transcript-grep"
+    },
+    "created_at": "2026-05-05T15:34:07.490Z"
+  },
+  {
+    "id": "01KQWCCVW4WF820A5976BV43CD",
+    "source": "01KHMSDEJH7CQCE97XA0ZAP52A",
+    "target": "01KQWCCVVRYRSB9QWDEFCYX551",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose sentinel-file + git-log-HEAD over transcript-grep"
+    },
+    "created_at": "2026-05-05T15:34:07.492Z"
+  },
+  {
+    "id": "01KQWCCVWTBXHWB4NCSWFYTHH0",
+    "source": "01KQV97HB8G0AQ7RE6ZARYNBW2",
+    "target": "01KQWCCVWRYFVRDDTE4AJXYM4Q",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Wired sentinel into the three explicit recording tool handlers, not into engine methods"
+    },
+    "created_at": "2026-05-05T15:34:07.514Z"
+  },
+  {
+    "id": "01KQWCCVWVF5X6Z8H6ZAFGEF4C",
+    "source": "01KQWCCVVV864JRQVQCHHZTCNR",
+    "target": "01KQWCCVWRYFVRDDTE4AJXYM4Q",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Wired sentinel into the three explicit recording tool handlers, not into engine methods"
+    },
+    "created_at": "2026-05-05T15:34:07.515Z"
+  },
+  {
+    "id": "01KQWCCVWXDCZ05JA9GK9SDAKE",
+    "source": "01KQ0VBWQ83J4NGF3K4XWAMT14",
+    "target": "01KQWCCVWRYFVRDDTE4AJXYM4Q",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Wired sentinel into the three explicit recording tool handlers, not into engine methods"
+    },
+    "created_at": "2026-05-05T15:34:07.517Z"
+  },
+  {
+    "id": "01KQWCCVWZG1S8SX14J2D0CD55",
+    "source": "01KHMSDJZEQM1FXSMNYBYTST24",
+    "target": "01KQWCCVWRYFVRDDTE4AJXYM4Q",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Wired sentinel into the three explicit recording tool handlers, not into engine methods"
+    },
+    "created_at": "2026-05-05T15:34:07.519Z"
+  },
+  {
+    "id": "01KQWCCVX19E5AJDGK8AYAR4Q8",
+    "source": "01KHMSDM44AFAD0VVEK8T9N3TK",
+    "target": "01KQWCCVWRYFVRDDTE4AJXYM4Q",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Wired sentinel into the three explicit recording tool handlers, not into engine methods"
+    },
+    "created_at": "2026-05-05T15:34:07.521Z"
+  },
+  {
+    "id": "01KQWCCVX3YNEBGXJB8AAMTRXX",
+    "source": "01KHMSDEJH7CQCE97XA0ZAP52A",
+    "target": "01KQWCCVWRYFVRDDTE4AJXYM4Q",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Wired sentinel into the three explicit recording tool handlers, not into engine methods"
+    },
+    "created_at": "2026-05-05T15:34:07.523Z"
+  },
+  {
+    "id": "01KQWCCVYGRAZA7NNX2V86Z095",
+    "source": "01KQV97HB8G0AQ7RE6ZARYNBW2",
+    "target": "01KQWCCVYEZJP1BTBMVX8P81G2",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Used node -e for JSON parsing in the hook"
+    },
+    "created_at": "2026-05-05T15:34:07.568Z"
+  },
+  {
+    "id": "01KQWCCVYJ97MDTECQ27VYHG1C",
+    "source": "01KQWCCVVV864JRQVQCHHZTCNR",
+    "target": "01KQWCCVYEZJP1BTBMVX8P81G2",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Used node -e for JSON parsing in the hook"
+    },
+    "created_at": "2026-05-05T15:34:07.570Z"
+  },
+  {
+    "id": "01KQWCCVYK7ZYMSBSK9QWTMDJF",
+    "source": "01KQ0VBWQ83J4NGF3K4XWAMT14",
+    "target": "01KQWCCVYEZJP1BTBMVX8P81G2",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Used node -e for JSON parsing in the hook"
+    },
+    "created_at": "2026-05-05T15:34:07.571Z"
+  },
+  {
+    "id": "01KQWCCVYP7PHYZW81CJ3ZCW92",
+    "source": "01KHMSDJZEQM1FXSMNYBYTST24",
+    "target": "01KQWCCVYEZJP1BTBMVX8P81G2",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Used node -e for JSON parsing in the hook"
+    },
+    "created_at": "2026-05-05T15:34:07.574Z"
+  },
+  {
+    "id": "01KQWCCVYRX96Z239G6X45WECZ",
+    "source": "01KHMSDM44AFAD0VVEK8T9N3TK",
+    "target": "01KQWCCVYEZJP1BTBMVX8P81G2",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Used node -e for JSON parsing in the hook"
+    },
+    "created_at": "2026-05-05T15:34:07.576Z"
+  },
+  {
+    "id": "01KQWCCVYTG1RE8DJBDWW7C2E2",
+    "source": "01KHMSDEJH7CQCE97XA0ZAP52A",
+    "target": "01KQWCCVYEZJP1BTBMVX8P81G2",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Used node -e for JSON parsing in the hook"
+    },
+    "created_at": "2026-05-05T15:34:07.578Z"
+  },
+  {
+    "id": "01KQWCCVZKZS7J9187JBK28ZYC",
+    "source": "01KQV97HB8G0AQ7RE6ZARYNBW2",
+    "target": "01KQWCCVZHYM753YH00BCBSMQT",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Token-aware trigger: argv[0]=='git' && argv[1]=='commit' after stripping pipes"
+    },
+    "created_at": "2026-05-05T15:34:07.603Z"
+  },
+  {
+    "id": "01KQWCCVZN5RHX5XPG2AKG0HX9",
+    "source": "01KQWCCVVV864JRQVQCHHZTCNR",
+    "target": "01KQWCCVZHYM753YH00BCBSMQT",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Token-aware trigger: argv[0]=='git' && argv[1]=='commit' after stripping pipes"
+    },
+    "created_at": "2026-05-05T15:34:07.605Z"
+  },
+  {
+    "id": "01KQWCCVZQTZG2KV2GGGXSSSJ5",
+    "source": "01KQ0VBWQ83J4NGF3K4XWAMT14",
+    "target": "01KQWCCVZHYM753YH00BCBSMQT",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Token-aware trigger: argv[0]=='git' && argv[1]=='commit' after stripping pipes"
+    },
+    "created_at": "2026-05-05T15:34:07.607Z"
+  },
+  {
+    "id": "01KQWCCVZSK1KNJ0TK9HAZWRMJ",
+    "source": "01KHMSDJZEQM1FXSMNYBYTST24",
+    "target": "01KQWCCVZHYM753YH00BCBSMQT",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Token-aware trigger: argv[0]=='git' && argv[1]=='commit' after stripping pipes"
+    },
+    "created_at": "2026-05-05T15:34:07.609Z"
+  },
+  {
+    "id": "01KQWCCVZV0Q7MN31RRC4Z34H3",
+    "source": "01KHMSDM44AFAD0VVEK8T9N3TK",
+    "target": "01KQWCCVZHYM753YH00BCBSMQT",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Token-aware trigger: argv[0]=='git' && argv[1]=='commit' after stripping pipes"
+    },
+    "created_at": "2026-05-05T15:34:07.611Z"
+  },
+  {
+    "id": "01KQWCCVZXR48G8MKPNF4NC2FY",
+    "source": "01KHMSDEJH7CQCE97XA0ZAP52A",
+    "target": "01KQWCCVZHYM753YH00BCBSMQT",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Token-aware trigger: argv[0]=='git' && argv[1]=='commit' after stripping pipes"
+    },
+    "created_at": "2026-05-05T15:34:07.613Z"
   }
 ]

@@ -2,6 +2,16 @@
 
 All notable changes to Twining MCP are documented here.
 
+## Plugin [1.9.1] - 2026-05-05
+
+Plugin-only release. The npm package stays at 1.19.0 — server protocol is unchanged.
+
+### Fixed
+- Pre-commit hook no longer false-blocks commits in same-turn record→commit batches (#11 Bug 1) or when commands contain the substring `git commit` inside heredocs/pipelines (#11 Bug 2). The bash regex extracting the command from hook input also no longer truncates on escaped quotes (#13). And the hook no longer counts assistant prose, failed-attempt command bodies, or heredoc message bodies that mention `git commit` as if they were real commits.
+- Replaced the JSONL-transcript scan with a synchronous sentinel file. `twining_record`, `twining_post`, and `twining_decide` write `.twining/.last-record` (unix timestamp) on every successful call. The hook compares it against `git log -1 --format=%ct HEAD`. Sentinel writes complete before the tool returns, so transcript flush latency no longer matters.
+- Replaced the bash-regex JSON parser with `node -e` (node is already a hard dep), and replaced substring `grep 'git commit'` with argv-tokenized matching: `argv[0]=='git' && argv[1]=='commit'` after stripping pipes / `&&` / `;`.
+- Hook silently allows commits in repos without a `.twining/` directory (so the global plugin install doesn't break unrelated repos).
+
 ## [1.19.0] - 2026-04-29
 
 ### Added
