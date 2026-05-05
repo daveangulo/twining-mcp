@@ -1639,5 +1639,103 @@
       "buildFromStructured"
     ],
     "commit_hashes": []
+  },
+  {
+    "id": "01KQTRRN0CFQCAT0N3KSXRNXW8",
+    "timestamp": "2026-05-05T00:31:47.724Z",
+    "domain": "testing",
+    "scope": "docs/superpowers/specs/",
+    "summary": "Chose two specs over one combined spec",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/specs/2026-04-29-plugin-hygiene-design.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQTRRN1BN7VK7P363XRY45EE",
+    "timestamp": "2026-05-05T00:31:47.755Z",
+    "domain": "security",
+    "scope": "docs/superpowers/specs/",
+    "summary": "Chose to keep CLAUDE.md gate authority over reporter's prompt-injection-only alternative for issue #9",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/specs/2026-04-29-plugin-hygiene-design.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQTRRN2NFVP78RYAYG3EMS0Q",
+    "timestamp": "2026-05-05T00:31:47.797Z",
+    "domain": "deployment",
+    "scope": "docs/superpowers/specs/",
+    "summary": "Chose broad marker search across 4 files (~/.claude/CLAUDE.md, project CLAUDE.md, project CLAUDE.local.md, project .claude/CLAUDE.local.md) plus opt-out flag .twining/.no-claude-md-gates for issue #9",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/specs/2026-04-29-plugin-hygiene-design.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQTRRN3VE2S5D3B9ZRZGX752",
+    "timestamp": "2026-05-05T00:31:47.835Z",
+    "domain": "architecture",
+    "scope": "docs/superpowers/specs/",
+    "summary": "Chose two-layer disable for TWINING_DISABLED (hooks no-op + MCP server early-exit before tool registration)",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/specs/2026-04-29-plugin-hygiene-design.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQTRRN4VEXME5DNAY93Y8B8J",
+    "timestamp": "2026-05-05T00:31:47.867Z",
+    "domain": "implementation",
+    "scope": "docs/superpowers/specs/",
+    "summary": "Chose to convert SessionStart prompt-type hook to command-type hook for issue #8",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/specs/2026-04-29-plugin-hygiene-design.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQV88TKHG29D06K6B40WV2CV",
+    "timestamp": "2026-05-05T05:02:46.385Z",
+    "domain": "testing",
+    "scope": "docs/superpowers/plans/",
+    "summary": "Chose Vitest with child_process.spawnSync for hook tests over bats/shell-only",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/plans/2026-04-29-plugin-hygiene.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KQV88TMGHE6ENP9EP7W0Z1HY",
+    "timestamp": "2026-05-05T05:02:46.416Z",
+    "domain": "testing",
+    "scope": "docs/superpowers/plans/",
+    "summary": "Chose to phase the work as: verifications first → test helper → server gate → simple hook guards → ensure-claude-md-gates (compound changes) → SessionStart command hook → versions → manual smoke test → release. Foundation-first ordering means each phase's tests can rely on infrastructure from prior phases.",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/plans/2026-04-29-plugin-hygiene.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]

@@ -29,3 +29,10 @@
 {"tool_name":"twining_why","timestamp":"2026-04-24T22:46:17.652Z","duration_ms":0,"success":true,"agent_id":"unknown"}
 {"tool_name":"twining_why","timestamp":"2026-04-24T22:46:17.702Z","duration_ms":0,"success":true,"agent_id":"unknown"}
 {"tool_name":"twining_record","timestamp":"2026-04-24T22:57:00.372Z","duration_ms":346,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_record","timestamp":"2026-04-24T23:10:00.929Z","duration_ms":0,"success":false,"error_code":"INVALID_INPUT","agent_id":"unknown"}
+{"tool_name":"twining_record","timestamp":"2026-04-24T23:10:05.583Z","duration_ms":28,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_record","timestamp":"2026-04-24T23:16:54.286Z","duration_ms":35,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_record","timestamp":"2026-05-05T00:09:22.597Z","duration_ms":1,"success":false,"error_code":"INVALID_INPUT","agent_id":"unknown"}
+{"tool_name":"twining_record","timestamp":"2026-05-05T00:31:47.936Z","duration_ms":742,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_record","timestamp":"2026-05-05T05:02:46.469Z","duration_ms":125,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_record","timestamp":"2026-05-05T05:05:41.410Z","duration_ms":12,"success":true,"agent_id":"unknown"}

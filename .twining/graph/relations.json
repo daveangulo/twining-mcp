@@ -3532,5 +3532,75 @@
       "decision_summary": "Surfaced per-decision persistence errors in the twining_record response"
     },
     "created_at": "2026-04-24T22:57:00.371Z"
+  },
+  {
+    "id": "01KQTRRN1A2524P2JFV8YKVG3A",
+    "source": "01KQTRRN19FPSG5PNV4QB0Y34P",
+    "target": "01KQTRRN187T0KCZXZ0FRCVPDZ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose two specs over one combined spec"
+    },
+    "created_at": "2026-05-05T00:31:47.755Z"
+  },
+  {
+    "id": "01KQTRRN2MP3ZCR78M2JEY5Q59",
+    "source": "01KQTRRN19FPSG5PNV4QB0Y34P",
+    "target": "01KQTRRN2JN2KGHX81A3ZWMMQW",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose to keep CLAUDE.md gate authority over reporter's prompt-injection-only alternative for issue #9"
+    },
+    "created_at": "2026-05-05T00:31:47.796Z"
+  },
+  {
+    "id": "01KQTRRN3TG5ZYWBVXJ28BET6C",
+    "source": "01KQTRRN19FPSG5PNV4QB0Y34P",
+    "target": "01KQTRRN3SFR10D7N7BPSFCA5K",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose broad marker search across 4 files (~/.claude/CLAUDE.md, project CLAUDE.md, project CLAUDE.local.md, project .claude/CLAUDE.local.md) plus opt-out flag .twining/.no-claude-md-gates for issue #9"
+    },
+    "created_at": "2026-05-05T00:31:47.834Z"
+  },
+  {
+    "id": "01KQTRRN4T0H0X88D056R9QT2M",
+    "source": "01KQTRRN19FPSG5PNV4QB0Y34P",
+    "target": "01KQTRRN4RYD8JCCC502DV1S09",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose two-layer disable for TWINING_DISABLED (hooks no-op + MCP server early-exit before tool registration)"
+    },
+    "created_at": "2026-05-05T00:31:47.866Z"
+  },
+  {
+    "id": "01KQTRRN5R7T65KGEKE4N9T8K1",
+    "source": "01KQTRRN19FPSG5PNV4QB0Y34P",
+    "target": "01KQTRRN5PFFNJKSAP3EC63Y6X",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose to convert SessionStart prompt-type hook to command-type hook for issue #8"
+    },
+    "created_at": "2026-05-05T00:31:47.896Z"
+  },
+  {
+    "id": "01KQV88TMFD4M4FBTBA1PENZTW",
+    "source": "01KQV88TMEW2CAYCBADGM5J8PX",
+    "target": "01KQV88TMD8MNZEPV3PPSH5AG9",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose Vitest with child_process.spawnSync for hook tests over bats/shell-only"
+    },
+    "created_at": "2026-05-05T05:02:46.415Z"
+  },
+  {
+    "id": "01KQV88TP5DJ4NEXTJ7Z35RCPS",
+    "source": "01KQV88TMEW2CAYCBADGM5J8PX",
+    "target": "01KQV88TP3Q72J4SVY0D4B44MD",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose to phase the work as: verifications first → test helper → server gate → simple hook guards → ensure-claude-md-gates (compound changes) → SessionStart command hook → versions → manual smoke test → release. Foundation-first ordering means each phase's tests can rely on infrastructure from prior phases."
+    },
+    "created_at": "2026-05-05T05:02:46.469Z"
   }
 ]
