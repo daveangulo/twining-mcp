@@ -2713,17 +2713,6 @@
     "updated_at": "2026-05-05T05:02:46.467Z"
   },
   {
-    "id": "01KQV8Q0JRFQD4V5MX83QKYZ2G",
-    "name": "01KQV8Q0HZWMTRNS2NYFACCKY4",
-    "type": "concept",
-    "properties": {
-      "summary": "Adapted import style from 'import path' to 'import * as path' to satisfy TypeScript strict ESM rules (verbatimModuleSyntax: true)",
-      "scope": "project"
-    },
-    "created_at": "2026-05-05T05:10:31.256Z",
-    "updated_at": "2026-05-05T05:10:31.256Z"
-  },
-  {
     "id": "01KQV935Y3C3C4KBFF6MT6QWY6",
     "name": "01KQV935XB6AMVC404F344S6GY",
     "type": "concept",
@@ -2739,10 +2728,10 @@
     "name": "test/server-startup.test.ts",
     "type": "file",
     "properties": {
-      "scope": "project"
+      "scope": "test/"
     },
     "created_at": "2026-05-05T05:17:09.958Z",
-    "updated_at": "2026-05-05T05:33:18.266Z"
+    "updated_at": "2026-05-05T14:05:42.780Z"
   },
   {
     "id": "01KQV935Z9QS6HYWNRTZ2CN09A",
@@ -2999,5 +2988,16 @@
     },
     "created_at": "2026-05-05T05:34:23.196Z",
     "updated_at": "2026-05-05T05:34:23.196Z"
+  },
+  {
+    "id": "01KQW7AZFVCGMJABH5CB2DV5N8",
+    "name": "01KQW7AZB771D3WQHPRH98VE29",
+    "type": "concept",
+    "properties": {
+      "summary": "Rewrote server-startup test discrimination from signal/exit-code to stderr content. Empirical observation: with EOF stdin, both gate-firing and gate-not-firing exit with code 0 (no signal), but only the gate-not-firing path produces [twining] stderr output (dashboard startup, config warnings). The signal-based test was attempting to keep stdin open with a Readable.pipe to force SIGTERM on timeout, but Linux closes the pipe early when the source Readable enters end state. Stderr-content discrimination is platform-independent and 10x faster (343ms vs 3155ms). Rejected: increasing test timeout (doesn't fix root cause), holding stdin open differently with raw fd manipulation (fragile, more code).",
+      "scope": "test/"
+    },
+    "created_at": "2026-05-05T14:05:42.779Z",
+    "updated_at": "2026-05-05T14:05:42.779Z"
   }
 ]

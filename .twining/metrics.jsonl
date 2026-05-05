@@ -1,16 +1,3 @@
-{"tool_name":"twining_assemble","timestamp":"2026-03-28T10:51:22.546Z","duration_ms":156,"success":false,"error_code":"INTERNAL_ERROR","agent_id":"unknown"}
-{"tool_name":"twining_status","timestamp":"2026-03-28T10:54:06.446Z","duration_ms":3,"success":true,"agent_id":"unknown"}
-{"tool_name":"twining_assemble","timestamp":"2026-03-28T10:54:11.379Z","duration_ms":32,"success":false,"error_code":"INTERNAL_ERROR","agent_id":"unknown"}
-{"tool_name":"twining_assemble","timestamp":"2026-03-28T10:58:40.828Z","duration_ms":29,"success":false,"error_code":"INTERNAL_ERROR","agent_id":"unknown"}
-{"tool_name":"twining_assemble","timestamp":"2026-03-28T11:03:53.493Z","duration_ms":167,"success":true,"agent_id":"unknown"}
-{"tool_name":"twining_decide","timestamp":"2026-03-28T11:09:23.130Z","duration_ms":91,"success":true,"agent_id":"unknown"}
-{"tool_name":"twining_decide","timestamp":"2026-03-28T11:09:32.469Z","duration_ms":77,"success":true,"agent_id":"unknown"}
-{"tool_name":"twining_post","timestamp":"2026-03-28T11:09:41.096Z","duration_ms":30,"success":true,"agent_id":"unknown"}
-{"tool_name":"twining_post","timestamp":"2026-03-28T11:09:49.100Z","duration_ms":36,"success":true,"agent_id":"unknown"}
-{"tool_name":"twining_post","timestamp":"2026-03-28T11:10:18.397Z","duration_ms":42,"success":true,"agent_id":"unknown"}
-{"tool_name":"twining_decide","timestamp":"2026-03-28T11:33:12.435Z","duration_ms":79,"success":true,"agent_id":"unknown"}
-{"tool_name":"twining_decide","timestamp":"2026-03-28T11:33:26.089Z","duration_ms":93,"success":true,"agent_id":"unknown"}
-{"tool_name":"twining_post","timestamp":"2026-03-28T11:33:28.335Z","duration_ms":29,"success":true,"agent_id":"unknown"}
 {"tool_name":"twining_post","timestamp":"2026-04-21T04:07:06.663Z","duration_ms":465,"success":true,"agent_id":"unknown"}
 {"tool_name":"twining_assemble","timestamp":"2026-04-21T04:24:31.399Z","duration_ms":218,"success":true,"agent_id":"unknown"}
 {"tool_name":"twining_housekeeping","timestamp":"2026-04-24T17:14:55.370Z","duration_ms":7,"success":true,"agent_id":"unknown"}
@@ -63,3 +50,9 @@
 {"tool_name":"twining_record","timestamp":"2026-05-05T05:33:48.678Z","duration_ms":16,"success":true,"agent_id":"unknown"}
 {"tool_name":"twining_record","timestamp":"2026-05-05T05:34:23.200Z","duration_ms":98,"success":true,"agent_id":"unknown"}
 {"tool_name":"twining_record","timestamp":"2026-05-05T05:34:54.813Z","duration_ms":11,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_record","timestamp":"2026-05-05T13:47:05.301Z","duration_ms":23,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_record","timestamp":"2026-05-05T14:05:35.530Z","duration_ms":0,"success":false,"error_code":"INVALID_INPUT","agent_id":"unknown"}
+{"tool_name":"twining_record","timestamp":"2026-05-05T14:05:42.781Z","duration_ms":186,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_housekeeping","timestamp":"2026-05-05T14:11:35.527Z","duration_ms":4,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_housekeeping","timestamp":"2026-05-05T14:11:46.338Z","duration_ms":19,"success":true,"agent_id":"unknown"}
+{"tool_name":"twining_record","timestamp":"2026-05-05T14:12:04.807Z","duration_ms":14,"success":true,"agent_id":"unknown"}
