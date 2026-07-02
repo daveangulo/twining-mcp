@@ -2,6 +2,23 @@
 
 All notable changes to Twining MCP are documented here.
 
+## [1.21.0] - 2026-07-02
+
+Storage-safety release — phase W0 of the v2 foundation plan (`docs/FOUNDATION-PLAN.md`). No tool-surface or data-format changes.
+
+### Added
+- **Format version gate.** The server now reads `config.yml`'s `version` field at startup. If the on-disk format is newer than this release supports, the server logs a clear upgrade message and enters read-only mode: all reads keep working, all writes refuse with `FORMAT_VERSION_TOO_NEW`. This protects projects migrated by a future Twining release from being silently diverged by a stale client, and must be in the installed base before any format change ships.
+- `.twining/.gitattributes` (`blackboard.jsonl merge=union`) is created on init so branches that both append blackboard entries union-merge instead of conflicting.
+
+### Fixed
+- **Atomic writes everywhere.** All whole-file writes (graph `entities.json`/`relations.json`, `decisions/*.json` + `decisions/index.json`, embedding indexes, agent registry, handoffs, blackboard rewrites) now go through a temp-file + rename pattern. Previously a process killed mid-write could truncate a JSON store and make the entire dataset unreadable; now readers observe either the old or the new content, never a torn file. `readJSON` additionally retries once on a parse failure to tolerate files last written by older releases.
+- The `.twining/.gitignore` template now covers all local runtime state (`metrics.jsonl`, `pending-posts.jsonl`, `pending-actions.jsonl`, `.last-record`, `.last-known-branches.json`), matching what the README has claimed since 1.18. This repo's own tracked `metrics.jsonl`/`pending-posts.jsonl` were untracked accordingly.
+
+## Plugin [1.9.2] - 2026-07-02
+
+### Fixed
+- SubagentStop hook no longer appends directly to `blackboard.jsonl`. A raw bash append can't take the store's file lock, so a concurrent server write could interleave and corrupt lines. The hook now queues its status entry in `pending-posts.jsonl` — the drop box the server drains through the locked store path on next startup.
+
 ## [1.20.0] - 2026-05-05
 
 Closes #7 (deterministic portion). The LLM-judged semantic-content review piece is tracked in #16.
