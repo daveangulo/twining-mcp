@@ -4,10 +4,6 @@
       "matcher": "*",
       "hooks": [{
         "type": "command",
-        "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/ensure-claude-md-gates.sh\"",
-        "timeout": 5
-      }, {
-        "type": "command",
         "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start-context.sh\"",
         "timeout": 5
       }]
