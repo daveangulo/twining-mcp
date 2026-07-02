@@ -6,7 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import lockfile from "proper-lockfile";
-import { ensureDir } from "../storage/file-store.js";
+import { atomicWriteFileSync, ensureDir } from "../storage/file-store.js";
 
 /** Embedding index structure — spec section 5.3 */
 export interface EmbeddingIndex {
@@ -76,7 +76,7 @@ export class IndexManager {
 
     const release = await lockfile.lock(filePath, LOCK_OPTIONS);
     try {
-      fs.writeFileSync(filePath, JSON.stringify(index));
+      atomicWriteFileSync(filePath, JSON.stringify(index));
     } finally {
       await release();
     }
@@ -111,7 +111,7 @@ export class IndexManager {
       }
 
       // Write back
-      fs.writeFileSync(filePath, JSON.stringify(index));
+      atomicWriteFileSync(filePath, JSON.stringify(index));
     } finally {
       await release();
     }
@@ -131,7 +131,7 @@ export class IndexManager {
       const idSet = new Set(ids);
       index.entries = index.entries.filter((e) => !idSet.has(e.id));
 
-      fs.writeFileSync(filePath, JSON.stringify(index));
+      atomicWriteFileSync(filePath, JSON.stringify(index));
     } finally {
       await release();
     }

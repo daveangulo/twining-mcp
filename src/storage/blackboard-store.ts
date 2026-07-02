@@ -5,7 +5,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import { appendJSONL, readJSONL } from "./file-store.js";
+import { appendJSONL, atomicWriteFileSync, readJSONL } from "./file-store.js";
 import { generateId } from "../utils/ids.js";
 import type { BlackboardEntry } from "../utils/types.js";
 
@@ -151,7 +151,7 @@ export class BlackboardStore {
 
       if (dismissed.length > 0) {
         const newContent = kept.length > 0 ? kept.join("\n") + "\n" : "";
-        fs.writeFileSync(bbPath, newContent);
+        atomicWriteFileSync(bbPath, newContent);
         // Invalidate cache
         this.cachedEntries = null;
       }

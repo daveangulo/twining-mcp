@@ -5,7 +5,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import lockfile from "proper-lockfile";
-import { readJSON, writeJSON } from "./file-store.js";
+import { atomicWriteFileSync, readJSON } from "./file-store.js";
 import { generateId } from "../utils/ids.js";
 import type {
   Decision,
@@ -47,14 +47,14 @@ export class DecisionStore {
     const release = await lockfile.lock(this.indexPath, INDEX_LOCK_OPTIONS);
     try {
       // Write individual decision file
-      fs.writeFileSync(filePath, JSON.stringify(decision, null, 2));
+      atomicWriteFileSync(filePath, JSON.stringify(decision, null, 2));
 
       // Update index
       const index = JSON.parse(
         fs.readFileSync(this.indexPath, "utf-8"),
       ) as DecisionIndexEntry[];
       index.push(this.toIndexEntry(decision));
-      fs.writeFileSync(this.indexPath, JSON.stringify(index, null, 2));
+      atomicWriteFileSync(this.indexPath, JSON.stringify(index, null, 2));
     } finally {
       await release();
     }
@@ -121,7 +121,7 @@ export class DecisionStore {
       if (extra) {
         Object.assign(decision, extra);
       }
-      fs.writeFileSync(filePath, JSON.stringify(decision, null, 2));
+      atomicWriteFileSync(filePath, JSON.stringify(decision, null, 2));
 
       // Update index
       const index = JSON.parse(
@@ -131,7 +131,7 @@ export class DecisionStore {
       if (indexEntry) {
         indexEntry.status = status;
       }
-      fs.writeFileSync(this.indexPath, JSON.stringify(index, null, 2));
+      atomicWriteFileSync(this.indexPath, JSON.stringify(index, null, 2));
     } finally {
       await release();
     }
@@ -179,7 +179,7 @@ export class DecisionStore {
       if (!decision.commit_hashes.includes(commitHash)) {
         decision.commit_hashes.push(commitHash);
       }
-      fs.writeFileSync(filePath, JSON.stringify(decision, null, 2));
+      atomicWriteFileSync(filePath, JSON.stringify(decision, null, 2));
 
       // Update index
       const index = JSON.parse(
@@ -194,7 +194,7 @@ export class DecisionStore {
           indexEntry.commit_hashes.push(commitHash);
         }
       }
-      fs.writeFileSync(this.indexPath, JSON.stringify(index, null, 2));
+      atomicWriteFileSync(this.indexPath, JSON.stringify(index, null, 2));
     } finally {
       await release();
     }
