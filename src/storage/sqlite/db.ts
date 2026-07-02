@@ -129,6 +129,30 @@ export function openDatabase(twiningDir: string): SqliteDatabase {
 }
 
 /**
+ * Run a read-modify-write cycle inside an IMMEDIATE transaction.
+ * WAL serializes individual statements, not statement PAIRS: two processes
+ * can both SELECT the same row and the second UPDATE silently clobbers the
+ * first's merge — a lost-update race the multiwriter soak reproduces.
+ * BEGIN IMMEDIATE takes the write lock up front (waiting on busy_timeout),
+ * making the whole cycle atomic across processes.
+ */
+export function withWriteTxn<T>(db: SqliteDatabase, fn: () => T): T {
+  db.exec("BEGIN IMMEDIATE;");
+  try {
+    const result = fn();
+    db.exec("COMMIT;");
+    return result;
+  } catch (err) {
+    try {
+      db.exec("ROLLBACK;");
+    } catch {
+      // connection state unknown — original error matters more
+    }
+    throw err;
+  }
+}
+
+/**
  * Serialize a float vector to a BLOB (little-endian float64 — exact
  * round-trip parity with the JSON file backend; float32 would silently
  * perturb similarity scores across backends).
