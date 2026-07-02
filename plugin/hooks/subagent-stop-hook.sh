@@ -30,17 +30,17 @@ if [[ -z "$TWINING_DIR" ]]; then
   exit 0
 fi
 
-# Append a pending status post to the blackboard
-TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
+# Queue a pending status post for the MCP server's PendingProcessor.
+# Never write blackboard.jsonl directly — the server writes it under a
+# lock this hook cannot take, so a raw append can interleave with a
+# concurrent server write and corrupt lines. pending-posts.jsonl is the
+# designated unlocked drop box: the server drains it on startup and posts
+# each line through the locked store path.
 AGENT_LABEL="${AGENT_TYPE:-unknown-subagent}"
 
-# Write directly to blackboard.jsonl — same format as BlackboardStore
-# Use a simple entry that the orchestrator can see
-printf '{"id":"hook-%s","entry_type":"status","summary":"Subagent completed: %s","detail":"","scope":"project","agent_id":"%s","tags":["subagent-stop","hook-generated"],"timestamp":"%s","supersedes":null,"dismissed":false}\n' \
-  "$(date +%s%N | cut -c1-13)" \
+printf '{"entry_type":"status","summary":"Subagent completed: %s","detail":"","scope":"project","agent_id":"%s","tags":["subagent-stop","hook-generated"]}\n' \
   "$AGENT_LABEL" \
   "$AGENT_LABEL" \
-  "$TIMESTAMP" \
-  >> "$TWINING_DIR/blackboard.jsonl"
+  >> "$TWINING_DIR/pending-posts.jsonl"
 
 exit 0
