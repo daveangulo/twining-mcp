@@ -64,6 +64,9 @@ export function initTwiningDir(projectRoot: string): void {
       "pending-actions.jsonl",
       ".last-record",
       ".last-known-branches.json",
+      "twining.db",
+      "twining.db-wal",
+      "twining.db-shm",
     ].join("\n") + "\n",
   );
 
