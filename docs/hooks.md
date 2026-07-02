@@ -17,7 +17,7 @@ The check compares `.twining/.last-record` (a unix timestamp written synchronous
 Blocks session exit if code changes (Edit/Write calls) occurred after the last Twining recording call. Asks for one action: "Call `twining_record` before ending."
 
 ### SubagentStop
-Posts a status entry to the blackboard when subagents complete, ensuring the orchestrator has visibility into subagent work.
+Queues a status entry in `.twining/pending-posts.jsonl` when subagents complete, ensuring the orchestrator has visibility into subagent work. The MCP server drains the queue on next startup and posts each entry through the locked blackboard store — the hook never writes `blackboard.jsonl` directly, since a raw bash append can't take the store's lock and could interleave with a concurrent server write.
 
 ## Auto-Archive on Git Commit (Optional)
 
