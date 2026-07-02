@@ -35,6 +35,8 @@ import {
   SqliteHandoffStore,
   SqliteIndexManager,
 } from "./sqlite/sqlite-stores.js";
+import { withRecordExport } from "./sync/record-export.js";
+import { ingestRecords } from "./sync/record-ingest.js";
 
 export interface StoreSet {
   backend: "files" | "sqlite";
@@ -58,7 +60,26 @@ export function createStores(
         throw new Error("node:sqlite is unavailable (requires Node >= 22.13)");
       }
       const db = openDatabase(twiningDir);
-      return {
+
+      // W2.3: converge the database to the committed export tree first —
+      // this is where another user's / branch's records arrive after a
+      // git pull. Non-fatal: a broken tree must not stop the server.
+      try {
+        const stats = ingestRecords(db, twiningDir);
+        if (stats.inserted || stats.updated || stats.deleted) {
+          console.error(
+            `[twining] Ingested records: +${stats.inserted} ~${stats.updated} -${stats.deleted}` +
+              (stats.skipped ? ` (${stats.skipped} unparseable skipped)` : ""),
+          );
+        }
+      } catch (err) {
+        console.error(
+          "[twining] Record ingest failed (non-fatal):",
+          err instanceof Error ? err.message : String(err),
+        );
+      }
+
+      let set: StoreSet = {
         backend: "sqlite",
         blackboardStore: new SqliteBlackboardStore(db),
         decisionStore: new SqliteDecisionStore(db),
@@ -67,6 +88,12 @@ export function createStores(
         handoffStore: new SqliteHandoffStore(db),
         indexManager: new SqliteIndexManager(db),
       };
+      // Mirror every write into .twining/records/ — the committable truth
+      // (twining.db itself is a gitignored local cache).
+      if (config.storage?.export_records !== false) {
+        set = withRecordExport(set, twiningDir);
+      }
+      return set;
     } catch (err) {
       console.error(
         `[twining] sqlite backend requested but unavailable (${

@@ -40,6 +40,7 @@ export const DEFAULT_CONFIG: TwiningConfig = {
   embedding_model: "all-MiniLM-L6-v2",
   storage: {
     backend: "files",        // "sqlite" opts into the single-database backend (Node >= 22.13)
+    export_records: true,    // sqlite only: maintain committable .twining/records/ tree + ingest on startup
   },
   archive: {
     auto_archive_on_commit: true,
