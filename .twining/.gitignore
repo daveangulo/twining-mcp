@@ -1,5 +1,8 @@
 embeddings/*.index
 archive/
 models/
+metrics.jsonl
+pending-posts.jsonl
+pending-actions.jsonl
 .last-record
 .last-known-branches.json

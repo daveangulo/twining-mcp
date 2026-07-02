@@ -6,27 +6,21 @@
 import fs from "node:fs";
 import path from "node:path";
 import lockfile from "proper-lockfile";
-import {
-  readJSON,
-  writeJSON,
-  appendJSONL,
-  readJSONL,
-  writeJSONL,
-  ensureDir,
-} from "./file-store.js";
+import { appendJSONL, atomicWriteFileSync, ensureDir, readJSON, readJSONL, writeJSON, writeJSONL } from "./file-store.js";
 import { generateId } from "../utils/ids.js";
 import type {
   HandoffRecord,
   HandoffResult,
   HandoffIndexEntry,
 } from "../utils/types.js";
+import type { IHandoffStore } from "./interfaces.js";
 
 const INDEX_LOCK_OPTIONS: lockfile.LockOptions = {
   retries: { retries: 10, factor: 1.5, minTimeout: 50, maxTimeout: 1000 },
   stale: 10000,
 };
 
-export class HandoffStore {
+export class HandoffStore implements IHandoffStore {
   private readonly handoffsDir: string;
   private readonly indexPath: string;
 
@@ -163,7 +157,7 @@ export class HandoffStore {
       record.acknowledged_at = new Date().toISOString();
 
       // Rewrite individual file (direct write, no nested lock)
-      fs.writeFileSync(filePath, JSON.stringify(record, null, 2));
+      atomicWriteFileSync(filePath, JSON.stringify(record, null, 2));
 
       // Rewrite index with updated entry (direct read/write, no nested lock)
       const indexContent = fs.readFileSync(this.indexPath, "utf-8");
@@ -177,7 +171,7 @@ export class HandoffStore {
       const newContent = updatedEntries.length > 0
         ? updatedEntries.map((e) => JSON.stringify(e)).join("\n") + "\n"
         : "";
-      fs.writeFileSync(this.indexPath, newContent);
+      atomicWriteFileSync(this.indexPath, newContent);
 
       return record;
     } finally {

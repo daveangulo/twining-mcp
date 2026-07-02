@@ -3,11 +3,7 @@
  * Provides scoring algorithm and discovery method for ranking agents
  * by capability overlap and liveness.
  */
-import type { AgentStore } from "../storage/agent-store.js";
-import type { HandoffStore } from "../storage/handoff-store.js";
 import type { BlackboardEngine } from "./blackboard.js";
-import type { DecisionStore } from "../storage/decision-store.js";
-import type { BlackboardStore } from "../storage/blackboard-store.js";
 import {
   computeLiveness,
   DEFAULT_LIVENESS_THRESHOLDS,
@@ -29,6 +25,7 @@ import type {
   HandoffRecord,
   TwiningConfig,
 } from "../utils/types.js";
+import type { IAgentStore, IBlackboardStore, IDecisionStore, IHandoffStore } from "../storage/interfaces.js";
 
 /** Map liveness state to a numeric score. */
 function livenessToScore(liveness: AgentLiveness): number {
@@ -124,19 +121,19 @@ export function isDelegationExpired(
 }
 
 export class CoordinationEngine {
-  private readonly agentStore: AgentStore;
-  private readonly handoffStore: HandoffStore;
+  private readonly agentStore: IAgentStore;
+  private readonly handoffStore: IHandoffStore;
   private readonly blackboardEngine: BlackboardEngine;
-  private readonly decisionStore: DecisionStore;
-  private readonly blackboardStore: BlackboardStore;
+  private readonly decisionStore: IDecisionStore;
+  private readonly blackboardStore: IBlackboardStore;
   private readonly config: TwiningConfig;
 
   constructor(
-    agentStore: AgentStore,
-    handoffStore: HandoffStore,
+    agentStore: IAgentStore,
+    handoffStore: IHandoffStore,
     blackboardEngine: BlackboardEngine,
-    decisionStore: DecisionStore,
-    blackboardStore: BlackboardStore,
+    decisionStore: IDecisionStore,
+    blackboardStore: IBlackboardStore,
     config: TwiningConfig,
   ) {
     this.agentStore = agentStore;
@@ -300,7 +297,7 @@ export class CoordinationEngine {
       };
     }
 
-    // 2. Create via HandoffStore
+    // 2. Create via IHandoffStore
     const record = await this.handoffStore.create({
       source_agent: input.source_agent,
       target_agent: input.target_agent,

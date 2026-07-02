@@ -12,6 +12,9 @@ import { parseDecision } from "../engine/record-parser.js";
 import { toolResult, toolError, TwiningError } from "../utils/errors.js";
 import { writeRecordSentinel } from "../utils/record-sentinel.js";
 
+// One quality nudge per server process (i.e. per session) — see #18.
+let qualityNudgeSent = false;
+
 /**
  * Infer scope from git diff when not explicitly provided.
  * Finds the common path prefix of changed files.
@@ -210,8 +213,9 @@ export function registerRecordTools(
           .array(z.string())
           .optional()
           .describe(
-            'Discoveries, warnings, or needs. Prefix with "warning:" or "need:" for severity. ' +
-            'E.g. ["Auth tokens stored in localStorage — fails SOC2", "warning: No token rotation exists", "need: Add rate limiting before launch"]',
+            'Discoveries, warnings, needs, and surprises — anything the next session would want to know that is not visible from the diff: odd patterns you noticed, fragile spots, dead ends you ruled out, things that did not work as expected. Prefix with "warning:" or "need:" for severity. ' +
+            'E.g. ["Auth tokens stored in localStorage — fails SOC2", "warning: No token rotation exists", "need: Add rate limiting before launch"]. ' +
+            'A substantial change with zero findings is usually under-recording, not a clean run.',
           ),
         assumptions: z
           .array(z.string())
@@ -364,6 +368,22 @@ export function registerRecordTools(
           message: parts.join(" + "),
         };
         if (decisionErrors.length > 0) response.decision_errors = decisionErrors;
+
+        // #18: one deterministic quality nudge per server lifetime — a
+        // substantial record with zero findings usually means discoveries
+        // went unrecorded, not that there were none. Never repeated:
+        // repeated nagging is what degrades record quality in the first place.
+        if (
+          !qualityNudgeSent &&
+          createdFindings.length === 0 &&
+          ((args.affected_files?.length ?? 0) >= 5 ||
+            createdDecisions.length >= 2)
+        ) {
+          qualityNudgeSent = true;
+          response.quality_nudge =
+            "No findings recorded for a substantial change. If anything surprised you — an odd pattern, a fragile spot, a dead end you ruled out — record it with one more twining_record({ findings: [...] }) call. If there was genuinely nothing notable, ignore this.";
+        }
+
         writeRecordSentinel(twiningDir);
         return toolResult(response);
       } catch (e) {

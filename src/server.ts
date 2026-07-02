@@ -9,7 +9,8 @@ import { ensureInitialized } from "./storage/init.js";
 
 const require = createRequire(import.meta.url);
 const { version: PKG_VERSION } = require("../package.json") as { version: string };
-import { loadConfig } from "./config.js";
+import { formatVersionRefusal, loadConfig } from "./config.js";
+import { enterReadOnlyMode } from "./storage/file-store.js";
 import { BlackboardStore } from "./storage/blackboard-store.js";
 import { DecisionStore } from "./storage/decision-store.js";
 import { GraphStore } from "./storage/graph-store.js";
@@ -43,6 +44,8 @@ import { MetricsCollector } from "./analytics/metrics-collector.js";
 import { createInstrumentedServer } from "./analytics/instrumented-server.js";
 import { TWINING_INSTRUCTIONS } from "./instructions.js";
 import { GraphAutoPopulator } from "./engine/graph-auto-populator.js";
+import { MetricsStore } from "./analytics/metrics-store.js";
+import type { DashboardDeps } from "./dashboard/api-routes.js";
 
 /**
  * Create and configure the Twining MCP server.
@@ -53,6 +56,8 @@ export interface ServerContext {
   metricsCollector: MetricsCollector;
   twiningDir: string;
   config: import("./utils/types.js").TwiningConfig;
+  /** Shared store/engine instances for the dashboard — one stack, not two. */
+  dashboardDeps: DashboardDeps;
 }
 
 export function createServer(projectRoot: string): ServerContext {
@@ -61,6 +66,14 @@ export function createServer(projectRoot: string): ServerContext {
 
   // Load config
   const config = loadConfig(twiningDir);
+
+  // Refuse writes when the on-disk format is newer than this release —
+  // a migrated project must not be written to by a stale client.
+  const versionRefusal = formatVersionRefusal(config);
+  if (versionRefusal) {
+    console.error(`[twining] ${versionRefusal}`);
+    enterReadOnlyMode(versionRefusal);
+  }
 
   // Create stores
   const blackboardStore = new BlackboardStore(twiningDir);
@@ -81,6 +94,11 @@ export function createServer(projectRoot: string): ServerContext {
     projectRoot,
   );
   const graphEngine = new GraphEngine(graphStore);
+  // Decision-side population stays unconditionally on (pre-1.21 behavior);
+  // only the blackboard-side populator below is gated by config.graph.auto_populate.
+  // Unifying the two behind the config flag is a deliberate behavior change
+  // deferred to a release of its own.
+  const decisionGraphPopulator = new GraphAutoPopulator(graphEngine);
   const decisionEngine = new DecisionEngine(
     decisionStore,
     blackboardEngine,
@@ -88,7 +106,7 @@ export function createServer(projectRoot: string): ServerContext {
     indexManager,
     projectRoot,
     searchEngine,
-    graphEngine,
+    decisionGraphPopulator,
   );
   const archiver = new Archiver(
     twiningDir,
@@ -232,5 +250,17 @@ export function createServer(projectRoot: string): ServerContext {
     registerGraphTools(server, graphEngine);
   }
 
-  return { server, metricsCollector, twiningDir, config };
+  const dashboardDeps: DashboardDeps = {
+    blackboardStore,
+    decisionStore,
+    graphStore,
+    agentStore,
+    handoffStore,
+    metricsStore: new MetricsStore(twiningDir),
+    blackboardEngine,
+    decisionEngine,
+    graphEngine,
+  };
+
+  return { server, metricsCollector, twiningDir, config, dashboardDeps };
 }

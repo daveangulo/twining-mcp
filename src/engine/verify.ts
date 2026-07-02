@@ -4,8 +4,6 @@
  * Auto-posts a finding with the verification summary.
  */
 import { execSync, execFileSync } from "node:child_process";
-import type { DecisionStore } from "../storage/decision-store.js";
-import type { BlackboardStore } from "../storage/blackboard-store.js";
 import type { BlackboardEngine } from "./blackboard.js";
 import type { GraphEngine } from "./graph.js";
 import type {
@@ -16,6 +14,7 @@ import type {
   DriftCheck,
   ConstraintsCheck,
 } from "../utils/types.js";
+import type { IBlackboardStore, IDecisionStore } from "../storage/interfaces.js";
 
 const ALL_CHECKS = [
   "test_coverage",
@@ -30,16 +29,16 @@ type CheckName = (typeof ALL_CHECKS)[number];
 const DEFAULT_CHECKS: CheckName[] = ["warnings", "assembly", "drift"];
 
 export class VerifyEngine {
-  private readonly decisionStore: DecisionStore;
-  private readonly blackboardStore: BlackboardStore;
+  private readonly decisionStore: IDecisionStore;
+  private readonly blackboardStore: IBlackboardStore;
   private readonly blackboardEngine: BlackboardEngine;
   private readonly graphEngine: GraphEngine | null;
   private readonly projectRoot: string;
   private assemblyChecker?: (agentId: string) => boolean;
 
   constructor(
-    decisionStore: DecisionStore,
-    blackboardStore: BlackboardStore,
+    decisionStore: IDecisionStore,
+    blackboardStore: IBlackboardStore,
     blackboardEngine: BlackboardEngine,
     graphEngine: GraphEngine | null,
     projectRoot: string,

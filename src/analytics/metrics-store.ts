@@ -6,8 +6,9 @@ import fs from "node:fs";
 import path from "node:path";
 import type { MetricEntry, ToolUsageSummary, UsageBucket } from "../utils/types.js";
 import { readJSONL } from "../storage/file-store.js";
+import type { IMetricsStore } from "../storage/interfaces.js";
 
-export class MetricsStore {
+export class MetricsStore implements IMetricsStore {
   private readonly metricsPath: string;
   private cachedEntries: MetricEntry[] | null = null;
   private cachedMtime: number = 0;

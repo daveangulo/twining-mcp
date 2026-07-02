@@ -5,7 +5,6 @@
  */
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import type { AgentStore } from "../storage/agent-store.js";
 import type { CoordinationEngine } from "../engine/coordination.js";
 import type { TwiningConfig } from "../utils/types.js";
 import {
@@ -14,10 +13,11 @@ import {
 } from "../utils/liveness.js";
 import { toolResult, toolError } from "../utils/errors.js";
 import type { GraphAutoPopulator } from "../engine/graph-auto-populator.js";
+import type { IAgentStore } from "../storage/interfaces.js";
 
 export function registerCoordinationTools(
   server: McpServer,
-  agentStore: AgentStore,
+  agentStore: IAgentStore,
   coordinationEngine: CoordinationEngine,
   config: TwiningConfig,
   graphPopulator?: GraphAutoPopulator | null,

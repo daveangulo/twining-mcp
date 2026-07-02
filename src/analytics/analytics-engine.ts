@@ -2,18 +2,15 @@
  * Analytics engine — computes value stats from existing .twining/ data.
  * No new data collection needed — reads existing stores.
  */
-import type { BlackboardStore } from "../storage/blackboard-store.js";
-import type { DecisionStore } from "../storage/decision-store.js";
-import type { GraphStore } from "../storage/graph-store.js";
-import type { HandoffStore } from "../storage/handoff-store.js";
 import type { ValueStats } from "../utils/types.js";
+import type { IBlackboardStore, IDecisionStore, IGraphStore, IHandoffStore } from "../storage/interfaces.js";
 
 export class AnalyticsEngine {
   constructor(
-    private readonly blackboardStore: BlackboardStore,
-    private readonly decisionStore: DecisionStore,
-    private readonly graphStore: GraphStore,
-    private readonly handoffStore: HandoffStore,
+    private readonly blackboardStore: IBlackboardStore,
+    private readonly decisionStore: IDecisionStore,
+    private readonly graphStore: IGraphStore,
+    private readonly handoffStore: IHandoffStore,
   ) {}
 
   async computeValueStats(): Promise<ValueStats> {

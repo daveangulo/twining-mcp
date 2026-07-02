@@ -7,13 +7,12 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import type { BlackboardStore } from "../storage/blackboard-store.js";
-import type { DecisionStore } from "../storage/decision-store.js";
 import type { Archiver } from "./archiver.js";
 import type { GraphEngine } from "./graph.js";
 import type { BlackboardEntry, Decision } from "../utils/types.js";
 import { auditStaleness, type StaleItem } from "./staleness.js";
 import { detectDeletedBranches } from "./branch-watcher.js";
+import type { IBlackboardStore, IDecisionStore } from "../storage/interfaces.js";
 
 /** Default: flag provisionals older than 7 days. */
 const STALE_PROVISIONAL_DAYS = 7;
@@ -73,8 +72,8 @@ export interface HousekeepingResult {
 export class HousekeepingEngine {
   constructor(
     private readonly twiningDir: string,
-    private readonly blackboardStore: BlackboardStore,
-    private readonly decisionStore: DecisionStore,
+    private readonly blackboardStore: IBlackboardStore,
+    private readonly decisionStore: IDecisionStore,
     private readonly archiver: Archiver,
     private readonly graphEngine: GraphEngine | null,
     private readonly projectRoot: string | null = null,

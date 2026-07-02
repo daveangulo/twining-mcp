@@ -6,6 +6,34 @@ import path from "node:path";
 import yaml from "js-yaml";
 import type { TwiningConfig } from "./utils/types.js";
 
+/**
+ * Highest .twining/ on-disk format version this server can write.
+ * A project whose config.yml carries a higher version was migrated by a
+ * newer Twining release — this server must not write there (see
+ * formatVersionRefusal), or old and new clients silently diverge.
+ */
+export const SUPPORTED_CONFIG_VERSION = 1;
+
+/**
+ * Returns a human-readable refusal reason when the on-disk format is newer
+ * than this server supports, or null when writes are safe.
+ */
+export function formatVersionRefusal(config: TwiningConfig): string | null {
+  if (
+    typeof config.version === "number" &&
+    config.version > SUPPORTED_CONFIG_VERSION
+  ) {
+    return (
+      `.twining/ format version ${config.version} is newer than this ` +
+      `twining-mcp release supports (${SUPPORTED_CONFIG_VERSION}). ` +
+      `The project was migrated by a newer Twining version — update ` +
+      `twining-mcp to record here. Reads still work; writes are refused ` +
+      `to prevent divergence.`
+    );
+  }
+  return null;
+}
+
 export const DEFAULT_CONFIG: TwiningConfig = {
   version: 1,
   project_name: "",

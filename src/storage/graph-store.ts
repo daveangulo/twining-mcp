@@ -6,6 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import lockfile from "proper-lockfile";
+import { atomicWriteFileSync } from "./file-store.js";
 import { generateId } from "../utils/ids.js";
 import type { Entity, Relation } from "../utils/types.js";
 
@@ -15,8 +16,9 @@ const LOCK_OPTIONS: lockfile.LockOptions = {
 };
 
 import { TwiningError } from "../utils/errors.js";
+import type { IGraphStore } from "./interfaces.js";
 
-export class GraphStore {
+export class GraphStore implements IGraphStore {
   private readonly entitiesPath: string;
   private readonly relationsPath: string;
   private readonly graphDir: string;
@@ -33,10 +35,10 @@ export class GraphStore {
       fs.mkdirSync(this.graphDir, { recursive: true });
     }
     if (!fs.existsSync(this.entitiesPath)) {
-      fs.writeFileSync(this.entitiesPath, JSON.stringify([]));
+      atomicWriteFileSync(this.entitiesPath, JSON.stringify([]));
     }
     if (!fs.existsSync(this.relationsPath)) {
-      fs.writeFileSync(this.relationsPath, JSON.stringify([]));
+      atomicWriteFileSync(this.relationsPath, JSON.stringify([]));
     }
   }
 
@@ -70,7 +72,7 @@ export class GraphStore {
           ...(input.properties ?? {}),
         };
         existing.updated_at = now;
-        fs.writeFileSync(
+        atomicWriteFileSync(
           this.entitiesPath,
           JSON.stringify(entities, null, 2),
         );
@@ -87,7 +89,7 @@ export class GraphStore {
         updated_at: now,
       };
       entities.push(entity);
-      fs.writeFileSync(
+      atomicWriteFileSync(
         this.entitiesPath,
         JSON.stringify(entities, null, 2),
       );
@@ -155,7 +157,7 @@ export class GraphStore {
         created_at: new Date().toISOString(),
       };
       relations.push(relation);
-      fs.writeFileSync(
+      atomicWriteFileSync(
         this.relationsPath,
         JSON.stringify(relations, null, 2),
       );
@@ -222,7 +224,7 @@ export class GraphStore {
       const before = entities.length;
       const kept = entities.filter((e) => !entityIds.has(e.id));
       removedEntities = before - kept.length;
-      fs.writeFileSync(
+      atomicWriteFileSync(
         this.entitiesPath,
         JSON.stringify(kept, null, 2),
       );
@@ -243,7 +245,7 @@ export class GraphStore {
         (r) => !entityIds.has(r.source) && !entityIds.has(r.target),
       );
       removedRelations = before - kept.length;
-      fs.writeFileSync(
+      atomicWriteFileSync(
         this.relationsPath,
         JSON.stringify(kept, null, 2),
       );

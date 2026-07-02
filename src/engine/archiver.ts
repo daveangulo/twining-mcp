@@ -8,10 +8,9 @@ import fs from "node:fs";
 import path from "node:path";
 import lockfile from "proper-lockfile";
 import { ensureDir } from "../storage/file-store.js";
-import type { BlackboardStore } from "../storage/blackboard-store.js";
 import type { BlackboardEngine } from "./blackboard.js";
-import type { IndexManager } from "../embeddings/index-manager.js";
 import type { BlackboardEntry } from "../utils/types.js";
+import type { IBlackboardStore, IIndexManager } from "../storage/interfaces.js";
 
 const LOCK_OPTIONS: lockfile.LockOptions = {
   retries: { retries: 10, factor: 1.5, minTimeout: 50, maxTimeout: 1000 },
@@ -20,15 +19,15 @@ const LOCK_OPTIONS: lockfile.LockOptions = {
 
 export class Archiver {
   private readonly twiningDir: string;
-  private readonly blackboardStore: BlackboardStore;
+  private readonly blackboardStore: IBlackboardStore;
   private readonly blackboardEngine: BlackboardEngine;
-  private readonly indexManager: IndexManager | null;
+  private readonly indexManager: IIndexManager | null;
 
   constructor(
     twiningDir: string,
-    blackboardStore: BlackboardStore,
+    blackboardStore: IBlackboardStore,
     blackboardEngine: BlackboardEngine,
-    indexManager: IndexManager | null,
+    indexManager: IIndexManager | null,
   ) {
     this.twiningDir = twiningDir;
     this.blackboardStore = blackboardStore;

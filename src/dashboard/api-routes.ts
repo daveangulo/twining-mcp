@@ -32,6 +32,7 @@ import {
 } from "../utils/liveness.js";
 import { AnalyticsEngine } from "../analytics/analytics-engine.js";
 import { MetricsStore } from "../analytics/metrics-store.js";
+import type { IAgentStore, IBlackboardStore, IDecisionStore, IGraphStore, IHandoffStore, IMetricsStore } from "../storage/interfaces.js";
 
 /** Send a JSON response with standard headers. */
 function sendJSON(
@@ -56,30 +57,61 @@ function sendJSON(
  *
  * Store instances are created once in the closure, not per-request.
  */
+/**
+ * Shared instances handed in by the MCP server (src/server.ts) so the
+ * dashboard reads through the same stores, caches, and embedder as the tool
+ * layer instead of wiring a parallel stack of its own. Optional: when absent
+ * (standalone dashboard, tests), the handler constructs its own file-backed
+ * instances exactly as before.
+ */
+export interface DashboardDeps {
+  blackboardStore: IBlackboardStore;
+  decisionStore: IDecisionStore;
+  graphStore: IGraphStore;
+  agentStore: IAgentStore;
+  handoffStore: IHandoffStore;
+  metricsStore: IMetricsStore;
+  blackboardEngine: BlackboardEngine;
+  decisionEngine: DecisionEngine;
+  graphEngine: GraphEngine;
+}
+
 export function createApiHandler(
   projectRoot: string,
+  deps?: DashboardDeps,
 ): (req: http.IncomingMessage, res: http.ServerResponse) => Promise<boolean> {
   const twiningDir = path.join(projectRoot, ".twining");
-  const blackboardStore = new BlackboardStore(twiningDir);
-  const decisionStore = new DecisionStore(twiningDir);
-  const graphStore = new GraphStore(twiningDir);
-  const agentStore = new AgentStore(twiningDir);
-  const handoffStore = new HandoffStore(twiningDir);
+  const blackboardStore: IBlackboardStore =
+    deps?.blackboardStore ?? new BlackboardStore(twiningDir);
+  const decisionStore: IDecisionStore =
+    deps?.decisionStore ?? new DecisionStore(twiningDir);
+  const graphStore: IGraphStore = deps?.graphStore ?? new GraphStore(twiningDir);
+  const agentStore: IAgentStore = deps?.agentStore ?? new AgentStore(twiningDir);
+  const handoffStore: IHandoffStore =
+    deps?.handoffStore ?? new HandoffStore(twiningDir);
   const analyticsEngine = new AnalyticsEngine(
     blackboardStore,
     decisionStore,
     graphStore,
     handoffStore,
   );
-  const metricsStore = new MetricsStore(twiningDir);
+  const metricsStore: IMetricsStore =
+    deps?.metricsStore ?? new MetricsStore(twiningDir);
 
-  // Engine layer for search — lazily initialized to avoid creating
-  // .twining/embeddings/ directory on uninitialized projects
+  // Engine layer for search — shared with the MCP server when deps are
+  // provided; otherwise lazily initialized to avoid creating
+  // .twining/embeddings/ (and a second embedder) on uninitialized projects.
   let searchEngines: {
     blackboardEngine: BlackboardEngine;
     decisionEngine: DecisionEngine;
     graphEngine: GraphEngine;
-  } | null = null;
+  } | null = deps
+    ? {
+        blackboardEngine: deps.blackboardEngine,
+        decisionEngine: deps.decisionEngine,
+        graphEngine: deps.graphEngine,
+      }
+    : null;
 
   function getSearchEngines() {
     if (!searchEngines) {

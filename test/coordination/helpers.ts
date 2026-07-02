@@ -13,6 +13,7 @@ import { BlackboardEngine } from "../../src/engine/blackboard.js";
 import { DEFAULT_CONFIG } from "../../src/config.js";
 import type { TwiningConfig, AssembledContext } from "../../src/utils/types.js";
 import { estimateTokens } from "../../src/utils/tokens.js";
+import { GraphAutoPopulator } from "../../src/engine/graph-auto-populator.js";
 
 export function createTwiningDir(): string {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "twining-coord-test-"));
@@ -69,7 +70,7 @@ export function createDecisionEngine(
   graph?: GraphEngine,
 ): DecisionEngine {
   const bbEngine = new BlackboardEngine(blackboard, null, null, null);
-  return new DecisionEngine(decisions, bbEngine, null, null, null, null, graph ?? null);
+  return new DecisionEngine(decisions, bbEngine, null, null, null, null, graph ? new GraphAutoPopulator(graph) : null);
 }
 
 export function countActionableSignals(ctx: AssembledContext): number {

@@ -55,13 +55,22 @@ done
 [[ ! -d ".twining" ]] && exit 0
 
 SENTINEL=".twining/.last-record"
-LAST_RECORD=0
-if [[ -f "$SENTINEL" ]]; then
-  raw=$(cat "$SENTINEL" 2>/dev/null || true)
-  # Strip non-digits to guard against partial writes / corruption.
-  raw="${raw//[^0-9]/}"
-  [[ -n "$raw" ]] && LAST_RECORD="$raw"
+
+# Fail open when no record sentinel has ever been written in this checkout —
+# fresh clone, npm outage, or the MCP server never booted. Blocking here is
+# unsatisfiable (the record tools aren't reachable), and a coordination gate
+# must never be the reason a commit is impossible. Warn once per attempt so
+# the gap is visible; normal gating resumes after the first successful record.
+if [[ ! -f "$SENTINEL" ]]; then
+  printf '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"allow","permissionDecisionReason":"Twining has no record sentinel in this checkout (fresh clone or MCP server unavailable) — allowing the commit. Call twining_record once the server is up."}}\n'
+  exit 0
 fi
+
+LAST_RECORD=0
+raw=$(cat "$SENTINEL" 2>/dev/null || true)
+# Strip non-digits to guard against partial writes / corruption.
+raw="${raw//[^0-9]/}"
+[[ -n "$raw" ]] && LAST_RECORD="$raw"
 
 LAST_COMMIT_TIME=$(git log -1 --format=%ct HEAD 2>/dev/null || true)
 LAST_COMMIT_TIME="${LAST_COMMIT_TIME//[^0-9]/}"

@@ -29,7 +29,7 @@ async function main(): Promise<void> {
     projectRoot = process.argv[projectArgIndex + 1]!;
   }
 
-  const { server, metricsCollector, config } = createServer(projectRoot);
+  const { server, metricsCollector, config, dashboardDeps } = createServer(projectRoot);
   const transport = new StdioServerTransport();
   await server.connect(transport);
 
@@ -57,8 +57,10 @@ async function main(): Promise<void> {
     telemetry.shutdown().catch(() => {});
   });
 
-  // Start dashboard HTTP server (fire-and-forget — never blocks MCP)
-  startDashboard(projectRoot).then((result) => {
+  // Start dashboard HTTP server (fire-and-forget — never blocks MCP).
+  // Shares the server's stores and engines so the dashboard reads through the
+  // same caches and embedder instead of wiring a parallel stack.
+  startDashboard(projectRoot, dashboardDeps).then((result) => {
     if (result) {
       setupDashboardShutdown(result.server);
     }

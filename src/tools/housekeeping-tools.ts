@@ -6,14 +6,14 @@ import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { HousekeepingEngine } from "../engine/housekeeping.js";
 import type { BlackboardEngine } from "../engine/blackboard.js";
-import type { DecisionStore } from "../storage/decision-store.js";
 import { toolResult, toolError } from "../utils/errors.js";
+import type { IDecisionStore } from "../storage/interfaces.js";
 
 export function registerHousekeepingTools(
   server: McpServer,
   housekeepingEngine: HousekeepingEngine,
   blackboardEngine: BlackboardEngine,
-  decisionStore: DecisionStore,
+  decisionStore: IDecisionStore,
 ): void {
   server.registerTool(
     "twining_housekeeping",

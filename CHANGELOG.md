@@ -2,6 +2,41 @@
 
 All notable changes to Twining MCP are documented here.
 
+## [1.21.0] - 2026-07-02
+
+Storage-safety release — phase W0 of the v2 foundation plan (`docs/FOUNDATION-PLAN.md`). No tool-surface or data-format changes.
+
+### Added
+- **Format version gate.** The server now reads `config.yml`'s `version` field at startup. If the on-disk format is newer than this release supports, the server logs a clear upgrade message and enters read-only mode: all reads keep working, all writes refuse with `FORMAT_VERSION_TOO_NEW`. This protects projects migrated by a future Twining release from being silently diverged by a stale client, and must be in the installed base before any format change ships.
+- `.twining/.gitattributes` (`blackboard.jsonl merge=union`) is created on init so branches that both append blackboard entries union-merge instead of conflicting.
+- **Record quality nudge (#18).** `twining_record` responds with a one-shot `quality_nudge` when a substantial record (≥5 affected files or ≥2 decisions) contains zero findings — asking once whether anything surprising, fragile, or ruled-out is worth recording. Deliberately once per session: repeated nagging is what produces checkbox-quality records in the first place. The `findings` schema description now spells out what belongs there (surprises, dead ends, fragile spots — anything not visible from the diff).
+
+### Changed
+- **Storage backend interfaces (W2.1).** Engines, tools, and the dashboard now type against `src/storage/interfaces.ts` (`IBlackboardStore`, `IDecisionStore`, `IGraphStore`, `IAgentStore`, `IHandoffStore`, `IIndexManager`, `IMetricsStore`) instead of the concrete file-backed classes, which `implement` them. Pure extraction — every interface mirrors its class verbatim — but it is the seam the SQLite backend (FOUNDATION-PLAN W2.2) plugs into.
+- **Dashboard shares the server's instances.** `createApiHandler`/`startDashboard` accept an optional `DashboardDeps` bag that `src/index.ts` fills from `createServer`'s wiring, so the dashboard reads through the same stores, caches, and embedder as the tool layer instead of constructing a parallel stack (including its own second embedding model). Standalone mode (no deps — tests, demo scripts) constructs its own instances exactly as before.
+- `DecisionEngine` no longer constructs its own `GraphAutoPopulator` from a passed `GraphEngine`; the populator is injected by `createServer`. Wiring-only change — decision-side population remains unconditionally on as before (unifying it behind `config.graph.auto_populate` would be a behavior change and is deferred).
+
+### Fixed
+- **Atomic writes everywhere.** All whole-file writes (graph `entities.json`/`relations.json`, `decisions/*.json` + `decisions/index.json`, embedding indexes, agent registry, handoffs, blackboard rewrites) now go through a temp-file + rename pattern. Previously a process killed mid-write could truncate a JSON store and make the entire dataset unreadable; now readers observe either the old or the new content, never a torn file. `readJSON` additionally retries once on a parse failure to tolerate files last written by older releases.
+- The `.twining/.gitignore` template now covers all local runtime state (`metrics.jsonl`, `pending-posts.jsonl`, `pending-actions.jsonl`, `.last-record`, `.last-known-branches.json`), matching what the README has claimed since 1.18. This repo's own tracked `metrics.jsonl`/`pending-posts.jsonl` were untracked accordingly.
+
+## Plugin [1.10.0] - 2026-07-02
+
+Hook-hardening release — phase W1 of the v2 foundation plan. Closes the transcript-grepping bug class (#11/#13 lineage) everywhere, ends CLAUDE.md mutation (#9), and gives every hook uniform guards.
+
+### Changed
+- **Stop hook is transcript-free.** It now compares the `.twining/.last-record` sentinel against the newest mtime of dirty working-tree files instead of grepping the session transcript for tool-call strings — the same sentinel pattern the pre-commit hook adopted in 1.9.1, applied to the remaining gate. Prose mentioning `twining_record` can no longer satisfy the gate, transcript format drift can no longer break it, and a record made before the final edit no longer false-blocks a fully-recorded session. It also honors `stop_hook_active` (a continuation after a block is never re-blocked) and only fires in projects with a `.twining/` directory — previously it blocked session exit in every repo when the plugin was installed globally.
+- **`ensure-claude-md-gates.sh` removed.** The plugin no longer writes to the project's `CLAUDE.md` (issue #9's root cause). The lifecycle-gate guidance is delivered by `session-start-context.sh` via `additionalContext` — same content in the model's context, zero file mutation, works on resume. The `.twining/.no-claude-md-gates` opt-out flag is obsolete.
+- **Every gate fails open when it can't be satisfied.** Pre-commit: when no record sentinel exists in the checkout (fresh clone, npm outage, server never booted), the hook allows the commit with a visible warning instead of denying — the record tools aren't reachable, so denying would lock the user out of committing entirely. Stop hook: same rule. Normal gating resumes after the first successful record.
+- **Server version pinned in `.mcp.json`** to `twining-mcp@^1.20.0`. The plugin previously resolved the unpinned latest on every session start, which would have silently auto-adopted a future 2.x server (and its on-disk format migration) under an old plugin. Major-version adoption is now an explicit plugin update.
+- SessionStart context injection is scoped to twining-managed projects (`.twining/` present), consistent with the other hooks.
+- Stop-hook block message now asks for findings, warnings, and surprises explicitly — not just a summary (part of the #18 fix; see the server-side nudge above).
+
+## Plugin [1.9.2] - 2026-07-02
+
+### Fixed
+- SubagentStop hook no longer appends directly to `blackboard.jsonl`. A raw bash append can't take the store's file lock, so a concurrent server write could interleave and corrupt lines. The hook now queues its status entry in `pending-posts.jsonl` — the drop box the server drains through the locked store path on next startup.
+
 ## [1.20.0] - 2026-05-05
 
 Closes #7 (deterministic portion). The LLM-judged semantic-content review piece is tracked in #16.

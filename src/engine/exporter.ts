@@ -3,9 +3,6 @@
  * Reads blackboard, decisions, and knowledge graph stores.
  * Supports optional scope filtering for targeted exports.
  */
-import type { BlackboardStore } from "../storage/blackboard-store.js";
-import type { DecisionStore } from "../storage/decision-store.js";
-import type { GraphStore } from "../storage/graph-store.js";
 import type {
   BlackboardEntry,
   Decision,
@@ -13,6 +10,7 @@ import type {
   Entity,
   Relation,
 } from "../utils/types.js";
+import type { IBlackboardStore, IDecisionStore, IGraphStore } from "../storage/interfaces.js";
 
 export interface ExportStats {
   blackboard_entries: number;
@@ -24,9 +22,9 @@ export interface ExportStats {
 
 export class Exporter {
   constructor(
-    private readonly blackboardStore: BlackboardStore,
-    private readonly decisionStore: DecisionStore,
-    private readonly graphStore: GraphStore,
+    private readonly blackboardStore: IBlackboardStore,
+    private readonly decisionStore: IDecisionStore,
+    private readonly graphStore: IGraphStore,
   ) {}
 
   /**

@@ -128,14 +128,19 @@ describe("pre-commit-hook.sh", () => {
 
     it("Bug D: command JSON containing escaped quotes is parsed correctly", () => {
       // Reproducer for #13: bash regex [^"]+ truncates at first \"
-      repo = makeRepo({ initTwining: true, withInitialCommit: true });
+      // Stale sentinel (older than HEAD) so recognition produces a deny.
+      repo = makeRepo({
+        initTwining: true,
+        withInitialCommit: true,
+        sentinelTime: 1,
+      });
       // A real commit with a quoted message — JSON-encoded with escaped quotes
       const result = runHook({
         script: "pre-commit-hook.sh",
         stdin: hookInput(`git commit -m "fix: handle \\"escaped\\" quotes"`),
         cwd: repo.dir,
       });
-      // No sentinel → block. The point of this test is that we recognize
+      // Stale sentinel → block. The point of this test is that we recognize
       // it AS a git commit (and therefore deny), proving the JSON parse worked.
       expect(result.stdout).toContain("permissionDecision");
       expect(result.stdout).toContain("deny");
@@ -220,15 +225,35 @@ describe("pre-commit-hook.sh", () => {
       expect(result.stdout).not.toContain("permissionDecision");
     });
 
-    it("no sentinel and no commits (fresh repo + fresh twining): deny", () => {
-      // Forces first record before first commit.
-      repo = makeRepo({ initTwining: true, withInitialCommit: false });
+    it("no sentinel at all: allow with a visible warning (fail open, W1.3)", () => {
+      // Fresh clone / MCP server never booted — the gate is unsatisfiable
+      // (record tools unreachable), so it must not be the reason a commit
+      // is impossible (issue class B3). Warn instead of deny.
+      repo = makeRepo({ initTwining: true, withInitialCommit: true });
       const result = runHook({
         script: "pre-commit-hook.sh",
         stdin: hookInput("git commit -m 'first'"),
         cwd: repo.dir,
       });
-      expect(result.stdout).toContain("permissionDecision");
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout).toContain('"permissionDecision":"allow"');
+      expect(result.stdout).not.toContain('"deny"');
+      expect(result.stdout).toContain("no record sentinel");
+    });
+
+    it("sentinel present but stale after fail-open window: normal gating resumes (deny)", () => {
+      // Once any record has been written, the sentinel exists forever and
+      // the stale-sentinel deny path applies again.
+      repo = makeRepo({
+        initTwining: true,
+        withInitialCommit: true, // commit at 2020-01-01
+        sentinelTime: 1,
+      });
+      const result = runHook({
+        script: "pre-commit-hook.sh",
+        stdin: hookInput("git commit -m 'next'"),
+        cwd: repo.dir,
+      });
       expect(result.stdout).toContain("deny");
     });
 

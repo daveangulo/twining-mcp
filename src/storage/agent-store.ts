@@ -8,8 +8,9 @@ import path from "node:path";
 import { readJSON, writeJSON, ensureDir } from "./file-store.js";
 import { normalizeTags } from "../utils/tags.js";
 import type { AgentRecord } from "../utils/types.js";
+import type { IAgentStore } from "./interfaces.js";
 
-export class AgentStore {
+export class AgentStore implements IAgentStore {
   private readonly registryPath: string;
   private readonly agentsDir: string;
 

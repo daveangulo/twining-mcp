@@ -1,11 +1,14 @@
 /**
- * Low-level file I/O with advisory locking.
- * All writes use proper-lockfile for concurrent safety.
+ * Low-level file I/O with advisory locking and atomic writes.
+ * All writes use proper-lockfile for concurrent safety and go through
+ * atomicWriteFileSync (temp file + rename) so a crash mid-write can never
+ * leave a truncated data file.
  * Engine and store modules use these — never direct fs calls.
  */
 import fs from "node:fs";
 import path from "node:path";
 import lockfile from "proper-lockfile";
+import { TwiningError } from "../utils/errors.js";
 
 const LOCK_OPTIONS: lockfile.LockOptions = {
   retries: { retries: 10, factor: 1.5, minTimeout: 50, maxTimeout: 1000 },
@@ -15,17 +18,80 @@ const LOCK_OPTIONS: lockfile.LockOptions = {
   },
 };
 
-/** Read and parse a JSON file. Throws if file doesn't exist. */
-export async function readJSON<T>(filePath: string): Promise<T> {
-  const content = fs.readFileSync(filePath, "utf-8");
-  return JSON.parse(content) as T;
+/**
+ * Read-only mode: set at startup when the on-disk .twining/ format is newer
+ * than this server supports (config.version > SUPPORTED_CONFIG_VERSION).
+ * Reads keep working; every write refuses with FORMAT_VERSION_TOO_NEW so a
+ * stale client can never diverge a migrated project.
+ */
+let readOnlyReason: string | null = null;
+
+export function enterReadOnlyMode(reason: string): void {
+  readOnlyReason = reason;
 }
 
-/** Write JSON to file under advisory lock. */
+/** Test-only escape hatch — module state would otherwise leak across tests. */
+export function exitReadOnlyMode(): void {
+  readOnlyReason = null;
+}
+
+export function isReadOnly(): boolean {
+  return readOnlyReason !== null;
+}
+
+function assertWritable(): void {
+  if (readOnlyReason !== null) {
+    throw new TwiningError(readOnlyReason, "FORMAT_VERSION_TOO_NEW");
+  }
+}
+
+/**
+ * Write a file atomically: write to a temp file in the same directory, then
+ * rename over the target. Rename is atomic on POSIX, so readers observe
+ * either the old content or the new content — never a torn write, even if
+ * the process is killed mid-write.
+ */
+export function atomicWriteFileSync(filePath: string, content: string): void {
+  assertWritable();
+  const tmpPath = `${filePath}.${process.pid}.${Math.random()
+    .toString(36)
+    .slice(2)}.tmp`;
+  try {
+    fs.writeFileSync(tmpPath, content);
+    fs.renameSync(tmpPath, filePath);
+  } catch (err) {
+    try {
+      fs.rmSync(tmpPath, { force: true });
+    } catch {
+      // Best-effort cleanup — the original error is what matters
+    }
+    throw err;
+  }
+}
+
+/**
+ * Read and parse a JSON file. Throws if file doesn't exist.
+ * Retries once on a parse failure: with rename-based writes a torn read is
+ * impossible, but this guards against files last written by older releases.
+ */
+export async function readJSON<T>(filePath: string): Promise<T> {
+  try {
+    const content = fs.readFileSync(filePath, "utf-8");
+    return JSON.parse(content) as T;
+  } catch (err) {
+    if (!(err instanceof SyntaxError)) throw err;
+    await new Promise((resolve) => setTimeout(resolve, 25));
+    const content = fs.readFileSync(filePath, "utf-8");
+    return JSON.parse(content) as T;
+  }
+}
+
+/** Write JSON to file atomically under advisory lock. */
 export async function writeJSON(
   filePath: string,
   data: unknown,
 ): Promise<void> {
+  assertWritable();
   // Ensure parent directory exists
   const dir = path.dirname(filePath);
   if (!fs.existsSync(dir)) {
@@ -37,7 +103,7 @@ export async function writeJSON(
   }
   const release = await lockfile.lock(filePath, LOCK_OPTIONS);
   try {
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    atomicWriteFileSync(filePath, JSON.stringify(data, null, 2));
   } finally {
     await release();
   }
@@ -48,6 +114,7 @@ export async function appendJSONL(
   filePath: string,
   data: unknown,
 ): Promise<void> {
+  assertWritable();
   // Ensure file exists for locking
   if (!fs.existsSync(filePath)) {
     const dir = path.dirname(filePath);
@@ -67,7 +134,9 @@ export async function appendJSONL(
 /**
  * Read a JSONL file and parse each line.
  * Corrupt lines are skipped with a warning to stderr.
- * No locking needed for reads.
+ * No locking needed for reads — appends are line-buffered and whole-file
+ * rewrites are atomic renames, so a line is either absent, complete, or
+ * (at worst, for a torn append tail) skipped by the parse guard below.
  */
 export async function readJSONL<T>(filePath: string): Promise<T[]> {
   if (!fs.existsSync(filePath)) return [];
@@ -94,6 +163,7 @@ export async function writeJSONL(
   filePath: string,
   data: unknown[],
 ): Promise<void> {
+  assertWritable();
   // Ensure parent directory exists
   const dir = path.dirname(filePath);
   if (!fs.existsSync(dir)) {
@@ -109,7 +179,7 @@ export async function writeJSONL(
       data.length > 0
         ? data.map((item) => JSON.stringify(item)).join("\n") + "\n"
         : "";
-    fs.writeFileSync(filePath, content);
+    atomicWriteFileSync(filePath, content);
   } finally {
     await release();
   }
