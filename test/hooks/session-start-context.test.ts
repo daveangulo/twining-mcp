@@ -1,33 +1,62 @@
 // test/hooks/session-start-context.test.ts
-import { describe, it, expect } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import { runHook } from "./run-hook";
 
 const EXPECTED_CONTEXT_FRAGMENT = "Twining MCP tools are available";
 
+let dir: string;
+
+beforeEach(() => {
+  dir = fs.mkdtempSync(path.join(os.tmpdir(), "twining-ssc-"));
+});
+
+afterEach(() => {
+  fs.rmSync(dir, { recursive: true, force: true });
+});
+
 describe("session-start-context.sh", () => {
-  it("emits a JSON envelope with hookSpecificOutput.additionalContext", () => {
-    const result = runHook({ script: "session-start-context.sh" });
+  it("emits a JSON envelope with hookSpecificOutput.additionalContext in a twining project", () => {
+    fs.mkdirSync(path.join(dir, ".twining"));
+    const result = runHook({ script: "session-start-context.sh", cwd: dir });
     expect(result.exitCode).toBe(0);
     const payload = JSON.parse(result.stdout);
     expect(payload.hookSpecificOutput.hookEventName).toBe("SessionStart");
     expect(payload.hookSpecificOutput.additionalContext).toContain(EXPECTED_CONTEXT_FRAGMENT);
     expect(payload.hookSpecificOutput.additionalContext).toContain("twining_assemble");
     expect(payload.hookSpecificOutput.additionalContext).toContain("twining_record");
+    // Gates delivery moved here from the removed ensure-claude-md-gates.sh —
+    // the context must carry the full gate guidance, not just a reminder.
+    expect(payload.hookSpecificOutput.additionalContext).toContain("Gate 1");
+    expect(payload.hookSpecificOutput.additionalContext).toContain("Gate 2");
+    expect(payload.hookSpecificOutput.additionalContext).toContain("findings");
+  });
+
+  it("exits 0 with no output when no .twining/ directory exists", () => {
+    const result = runHook({ script: "session-start-context.sh", cwd: dir });
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout.trim()).toBe("");
   });
 
   it("exits 0 with no output when TWINING_DISABLED=true", () => {
+    fs.mkdirSync(path.join(dir, ".twining"));
     const result = runHook({
       script: "session-start-context.sh",
       env: { TWINING_DISABLED: "true" },
+      cwd: dir,
     });
     expect(result.exitCode).toBe(0);
     expect(result.stdout.trim()).toBe("");
   });
 
   it("emits the JSON envelope when TWINING_DISABLED is set to a non-true value (e.g. '1')", () => {
+    fs.mkdirSync(path.join(dir, ".twining"));
     const result = runHook({
       script: "session-start-context.sh",
       env: { TWINING_DISABLED: "1" },
+      cwd: dir,
     });
     expect(result.exitCode).toBe(0);
     const payload = JSON.parse(result.stdout);
