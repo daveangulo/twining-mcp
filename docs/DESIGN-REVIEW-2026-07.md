@@ -12,6 +12,8 @@ The core product idea is sound and validated: a shared blackboard + decision log
 
 The better delivery shape is not a rewrite: **keep the MCP surface and the plugin, but move storage to SQLite, unify the runtime into one per-project service, and finish the sentinel-based hook hardening you already started.** Details and a sequenced roadmap below.
 
+> **Follow-up:** the concrete implementation plan — including git-sync semantics under SQLite (git as replication transport, DB as derived cache), multi-worktree design, and the migration tool for existing `.twining/` instances — lives in [FOUNDATION-PLAN.md](./FOUNDATION-PLAN.md).
+
 ---
 
 ## What the issue tracker says
