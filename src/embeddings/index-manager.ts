@@ -6,7 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import lockfile from "proper-lockfile";
-import { atomicWriteFileSync, ensureDir } from "../storage/file-store.js";
+import { LOCK_OPTIONS, atomicWriteFileSync, ensureDir, ensureFileExists } from "../storage/file-store.js";
 import type { IIndexManager } from "../storage/interfaces.js";
 
 /** Embedding index structure — spec section 5.3 */
@@ -18,11 +18,6 @@ export interface EmbeddingIndex {
     vector: number[];
   }[];
 }
-
-const LOCK_OPTIONS: lockfile.LockOptions = {
-  retries: { retries: 10, factor: 1.5, minTimeout: 50, maxTimeout: 1000 },
-  stale: 10000,
-};
 
 const DEFAULT_INDEX: EmbeddingIndex = {
   model: "all-MiniLM-L6-v2",
@@ -70,10 +65,8 @@ export class IndexManager implements IIndexManager {
   async save(indexName: IndexName, index: EmbeddingIndex): Promise<void> {
     const filePath = this.indexPath(indexName);
 
-    // Ensure file exists for proper-lockfile
-    if (!fs.existsSync(filePath)) {
-      fs.writeFileSync(filePath, "");
-    }
+    // Ensure file exists for proper-lockfile (exclusive create — no clobber)
+    ensureFileExists(filePath);
 
     const release = await lockfile.lock(filePath, LOCK_OPTIONS);
     try {
@@ -91,10 +84,8 @@ export class IndexManager implements IIndexManager {
   ): Promise<void> {
     const filePath = this.indexPath(indexName);
 
-    // Ensure file exists for proper-lockfile
-    if (!fs.existsSync(filePath)) {
-      fs.writeFileSync(filePath, "");
-    }
+    // Ensure file exists for proper-lockfile (exclusive create — no clobber)
+    ensureFileExists(filePath);
 
     const release = await lockfile.lock(filePath, LOCK_OPTIONS);
     try {

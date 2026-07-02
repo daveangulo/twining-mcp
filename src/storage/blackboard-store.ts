@@ -5,7 +5,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import { appendJSONL, atomicWriteFileSync, readJSONL } from "./file-store.js";
+import { appendJSONL, atomicWriteFileSync, LOCK_OPTIONS, readJSONL } from "./file-store.js";
 import { generateId } from "../utils/ids.js";
 import type { BlackboardEntry } from "../utils/types.js";
 import type { IBlackboardStore } from "./interfaces.js";
@@ -124,10 +124,7 @@ export class BlackboardStore implements IBlackboardStore {
     }
 
     const lockfileModule = await import("proper-lockfile");
-    const release = await lockfileModule.default.lock(bbPath, {
-      retries: { retries: 10, factor: 1.5, minTimeout: 50, maxTimeout: 1000 },
-      stale: 10000,
-    });
+    const release = await lockfileModule.default.lock(bbPath, LOCK_OPTIONS);
 
     try {
       const content = fs.readFileSync(bbPath, "utf-8");
