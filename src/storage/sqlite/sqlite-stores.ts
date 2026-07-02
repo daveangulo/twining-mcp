@@ -39,6 +39,7 @@ import type {
 import {
   blobToVector,
   vectorToBlob,
+  withWriteTxn,
   type SqliteDatabase,
 } from "./db.js";
 
@@ -210,11 +211,13 @@ export class SqliteDecisionStore implements IDecisionStore {
     extra?: Partial<Decision>,
   ): Promise<void> {
     assertWritable();
-    const decision = this.load(id);
-    if (!decision) return; // file backend: silently no-op when file missing
-    decision.status = status;
-    if (extra) Object.assign(decision, extra);
-    this.save(decision);
+    withWriteTxn(this.db, () => {
+      const decision = this.load(id);
+      if (!decision) return; // file backend: silently no-op when file missing
+      decision.status = status;
+      if (extra) Object.assign(decision, extra);
+      this.save(decision);
+    });
   }
 
   async getIndex(): Promise<DecisionIndexEntry[]> {
@@ -240,15 +243,17 @@ export class SqliteDecisionStore implements IDecisionStore {
 
   async linkCommit(id: string, commitHash: string): Promise<void> {
     assertWritable();
-    const decision = this.load(id);
-    if (!decision) {
-      throw new Error(`Decision not found: ${id}`);
-    }
-    if (!decision.commit_hashes) decision.commit_hashes = [];
-    if (!decision.commit_hashes.includes(commitHash)) {
-      decision.commit_hashes.push(commitHash);
-    }
-    this.save(decision);
+    withWriteTxn(this.db, () => {
+      const decision = this.load(id);
+      if (!decision) {
+        throw new Error(`Decision not found: ${id}`);
+      }
+      if (!decision.commit_hashes) decision.commit_hashes = [];
+      if (!decision.commit_hashes.includes(commitHash)) {
+        decision.commit_hashes.push(commitHash);
+      }
+      this.save(decision);
+    });
   }
 
   async getByCommitHash(commitHash: string): Promise<Decision[]> {
@@ -286,35 +291,37 @@ export class SqliteGraphStore implements IGraphStore {
   }): Promise<Entity> {
     assertWritable();
     const now = new Date().toISOString();
-    const existingRow = this.db
-      .prepare("SELECT data FROM entities WHERE name = ? AND type = ?")
-      .get(input.name, input.type);
+    return withWriteTxn(this.db, () => {
+      const existingRow = this.db
+        .prepare("SELECT data FROM entities WHERE name = ? AND type = ?")
+        .get(input.name, input.type);
 
-    if (existingRow) {
-      const existing = JSON.parse(existingRow.data as string) as Entity;
-      existing.properties = {
-        ...existing.properties,
-        ...(input.properties ?? {}),
+      if (existingRow) {
+        const existing = JSON.parse(existingRow.data as string) as Entity;
+        existing.properties = {
+          ...existing.properties,
+          ...(input.properties ?? {}),
+        };
+        existing.updated_at = now;
+        this.db
+          .prepare("UPDATE entities SET data = ? WHERE id = ?")
+          .run(JSON.stringify(existing), existing.id);
+        return existing;
+      }
+
+      const entity: Entity = {
+        id: generateId(),
+        name: input.name,
+        type: input.type,
+        properties: input.properties ?? {},
+        created_at: now,
+        updated_at: now,
       };
-      existing.updated_at = now;
       this.db
-        .prepare("UPDATE entities SET data = ? WHERE id = ?")
-        .run(JSON.stringify(existing), existing.id);
-      return existing;
-    }
-
-    const entity: Entity = {
-      id: generateId(),
-      name: input.name,
-      type: input.type,
-      properties: input.properties ?? {},
-      created_at: now,
-      updated_at: now,
-    };
-    this.db
-      .prepare("INSERT INTO entities (id, name, type, data) VALUES (?, ?, ?, ?)")
-      .run(entity.id, entity.name, entity.type, JSON.stringify(entity));
-    return entity;
+        .prepare("INSERT INTO entities (id, name, type, data) VALUES (?, ?, ?, ?)")
+        .run(entity.id, entity.name, entity.type, JSON.stringify(entity));
+      return entity;
+    });
   }
 
   async addRelation(input: {
@@ -435,6 +442,7 @@ export class SqliteAgentStore implements IAgentStore {
     assertWritable();
     const now = new Date().toISOString();
     const normalizedCaps = normalizeTags(input.capabilities ?? []);
+    return withWriteTxn(this.db, () => {
     const existing = this.load(input.agent_id);
 
     if (existing) {
@@ -461,25 +469,28 @@ export class SqliteAgentStore implements IAgentStore {
     };
     this.save(agent, true);
     return agent;
+    });
   }
 
   async touch(agentId: string): Promise<AgentRecord> {
     assertWritable();
     const now = new Date().toISOString();
-    const existing = this.load(agentId);
-    if (existing) {
-      existing.last_active = now;
-      this.save(existing, false);
-      return existing;
-    }
-    const agent: AgentRecord = {
-      agent_id: agentId,
-      capabilities: [],
-      registered_at: now,
-      last_active: now,
-    };
-    this.save(agent, true);
-    return agent;
+    return withWriteTxn(this.db, () => {
+      const existing = this.load(agentId);
+      if (existing) {
+        existing.last_active = now;
+        this.save(existing, false);
+        return existing;
+      }
+      const agent: AgentRecord = {
+        agent_id: agentId,
+        capabilities: [],
+        registered_at: now,
+        last_active: now,
+      };
+      this.save(agent, true);
+      return agent;
+    });
   }
 
   async get(agentId: string): Promise<AgentRecord | null> {
@@ -575,21 +586,23 @@ export class SqliteHandoffStore implements IHandoffStore {
 
   async acknowledge(id: string, acknowledgedBy: string): Promise<HandoffRecord> {
     assertWritable();
-    const row = this.db
-      .prepare("SELECT data, index_data FROM handoffs WHERE id = ?")
-      .get(id);
-    if (!row) {
-      throw new Error(`Handoff not found: ${id}`);
-    }
-    const record = JSON.parse(row.data as string) as HandoffRecord;
-    record.acknowledged_by = acknowledgedBy;
-    record.acknowledged_at = new Date().toISOString();
-    const indexEntry = JSON.parse(row.index_data as string) as HandoffIndexEntry;
-    indexEntry.acknowledged = true;
-    this.db
-      .prepare("UPDATE handoffs SET data = ?, index_data = ? WHERE id = ?")
-      .run(JSON.stringify(record), JSON.stringify(indexEntry), id);
-    return record;
+    return withWriteTxn(this.db, () => {
+      const row = this.db
+        .prepare("SELECT data, index_data FROM handoffs WHERE id = ?")
+        .get(id);
+      if (!row) {
+        throw new Error(`Handoff not found: ${id}`);
+      }
+      const record = JSON.parse(row.data as string) as HandoffRecord;
+      record.acknowledged_by = acknowledgedBy;
+      record.acknowledged_at = new Date().toISOString();
+      const indexEntry = JSON.parse(row.index_data as string) as HandoffIndexEntry;
+      indexEntry.acknowledged = true;
+      this.db
+        .prepare("UPDATE handoffs SET data = ?, index_data = ? WHERE id = ?")
+        .run(JSON.stringify(record), JSON.stringify(indexEntry), id);
+      return record;
+    });
   }
 
   private toIndexEntry(record: HandoffRecord): HandoffIndexEntry {

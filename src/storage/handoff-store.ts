@@ -6,7 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import lockfile from "proper-lockfile";
-import { appendJSONL, atomicWriteFileSync, ensureDir, readJSON, readJSONL, writeJSON, writeJSONL } from "./file-store.js";
+import { LOCK_OPTIONS, appendJSONL, atomicWriteFileSync, ensureDir, ensureFileExists, readJSON, readJSONL, writeJSON, writeJSONL } from "./file-store.js";
 import { generateId } from "../utils/ids.js";
 import type {
   HandoffRecord,
@@ -14,11 +14,6 @@ import type {
   HandoffIndexEntry,
 } from "../utils/types.js";
 import type { IHandoffStore } from "./interfaces.js";
-
-const INDEX_LOCK_OPTIONS: lockfile.LockOptions = {
-  retries: { retries: 10, factor: 1.5, minTimeout: 50, maxTimeout: 1000 },
-  stale: 10000,
-};
 
 export class HandoffStore implements IHandoffStore {
   private readonly handoffsDir: string;
@@ -136,14 +131,12 @@ export class HandoffStore implements IHandoffStore {
 
     // Ensure index file exists for locking (appendJSONL creates lazily)
     ensureDir(this.handoffsDir);
-    if (!fs.existsSync(this.indexPath)) {
-      fs.writeFileSync(this.indexPath, "");
-    }
+    ensureFileExists(this.indexPath);
 
     // Lock index for atomic read-modify-write of both file and index.
     // We do direct fs reads/writes inside the lock to avoid nested locking
     // (readJSONL/writeJSONL/writeJSON use their own locks internally).
-    const release = await lockfile.lock(this.indexPath, INDEX_LOCK_OPTIONS);
+    const release = await lockfile.lock(this.indexPath, LOCK_OPTIONS);
     try {
       let record: HandoffRecord;
       try {

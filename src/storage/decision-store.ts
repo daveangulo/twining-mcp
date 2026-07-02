@@ -5,7 +5,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import lockfile from "proper-lockfile";
-import { atomicWriteFileSync, readJSON } from "./file-store.js";
+import { LOCK_OPTIONS, atomicWriteFileSync, readJSON } from "./file-store.js";
 import { generateId } from "../utils/ids.js";
 import type {
   Decision,
@@ -13,11 +13,6 @@ import type {
   DecisionStatus,
 } from "../utils/types.js";
 import type { IDecisionStore } from "./interfaces.js";
-
-const INDEX_LOCK_OPTIONS: lockfile.LockOptions = {
-  retries: { retries: 10, factor: 1.5, minTimeout: 50, maxTimeout: 1000 },
-  stale: 10000,
-};
 
 export class DecisionStore implements IDecisionStore {
   private readonly decisionsDir: string;
@@ -45,7 +40,7 @@ export class DecisionStore implements IDecisionStore {
     const filePath = path.join(this.decisionsDir, `${decision.id}.json`);
 
     // Lock index for atomic read-modify-write
-    const release = await lockfile.lock(this.indexPath, INDEX_LOCK_OPTIONS);
+    const release = await lockfile.lock(this.indexPath, LOCK_OPTIONS);
     try {
       // Write individual decision file
       atomicWriteFileSync(filePath, JSON.stringify(decision, null, 2));
@@ -112,7 +107,7 @@ export class DecisionStore implements IDecisionStore {
     if (!fs.existsSync(filePath)) return;
 
     // Lock index for the full atomic update of both file and index
-    const release = await lockfile.lock(this.indexPath, INDEX_LOCK_OPTIONS);
+    const release = await lockfile.lock(this.indexPath, LOCK_OPTIONS);
     try {
       // Update individual decision file
       const decision = JSON.parse(
@@ -168,7 +163,7 @@ export class DecisionStore implements IDecisionStore {
     }
 
     // Lock index for the full atomic update of both file and index
-    const release = await lockfile.lock(this.indexPath, INDEX_LOCK_OPTIONS);
+    const release = await lockfile.lock(this.indexPath, LOCK_OPTIONS);
     try {
       // Update individual decision file
       const decision = JSON.parse(

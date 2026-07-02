@@ -10,8 +10,15 @@ import path from "node:path";
 import lockfile from "proper-lockfile";
 import { TwiningError } from "../utils/errors.js";
 
-const LOCK_OPTIONS: lockfile.LockOptions = {
-  retries: { retries: 10, factor: 1.5, minTimeout: 50, maxTimeout: 1000 },
+/**
+ * Shared advisory-lock options for every file-backed store.
+ * The cumulative retry budget (~24s) MUST exceed `stale` (10s): when a
+ * process dies while holding a lock, waiters need to outlast the stale
+ * window so they can steal the dead lock instead of throwing ELOCKED —
+ * a failure mode the multiwriter soak's kill test reproduces.
+ */
+export const LOCK_OPTIONS: lockfile.LockOptions = {
+  retries: { retries: 12, factor: 2, minTimeout: 100, maxTimeout: 3000 },
   stale: 10000,
   onCompromised: (err) => {
     console.error("[twining] Lock compromised:", err.message);
@@ -70,6 +77,21 @@ export function atomicWriteFileSync(filePath: string, content: string): void {
 }
 
 /**
+ * Create a file if and only if it does not exist yet (exclusive create).
+ * The naive `if (!existsSync) writeFileSync(...)` has a cross-process race:
+ * B can pass the existence check before A's file appears, then B's
+ * initializer write clobbers data A committed in between — a lost-update
+ * bug the multiwriter soak reproduces. O_EXCL makes creation atomic.
+ */
+export function ensureFileExists(filePath: string, initial = ""): void {
+  try {
+    fs.writeFileSync(filePath, initial, { flag: "wx" });
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code !== "EEXIST") throw err;
+  }
+}
+
+/**
  * Read and parse a JSON file. Throws if file doesn't exist.
  * Retries once on a parse failure: with rename-based writes a torn read is
  * impossible, but this guards against files last written by older releases.
@@ -98,9 +120,7 @@ export async function writeJSON(
     fs.mkdirSync(dir, { recursive: true });
   }
   // Ensure file exists for proper-lockfile (it locks based on file existence)
-  if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, "");
-  }
+  ensureFileExists(filePath);
   const release = await lockfile.lock(filePath, LOCK_OPTIONS);
   try {
     atomicWriteFileSync(filePath, JSON.stringify(data, null, 2));
@@ -117,12 +137,9 @@ export async function appendJSONL(
   assertWritable();
   // Ensure file exists for locking
   if (!fs.existsSync(filePath)) {
-    const dir = path.dirname(filePath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    fs.writeFileSync(filePath, "");
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
   }
+  ensureFileExists(filePath);
   const release = await lockfile.lock(filePath, LOCK_OPTIONS);
   try {
     fs.appendFileSync(filePath, JSON.stringify(data) + "\n");
@@ -170,9 +187,7 @@ export async function writeJSONL(
     fs.mkdirSync(dir, { recursive: true });
   }
   // Ensure file exists for proper-lockfile
-  if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, "");
-  }
+  ensureFileExists(filePath);
   const release = await lockfile.lock(filePath, LOCK_OPTIONS);
   try {
     const content =

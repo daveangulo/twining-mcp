@@ -6,14 +6,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import lockfile from "proper-lockfile";
-import { atomicWriteFileSync } from "./file-store.js";
+import { LOCK_OPTIONS, atomicWriteFileSync, ensureFileExists } from "./file-store.js";
 import { generateId } from "../utils/ids.js";
 import type { Entity, Relation } from "../utils/types.js";
-
-const LOCK_OPTIONS: lockfile.LockOptions = {
-  retries: { retries: 10, factor: 1.5, minTimeout: 50, maxTimeout: 1000 },
-  stale: 10000,
-};
 
 import { TwiningError } from "../utils/errors.js";
 import type { IGraphStore } from "./interfaces.js";
@@ -34,12 +29,8 @@ export class GraphStore implements IGraphStore {
     if (!fs.existsSync(this.graphDir)) {
       fs.mkdirSync(this.graphDir, { recursive: true });
     }
-    if (!fs.existsSync(this.entitiesPath)) {
-      atomicWriteFileSync(this.entitiesPath, JSON.stringify([]));
-    }
-    if (!fs.existsSync(this.relationsPath)) {
-      atomicWriteFileSync(this.relationsPath, JSON.stringify([]));
-    }
+    ensureFileExists(this.entitiesPath, JSON.stringify([]));
+    ensureFileExists(this.relationsPath, JSON.stringify([]));
   }
 
   /**
