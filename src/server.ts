@@ -9,7 +9,8 @@ import { ensureInitialized } from "./storage/init.js";
 
 const require = createRequire(import.meta.url);
 const { version: PKG_VERSION } = require("../package.json") as { version: string };
-import { loadConfig } from "./config.js";
+import { formatVersionRefusal, loadConfig } from "./config.js";
+import { enterReadOnlyMode } from "./storage/file-store.js";
 import { BlackboardStore } from "./storage/blackboard-store.js";
 import { DecisionStore } from "./storage/decision-store.js";
 import { GraphStore } from "./storage/graph-store.js";
@@ -61,6 +62,14 @@ export function createServer(projectRoot: string): ServerContext {
 
   // Load config
   const config = loadConfig(twiningDir);
+
+  // Refuse writes when the on-disk format is newer than this release —
+  // a migrated project must not be written to by a stale client.
+  const versionRefusal = formatVersionRefusal(config);
+  if (versionRefusal) {
+    console.error(`[twining] ${versionRefusal}`);
+    enterReadOnlyMode(versionRefusal);
+  }
 
   // Create stores
   const blackboardStore = new BlackboardStore(twiningDir);
