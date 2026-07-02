@@ -3,13 +3,9 @@
  * Builds tailored context packages for agent tasks within token budgets.
  * Uses weighted multi-signal scoring: recency, relevance, confidence, warning boost.
  */
-import type { BlackboardStore } from "../storage/blackboard-store.js";
-import type { DecisionStore } from "../storage/decision-store.js";
 import type { SearchEngine } from "../embeddings/search.js";
 import type { GraphEngine } from "./graph.js";
 import type { PlanningBridge } from "./planning-bridge.js";
-import type { HandoffStore } from "../storage/handoff-store.js";
-import type { AgentStore } from "../storage/agent-store.js";
 import type {
   AssembledContext,
   BlackboardEntry,
@@ -22,6 +18,7 @@ import { DEFAULT_LIVENESS_THRESHOLDS } from "../utils/liveness.js";
 import { computeLiveness } from "../utils/liveness.js";
 import { normalizeTags } from "../utils/tags.js";
 import { estimateTokens } from "../utils/tokens.js";
+import type { IAgentStore, IBlackboardStore, IDecisionStore, IHandoffStore } from "../storage/interfaces.js";
 
 /** Half-life for recency decay in hours (one week). */
 const RECENCY_HALF_LIFE = 168;
@@ -36,27 +33,27 @@ interface ScoredItem {
 }
 
 export class ContextAssembler {
-  private readonly blackboardStore: BlackboardStore;
-  private readonly decisionStore: DecisionStore;
+  private readonly blackboardStore: IBlackboardStore;
+  private readonly decisionStore: IDecisionStore;
   private readonly searchEngine: SearchEngine | null;
   private readonly config: TwiningConfig;
   private readonly graphEngine: GraphEngine | null;
   private readonly planningBridge: PlanningBridge | null;
-  private readonly handoffStore: HandoffStore | null;
-  private readonly agentStore: AgentStore | null;
+  private readonly handoffStore: IHandoffStore | null;
+  private readonly agentStore: IAgentStore | null;
 
   /** In-memory log of last assembly time per agent (not persisted across restarts). */
   private readonly assemblyLog = new Map<string, string>();
 
   constructor(
-    blackboardStore: BlackboardStore,
-    decisionStore: DecisionStore,
+    blackboardStore: IBlackboardStore,
+    decisionStore: IDecisionStore,
     searchEngine: SearchEngine | null,
     config: TwiningConfig,
     graphEngine?: GraphEngine | null,
     planningBridge?: PlanningBridge | null,
-    handoffStore?: HandoffStore | null,
-    agentStore?: AgentStore | null,
+    handoffStore?: IHandoffStore | null,
+    agentStore?: IAgentStore | null,
   ) {
     this.blackboardStore = blackboardStore;
     this.decisionStore = decisionStore;
