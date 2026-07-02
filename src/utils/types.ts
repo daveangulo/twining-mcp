@@ -182,6 +182,14 @@ export interface TwiningConfig {
   version: number;
   project_name: string;
   embedding_model: string;
+  storage?: {
+    /**
+     * Persistence backend. "files" (default) is the JSON-file layout;
+     * "sqlite" is the opt-in single-database backend (requires Node with
+     * node:sqlite, >= 22.13; silently falls back to "files" when absent).
+     */
+    backend?: "files" | "sqlite";
+  };
   archive: {
     auto_archive_on_commit: boolean;
     auto_archive_on_context_switch: boolean;
