@@ -6,16 +6,10 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import lockfile from "proper-lockfile";
 import { ensureDir } from "../storage/file-store.js";
 import type { BlackboardEngine } from "./blackboard.js";
 import type { BlackboardEntry } from "../utils/types.js";
 import type { IBlackboardStore, IIndexManager } from "../storage/interfaces.js";
-
-const LOCK_OPTIONS: lockfile.LockOptions = {
-  retries: { retries: 10, factor: 1.5, minTimeout: 50, maxTimeout: 1000 },
-  stale: 10000,
-};
 
 export class Archiver {
   private readonly twiningDir: string;
@@ -54,80 +48,40 @@ export class Archiver {
     const keepDecisions = options?.keep_decisions ?? true;
     const summarize = options?.summarize ?? true;
 
-    const bbPath = path.join(this.twiningDir, "blackboard.jsonl");
+    // Read through the store interface — backend-agnostic (W2.2). The old
+    // implementation read and rewrote blackboard.jsonl directly, which would
+    // silently no-op under the sqlite backend.
+    const { entries: allEntries } = await this.blackboardStore.read();
 
-    // Ensure blackboard file exists for locking
-    if (!fs.existsSync(bbPath)) {
+    // Partition: entries before cutoff go to archive, UNLESS they are decisions
+    const toArchive: BlackboardEntry[] = [];
+    for (const entry of allEntries) {
+      const isOldEnough = entry.timestamp < cutoff;
+      const isDecision = entry.entry_type === "decision";
+      if (isOldEnough && !(keepDecisions && isDecision)) {
+        toArchive.push(entry);
+      }
+    }
+
+    if (toArchive.length === 0) {
       return { archived_count: 0, archive_file: "" };
     }
 
-    // Lock blackboard for the full read-partition-rewrite cycle
-    if (!fs.existsSync(bbPath)) {
-      fs.writeFileSync(bbPath, "");
-    }
-    const release = await lockfile.lock(bbPath, LOCK_OPTIONS);
+    // Write archived entries to the archive file BEFORE removing them from
+    // the store, so a crash between the two steps duplicates rather than
+    // loses entries. Archive files stay on disk under .twining/archive/
+    // regardless of backend.
+    const archiveDir = path.join(this.twiningDir, "archive");
+    ensureDir(archiveDir);
+    const dateStr = cutoff.slice(0, 10); // YYYY-MM-DD
+    const archiveFile = path.join(archiveDir, `${dateStr}-blackboard.jsonl`);
+    const archiveContent =
+      toArchive.map((e) => JSON.stringify(e)).join("\n") + "\n";
+    fs.appendFileSync(archiveFile, archiveContent);
 
-    let toArchive: BlackboardEntry[] = [];
-    let toKeep: BlackboardEntry[] = [];
-    let archiveFile = "";
-
-    try {
-      // Read all entries (no lock needed since we hold it)
-      const content = fs.readFileSync(bbPath, "utf-8");
-      const lines = content
-        .split("\n")
-        .filter((line) => line.trim().length > 0);
-      const allEntries: BlackboardEntry[] = [];
-      for (const line of lines) {
-        try {
-          allEntries.push(JSON.parse(line) as BlackboardEntry);
-        } catch {
-          // Skip corrupt lines
-        }
-      }
-
-      // Partition: entries before cutoff go to archive, UNLESS they are decisions
-      for (const entry of allEntries) {
-        const isOldEnough = entry.timestamp < cutoff;
-        const isDecision = entry.entry_type === "decision";
-        const shouldKeep = !isOldEnough || (keepDecisions && isDecision);
-
-        if (shouldKeep) {
-          toKeep.push(entry);
-        } else {
-          toArchive.push(entry);
-        }
-      }
-
-      // If nothing to archive, release lock and return early
-      if (toArchive.length === 0) {
-        return { archived_count: 0, archive_file: "" };
-      }
-
-      // Write archived entries to archive file BEFORE rewriting blackboard.
-      // This ensures entries exist in the archive before being removed from
-      // the blackboard, preventing data loss on crash.
-      const archiveDir = path.join(this.twiningDir, "archive");
-      ensureDir(archiveDir);
-
-      const dateStr = cutoff.slice(0, 10); // YYYY-MM-DD
-      archiveFile = path.join(archiveDir, `${dateStr}-blackboard.jsonl`);
-
-      // Direct append (no nested lock since we already hold the blackboard lock)
-      const archiveContent = toArchive
-        .map((e) => JSON.stringify(e))
-        .join("\n") + "\n";
-      fs.appendFileSync(archiveFile, archiveContent);
-
-      // Now rewrite blackboard with only kept entries
-      const keptContent =
-        toKeep.length > 0
-          ? toKeep.map((e) => JSON.stringify(e)).join("\n") + "\n"
-          : "";
-      fs.writeFileSync(bbPath, keptContent);
-    } finally {
-      await release();
-    }
+    // Remove by ID through the store. Entries appended concurrently are
+    // untouched (removal is targeted, not a wholesale rewrite).
+    await this.blackboardStore.dismiss(toArchive.map((e) => e.id));
 
     // Remove archived entry embeddings (best-effort)
     if (this.indexManager) {

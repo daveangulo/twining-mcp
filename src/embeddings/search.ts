@@ -4,7 +4,7 @@
  * keyword search when ONNX is unavailable.
  */
 import type { Embedder } from "./embedder.js";
-import type { IndexManager } from "./index-manager.js";
+import type { IIndexManager } from "../storage/interfaces.js";
 import type { BlackboardEntry, Decision } from "../utils/types.js";
 
 export interface BlackboardSearchResult {
@@ -24,9 +24,9 @@ export interface SearchResults<T> {
 
 export class SearchEngine {
   private readonly embedder: Embedder;
-  private readonly indexManager: IndexManager;
+  private readonly indexManager: IIndexManager;
 
-  constructor(embedder: Embedder, indexManager: IndexManager) {
+  constructor(embedder: Embedder, indexManager: IIndexManager) {
     this.embedder = embedder;
     this.indexManager = indexManager;
   }
