@@ -52,10 +52,26 @@ export function initTwiningDir(projectRoot: string): void {
     JSON.stringify([], null, 2),
   );
 
-  // Gitignore (spec section 2.3 + model cache)
+  // Gitignore (spec section 2.3 + model cache + local runtime state)
   fs.writeFileSync(
     path.join(twiningDir, ".gitignore"),
-    "embeddings/*.index\narchive/\nmodels/\nmetrics.jsonl\n",
+    [
+      "embeddings/*.index",
+      "archive/",
+      "models/",
+      "metrics.jsonl",
+      "pending-posts.jsonl",
+      "pending-actions.jsonl",
+      ".last-record",
+      ".last-known-branches.json",
+    ].join("\n") + "\n",
+  );
+
+  // Merge attributes: blackboard.jsonl is append-only, so concurrent
+  // branches both appending at the tail should union-merge, not conflict.
+  fs.writeFileSync(
+    path.join(twiningDir, ".gitattributes"),
+    "blackboard.jsonl merge=union\n",
   );
 }
 
