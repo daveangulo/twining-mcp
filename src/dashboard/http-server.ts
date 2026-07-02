@@ -10,7 +10,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { getDashboardConfig } from "./dashboard-config.js";
-import { createApiHandler } from "./api-routes.js";
+import { createApiHandler, type DashboardDeps } from "./api-routes.js";
 
 /**
  * Check if a Twining dashboard for the SAME project is already running on the given port.
@@ -149,9 +149,10 @@ function tryListen(
 export function handleRequest(
   publicDir: string,
   projectRoot: string,
+  deps?: DashboardDeps,
 ): (req: http.IncomingMessage, res: http.ServerResponse) => void {
   const staticHandler = serveStatic(publicDir);
-  const apiHandler = createApiHandler(projectRoot);
+  const apiHandler = createApiHandler(projectRoot, deps);
   const resolvedProjectRoot = path.resolve(projectRoot);
 
   return (req: http.IncomingMessage, res: http.ServerResponse) => {
@@ -193,9 +194,12 @@ export function handleRequest(
  * Returns the server and actual port, or null if the dashboard is disabled.
  *
  * @param projectRoot - The project root directory (used for API data access)
+ * @param deps - Shared store/engine instances from the MCP server; omitted in
+ *   standalone mode, in which the API handler constructs its own.
  */
 export async function startDashboard(
   projectRoot: string,
+  deps?: DashboardDeps,
 ): Promise<{ server: http.Server; port: number } | null> {
   const config = getDashboardConfig();
   if (!config.enabled) {
@@ -207,7 +211,7 @@ export async function startDashboard(
   const __dirname = path.dirname(__filename);
   const publicDir = path.join(__dirname, "public");
 
-  const server = http.createServer(handleRequest(publicDir, projectRoot));
+  const server = http.createServer(handleRequest(publicDir, projectRoot, deps));
   const port = await tryListen(server, config.port, 5);
 
   const url = `http://127.0.0.1:${port}`;

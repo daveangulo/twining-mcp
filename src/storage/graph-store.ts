@@ -16,8 +16,9 @@ const LOCK_OPTIONS: lockfile.LockOptions = {
 };
 
 import { TwiningError } from "../utils/errors.js";
+import type { IGraphStore } from "./interfaces.js";
 
-export class GraphStore {
+export class GraphStore implements IGraphStore {
   private readonly entitiesPath: string;
   private readonly relationsPath: string;
   private readonly graphDir: string;

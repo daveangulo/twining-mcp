@@ -1,11 +1,11 @@
 /**
  * Knowledge graph engine.
  * Business logic for BFS neighbor traversal and substring entity queries.
- * Delegates storage operations to GraphStore.
+ * Delegates storage operations to IGraphStore.
  */
-import type { GraphStore } from "../storage/graph-store.js";
 import type { Entity, Relation, TestCoverageResult } from "../utils/types.js";
 import { TwiningError } from "../utils/errors.js";
+import type { IGraphStore } from "../storage/interfaces.js";
 
 /** Direction of relation relative to the center entity. */
 export type RelationDirection = "outgoing" | "incoming";
@@ -29,9 +29,9 @@ export interface QueryResult {
 }
 
 export class GraphEngine {
-  private readonly graphStore: GraphStore;
+  private readonly graphStore: IGraphStore;
 
-  constructor(graphStore: GraphStore) {
+  constructor(graphStore: IGraphStore) {
     this.graphStore = graphStore;
   }
 
