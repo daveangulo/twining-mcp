@@ -62,7 +62,7 @@ export class BlackboardEngine {
     // Validate entry_type
     if (!ENTRY_TYPES.includes(input.entry_type as EntryType)) {
       throw new TwiningError(
-        `Invalid entry_type \"${input.entry_type}\". Must be one of: ${ENTRY_TYPES.join(", ")}`,
+        `Invalid entry_type "${input.entry_type}". Must be one of: ${ENTRY_TYPES.join(", ")}`,
         "INVALID_INPUT",
       );
     }
@@ -70,7 +70,7 @@ export class BlackboardEngine {
     // Reject direct decision posts — agents must use twining_decide for rationale capture
     if (input.entry_type === "decision" && !input._internal) {
       throw new TwiningError(
-        `Use twining_decide to record decisions (ensures rationale, graph linkage, and conflict detection). twining_post does not accept entry_type \"decision\".`,
+        `Use twining_decide to record decisions (ensures rationale, graph linkage, and conflict detection). twining_post does not accept entry_type "decision".`,
         "INVALID_INPUT",
       );
     }

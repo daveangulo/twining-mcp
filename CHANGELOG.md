@@ -154,6 +154,7 @@ No plugin-side changes required. The plugin consumes `twining-mcp` via `npx -y t
 
 ### Added
 - Plugin release automation with version bump script and CI enforcement
+- Self-hosted GitHub marketplace for plugin distribution
 
 ### Fixed
 - Skip ONNX embedding init in tests to eliminate 30s timeouts
