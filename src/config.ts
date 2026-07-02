@@ -38,6 +38,9 @@ export const DEFAULT_CONFIG: TwiningConfig = {
   version: 1,
   project_name: "",
   embedding_model: "all-MiniLM-L6-v2",
+  storage: {
+    backend: "files",        // "sqlite" opts into the single-database backend (Node >= 22.13)
+  },
   archive: {
     auto_archive_on_commit: true,
     auto_archive_on_context_switch: true,
