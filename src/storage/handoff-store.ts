@@ -13,13 +13,14 @@ import type {
   HandoffResult,
   HandoffIndexEntry,
 } from "../utils/types.js";
+import type { IHandoffStore } from "./interfaces.js";
 
 const INDEX_LOCK_OPTIONS: lockfile.LockOptions = {
   retries: { retries: 10, factor: 1.5, minTimeout: 50, maxTimeout: 1000 },
   stale: 10000,
 };
 
-export class HandoffStore {
+export class HandoffStore implements IHandoffStore {
   private readonly handoffsDir: string;
   private readonly indexPath: string;
 

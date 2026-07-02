@@ -12,13 +12,14 @@ import type {
   DecisionIndexEntry,
   DecisionStatus,
 } from "../utils/types.js";
+import type { IDecisionStore } from "./interfaces.js";
 
 const INDEX_LOCK_OPTIONS: lockfile.LockOptions = {
   retries: { retries: 10, factor: 1.5, minTimeout: 50, maxTimeout: 1000 },
   stale: 10000,
 };
 
-export class DecisionStore {
+export class DecisionStore implements IDecisionStore {
   private readonly decisionsDir: string;
   private readonly indexPath: string;
   private cachedIndex: DecisionIndexEntry[] | null = null;

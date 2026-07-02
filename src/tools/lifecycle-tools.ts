@@ -5,10 +5,6 @@
 import path from "node:path";
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { BlackboardStore } from "../storage/blackboard-store.js";
-import { DecisionStore } from "../storage/decision-store.js";
-import type { GraphStore } from "../storage/graph-store.js";
-import type { AgentStore } from "../storage/agent-store.js";
 import type { Archiver } from "../engine/archiver.js";
 import type { TwiningConfig } from "../utils/types.js";
 import {
@@ -16,16 +12,17 @@ import {
   DEFAULT_LIVENESS_THRESHOLDS,
 } from "../utils/liveness.js";
 import { toolResult, toolError, TwiningError } from "../utils/errors.js";
+import type { IAgentStore, IBlackboardStore, IDecisionStore, IGraphStore } from "../storage/interfaces.js";
 
 export function registerLifecycleTools(
   server: McpServer,
   twiningDir: string,
-  blackboardStore: BlackboardStore,
-  decisionStore: DecisionStore,
-  graphStore: GraphStore,
+  blackboardStore: IBlackboardStore,
+  decisionStore: IDecisionStore,
+  graphStore: IGraphStore,
   archiver: Archiver,
   config: TwiningConfig,
-  agentStore: AgentStore | null = null,
+  agentStore: IAgentStore | null = null,
 ): void {
   // twining_status — Overall health check of the Twining state
   server.registerTool(
