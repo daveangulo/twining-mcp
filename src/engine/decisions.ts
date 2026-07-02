@@ -1,6 +1,6 @@
 /**
  * Decision business logic.
- * Validates input, applies defaults, delegates to DecisionStore,
+ * Validates input, applies defaults, delegates to IDecisionStore,
  * and cross-posts to blackboard.
  * Phase 3: Adds trace, reconsider, override, and conflict detection.
  * Generates embeddings on decide (Phase 2) with graceful fallback.
@@ -8,7 +8,6 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import { DecisionStore } from "../storage/decision-store.js";
 import { BlackboardEngine } from "./blackboard.js";
 import { TwiningError } from "../utils/errors.js";
 import { captureProvenance } from "../utils/provenance.js";
@@ -18,10 +17,9 @@ import type {
   DecisionStatus,
 } from "../utils/types.js";
 import type { Embedder } from "../embeddings/embedder.js";
-import type { IndexManager } from "../embeddings/index-manager.js";
 import type { SearchEngine } from "../embeddings/search.js";
-import type { GraphEngine } from "./graph.js";
 import { GraphAutoPopulator } from "./graph-auto-populator.js";
+import type { IDecisionStore, IIndexManager } from "../storage/interfaces.js";
 
 /** Entry in a dependency trace chain. */
 export interface TraceEntry {
@@ -33,23 +31,23 @@ export interface TraceEntry {
 }
 
 export class DecisionEngine {
-  private readonly decisionStore: DecisionStore;
+  private readonly decisionStore: IDecisionStore;
   private readonly blackboardEngine: BlackboardEngine;
   private readonly embedder: Embedder | null;
-  private readonly indexManager: IndexManager | null;
+  private readonly indexManager: IIndexManager | null;
   private readonly projectRoot: string | null;
   private readonly searchEngine: SearchEngine | null;
   private readonly graphPopulator: GraphAutoPopulator | null;
   private assemblyChecker?: (agentId: string) => boolean;
 
   constructor(
-    decisionStore: DecisionStore,
+    decisionStore: IDecisionStore,
     blackboardEngine: BlackboardEngine,
     embedder?: Embedder | null,
-    indexManager?: IndexManager | null,
+    indexManager?: IIndexManager | null,
     projectRoot?: string | null,
     searchEngine?: SearchEngine | null,
-    graphEngine?: GraphEngine | null,
+    graphPopulator?: GraphAutoPopulator | null,
   ) {
     this.decisionStore = decisionStore;
     this.blackboardEngine = blackboardEngine;
@@ -57,7 +55,7 @@ export class DecisionEngine {
     this.indexManager = indexManager ?? null;
     this.projectRoot = projectRoot ?? null;
     this.searchEngine = searchEngine ?? null;
-    this.graphPopulator = graphEngine ? new GraphAutoPopulator(graphEngine) : null;
+    this.graphPopulator = graphPopulator ?? null;
   }
 
   /** Set the function that checks whether an agent assembled context before deciding. */
