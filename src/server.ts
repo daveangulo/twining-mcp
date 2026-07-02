@@ -11,9 +11,7 @@ const require = createRequire(import.meta.url);
 const { version: PKG_VERSION } = require("../package.json") as { version: string };
 import { formatVersionRefusal, loadConfig } from "./config.js";
 import { enterReadOnlyMode } from "./storage/file-store.js";
-import { BlackboardStore } from "./storage/blackboard-store.js";
-import { DecisionStore } from "./storage/decision-store.js";
-import { GraphStore } from "./storage/graph-store.js";
+import { createStores } from "./storage/backend-factory.js";
 import { BlackboardEngine } from "./engine/blackboard.js";
 import { DecisionEngine } from "./engine/decisions.js";
 import { GraphEngine } from "./engine/graph.js";
@@ -23,7 +21,6 @@ import { PlanningBridge } from "./engine/planning-bridge.js";
 import { VerifyEngine } from "./engine/verify.js";
 import { PendingProcessor } from "./engine/pending-processor.js";
 import { Embedder } from "./embeddings/embedder.js";
-import { IndexManager } from "./embeddings/index-manager.js";
 import { SearchEngine } from "./embeddings/search.js";
 import { registerBlackboardTools } from "./tools/blackboard-tools.js";
 import { registerDecisionTools } from "./tools/decision-tools.js";
@@ -34,8 +31,6 @@ import { registerGraphTools } from "./tools/graph-tools.js";
 import { registerVerifyTools } from "./tools/verify-tools.js";
 import { Exporter } from "./engine/exporter.js";
 import { registerExportTools } from "./tools/export-tools.js";
-import { AgentStore } from "./storage/agent-store.js";
-import { HandoffStore } from "./storage/handoff-store.js";
 import { CoordinationEngine } from "./engine/coordination.js";
 import { registerCoordinationTools } from "./tools/coordination-tools.js";
 import { HousekeepingEngine } from "./engine/housekeeping.js";
@@ -75,14 +70,22 @@ export function createServer(projectRoot: string): ServerContext {
     enterReadOnlyMode(versionRefusal);
   }
 
-  // Create stores
-  const blackboardStore = new BlackboardStore(twiningDir);
-  const decisionStore = new DecisionStore(twiningDir);
-  const graphStore = new GraphStore(twiningDir);
+  // Create stores for the configured backend ("files" default, "sqlite" opt-in)
+  const {
+    backend,
+    blackboardStore,
+    decisionStore,
+    graphStore,
+    agentStore,
+    handoffStore,
+    indexManager,
+  } = createStores(twiningDir, config);
+  if (backend !== (config.storage?.backend ?? "files")) {
+    // createStores already logged the fallback reason
+  }
 
   // Create embedding layer (lazy-loaded — no ONNX init cost at startup)
   const embedder = Embedder.getInstance(twiningDir);
-  const indexManager = new IndexManager(twiningDir);
   const searchEngine = new SearchEngine(embedder, indexManager);
 
   // Create engines (with embedding support)
@@ -128,10 +131,6 @@ export function createServer(projectRoot: string): ServerContext {
   blackboardEngine.setArchiver(archiver, config);
 
   const planningBridge = new PlanningBridge(projectRoot);
-
-  // Create coordination stores (before ContextAssembler which depends on them)
-  const agentStore = new AgentStore(twiningDir);
-  const handoffStore = new HandoffStore(twiningDir);
 
   const contextAssembler = new ContextAssembler(
     blackboardStore,
