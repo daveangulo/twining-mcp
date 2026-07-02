@@ -189,6 +189,14 @@ export interface TwiningConfig {
      * node:sqlite, >= 22.13; silently falls back to "files" when absent).
      */
     backend?: "files" | "sqlite";
+    /**
+     * Maintain the committable per-record export tree (.twining/records/)
+     * alongside the sqlite database, and converge the database to it on
+     * startup. Only applies to the sqlite backend (twining.db is a
+     * gitignored local cache; the export tree is how state rides git
+     * between users, branches, and worktrees). Default: true.
+     */
+    export_records?: boolean;
   };
   archive: {
     auto_archive_on_commit: boolean;
