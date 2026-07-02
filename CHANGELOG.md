@@ -11,6 +11,11 @@ Storage-safety release — phase W0 of the v2 foundation plan (`docs/FOUNDATION-
 - `.twining/.gitattributes` (`blackboard.jsonl merge=union`) is created on init so branches that both append blackboard entries union-merge instead of conflicting.
 - **Record quality nudge (#18).** `twining_record` responds with a one-shot `quality_nudge` when a substantial record (≥5 affected files or ≥2 decisions) contains zero findings — asking once whether anything surprising, fragile, or ruled-out is worth recording. Deliberately once per session: repeated nagging is what produces checkbox-quality records in the first place. The `findings` schema description now spells out what belongs there (surprises, dead ends, fragile spots — anything not visible from the diff).
 
+### Changed
+- **Storage backend interfaces (W2.1).** Engines, tools, and the dashboard now type against `src/storage/interfaces.ts` (`IBlackboardStore`, `IDecisionStore`, `IGraphStore`, `IAgentStore`, `IHandoffStore`, `IIndexManager`, `IMetricsStore`) instead of the concrete file-backed classes, which `implement` them. Pure extraction — every interface mirrors its class verbatim — but it is the seam the SQLite backend (FOUNDATION-PLAN W2.2) plugs into.
+- **Dashboard shares the server's instances.** `createApiHandler`/`startDashboard` accept an optional `DashboardDeps` bag that `src/index.ts` fills from `createServer`'s wiring, so the dashboard reads through the same stores, caches, and embedder as the tool layer instead of constructing a parallel stack (including its own second embedding model). Standalone mode (no deps — tests, demo scripts) constructs its own instances exactly as before.
+- `DecisionEngine` no longer constructs its own `GraphAutoPopulator` from a passed `GraphEngine`; the populator is injected by `createServer`. Wiring-only change — decision-side population remains unconditionally on as before (unifying it behind `config.graph.auto_populate` would be a behavior change and is deferred).
+
 ### Fixed
 - **Atomic writes everywhere.** All whole-file writes (graph `entities.json`/`relations.json`, `decisions/*.json` + `decisions/index.json`, embedding indexes, agent registry, handoffs, blackboard rewrites) now go through a temp-file + rename pattern. Previously a process killed mid-write could truncate a JSON store and make the entire dataset unreadable; now readers observe either the old or the new content, never a torn file. `readJSON` additionally retries once on a parse failure to tolerate files last written by older releases.
 - The `.twining/.gitignore` template now covers all local runtime state (`metrics.jsonl`, `pending-posts.jsonl`, `pending-actions.jsonl`, `.last-record`, `.last-known-branches.json`), matching what the README has claimed since 1.18. This repo's own tracked `metrics.jsonl`/`pending-posts.jsonl` were untracked accordingly.
@@ -149,7 +154,6 @@ No plugin-side changes required. The plugin consumes `twining-mcp` via `npx -y t
 
 ### Added
 - Plugin release automation with version bump script and CI enforcement
-- Self-hosted GitHub marketplace for plugin distribution
 
 ### Fixed
 - Skip ONNX embedding init in tests to eliminate 30s timeouts
