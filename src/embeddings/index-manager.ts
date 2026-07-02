@@ -7,6 +7,7 @@ import fs from "node:fs";
 import path from "node:path";
 import lockfile from "proper-lockfile";
 import { atomicWriteFileSync, ensureDir } from "../storage/file-store.js";
+import type { IIndexManager } from "../storage/interfaces.js";
 
 /** Embedding index structure — spec section 5.3 */
 export interface EmbeddingIndex {
@@ -31,7 +32,7 @@ const DEFAULT_INDEX: EmbeddingIndex = {
 
 export type IndexName = "blackboard" | "decisions";
 
-export class IndexManager {
+export class IndexManager implements IIndexManager {
   private readonly embeddingsDir: string;
 
   constructor(twiningDir: string) {

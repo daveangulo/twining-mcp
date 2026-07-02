@@ -1,23 +1,22 @@
 /**
  * Blackboard business logic.
- * Validates input, applies defaults, delegates to BlackboardStore.
+ * Validates input, applies defaults, delegates to IBlackboardStore.
  * Generates embeddings on post (Phase 2) with graceful fallback.
  */
-import { BlackboardStore } from "../storage/blackboard-store.js";
 import { ENTRY_TYPES } from "../utils/types.js";
 import type { BlackboardEntry, EntryType, TwiningConfig } from "../utils/types.js";
 import { TwiningError } from "../utils/errors.js";
 import { captureProvenance } from "../utils/provenance.js";
 import type { Embedder } from "../embeddings/embedder.js";
-import type { IndexManager } from "../embeddings/index-manager.js";
 import type { SearchEngine, BlackboardSearchResult } from "../embeddings/search.js";
 import type { Archiver } from "./archiver.js";
 import type { GraphAutoPopulator } from "./graph-auto-populator.js";
+import type { IBlackboardStore, IIndexManager } from "../storage/interfaces.js";
 
 export class BlackboardEngine {
-  private readonly store: BlackboardStore;
+  private readonly store: IBlackboardStore;
   private readonly embedder: Embedder | null;
-  private readonly indexManager: IndexManager | null;
+  private readonly indexManager: IIndexManager | null;
   private readonly searchEngine: SearchEngine | null;
   private readonly projectRoot: string | null;
   private archiver: Archiver | null = null;
@@ -25,9 +24,9 @@ export class BlackboardEngine {
   private graphPopulator: GraphAutoPopulator | null = null;
 
   constructor(
-    store: BlackboardStore,
+    store: IBlackboardStore,
     embedder?: Embedder | null,
-    indexManager?: IndexManager | null,
+    indexManager?: IIndexManager | null,
     searchEngine?: SearchEngine | null,
     projectRoot?: string | null,
   ) {
@@ -63,7 +62,7 @@ export class BlackboardEngine {
     // Validate entry_type
     if (!ENTRY_TYPES.includes(input.entry_type as EntryType)) {
       throw new TwiningError(
-        `Invalid entry_type "${input.entry_type}". Must be one of: ${ENTRY_TYPES.join(", ")}`,
+        `Invalid entry_type \"${input.entry_type}\". Must be one of: ${ENTRY_TYPES.join(", ")}`,
         "INVALID_INPUT",
       );
     }
@@ -71,7 +70,7 @@ export class BlackboardEngine {
     // Reject direct decision posts — agents must use twining_decide for rationale capture
     if (input.entry_type === "decision" && !input._internal) {
       throw new TwiningError(
-        `Use twining_decide to record decisions (ensures rationale, graph linkage, and conflict detection). twining_post does not accept entry_type "decision".`,
+        `Use twining_decide to record decisions (ensures rationale, graph linkage, and conflict detection). twining_post does not accept entry_type \"decision\".`,
         "INVALID_INPUT",
       );
     }

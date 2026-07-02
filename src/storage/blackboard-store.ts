@@ -8,8 +8,9 @@ import path from "node:path";
 import { appendJSONL, atomicWriteFileSync, readJSONL } from "./file-store.js";
 import { generateId } from "../utils/ids.js";
 import type { BlackboardEntry } from "../utils/types.js";
+import type { IBlackboardStore } from "./interfaces.js";
 
-export class BlackboardStore {
+export class BlackboardStore implements IBlackboardStore {
   private readonly blackboardPath: string;
   private cachedEntries: BlackboardEntry[] | null = null;
   private cachedMtime: number = 0;
