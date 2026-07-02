@@ -2,19 +2,20 @@
 
 ## Plugin Hooks (Automatic with Plugin Install)
 
-The Twining plugin includes four hooks that enforce the lifecycle gates:
+The Twining plugin includes four hooks that enforce the lifecycle gates. All four share the same guards: they no-op when `TWINING_DISABLED=true` and when the project has no `.twining/` directory, and they **fail open** — a missing sentinel, an unreadable file, or an absent git binary always allows rather than blocks. A coordination tool must never be the reason a commit or session-exit is impossible.
 
 ### SessionStart
-- **Command hook:** Ensures `CLAUDE.md` contains the Twining Lifecycle Gates section (idempotent)
-- **Prompt hook:** Reminds agents of the two gates — `twining_assemble` first, `twining_record` last
+Injects the lifecycle-gate guidance (assemble first, record last, with what a good record contains) into session context via `additionalContext` — including on resume. Since plugin 1.10.0 this is the sole delivery mechanism: the previous `ensure-claude-md-gates.sh` hook, which appended a gates block to the project's `CLAUDE.md` (issue #9), was removed. No user files are ever modified.
 
 ### PreToolUse (on `Bash`)
 Blocks `git commit` commands if the agent hasn't called `twining_record`, `twining_decide`, or `twining_post` since the last commit. This enforces Gate 2 at the natural checkpoint — when code is being committed.
 
-The check compares `.twining/.last-record` (a unix timestamp written synchronously by the three recording tools) against `git log -1 --format=%ct HEAD`. The sentinel write is synchronous, so same-turn record→commit batches work correctly and the hook is immune to transcript content. Trigger detection is argv-aware: `git commit-tree`, pipelines that mention "git commit", and `git commit --amend` are all skipped. The hook silently allows in repos without a `.twining/` directory.
+The check compares `.twining/.last-record` (a unix timestamp written synchronously by the three recording tools) against `git log -1 --format=%ct HEAD`. The sentinel write is synchronous, so same-turn record→commit batches work correctly and the hook is immune to transcript content. Trigger detection is argv-aware: `git commit-tree`, pipelines that mention "git commit", and `git commit --amend` are all skipped.
+
+If no sentinel file exists at all — a fresh clone, or the MCP server never booted (npm outage, broken resolve) — the hook allows the commit with a visible warning instead of denying: the gate would be unsatisfiable, since the record tools aren't reachable. Normal gating resumes after the first successful record.
 
 ### Stop
-Blocks session exit if code changes (Edit/Write calls) occurred after the last Twining recording call. Asks for one action: "Call `twining_record` before ending."
+Blocks session exit when uncommitted changes are newer than the last Twining recording. Transcript-free since plugin 1.10.0: it compares the `.last-record` sentinel against the newest mtime of dirty working-tree files (`git status --porcelain`, with `.twining/` itself excluded). The previous implementation grepped the session transcript for tool-call strings — the same technique the pre-commit hook abandoned after issues #11/#13. Honors `stop_hook_active` so a continuation after a block is never re-blocked, and allows silently when the tree is clean (committed work was already gated by the pre-commit hook), when no sentinel exists, or when git is unavailable.
 
 ### SubagentStop
 Queues a status entry in `.twining/pending-posts.jsonl` when subagents complete, ensuring the orchestrator has visibility into subagent work. The MCP server drains the queue on next startup and posts each entry through the locked blackboard store — the hook never writes `blackboard.jsonl` directly, since a raw bash append can't take the store's lock and could interleave with a concurrent server write.
