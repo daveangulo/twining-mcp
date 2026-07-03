@@ -2,6 +2,18 @@
 
 All notable changes to Twining MCP are documented here.
 
+## [1.21.1] - 2026-07-03
+
+### Changed
+- **`@huggingface/transformers` is now an `optionalDependency`.** Its transitive `onnxruntime-node` downloads platform binaries in a postinstall script, which fails in network-restricted environments and previously killed the entire `npx twining-mcp` install. As an optional dependency npm skips the failed subtree and the server installs cleanly; the embedder already loads the package lazily inside a try/catch and degrades to keyword search when it is absent. `package-lock.json` regenerated (also heals its version field, stale since 1.8.2).
+- CI now enforces the plugin token budget (`scripts/measure-plugin-tokens.sh --ci`) — which immediately caught the plugin 44 bytes over its +20% cap; the SessionStart gates text was tightened to restore headroom.
+- Doc reconciliation (review finding D1/D3): `BEHAVIORS.md` now documents all 35 tools (added `twining_record` — the Gate 2 headline tool the evals score against — plus `twining_housekeeping` and `twining_archive_stale`); `STATE.md` refreshed from its 1.17-era snapshot; fixed the "3 mandatory gates" comment in `src/instructions.ts`.
+
+## Plugin [1.10.1] - 2026-07-03
+
+### Changed
+- SessionStart gates context tightened (~200 bytes) to restore token-budget headroom; BEHAVIORS.md covers the full 35-tool surface.
+
 ## [1.21.0] - 2026-07-02
 
 Storage-safety release — phase W0 of the v2 foundation plan (`docs/FOUNDATION-PLAN.md`). No tool-surface or data-format changes.

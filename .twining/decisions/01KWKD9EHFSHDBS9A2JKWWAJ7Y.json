@@ -1,0 +1,40 @@
+{
+  "agent_id": "claude-remote-session",
+  "domain": "implementation",
+  "scope": "package.json",
+  "summary": "Moved @huggingface/transformers to optionalDependencies — the embedder already degrades to keyword search when the import fails",
+  "context": "npx installs failed in network-restricted environments because onnxruntime-node's postinstall downloads binaries; the dep was hard, so the whole install died.",
+  "rationale": "embedder.ts loads the package only via await import() inside doInitialize's try/catch (single import site, grep-verified); absence flips fallbackMode. npm skips failed optionalDependencies subtrees, so a blocked postinstall no longer kills the install.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "Keep as hard dependency",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Install failure in proxied sandboxes and offline CI — proven in this repo's own remote sessions."
+    },
+    {
+      "option": "peerDependency",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "npx users would never get semantic search; optional keeps the default-on behavior where installs succeed."
+    }
+  ],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": true,
+  "affected_files": [
+    "package.json",
+    "package-lock.json"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "provenance": {
+    "recorded_at": "2026-07-03T07:15:03.336Z",
+    "branch": "claude/hygiene-1.21.1",
+    "commit_sha": "eceb30412aec06d66f429bd0615e10c3a8c80b24"
+  },
+  "id": "01KWKD9EHFSHDBS9A2JKWWAJ7Y",
+  "timestamp": "2026-07-03T07:15:03.345Z",
+  "status": "active"
+}

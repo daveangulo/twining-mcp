@@ -67,7 +67,7 @@ export const QualityCriterionSchema = z.object({
 export const BehaviorSpecSchema = z.object({
   tools: z
     .array(ToolBehaviorSchema)
-    .length(32, "Spec must contain exactly 32 tool entries"),
+    .length(35, "Spec must contain exactly 35 tool entries"),
   workflows: z
     .array(WorkflowScenarioSchema)
     .min(8, "Spec must contain at least 8 workflow scenarios"),
@@ -169,7 +169,7 @@ export interface QualityCriterion {
 
 /** Top-level parsed behavioral specification. */
 export interface BehaviorSpec {
-  /** All 32 tool behaviors. */
+  /** All 35 tool behaviors. */
   tools: ToolBehavior[];
   /** Multi-tool workflow scenarios (>= 8). */
   workflows: WorkflowScenario[];

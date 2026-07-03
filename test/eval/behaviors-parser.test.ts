@@ -2,7 +2,7 @@
  * Test suite for the BEHAVIORS.md parser.
  *
  * Validates the parser against the ACTUAL plugin/BEHAVIORS.md file,
- * ensuring all 32 tool behaviors, workflows, anti-patterns, and quality
+ * ensuring all 35 tool behaviors, workflows, anti-patterns, and quality
  * criteria are extracted correctly into typed BehaviorSpec objects.
  */
 import { describe, it, expect, beforeAll } from "vitest";
@@ -47,8 +47,8 @@ describe("behaviors-parser", () => {
   });
 
   describe("tool behaviors", () => {
-    it("has exactly 32 tool entries", () => {
-      expect(spec.tools).toHaveLength(32);
+    it("has exactly 35 tool entries", () => {
+      expect(spec.tools).toHaveLength(35);
     });
 
     it("each tool name starts with twining_", () => {
@@ -104,7 +104,10 @@ describe("behaviors-parser", () => {
       }
     });
 
-    it("total MUST rules count is between 8 and 12", () => {
+    it("total MUST rules count is between 8 and 16", () => {
+      // Band widened from 12 when twining_record / twining_housekeeping /
+      // twining_archive_stale were documented (RECORD-01/02, HK-02, ARCH-01).
+      // MUST stays scarce: keep the ceiling tight relative to total rules.
       const mustCount = spec.tools.reduce(
         (sum, t) =>
           sum +
@@ -113,7 +116,7 @@ describe("behaviors-parser", () => {
         0,
       );
       expect(mustCount).toBeGreaterThanOrEqual(8);
-      expect(mustCount).toBeLessThanOrEqual(12);
+      expect(mustCount).toBeLessThanOrEqual(16);
     });
   });
 
@@ -170,7 +173,7 @@ describe("behaviors-parser", () => {
     it("handles blank lines between sections without breaking", () => {
       // The real BEHAVIORS.md has blank lines between sections.
       // If we get here with a valid spec, the parser handles them.
-      expect(spec.tools.length).toBe(32);
+      expect(spec.tools.length).toBe(35);
       expect(spec.workflows.length).toBeGreaterThanOrEqual(8);
     });
   });

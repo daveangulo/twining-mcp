@@ -73,6 +73,8 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Format version gate ships and soaks before any format change: config version newer than the release puts the server in read-only mode (FORMAT_VERSION_TOO_NEW) instead of silently diverging
 - Cross-process write-safety fixes from the multiwriter soak: exclusive-create (O_EXCL) for all file pre-creates, BEGIN IMMEDIATE around every sqlite read-modify-write, and lock retry budget (~24s) raised past the stale threshold (10s)
 - Export tree excludes agents and embeddings, and ingest never deletes without the corresponding kind directory present
+- Moved @huggingface/transformers to optionalDependencies — the embedder already degrades to keyword search when the import fails
+- Widened the behaviors-parser MUST-count band to 8–16 instead of demoting the new tools' MUST rules to SHOULD
 
 ### Pending Todos
 

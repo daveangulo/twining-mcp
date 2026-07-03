@@ -1,6 +1,6 @@
 # Twining Behavioral Specification
 
-This document defines correct usage patterns for all 32 Twining MCP tools. It is the authoritative behavioral reference that the eval harness scores against. The document is both human-readable and machine-parseable using strict markdown conventions.
+This document defines correct usage patterns for all 35 Twining MCP tools. It is the authoritative behavioral reference that the eval harness scores against. The document is both human-readable and machine-parseable using strict markdown conventions.
 
 **Tiering:** Tier 1 tools are core workflow tools with full behavioral depth (context, rules, correct/incorrect usage examples). Tier 2 tools are supporting tools with lighter coverage (context and rules only).
 
@@ -22,6 +22,64 @@ This document defines correct usage patterns for all 32 Twining MCP tools. It is
 ---
 
 ## Tool Behaviors
+
+### twining_record
+<!-- tier: 1 -->
+
+#### Context
+The unified Gate 2 recording tool — call before every git commit and before ending a session. One natural-language call creates a status post and, from the `decisions` and `findings` arrays, tracked decision records and blackboard entries. Collapses the old decide + post ceremony; hooks enforce that it ran.
+
+#### Rules
+| ID | Level | Rule |
+|----|-------|------|
+| RECORD-01 | MUST | Call before every `git commit` and before ending any session that changed code — the pre-commit and Stop hooks gate on the sentinel this tool writes |
+| RECORD-02 | MUST | Write each decision as a committed natural sentence ("Chose X over Y — reason") or a structured object; never hedge two options into one decision |
+| RECORD-03 | SHOULD | Include findings for anything not visible from the diff — surprises, fragile spots, dead ends ruled out. A substantial change with zero findings is usually under-recording (the server nudges once per session) |
+| RECORD-04 | SHOULD | Prefix findings with "warning:" or "need:" to set severity; plain strings become findings |
+| RECORD-05 | SHOULD | Let scope auto-infer from the git diff when unsure; otherwise use the narrowest covering path |
+| RECORD-06 | SHOULD | Use the structured-object decision form when rationale is long or ≥2 rejected alternatives must survive verbatim — it bypasses the NL parser |
+
+#### Correct Usage
+```json
+{
+  "summary": "Hardened the auth token refresh path",
+  "decisions": ["Chose sliding-window refresh over fixed expiry — fixed expiry forced re-login mid-operation"],
+  "findings": ["warning: refresh and logout race when both fire in the same tick", "Dead end: cookie-based refresh breaks the mobile client"],
+  "affected_files": ["src/auth/refresh.ts"]
+}
+```
+
+#### Incorrect Usage
+```json
+{ "summary": "did stuff" }
+```
+**Why incorrect:** No decisions or findings for a code-changing session, and the summary carries no information — this satisfies the hook but records nothing a future session can use.
+
+### twining_housekeeping
+<!-- tier: 2 -->
+
+#### Context
+Periodic store maintenance in one call: archival, deduplication, stale-provisional surfacing, orphaned-graph pruning, metrics rotation. Optional passes: `staleness_review` (deterministic orphan signals) and `merge_sweep` (records whose originating branch was deleted). Dry-run by default.
+
+#### Rules
+| ID | Level | Rule |
+|----|-------|------|
+| HK-01 | SHOULD | Run with `{}` (preview) at the start of long sessions — preview never mutates |
+| HK-02 | MUST | Only pass `execute: true` after reviewing the preview output |
+| HK-03 | SHOULD | Treat staleness/merge-sweep output as candidates for `twining_archive_stale`, never as auto-deletions |
+
+### twining_archive_stale
+<!-- tier: 2 -->
+
+#### Context
+Archives a reviewed list of stale item IDs (typically candidates from `twining_housekeeping`'s staleness or merge-sweep passes). Decisions move to `archived` status (excluded from assemble/why but kept on disk); blackboard entries are dismissed. Posts an audit-trail finding.
+
+#### Rules
+| ID | Level | Rule |
+|----|-------|------|
+| ARCH-01 | MUST | Pass only IDs a human or reviewing agent has confirmed — the staleness signals are heuristics, not verdicts |
+| ARCH-02 | SHOULD | Archive in small batches so the audit-trail finding stays reviewable |
+
 
 ### twining_post
 <!-- tier: 1 -->

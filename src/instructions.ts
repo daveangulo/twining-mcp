@@ -1,6 +1,6 @@
 /**
  * MCP server instructions for non-plugin clients.
- * Condensed version of the 3 mandatory gates from docs/CLAUDE_TEMPLATE.md.
+ * Condensed version of the 2 mandatory gates from docs/CLAUDE_TEMPLATE.md.
  * Sent in the MCP initialize response so any MCP client gets workflow guidance.
  */
 
