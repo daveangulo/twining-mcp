@@ -3484,5 +3484,36 @@
     },
     "created_at": "2026-07-03T21:41:40.256Z",
     "updated_at": "2026-07-03T21:41:40.256Z"
+  },
+  {
+    "id": "01KWN25KVAZQ8GEF44V3BP3DJM",
+    "name": "01KWN25KRGBEC6KBNMMPNEFWKP",
+    "type": "concept",
+    "properties": {
+      "summary": "config.yml backup is first-wins (.pre-migrate.bak never overwritten)",
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T22:39:12.234Z",
+    "updated_at": "2026-07-03T22:39:12.234Z"
+  },
+  {
+    "id": "01KWN25KVB4B5K8XR32QZ7J9P9",
+    "name": "src/migrate/config-edit.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T22:39:12.235Z",
+    "updated_at": "2026-07-03T22:39:12.235Z"
+  },
+  {
+    "id": "01KWN25KVD4ENKEWNTE40GQKFW",
+    "name": "test/migrate/config-edit.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T22:39:12.237Z",
+    "updated_at": "2026-07-03T22:39:12.237Z"
   }
 ]

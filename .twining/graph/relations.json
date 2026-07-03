@@ -5556,5 +5556,25 @@
       "decision_summary": "Reverse migration leaves records/ and twining.db in place but prints a FROZEN warning with remediation commands"
     },
     "created_at": "2026-07-03T21:41:40.261Z"
+  },
+  {
+    "id": "01KWN25KVCY3Y9GZ75CJSZMPQC",
+    "source": "01KWN25KVB4B5K8XR32QZ7J9P9",
+    "target": "01KWN25KVAZQ8GEF44V3BP3DJM",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "config.yml backup is first-wins (.pre-migrate.bak never overwritten)"
+    },
+    "created_at": "2026-07-03T22:39:12.236Z"
+  },
+  {
+    "id": "01KWN25KVEAHMV5EA45EBQ3PK6",
+    "source": "01KWN25KVD4ENKEWNTE40GQKFW",
+    "target": "01KWN25KVAZQ8GEF44V3BP3DJM",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "config.yml backup is first-wins (.pre-migrate.bak never overwritten)"
+    },
+    "created_at": "2026-07-03T22:39:12.238Z"
   }
 ]

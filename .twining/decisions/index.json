@@ -2657,5 +2657,20 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KWN25KRGBEC6KBNMMPNEFWKP",
+    "timestamp": "2026-07-03T22:39:12.144Z",
+    "domain": "data-model",
+    "scope": "src/migrate/",
+    "summary": "config.yml backup is first-wins (.pre-migrate.bak never overwritten)",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/migrate/config-edit.ts",
+      "test/migrate/config-edit.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]
