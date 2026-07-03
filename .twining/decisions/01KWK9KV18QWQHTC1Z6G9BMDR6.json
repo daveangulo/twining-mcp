@@ -1,0 +1,26 @@
+{
+  "agent_id": "claude-remote-session",
+  "domain": "architecture",
+  "scope": "src/storage/",
+  "summary": "Extract storage interfaces (src/storage/interfaces.ts) and type engines against them, because private fields make the concrete class types nominal",
+  "context": "The SQLite backend must be substitutable behind the existing engine layer; TypeScript structural typing alone fails once a class has private members.",
+  "rationale": "Pure extraction — every interface mirrors its class verbatim — shipped as a zero-behavior-change release so the full suite pins the refactor before the new backend lands.",
+  "constraints": [],
+  "alternatives": [],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": false,
+  "affected_files": [
+    "src/storage/interfaces.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "provenance": {
+    "recorded_at": "2026-07-03T06:10:49.507Z",
+    "branch": "claude/twining-catchup",
+    "commit_sha": "80c9c4a6983e030aa26e60a9745fb37a8c56bc94"
+  },
+  "id": "01KWK9KV18QWQHTC1Z6G9BMDR6",
+  "timestamp": "2026-07-03T06:10:49.512Z",
+  "status": "active"
+}

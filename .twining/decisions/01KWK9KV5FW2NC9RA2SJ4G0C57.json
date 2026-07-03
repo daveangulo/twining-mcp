@@ -1,0 +1,27 @@
+{
+  "agent_id": "claude-remote-session",
+  "domain": "implementation",
+  "scope": "src/storage/sync/",
+  "summary": "Export tree excludes agents and embeddings, and ingest never deletes without the corresponding kind directory present",
+  "context": "Agent liveness timestamps churn on every call (pure git noise) and embeddings are a rebuildable local index; a team may gitignore records/ entirely.",
+  "rationale": "Deletion propagation keyed on per-kind directory existence means an absent tree is read as 'not synced', never as 'everything was deleted' — the failure mode that would wipe a database on first ingest.",
+  "constraints": [],
+  "alternatives": [],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": false,
+  "affected_files": [
+    "src/storage/sync/record-export.ts",
+    "src/storage/sync/record-ingest.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "provenance": {
+    "recorded_at": "2026-07-03T06:10:49.639Z",
+    "branch": "claude/twining-catchup",
+    "commit_sha": "80c9c4a6983e030aa26e60a9745fb37a8c56bc94"
+  },
+  "id": "01KWK9KV5FW2NC9RA2SJ4G0C57",
+  "timestamp": "2026-07-03T06:10:49.648Z",
+  "status": "active"
+}
