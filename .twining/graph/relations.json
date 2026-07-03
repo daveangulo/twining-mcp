@@ -5476,5 +5476,85 @@
       "decision_summary": "Fixed the multiwriter-soak crash-tolerance flake by giving the victim writer an unfinishable op budget (VICTIM_OPS = OPS*100)"
     },
     "created_at": "2026-07-03T19:59:38.927Z"
+  },
+  {
+    "id": "01KWMYW8GQG08PP554FFWMTXEG",
+    "source": "01KWMYW8GP40R5K8EV8CGADYP8",
+    "target": "01KWMYW8GN6EMWS3FGXX0GRE8K",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "W3 1.x migrate leaves config.version at 1 and only flips storage.backend"
+    },
+    "created_at": "2026-07-03T21:41:39.991Z"
+  },
+  {
+    "id": "01KWMYW8GSP2TJP1V366HTW8A2",
+    "source": "01KWMNHR416F2FYJZAX7X9Y6ZT",
+    "target": "01KWMYW8GN6EMWS3FGXX0GRE8K",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "W3 1.x migrate leaves config.version at 1 and only flips storage.backend"
+    },
+    "created_at": "2026-07-03T21:41:39.993Z"
+  },
+  {
+    "id": "01KWMYW8JRCFSSQC04D8YM49SA",
+    "source": "01KWMYW8GP40R5K8EV8CGADYP8",
+    "target": "01KWMYW8JPGY9SV63A6AJE8ZPG",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Migration verify uses subset-containment (source ⊆ target) rather than set equality"
+    },
+    "created_at": "2026-07-03T21:41:40.056Z"
+  },
+  {
+    "id": "01KWMYW8JT3CQ6R17TDS7Q1Y3V",
+    "source": "01KWMNHR416F2FYJZAX7X9Y6ZT",
+    "target": "01KWMYW8JPGY9SV63A6AJE8ZPG",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Migration verify uses subset-containment (source ⊆ target) rather than set equality"
+    },
+    "created_at": "2026-07-03T21:41:40.058Z"
+  },
+  {
+    "id": "01KWMYW8NTJ3Q9CZQMYHTPR6WG",
+    "source": "01KWMYW8GP40R5K8EV8CGADYP8",
+    "target": "01KWMYW8NRYPV70K3QX8YGKR54",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "No legacy-v1/ full backup in the 1.x migrate"
+    },
+    "created_at": "2026-07-03T21:41:40.154Z"
+  },
+  {
+    "id": "01KWMYW8NX5ND68D5NRZDRFEY6",
+    "source": "01KWMNHR416F2FYJZAX7X9Y6ZT",
+    "target": "01KWMYW8NRYPV70K3QX8YGKR54",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "No legacy-v1/ full backup in the 1.x migrate"
+    },
+    "created_at": "2026-07-03T21:41:40.157Z"
+  },
+  {
+    "id": "01KWMYW8S252R456ATNGFGM0PR",
+    "source": "01KWMYW8GP40R5K8EV8CGADYP8",
+    "target": "01KWMYW8S0F4Y2PC1CWGH6KKVB",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Reverse migration leaves records/ and twining.db in place but prints a FROZEN warning with remediation commands"
+    },
+    "created_at": "2026-07-03T21:41:40.258Z"
+  },
+  {
+    "id": "01KWMYW8S5X9JJT4TFVZWZHYS1",
+    "source": "01KWMNHR416F2FYJZAX7X9Y6ZT",
+    "target": "01KWMYW8S0F4Y2PC1CWGH6KKVB",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Reverse migration leaves records/ and twining.db in place but prints a FROZEN warning with remediation commands"
+    },
+    "created_at": "2026-07-03T21:41:40.261Z"
   }
 ]

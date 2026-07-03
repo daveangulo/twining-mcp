@@ -3290,10 +3290,10 @@
     "name": "docs/FOUNDATION-PLAN.md",
     "type": "file",
     "properties": {
-      "scope": "docs/FOUNDATION-PLAN.md"
+      "scope": "src/migrate/"
     },
     "created_at": "2026-07-03T18:58:38.337Z",
-    "updated_at": "2026-07-03T18:58:38.485Z"
+    "updated_at": "2026-07-03T21:41:40.260Z"
   },
   {
     "id": "01KWMNHR44GXNT3XZXBRVX8MAA",
@@ -3430,5 +3430,59 @@
     },
     "created_at": "2026-07-03T19:59:38.912Z",
     "updated_at": "2026-07-03T19:59:38.912Z"
+  },
+  {
+    "id": "01KWMYW8GN6EMWS3FGXX0GRE8K",
+    "name": "01KWMYW8EYSG7H5MWVSS19AZYQ",
+    "type": "concept",
+    "properties": {
+      "summary": "W3 1.x migrate leaves config.version at 1 and only flips storage.backend",
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T21:41:39.989Z",
+    "updated_at": "2026-07-03T21:41:39.989Z"
+  },
+  {
+    "id": "01KWMYW8GP40R5K8EV8CGADYP8",
+    "name": "docs/superpowers/plans/2026-07-03-w3-migrate-tool.md",
+    "type": "file",
+    "properties": {
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T21:41:39.990Z",
+    "updated_at": "2026-07-03T21:41:40.257Z"
+  },
+  {
+    "id": "01KWMYW8JPGY9SV63A6AJE8ZPG",
+    "name": "01KWMYW8HA1TGCXRWNB26JD1EN",
+    "type": "concept",
+    "properties": {
+      "summary": "Migration verify uses subset-containment (source ⊆ target) rather than set equality",
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T21:41:40.054Z",
+    "updated_at": "2026-07-03T21:41:40.054Z"
+  },
+  {
+    "id": "01KWMYW8NRYPV70K3QX8YGKR54",
+    "name": "01KWMYW8KA6NRARJDAWB3WCD2K",
+    "type": "concept",
+    "properties": {
+      "summary": "No legacy-v1/ full backup in the 1.x migrate",
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T21:41:40.152Z",
+    "updated_at": "2026-07-03T21:41:40.152Z"
+  },
+  {
+    "id": "01KWMYW8S0F4Y2PC1CWGH6KKVB",
+    "name": "01KWMYW8PEGZRWWBW1HJFDYCEG",
+    "type": "concept",
+    "properties": {
+      "summary": "Reverse migration leaves records/ and twining.db in place but prints a FROZEN warning with remediation commands",
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T21:41:40.256Z",
+    "updated_at": "2026-07-03T21:41:40.256Z"
   }
 ]

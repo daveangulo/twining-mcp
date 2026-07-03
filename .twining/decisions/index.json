@@ -2597,5 +2597,65 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KWMYW8EYSG7H5MWVSS19AZYQ",
+    "timestamp": "2026-07-03T21:41:39.934Z",
+    "domain": "implementation",
+    "scope": "src/migrate/",
+    "summary": "W3 1.x migrate leaves config.version at 1 and only flips storage.backend",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/plans/2026-07-03-w3-migrate-tool.md",
+      "docs/FOUNDATION-PLAN.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWMYW8HA1TGCXRWNB26JD1EN",
+    "timestamp": "2026-07-03T21:41:40.010Z",
+    "domain": "data-model",
+    "scope": "src/migrate/",
+    "summary": "Migration verify uses subset-containment (source ⊆ target) rather than set equality",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/plans/2026-07-03-w3-migrate-tool.md",
+      "docs/FOUNDATION-PLAN.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWMYW8KA6NRARJDAWB3WCD2K",
+    "timestamp": "2026-07-03T21:41:40.074Z",
+    "domain": "data-model",
+    "scope": "src/migrate/",
+    "summary": "No legacy-v1/ full backup in the 1.x migrate",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/plans/2026-07-03-w3-migrate-tool.md",
+      "docs/FOUNDATION-PLAN.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWMYW8PEGZRWWBW1HJFDYCEG",
+    "timestamp": "2026-07-03T21:41:40.174Z",
+    "domain": "data-model",
+    "scope": "src/migrate/",
+    "summary": "Reverse migration leaves records/ and twining.db in place but prints a FROZEN warning with remediation commands",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/plans/2026-07-03-w3-migrate-tool.md",
+      "docs/FOUNDATION-PLAN.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]
