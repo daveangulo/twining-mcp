@@ -119,7 +119,17 @@ export interface IHandoffStore {
 export interface IIndexManager {
   load(indexName: IndexName): Promise<EmbeddingIndex>;
   save(indexName: IndexName, index: EmbeddingIndex): Promise<void>;
-  addEntry(indexName: IndexName, id: string, vector: number[]): Promise<void>;
+  /**
+   * contentHash (sha256 of the embed text, see embed-text.ts) lets the
+   * sqlite backend's reconciler skip re-embedding unchanged records after
+   * ingest. The file backend has no ingest and ignores it.
+   */
+  addEntry(
+    indexName: IndexName,
+    id: string,
+    vector: number[],
+    contentHash?: string,
+  ): Promise<void>;
   removeEntries(indexName: IndexName, ids: string[]): Promise<void>;
   getVector(indexName: IndexName, id: string): Promise<number[] | null>;
 }

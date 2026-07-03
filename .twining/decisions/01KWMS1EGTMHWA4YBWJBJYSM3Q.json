@@ -1,0 +1,40 @@
+{
+  "agent_id": "main",
+  "domain": "data-model",
+  "scope": "src/storage/sync/",
+  "summary": "Chose a full converge pass (reconcileEmbeddings: orphan delete, NULL-hash backfill, embed missing, re-embed mismatched) over threading changed-ID deltas out of ingest",
+  "context": "W2.3 phase 2 implemented: git-HEAD probe on tool dispatch re-ingests records mid-session; schema v2 content_hash; async reconcile re-embeds only changed text. 968 tests + SOAK_SCALE=5 green.",
+  "rationale": "idempotent and self-healing (records posted while the model was down get embedded later), needs zero ingest plumbing, and the linear scan is fine at the plan's stated ~50k-record ceiling.",
+  "constraints": [],
+  "alternatives": [
+    {
+      "option": "threading changed-ID deltas out of ingest",
+      "pros": [],
+      "cons": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "depends_on": [],
+  "confidence": "medium",
+  "reversible": true,
+  "affected_files": [
+    "src/storage/sqlite/db.ts",
+    "src/storage/sync/sync-manager.ts",
+    "src/storage/sync/embedding-reconcile.ts",
+    "src/embeddings/embed-text.ts",
+    "src/storage/backend-factory.ts",
+    "src/server.ts",
+    "test/multiwriter-soak.test.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "provenance": {
+    "recorded_at": "2026-07-03T19:59:38.503Z",
+    "branch": "claude/w23-phase2-live-ingest",
+    "commit_sha": "65f877bfac331e61eff2387adc365635528e6506"
+  },
+  "id": "01KWMS1EGTMHWA4YBWJBJYSM3Q",
+  "timestamp": "2026-07-03T19:59:38.522Z",
+  "status": "active"
+}

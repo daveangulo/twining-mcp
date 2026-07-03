@@ -12,6 +12,7 @@ const { version: PKG_VERSION } = require("../package.json") as { version: string
 import { formatVersionRefusal, loadConfig } from "./config.js";
 import { enterReadOnlyMode } from "./storage/file-store.js";
 import { createStores } from "./storage/backend-factory.js";
+import { attachSyncProbe } from "./storage/sync/sync-manager.js";
 import { BlackboardEngine } from "./engine/blackboard.js";
 import { DecisionEngine } from "./engine/decisions.js";
 import { GraphEngine } from "./engine/graph.js";
@@ -79,6 +80,7 @@ export function createServer(projectRoot: string): ServerContext {
     agentStore,
     handoffStore,
     indexManager,
+    recordSync,
   } = createStores(twiningDir, config);
   if (backend !== (config.storage?.backend ?? "files")) {
     // createStores already logged the fallback reason
@@ -87,6 +89,13 @@ export function createServer(projectRoot: string): ServerContext {
   // Create embedding layer (lazy-loaded — no ONNX init cost at startup)
   const embedder = Embedder.getInstance(twiningDir);
   const searchEngine = new SearchEngine(embedder, indexManager);
+
+  // W2.3 phase 2 (sqlite only): embed what the startup ingest inserted, and
+  // keep the database converged when git moves HEAD mid-session.
+  if (recordSync) {
+    recordSync.setEmbedder(embedder);
+    recordSync.scheduleReconcile();
+  }
 
   // Create engines (with embedding support)
   const blackboardEngine = new BlackboardEngine(
@@ -211,6 +220,12 @@ export function createServer(projectRoot: string): ServerContext {
   const metricsCollector = new MetricsCollector(twiningDir);
   if (config.analytics?.metrics?.enabled !== false) {
     createInstrumentedServer(server, metricsCollector);
+  }
+
+  // Probe for git-driven record staleness before every tool call — how a
+  // branch switch or pull becomes visible without a server restart.
+  if (recordSync) {
+    attachSyncProbe(server, recordSync);
   }
 
   // Register tools — full_surface=false (default) hides rarely-used tools to reduce noise.

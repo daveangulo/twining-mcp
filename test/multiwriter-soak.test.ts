@@ -50,6 +50,11 @@ const SCALE = Number(process.env.SOAK_SCALE || 1);
 const WRITERS = 4;
 const OPS = 60 * SCALE; // per writer; keeps the default run in seconds
 const KILLED_WRITER = 1;
+// The victim gets a budget it cannot finish before the SIGKILL lands: on a
+// fast machine the sqlite writers complete 60 ops in well under the ack
+// poller's latency, and a victim that finishes cleanly can't be killed
+// "mid-stream" — the flake this bound removes.
+const VICTIM_OPS = OPS * 100;
 
 interface WriterResult {
   writerId: number;
@@ -63,6 +68,7 @@ function spawnWriter(
   backend: "files" | "sqlite",
   projectRoot: string,
   writerId: number,
+  ops: number,
 ): { child: ChildProcess; result: WriterResult; finished: Promise<void> } {
   const result: WriterResult = {
     writerId,
@@ -73,7 +79,7 @@ function spawnWriter(
   };
   const child = spawn(
     process.execPath,
-    [CHILD, backend, projectRoot, String(writerId), String(OPS)],
+    [CHILD, backend, projectRoot, String(writerId), String(ops)],
     { stdio: ["ignore", "pipe", "pipe"] },
   );
   let buf = "";
@@ -174,7 +180,7 @@ async function runSoak(backend: "files" | "sqlite") {
     const reader = await parentStores(backend, projectRoot);
 
     const writers = Array.from({ length: WRITERS }, (_, i) =>
-      spawnWriter(backend, projectRoot, i),
+      spawnWriter(backend, projectRoot, i, i === KILLED_WRITER ? VICTIM_OPS : OPS),
     );
 
     // Torn-read poller: every observation must parse and counts must be
@@ -230,7 +236,7 @@ async function runSoak(backend: "files" | "sqlite") {
     // Victim was actually killed mid-stream with some progress.
     expect(victim.result.killed).toBe(true);
     expect(victim.result.acks.length).toBeGreaterThan(0);
-    expect(victim.result.acks.length).toBeLessThan(OPS);
+    expect(victim.result.acks.length).toBeLessThan(VICTIM_OPS);
 
     // ---- Final audit through a FRESH connection ----
     const audit = await parentStores(backend, projectRoot);

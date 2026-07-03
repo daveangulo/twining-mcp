@@ -17,6 +17,7 @@ import type {
   DecisionStatus,
 } from "../utils/types.js";
 import type { Embedder } from "../embeddings/embedder.js";
+import { decisionEmbedText, embedContentHash } from "../embeddings/embed-text.js";
 import type { SearchEngine } from "../embeddings/search.js";
 import { GraphAutoPopulator } from "./graph-auto-populator.js";
 import type { IDecisionStore, IIndexManager } from "../storage/interfaces.js";
@@ -257,11 +258,15 @@ export class DecisionEngine {
     // Generate embedding (Phase 2) — never let embedding failure prevent the decide
     if (this.embedder && this.indexManager) {
       try {
-        const text =
-          decision.summary + " " + decision.rationale + " " + decision.context;
+        const text = decisionEmbedText(decision);
         const vector = await this.embedder.embed(text);
         if (vector) {
-          await this.indexManager.addEntry("decisions", decision.id, vector);
+          await this.indexManager.addEntry(
+            "decisions",
+            decision.id,
+            vector,
+            embedContentHash(text),
+          );
         }
       } catch (error) {
         // Silent failure — embedding is best-effort

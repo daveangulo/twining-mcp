@@ -76,11 +76,16 @@ export class IndexManager implements IIndexManager {
     }
   }
 
-  /** Add a single entry to an index. Loads, appends, saves atomically. */
+  /**
+   * Add a single entry to an index. Loads, appends, saves atomically.
+   * contentHash is accepted for interface parity and ignored: the file
+   * backend has no ingest, so nothing ever consumes a hash here.
+   */
   async addEntry(
     indexName: IndexName,
     id: string,
     vector: number[],
+    _contentHash?: string,
   ): Promise<void> {
     const filePath = this.indexPath(indexName);
 

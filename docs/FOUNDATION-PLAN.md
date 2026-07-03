@@ -2,6 +2,22 @@
 
 Companion to [DESIGN-REVIEW-2026-07.md](./DESIGN-REVIEW-2026-07.md). That document says *what* is wrong and *where* to go; this one says *how to get there* without losing a single record in any existing `.twining/` instance.
 
+## Status (as of 2026-07-03)
+
+| Workstream | State | Shipped in |
+|---|---|---|
+| W0 stop-the-bleeding (atomic writes, locked reads, pending-posts route, version-field respect) | ✅ done | server 1.21.0 |
+| W1 hook hardening (sentinel Stop hook, guards, fail-open, version pin, no CLAUDE.md mutation) | ✅ done | plugin 1.10.x |
+| W2.1 storage interfaces (file impl underneath, shared dashboard instances) | ✅ done | server 1.21.0 |
+| W2.2 SQLite backend (opt-in `storage.backend`, node:sqlite, warn-and-fallback, multiwriter soak) | ✅ done | server 1.21.0 |
+| W2.3 git sync — phase 1: per-ULID export tree + startup ingest | ✅ done | server 1.21.0 |
+| W2.3 git sync — phase 2: live re-ingest on git changes + content-hash re-embedding | 🚧 in progress | targeted at server 1.22.0 |
+| W3 migration tool (`twining-mcp migrate`) | ⬜ next after W2.3 | v2.0.0 |
+| W4 repo-scoped daemon | ⬜ not started | v2.1.0 |
+| W5 surface & hygiene (BEHAVIORS.md 35 tools, CI token budget, STATE.md) | ✅ ongoing, current | server 1.21.1 / plugin 1.10.1 |
+
+Deviations from the original release map: version numbers compressed — W0/W2.1/W2.2/W2.3-phase-1 all landed in 1.21.0 rather than spreading across 1.21–1.23; hook hardening rode plugin releases independently of server versions. The v2.0 gate (D6 engines bump, backend default flip, config version 2) still holds: **do not ship v2.0 without explicit go-ahead** — 1.21.x needs field soak first.
+
 ## Locked-in design decisions
 
 These were settled in review discussion; the plan below assumes them.

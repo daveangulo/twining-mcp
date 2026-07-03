@@ -668,14 +668,15 @@ export class SqliteIndexManager implements IIndexManager {
     indexName: IndexName,
     id: string,
     vector: number[],
+    contentHash?: string,
   ): Promise<void> {
     assertWritable();
     this.db
       .prepare(
-        "INSERT INTO embeddings (index_name, id, vector) VALUES (?, ?, ?) " +
-          "ON CONFLICT(index_name, id) DO UPDATE SET vector = excluded.vector",
+        "INSERT INTO embeddings (index_name, id, vector, content_hash) VALUES (?, ?, ?, ?) " +
+          "ON CONFLICT(index_name, id) DO UPDATE SET vector = excluded.vector, content_hash = excluded.content_hash",
       )
-      .run(indexName, id, vectorToBlob(vector));
+      .run(indexName, id, vectorToBlob(vector), contentHash ?? null);
   }
 
   async removeEntries(indexName: IndexName, ids: string[]): Promise<void> {

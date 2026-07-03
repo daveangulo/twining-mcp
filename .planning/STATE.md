@@ -75,6 +75,15 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Export tree excludes agents and embeddings, and ingest never deletes without the corresponding kind directory present
 - Moved @huggingface/transformers to optionalDependencies — the embedder already degrades to keyword search when the import fails
 - Widened the behaviors-parser MUST-count band to 8–16 instead of demoting the new tools' MUST rules to SHOULD
+- Committed the chore(release): v1.21.1 version bump directly to main instead of via PR
+- Folded the stray hook-generated blackboard entry (subagent-stop noise from the CI watch task) into the release commit rather than discarding it
+- Chose lazy TTL-gated git-HEAD probe on tool dispatch over fs.watch on .twining/records/ for live re-ingest
+- Chose a new sync-manager module reusing branch-watcher's snapshot-and-diff pattern instead of literally extending src/engine/branch-watcher.ts
+- Chose hash-based re-embedding (embeddings.content_hash column, schema v2) with NULL-hash backfill-without-re-embed
+- Chose a full converge pass (reconcileEmbeddings: orphan delete, NULL-hash backfill, embed missing, re-embed mismatched) over threading changed-ID deltas out of ingest
+- Made the probe synchronous before tool dispatch (not fire-and-forget)
+- Model inference never runs inside a transaction and all reconcile writes are single upsert/delete statements
+- Fixed the multiwriter-soak crash-tolerance flake by giving the victim writer an unfinishable op budget (VICTIM_OPS = OPS*100)
 
 ### Pending Todos
 
