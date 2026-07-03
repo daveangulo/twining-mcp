@@ -2278,5 +2278,126 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KWK9KTZGR2V148HJJ2CGY3ZY",
+    "timestamp": "2026-07-03T06:10:49.458Z",
+    "domain": "architecture",
+    "scope": "src/storage/",
+    "summary": "SQLite is the runtime store and git is the replication transport — twining.db is a gitignored derived cache, the committed truth is a per-record export tree",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "src/storage/sqlite/db.ts",
+      "src/storage/sync/record-export.ts",
+      "src/storage/sync/record-ingest.ts",
+      "docs/FOUNDATION-PLAN.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWK9KV0HV77BFQM6X4KT9V58",
+    "timestamp": "2026-07-03T06:10:49.489Z",
+    "domain": "architecture",
+    "scope": "src/storage/",
+    "summary": "Ship the SQLite backend opt-in (storage.backend config, warn-and-fallback) on node:sqlite instead of bumping engines or adding better-sqlite3",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "src/storage/backend-factory.ts",
+      "src/storage/sqlite/sqlite-stores.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWK9KV18QWQHTC1Z6G9BMDR6",
+    "timestamp": "2026-07-03T06:10:49.512Z",
+    "domain": "architecture",
+    "scope": "src/storage/",
+    "summary": "Extract storage interfaces (src/storage/interfaces.ts) and type engines against them, because private fields make the concrete class types nominal",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "src/storage/interfaces.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWK9KV209JRSW70E32MYYDCX",
+    "timestamp": "2026-07-03T06:10:49.536Z",
+    "domain": "implementation",
+    "scope": "plugin/hooks/",
+    "summary": "All hook gates are sentinel-based and fail open when unsatisfiable — no transcript grepping anywhere, and a fresh clone or dead server never blocks commits or session exit",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "plugin/hooks/stop-hook.sh",
+      "plugin/hooks/pre-commit-hook.sh"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWK9KV302DZ0VDKKPKZAFRZ7",
+    "timestamp": "2026-07-03T06:10:49.568Z",
+    "domain": "architecture",
+    "scope": "plugin/",
+    "summary": "Deliver lifecycle gates via SessionStart additionalContext and delete ensure-claude-md-gates.sh — the plugin never mutates user files",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "plugin/hooks/session-start-context.sh"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWK9KV3WQYCMZN41A1MMEWKE",
+    "timestamp": "2026-07-03T06:10:49.597Z",
+    "domain": "architecture",
+    "scope": "src/config.ts",
+    "summary": "Format version gate ships and soaks before any format change: config version newer than the release puts the server in read-only mode (FORMAT_VERSION_TOO_NEW) instead of silently diverging",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "src/config.ts",
+      "src/server.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWK9KV4JQP61XDP1GDFXP764",
+    "timestamp": "2026-07-03T06:10:49.618Z",
+    "domain": "implementation",
+    "scope": "src/storage/",
+    "summary": "Cross-process write-safety fixes from the multiwriter soak: exclusive-create (O_EXCL) for all file pre-creates, BEGIN IMMEDIATE around every sqlite read-modify-write, and lock retry budget (~24s) raised past the stale threshold (10s)",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "src/storage/file-store.ts",
+      "src/storage/sqlite/db.ts",
+      "test/multiwriter-soak.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWK9KV5FW2NC9RA2SJ4G0C57",
+    "timestamp": "2026-07-03T06:10:49.648Z",
+    "domain": "implementation",
+    "scope": "src/storage/sync/",
+    "summary": "Export tree excludes agents and embeddings, and ingest never deletes without the corresponding kind directory present",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "src/storage/sync/record-export.ts",
+      "src/storage/sync/record-ingest.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]
