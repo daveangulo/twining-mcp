@@ -112,10 +112,10 @@
     "properties": {
       "description": "MCP server setup — createServer() wires all engines and registers tool handlers",
       "layer": "server",
-      "scope": "src/"
+      "scope": "src/storage/sync/"
     },
     "created_at": "2026-02-17T03:13:31.729Z",
-    "updated_at": "2026-05-05T16:07:06.557Z"
+    "updated_at": "2026-07-03T19:59:38.924Z"
   },
   {
     "id": "01KHMSDJZEQM1FXSMNYBYTST24",
@@ -3310,10 +3310,10 @@
     "name": "src/storage/sqlite/db.ts",
     "type": "file",
     "properties": {
-      "scope": "docs/FOUNDATION-PLAN.md"
+      "scope": "src/storage/sync/"
     },
     "created_at": "2026-07-03T18:58:38.342Z",
-    "updated_at": "2026-07-03T18:58:38.490Z"
+    "updated_at": "2026-07-03T19:59:38.913Z"
   },
   {
     "id": "01KWMNHR6AWXE7QW6X9N2KZCM0",
@@ -3336,5 +3336,99 @@
     },
     "created_at": "2026-07-03T18:58:38.484Z",
     "updated_at": "2026-07-03T18:58:38.484Z"
+  },
+  {
+    "id": "01KWMS1EJMG0D38QM7MPCSN6PB",
+    "name": "01KWMS1EGTMHWA4YBWJBJYSM3Q",
+    "type": "concept",
+    "properties": {
+      "summary": "Chose a full converge pass (reconcileEmbeddings: orphan delete, NULL-hash backfill, embed missing, re-embed mismatched) over threading changed-ID deltas out of ingest",
+      "scope": "src/storage/sync/"
+    },
+    "created_at": "2026-07-03T19:59:38.580Z",
+    "updated_at": "2026-07-03T19:59:38.580Z"
+  },
+  {
+    "id": "01KWMS1EJQZX9M5TVYN3SGTWW0",
+    "name": "src/storage/sync/sync-manager.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/storage/sync/"
+    },
+    "created_at": "2026-07-03T19:59:38.583Z",
+    "updated_at": "2026-07-03T19:59:38.915Z"
+  },
+  {
+    "id": "01KWMS1EJTZBTKCVTZ7BGTE265",
+    "name": "src/storage/sync/embedding-reconcile.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/storage/sync/"
+    },
+    "created_at": "2026-07-03T19:59:38.586Z",
+    "updated_at": "2026-07-03T19:59:38.917Z"
+  },
+  {
+    "id": "01KWMS1EJW2MGFEFPY7T0WNSCH",
+    "name": "src/embeddings/embed-text.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/storage/sync/"
+    },
+    "created_at": "2026-07-03T19:59:38.588Z",
+    "updated_at": "2026-07-03T19:59:38.919Z"
+  },
+  {
+    "id": "01KWMS1EJY7VZ185A0WNT7D11E",
+    "name": "src/storage/backend-factory.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/storage/sync/"
+    },
+    "created_at": "2026-07-03T19:59:38.590Z",
+    "updated_at": "2026-07-03T19:59:38.922Z"
+  },
+  {
+    "id": "01KWMS1EK2HXEH7TE6R3011EFF",
+    "name": "test/multiwriter-soak.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/storage/sync/"
+    },
+    "created_at": "2026-07-03T19:59:38.594Z",
+    "updated_at": "2026-07-03T19:59:38.926Z"
+  },
+  {
+    "id": "01KWMS1EP4M7NW1P04AAPG72QB",
+    "name": "01KWMS1EKM6J8S8N6AAVENV5H2",
+    "type": "concept",
+    "properties": {
+      "summary": "Made the probe synchronous before tool dispatch (not fire-and-forget)",
+      "scope": "src/storage/sync/"
+    },
+    "created_at": "2026-07-03T19:59:38.692Z",
+    "updated_at": "2026-07-03T19:59:38.692Z"
+  },
+  {
+    "id": "01KWMS1ESF5WK9PVB29PEKHZZD",
+    "name": "01KWMS1EQ3HQM0Q3SH27A3CF1A",
+    "type": "concept",
+    "properties": {
+      "summary": "Model inference never runs inside a transaction and all reconcile writes are single upsert/delete statements",
+      "scope": "src/storage/sync/"
+    },
+    "created_at": "2026-07-03T19:59:38.799Z",
+    "updated_at": "2026-07-03T19:59:38.799Z"
+  },
+  {
+    "id": "01KWMS1EX0VKVACKYANW1W59QQ",
+    "name": "01KWMS1ETGRRNV4BW25Q1CQHJA",
+    "type": "concept",
+    "properties": {
+      "summary": "Fixed the multiwriter-soak crash-tolerance flake by giving the victim writer an unfinishable op budget (VICTIM_OPS = OPS*100)",
+      "scope": "src/storage/sync/"
+    },
+    "created_at": "2026-07-03T19:59:38.912Z",
+    "updated_at": "2026-07-03T19:59:38.912Z"
   }
 ]

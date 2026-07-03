@@ -8,6 +8,7 @@ import type { BlackboardEntry, EntryType, TwiningConfig } from "../utils/types.j
 import { TwiningError } from "../utils/errors.js";
 import { captureProvenance } from "../utils/provenance.js";
 import type { Embedder } from "../embeddings/embedder.js";
+import { blackboardEmbedText, embedContentHash } from "../embeddings/embed-text.js";
 import type { SearchEngine, BlackboardSearchResult } from "../embeddings/search.js";
 import type { Archiver } from "./archiver.js";
 import type { GraphAutoPopulator } from "./graph-auto-populator.js";
@@ -105,10 +106,15 @@ export class BlackboardEngine {
     // Generate embedding (Phase 2) — never let embedding failure prevent the post
     if (this.embedder && this.indexManager) {
       try {
-        const text = entry.summary + " " + entry.detail;
+        const text = blackboardEmbedText(entry);
         const vector = await this.embedder.embed(text);
         if (vector) {
-          await this.indexManager.addEntry("blackboard", entry.id, vector);
+          await this.indexManager.addEntry(
+            "blackboard",
+            entry.id,
+            vector,
+            embedContentHash(text),
+          );
         }
       } catch (error) {
         // Silent failure — embedding is best-effort

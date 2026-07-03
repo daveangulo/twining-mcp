@@ -2,6 +2,18 @@
 
 All notable changes to Twining MCP are documented here.
 
+## [1.22.0] - 2026-07-03
+
+Live git sync for the sqlite backend — W2.3 phase 2 of the v2 foundation plan (`docs/FOUNDATION-PLAN.md`). Sqlite-backend-only; no tool-surface, plugin, or file-backend changes.
+
+### Added
+- **Live re-ingest on git changes.** Phase 1 converged the database to the committed `.twining/records/` tree only at startup, so a branch switch, pull, or merge mid-session left the running server stale until restart. A TTL-throttled probe now runs before every tool call: when the repo's HEAD sha has moved since the last ingest, the export tree is re-ingested (idempotent upsert-by-ULID, same deletion guards as startup). Switching branches or pulling a colleague's records is visible to the very next `twining_assemble` — no restart. The probe costs one `git rev-parse` (~1ms) per 5-second window and does nothing while idle or outside a git repo.
+- **Content-hash re-embedding.** Schema v2 (`PRAGMA user_version = 2`, automatic idempotent migration) adds `embeddings.content_hash` — sha256 of the exact text a record was embedded as. After any ingest that changes records (and once at startup, closing a phase-1 gap where ingested records never got vectors), an asynchronous reconcile pass converges the embeddings table: records without vectors are embedded, records whose embed text changed are re-embedded, orphaned vectors are deleted, and pre-v2 rows get their hash backfilled without a model call. Pulled decision *status* changes leave embed text unchanged, so the common ingest update costs zero model calls. Without the model (fallback mode) cleanup and backfill still run; search keeps its keyword fallback for not-yet-embedded records.
+- Canonical embed-text module (`src/embeddings/embed-text.ts`) — the summary/detail and summary/rationale/context derivations previously duplicated across the blackboard engine, decision engine, and search fallback now have one definition, shared with the reconciler's hashing.
+
+### Fixed
+- Multiwriter soak flake: on fast machines the sqlite writer children finished all ops before the crash-injection `SIGKILL` could land, failing the "killed mid-stream" assertion (reproduced on `main`). The victim writer now gets an op budget it cannot finish before the kill.
+
 ## [1.21.1] - 2026-07-03
 
 ### Changed

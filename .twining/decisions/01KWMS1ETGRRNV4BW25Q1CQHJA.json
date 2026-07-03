@@ -1,0 +1,33 @@
+{
+  "agent_id": "main",
+  "domain": "implementation",
+  "scope": "src/storage/sync/",
+  "summary": "Fixed the multiwriter-soak crash-tolerance flake by giving the victim writer an unfinishable op budget (VICTIM_OPS = OPS*100)",
+  "context": "W2.3 phase 2 implemented: git-HEAD probe on tool dispatch re-ingests records mid-session; schema v2 content_hash; async reconcile re-embeds only changed text. 968 tests + SOAK_SCALE=5 green.",
+  "rationale": "cheap adjacent debt; alternatives (kill on first ack, tolerating unkilled victims) either stay racy or weaken the assertion.",
+  "constraints": [],
+  "alternatives": [],
+  "depends_on": [],
+  "confidence": "medium",
+  "reversible": true,
+  "affected_files": [
+    "src/storage/sqlite/db.ts",
+    "src/storage/sync/sync-manager.ts",
+    "src/storage/sync/embedding-reconcile.ts",
+    "src/embeddings/embed-text.ts",
+    "src/storage/backend-factory.ts",
+    "src/server.ts",
+    "test/multiwriter-soak.test.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "provenance": {
+    "recorded_at": "2026-07-03T19:59:38.815Z",
+    "branch": "claude/w23-phase2-live-ingest",
+    "commit_sha": "65f877bfac331e61eff2387adc365635528e6506"
+  },
+  "id": "01KWMS1ETGRRNV4BW25Q1CQHJA",
+  "timestamp": "2026-07-03T19:59:38.832Z",
+  "status": "active"
+}

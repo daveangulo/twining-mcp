@@ -28,7 +28,7 @@ export interface SqliteDatabase {
   close(): void;
 }
 
-export const SQLITE_SCHEMA_VERSION = 1;
+export const SQLITE_SCHEMA_VERSION = 2;
 
 const SCHEMA = `
 CREATE TABLE IF NOT EXISTS blackboard (
@@ -83,9 +83,10 @@ CREATE TABLE IF NOT EXISTS handoffs (
 );
 
 CREATE TABLE IF NOT EXISTS embeddings (
-  index_name TEXT NOT NULL,
-  id         TEXT NOT NULL,
-  vector     BLOB NOT NULL,
+  index_name   TEXT NOT NULL,
+  id           TEXT NOT NULL,
+  vector       BLOB NOT NULL,
+  content_hash TEXT,
   PRIMARY KEY (index_name, id)
 );
 `;
@@ -112,10 +113,13 @@ export function openDatabase(twiningDir: string): SqliteDatabase {
   db.exec("PRAGMA journal_mode = WAL;");
   db.exec("PRAGMA busy_timeout = 5000;");
   db.exec(SCHEMA);
-  const row = db.prepare("PRAGMA user_version;").get() as
-    | { user_version: number | bigint }
-    | undefined;
-  const current = Number(row?.user_version ?? 0);
+  const readVersion = (): number => {
+    const row = db.prepare("PRAGMA user_version;").get() as
+      | { user_version: number | bigint }
+      | undefined;
+    return Number(row?.user_version ?? 0);
+  };
+  const current = readVersion();
   if (current === 0) {
     db.exec(`PRAGMA user_version = ${SQLITE_SCHEMA_VERSION};`);
   } else if (current > SQLITE_SCHEMA_VERSION) {
@@ -123,8 +127,22 @@ export function openDatabase(twiningDir: string): SqliteDatabase {
     throw new Error(
       `twining.db schema version ${current} is newer than this release supports (${SQLITE_SCHEMA_VERSION}) — update twining-mcp.`,
     );
+  } else if (current < SQLITE_SCHEMA_VERSION) {
+    // Migrations run inside BEGIN IMMEDIATE with a version re-check: two
+    // processes opening the same v1 database concurrently must not both
+    // apply the ALTER (the loser would fail on a duplicate column).
+    withWriteTxn(db, () => {
+      let v = readVersion();
+      if (v === 1) {
+        // v2: per-row content hash so ingest can re-embed only records
+        // whose embed text actually changed. NULL = written before v2 (or
+        // by the live path) — reconciliation backfills it from current text.
+        db.exec("ALTER TABLE embeddings ADD COLUMN content_hash TEXT;");
+        v = 2;
+      }
+      db.exec(`PRAGMA user_version = ${v};`);
+    });
   }
-  // current < SQLITE_SCHEMA_VERSION: future migrations run here.
   return db;
 }
 

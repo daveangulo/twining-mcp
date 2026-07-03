@@ -5196,5 +5196,285 @@
       "decision_summary": "Chose hash-based re-embedding (embeddings.content_hash column, schema v2) with NULL-hash backfill-without-re-embed"
     },
     "created_at": "2026-07-03T18:58:38.493Z"
+  },
+  {
+    "id": "01KWMS1EJPCQZW38RW2V1W5E41",
+    "source": "01KWMNHR463F6JEF4SF8BQ84CK",
+    "target": "01KWMS1EJMG0D38QM7MPCSN6PB",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose a full converge pass (reconcileEmbeddings: orphan delete, NULL-hash backfill, embed missing, re-embed mismatched) over threading changed-ID deltas out of ingest"
+    },
+    "created_at": "2026-07-03T19:59:38.582Z"
+  },
+  {
+    "id": "01KWMS1EJS8D2M2ZD569ZPMJVE",
+    "source": "01KWMS1EJQZX9M5TVYN3SGTWW0",
+    "target": "01KWMS1EJMG0D38QM7MPCSN6PB",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose a full converge pass (reconcileEmbeddings: orphan delete, NULL-hash backfill, embed missing, re-embed mismatched) over threading changed-ID deltas out of ingest"
+    },
+    "created_at": "2026-07-03T19:59:38.585Z"
+  },
+  {
+    "id": "01KWMS1EJVRVA0QDFX43CE9WZT",
+    "source": "01KWMS1EJTZBTKCVTZ7BGTE265",
+    "target": "01KWMS1EJMG0D38QM7MPCSN6PB",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose a full converge pass (reconcileEmbeddings: orphan delete, NULL-hash backfill, embed missing, re-embed mismatched) over threading changed-ID deltas out of ingest"
+    },
+    "created_at": "2026-07-03T19:59:38.587Z"
+  },
+  {
+    "id": "01KWMS1EJXJDWTS9CPFR1RQBW3",
+    "source": "01KWMS1EJW2MGFEFPY7T0WNSCH",
+    "target": "01KWMS1EJMG0D38QM7MPCSN6PB",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose a full converge pass (reconcileEmbeddings: orphan delete, NULL-hash backfill, embed missing, re-embed mismatched) over threading changed-ID deltas out of ingest"
+    },
+    "created_at": "2026-07-03T19:59:38.589Z"
+  },
+  {
+    "id": "01KWMS1EJZSKKBEZ5KB7FJRQQM",
+    "source": "01KWMS1EJY7VZ185A0WNT7D11E",
+    "target": "01KWMS1EJMG0D38QM7MPCSN6PB",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose a full converge pass (reconcileEmbeddings: orphan delete, NULL-hash backfill, embed missing, re-embed mismatched) over threading changed-ID deltas out of ingest"
+    },
+    "created_at": "2026-07-03T19:59:38.591Z"
+  },
+  {
+    "id": "01KWMS1EK1554WPPZ5H9RS5HDV",
+    "source": "01KHMSDEJH7CQCE97XA0ZAP52A",
+    "target": "01KWMS1EJMG0D38QM7MPCSN6PB",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose a full converge pass (reconcileEmbeddings: orphan delete, NULL-hash backfill, embed missing, re-embed mismatched) over threading changed-ID deltas out of ingest"
+    },
+    "created_at": "2026-07-03T19:59:38.593Z"
+  },
+  {
+    "id": "01KWMS1EK37NER3G833E0MRXMG",
+    "source": "01KWMS1EK2HXEH7TE6R3011EFF",
+    "target": "01KWMS1EJMG0D38QM7MPCSN6PB",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose a full converge pass (reconcileEmbeddings: orphan delete, NULL-hash backfill, embed missing, re-embed mismatched) over threading changed-ID deltas out of ingest"
+    },
+    "created_at": "2026-07-03T19:59:38.595Z"
+  },
+  {
+    "id": "01KWMS1EP7JJM7XQEEQJZJCJ68",
+    "source": "01KWMNHR463F6JEF4SF8BQ84CK",
+    "target": "01KWMS1EP4M7NW1P04AAPG72QB",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Made the probe synchronous before tool dispatch (not fire-and-forget)"
+    },
+    "created_at": "2026-07-03T19:59:38.695Z"
+  },
+  {
+    "id": "01KWMS1EP9MC8EK46R8FFFER1F",
+    "source": "01KWMS1EJQZX9M5TVYN3SGTWW0",
+    "target": "01KWMS1EP4M7NW1P04AAPG72QB",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Made the probe synchronous before tool dispatch (not fire-and-forget)"
+    },
+    "created_at": "2026-07-03T19:59:38.697Z"
+  },
+  {
+    "id": "01KWMS1EPBBYCDQX8NVETGKFSR",
+    "source": "01KWMS1EJTZBTKCVTZ7BGTE265",
+    "target": "01KWMS1EP4M7NW1P04AAPG72QB",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Made the probe synchronous before tool dispatch (not fire-and-forget)"
+    },
+    "created_at": "2026-07-03T19:59:38.699Z"
+  },
+  {
+    "id": "01KWMS1EPDEDMGPPGQACZQ199W",
+    "source": "01KWMS1EJW2MGFEFPY7T0WNSCH",
+    "target": "01KWMS1EP4M7NW1P04AAPG72QB",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Made the probe synchronous before tool dispatch (not fire-and-forget)"
+    },
+    "created_at": "2026-07-03T19:59:38.701Z"
+  },
+  {
+    "id": "01KWMS1EPFX4YH6PZC3KRD1T0J",
+    "source": "01KWMS1EJY7VZ185A0WNT7D11E",
+    "target": "01KWMS1EP4M7NW1P04AAPG72QB",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Made the probe synchronous before tool dispatch (not fire-and-forget)"
+    },
+    "created_at": "2026-07-03T19:59:38.703Z"
+  },
+  {
+    "id": "01KWMS1EPHRF46E9QJAMKJPAGM",
+    "source": "01KHMSDEJH7CQCE97XA0ZAP52A",
+    "target": "01KWMS1EP4M7NW1P04AAPG72QB",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Made the probe synchronous before tool dispatch (not fire-and-forget)"
+    },
+    "created_at": "2026-07-03T19:59:38.705Z"
+  },
+  {
+    "id": "01KWMS1EPKX6DD7P40NBKQ0YGJ",
+    "source": "01KWMS1EK2HXEH7TE6R3011EFF",
+    "target": "01KWMS1EP4M7NW1P04AAPG72QB",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Made the probe synchronous before tool dispatch (not fire-and-forget)"
+    },
+    "created_at": "2026-07-03T19:59:38.707Z"
+  },
+  {
+    "id": "01KWMS1ESHKAMABEWB279J7W9P",
+    "source": "01KWMNHR463F6JEF4SF8BQ84CK",
+    "target": "01KWMS1ESF5WK9PVB29PEKHZZD",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Model inference never runs inside a transaction and all reconcile writes are single upsert/delete statements"
+    },
+    "created_at": "2026-07-03T19:59:38.801Z"
+  },
+  {
+    "id": "01KWMS1ESM3M9YH7ZN8ZCPAYJW",
+    "source": "01KWMS1EJQZX9M5TVYN3SGTWW0",
+    "target": "01KWMS1ESF5WK9PVB29PEKHZZD",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Model inference never runs inside a transaction and all reconcile writes are single upsert/delete statements"
+    },
+    "created_at": "2026-07-03T19:59:38.804Z"
+  },
+  {
+    "id": "01KWMS1ESP6538TMRKZ49XD7NB",
+    "source": "01KWMS1EJTZBTKCVTZ7BGTE265",
+    "target": "01KWMS1ESF5WK9PVB29PEKHZZD",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Model inference never runs inside a transaction and all reconcile writes are single upsert/delete statements"
+    },
+    "created_at": "2026-07-03T19:59:38.806Z"
+  },
+  {
+    "id": "01KWMS1ESRWMQ66HTMWJR36P99",
+    "source": "01KWMS1EJW2MGFEFPY7T0WNSCH",
+    "target": "01KWMS1ESF5WK9PVB29PEKHZZD",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Model inference never runs inside a transaction and all reconcile writes are single upsert/delete statements"
+    },
+    "created_at": "2026-07-03T19:59:38.808Z"
+  },
+  {
+    "id": "01KWMS1ESTED2K7QRVGZCTTQ0R",
+    "source": "01KWMS1EJY7VZ185A0WNT7D11E",
+    "target": "01KWMS1ESF5WK9PVB29PEKHZZD",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Model inference never runs inside a transaction and all reconcile writes are single upsert/delete statements"
+    },
+    "created_at": "2026-07-03T19:59:38.810Z"
+  },
+  {
+    "id": "01KWMS1ESWGACYQH0660FAKH6S",
+    "source": "01KHMSDEJH7CQCE97XA0ZAP52A",
+    "target": "01KWMS1ESF5WK9PVB29PEKHZZD",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Model inference never runs inside a transaction and all reconcile writes are single upsert/delete statements"
+    },
+    "created_at": "2026-07-03T19:59:38.812Z"
+  },
+  {
+    "id": "01KWMS1ESY98GK3H95TSEQKM7R",
+    "source": "01KWMS1EK2HXEH7TE6R3011EFF",
+    "target": "01KWMS1ESF5WK9PVB29PEKHZZD",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Model inference never runs inside a transaction and all reconcile writes are single upsert/delete statements"
+    },
+    "created_at": "2026-07-03T19:59:38.814Z"
+  },
+  {
+    "id": "01KWMS1EX2W18MG1FJSTKQVWQX",
+    "source": "01KWMNHR463F6JEF4SF8BQ84CK",
+    "target": "01KWMS1EX0VKVACKYANW1W59QQ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Fixed the multiwriter-soak crash-tolerance flake by giving the victim writer an unfinishable op budget (VICTIM_OPS = OPS*100)"
+    },
+    "created_at": "2026-07-03T19:59:38.914Z"
+  },
+  {
+    "id": "01KWMS1EX4P2E8R5A73K78DJP9",
+    "source": "01KWMS1EJQZX9M5TVYN3SGTWW0",
+    "target": "01KWMS1EX0VKVACKYANW1W59QQ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Fixed the multiwriter-soak crash-tolerance flake by giving the victim writer an unfinishable op budget (VICTIM_OPS = OPS*100)"
+    },
+    "created_at": "2026-07-03T19:59:38.916Z"
+  },
+  {
+    "id": "01KWMS1EX6RXG0YQMCR370E68M",
+    "source": "01KWMS1EJTZBTKCVTZ7BGTE265",
+    "target": "01KWMS1EX0VKVACKYANW1W59QQ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Fixed the multiwriter-soak crash-tolerance flake by giving the victim writer an unfinishable op budget (VICTIM_OPS = OPS*100)"
+    },
+    "created_at": "2026-07-03T19:59:38.918Z"
+  },
+  {
+    "id": "01KWMS1EX908MHYYH13R1NXE0B",
+    "source": "01KWMS1EJW2MGFEFPY7T0WNSCH",
+    "target": "01KWMS1EX0VKVACKYANW1W59QQ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Fixed the multiwriter-soak crash-tolerance flake by giving the victim writer an unfinishable op budget (VICTIM_OPS = OPS*100)"
+    },
+    "created_at": "2026-07-03T19:59:38.921Z"
+  },
+  {
+    "id": "01KWMS1EXBEECDJVDSAXB8VQTR",
+    "source": "01KWMS1EJY7VZ185A0WNT7D11E",
+    "target": "01KWMS1EX0VKVACKYANW1W59QQ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Fixed the multiwriter-soak crash-tolerance flake by giving the victim writer an unfinishable op budget (VICTIM_OPS = OPS*100)"
+    },
+    "created_at": "2026-07-03T19:59:38.923Z"
+  },
+  {
+    "id": "01KWMS1EXDK1JW212JNTR8SSTF",
+    "source": "01KHMSDEJH7CQCE97XA0ZAP52A",
+    "target": "01KWMS1EX0VKVACKYANW1W59QQ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Fixed the multiwriter-soak crash-tolerance flake by giving the victim writer an unfinishable op budget (VICTIM_OPS = OPS*100)"
+    },
+    "created_at": "2026-07-03T19:59:38.925Z"
+  },
+  {
+    "id": "01KWMS1EXFYGG1N6S4X38XRY2M",
+    "source": "01KWMS1EK2HXEH7TE6R3011EFF",
+    "target": "01KWMS1EX0VKVACKYANW1W59QQ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Fixed the multiwriter-soak crash-tolerance flake by giving the victim writer an unfinishable op budget (VICTIM_OPS = OPS*100)"
+    },
+    "created_at": "2026-07-03T19:59:38.927Z"
   }
 ]

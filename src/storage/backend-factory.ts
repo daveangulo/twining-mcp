@@ -37,6 +37,8 @@ import {
 } from "./sqlite/sqlite-stores.js";
 import { withRecordExport } from "./sync/record-export.js";
 import { ingestRecords } from "./sync/record-ingest.js";
+import { RecordSyncManager } from "./sync/sync-manager.js";
+import path from "node:path";
 
 export interface StoreSet {
   backend: "files" | "sqlite";
@@ -46,6 +48,11 @@ export interface StoreSet {
   agentStore: IAgentStore;
   handoffStore: IHandoffStore;
   indexManager: IIndexManager;
+  /**
+   * sqlite only: live re-ingest of the export tree when git moves HEAD
+   * mid-session, plus embedding reconciliation (W2.3 phase 2).
+   */
+  recordSync?: RecordSyncManager;
 }
 
 export function createStores(
@@ -87,6 +94,13 @@ export function createStores(
         agentStore: new SqliteAgentStore(db),
         handoffStore: new SqliteHandoffStore(db),
         indexManager: new SqliteIndexManager(db),
+        // Constructed immediately after the startup ingest so its HEAD
+        // snapshot means "HEAD as of the last ingest".
+        recordSync: new RecordSyncManager(
+          db,
+          twiningDir,
+          path.dirname(twiningDir),
+        ),
       };
       // Mirror every write into .twining/records/ — the committable truth
       // (twining.db itself is a gitignored local cache).

@@ -4,6 +4,7 @@
  * keyword search when ONNX is unavailable.
  */
 import type { Embedder } from "./embedder.js";
+import { blackboardEmbedText, decisionEmbedText } from "./embed-text.js";
 import type { IIndexManager } from "../storage/interfaces.js";
 import type { BlackboardEntry, Decision } from "../utils/types.js";
 
@@ -68,7 +69,7 @@ export class SearchEngine {
             scored.push({ entry, relevance });
           } else {
             // Entry has no embedding — use keyword as individual fallback
-            const text = entry.summary + " " + entry.detail;
+            const text = blackboardEmbedText(entry);
             const kwResults = keywordSearch(
               query,
               [{ id: entry.id, text }],
@@ -92,7 +93,7 @@ export class SearchEngine {
     // Keyword fallback
     const items = filtered.map((e) => ({
       id: e.id,
-      text: e.summary + " " + e.detail,
+      text: blackboardEmbedText(e),
     }));
     const kwResults = keywordSearch(query, items, limit);
     const idToScore = new Map(kwResults.map((r) => [r.id, r.score]));
@@ -140,8 +141,7 @@ export class SearchEngine {
             const relevance = cosineSimilarity(queryVector, decisionVector);
             scored.push({ decision, relevance });
           } else {
-            const text =
-              decision.summary + " " + decision.rationale + " " + decision.context;
+            const text = decisionEmbedText(decision);
             const kwResults = keywordSearch(
               query,
               [{ id: decision.id, text }],
@@ -165,7 +165,7 @@ export class SearchEngine {
     // Keyword fallback
     const items = decisions.map((d) => ({
       id: d.id,
-      text: d.summary + " " + d.rationale + " " + d.context,
+      text: decisionEmbedText(d),
     }));
     const kwResults = keywordSearch(query, items, limit);
     const idToScore = new Map(kwResults.map((r) => [r.id, r.score]));
