@@ -65,6 +65,14 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Add SessionStart command hook to inject Twining Lifecycle Gates into project CLAUDE.md
 - Remove fullSurface tool gate — all 34 MCP tools always registered
 - Layered instruction architecture: CLAUDE.md as authority, lean SessionStart prompt, third-person skill descriptions
+- SQLite is the runtime store and git is the replication transport — twining.db is a gitignored derived cache, the committed truth is a per-record export tree
+- Ship the SQLite backend opt-in (storage.backend config, warn-and-fallback) on node:sqlite instead of bumping engines or adding better-sqlite3
+- Extract storage interfaces (src/storage/interfaces.ts) and type engines against them, because private fields make the concrete class types nominal
+- All hook gates are sentinel-based and fail open when unsatisfiable — no transcript grepping anywhere, and a fresh clone or dead server never blocks commits or session exit
+- Deliver lifecycle gates via SessionStart additionalContext and delete ensure-claude-md-gates.sh — the plugin never mutates user files
+- Format version gate ships and soaks before any format change: config version newer than the release puts the server in read-only mode (FORMAT_VERSION_TOO_NEW) instead of silently diverging
+- Cross-process write-safety fixes from the multiwriter soak: exclusive-create (O_EXCL) for all file pre-creates, BEGIN IMMEDIATE around every sqlite read-modify-write, and lock retry budget (~24s) raised past the stale threshold (10s)
+- Export tree excludes agents and embeddings, and ingest never deletes without the corresponding kind directory present
 
 ### Pending Todos
 

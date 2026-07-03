@@ -1,0 +1,27 @@
+{
+  "agent_id": "claude-remote-session",
+  "domain": "architecture",
+  "scope": "src/config.ts",
+  "summary": "Format version gate ships and soaks before any format change: config version newer than the release puts the server in read-only mode (FORMAT_VERSION_TOO_NEW) instead of silently diverging",
+  "context": "Mixed-version teams are the main migration hazard — a stale client writing to a migrated project corrupts both representations.",
+  "rationale": "Nothing previously read config.version at all; the gate must be in the installed base before v2 flips the format, which is why it shipped in 1.21.0 ahead of the migration tooling.",
+  "constraints": [],
+  "alternatives": [],
+  "depends_on": [],
+  "confidence": "high",
+  "reversible": false,
+  "affected_files": [
+    "src/config.ts",
+    "src/server.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "provenance": {
+    "recorded_at": "2026-07-03T06:10:49.589Z",
+    "branch": "claude/twining-catchup",
+    "commit_sha": "80c9c4a6983e030aa26e60a9745fb37a8c56bc94"
+  },
+  "id": "01KWK9KV3WQYCMZN41A1MMEWKE",
+  "timestamp": "2026-07-03T06:10:49.597Z",
+  "status": "active"
+}
