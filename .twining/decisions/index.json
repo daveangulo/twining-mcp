@@ -2399,5 +2399,36 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KWKD9EHFSHDBS9A2JKWWAJ7Y",
+    "timestamp": "2026-07-03T07:15:03.345Z",
+    "domain": "implementation",
+    "scope": "package.json",
+    "summary": "Moved @huggingface/transformers to optionalDependencies — the embedder already degrades to keyword search when the import fails",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "package.json",
+      "package-lock.json"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWKD9EJ59DZ2W89EYVQ241JG",
+    "timestamp": "2026-07-03T07:15:03.365Z",
+    "domain": "implementation",
+    "scope": "test/eval/",
+    "summary": "Widened the behaviors-parser MUST-count band to 8–16 instead of demoting the new tools' MUST rules to SHOULD",
+    "confidence": "high",
+    "status": "active",
+    "affected_files": [
+      "test/eval/types.ts",
+      "test/eval/behaviors-parser.test.ts",
+      "plugin/BEHAVIORS.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]

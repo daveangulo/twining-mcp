@@ -1,23 +1,24 @@
 # twining-mcp — STATE
 
-_Last updated: 2026-04-24 (grounded from v1.17.0 source, BEHAVIORS.md, CHANGELOG, project blackboard through 2026-04-21, and recent session transcripts)_
+_Last updated: 2026-07-03 (grounded from v1.21.0 source, CHANGELOG, and the foundation-work sessions; see docs/DESIGN-REVIEW-2026-07.md and docs/FOUNDATION-PLAN.md)_
 
 This file is the human-and-LLM-readable snapshot of current reality for the twining-mcp product. Update when the tool surface, gates, or open issues change materially. The npm-published version and GitHub releases are the external source of truth; this file is the internal narrative layer above them.
 
 ## TL;DR
 
-- **Framing: product as shipping research artifact.** Twining is simultaneously an npm-published MCP server (`twining-mcp@1.17.0`, plugin `v1.8.0`) and the experimental substrate for the twining-benchmark-harness research program. Neither framing is subordinate. Real users and the benchmark are both first-class consumers. The product is maintained for correctness, not grown for adoption.
+- **Framing: product as shipping research artifact.** Twining is simultaneously an npm-published MCP server (`twining-mcp@1.21.0`, plugin `v1.10.1`) and the experimental substrate for the twining-benchmark-harness research program. Neither framing is subordinate. Real users and the benchmark are both first-class consumers. The product is maintained for correctness, not grown for adoption.
 - **Posture: maintain, don't grow.** Ship bug fixes and correctness work (e.g., the in-flight plugin-hygiene fixes for issues #7–#10). Do not invest in growth features, marketing, or adoption mechanics. Dogfood rigorously enough that the product stays research-substrate-credible.
 - **Lifecycle is now 2 gates** (down from 3 as of 1.17.0, 2026-04-06): **Gate 1** `twining_assemble` before work, **Gate 2** `twining_record` before commit or session end. `twining_record` collapses the old `decide` + `post` + `verify` ceremony into one natural-language call.
-- **Tool surface is disputed across artifacts.** Current count depends on what you read: 34 in `server.ts` code, 32 in BEHAVIORS.md, 17 core + extended in README/TWINING-REFERENCE. BEHAVIORS.md is missing `twining_record` and `twining_housekeeping` (added 1.17.0). The `full_surface` config gate was **removed in 1.15.0** (decision 01KMT3GDHV15HA, now formally `superseded` as of 2026-04-24) and **re-added in 1.16.0** — with the re-addition decision filed in the *harness* decision index rather than the product's (see "Dogfooding debt" below).
+- **Tool surface is reconciled at 35** (as of 2026-07-03): 35 `registerTool` calls in source, 35 documented in BEHAVIORS.md (`twining_record`, `twining_housekeeping`, `twining_archive_stale` added). Lite mode registers 6 core tools by default; `full_surface` exposes the rest.
 - **Dogfooding debt was substantially repaid 2026-04-24.** Housekeeping run cleaned state: 16 provisionals → 0 (14 promoted to active after verification, 2 superseded). 325 blackboard entries archived, 2 duplicates removed, 2 orphans pruned, 224 metrics rotated. **Remaining gap:** no decisions recorded for 1.16.0 or 1.17.0 shipped behavior, and two decisions (#3 and #1) are implicitly-but-not-explicitly superseded — see "Dogfooding debt" section below.
-- **Active work is on plugin hygiene** (GitHub issues #7, #8, #9, #10) — detection of user-relocated CLAUDE.md, a `TWINING_DISABLED` kill switch, a SessionStart resume hook bug, and scope/decision GC. Paused 2026-04-21 awaiting reporter feedback on #10. A housekeeping pass was run 2026-04-24 to clean up accumulated state.
+- **Foundation work (2026-07) landed and released as 1.21.0 / plugin 1.10.x** (PRs #20, #22–#26): atomic storage writes; a format version gate (read-only on newer on-disk formats — the mixed-team migration prerequisite, now soaking in the field); fully sentinel-based fail-open hooks with the CLAUDE.md mutation removed; storage backend interfaces; an opt-in SQLite backend (`storage.backend: sqlite`, node:sqlite, warn-and-fallback) hardened by a multiwriter process soak that found and fixed three real concurrency bugs; and a git sync layer (per-ULID export tree + startup ingest, union-merge across branches). Roadmap to v2 (default flip, engines >=22.13, migrate tool, per-repo daemon) is in docs/FOUNDATION-PLAN.md.
+- **Open issues:** #16 (semantic staleness review, skill-driven design agreed), #18 (record quality — partially addressed by the one-shot `quality_nudge` in 1.21.0), #19 (dashboard port fights — root fix lands with the W4 daemon).
 
 ## Product identity
 
 **What it is.** MCP server + Claude Code plugin that gives AI agents persistent project memory. Decisions, findings, warnings, handoffs survive context resets. Multi-agent work coordinates via shared state rather than orchestrator routing.
 
-**What it's not.** Not an orchestrator (explicit positioning in README). Not a database (JSONL + JSON files on disk). Not cloud-hosted (local-only, optional opt-in telemetry to PostHog). **Not currently pursuing growth** — the product is maintained as a correctness-stable research substrate, not positioned as a category competitor to mem0 / Letta / Zep / the Anthropic Memory tool.
+**What it's not.** Not an orchestrator (explicit positioning in README). Not a hosted database (state is local: JSONL/JSON files by default, or an opt-in local SQLite cache with a committable per-record export tree). Not cloud-hosted (local-only, optional opt-in telemetry to PostHog). **Not currently pursuing growth** — the product is maintained as a correctness-stable research substrate, not positioned as a category competitor to mem0 / Letta / Zep / the Anthropic Memory tool.
 
 **Distribution channels.**
 - **npm**: `twining-mcp` — CLI + MCP server (`dist/index.js`)

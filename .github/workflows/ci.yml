@@ -49,6 +49,14 @@ jobs:
           echo "::error::Plugin files changed without a version bump. Run: scripts/bump-plugin-version.sh patch (or minor/major)"
           exit 1
 
+  plugin-token-budget:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enforce plugin token budget
+        run: bash scripts/measure-plugin-tokens.sh --ci
+
   build-and-test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
