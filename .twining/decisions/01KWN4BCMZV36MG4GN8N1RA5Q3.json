@@ -1,0 +1,28 @@
+{
+  "agent_id": "main",
+  "domain": "data-model",
+  "scope": "src/migrate/",
+  "summary": "Migration finalize idempotently appends twining.db* lines to .twining/.gitignore",
+  "context": "W3 Task 3: forward.ts files→sqlite migration (export tree + ordinary ingest), 8 tests. Review added gitignore refresh at finalize, export_records:false re-run guard, and no-db --check UX.",
+  "rationale": "legacy projects (the migration's exact target population) predate those lines in the init template, and this repo's own tracked .gitignore proved the gap.",
+  "constraints": [],
+  "alternatives": [],
+  "depends_on": [],
+  "confidence": "medium",
+  "reversible": true,
+  "affected_files": [
+    "src/migrate/forward.ts",
+    "test/migrate/forward.test.ts"
+  ],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "provenance": {
+    "recorded_at": "2026-07-03T23:17:18.607Z",
+    "branch": "claude/w3-migrate-tool",
+    "commit_sha": "28aad4e99f0bfdcd41b35e26c42e74ac2fb22a16"
+  },
+  "id": "01KWN4BCMZV36MG4GN8N1RA5Q3",
+  "timestamp": "2026-07-03T23:17:18.623Z",
+  "status": "active"
+}

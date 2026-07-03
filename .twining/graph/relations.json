@@ -5576,5 +5576,45 @@
       "decision_summary": "config.yml backup is first-wins (.pre-migrate.bak never overwritten)"
     },
     "created_at": "2026-07-03T22:39:12.238Z"
+  },
+  {
+    "id": "01KWN4BCMCR0J267RJXHVSSH0J",
+    "source": "01KWN4BCMBDHY2MCTWESYG2VVW",
+    "target": "01KWN4BCMAGYTQ0NYV4HJHKF6G",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Forward migrate refuses to run when config is sqlite with export_records explicitly false"
+    },
+    "created_at": "2026-07-03T23:17:18.604Z"
+  },
+  {
+    "id": "01KWN4BCME5PFVMGJ5DVYJZ50X",
+    "source": "01KWN4BCMD22J8B4CZT3P35HH5",
+    "target": "01KWN4BCMAGYTQ0NYV4HJHKF6G",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Forward migrate refuses to run when config is sqlite with export_records explicitly false"
+    },
+    "created_at": "2026-07-03T23:17:18.606Z"
+  },
+  {
+    "id": "01KWN4BCQNV5PSWTVCRR52PW56",
+    "source": "01KWN4BCMBDHY2MCTWESYG2VVW",
+    "target": "01KWN4BCQKZCJ7VX98QWHG3HST",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Migration finalize idempotently appends twining.db* lines to .twining/.gitignore"
+    },
+    "created_at": "2026-07-03T23:17:18.709Z"
+  },
+  {
+    "id": "01KWN4BCQQY8F9SPXG4CB2FNZF",
+    "source": "01KWN4BCMD22J8B4CZT3P35HH5",
+    "target": "01KWN4BCQKZCJ7VX98QWHG3HST",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Migration finalize idempotently appends twining.db* lines to .twining/.gitignore"
+    },
+    "created_at": "2026-07-03T23:17:18.711Z"
   }
 ]

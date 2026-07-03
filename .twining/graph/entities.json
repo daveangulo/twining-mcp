@@ -3515,5 +3515,47 @@
     },
     "created_at": "2026-07-03T22:39:12.237Z",
     "updated_at": "2026-07-03T22:39:12.237Z"
+  },
+  {
+    "id": "01KWN4BCMAGYTQ0NYV4HJHKF6G",
+    "name": "01KWN4BCJVKH1X982JA0WDDS66",
+    "type": "concept",
+    "properties": {
+      "summary": "Forward migrate refuses to run when config is sqlite with export_records explicitly false",
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T23:17:18.602Z",
+    "updated_at": "2026-07-03T23:17:18.602Z"
+  },
+  {
+    "id": "01KWN4BCMBDHY2MCTWESYG2VVW",
+    "name": "src/migrate/forward.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T23:17:18.603Z",
+    "updated_at": "2026-07-03T23:17:18.708Z"
+  },
+  {
+    "id": "01KWN4BCMD22J8B4CZT3P35HH5",
+    "name": "test/migrate/forward.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T23:17:18.605Z",
+    "updated_at": "2026-07-03T23:17:18.710Z"
+  },
+  {
+    "id": "01KWN4BCQKZCJ7VX98QWHG3HST",
+    "name": "01KWN4BCMZV36MG4GN8N1RA5Q3",
+    "type": "concept",
+    "properties": {
+      "summary": "Migration finalize idempotently appends twining.db* lines to .twining/.gitignore",
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T23:17:18.707Z",
+    "updated_at": "2026-07-03T23:17:18.707Z"
   }
 ]
