@@ -2466,5 +2466,56 @@
     "commit_hashes": [
       "97d1f74"
     ]
+  },
+  {
+    "id": "01KWMNHR281RW7F8WB9SVQ55DV",
+    "timestamp": "2026-07-03T18:58:38.280Z",
+    "domain": "api-design",
+    "scope": "docs/FOUNDATION-PLAN.md",
+    "summary": "Chose lazy TTL-gated git-HEAD probe on tool dispatch over fs.watch on .twining/records/ for live re-ingest",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/FOUNDATION-PLAN.md",
+      "src/storage/sync/record-ingest.ts",
+      "src/storage/sqlite/db.ts",
+      "src/embeddings/embedder.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWMNHR4SW6MWZD85PJR9R04F",
+    "timestamp": "2026-07-03T18:58:38.361Z",
+    "domain": "architecture",
+    "scope": "docs/FOUNDATION-PLAN.md",
+    "summary": "Chose a new sync-manager module reusing branch-watcher's snapshot-and-diff pattern instead of literally extending src/engine/branch-watcher.ts",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/FOUNDATION-PLAN.md",
+      "src/storage/sync/record-ingest.ts",
+      "src/storage/sqlite/db.ts",
+      "src/embeddings/embedder.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWMNHR7144MJXS7DRGG6CGDV",
+    "timestamp": "2026-07-03T18:58:38.433Z",
+    "domain": "data-model",
+    "scope": "docs/FOUNDATION-PLAN.md",
+    "summary": "Chose hash-based re-embedding (embeddings.content_hash column, schema v2) with NULL-hash backfill-without-re-embed",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/FOUNDATION-PLAN.md",
+      "src/storage/sync/record-ingest.ts",
+      "src/storage/sqlite/db.ts",
+      "src/embeddings/embedder.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]

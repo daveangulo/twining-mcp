@@ -5076,5 +5076,125 @@
     "type": "decided_by",
     "properties": {},
     "created_at": "2026-07-03T18:35:01.365Z"
+  },
+  {
+    "id": "01KWMNHR4369HD0WDGM7NPADYZ",
+    "source": "01KWMNHR416F2FYJZAX7X9Y6ZT",
+    "target": "01KWMNHR416F2FYJZAX7X9Y6ZS",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose lazy TTL-gated git-HEAD probe on tool dispatch over fs.watch on .twining/records/ for live re-ingest"
+    },
+    "created_at": "2026-07-03T18:58:38.339Z"
+  },
+  {
+    "id": "01KWMNHR4582PMFQTR1ZP4AT1Z",
+    "source": "01KWMNHR44GXNT3XZXBRVX8MAA",
+    "target": "01KWMNHR416F2FYJZAX7X9Y6ZS",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose lazy TTL-gated git-HEAD probe on tool dispatch over fs.watch on .twining/records/ for live re-ingest"
+    },
+    "created_at": "2026-07-03T18:58:38.341Z"
+  },
+  {
+    "id": "01KWMNHR47E8KMBCZYQZF7K4CA",
+    "source": "01KWMNHR463F6JEF4SF8BQ84CK",
+    "target": "01KWMNHR416F2FYJZAX7X9Y6ZS",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose lazy TTL-gated git-HEAD probe on tool dispatch over fs.watch on .twining/records/ for live re-ingest"
+    },
+    "created_at": "2026-07-03T18:58:38.343Z"
+  },
+  {
+    "id": "01KWMNHR49FC5MW8M6773ZAJ29",
+    "source": "01KJJAP1393ZRMJY1SRKEQVBVQ",
+    "target": "01KWMNHR416F2FYJZAX7X9Y6ZS",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose lazy TTL-gated git-HEAD probe on tool dispatch over fs.watch on .twining/records/ for live re-ingest"
+    },
+    "created_at": "2026-07-03T18:58:38.345Z"
+  },
+  {
+    "id": "01KWMNHR6CV8GA0Y6EKSVD3FSR",
+    "source": "01KWMNHR416F2FYJZAX7X9Y6ZT",
+    "target": "01KWMNHR6AWXE7QW6X9N2KZCM0",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose a new sync-manager module reusing branch-watcher's snapshot-and-diff pattern instead of literally extending src/engine/branch-watcher.ts"
+    },
+    "created_at": "2026-07-03T18:58:38.412Z"
+  },
+  {
+    "id": "01KWMNHR6E544YVMT4S5A961W3",
+    "source": "01KWMNHR44GXNT3XZXBRVX8MAA",
+    "target": "01KWMNHR6AWXE7QW6X9N2KZCM0",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose a new sync-manager module reusing branch-watcher's snapshot-and-diff pattern instead of literally extending src/engine/branch-watcher.ts"
+    },
+    "created_at": "2026-07-03T18:58:38.414Z"
+  },
+  {
+    "id": "01KWMNHR6GDDRTZK5G3M1K8TP5",
+    "source": "01KWMNHR463F6JEF4SF8BQ84CK",
+    "target": "01KWMNHR6AWXE7QW6X9N2KZCM0",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose a new sync-manager module reusing branch-watcher's snapshot-and-diff pattern instead of literally extending src/engine/branch-watcher.ts"
+    },
+    "created_at": "2026-07-03T18:58:38.416Z"
+  },
+  {
+    "id": "01KWMNHR6JSSSSH3ZETAFMEMVX",
+    "source": "01KJJAP1393ZRMJY1SRKEQVBVQ",
+    "target": "01KWMNHR6AWXE7QW6X9N2KZCM0",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose a new sync-manager module reusing branch-watcher's snapshot-and-diff pattern instead of literally extending src/engine/branch-watcher.ts"
+    },
+    "created_at": "2026-07-03T18:58:38.418Z"
+  },
+  {
+    "id": "01KWMNHR8PAYKKC2DZHQBCW19R",
+    "source": "01KWMNHR416F2FYJZAX7X9Y6ZT",
+    "target": "01KWMNHR8MKJSDM1269M4Y34JW",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose hash-based re-embedding (embeddings.content_hash column, schema v2) with NULL-hash backfill-without-re-embed"
+    },
+    "created_at": "2026-07-03T18:58:38.486Z"
+  },
+  {
+    "id": "01KWMNHR8STZMY4DAAKVS02J31",
+    "source": "01KWMNHR44GXNT3XZXBRVX8MAA",
+    "target": "01KWMNHR8MKJSDM1269M4Y34JW",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose hash-based re-embedding (embeddings.content_hash column, schema v2) with NULL-hash backfill-without-re-embed"
+    },
+    "created_at": "2026-07-03T18:58:38.489Z"
+  },
+  {
+    "id": "01KWMNHR8VW8JXQR1GM2DTTVDT",
+    "source": "01KWMNHR463F6JEF4SF8BQ84CK",
+    "target": "01KWMNHR8MKJSDM1269M4Y34JW",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose hash-based re-embedding (embeddings.content_hash column, schema v2) with NULL-hash backfill-without-re-embed"
+    },
+    "created_at": "2026-07-03T18:58:38.491Z"
+  },
+  {
+    "id": "01KWMNHR8X485F2145RAKZ0R4V",
+    "source": "01KJJAP1393ZRMJY1SRKEQVBVQ",
+    "target": "01KWMNHR8MKJSDM1269M4Y34JW",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Chose hash-based re-embedding (embeddings.content_hash column, schema v2) with NULL-hash backfill-without-re-embed"
+    },
+    "created_at": "2026-07-03T18:58:38.493Z"
   }
 ]
