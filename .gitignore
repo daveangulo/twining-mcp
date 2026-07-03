@@ -33,7 +33,6 @@ examples/demo-automation/recordings/*.webm
 !assets/**
 
 # Local config
-.mcp.json
 .vscode/
 
 # Eval results (generated)
