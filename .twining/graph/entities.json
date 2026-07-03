@@ -1297,10 +1297,10 @@
     "name": "package.json",
     "type": "file",
     "properties": {
-      "scope": "plugin/.claude-plugin/plugin.json, .claude-plugin/marketplace.json, package.json, CHANGELOG.md"
+      "scope": "project"
     },
     "created_at": "2026-03-01T18:31:53.339Z",
-    "updated_at": "2026-05-05T05:25:23.934Z"
+    "updated_at": "2026-07-03T18:35:01.357Z"
   },
   {
     "id": "01KJNAQMQZ9DKYRR1SEP2M3HVX",
@@ -3221,5 +3221,57 @@
     },
     "created_at": "2026-05-05T17:23:21.786Z",
     "updated_at": "2026-05-05T17:23:21.786Z"
+  },
+  {
+    "id": "01KWMM6G7QGS13B7AM8BFP7T78",
+    "name": "01KWMM6G5X22W48T090B13VF2Z",
+    "type": "concept",
+    "properties": {
+      "summary": "Committed the chore(release): v1.21.1 version bump directly to main instead of via PR",
+      "scope": "project"
+    },
+    "created_at": "2026-07-03T18:35:01.239Z",
+    "updated_at": "2026-07-03T18:35:01.239Z"
+  },
+  {
+    "id": "01KWMM6G7V9BC0547K98JW0PA4",
+    "name": "package-lock.json",
+    "type": "file",
+    "properties": {
+      "scope": "project"
+    },
+    "created_at": "2026-07-03T18:35:01.243Z",
+    "updated_at": "2026-07-03T18:35:01.359Z"
+  },
+  {
+    "id": "01KWMM6G7XEK23GG99QP5841D8",
+    "name": ".twining/blackboard.jsonl",
+    "type": "file",
+    "properties": {
+      "scope": "project"
+    },
+    "created_at": "2026-07-03T18:35:01.245Z",
+    "updated_at": "2026-07-03T18:35:01.361Z"
+  },
+  {
+    "id": "01KWMM6G81378A8R9YNEJSW2TW",
+    "name": "97d1f74",
+    "type": "commit",
+    "properties": {
+      "decision": "01KWMM6G8NXVHJA6TPEYG7X9ZE"
+    },
+    "created_at": "2026-07-03T18:35:01.249Z",
+    "updated_at": "2026-07-03T18:35:01.364Z"
+  },
+  {
+    "id": "01KWMM6GBC79GYPJDFFN3PT67Y",
+    "name": "01KWMM6G8NXVHJA6TPEYG7X9ZE",
+    "type": "concept",
+    "properties": {
+      "summary": "Folded the stray hook-generated blackboard entry (subagent-stop noise from the CI watch task) into the release commit rather than discarding it",
+      "scope": "project"
+    },
+    "created_at": "2026-07-03T18:35:01.356Z",
+    "updated_at": "2026-07-03T18:35:01.356Z"
   }
 ]

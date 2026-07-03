@@ -5000,5 +5000,81 @@
       "decision_summary": "First-run is a no-op for archival"
     },
     "created_at": "2026-05-05T17:23:21.797Z"
+  },
+  {
+    "id": "01KWMM6G7TN9T7VH565B2Z7KBD",
+    "source": "01KJNAQMQVGD3TWE905M4KZ1ST",
+    "target": "01KWMM6G7QGS13B7AM8BFP7T78",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Committed the chore(release): v1.21.1 version bump directly to main instead of via PR"
+    },
+    "created_at": "2026-07-03T18:35:01.242Z"
+  },
+  {
+    "id": "01KWMM6G7WDX4YW9EJTJWB0Z21",
+    "source": "01KWMM6G7V9BC0547K98JW0PA4",
+    "target": "01KWMM6G7QGS13B7AM8BFP7T78",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Committed the chore(release): v1.21.1 version bump directly to main instead of via PR"
+    },
+    "created_at": "2026-07-03T18:35:01.244Z"
+  },
+  {
+    "id": "01KWMM6G7Z10SABEBV9NV2TP42",
+    "source": "01KWMM6G7XEK23GG99QP5841D8",
+    "target": "01KWMM6G7QGS13B7AM8BFP7T78",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Committed the chore(release): v1.21.1 version bump directly to main instead of via PR"
+    },
+    "created_at": "2026-07-03T18:35:01.247Z"
+  },
+  {
+    "id": "01KWMM6G84WDGJTRZCEGKCCMZC",
+    "source": "01KWMM6G81378A8R9YNEJSW2TW",
+    "target": "01KWMM6G7QGS13B7AM8BFP7T78",
+    "type": "decided_by",
+    "properties": {},
+    "created_at": "2026-07-03T18:35:01.252Z"
+  },
+  {
+    "id": "01KWMM6GBEYGEJBMKWGA5NHE03",
+    "source": "01KJNAQMQVGD3TWE905M4KZ1ST",
+    "target": "01KWMM6GBC79GYPJDFFN3PT67Y",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Folded the stray hook-generated blackboard entry (subagent-stop noise from the CI watch task) into the release commit rather than discarding it"
+    },
+    "created_at": "2026-07-03T18:35:01.358Z"
+  },
+  {
+    "id": "01KWMM6GBGD5N4K9ZSPJEP364F",
+    "source": "01KWMM6G7V9BC0547K98JW0PA4",
+    "target": "01KWMM6GBC79GYPJDFFN3PT67Y",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Folded the stray hook-generated blackboard entry (subagent-stop noise from the CI watch task) into the release commit rather than discarding it"
+    },
+    "created_at": "2026-07-03T18:35:01.360Z"
+  },
+  {
+    "id": "01KWMM6GBJJGB2QK984HBZJ72H",
+    "source": "01KWMM6G7XEK23GG99QP5841D8",
+    "target": "01KWMM6GBC79GYPJDFFN3PT67Y",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Folded the stray hook-generated blackboard entry (subagent-stop noise from the CI watch task) into the release commit rather than discarding it"
+    },
+    "created_at": "2026-07-03T18:35:01.362Z"
+  },
+  {
+    "id": "01KWMM6GBNFM3ZHFXJG0FWDPC7",
+    "source": "01KWMM6G81378A8R9YNEJSW2TW",
+    "target": "01KWMM6GBC79GYPJDFFN3PT67Y",
+    "type": "decided_by",
+    "properties": {},
+    "created_at": "2026-07-03T18:35:01.365Z"
   }
 ]

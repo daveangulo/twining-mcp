@@ -2430,5 +2430,41 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KWMM6G5X22W48T090B13VF2Z",
+    "timestamp": "2026-07-03T18:35:01.181Z",
+    "domain": "data-model",
+    "scope": "project",
+    "summary": "Committed the chore(release): v1.21.1 version bump directly to main instead of via PR",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "package.json",
+      "package-lock.json",
+      ".twining/blackboard.jsonl"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": [
+      "97d1f74"
+    ]
+  },
+  {
+    "id": "01KWMM6G8NXVHJA6TPEYG7X9ZE",
+    "timestamp": "2026-07-03T18:35:01.269Z",
+    "domain": "deployment",
+    "scope": "project",
+    "summary": "Folded the stray hook-generated blackboard entry (subagent-stop noise from the CI watch task) into the release commit rather than discarding it",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "package.json",
+      "package-lock.json",
+      ".twining/blackboard.jsonl"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": [
+      "97d1f74"
+    ]
   }
 ]
