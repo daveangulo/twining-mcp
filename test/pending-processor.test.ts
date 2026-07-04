@@ -203,6 +203,24 @@ describe("PendingProcessor.processPending (periodic drain)", () => {
     ).toEqual([]);
   });
 
+  it("drains a >200-char summary by truncating it and preserving the full text in detail", async () => {
+    const postsPath = path.join(tmpDir, "pending-posts.jsonl");
+    const longSummary = "x".repeat(250);
+    fs.writeFileSync(
+      postsPath,
+      JSON.stringify({ entry_type: "status", summary: longSummary }) + "\n",
+    );
+
+    const result = await processor.processPending();
+    expect(result.posts_processed).toBe(1);
+
+    const { entries } = await blackboardStore.read();
+    expect(entries).toHaveLength(1);
+    expect(entries[0]!.summary.length).toBeLessThanOrEqual(200);
+    expect(entries[0]!.summary.endsWith("…")).toBe(true);
+    expect(entries[0]!.detail).toContain(longSummary);
+  });
+
   it("recovers a crashed drainer's leftover even when there is no live queue file", async () => {
     const postsPath = path.join(tmpDir, "pending-posts.jsonl");
     // Only the leftover exists — the crashed drainer had already renamed

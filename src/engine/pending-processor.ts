@@ -60,10 +60,22 @@ export class PendingProcessor {
     const posts_processed = await this.drainJsonlFile<PendingPost>(
       path.join(this.twiningDir, "pending-posts.jsonl"),
       async (post) => {
+        // BlackboardEngine.post() rejects summaries >200 chars. Queued posts
+        // come from hooks whose text (e.g. a subagent description fallback)
+        // can exceed that; a rejection here would skip the line, and the
+        // swap-file delete would make the loss permanent. Mirror the
+        // twining_record convention instead: truncate the summary and keep
+        // the full text in detail — never drop a queued post over length.
+        let summary = post.summary;
+        let detail = post.detail ?? "";
+        if (typeof summary === "string" && summary.length > 200) {
+          detail = `Full summary: ${summary}\n${detail}`;
+          summary = summary.slice(0, 197) + "…";
+        }
         await this.blackboardEngine.post({
           entry_type: post.entry_type as "finding",
-          summary: post.summary,
-          detail: post.detail ?? "",
+          summary,
+          detail,
           tags: post.tags ?? [],
           scope: post.scope ?? "project",
           agent_id: post.agent_id ?? "pending-processor",
