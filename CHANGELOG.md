@@ -2,6 +2,23 @@
 
 All notable changes to Twining MCP are documented here.
 
+## [1.24.0] - 2026-07-04
+
+Field-findings release. A usage analysis across three heavy-use repos (2,317 tool calls, 2,713 decisions, 3.9 GB of blackboard archives) surfaced defects that were costing every session; this release fixes the actively-bleeding ones. The findings that need design work are tracked in issues #30–#35.
+
+### Fixed
+- **Auto-archive feedback loop.** Past ~500 decisions, every `twining_post` triggered an archive pass (decision cross-posts counted toward the threshold but are never archived), and the archiver's own "Archive: N entries archived" summary re-armed the trigger — one field repo accumulated 7.6M junk findings / 3.0 GB. The trigger now counts only archivable entries, and the archiver's summary can never re-trigger. Existing junk archives are safe to delete (see #35 for planned repair tooling).
+- **`twining_record` no longer rejects over-length summaries.** The most-called tool failed ~38% of field calls with INVALID_INPUT because its status post enforced an undocumented 200-character cap. Summaries (and findings) are now truncated with the full text preserved in the entry detail; the schema documents the cap; the response notes the truncation. Direct `twining_post` keeps strict validation.
+- **No more silent finding loss.** Findings in `twining_record` were posted inside a bare catch — an over-length finding vanished while the call reported success. Failures now surface in the response (`finding_errors`), and over-length findings are truncated instead of dropped.
+- **Pending-post queue drains continuously.** `pending-posts.jsonl` (the hooks' drop box) only drained at server startup, stranding posts for days. It now drains every 60 seconds with loss-proof swap semantics: concurrent drains can at worst duplicate a post, never lose one.
+- **`depends_on` links validated at write time.** 49% of dependency links in the heaviest field repo pointed at nonexistent decision IDs, corrupting trace/graph walks. Unknown IDs are now dropped at decide time and reported in the tool response ("ignored N unknown depends_on id(s)"). Retroactive cleanup: #31 territory.
+- **`twining-mcp migrate` salvages index-orphaned decisions.** One field repo has 109 decision files missing from decisions/index.json (historical write-path desync); index-driven migration would have silently excluded them while verification passed. Forward migration now enumerates decision files by directory scan, salvages orphans (counted + noted), and a subsequent reverse migration regenerates the index — healing the desync.
+
+## Plugin [1.11.0] - 2026-07-04
+
+### Fixed
+- SubagentStop hook no longer posts content-free "Subagent completed: unknown-subagent" noise — field data showed that was 100% of its output. It now tries `agent_type`, `agent_name`, then `description` from the hook payload and stays silent when none is present.
+
 ## [1.23.0] - 2026-07-03
 
 `twining-mcp migrate` — W3 of the v2 foundation plan (`docs/FOUNDATION-PLAN.md`). CLI-only; no MCP tool-surface, plugin, or file-backend behavior changes.
