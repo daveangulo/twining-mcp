@@ -167,7 +167,9 @@ export function registerRecordTools(
           .string()
           .describe(
             "What you did this session — one or two sentences. Kept to 200 characters — " +
-              "longer text is truncated with the full text preserved in the entry detail.",
+              "longer text is truncated with the full text preserved in the entry detail. " +
+              "Lead with the most important information: similarity search weighs the " +
+              "opening of the text most heavily.",
           ),
         decisions: z
           .array(
@@ -236,7 +238,8 @@ export function registerRecordTools(
           .describe(
             'Discoveries, warnings, needs, and surprises — anything the next session would want to know that is not visible from the diff: odd patterns you noticed, fragile spots, dead ends you ruled out, things that did not work as expected. Prefix with "warning:" or "need:" for severity. ' +
             'E.g. ["Auth tokens stored in localStorage — fails SOC2", "warning: No token rotation exists", "need: Add rate limiting before launch"]. ' +
-            'A substantial change with zero findings is usually under-recording, not a clean run.',
+            'A substantial change with zero findings is usually under-recording, not a clean run. ' +
+            'Lead each finding with the most important information — the first ~200 characters carry the most weight in similarity search.',
           ),
         assumptions: z
           .array(z.string())
