@@ -2702,5 +2702,37 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KWN892XYHWDFBFBRVQP8E67A",
+    "timestamp": "2026-07-04T00:25:57.438Z",
+    "domain": "implementation",
+    "scope": "src/migrate/",
+    "summary": "Reverse under export_records:false SKIPS ingest and exports from the database alone",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/migrate/reverse.ts",
+      "test/migrate/reverse.test.ts",
+      "src/migrate/forward.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWN893175YCE3S3KR6F2F1KQ",
+    "timestamp": "2026-07-04T00:25:57.543Z",
+    "domain": "implementation",
+    "scope": "src/migrate/",
+    "summary": "pre-reverse-backup/ is deliberately LAST-WINS (unlike config-edit's first-wins .pre-migrate.bak): it means 'what this run is about to overwrite', which is what makes a mistaken second reverse recoverable.",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/migrate/reverse.ts",
+      "test/migrate/reverse.test.ts",
+      "src/migrate/forward.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]

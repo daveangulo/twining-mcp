@@ -5616,5 +5616,65 @@
       "decision_summary": "Migration finalize idempotently appends twining.db* lines to .twining/.gitignore"
     },
     "created_at": "2026-07-03T23:17:18.711Z"
+  },
+  {
+    "id": "01KWN8930JK1K3SSR8DPSZC0NT",
+    "source": "01KWN8930HYTTFYZFBKZ6NC9DD",
+    "target": "01KWN8930GGJ6JE8Y5GW8YNTS3",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Reverse under export_records:false SKIPS ingest and exports from the database alone"
+    },
+    "created_at": "2026-07-04T00:25:57.522Z"
+  },
+  {
+    "id": "01KWN8930MNKGQVC07NJF5C4DB",
+    "source": "01KWN8930K4NJ69G2QG06BHSMZ",
+    "target": "01KWN8930GGJ6JE8Y5GW8YNTS3",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Reverse under export_records:false SKIPS ingest and exports from the database alone"
+    },
+    "created_at": "2026-07-04T00:25:57.524Z"
+  },
+  {
+    "id": "01KWN8930P8H5960VABSAHN78Z",
+    "source": "01KWN4BCMBDHY2MCTWESYG2VVW",
+    "target": "01KWN8930GGJ6JE8Y5GW8YNTS3",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Reverse under export_records:false SKIPS ingest and exports from the database alone"
+    },
+    "created_at": "2026-07-04T00:25:57.526Z"
+  },
+  {
+    "id": "01KWN89341EQ9TQ1KE8TF1971X",
+    "source": "01KWN8930HYTTFYZFBKZ6NC9DD",
+    "target": "01KWN8933ZN4TR3B33GXY2ZBGZ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "pre-reverse-backup/ is deliberately LAST-WINS (unlike config-edit's first-wins .pre-migrate.bak): it means 'what this run is about to overwrite', which is what makes a mistaken second reverse recoverable."
+    },
+    "created_at": "2026-07-04T00:25:57.633Z"
+  },
+  {
+    "id": "01KWN893442T1ASX7KJW9AVA3R",
+    "source": "01KWN8930K4NJ69G2QG06BHSMZ",
+    "target": "01KWN8933ZN4TR3B33GXY2ZBGZ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "pre-reverse-backup/ is deliberately LAST-WINS (unlike config-edit's first-wins .pre-migrate.bak): it means 'what this run is about to overwrite', which is what makes a mistaken second reverse recoverable."
+    },
+    "created_at": "2026-07-04T00:25:57.636Z"
+  },
+  {
+    "id": "01KWN893469MCDBJ27R9P2516M",
+    "source": "01KWN4BCMBDHY2MCTWESYG2VVW",
+    "target": "01KWN8933ZN4TR3B33GXY2ZBGZ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "pre-reverse-backup/ is deliberately LAST-WINS (unlike config-edit's first-wins .pre-migrate.bak): it means 'what this run is about to overwrite', which is what makes a mistaken second reverse recoverable."
+    },
+    "created_at": "2026-07-04T00:25:57.638Z"
   }
 ]

@@ -3535,7 +3535,7 @@
       "scope": "src/migrate/"
     },
     "created_at": "2026-07-03T23:17:18.603Z",
-    "updated_at": "2026-07-03T23:17:18.708Z"
+    "updated_at": "2026-07-04T00:25:57.637Z"
   },
   {
     "id": "01KWN4BCMD22J8B4CZT3P35HH5",
@@ -3557,5 +3557,47 @@
     },
     "created_at": "2026-07-03T23:17:18.707Z",
     "updated_at": "2026-07-03T23:17:18.707Z"
+  },
+  {
+    "id": "01KWN8930GGJ6JE8Y5GW8YNTS3",
+    "name": "01KWN892XYHWDFBFBRVQP8E67A",
+    "type": "concept",
+    "properties": {
+      "summary": "Reverse under export_records:false SKIPS ingest and exports from the database alone",
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-04T00:25:57.520Z",
+    "updated_at": "2026-07-04T00:25:57.520Z"
+  },
+  {
+    "id": "01KWN8930HYTTFYZFBKZ6NC9DD",
+    "name": "src/migrate/reverse.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-04T00:25:57.521Z",
+    "updated_at": "2026-07-04T00:25:57.632Z"
+  },
+  {
+    "id": "01KWN8930K4NJ69G2QG06BHSMZ",
+    "name": "test/migrate/reverse.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-04T00:25:57.523Z",
+    "updated_at": "2026-07-04T00:25:57.634Z"
+  },
+  {
+    "id": "01KWN8933ZN4TR3B33GXY2ZBGZ",
+    "name": "01KWN893175YCE3S3KR6F2F1KQ",
+    "type": "concept",
+    "properties": {
+      "summary": "pre-reverse-backup/ is deliberately LAST-WINS (unlike config-edit's first-wins .pre-migrate.bak): it means 'what this run is about to overwrite', which is what makes a mistaken second reverse recoverable.",
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-04T00:25:57.631Z",
+    "updated_at": "2026-07-04T00:25:57.631Z"
   }
 ]

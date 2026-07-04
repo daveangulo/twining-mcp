@@ -107,6 +107,7 @@ export async function migrateForward(opts: ForwardOptions): Promise<MigrateRepor
   const notes = [
     "agents registry, archive/, metrics, and pending queues are backend-agnostic — untouched",
     "embeddings are not migrated; the sqlite backend rebuilds them by content hash on first start",
+    "stop running Twining sessions before migrating — the backend flip does not coordinate with live server processes",
   ];
 
   if (opts.dryRun) {
