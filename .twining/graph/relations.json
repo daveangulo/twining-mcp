@@ -5676,5 +5676,35 @@
       "decision_summary": "pre-reverse-backup/ is deliberately LAST-WINS (unlike config-edit's first-wins .pre-migrate.bak): it means 'what this run is about to overwrite', which is what makes a mistaken second reverse recoverable."
     },
     "created_at": "2026-07-04T00:25:57.638Z"
+  },
+  {
+    "id": "01KWNBQZEEFWSWZ30MPYEB5Y7G",
+    "source": "01KWNBQZEDDCT6YH4D4W9K3P3S",
+    "target": "01KWNBQZECPT1R8CNM0K001NHD",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Incompatible CLI flag combos are rejected at parse time (exit 2) rather than reinterpreted"
+    },
+    "created_at": "2026-07-04T01:26:31.118Z"
+  },
+  {
+    "id": "01KWNBQZEGHSE1JZH2ABNSFWM2",
+    "source": "01KWNBQZEFZR5KH8FE3B807TKF",
+    "target": "01KWNBQZECPT1R8CNM0K001NHD",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Incompatible CLI flag combos are rejected at parse time (exit 2) rather than reinterpreted"
+    },
+    "created_at": "2026-07-04T01:26:31.120Z"
+  },
+  {
+    "id": "01KWNBQZEKABSSHV0KQAWXCA84",
+    "source": "01KJD595NBM3QK28EQJ3JG8QXV",
+    "target": "01KWNBQZECPT1R8CNM0K001NHD",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Incompatible CLI flag combos are rejected at parse time (exit 2) rather than reinterpreted"
+    },
+    "created_at": "2026-07-04T01:26:31.123Z"
   }
 ]

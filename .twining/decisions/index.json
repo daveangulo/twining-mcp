@@ -2734,5 +2734,21 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KWNBQZBKKX7W1E2403PN5CZW",
+    "timestamp": "2026-07-04T01:26:31.027Z",
+    "domain": "implementation",
+    "scope": "src/migrate/",
+    "summary": "Incompatible CLI flag combos are rejected at parse time (exit 2) rather than reinterpreted",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/migrate/cli.ts",
+      "test/migrate/cli.test.ts",
+      "src/index.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]
