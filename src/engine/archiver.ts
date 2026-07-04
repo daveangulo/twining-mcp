@@ -103,6 +103,7 @@ export class Archiver {
         detail: summaryText,
         tags: ["archive"],
         scope: "project",
+        _skipAutoArchive: true,
       });
     }
 

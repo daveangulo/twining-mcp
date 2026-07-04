@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
@@ -6,7 +6,8 @@ import { BlackboardStore } from "../src/storage/blackboard-store.js";
 import { BlackboardEngine } from "../src/engine/blackboard.js";
 import { Archiver } from "../src/engine/archiver.js";
 import { readJSONL } from "../src/storage/file-store.js";
-import type { BlackboardEntry } from "../src/utils/types.js";
+import type { BlackboardEntry, TwiningConfig } from "../src/utils/types.js";
+import { DEFAULT_CONFIG } from "../src/config.js";
 
 let tmpDir: string;
 let blackboardStore: BlackboardStore;
@@ -197,5 +198,53 @@ describe("Archiver.archive", () => {
     const { entries } = await blackboardStore.read();
     expect(entries).toHaveLength(1);
     expect(entries[0]!.entry_type).toBe("decision");
+  });
+
+  it("posts no summary entry when nothing is archivable", async () => {
+    await postEntry("finding", "Recent finding", "2025-12-01T00:00:00.000Z");
+
+    const result = await archiver.archive({
+      before: "2025-01-01T00:00:00.000Z",
+      summarize: true,
+    });
+
+    expect(result.archived_count).toBe(0);
+    expect(result.summary).toBeUndefined();
+
+    // No "Archive: N entries archived" summary should have been posted.
+    const { entries } = await blackboardStore.read();
+    expect(entries).toHaveLength(1);
+    const summaryEntry = entries.find((e) => e.summary.includes("Archive:"));
+    expect(summaryEntry).toBeUndefined();
+  });
+
+  it("archiver's own summary post does not recursively re-trigger another archive", async () => {
+    // Set up a scenario where, absent the _skipAutoArchive flag on the
+    // summary post, the post-archive blackboard state (1 surviving recent
+    // finding + the new summary entry, which is tag-excluded) would still
+    // meet the threshold and re-fire the archiver — the exact loop that
+    // produced millions of "Archive: 1 entries archived" junk entries.
+    await postEntry("finding", "Old finding", "2024-01-01T00:00:00.000Z");
+    await postEntry("finding", "Recent finding", "2025-06-01T00:00:00.000Z");
+
+    const config: TwiningConfig = {
+      ...DEFAULT_CONFIG,
+      archive: {
+        ...DEFAULT_CONFIG.archive,
+        max_blackboard_entries_before_archive: 1,
+      },
+    };
+    blackboardEngine.setArchiver(archiver, config);
+    const archiveSpy = vi.spyOn(archiver, "archive");
+
+    await archiver.archive({
+      before: "2025-01-01T00:00:00.000Z",
+      summarize: true,
+    });
+
+    // Allow any (bugged) fire-and-forget recursive call to settle.
+    await new Promise((r) => setTimeout(r, 50));
+
+    expect(archiveSpy).toHaveBeenCalledTimes(1);
   });
 });

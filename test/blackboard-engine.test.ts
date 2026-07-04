@@ -221,4 +221,89 @@ describe("BlackboardEngine auto-archive", () => {
     await engine.post({ entry_type: "finding", summary: "Entry 1" });
     // If this doesn't throw, the test passes
   });
+
+  it("does not trigger archive when only decision cross-posts exceed threshold", async () => {
+    // Regression: decisions cross-post to the blackboard (entry_type
+    // "decision") but the archiver never archives them while keep_decisions
+    // defaults true — counting them toward the trigger meant the count was
+    // permanently over threshold past ~500 decisions, firing on every post.
+    const mockArchiver = {
+      archive: vi.fn().mockResolvedValue({ archived_count: 0, archive_file: "" }),
+    };
+    const config: TwiningConfig = {
+      ...DEFAULT_CONFIG,
+      archive: {
+        ...DEFAULT_CONFIG.archive,
+        max_blackboard_entries_before_archive: 5,
+      },
+    };
+
+    engine.setArchiver(mockArchiver as any, config);
+
+    for (let i = 0; i < 6; i++) {
+      // _internal mirrors how DecisionEngine cross-posts decisions to the
+      // blackboard (decisions.ts:249,601).
+      await engine.post({
+        entry_type: "decision",
+        summary: `Decision ${i}`,
+        _internal: true,
+      });
+    }
+
+    await new Promise((r) => setTimeout(r, 50));
+
+    expect(mockArchiver.archive).not.toHaveBeenCalled();
+  });
+
+  it("does not trigger archive when a post carries _skipAutoArchive, even over threshold", async () => {
+    const mockArchiver = {
+      archive: vi.fn().mockResolvedValue({ archived_count: 0, archive_file: "" }),
+    };
+    const config: TwiningConfig = {
+      ...DEFAULT_CONFIG,
+      archive: {
+        ...DEFAULT_CONFIG.archive,
+        max_blackboard_entries_before_archive: 3,
+      },
+    };
+
+    engine.setArchiver(mockArchiver as any, config);
+
+    await engine.post({ entry_type: "finding", summary: "Entry 1" });
+    await engine.post({ entry_type: "finding", summary: "Entry 2" });
+    // This post would push the archivable count to 3 (== threshold), but
+    // _skipAutoArchive must bypass the check entirely.
+    await engine.post({
+      entry_type: "finding",
+      summary: "Entry 3",
+      _skipAutoArchive: true,
+    });
+
+    await new Promise((r) => setTimeout(r, 50));
+
+    expect(mockArchiver.archive).not.toHaveBeenCalled();
+  });
+
+  it("still triggers archive when archivable (non-decision) entries exceed threshold (regression guard)", async () => {
+    const mockArchiver = {
+      archive: vi.fn().mockResolvedValue({ archived_count: 6, archive_file: "" }),
+    };
+    const config: TwiningConfig = {
+      ...DEFAULT_CONFIG,
+      archive: {
+        ...DEFAULT_CONFIG.archive,
+        max_blackboard_entries_before_archive: 5,
+      },
+    };
+
+    engine.setArchiver(mockArchiver as any, config);
+
+    for (let i = 0; i < 6; i++) {
+      await engine.post({ entry_type: "finding", summary: `Finding ${i}` });
+    }
+
+    await new Promise((r) => setTimeout(r, 50));
+
+    expect(mockArchiver.archive).toHaveBeenCalledWith({ summarize: true });
+  });
 });
