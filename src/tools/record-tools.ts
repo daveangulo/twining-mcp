@@ -15,6 +15,24 @@ import { writeRecordSentinel } from "../utils/record-sentinel.js";
 // One quality nudge per server process (i.e. per session) — see #18.
 let qualityNudgeSent = false;
 
+/** Blackboard enforces a 200-char summary cap (see BlackboardEngine.post). */
+const SUMMARY_MAX_LENGTH = 200;
+
+/**
+ * Truncate a summary to the blackboard's 200-char cap, preserving the full
+ * text for the caller to fold into the entry's detail. Nothing is lost —
+ * unlike a rejected post, a truncated one still succeeds.
+ */
+function truncateSummary(summary: string): {
+  summary: string;
+  truncated: boolean;
+} {
+  if (summary.length <= SUMMARY_MAX_LENGTH) {
+    return { summary, truncated: false };
+  }
+  return { summary: summary.slice(0, 197) + "…", truncated: true };
+}
+
 /**
  * Infer scope from git diff when not explicitly provided.
  * Finds the common path prefix of changed files.
@@ -147,7 +165,10 @@ export function registerRecordTools(
       inputSchema: {
         summary: z
           .string()
-          .describe("What you did this session — one or two sentences"),
+          .describe(
+            "What you did this session — one or two sentences. Kept to 200 characters — " +
+              "longer text is truncated with the full text preserved in the entry detail.",
+          ),
         decisions: z
           .array(
             z.union([
@@ -279,14 +300,21 @@ export function registerRecordTools(
         const createdDecisions: Array<{ id: string; summary: string }> = [];
         const createdFindings: Array<{ id: string; entry_type: string; summary: string }> = [];
 
-        // 1. Always create a status post
+        // 1. Always create a status post. A too-long summary is truncated
+        // rather than rejected — the full text is prepended to detail so
+        // nothing is lost (see decision B, 2026-07 field findings).
+        const { summary: statusSummary, truncated: summaryTruncated } =
+          truncateSummary(args.summary);
         const detailParts: string[] = [];
+        if (summaryTruncated) {
+          detailParts.push(`Full summary: ${args.summary}`);
+        }
         if (args.decisions?.length) detailParts.push(`Decisions: ${args.decisions.join("; ")}`);
         if (args.findings?.length) detailParts.push(`Findings: ${args.findings.join("; ")}`);
 
         const statusEntry = await blackboardEngine.post({
           entry_type: "status",
-          summary: args.summary,
+          summary: statusSummary,
           detail: detailParts.join("\n"),
           tags: ["session-record"],
           scope,
@@ -295,6 +323,7 @@ export function registerRecordTools(
 
         // 2. Create decision records — each item is either NL (string) or structured object.
         const decisionErrors: string[] = [];
+        const droppedDependsOnIds = new Set<string>();
         if (args.decisions?.length) {
           for (const item of args.decisions) {
             const input =
@@ -320,6 +349,11 @@ export function registerRecordTools(
                 id: decision.id,
                 summary: input.summary,
               });
+              if (decision.dropped_depends_on?.length) {
+                for (const id of decision.dropped_depends_on) {
+                  droppedDependsOnIds.add(id);
+                }
+              }
             } catch (error) {
               const message =
                 error instanceof Error ? error.message : String(error);
@@ -330,15 +364,23 @@ export function registerRecordTools(
           }
         }
 
-        // 3. Create finding/warning/need entries
+        // 3. Create finding/warning/need entries. Over-length findings are
+        // truncated (full text preserved in detail) rather than rejected,
+        // and a post that genuinely fails is surfaced in findingErrors
+        // instead of vanishing into a bare catch (see decision C).
+        const findingErrors: string[] = [];
         if (args.findings?.length) {
           for (const text of args.findings) {
             const parsed = parseFinding(text);
+            const { summary: findingSummary, truncated: findingTruncated } =
+              truncateSummary(parsed.summary);
             try {
               const entry = await blackboardEngine.post({
                 entry_type: parsed.entry_type,
-                summary: parsed.summary,
-                detail: "",
+                summary: findingSummary,
+                detail: findingTruncated
+                  ? `Full summary: ${parsed.summary}`
+                  : "",
                 tags: ["session-record"],
                 scope,
                 agent_id: agentId,
@@ -346,10 +388,14 @@ export function registerRecordTools(
               createdFindings.push({
                 id: entry.id,
                 entry_type: parsed.entry_type,
-                summary: parsed.summary,
+                summary: findingSummary,
               });
-            } catch {
-              // Non-fatal
+            } catch (error) {
+              const message =
+                error instanceof Error ? error.message : String(error);
+              findingErrors.push(
+                `"${parsed.summary.slice(0, 80)}${parsed.summary.length > 80 ? "…" : ""}": ${message}`,
+              );
             }
           }
         }
@@ -359,6 +405,12 @@ export function registerRecordTools(
         if (createdFindings.length > 0) parts.push(`${createdFindings.length} finding(s)`);
         if (decisionErrors.length > 0)
           parts.push(`${decisionErrors.length} decision error(s)`);
+        if (findingErrors.length > 0)
+          parts.push(`${findingErrors.length} finding(s) failed`);
+        if (droppedDependsOnIds.size > 0)
+          parts.push(
+            `ignored ${droppedDependsOnIds.size} unknown depends_on id(s): ${[...droppedDependsOnIds].join(", ")}`,
+          );
 
         const response: Record<string, unknown> = {
           status_entry_id: statusEntry.id,
@@ -368,6 +420,12 @@ export function registerRecordTools(
           message: parts.join(" + "),
         };
         if (decisionErrors.length > 0) response.decision_errors = decisionErrors;
+        if (findingErrors.length > 0) response.finding_errors = findingErrors;
+        if (droppedDependsOnIds.size > 0)
+          response.dropped_depends_on = [...droppedDependsOnIds];
+        if (summaryTruncated) {
+          response.message = `${response.message as string} (summary truncated to 200 chars — full text in detail)`;
+        }
 
         // #18: one deterministic quality nudge per server lifetime — a
         // substantial record with zero findings usually means discoveries

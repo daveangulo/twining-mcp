@@ -136,10 +136,10 @@
     "properties": {
       "description": "MCP tool handlers: twining_decide, twining_why, twining_trace, twining_commits",
       "layer": "tools",
-      "scope": "src/"
+      "scope": "src/tools/"
     },
     "created_at": "2026-02-17T03:13:37.412Z",
-    "updated_at": "2026-05-05T16:07:06.555Z"
+    "updated_at": "2026-07-04T20:29:11.623Z"
   },
   {
     "id": "01KHMSDMRQ5HSX2W6SBDT3RND2",
@@ -1925,10 +1925,10 @@
     "name": "src/engine/decisions.ts",
     "type": "file",
     "properties": {
-      "scope": "src/"
+      "scope": "src/tools/"
     },
     "created_at": "2026-03-14T05:48:32.106Z",
-    "updated_at": "2026-05-05T16:07:06.544Z"
+    "updated_at": "2026-07-04T20:29:11.621Z"
   },
   {
     "id": "01KKNE77ZVVMYK85M8D45XSR9D",
@@ -2497,10 +2497,10 @@
     "name": "src/tools/record-tools.ts",
     "type": "file",
     "properties": {
-      "scope": "plugin/hooks/"
+      "scope": "src/tools/"
     },
     "created_at": "2026-04-24T22:57:00.136Z",
-    "updated_at": "2026-05-05T15:34:07.605Z"
+    "updated_at": "2026-07-04T20:29:11.618Z"
   },
   {
     "id": "01KQ0VBWQAKWPFTYMPNE3X364C",
@@ -3738,5 +3738,16 @@
     },
     "created_at": "2026-07-04T05:30:27.034Z",
     "updated_at": "2026-07-04T05:30:27.034Z"
+  },
+  {
+    "id": "01KWQD4922NFYHZJHX18DZ69M4",
+    "name": "01KWQD48ZPSMZZSQ34WNBK28TJ",
+    "type": "concept",
+    "properties": {
+      "summary": "depends_on validation surfaces via an additive optional dropped_depends_on field on decide()'s existing return",
+      "scope": "src/tools/"
+    },
+    "created_at": "2026-07-04T20:29:11.618Z",
+    "updated_at": "2026-07-04T20:29:11.618Z"
   }
 ]

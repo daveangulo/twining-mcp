@@ -147,6 +147,7 @@ export class DecisionEngine {
     id: string;
     timestamp: string;
     conflicts?: { id: string; summary: string }[];
+    dropped_depends_on?: string[];
   }> {
     // Validate required fields
     if (!input.domain) {
@@ -182,6 +183,18 @@ export class DecisionEngine {
         entry.summary !== input.summary,
     );
 
+    // Validate depends_on against the decision store — dangling ids (e.g. from a
+    // stale twining_why/assemble snapshot, or a typo) are dropped rather than
+    // persisted silently. The caller is told which ids were ignored so it can
+    // decide whether that's a real problem, instead of trace()/graph walks
+    // later hitting nonexistent nodes.
+    const knownIds = new Set(index.map((entry) => entry.id));
+    const requestedDependsOn = input.depends_on ?? [];
+    const validDependsOn = requestedDependsOn.filter((id) => knownIds.has(id));
+    const droppedDependsOn = requestedDependsOn.filter(
+      (id) => !knownIds.has(id),
+    );
+
     // Normalize alternatives: ensure pros/cons arrays exist
     const alternatives = (input.alternatives ?? []).map((alt) => ({
       option: alt.option,
@@ -206,7 +219,7 @@ export class DecisionEngine {
       rationale: input.rationale,
       constraints: input.constraints ?? [],
       alternatives,
-      depends_on: input.depends_on ?? [],
+      depends_on: validDependsOn,
       supersedes: input.supersedes,
       confidence: (input.confidence ?? "medium") as DecisionConfidence,
       reversible: input.reversible ?? true,
@@ -286,7 +299,7 @@ export class DecisionEngine {
         {
           affected_files: decision.affected_files,
           affected_symbols: decision.affected_symbols,
-          depends_on: input.depends_on,
+          depends_on: validDependsOn,
           supersedes: input.supersedes,
           commit_hash: input.commit_hash,
           scope: decision.scope,
@@ -300,6 +313,7 @@ export class DecisionEngine {
       id: string;
       timestamp: string;
       conflicts?: { id: string; summary: string }[];
+      dropped_depends_on?: string[];
     } = { id: decision.id, timestamp: decision.timestamp };
 
     if (conflicts.length > 0) {
@@ -307,6 +321,10 @@ export class DecisionEngine {
         id: c.id,
         summary: c.summary,
       }));
+    }
+
+    if (droppedDependsOn.length > 0) {
+      result.dropped_depends_on = droppedDependsOn;
     }
 
     return result;

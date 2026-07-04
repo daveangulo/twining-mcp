@@ -2864,5 +2864,21 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KWQD48ZPSMZZSQ34WNBK28TJ",
+    "timestamp": "2026-07-04T20:29:11.542Z",
+    "domain": "deployment",
+    "scope": "src/tools/",
+    "summary": "depends_on validation surfaces via an additive optional dropped_depends_on field on decide()'s existing return",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/tools/record-tools.ts",
+      "src/engine/decisions.ts",
+      "src/tools/decision-tools.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]

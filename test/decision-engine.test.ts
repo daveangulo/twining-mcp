@@ -133,6 +133,54 @@ describe("DecisionEngine.decide", () => {
   });
 });
 
+describe("DecisionEngine.decide — depends_on validation (decision F)", () => {
+  it("drops unknown depends_on ids and reports them, keeping only the valid id", async () => {
+    const valid = await decisionEngine.decide(
+      validDecisionInput({ summary: "Foundation decision" }),
+    );
+
+    const result = await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Dependent decision",
+        depends_on: [valid.id, "01NOTREALDECISIONIDXXXXXXX", "01ALSOFAKEDECISIONIDXXXXXX"],
+      }),
+    );
+
+    expect(result.dropped_depends_on).toBeDefined();
+    expect(result.dropped_depends_on).toEqual(
+      expect.arrayContaining([
+        "01NOTREALDECISIONIDXXXXXXX",
+        "01ALSOFAKEDECISIONIDXXXXXX",
+      ]),
+    );
+    expect(result.dropped_depends_on!.length).toBe(2);
+
+    const stored = await decisionStore.get(result.id);
+    expect(stored!.depends_on).toEqual([valid.id]);
+  });
+
+  it("does not set dropped_depends_on when all depends_on ids are valid (regression)", async () => {
+    const d1 = await decisionEngine.decide(
+      validDecisionInput({ summary: "Root decision" }),
+    );
+    const result = await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Dependent decision",
+        depends_on: [d1.id],
+      }),
+    );
+
+    expect(result.dropped_depends_on).toBeUndefined();
+    const stored = await decisionStore.get(result.id);
+    expect(stored!.depends_on).toEqual([d1.id]);
+  });
+
+  it("omits dropped_depends_on entirely when depends_on is not provided", async () => {
+    const result = await decisionEngine.decide(validDecisionInput());
+    expect(result.dropped_depends_on).toBeUndefined();
+  });
+});
+
 describe("DecisionEngine.decide with commit_hash", () => {
   it("creates decision with commit_hashes when commit_hash provided", async () => {
     const result = await decisionEngine.decide(

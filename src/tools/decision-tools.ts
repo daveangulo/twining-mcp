@@ -97,7 +97,11 @@ export function registerDecisionTools(
       try {
         const result = await engine.decide(args);
         writeRecordSentinel(twiningDir);
-        return toolResult(result);
+        const response: Record<string, unknown> = { ...result };
+        if (result.dropped_depends_on && result.dropped_depends_on.length > 0) {
+          response.message = `ignored ${result.dropped_depends_on.length} unknown depends_on id(s): ${result.dropped_depends_on.join(", ")}`;
+        }
+        return toolResult(response);
       } catch (e) {
         if (e instanceof TwiningError) {
           return toolError(e.message, e.code);
