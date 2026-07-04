@@ -59,6 +59,7 @@ export class BlackboardEngine {
     relates_to?: string[];
     agent_id?: string;
     _internal?: boolean;
+    _skipAutoArchive?: boolean;
   }): Promise<{ id: string; timestamp: string }> {
     // Validate entry_type
     if (!ENTRY_TYPES.includes(input.entry_type as EntryType)) {
@@ -123,9 +124,16 @@ export class BlackboardEngine {
     }
 
     // Auto-archive if threshold exceeded (fire-and-forget, non-fatal) — spec §6.1.3
-    if (this.archiver && this.archiveThreshold) {
-      const { total_count } = await this.store.read();
-      if (total_count >= this.archiveThreshold) {
+    // Counts only archivable entries: decisions are never archived while
+    // keep_decisions defaults true, and entries tagged "archive" are the
+    // archiver's own summary posts — including either in the count would let
+    // the trigger permanently re-arm itself (the archive-loop field bug).
+    if (this.archiver && this.archiveThreshold && !input._skipAutoArchive) {
+      const { entries } = await this.store.read();
+      const archivableCount = entries.filter(
+        (e) => e.entry_type !== "decision" && !(e.tags ?? []).includes("archive"),
+      ).length;
+      if (archivableCount >= this.archiveThreshold) {
         this.archiver.archive({ summarize: true }).catch((err) => {
           console.error("[twining] Auto-archive failed (non-fatal):", err);
         });

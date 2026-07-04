@@ -350,6 +350,121 @@ describe("twining_record — regression (existing NL path)", () => {
   });
 });
 
+describe("twining_record — status summary truncation (decision B)", () => {
+  it("succeeds with a 250-char summary: stored entry is truncated, full text in detail, response notes truncation", async () => {
+    const longSummary = "S".repeat(250);
+    const resp = await callTool("twining_record", {
+      summary: longSummary,
+      scope: "src/x/",
+    });
+
+    const body = parseToolResponse(resp) as {
+      status_entry_id: string;
+      message: string;
+    };
+    expect(body.status_entry_id).toBeTruthy();
+    expect(body.message).toContain("summary truncated to 200 chars");
+
+    const { entries } = await bbEngine.read({ entry_types: ["status"] });
+    const entry = entries.find((e) => e.id === body.status_entry_id)!;
+    expect(entry.summary.length).toBeLessThanOrEqual(200);
+    expect(entry.summary).toBe(longSummary.slice(0, 197) + "…");
+    expect(entry.summary.endsWith("…")).toBe(true);
+    expect(entry.detail).toContain(`Full summary: ${longSummary}`);
+  });
+
+  it("does not truncate a summary within the 200-char limit", async () => {
+    const resp = await callTool("twining_record", {
+      summary: "A short summary",
+      scope: "src/x/",
+    });
+    const body = parseToolResponse(resp) as { message: string };
+    expect(body.message).not.toContain("truncated");
+  });
+});
+
+describe("twining_record — finding truncation and error surfacing (decision C)", () => {
+  it("creates a finding with a 250-char summary: truncated summary, full text in detail", async () => {
+    const longFinding = "F".repeat(250);
+    const resp = await callTool("twining_record", {
+      summary: "Session with a long finding",
+      scope: "src/x/",
+      findings: [longFinding],
+    });
+
+    const body = parseToolResponse(resp) as {
+      findings_created: Array<{ id: string; summary: string }>;
+    };
+    expect(body.findings_created.length).toBe(1);
+    expect(body.findings_created[0]!.summary.length).toBeLessThanOrEqual(200);
+    expect(body.findings_created[0]!.summary).toBe(
+      longFinding.slice(0, 197) + "…",
+    );
+    expect(body.findings_created[0]!.summary.endsWith("…")).toBe(true);
+
+    const { entries } = await bbEngine.read({ entry_types: ["finding"] });
+    const entry = entries.find((e) => e.id === body.findings_created[0]!.id)!;
+    expect(entry.detail).toContain(`Full summary: ${longFinding}`);
+  });
+
+  it("surfaces a genuinely failed finding post in the response without dropping other findings", async () => {
+    const originalPost = bbEngine.post.bind(bbEngine);
+    let calls = 0;
+    bbEngine.post = (async (input: Parameters<typeof originalPost>[0]) => {
+      calls++;
+      // First call is the status post; second call is the first finding — fail only that one.
+      if (calls === 2) {
+        throw new Error("simulated post failure");
+      }
+      return originalPost(input);
+    }) as typeof bbEngine.post;
+
+    const resp = await callTool("twining_record", {
+      summary: "Session with one failing finding",
+      scope: "src/x/",
+      findings: ["this one fails", "this one succeeds"],
+    });
+
+    bbEngine.post = originalPost;
+
+    const body = parseToolResponse(resp) as {
+      findings_created: Array<{ id: string; summary: string }>;
+      finding_errors?: string[];
+      message: string;
+    };
+    expect(body.findings_created.length).toBe(1);
+    expect(body.findings_created[0]!.summary).toBe("this one succeeds");
+    expect(body.finding_errors).toBeDefined();
+    expect(body.finding_errors!.length).toBe(1);
+    expect(body.finding_errors![0]).toContain("simulated post failure");
+    expect(body.message).toContain("1 finding(s) failed");
+  });
+});
+
+describe("twining_record — depends_on validation surfacing (decision F)", () => {
+  it("mentions ignored unknown depends_on ids when a decision references them", async () => {
+    const resp = await callTool("twining_record", {
+      summary: "Session with a decision that depends on a fake id",
+      scope: "src/x/",
+      decisions: [
+        {
+          summary: "Chose the thing",
+          rationale: "Because reasons.",
+        },
+      ],
+      depends_on: ["01NOTREALDECISIONIDXXXXXXX", "01ALSOFAKEDECISIONIDXXXXXX"],
+    });
+
+    const body = parseToolResponse(resp) as {
+      message: string;
+      dropped_depends_on?: string[];
+    };
+    expect(body.dropped_depends_on).toBeDefined();
+    expect(body.dropped_depends_on!.length).toBe(2);
+    expect(body.message).toContain("ignored 2 unknown depends_on id(s)");
+  });
+});
+
 describe("twining_record — sentinel for pre-commit hook", () => {
   it("writes .last-record with a current unix timestamp on success", async () => {
     const before = Math.floor(Date.now() / 1000);

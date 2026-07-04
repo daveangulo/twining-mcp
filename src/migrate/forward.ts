@@ -36,6 +36,7 @@ import { RecordExporter } from "../storage/sync/record-export.js";
 import { ingestRecords } from "../storage/sync/record-ingest.js";
 import { setStorageBackend } from "./config-edit.js";
 import { verifyContains, type ReadModelStores, type VerifyResult } from "./verify.js";
+import type { Decision } from "../utils/types.js";
 
 export interface ForwardOptions {
   projectRoot: string;
@@ -51,6 +52,14 @@ export interface MigrateReport extends VerifyResult {
   configBackup: string | null;
   configHadComments: boolean;
   notes: string[];
+  /**
+   * Decision files found on disk (decisions/*.json) but absent from
+   * decisions/index.json — a historical write-path desync some field repos
+   * hit. Forward migration salvages them by directory scan instead of
+   * silently dropping them (see migrateForward's export step). Always 0 for
+   * migrateReverse, which has no file-index desync to heal.
+   */
+  orphans_salvaged: number;
 }
 
 /**
@@ -123,6 +132,7 @@ export async function migrateForward(opts: ForwardOptions): Promise<MigrateRepor
       ok: true, counts, missing: [], mismatched: [],
       dryRun: true, verified: false, finalized: false,
       configBackup: null, configHadComments: false, notes,
+      orphans_salvaged: 0,
     };
   }
 
@@ -141,8 +151,11 @@ export async function migrateForward(opts: ForwardOptions): Promise<MigrateRepor
       dryRun: false, verified: false, finalized: false,
       configBackup: null, configHadComments: false,
       notes: [...notes, "not migrated — twining.db absent"],
+      orphans_salvaged: 0,
     };
   }
+
+  let orphansSalvaged = 0;
 
   if (!opts.checkOnly) {
     // 1. Export: file stores → per-ULID records tree (deterministic bytes).
@@ -150,9 +163,45 @@ export async function migrateForward(opts: ForwardOptions): Promise<MigrateRepor
     for (const entry of (await legacy.blackboardStore.read()).entries) {
       exporter.post(entry);
     }
+    const indexedDecisionIds = new Set<string>();
     for (const ix of await legacy.decisionStore.getIndex()) {
+      indexedDecisionIds.add(ix.id);
       const decision = await legacy.decisionStore.get(ix.id);
       if (decision) exporter.decision(decision);
+    }
+    // Orphan salvage: decision files can exist on disk without a matching
+    // decisions/index.json entry (a historical write-path desync some field
+    // repos hit — 109 orphans in one). Every read path above is index-
+    // driven, so those files would otherwise be silently excluded from the
+    // migration and verification (also index-driven) would still pass —
+    // the desync becomes permanent data loss the moment legacy files stop
+    // being consulted. Close that gap with a direct directory scan, unioned
+    // with the index ids, so every readable decision file gets exported.
+    const decisionsDir = path.join(twiningDir, "decisions");
+    if (fs.existsSync(decisionsDir)) {
+      for (const file of fs.readdirSync(decisionsDir)) {
+        if (file === "index.json" || !file.endsWith(".json")) continue;
+        const id = file.slice(0, -".json".length);
+        if (indexedDecisionIds.has(id)) continue; // already exported via the index
+        try {
+          const raw = fs.readFileSync(path.join(decisionsDir, file), "utf-8");
+          const orphan = JSON.parse(raw) as Decision;
+          exporter.decision(orphan);
+          orphansSalvaged++;
+        } catch (err) {
+          // Never delete on parse failure — just skip and warn, matching
+          // the "legacy files are their own backup, never modified" rule.
+          console.error(
+            `[twining] migrate: skipping unparseable decision file decisions/${file} (left on disk):`,
+            err,
+          );
+        }
+      }
+    }
+    if (orphansSalvaged > 0) {
+      notes.push(
+        `salvaged ${orphansSalvaged} decision(s) present on disk but missing from decisions/index.json (index desync) — they are now in the database`,
+      );
     }
     for (const entity of await legacy.graphStore.getEntities()) {
       exporter.entity(entity);
@@ -185,6 +234,7 @@ export async function migrateForward(opts: ForwardOptions): Promise<MigrateRepor
       return {
         ...verdict, dryRun: false, verified: verdict.ok, finalized: false,
         configBackup: null, configHadComments: false, notes,
+        orphans_salvaged: orphansSalvaged,
       };
     }
 
@@ -196,6 +246,7 @@ export async function migrateForward(opts: ForwardOptions): Promise<MigrateRepor
     return {
       ...verdict, dryRun: false, verified: true, finalized: true,
       configBackup: edit.backedUpTo, configHadComments: edit.hadComments, notes,
+      orphans_salvaged: orphansSalvaged,
     };
   } finally {
     db.close();

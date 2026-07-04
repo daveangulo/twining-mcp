@@ -2762,5 +2762,140 @@
     "affected_files": [],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KWNR9MQXG8NXX3SW1NXYXQ1F",
+    "timestamp": "2026-07-04T05:05:52.893Z",
+    "domain": "implementation",
+    "scope": "project",
+    "summary": "Proposed (pending Dave's approval): the v2 backend default flip must use a legacy-detection resolution rule",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/plans/2026-07-04-v2.0-prep-proposal.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWNR9MVBGNCFNFV4PTSA94WJ",
+    "timestamp": "2026-07-04T05:05:53.003Z",
+    "domain": "data-model",
+    "scope": "project",
+    "summary": "Proposed (pending approval): recommend startup NUDGE over FOUNDATION-PLAN's auto-migration",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/plans/2026-07-04-v2.0-prep-proposal.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWNR9MYF641JEKA9RG3AVNMS",
+    "timestamp": "2026-07-04T05:05:53.103Z",
+    "domain": "testing",
+    "scope": "project",
+    "summary": "Proposed (pending approval): v2.0.0-beta ships under npm dist-tag next, never latest",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/plans/2026-07-04-v2.0-prep-proposal.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWNSPKV8AE6VH87QP1ZWG6NZ",
+    "timestamp": "2026-07-04T05:30:26.537Z",
+    "domain": "deployment",
+    "scope": "src/",
+    "summary": "Auto-archive trigger counts only archivable entries (excludes decision cross-posts and archive-tagged summaries) and the archiver's summary post carries _skipAutoArchive",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/plans/2026-07-04-1.24.0-field-findings.md",
+      "docs/superpowers/plans/2026-07-04-v2.0-prep-proposal.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWNSPKZWPPYZ3HJ4QPS1BXHN",
+    "timestamp": "2026-07-04T05:30:26.684Z",
+    "domain": "data-model",
+    "scope": "src/",
+    "summary": "twining_record truncates over-length summaries/findings (full text preserved in detail) instead of rejecting",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/plans/2026-07-04-1.24.0-field-findings.md",
+      "docs/superpowers/plans/2026-07-04-v2.0-prep-proposal.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWNSPM43J8D0SSGXNV37H7RB",
+    "timestamp": "2026-07-04T05:30:26.819Z",
+    "domain": "data-model",
+    "scope": "src/",
+    "summary": "Subagent-stop hook posts nothing when agent identity is unknown",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/plans/2026-07-04-1.24.0-field-findings.md",
+      "docs/superpowers/plans/2026-07-04-v2.0-prep-proposal.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWNSPM8A4Q26CNYAXXF15KT9",
+    "timestamp": "2026-07-04T05:30:26.954Z",
+    "domain": "performance",
+    "scope": "src/",
+    "summary": "migrateForward enumerates decisions by directory scan unioned with the index",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/plans/2026-07-04-1.24.0-field-findings.md",
+      "docs/superpowers/plans/2026-07-04-v2.0-prep-proposal.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWQD48ZPSMZZSQ34WNBK28TJ",
+    "timestamp": "2026-07-04T20:29:11.542Z",
+    "domain": "deployment",
+    "scope": "src/tools/",
+    "summary": "depends_on validation surfaces via an additive optional dropped_depends_on field on decide()'s existing return",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/tools/record-tools.ts",
+      "src/engine/decisions.ts",
+      "src/tools/decision-tools.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWQFW68JE8WBKAP1STHNJKF3",
+    "timestamp": "2026-07-04T21:17:12.338Z",
+    "domain": "implementation",
+    "scope": "src/engine/",
+    "summary": "Pending drain uses per-drain unique swap files with claim-by-rename recovery",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/engine/pending-processor.ts",
+      "src/server.ts",
+      "src/migrate/forward.ts",
+      "src/migrate/reverse.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]

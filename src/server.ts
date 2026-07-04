@@ -203,6 +203,18 @@ export function createServer(projectRoot: string): ServerContext {
     console.error("[twining] Pending processor failed (non-fatal):", err);
   });
 
+  // Periodic drain: startup alone left posts stuck for the lifetime of a
+  // long-running server (field repos saw multi-day-old queued posts). The
+  // rename-based swap in PendingProcessor makes repeated draining safe —
+  // at-least-once semantics: a rare race with another server process
+  // draining concurrently can duplicate a post, it can never lose one.
+  const drainTimer = setInterval(() => {
+    pendingProcessor.processPending().catch((err) => {
+      console.error("[twining] Periodic pending drain failed (non-fatal):", err);
+    });
+  }, 60_000);
+  drainTimer.unref();
+
   // Create MCP server with workflow instructions for non-plugin clients
   const server = new McpServer(
     {

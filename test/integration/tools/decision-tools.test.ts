@@ -46,6 +46,37 @@ describe("twining_decide", () => {
     const text = res.content[0]!.text;
     expect(text).toContain("error");
   });
+
+  it("drops unknown depends_on ids and mentions them in the response message (decision F)", async () => {
+    const res1 = await callTool(server, "twining_decide", validDecision);
+    const { id: validId } = parseToolResponse(res1) as { id: string };
+
+    const res = await callTool(server, "twining_decide", {
+      ...validDecision,
+      summary: "Dependent decision",
+      depends_on: [validId, "01NOTREALDECISIONIDXXXXXXX", "01ALSOFAKEDECISIONIDXXXXXX"],
+    });
+    const parsed = parseToolResponse(res) as {
+      dropped_depends_on?: string[];
+      message?: string;
+    };
+    expect(parsed.dropped_depends_on).toBeDefined();
+    expect(parsed.dropped_depends_on!.length).toBe(2);
+    expect(parsed.message).toContain("ignored 2 unknown depends_on id(s)");
+  });
+
+  it("does not include dropped_depends_on when all ids are valid (regression)", async () => {
+    const res1 = await callTool(server, "twining_decide", validDecision);
+    const { id: validId } = parseToolResponse(res1) as { id: string };
+
+    const res = await callTool(server, "twining_decide", {
+      ...validDecision,
+      summary: "Dependent decision",
+      depends_on: [validId],
+    });
+    const parsed = parseToolResponse(res) as { dropped_depends_on?: string[] };
+    expect(parsed.dropped_depends_on).toBeUndefined();
+  });
 });
 
 describe("twining_why", () => {

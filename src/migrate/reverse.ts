@@ -120,6 +120,7 @@ export async function migrateReverse(
         ok: true, counts, missing: [], mismatched: [],
         dryRun: true, verified: false, finalized: false,
         configBackup: null, configHadComments: false, notes,
+        orphans_salvaged: 0,
       };
     }
 
@@ -203,6 +204,7 @@ export async function migrateReverse(
       return {
         ...verdict, dryRun: false, verified: false, finalized: false,
         configBackup: null, configHadComments: false, notes,
+        orphans_salvaged: 0,
       };
     }
 
@@ -210,6 +212,7 @@ export async function migrateReverse(
     return {
       ...verdict, dryRun: false, verified: true, finalized: true,
       configBackup: edit.backedUpTo, configHadComments: edit.hadComments, notes,
+      orphans_salvaged: 0,
     };
   } finally {
     db.close();

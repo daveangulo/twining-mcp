@@ -75,6 +75,61 @@ describe("subagent-stop-hook.sh", () => {
     });
   });
 
+  it("falls back to agent_name when agent_type is absent", () => {
+    fs.mkdirSync(path.join(dir, ".twining"));
+    const result = runHook({
+      script: "subagent-stop-hook.sh",
+      stdin: JSON.stringify({ agent_name: "gsd-executor" }),
+      cwd: dir,
+    });
+    expect(result.exitCode).toBe(0);
+    const pendingPath = path.join(dir, ".twining", "pending-posts.jsonl");
+    const lines = fs
+      .readFileSync(pendingPath, "utf-8")
+      .split("\n")
+      .filter((l) => l.trim().length > 0);
+    expect(lines).toHaveLength(1);
+    const post = JSON.parse(lines[0]!);
+    expect(post).toMatchObject({
+      summary: "Subagent completed: gsd-executor",
+      agent_id: "gsd-executor",
+    });
+  });
+
+  it("falls back to description when agent_type and agent_name are absent", () => {
+    fs.mkdirSync(path.join(dir, ".twining"));
+    const result = runHook({
+      script: "subagent-stop-hook.sh",
+      stdin: JSON.stringify({ description: "refactor auth module" }),
+      cwd: dir,
+    });
+    expect(result.exitCode).toBe(0);
+    const pendingPath = path.join(dir, ".twining", "pending-posts.jsonl");
+    const lines = fs
+      .readFileSync(pendingPath, "utf-8")
+      .split("\n")
+      .filter((l) => l.trim().length > 0);
+    expect(lines).toHaveLength(1);
+    const post = JSON.parse(lines[0]!);
+    expect(post).toMatchObject({
+      summary: "Subagent completed: refactor auth module",
+      agent_id: "refactor auth module",
+    });
+  });
+
+  it("posts nothing when agent_type, agent_name, and description are all absent", () => {
+    fs.mkdirSync(path.join(dir, ".twining"));
+    const result = runHook({
+      script: "subagent-stop-hook.sh",
+      stdin: JSON.stringify({ transcript_path: "/tmp/foo.jsonl" }),
+      cwd: dir,
+    });
+    expect(result.exitCode).toBe(0);
+    expect(
+      fs.existsSync(path.join(dir, ".twining", "pending-posts.jsonl")),
+    ).toBe(false);
+  });
+
   it("appends when pending-posts.jsonl already has queued entries", () => {
     const twining = path.join(dir, ".twining");
     fs.mkdirSync(twining);
