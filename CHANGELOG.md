@@ -2,6 +2,13 @@
 
 All notable changes to Twining MCP are documented here.
 
+## [1.23.0] - 2026-07-03
+
+`twining-mcp migrate` — W3 of the v2 foundation plan (`docs/FOUNDATION-PLAN.md`). CLI-only; no MCP tool-surface, plugin, or file-backend behavior changes.
+
+### Added
+- **`twining-mcp migrate [--project <dir>] [--dry-run] [--check] [--reverse]`.** Moves an existing file-backend `.twining/` to the opt-in sqlite backend, and back. Not a special importer: forward migration writes the per-ULID `records/` export tree from the file stores and runs the ordinary ingest, so every parsing and safety rule is the shipped W2.2/W2.3 one. Verified before finalizing — every record readable from the source backend must exist byte-identically in the target or the tool exits 1 without touching config.yml. Idempotent: re-running picks up straggler writes made to the legacy files by stale clients. Legacy files are never modified or deleted (config.yml is the one exception — edited to flip `storage.backend`, first-wins backup at `config.yml.pre-migrate.bak`); finalize also heals legacy `.twining/.gitignore` files that predate the `twining.db*` ignore lines. `--reverse` regenerates the full file-backend layout from the sqlite read model so nobody is locked in (overwritten layout backed up to `pre-reverse-backup/`; the now-frozen `records/` tree comes with a printed warning). Guards refuse the destructive edge cases outright: re-running forward against a sqlite project with `export_records: false`, reversing an already-reversed project, and incompatible flag combos (`--reverse --check`, `--dry-run --check`). Embeddings are not migrated — the sqlite backend rebuilds them by content hash on first start (1.22.0). `config.version` stays 1: the format-v2 flip ships with v2.0, not here. Acceptance: migrating this repo's own committed `.twining/` (160 decisions, 296 blackboard entries, 347 graph entities — including pre-provenance records from before 1.19) verifies diff-clean, double-migration is a no-op, and the reverse round-trip holds.
+
 ## [1.22.0] - 2026-07-03
 
 Live git sync for the sqlite backend — W2.3 phase 2 of the v2 foundation plan (`docs/FOUNDATION-PLAN.md`). Sqlite-backend-only; no tool-surface, plugin, or file-backend changes.

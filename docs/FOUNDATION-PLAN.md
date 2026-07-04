@@ -11,8 +11,8 @@ Companion to [DESIGN-REVIEW-2026-07.md](./DESIGN-REVIEW-2026-07.md). That docume
 | W2.1 storage interfaces (file impl underneath, shared dashboard instances) | ✅ done | server 1.21.0 |
 | W2.2 SQLite backend (opt-in `storage.backend`, node:sqlite, warn-and-fallback, multiwriter soak) | ✅ done | server 1.21.0 |
 | W2.3 git sync — phase 1: per-ULID export tree + startup ingest | ✅ done | server 1.21.0 |
-| W2.3 git sync — phase 2: live re-ingest on git changes + content-hash re-embedding | 🚧 in progress | targeted at server 1.22.0 |
-| W3 migration tool (`twining-mcp migrate`) | ⬜ next after W2.3 | v2.0.0 |
+| W2.3 git sync — phase 2: live re-ingest on git changes + content-hash re-embedding | ✅ done | server 1.22.0 |
+| W3 migration tool (`twining-mcp migrate`, files ⇄ sqlite, verify-gated) | ✅ done (v2-gated parts open: version-2 flip, startup auto-migration) | server 1.23.0 |
 | W4 repo-scoped daemon | ⬜ not started | v2.1.0 |
 | W5 surface & hygiene (BEHAVIORS.md 35 tools, CI token budget, STATE.md) | ✅ ongoing, current | server 1.21.1 / plugin 1.10.1 |
 

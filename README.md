@@ -198,7 +198,7 @@ tools:
 
 ## How It Works
 
-All state lives in `.twining/` as plain files — JSONL for the blackboard, JSON for decisions, graph, agents, and handoffs. Everything is `jq`-queryable, `grep`-able, and git-diffable. No database. No cloud. No accounts.
+All state lives in `.twining/` as plain files — JSONL for the blackboard, JSON for decisions, graph, agents, and handoffs. Everything is `jq`-queryable, `grep`-able, and git-diffable. No cloud. No accounts. (An opt-in local SQLite backend is available — the database is a gitignored derived cache and the committed truth stays plain JSON files; see "Migrating to the SQLite Backend" below.)
 
 **Architecture layers:**
 
@@ -209,6 +209,28 @@ All state lives in `.twining/` as plain files — JSONL for the blackboard, JSON
 - **Tools** — MCP tool definitions validated with Zod, mapping 1:1 to the tool surface
 
 See [TWINING-DESIGN-SPEC.md](TWINING-DESIGN-SPEC.md) for the full specification.
+
+## Migrating to the SQLite Backend
+
+Since 1.21, Twining has an opt-in sqlite backend alongside the default file backend. `twining-mcp migrate` converts an existing file-backend `.twining/` in place — run it from your project root (or pass `--project <dir>` if `.twining/` lives elsewhere).
+
+```
+npx twining-mcp migrate --dry-run   # preview what would change, writes nothing
+npx twining-mcp migrate             # migrate to sqlite, then verify
+npx twining-mcp migrate --check     # re-verify a previously migrated project at any time
+npx twining-mcp migrate --reverse   # convert back to the file backend
+```
+
+- Stop any running twining sessions before migrating.
+- Verification must pass before anything is finalized — if it doesn't, the tool exits 1 and `config.yml` is left untouched.
+- Legacy files are never modified or deleted by the forward migration; only `config.yml` is edited (to flip `storage.backend`), with a first-wins backup at `config.yml.pre-migrate.bak`.
+- Afterwards, commit `.twining/records/`, `config.yml`, and `.gitignore` — the tool prints the exact `git add`/`git commit` commands to run; it never commits for you.
+- Teammates should update `twining-mcp` before pulling the migrated state.
+- Exit codes: `0` success, `1` verification/migration failure, `2` usage error.
+
+**Reverse caveat:** after `--reverse`, the `records/` tree and `twining.db` are frozen — re-run `migrate` before ever switching back to sqlite, or remove `.twining/records/` first. The overwritten file-backend layout is backed up to `pre-reverse-backup/`.
+
+Requires Node >= 22.13 (`node:sqlite`) for both the sqlite backend and the `migrate` command. See [docs/FOUNDATION-PLAN.md](docs/FOUNDATION-PLAN.md) (W3) for design details.
 
 ## FAQ
 

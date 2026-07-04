@@ -2597,5 +2597,170 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KWMYW8EYSG7H5MWVSS19AZYQ",
+    "timestamp": "2026-07-03T21:41:39.934Z",
+    "domain": "implementation",
+    "scope": "src/migrate/",
+    "summary": "W3 1.x migrate leaves config.version at 1 and only flips storage.backend",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/plans/2026-07-03-w3-migrate-tool.md",
+      "docs/FOUNDATION-PLAN.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWMYW8HA1TGCXRWNB26JD1EN",
+    "timestamp": "2026-07-03T21:41:40.010Z",
+    "domain": "data-model",
+    "scope": "src/migrate/",
+    "summary": "Migration verify uses subset-containment (source ⊆ target) rather than set equality",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/plans/2026-07-03-w3-migrate-tool.md",
+      "docs/FOUNDATION-PLAN.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWMYW8KA6NRARJDAWB3WCD2K",
+    "timestamp": "2026-07-03T21:41:40.074Z",
+    "domain": "data-model",
+    "scope": "src/migrate/",
+    "summary": "No legacy-v1/ full backup in the 1.x migrate",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/plans/2026-07-03-w3-migrate-tool.md",
+      "docs/FOUNDATION-PLAN.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWMYW8PEGZRWWBW1HJFDYCEG",
+    "timestamp": "2026-07-03T21:41:40.174Z",
+    "domain": "data-model",
+    "scope": "src/migrate/",
+    "summary": "Reverse migration leaves records/ and twining.db in place but prints a FROZEN warning with remediation commands",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "docs/superpowers/plans/2026-07-03-w3-migrate-tool.md",
+      "docs/FOUNDATION-PLAN.md"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWN25KRGBEC6KBNMMPNEFWKP",
+    "timestamp": "2026-07-03T22:39:12.144Z",
+    "domain": "data-model",
+    "scope": "src/migrate/",
+    "summary": "config.yml backup is first-wins (.pre-migrate.bak never overwritten)",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/migrate/config-edit.ts",
+      "test/migrate/config-edit.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWN4BCJVKH1X982JA0WDDS66",
+    "timestamp": "2026-07-03T23:17:18.555Z",
+    "domain": "deployment",
+    "scope": "src/migrate/",
+    "summary": "Forward migrate refuses to run when config is sqlite with export_records explicitly false",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/migrate/forward.ts",
+      "test/migrate/forward.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWN4BCMZV36MG4GN8N1RA5Q3",
+    "timestamp": "2026-07-03T23:17:18.623Z",
+    "domain": "data-model",
+    "scope": "src/migrate/",
+    "summary": "Migration finalize idempotently appends twining.db* lines to .twining/.gitignore",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/migrate/forward.ts",
+      "test/migrate/forward.test.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWN892XYHWDFBFBRVQP8E67A",
+    "timestamp": "2026-07-04T00:25:57.438Z",
+    "domain": "implementation",
+    "scope": "src/migrate/",
+    "summary": "Reverse under export_records:false SKIPS ingest and exports from the database alone",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/migrate/reverse.ts",
+      "test/migrate/reverse.test.ts",
+      "src/migrate/forward.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWN893175YCE3S3KR6F2F1KQ",
+    "timestamp": "2026-07-04T00:25:57.543Z",
+    "domain": "implementation",
+    "scope": "src/migrate/",
+    "summary": "pre-reverse-backup/ is deliberately LAST-WINS (unlike config-edit's first-wins .pre-migrate.bak): it means 'what this run is about to overwrite', which is what makes a mistaken second reverse recoverable.",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/migrate/reverse.ts",
+      "test/migrate/reverse.test.ts",
+      "src/migrate/forward.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWNBQZBKKX7W1E2403PN5CZW",
+    "timestamp": "2026-07-04T01:26:31.027Z",
+    "domain": "implementation",
+    "scope": "src/migrate/",
+    "summary": "Incompatible CLI flag combos are rejected at parse time (exit 2) rather than reinterpreted",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/migrate/cli.ts",
+      "test/migrate/cli.test.ts",
+      "src/index.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
+  },
+  {
+    "id": "01KWNEBH94BYK842FQVZB6VPT9",
+    "timestamp": "2026-07-04T02:12:09.124Z",
+    "domain": "performance",
+    "scope": "src/migrate/",
+    "summary": "Judged reverse --dry-run's twining.db mutation (ingestRecords runs before the dryRun early-return in reverse.ts) a non-blocking Low rather than a merge blocker",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]

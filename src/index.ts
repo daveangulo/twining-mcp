@@ -17,6 +17,14 @@ if (process.argv.includes("--version") || process.argv.includes("-v")) {
   process.exit(0);
 }
 
+// Explicit CLI subcommand — exits before the MCP stdio transport starts, so
+// console.log is safe on this path. Runs even under TWINING_DISABLED:
+// migration is a deliberate act.
+if (process.argv[2] === "migrate") {
+  const { runMigrateCli } = await import("./migrate/cli.js");
+  process.exit(await runMigrateCli(process.argv.slice(3)));
+}
+
 async function main(): Promise<void> {
   if (process.env.TWINING_DISABLED === "true") {
     process.exit(0);

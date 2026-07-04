@@ -548,10 +548,10 @@
     "name": "src/index.ts",
     "type": "file",
     "properties": {
-      "scope": "src/index.ts, test/server-startup.test.ts"
+      "scope": "src/migrate/"
     },
     "created_at": "2026-02-26T14:22:40.811Z",
-    "updated_at": "2026-05-05T05:17:10.017Z"
+    "updated_at": "2026-07-04T01:26:31.121Z"
   },
   {
     "id": "01KJD595ND5YACA06PBGYTRRXA",
@@ -3290,10 +3290,10 @@
     "name": "docs/FOUNDATION-PLAN.md",
     "type": "file",
     "properties": {
-      "scope": "docs/FOUNDATION-PLAN.md"
+      "scope": "src/migrate/"
     },
     "created_at": "2026-07-03T18:58:38.337Z",
-    "updated_at": "2026-07-03T18:58:38.485Z"
+    "updated_at": "2026-07-03T21:41:40.260Z"
   },
   {
     "id": "01KWMNHR44GXNT3XZXBRVX8MAA",
@@ -3430,5 +3430,216 @@
     },
     "created_at": "2026-07-03T19:59:38.912Z",
     "updated_at": "2026-07-03T19:59:38.912Z"
+  },
+  {
+    "id": "01KWMYW8GN6EMWS3FGXX0GRE8K",
+    "name": "01KWMYW8EYSG7H5MWVSS19AZYQ",
+    "type": "concept",
+    "properties": {
+      "summary": "W3 1.x migrate leaves config.version at 1 and only flips storage.backend",
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T21:41:39.989Z",
+    "updated_at": "2026-07-03T21:41:39.989Z"
+  },
+  {
+    "id": "01KWMYW8GP40R5K8EV8CGADYP8",
+    "name": "docs/superpowers/plans/2026-07-03-w3-migrate-tool.md",
+    "type": "file",
+    "properties": {
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T21:41:39.990Z",
+    "updated_at": "2026-07-03T21:41:40.257Z"
+  },
+  {
+    "id": "01KWMYW8JPGY9SV63A6AJE8ZPG",
+    "name": "01KWMYW8HA1TGCXRWNB26JD1EN",
+    "type": "concept",
+    "properties": {
+      "summary": "Migration verify uses subset-containment (source ⊆ target) rather than set equality",
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T21:41:40.054Z",
+    "updated_at": "2026-07-03T21:41:40.054Z"
+  },
+  {
+    "id": "01KWMYW8NRYPV70K3QX8YGKR54",
+    "name": "01KWMYW8KA6NRARJDAWB3WCD2K",
+    "type": "concept",
+    "properties": {
+      "summary": "No legacy-v1/ full backup in the 1.x migrate",
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T21:41:40.152Z",
+    "updated_at": "2026-07-03T21:41:40.152Z"
+  },
+  {
+    "id": "01KWMYW8S0F4Y2PC1CWGH6KKVB",
+    "name": "01KWMYW8PEGZRWWBW1HJFDYCEG",
+    "type": "concept",
+    "properties": {
+      "summary": "Reverse migration leaves records/ and twining.db in place but prints a FROZEN warning with remediation commands",
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T21:41:40.256Z",
+    "updated_at": "2026-07-03T21:41:40.256Z"
+  },
+  {
+    "id": "01KWN25KVAZQ8GEF44V3BP3DJM",
+    "name": "01KWN25KRGBEC6KBNMMPNEFWKP",
+    "type": "concept",
+    "properties": {
+      "summary": "config.yml backup is first-wins (.pre-migrate.bak never overwritten)",
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T22:39:12.234Z",
+    "updated_at": "2026-07-03T22:39:12.234Z"
+  },
+  {
+    "id": "01KWN25KVB4B5K8XR32QZ7J9P9",
+    "name": "src/migrate/config-edit.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T22:39:12.235Z",
+    "updated_at": "2026-07-03T22:39:12.235Z"
+  },
+  {
+    "id": "01KWN25KVD4ENKEWNTE40GQKFW",
+    "name": "test/migrate/config-edit.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T22:39:12.237Z",
+    "updated_at": "2026-07-03T22:39:12.237Z"
+  },
+  {
+    "id": "01KWN4BCMAGYTQ0NYV4HJHKF6G",
+    "name": "01KWN4BCJVKH1X982JA0WDDS66",
+    "type": "concept",
+    "properties": {
+      "summary": "Forward migrate refuses to run when config is sqlite with export_records explicitly false",
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T23:17:18.602Z",
+    "updated_at": "2026-07-03T23:17:18.602Z"
+  },
+  {
+    "id": "01KWN4BCMBDHY2MCTWESYG2VVW",
+    "name": "src/migrate/forward.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T23:17:18.603Z",
+    "updated_at": "2026-07-04T00:25:57.637Z"
+  },
+  {
+    "id": "01KWN4BCMD22J8B4CZT3P35HH5",
+    "name": "test/migrate/forward.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T23:17:18.605Z",
+    "updated_at": "2026-07-03T23:17:18.710Z"
+  },
+  {
+    "id": "01KWN4BCQKZCJ7VX98QWHG3HST",
+    "name": "01KWN4BCMZV36MG4GN8N1RA5Q3",
+    "type": "concept",
+    "properties": {
+      "summary": "Migration finalize idempotently appends twining.db* lines to .twining/.gitignore",
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-03T23:17:18.707Z",
+    "updated_at": "2026-07-03T23:17:18.707Z"
+  },
+  {
+    "id": "01KWN8930GGJ6JE8Y5GW8YNTS3",
+    "name": "01KWN892XYHWDFBFBRVQP8E67A",
+    "type": "concept",
+    "properties": {
+      "summary": "Reverse under export_records:false SKIPS ingest and exports from the database alone",
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-04T00:25:57.520Z",
+    "updated_at": "2026-07-04T00:25:57.520Z"
+  },
+  {
+    "id": "01KWN8930HYTTFYZFBKZ6NC9DD",
+    "name": "src/migrate/reverse.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-04T00:25:57.521Z",
+    "updated_at": "2026-07-04T00:25:57.632Z"
+  },
+  {
+    "id": "01KWN8930K4NJ69G2QG06BHSMZ",
+    "name": "test/migrate/reverse.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-04T00:25:57.523Z",
+    "updated_at": "2026-07-04T00:25:57.634Z"
+  },
+  {
+    "id": "01KWN8933ZN4TR3B33GXY2ZBGZ",
+    "name": "01KWN893175YCE3S3KR6F2F1KQ",
+    "type": "concept",
+    "properties": {
+      "summary": "pre-reverse-backup/ is deliberately LAST-WINS (unlike config-edit's first-wins .pre-migrate.bak): it means 'what this run is about to overwrite', which is what makes a mistaken second reverse recoverable.",
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-04T00:25:57.631Z",
+    "updated_at": "2026-07-04T00:25:57.631Z"
+  },
+  {
+    "id": "01KWNBQZECPT1R8CNM0K001NHD",
+    "name": "01KWNBQZBKKX7W1E2403PN5CZW",
+    "type": "concept",
+    "properties": {
+      "summary": "Incompatible CLI flag combos are rejected at parse time (exit 2) rather than reinterpreted",
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-04T01:26:31.116Z",
+    "updated_at": "2026-07-04T01:26:31.116Z"
+  },
+  {
+    "id": "01KWNBQZEDDCT6YH4D4W9K3P3S",
+    "name": "src/migrate/cli.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-04T01:26:31.117Z",
+    "updated_at": "2026-07-04T01:26:31.117Z"
+  },
+  {
+    "id": "01KWNBQZEFZR5KH8FE3B807TKF",
+    "name": "test/migrate/cli.test.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-04T01:26:31.119Z",
+    "updated_at": "2026-07-04T01:26:31.119Z"
+  },
+  {
+    "id": "01KWNEBHAKJDMVXB3YAVN1TBC0",
+    "name": "01KWNEBH94BYK842FQVZB6VPT9",
+    "type": "concept",
+    "properties": {
+      "summary": "Judged reverse --dry-run's twining.db mutation (ingestRecords runs before the dryRun early-return in reverse.ts) a non-blocking Low rather than a merge blocker",
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-04T02:12:09.171Z",
+    "updated_at": "2026-07-04T02:12:09.171Z"
   }
 ]

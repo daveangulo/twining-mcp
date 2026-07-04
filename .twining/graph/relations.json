@@ -5476,5 +5476,235 @@
       "decision_summary": "Fixed the multiwriter-soak crash-tolerance flake by giving the victim writer an unfinishable op budget (VICTIM_OPS = OPS*100)"
     },
     "created_at": "2026-07-03T19:59:38.927Z"
+  },
+  {
+    "id": "01KWMYW8GQG08PP554FFWMTXEG",
+    "source": "01KWMYW8GP40R5K8EV8CGADYP8",
+    "target": "01KWMYW8GN6EMWS3FGXX0GRE8K",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "W3 1.x migrate leaves config.version at 1 and only flips storage.backend"
+    },
+    "created_at": "2026-07-03T21:41:39.991Z"
+  },
+  {
+    "id": "01KWMYW8GSP2TJP1V366HTW8A2",
+    "source": "01KWMNHR416F2FYJZAX7X9Y6ZT",
+    "target": "01KWMYW8GN6EMWS3FGXX0GRE8K",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "W3 1.x migrate leaves config.version at 1 and only flips storage.backend"
+    },
+    "created_at": "2026-07-03T21:41:39.993Z"
+  },
+  {
+    "id": "01KWMYW8JRCFSSQC04D8YM49SA",
+    "source": "01KWMYW8GP40R5K8EV8CGADYP8",
+    "target": "01KWMYW8JPGY9SV63A6AJE8ZPG",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Migration verify uses subset-containment (source ⊆ target) rather than set equality"
+    },
+    "created_at": "2026-07-03T21:41:40.056Z"
+  },
+  {
+    "id": "01KWMYW8JT3CQ6R17TDS7Q1Y3V",
+    "source": "01KWMNHR416F2FYJZAX7X9Y6ZT",
+    "target": "01KWMYW8JPGY9SV63A6AJE8ZPG",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Migration verify uses subset-containment (source ⊆ target) rather than set equality"
+    },
+    "created_at": "2026-07-03T21:41:40.058Z"
+  },
+  {
+    "id": "01KWMYW8NTJ3Q9CZQMYHTPR6WG",
+    "source": "01KWMYW8GP40R5K8EV8CGADYP8",
+    "target": "01KWMYW8NRYPV70K3QX8YGKR54",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "No legacy-v1/ full backup in the 1.x migrate"
+    },
+    "created_at": "2026-07-03T21:41:40.154Z"
+  },
+  {
+    "id": "01KWMYW8NX5ND68D5NRZDRFEY6",
+    "source": "01KWMNHR416F2FYJZAX7X9Y6ZT",
+    "target": "01KWMYW8NRYPV70K3QX8YGKR54",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "No legacy-v1/ full backup in the 1.x migrate"
+    },
+    "created_at": "2026-07-03T21:41:40.157Z"
+  },
+  {
+    "id": "01KWMYW8S252R456ATNGFGM0PR",
+    "source": "01KWMYW8GP40R5K8EV8CGADYP8",
+    "target": "01KWMYW8S0F4Y2PC1CWGH6KKVB",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Reverse migration leaves records/ and twining.db in place but prints a FROZEN warning with remediation commands"
+    },
+    "created_at": "2026-07-03T21:41:40.258Z"
+  },
+  {
+    "id": "01KWMYW8S5X9JJT4TFVZWZHYS1",
+    "source": "01KWMNHR416F2FYJZAX7X9Y6ZT",
+    "target": "01KWMYW8S0F4Y2PC1CWGH6KKVB",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Reverse migration leaves records/ and twining.db in place but prints a FROZEN warning with remediation commands"
+    },
+    "created_at": "2026-07-03T21:41:40.261Z"
+  },
+  {
+    "id": "01KWN25KVCY3Y9GZ75CJSZMPQC",
+    "source": "01KWN25KVB4B5K8XR32QZ7J9P9",
+    "target": "01KWN25KVAZQ8GEF44V3BP3DJM",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "config.yml backup is first-wins (.pre-migrate.bak never overwritten)"
+    },
+    "created_at": "2026-07-03T22:39:12.236Z"
+  },
+  {
+    "id": "01KWN25KVEAHMV5EA45EBQ3PK6",
+    "source": "01KWN25KVD4ENKEWNTE40GQKFW",
+    "target": "01KWN25KVAZQ8GEF44V3BP3DJM",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "config.yml backup is first-wins (.pre-migrate.bak never overwritten)"
+    },
+    "created_at": "2026-07-03T22:39:12.238Z"
+  },
+  {
+    "id": "01KWN4BCMCR0J267RJXHVSSH0J",
+    "source": "01KWN4BCMBDHY2MCTWESYG2VVW",
+    "target": "01KWN4BCMAGYTQ0NYV4HJHKF6G",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Forward migrate refuses to run when config is sqlite with export_records explicitly false"
+    },
+    "created_at": "2026-07-03T23:17:18.604Z"
+  },
+  {
+    "id": "01KWN4BCME5PFVMGJ5DVYJZ50X",
+    "source": "01KWN4BCMD22J8B4CZT3P35HH5",
+    "target": "01KWN4BCMAGYTQ0NYV4HJHKF6G",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Forward migrate refuses to run when config is sqlite with export_records explicitly false"
+    },
+    "created_at": "2026-07-03T23:17:18.606Z"
+  },
+  {
+    "id": "01KWN4BCQNV5PSWTVCRR52PW56",
+    "source": "01KWN4BCMBDHY2MCTWESYG2VVW",
+    "target": "01KWN4BCQKZCJ7VX98QWHG3HST",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Migration finalize idempotently appends twining.db* lines to .twining/.gitignore"
+    },
+    "created_at": "2026-07-03T23:17:18.709Z"
+  },
+  {
+    "id": "01KWN4BCQQY8F9SPXG4CB2FNZF",
+    "source": "01KWN4BCMD22J8B4CZT3P35HH5",
+    "target": "01KWN4BCQKZCJ7VX98QWHG3HST",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Migration finalize idempotently appends twining.db* lines to .twining/.gitignore"
+    },
+    "created_at": "2026-07-03T23:17:18.711Z"
+  },
+  {
+    "id": "01KWN8930JK1K3SSR8DPSZC0NT",
+    "source": "01KWN8930HYTTFYZFBKZ6NC9DD",
+    "target": "01KWN8930GGJ6JE8Y5GW8YNTS3",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Reverse under export_records:false SKIPS ingest and exports from the database alone"
+    },
+    "created_at": "2026-07-04T00:25:57.522Z"
+  },
+  {
+    "id": "01KWN8930MNKGQVC07NJF5C4DB",
+    "source": "01KWN8930K4NJ69G2QG06BHSMZ",
+    "target": "01KWN8930GGJ6JE8Y5GW8YNTS3",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Reverse under export_records:false SKIPS ingest and exports from the database alone"
+    },
+    "created_at": "2026-07-04T00:25:57.524Z"
+  },
+  {
+    "id": "01KWN8930P8H5960VABSAHN78Z",
+    "source": "01KWN4BCMBDHY2MCTWESYG2VVW",
+    "target": "01KWN8930GGJ6JE8Y5GW8YNTS3",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Reverse under export_records:false SKIPS ingest and exports from the database alone"
+    },
+    "created_at": "2026-07-04T00:25:57.526Z"
+  },
+  {
+    "id": "01KWN89341EQ9TQ1KE8TF1971X",
+    "source": "01KWN8930HYTTFYZFBKZ6NC9DD",
+    "target": "01KWN8933ZN4TR3B33GXY2ZBGZ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "pre-reverse-backup/ is deliberately LAST-WINS (unlike config-edit's first-wins .pre-migrate.bak): it means 'what this run is about to overwrite', which is what makes a mistaken second reverse recoverable."
+    },
+    "created_at": "2026-07-04T00:25:57.633Z"
+  },
+  {
+    "id": "01KWN893442T1ASX7KJW9AVA3R",
+    "source": "01KWN8930K4NJ69G2QG06BHSMZ",
+    "target": "01KWN8933ZN4TR3B33GXY2ZBGZ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "pre-reverse-backup/ is deliberately LAST-WINS (unlike config-edit's first-wins .pre-migrate.bak): it means 'what this run is about to overwrite', which is what makes a mistaken second reverse recoverable."
+    },
+    "created_at": "2026-07-04T00:25:57.636Z"
+  },
+  {
+    "id": "01KWN893469MCDBJ27R9P2516M",
+    "source": "01KWN4BCMBDHY2MCTWESYG2VVW",
+    "target": "01KWN8933ZN4TR3B33GXY2ZBGZ",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "pre-reverse-backup/ is deliberately LAST-WINS (unlike config-edit's first-wins .pre-migrate.bak): it means 'what this run is about to overwrite', which is what makes a mistaken second reverse recoverable."
+    },
+    "created_at": "2026-07-04T00:25:57.638Z"
+  },
+  {
+    "id": "01KWNBQZEEFWSWZ30MPYEB5Y7G",
+    "source": "01KWNBQZEDDCT6YH4D4W9K3P3S",
+    "target": "01KWNBQZECPT1R8CNM0K001NHD",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Incompatible CLI flag combos are rejected at parse time (exit 2) rather than reinterpreted"
+    },
+    "created_at": "2026-07-04T01:26:31.118Z"
+  },
+  {
+    "id": "01KWNBQZEGHSE1JZH2ABNSFWM2",
+    "source": "01KWNBQZEFZR5KH8FE3B807TKF",
+    "target": "01KWNBQZECPT1R8CNM0K001NHD",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Incompatible CLI flag combos are rejected at parse time (exit 2) rather than reinterpreted"
+    },
+    "created_at": "2026-07-04T01:26:31.120Z"
+  },
+  {
+    "id": "01KWNBQZEKABSSHV0KQAWXCA84",
+    "source": "01KJD595NBM3QK28EQJ3JG8QXV",
+    "target": "01KWNBQZECPT1R8CNM0K001NHD",
+    "type": "decided_by",
+    "properties": {
+      "decision_summary": "Incompatible CLI flag combos are rejected at parse time (exit 2) rather than reinterpreted"
+    },
+    "created_at": "2026-07-04T01:26:31.123Z"
   }
 ]
