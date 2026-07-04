@@ -84,6 +84,17 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Made the probe synchronous before tool dispatch (not fire-and-forget)
 - Model inference never runs inside a transaction and all reconcile writes are single upsert/delete statements
 - Fixed the multiwriter-soak crash-tolerance flake by giving the victim writer an unfinishable op budget (VICTIM_OPS = OPS*100)
+- W3 1.x migrate leaves config.version at 1 and only flips storage.backend
+- Migration verify uses subset-containment (source ⊆ target) rather than set equality
+- No legacy-v1/ full backup in the 1.x migrate
+- Reverse migration leaves records/ and twining.db in place but prints a FROZEN warning with remediation commands
+- config.yml backup is first-wins (.pre-migrate.bak never overwritten)
+- Forward migrate refuses to run when config is sqlite with export_records explicitly false
+- Migration finalize idempotently appends twining.db* lines to .twining/.gitignore
+- Reverse under export_records:false SKIPS ingest and exports from the database alone
+- pre-reverse-backup/ is deliberately LAST-WINS (unlike config-edit's first-wins .pre-migrate.bak): it means 'what this run is about to overwrite', which is what makes a mistaken second reverse recoverable.
+- Incompatible CLI flag combos are rejected at parse time (exit 2) rather than reinterpreted
+- Judged reverse --dry-run's twining.db mutation (ingestRecords runs before the dryRun early-return in reverse.ts) a non-blocking Low rather than a merge blocker
 
 ### Pending Todos
 
