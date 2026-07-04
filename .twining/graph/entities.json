@@ -3630,5 +3630,16 @@
     },
     "created_at": "2026-07-04T01:26:31.119Z",
     "updated_at": "2026-07-04T01:26:31.119Z"
+  },
+  {
+    "id": "01KWNEBHAKJDMVXB3YAVN1TBC0",
+    "name": "01KWNEBH94BYK842FQVZB6VPT9",
+    "type": "concept",
+    "properties": {
+      "summary": "Judged reverse --dry-run's twining.db mutation (ingestRecords runs before the dryRun early-return in reverse.ts) a non-blocking Low rather than a merge blocker",
+      "scope": "src/migrate/"
+    },
+    "created_at": "2026-07-04T02:12:09.171Z",
+    "updated_at": "2026-07-04T02:12:09.171Z"
   }
 ]

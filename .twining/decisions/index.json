@@ -2750,5 +2750,17 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KWNEBH94BYK842FQVZB6VPT9",
+    "timestamp": "2026-07-04T02:12:09.124Z",
+    "domain": "performance",
+    "scope": "src/migrate/",
+    "summary": "Judged reverse --dry-run's twining.db mutation (ingestRecords runs before the dryRun early-return in reverse.ts) a non-blocking Low rather than a merge blocker",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]
