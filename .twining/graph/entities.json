@@ -112,10 +112,10 @@
     "properties": {
       "description": "MCP server setup — createServer() wires all engines and registers tool handlers",
       "layer": "server",
-      "scope": "src/storage/sync/"
+      "scope": "src/engine/"
     },
     "created_at": "2026-02-17T03:13:31.729Z",
-    "updated_at": "2026-07-03T19:59:38.924Z"
+    "updated_at": "2026-07-04T21:17:12.468Z"
   },
   {
     "id": "01KHMSDJZEQM1FXSMNYBYTST24",
@@ -3532,10 +3532,10 @@
     "name": "src/migrate/forward.ts",
     "type": "file",
     "properties": {
-      "scope": "src/migrate/"
+      "scope": "src/engine/"
     },
     "created_at": "2026-07-03T23:17:18.603Z",
-    "updated_at": "2026-07-04T00:25:57.637Z"
+    "updated_at": "2026-07-04T21:17:12.470Z"
   },
   {
     "id": "01KWN4BCMD22J8B4CZT3P35HH5",
@@ -3574,10 +3574,10 @@
     "name": "src/migrate/reverse.ts",
     "type": "file",
     "properties": {
-      "scope": "src/migrate/"
+      "scope": "src/engine/"
     },
     "created_at": "2026-07-04T00:25:57.521Z",
-    "updated_at": "2026-07-04T00:25:57.632Z"
+    "updated_at": "2026-07-04T21:17:12.472Z"
   },
   {
     "id": "01KWN8930K4NJ69G2QG06BHSMZ",
@@ -3749,5 +3749,26 @@
     },
     "created_at": "2026-07-04T20:29:11.618Z",
     "updated_at": "2026-07-04T20:29:11.618Z"
+  },
+  {
+    "id": "01KWQFW6CGE5T2E6W4DYS1FACD",
+    "name": "01KWQFW68JE8WBKAP1STHNJKF3",
+    "type": "concept",
+    "properties": {
+      "summary": "Pending drain uses per-drain unique swap files with claim-by-rename recovery",
+      "scope": "src/engine/"
+    },
+    "created_at": "2026-07-04T21:17:12.464Z",
+    "updated_at": "2026-07-04T21:17:12.464Z"
+  },
+  {
+    "id": "01KWQFW6CHJ7156C0GM07X5NQ8",
+    "name": "src/engine/pending-processor.ts",
+    "type": "file",
+    "properties": {
+      "scope": "src/engine/"
+    },
+    "created_at": "2026-07-04T21:17:12.465Z",
+    "updated_at": "2026-07-04T21:17:12.465Z"
   }
 ]

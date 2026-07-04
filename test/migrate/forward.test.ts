@@ -182,6 +182,58 @@ describe.skipIf(!HAS_SQLITE)("migrateForward", () => {
     await expect(migrateForward({ projectRoot, dryRun: false })).rejects.toThrow(/no \.twining/i);
   });
 
+  it("salvages a decision file orphaned from the index (write-path desync)", async () => {
+    await seedFiles();
+
+    // Simulate the desync: a decision file exists on disk but was never
+    // (or is no longer) recorded in decisions/index.json.
+    const decisionsDir = path.join(twiningDir, "decisions");
+    const [existingFile] = fs
+      .readdirSync(decisionsDir)
+      .filter((f) => f !== "index.json");
+    const original = JSON.parse(
+      fs.readFileSync(path.join(decisionsDir, existingFile!), "utf-8"),
+    ) as { id: string; summary: string };
+    const orphanId = "01ORPHANDECISIONULIDXXXXXXXX";
+    const orphan = { ...original, id: orphanId, summary: "orphaned decision" };
+    fs.writeFileSync(
+      path.join(decisionsDir, `${orphanId}.json`),
+      JSON.stringify(orphan, null, 2),
+    );
+    // Deliberately NOT added to index.json — that's the desync.
+
+    const report = await migrateForward({ projectRoot, dryRun: false });
+    expect(report.verified).toBe(true);
+    expect(report.finalized).toBe(true);
+    expect(report.orphans_salvaged).toBe(1);
+    expect(report.notes.join(" ")).toContain(
+      "salvaged 1 decision(s) present on disk but missing from decisions/index.json",
+    );
+
+    const sqlite = createStores(twiningDir, sqliteConfig());
+    const salvaged = await sqlite.decisionStore.get(orphanId);
+    expect(salvaged).not.toBeNull();
+    expect(salvaged?.summary).toBe("orphaned decision");
+
+    // The original (non-orphan) decision from seedFiles is still present too.
+    const index = await sqlite.decisionStore.getIndex();
+    expect(index.map((d) => d.id).sort()).toEqual(
+      [original.id, orphanId].sort(),
+    );
+  });
+
+  it("skips an unparseable decision file without deleting it and without counting it as salvaged", async () => {
+    await seedFiles();
+    const decisionsDir = path.join(twiningDir, "decisions");
+    fs.writeFileSync(path.join(decisionsDir, "not-json-decision.json"), "{ not valid json");
+
+    const report = await migrateForward({ projectRoot, dryRun: false });
+    expect(report.verified).toBe(true);
+    expect(report.orphans_salvaged).toBe(0);
+    // Never deleted — legacy files are their own backup.
+    expect(fs.existsSync(path.join(decisionsDir, "not-json-decision.json"))).toBe(true);
+  });
+
   it("refuses to run against a sqlite backend with export_records disabled", async () => {
     fs.writeFileSync(
       path.join(twiningDir, "config.yml"),

@@ -2880,5 +2880,22 @@
     ],
     "affected_symbols": [],
     "commit_hashes": []
+  },
+  {
+    "id": "01KWQFW68JE8WBKAP1STHNJKF3",
+    "timestamp": "2026-07-04T21:17:12.338Z",
+    "domain": "implementation",
+    "scope": "src/engine/",
+    "summary": "Pending drain uses per-drain unique swap files with claim-by-rename recovery",
+    "confidence": "medium",
+    "status": "active",
+    "affected_files": [
+      "src/engine/pending-processor.ts",
+      "src/server.ts",
+      "src/migrate/forward.ts",
+      "src/migrate/reverse.ts"
+    ],
+    "affected_symbols": [],
+    "commit_hashes": []
   }
 ]

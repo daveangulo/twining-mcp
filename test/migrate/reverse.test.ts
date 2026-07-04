@@ -92,6 +92,50 @@ describe.skipIf(!HAS_SQLITE)("migrateReverse", () => {
     expect((await files.graphStore.getEntities()).map((e) => e.name).sort()).toEqual(["auth", "db"]);
   });
 
+  it("heals an index desync: an orphaned decision salvaged by forward is regenerated into index.json by reverse", async () => {
+    const legacy = createStores(twiningDir, filesConfig());
+    const dec = await legacy.decisionStore.create({
+      agent_id: "m", domain: "architecture", scope: "src/", summary: "indexed decision",
+      context: "c", rationale: "r", alternatives: [], confidence: "high",
+      affected_files: [], affected_symbols: [], reversible: true,
+    } as never);
+
+    // Simulate the desync directly against the legacy file store: a decision
+    // file on disk with no corresponding decisions/index.json entry.
+    const decisionsDir = path.join(twiningDir, "decisions");
+    const orphanId = "01ORPHANDECISIONULIDXXXXXXXX";
+    const orphanFile = JSON.parse(
+      fs.readFileSync(path.join(decisionsDir, `${dec.id}.json`), "utf-8"),
+    ) as { id: string; summary: string };
+    fs.writeFileSync(
+      path.join(decisionsDir, `${orphanId}.json`),
+      JSON.stringify({ ...orphanFile, id: orphanId, summary: "orphaned decision" }, null, 2),
+    );
+
+    const forwardReport = await migrateForward({ projectRoot, dryRun: false });
+    expect(forwardReport.orphans_salvaged).toBe(1);
+
+    const reverseReport = await migrateReverse({ projectRoot, dryRun: false });
+    expect(reverseReport.verified).toBe(true);
+    expect(reverseReport.finalized).toBe(true);
+    expect(reverseReport.orphans_salvaged).toBe(0); // reverse never salvages — nothing to heal on its own side
+
+    // The desync is healed: the regenerated index.json now contains the
+    // orphan, and reads that go through the index (getIndex/getByScope) see it.
+    const regeneratedIndex = JSON.parse(
+      fs.readFileSync(path.join(decisionsDir, "index.json"), "utf-8"),
+    ) as Array<{ id: string }>;
+    expect(regeneratedIndex.map((e) => e.id).sort()).toEqual(
+      [dec.id, orphanId].sort(),
+    );
+
+    const files = createStores(twiningDir, filesConfig());
+    const index = await files.decisionStore.getIndex();
+    expect(index.map((e) => e.id).sort()).toEqual([dec.id, orphanId].sort());
+    const healed = await files.decisionStore.get(orphanId);
+    expect(healed?.summary).toBe("orphaned decision");
+  });
+
   it("backs up the file layout it overwrites", async () => {
     const legacy = createStores(twiningDir, filesConfig());
     await legacy.blackboardStore.append({
