@@ -2,6 +2,11 @@
 
 All notable changes to Twining MCP are documented here.
 
+## [1.24.1] - 2026-07-04
+
+### Changed
+- Schema descriptions on `twining_record` (summary, findings) and `twining_post` (summary) now tell agents to lead with the most important information — the embedding model's ~256-token window means the opening of the text dominates similarity ranking. Informed by a retrieval A/B on this repo's own corpus (`scripts/retrieval-ab.mjs`, new): semantic vs keyword retrieval produced **zero identical assemble briefings** across ten realistic tasks (mean Jaccard 0.43), with keyword-fallback briefings consistently 2–4× sparser — retrieval mode materially shapes what agents see, and front-loading is the cheap lever on it.
+
 ## [1.24.0] - 2026-07-04
 
 Field-findings release. A usage analysis across three heavy-use repos (2,317 tool calls, 2,713 decisions, 3.9 GB of blackboard archives) surfaced defects that were costing every session; this release fixes the actively-bleeding ones. The findings that need design work are tracked in issues #30–#35.

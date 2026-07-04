@@ -26,7 +26,10 @@ export function registerBlackboardTools(
         summary: z
           .string()
           .max(200)
-          .describe("One-line summary (max 200 chars)"),
+          .describe(
+            "One-line summary (max 200 chars). Lead with the most important " +
+              "information — it carries the most weight in similarity search.",
+          ),
         detail: z.string().optional().describe("Full context and details"),
         tags: z
           .array(z.string())
