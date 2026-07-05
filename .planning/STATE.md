@@ -95,6 +95,17 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - pre-reverse-backup/ is deliberately LAST-WINS (unlike config-edit's first-wins .pre-migrate.bak): it means 'what this run is about to overwrite', which is what makes a mistaken second reverse recoverable.
 - Incompatible CLI flag combos are rejected at parse time (exit 2) rather than reinterpreted
 - Judged reverse --dry-run's twining.db mutation (ingestRecords runs before the dryRun early-return in reverse.ts) a non-blocking Low rather than a merge blocker
+- Proposed (pending Dave's approval): the v2 backend default flip must use a legacy-detection resolution rule
+- Proposed (pending approval): recommend startup NUDGE over FOUNDATION-PLAN's auto-migration
+- Proposed (pending approval): v2.0.0-beta ships under npm dist-tag next, never latest
+- Auto-archive trigger counts only archivable entries (excludes decision cross-posts and archive-tagged summaries) and the archiver's summary post carries _skipAutoArchive
+- twining_record truncates over-length summaries/findings (full text preserved in detail) instead of rejecting
+- Subagent-stop hook posts nothing when agent identity is unknown
+- migrateForward enumerates decisions by directory scan unioned with the index
+- depends_on validation surfaces via an additive optional dropped_depends_on field on decide()'s existing return
+- Pending drain uses per-drain unique swap files with claim-by-rename recovery
+- Migrate this repo's own .twining to sqlite as user zero of the shipped tool on live state
+- Approved (Dave, 2026-07-05): all recommended v2.0 prep options — startup nudge, soft engines>=22.13 with warn-and-fallback, beta on dist-tag next, evidence-gated stable timing, version-2 stamp at migrate finalize
 
 ### Pending Todos
 
