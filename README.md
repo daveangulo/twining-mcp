@@ -109,6 +109,8 @@ Commit this to your repo's `.claude/settings.json` so every team member gets Twi
 
 When team members trust the repository folder, Claude Code automatically installs the marketplace and plugin.
 
+> **v2 beta:** v2.0.0 (sqlite-by-default, Node >= 22.13) is in beta under the npm dist-tag `next` — opt in with `npx -y twining-mcp@next`. Unpinned installs stay on the latest 1.x until v2.0.0 is stable. See [docs/UPGRADE-v2.md](docs/UPGRADE-v2.md).
+
 ### MCP-Only Install
 
 For non-Claude-Code clients (Cursor, Windsurf, etc.):
@@ -198,7 +200,7 @@ tools:
 
 ## How It Works
 
-All state lives in `.twining/` as plain files — JSONL for the blackboard, JSON for decisions, graph, agents, and handoffs. Everything is `jq`-queryable, `grep`-able, and git-diffable. No cloud. No accounts. (An opt-in local SQLite backend is available — the database is a gitignored derived cache and the committed truth stays plain JSON files; see "Migrating to the SQLite Backend" below.)
+All state lives in `.twining/` as plain, committable files. Everything is `jq`-queryable, `grep`-able, and git-diffable. No cloud. No accounts. Since v2, new projects default to the local SQLite backend — the database itself is a gitignored derived cache; the committed truth is a per-record JSON export tree (`.twining/records/`). Existing file-backend projects keep the JSONL/JSON layout and change nothing until you run `twining-mcp migrate` (see "Migrating to the SQLite Backend" below).
 
 **Architecture layers:**
 
@@ -212,7 +214,7 @@ See [TWINING-DESIGN-SPEC.md](TWINING-DESIGN-SPEC.md) for the full specification.
 
 ## Migrating to the SQLite Backend
 
-Since 1.21, Twining has an opt-in sqlite backend alongside the default file backend. `twining-mcp migrate` converts an existing file-backend `.twining/` in place — run it from your project root (or pass `--project <dir>` if `.twining/` lives elsewhere).
+Since v2, the sqlite backend is the default for **new** projects. **Existing** file-backend projects are never migrated implicitly — the server nudges at startup and keeps running on files until you migrate (or opt in to auto-migrate with `TWINING_AUTO_MIGRATE=1` / `storage.auto_migrate: true`). `twining-mcp migrate` converts an existing file-backend `.twining/` in place — run it from your project root (or pass `--project <dir>` if `.twining/` lives elsewhere). Full upgrade story: [docs/UPGRADE-v2.md](docs/UPGRADE-v2.md).
 
 ```
 npx twining-mcp migrate --dry-run   # preview what would change, writes nothing
@@ -225,10 +227,10 @@ npx twining-mcp migrate --reverse   # convert back to the file backend
 - Verification must pass before anything is finalized — if it doesn't, the tool exits 1 and `config.yml` is left untouched.
 - Legacy files are never modified or deleted by the forward migration; only `config.yml` is edited (to flip `storage.backend`), with a first-wins backup at `config.yml.pre-migrate.bak`.
 - Afterwards, commit `.twining/records/`, `config.yml`, and `.gitignore` — the tool prints the exact `git add`/`git commit` commands to run; it never commits for you.
-- Teammates should update `twining-mcp` before pulling the migrated state.
+- Finalize stamps `version: 2` into `config.yml`: teammates on 1.21–1.24 go read-only on the migrated project until they update (deliberate — prevents silent divergence). Update teammates before pulling the migrated state.
 - Exit codes: `0` success, `1` verification/migration failure, `2` usage error.
 
-**Reverse caveat:** after `--reverse`, the `records/` tree and `twining.db` are frozen — re-run `migrate` before ever switching back to sqlite, or remove `.twining/records/` first. The overwritten file-backend layout is backed up to `pre-reverse-backup/`.
+**Reverse caveat:** after `--reverse`, the `records/` tree and `twining.db` are frozen — re-run `migrate` before ever switching back to sqlite, or remove `.twining/records/` first. The overwritten file-backend layout is backed up to `pre-reverse-backup/`. Reverse also restores `version: 1`, re-enabling 1.x clients — that's the point of the escape hatch.
 
 Requires Node >= 22.13 (`node:sqlite`) for both the sqlite backend and the `migrate` command. See [docs/FOUNDATION-PLAN.md](docs/FOUNDATION-PLAN.md) (W3) for design details.
 
@@ -304,20 +306,21 @@ npm test          # Run tests (800+ tests)
 npm run test:watch
 ```
 
-Requires Node.js >= 18.
+Requires Node.js >= 22.13 (soft floor — older Node still boots the server on the file-backend fallback, with a warning).
 
 ### CI/CD
 
 Two GitHub Actions workflows automate build verification and publishing:
 
 **CI** (`.github/workflows/ci.yml`) — runs on every PR and push to `main`:
-- Builds and tests across Node 18, 20, and 22
+- Builds and tests across Node 22 and 24
 - Cancels in-progress runs when a new push arrives on the same branch
 
 **Publish** (`.github/workflows/publish.yml`) — runs on `v*` tag push:
 - Builds with `POSTHOG_API_KEY` baked in for published packages
 - Runs the full test suite as defense-in-depth
-- Publishes to npm with `--provenance` for supply chain attestation
+- Verifies the tag matches `package.json` before publishing
+- Publishes to npm with `--provenance`; prerelease versions (e.g. `2.0.0-beta.1`) go to dist-tag `next`, stable versions to `latest`
 - Creates a GitHub Release with auto-generated release notes
 - Supports manual trigger via `workflow_dispatch` with a dry-run option
 

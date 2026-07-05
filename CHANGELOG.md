@@ -2,6 +2,23 @@
 
 All notable changes to Twining MCP are documented here.
 
+## [2.0.0-beta.1] - unreleased (dist-tag `next`)
+
+The v2.0 cut: the sqlite backend becomes the default — safely. Published under the npm dist-tag `next`; unpinned installs stay on 1.x until stable. Upgrade guide: [docs/UPGRADE-v2.md](docs/UPGRADE-v2.md).
+
+### Breaking
+- Node floor is now `engines.node: ">=22.13.0"` (soft: npm warns; older Node still boots via the file-backend fallback, with a warning). CI matrix is Node 22/24.
+- `SUPPORTED_CONFIG_VERSION` is 2. `twining-mcp migrate` finalize now stamps `version: 2` into `config.yml`, turning 1.21–1.24 clients read-only on migrated projects (the W0.4 mixed-team lockout). `migrate --reverse` restores `version: 1`, re-enabling 1.x clients.
+
+### Changed
+- Default `storage.backend` is now `auto`, resolved by legacy detection: sqlite state (twining.db or records/) → sqlite; legacy content with no sqlite state → files plus a one-line `migrate` nudge; fresh project → sqlite; anything ambiguous/unreadable → files (safe). Existing projects never flip implicitly — only through the verify-gated `twining-mcp migrate`.
+- Fresh `.twining/` init stamps an explicit `storage.backend` into config.yml (sqlite when node:sqlite is available, files otherwise) and the matching format version — the choice is visible and committed, never re-derived per machine.
+
+### Added
+- Opt-in startup auto-migration for legacy projects: `TWINING_AUTO_MIGRATE=1` or `storage.auto_migrate: true`. Default remains nudge-only; an explicit `storage.backend` disables it.
+- Publish workflow: prerelease versions route to npm dist-tag `next` (stable to `latest`), GitHub releases are marked prerelease, and a tag↔package.json version guard fails mismatched tags before publish.
+- `docs/UPGRADE-v2.md`: Node floor and fallback-divergence caveat, the backend resolution rule, migrate/reverse walkthrough, the `version: 2` mixed-team contract, and the D3 read-time contradiction contract.
+
 ## [1.24.1] - 2026-07-04
 
 ### Changed
