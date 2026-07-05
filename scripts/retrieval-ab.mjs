@@ -110,6 +110,9 @@ for (const d of decisions) {
   }
 }
 console.log(`\nexperiment 1: ${pairs.length} valid depends_on pairs`);
+if (pairs.length === 0) {
+  console.log("  (no depends_on links in this corpus — experiment 1 skipped)");
+}
 
 async function rankOf(engine, queryText, excludeId, targetId) {
   const candidates = decisions.filter((d) => d.id !== excludeId);
@@ -134,8 +137,10 @@ function summarize(name, ranks) {
     `miss=${(ranks.filter((r) => r === null).length / n * 100).toFixed(0)}%`,
   );
 }
-summarize("semantic", stats.semantic);
-summarize("keyword", stats.keyword);
+if (pairs.length > 0) {
+  summarize("semantic", stats.semantic);
+  summarize("keyword", stats.keyword);
+}
 
 // ---- experiment 2: briefing impact ---------------------------------------
 // Task queries come from the corpus itself so the script works against ANY
