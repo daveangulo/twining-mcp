@@ -9,6 +9,8 @@ import {
   readJSONL,
 } from "../src/storage/file-store.js";
 import { initTwiningDir, ensureInitialized } from "../src/storage/init.js";
+import { sqliteAvailable } from "../src/storage/sqlite/db.js";
+import { SUPPORTED_CONFIG_VERSION } from "../src/config.js";
 
 let tmpDir: string;
 
@@ -117,7 +119,10 @@ describe("initTwiningDir", () => {
       path.join(tmpDir, ".twining", "config.yml"),
       "utf-8",
     );
-    expect(configContent).toContain("version: 1");
+    // v2: fresh init stamps the format version to match the stamped backend
+    expect(configContent).toContain(
+      sqliteAvailable() ? `version: ${SUPPORTED_CONFIG_VERSION}` : "version: 1",
+    );
     expect(configContent).toContain(`project_name: ${path.basename(tmpDir)}`);
     expect(configContent).toContain("embedding_model: all-MiniLM-L6-v2");
   });
