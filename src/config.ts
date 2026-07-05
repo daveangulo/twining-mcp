@@ -12,7 +12,7 @@ import type { TwiningConfig } from "./utils/types.js";
  * newer Twining release — this server must not write there (see
  * formatVersionRefusal), or old and new clients silently diverge.
  */
-export const SUPPORTED_CONFIG_VERSION = 1;
+export const SUPPORTED_CONFIG_VERSION = 2;
 
 /**
  * Returns a human-readable refusal reason when the on-disk format is newer

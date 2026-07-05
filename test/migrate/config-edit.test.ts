@@ -28,6 +28,20 @@ describe("setStorageBackend", () => {
     expect(result.hadComments).toBe(false);
   });
 
+  it("stamps the format version when formatVersion is passed", () => {
+    fs.writeFileSync(cfgPath(), yaml.dump({ version: 1, storage: { backend: "files" } }));
+    setStorageBackend(dir, "sqlite", { formatVersion: 2 });
+    const parsed = yaml.load(fs.readFileSync(cfgPath(), "utf-8")) as Record<string, unknown>;
+    expect(parsed.version).toBe(2);
+    expect((parsed.storage as Record<string, unknown>).backend).toBe("sqlite");
+  });
+
+  it("stamps the format version into a missing config.yml", () => {
+    setStorageBackend(dir, "sqlite", { formatVersion: 2 });
+    const parsed = yaml.load(fs.readFileSync(cfgPath(), "utf-8")) as Record<string, unknown>;
+    expect(parsed.version).toBe(2);
+  });
+
   it("backs up the previous config next to it", () => {
     fs.writeFileSync(cfgPath(), yaml.dump({ version: 1, project_name: "demo" }));
     const before = fs.readFileSync(cfgPath(), "utf-8");

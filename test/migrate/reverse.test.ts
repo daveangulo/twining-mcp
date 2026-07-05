@@ -80,7 +80,7 @@ describe.skipIf(!HAS_SQLITE)("migrateReverse", () => {
       version: number; storage: { backend: string };
     };
     expect(cfg.storage.backend).toBe("files");
-    expect(cfg.version).toBe(1);
+    expect(cfg.version).toBe(1); // reverse restores v1 — the escape hatch re-enables 1.x clients
 
     // Fresh file stores see the full sqlite-era state, statuses and acks included.
     const files = createStores(twiningDir, filesConfig());

@@ -208,7 +208,9 @@ export async function migrateReverse(
       };
     }
 
-    const edit = setStorageBackend(twiningDir, "files");
+    // Reverse is the escape hatch: restoring format version 1 re-enables
+    // 1.x clients, which is the point of reversing.
+    const edit = setStorageBackend(twiningDir, "files", { formatVersion: 1 });
     return {
       ...verdict, dryRun: false, verified: true, finalized: true,
       configBackup: edit.backedUpTo, configHadComments: edit.hadComments, notes,
