@@ -57,12 +57,41 @@ for (const src of [path.join(PROJECT, ".twining", "models"), path.join(REPO, ".t
   }
 }
 
-const decisionStore = new DecisionStore(tw);
-const blackboardStore = new BlackboardStore(tw);
-const graphStore = new GraphStore(tw);
-const handoffStore = new HandoffStore(tw);
-const agentStore = new AgentStore(tw);
-const indexManager = new IndexManager(tw);
+// Backend detection: sqlite-migrated projects (storage.backend: sqlite)
+// are read through the sqlite stores, with the db rebuilt from the
+// committed records/ tree — the same path a fresh clone takes. File
+// projects keep the original file stores. Identical corpora should score
+// identically either way; a divergence here is a backend-parity bug.
+const cfgPath = path.join(tw, "config.yml");
+const useSqlite =
+  fs.existsSync(cfgPath) && /backend:\s*["']?sqlite/.test(fs.readFileSync(cfgPath, "utf-8"));
+
+let decisionStore, blackboardStore, graphStore, handoffStore, agentStore, indexManager;
+if (useSqlite) {
+  const { openDatabase } = await dist("storage/sqlite/db.js");
+  const { ingestRecords } = await dist("storage/sync/record-ingest.js");
+  const s = await dist("storage/sqlite/sqlite-stores.js");
+  for (const f of ["twining.db", "twining.db-wal", "twining.db-shm"]) {
+    fs.rmSync(path.join(tw, f), { force: true });
+  }
+  const db = openDatabase(tw);
+  const st = ingestRecords(db, tw);
+  console.log(`backend: sqlite — db rebuilt from records/ tree (+${st.inserted} ingested)`);
+  decisionStore = new s.SqliteDecisionStore(db);
+  blackboardStore = new s.SqliteBlackboardStore(db);
+  graphStore = new s.SqliteGraphStore(db);
+  handoffStore = new s.SqliteHandoffStore(db);
+  agentStore = new s.SqliteAgentStore(db);
+  indexManager = new s.SqliteIndexManager(db);
+} else {
+  console.log("backend: files");
+  decisionStore = new DecisionStore(tw);
+  blackboardStore = new BlackboardStore(tw);
+  graphStore = new GraphStore(tw);
+  handoffStore = new HandoffStore(tw);
+  agentStore = new AgentStore(tw);
+  indexManager = new IndexManager(tw);
+}
 
 const index = await decisionStore.getIndex();
 const decisions = [];
