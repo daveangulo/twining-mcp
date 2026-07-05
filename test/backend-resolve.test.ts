@@ -1,8 +1,21 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { createRequire } from "node:module";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { resolveAutoBackend } from "../src/storage/backend-resolve.js";
+import { createStores } from "../src/storage/backend-factory.js";
+import { DEFAULT_CONFIG, loadConfig } from "../src/config.js";
+
+const require = createRequire(import.meta.url);
+const HAS_SQLITE = (() => {
+  try {
+    require("node:sqlite");
+    return true;
+  } catch {
+    return false;
+  }
+})();
 
 let dir: string;
 
@@ -82,5 +95,36 @@ describe("resolveAutoBackend", () => {
     fs.writeFileSync(path.join(dir, "blackboard.jsonl"), '{"id":"01X"}\n');
     fs.writeFileSync(path.join(dir, "twining.db"), "");
     expect(resolveAutoBackend(dir)).toEqual({ backend: "sqlite", reason: "sqlite-state" });
+  });
+});
+
+describe("createStores auto resolution (v2 default flip)", () => {
+  it.runIf(HAS_SQLITE)("default config on a fresh dir resolves to sqlite", () => {
+    const stores = createStores(dir, { ...DEFAULT_CONFIG });
+    expect(stores.backend).toBe("sqlite");
+  });
+
+  it("default config on a legacy-content dir resolves to files", () => {
+    fs.writeFileSync(path.join(dir, "blackboard.jsonl"), '{"id":"01X"}\n');
+    const stores = createStores(dir, { ...DEFAULT_CONFIG });
+    expect(stores.backend).toBe("files");
+  });
+
+  it("explicit backend: files is respected regardless of dir state", () => {
+    const config = {
+      ...DEFAULT_CONFIG,
+      storage: { ...DEFAULT_CONFIG.storage, backend: "files" as const },
+    };
+    const stores = createStores(dir, config);
+    expect(stores.backend).toBe("files");
+  });
+
+  it("user-set auto_migrate survives config merge (deepMerge target trap)", () => {
+    fs.writeFileSync(
+      path.join(dir, "config.yml"),
+      "storage:\n  auto_migrate: true\n",
+    );
+    const config = loadConfig(dir);
+    expect(config.storage?.auto_migrate).toBe(true);
   });
 });

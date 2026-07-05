@@ -1,13 +1,17 @@
 /**
- * Storage backend selection (FOUNDATION-PLAN W2.2).
+ * Storage backend selection (FOUNDATION-PLAN W2.2; v2 default flip).
  *
  * Builds the store set for the configured backend:
- * - "files" (default): the JSON-file layout under .twining/
+ * - "auto" (v2 default): resolved by legacy detection — sqlite state →
+ *   "sqlite", legacy content → "files" plus a migrate nudge, fresh →
+ *   "sqlite" (see backend-resolve.ts). Existing projects flip only
+ *   through the verify-gated migrate, never implicitly.
+ * - "files": the JSON-file layout under .twining/
  * - "sqlite": single database at .twining/twining.db via node:sqlite —
- *   opt-in until v2.0; requires Node >= 22.13. When requested but
- *   unavailable (older Node, open failure), falls back to "files" with a
- *   warning rather than refusing to start: a coordination server must not
- *   be the reason a session can't boot.
+ *   requires Node >= 22.13. When requested but unavailable (older Node,
+ *   open failure), falls back to "files" with a warning rather than
+ *   refusing to start: a coordination server must not be the reason a
+ *   session can't boot.
  */
 import type { TwiningConfig } from "../utils/types.js";
 import type {
@@ -27,6 +31,7 @@ import { IndexManager } from "../embeddings/index-manager.js";
 // Safe to import statically on any Node version: node:sqlite is only
 // required inside sqliteAvailable()/openDatabase(), never at module load.
 import { openDatabase, sqliteAvailable } from "./sqlite/db.js";
+import { resolveAutoBackend } from "./backend-resolve.js";
 import {
   SqliteAgentStore,
   SqliteBlackboardStore,
@@ -59,7 +64,21 @@ export function createStores(
   twiningDir: string,
   config: TwiningConfig,
 ): StoreSet {
-  const requested = config.storage?.backend ?? "files";
+  const configured = config.storage?.backend ?? "auto";
+  let requested: "files" | "sqlite";
+  if (configured === "auto") {
+    const resolution = resolveAutoBackend(twiningDir);
+    requested = resolution.backend;
+    if (resolution.reason === "legacy-content") {
+      console.error(
+        "[twining] Legacy file-backend project detected — staying on the " +
+          "file backend. Run `npx twining-mcp migrate` to move to the v2 " +
+          "sqlite backend (reversible; see docs/UPGRADE-v2.md).",
+      );
+    }
+  } else {
+    requested = configured;
+  }
 
   if (requested === "sqlite") {
     try {

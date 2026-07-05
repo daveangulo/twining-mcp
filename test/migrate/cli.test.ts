@@ -40,7 +40,10 @@ afterEach(() => {
 });
 
 async function seedOnePost() {
-  const stores = createStores(path.join(projectRoot, ".twining"), { ...DEFAULT_CONFIG });
+  const stores = createStores(path.join(projectRoot, ".twining"), {
+    ...DEFAULT_CONFIG,
+    storage: { ...DEFAULT_CONFIG.storage, backend: "files" },
+  });
   await stores.blackboardStore.append({
     entry_type: "finding", summary: "cli seed", detail: "", tags: [], scope: "src/", agent_id: "m",
   });
@@ -165,7 +168,10 @@ describe.skipIf(!HAS_SQLITE)("runMigrateCli", () => {
     // 25 mismatched posts, 0 missing: the old combined formula
     // (missing + mismatched - 40) would compute -15 and silently hide the
     // 5 truncated entries; per-list overflow must print "…and 5 more".
-    const stores = createStores(path.join(projectRoot, ".twining"), { ...DEFAULT_CONFIG });
+    const stores = createStores(path.join(projectRoot, ".twining"), {
+    ...DEFAULT_CONFIG,
+    storage: { ...DEFAULT_CONFIG.storage, backend: "files" },
+  });
     for (let i = 0; i < 25; i++) {
       await stores.blackboardStore.append({
         entry_type: "finding", summary: `cli seed ${i}`, detail: "", tags: [], scope: "src/", agent_id: "m",

@@ -33,7 +33,10 @@ beforeEach(() => {
 });
 afterEach(() => { fs.rmSync(projectRoot, { recursive: true, force: true }); });
 
-const filesConfig = (): TwiningConfig => ({ ...DEFAULT_CONFIG });
+const filesConfig = (): TwiningConfig => ({
+  ...DEFAULT_CONFIG,
+  storage: { ...DEFAULT_CONFIG.storage, backend: "files" },
+});
 const sqliteConfig = (): TwiningConfig => ({
   ...DEFAULT_CONFIG,
   storage: { backend: "sqlite", export_records: true },
