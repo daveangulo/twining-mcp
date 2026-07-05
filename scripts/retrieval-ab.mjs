@@ -38,16 +38,24 @@ const { ContextAssembler } = await dist("engine/context-assembler.js");
 const { DEFAULT_CONFIG } = await dist("config.js");
 const { blackboardEmbedText, decisionEmbedText } = await dist("embeddings/embed-text.js");
 
-// ---- corpus: copy the repo's real .twining into a temp dir --------------
+// ---- corpus: copy the target project's .twining into a temp dir ---------
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "twining-ab-"));
 const tw = path.join(tmp, ".twining");
 fs.cpSync(path.join(PROJECT, ".twining"), tw, { recursive: true });
 // fresh embeddings index — we build it ourselves below for a fair A arm
 fs.rmSync(path.join(tw, "embeddings"), { recursive: true, force: true });
 fs.mkdirSync(path.join(tw, "embeddings"), { recursive: true });
-// reuse the repo's model cache to avoid a download
+// Model cache: prefer the target project's own cache, else this repo's,
+// else leave absent (first embed() downloads from huggingface.co — needs
+// network; on an air-gapped machine pre-seed .twining/models from any
+// machine that has it).
 fs.rmSync(path.join(tw, "models"), { recursive: true, force: true });
-fs.cpSync(path.join(REPO, ".twining", "models"), path.join(tw, "models"), { recursive: true });
+for (const src of [path.join(PROJECT, ".twining", "models"), path.join(REPO, ".twining", "models")]) {
+  if (fs.existsSync(src)) {
+    fs.cpSync(src, path.join(tw, "models"), { recursive: true });
+    break;
+  }
+}
 
 const decisionStore = new DecisionStore(tw);
 const blackboardStore = new BlackboardStore(tw);
@@ -130,18 +138,22 @@ summarize("semantic", stats.semantic);
 summarize("keyword", stats.keyword);
 
 // ---- experiment 2: briefing impact ---------------------------------------
-const TASKS = [
-  ["fix a bug in the blackboard auto-archive threshold logic", "src/engine/"],
-  ["add a new column to the sqlite embeddings schema", "src/storage/sqlite/"],
-  ["improve how the migrate CLI validates its flags", "src/migrate/"],
-  ["change how decisions are cross-posted to the blackboard", "src/engine/"],
-  ["make the pre-commit hook less brittle", "plugin/hooks/"],
-  ["speed up context assembly for large decision stores", "src/engine/"],
-  ["handle git branch switches while the server is running", "src/storage/sync/"],
-  ["tune the plugin token budget enforcement in CI", "plugin/"],
-  ["write embeddings for records that arrived via git pull", "src/embeddings/"],
-  ["refuse writes when the on-disk format is newer", "src/config.ts"],
-];
+// Task queries come from the corpus itself so the script works against ANY
+// project: 10 decisions evenly spaced through the store, query = their
+// `context` (the situation that prompted them — topically related to the
+// corpus without being the indexed summary text), scope = their scope.
+// Pass a JSON file of [task, scope] pairs as argv[3] to override.
+let TASKS;
+if (process.argv[3]) {
+  TASKS = JSON.parse(fs.readFileSync(path.resolve(process.argv[3]), "utf-8"));
+} else {
+  const usable = decisions.filter((d) => (d.context ?? "").length > 20);
+  const step = Math.max(1, Math.floor(usable.length / 10));
+  TASKS = usable
+    .filter((_, i) => i % step === 0)
+    .slice(0, 10)
+    .map((d) => [d.context.slice(0, 300), d.scope || "project"]);
+}
 
 const mkAssembler = (engine) =>
   new ContextAssembler(blackboardStore, decisionStore, engine, DEFAULT_CONFIG, null, null, handoffStore, agentStore);
