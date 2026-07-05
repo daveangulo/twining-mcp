@@ -106,6 +106,10 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Pending drain uses per-drain unique swap files with claim-by-rename recovery
 - Migrate this repo's own .twining to sqlite as user zero of the shipped tool on live state
 - Approved (Dave, 2026-07-05): all recommended v2.0 prep options — startup nudge, soft engines>=22.13 with warn-and-fallback, beta on dist-tag next, evidence-gated stable timing, version-2 stamp at migrate finalize
+- Implemented the v2 default backend flip as an "auto" sentinel in DEFAULT_CONFIG resolved at createStores time, not a blind default change
+- DEVIATION from proposal: fresh init stamps backend by sqliteAvailable() (sqlite/version-2 when available, files/version-1 otherwise) instead of stamping sqlite unconditionally
+- migrate --reverse now restores config version to 1 (forward finalize stamps 2)
+- Publish workflow gained a tag-vs-package.json version guard and prerelease GH-release marking alongside the dist-tag routing; checkout/setup-node bumped to v5
 
 ### Pending Todos
 

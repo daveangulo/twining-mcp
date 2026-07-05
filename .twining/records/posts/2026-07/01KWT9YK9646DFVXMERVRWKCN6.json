@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "status",
+  "id": "01KWT9YK9646DFVXMERVRWKCN6",
+  "provenance": {
+    "branch": "v2.0-beta",
+    "commit_sha": "140ecee486d55330aa53aabf6c61f727f8f6f56e",
+    "recorded_at": "2026-07-05T23:31:23.032Z"
+  },
+  "scope": ".planning/",
+  "summary": "Committed the decision-log sync to .planning/STATE.md on v2.0-beta (4 lines appended by the record hook); opening the v2.0.0-beta.1 PR next.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-05T23:31:23.046Z"
+}
