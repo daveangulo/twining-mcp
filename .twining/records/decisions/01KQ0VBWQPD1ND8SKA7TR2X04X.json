@@ -1,0 +1,37 @@
+{
+  "affected_files": [
+    "src/engine/record-parser.ts",
+    "src/engine/decisions.ts",
+    "src/tools/record-tools.ts",
+    "test/unit/record-parser.test.ts",
+    "test/unit/record-tools.test.ts"
+  ],
+  "affected_symbols": [
+    "parseDecision",
+    "splitSummaryAndRationale",
+    "extractRejectedAlternatives",
+    "DecisionEngine.decide",
+    "buildFromNaturalLanguage",
+    "buildFromStructured"
+  ],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "assumptions": [
+    "MCP clients tolerate z.union schemas in Zod for the decisions array — Claude Code and MCP SDK both accept discriminated unions at the tool-input layer.",
+    "Callers who send structured decision objects prefer exact round-trip over inference; they will provide their own domain / confidence when they care."
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Fixed twining_record NL parser truncation + alternatives undercount; added structured decision schema variant and hardened decisions_created response. 19 new tests, 835 total passing (was 816).",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KQ0VBWQPD1ND8SKA7TR2X04X",
+  "rationale": "rationale",
+  "reversible": true,
+  "scope": "src/engine/record-parser.ts",
+  "status": "active",
+  "summary": "Replaced split(regex, 2) with single-split-on-first-match that preserves the full remainder",
+  "timestamp": "2026-04-24T22:57:00.150Z"
+}

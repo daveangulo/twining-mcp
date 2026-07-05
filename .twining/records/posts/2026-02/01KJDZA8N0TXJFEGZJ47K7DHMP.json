@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "CI workflow gates PRs with Node 18/20/22 matrix (minimum supported, current LTS, active release). Publish workflow triggers on v* tags with npm provenance attestations and auto-generated GitHub Releases. POSTHOG_API_KEY is injected only during publish builds. workflow_dispatch with dry-run option enables testing the pipeline without publishing. Tests re-run in publish as defense-in-depth since tag pushes bypass PR CI.",
+  "entry_type": "decision",
+  "id": "01KJDZA8N0TXJFEGZJ47K7DHMP",
+  "scope": ".github/workflows/",
+  "summary": "Add CI (build-and-test on PRs) and Publish (npm publish on tags) GitHub Actions workflows",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-02-26T21:57:39.616Z"
+}

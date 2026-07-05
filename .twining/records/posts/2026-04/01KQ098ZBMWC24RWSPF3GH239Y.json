@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "the prior decision describing a 50/20 point resolution scorer was never landed in code",
+  "entry_type": "decision",
+  "id": "01KQ098ZBMWC24RWSPF3GH239Y",
+  "scope": "test/coordination/",
+  "summary": "Bug-investigation benchmark uses assertion-based tests rather than numeric scoring",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-04-24T17:40:50.164Z"
+}

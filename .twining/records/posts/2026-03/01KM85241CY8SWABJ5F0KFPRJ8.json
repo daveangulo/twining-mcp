@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Explicit assumptions let formatForLLM be prescriptive when assumptions hold ('follow exactly') and advisory when they don't ('reconsider'). This bridges the gap between structured decision records and actionable implementation guidance.",
+  "entry_type": "decision",
+  "id": "01KM85241CY8SWABJ5F0KFPRJ8",
+  "scope": "src/utils/types.ts",
+  "summary": "Add assumptions field to Decision type for assumption-based validation in assemble output",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-03-21T12:14:01.260Z"
+}

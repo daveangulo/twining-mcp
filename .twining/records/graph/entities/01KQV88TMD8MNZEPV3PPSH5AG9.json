@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-05T05:02:46.413Z",
+  "id": "01KQV88TMD8MNZEPV3PPSH5AG9",
+  "name": "01KQV88TKHG29D06K6B40WV2CV",
+  "properties": {
+    "scope": "docs/superpowers/plans/",
+    "summary": "Chose Vitest with child_process.spawnSync for hook tests over bats/shell-only"
+  },
+  "type": "concept",
+  "updated_at": "2026-05-05T05:02:46.413Z"
+}

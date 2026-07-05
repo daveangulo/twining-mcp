@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "field data shows 100% of its output was content-free 'unknown-subagent' noise; silence beats noise.",
+  "entry_type": "decision",
+  "id": "01KWNSPM6TZEVY1KE5TVBKHN4V",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "9be18d1f347e111d8538643df425061c57b4e607",
+    "recorded_at": "2026-07-04T05:30:26.891Z"
+  },
+  "scope": "src/",
+  "summary": "Subagent-stop hook posts nothing when agent identity is unknown",
+  "tags": [
+    "data-model"
+  ],
+  "timestamp": "2026-07-04T05:30:26.906Z"
+}

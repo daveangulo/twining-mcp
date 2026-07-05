@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-02T15:51:50.333Z",
+  "id": "01KJQKZ9SXVT7T3VX1YE6AV4CE",
+  "properties": {
+    "decision_summary": "Eval harness uses matrix testing: 22 scenarios × 7 scorers = 154 dynamic vitest tests"
+  },
+  "source": "01KJQKZ9SVSTFXZ8F9P0Z4KWZZ",
+  "target": "01KJQKZ9SH2JEGQTTD8GY3AMR6",
+  "type": "decided_by"
+}

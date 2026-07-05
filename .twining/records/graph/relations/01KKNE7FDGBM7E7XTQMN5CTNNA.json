@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-14T05:48:39.728Z",
+  "id": "01KKNE7FDGBM7E7XTQMN5CTNNA",
+  "properties": {
+    "decision_summary": "Replace computeGraphConnectivity with computeGraphReachability using typed BFS and adaptive weight fallback"
+  },
+  "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+  "target": "01KKNE7FD9ST5B9VAYEDCR08QN",
+  "type": "decided_by"
+}

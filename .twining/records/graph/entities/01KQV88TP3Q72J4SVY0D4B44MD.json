@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-05T05:02:46.467Z",
+  "id": "01KQV88TP3Q72J4SVY0D4B44MD",
+  "name": "01KQV88TMGHE6ENP9EP7W0Z1HY",
+  "properties": {
+    "scope": "docs/superpowers/plans/",
+    "summary": "Chose to phase the work as: verifications first → test helper → server gate → simple hook guards → ensure-claude-md-gates (compound changes) → SessionStart command hook → versions → manual smoke test → release. Foundation-first ordering means each phase's tests can rely on infrastructure from prior phases."
+  },
+  "type": "concept",
+  "updated_at": "2026-05-05T05:02:46.467Z"
+}

@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Plugin provides one-step install, behavioral teaching via skills (not just documentation), auto-starting MCP server, and lifecycle hooks. Skills are mapped to cover all 27 tools across 7 skills. MCP server instructions provide a fallback for non-Claude-Code clients.",
+  "entry_type": "decision",
+  "id": "01KJGX8KHC0SFTN1S4WMNVVA7J",
+  "scope": "plugin/",
+  "summary": "Implement Twining as a Claude Code plugin with skills, hooks, agents, commands, and MCP server instructions",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-02-28T01:19:31.373Z"
+}

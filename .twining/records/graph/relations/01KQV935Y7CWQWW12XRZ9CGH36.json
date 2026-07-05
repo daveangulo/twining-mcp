@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T05:17:09.959Z",
+  "id": "01KQV935Y7CWQWW12XRZ9CGH36",
+  "properties": {
+    "decision_summary": "Implemented strict equality check (=== 'true') for TWINING_DISABLED gate"
+  },
+  "source": "01KQV935Y6BSXE7V7HN5Z2KRM7",
+  "target": "01KQV935Y3C3C4KBFF6MT6QWY6",
+  "type": "decided_by"
+}

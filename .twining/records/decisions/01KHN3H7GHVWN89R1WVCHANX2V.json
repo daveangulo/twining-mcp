@@ -1,0 +1,20 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "human",
+  "alternatives": [],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "False-positive conflict detection — STATE.md fs exception and commit tracking are orthogonal. Restoring to active.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KHN3H7GHVWN89R1WVCHANX2V",
+  "rationale": "False-positive conflict detection — STATE.md fs exception and commit tracking are orthogonal. Restoring to active.",
+  "reversible": true,
+  "scope": "src/engine/decisions.ts",
+  "status": "active",
+  "summary": "Direct fs calls in DecisionEngine for STATE.md sync — deliberate exception to storage-layer convention",
+  "supersedes": "01KHMV0JDABJRSZJD3XX2VQ9AD",
+  "timestamp": "2026-02-17T06:10:21.329Z"
+}

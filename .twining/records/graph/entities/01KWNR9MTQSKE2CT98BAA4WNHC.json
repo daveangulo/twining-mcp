@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-04T05:05:52.983Z",
+  "id": "01KWNR9MTQSKE2CT98BAA4WNHC",
+  "name": "01KWNR9MQXG8NXX3SW1NXYXQ1F",
+  "properties": {
+    "scope": "project",
+    "summary": "Proposed (pending Dave's approval): the v2 backend default flip must use a legacy-detection resolution rule"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-04T05:05:52.983Z"
+}

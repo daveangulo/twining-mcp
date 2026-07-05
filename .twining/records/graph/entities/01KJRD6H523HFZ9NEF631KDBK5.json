@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-03-02T23:12:41.634Z",
+  "id": "01KJRD6H523HFZ9NEF631KDBK5",
+  "name": "01KJRD6GYQS9389FYNG6804Z82",
+  "properties": {
+    "scope": "test/eval/fixtures/",
+    "summary": "Use current live session as third eval fixture — captures post-instruction-fix behavior for A/B comparison"
+  },
+  "type": "concept",
+  "updated_at": "2026-03-02T23:12:41.634Z"
+}

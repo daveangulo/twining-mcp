@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-14T05:48:32.123Z",
+  "id": "01KKNE77ZVVMYK85M8D45XSR9D",
+  "name": "GraphAutoPopulator",
+  "properties": {
+    "scope": "src/engine/"
+  },
+  "type": "function",
+  "updated_at": "2026-03-14T05:48:32.123Z"
+}

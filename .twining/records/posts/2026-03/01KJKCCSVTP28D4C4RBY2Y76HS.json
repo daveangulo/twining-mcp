@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Each claude -p prompt explicitly lists the tool calls and parameters the agent should execute. This ensures deterministic, reproducible demo runs — the agent doesn't need to reason about what to do, it just executes the prescribed calls. The alternative of letting the agent explore freely would produce inconsistent results across recordings.",
+  "entry_type": "decision",
+  "id": "01KJKCCSVTP28D4C4RBY2Y76HS",
+  "scope": "examples/demo-automation/",
+  "summary": "Demo uses claude -p with explicit tool-call prompts for deterministic behavior",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-03-01T00:22:26.426Z"
+}

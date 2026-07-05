@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Added third test to session-start-context.test.ts verifying TWINING_DISABLED='1' does NOT trigger gate and hook emits JSON normally",
+  "entry_type": "decision",
+  "id": "01KQVA0QERA34M9BEF1V49SEZ5",
+  "scope": "project",
+  "summary": "Added third test to session-start-context.test.ts verifying TWINING_DISABLED='1' does NOT trigger gate and hook emits JSON normally",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-05-05T05:33:18.168Z"
+}

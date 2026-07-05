@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "legacy projects (the migration's exact target population) predate those lines in the init template, and this repo's own tracked .gitignore proved the gap.",
+  "entry_type": "decision",
+  "id": "01KWN4BCPQ1NQHDZT4DRGQK1NY",
+  "provenance": {
+    "branch": "claude/w3-migrate-tool",
+    "commit_sha": "28aad4e99f0bfdcd41b35e26c42e74ac2fb22a16",
+    "recorded_at": "2026-07-03T23:17:18.664Z"
+  },
+  "scope": "src/migrate/",
+  "summary": "Migration finalize idempotently appends twining.db* lines to .twining/.gitignore",
+  "tags": [
+    "data-model"
+  ],
+  "timestamp": "2026-07-03T23:17:18.679Z"
+}

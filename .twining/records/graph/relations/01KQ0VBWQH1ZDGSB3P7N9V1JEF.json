@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-04-24T22:57:00.145Z",
+  "id": "01KQ0VBWQH1ZDGSB3P7N9V1JEF",
+  "properties": {
+    "decision_summary": "Prefer explicit Rationale:/Why:/Reason:/Because: markers over heuristic split separators in record-parser"
+  },
+  "source": "01KQ0VBWQGSEH4BCPCE10SZ6BV",
+  "target": "01KQ0VBWQ4H8KWYG0WGZDS97J3",
+  "type": "decided_by"
+}

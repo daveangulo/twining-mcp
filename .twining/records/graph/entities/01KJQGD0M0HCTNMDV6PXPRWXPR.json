@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-03-02T14:49:25.376Z",
+  "id": "01KJQGD0M0HCTNMDV6PXPRWXPR",
+  "name": "01KJQGD00RRD49VD53H9KF5GW2",
+  "properties": {
+    "scope": "test/eval/",
+    "summary": "Eval scenarios use flat tool call lists with per-scorer pass/fail expectations"
+  },
+  "type": "concept",
+  "updated_at": "2026-03-02T14:49:25.376Z"
+}

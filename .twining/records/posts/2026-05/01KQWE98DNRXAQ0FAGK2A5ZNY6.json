@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "ensures non-git projects don't false-flag every provenance-stamped entry.",
+  "entry_type": "decision",
+  "id": "01KQWE98DNRXAQ0FAGK2A5ZNY6",
+  "scope": "src/",
+  "summary": "Branch_gone signal is auto-neutralized when listLocalBranches() returns an empty set",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-05-05T16:07:06.421Z"
+}

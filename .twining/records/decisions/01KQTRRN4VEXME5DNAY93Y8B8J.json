@@ -1,0 +1,27 @@
+{
+  "affected_files": [
+    "docs/superpowers/specs/2026-04-29-plugin-hygiene-design.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": false,
+  "assumptions": [
+    "#8 root cause is on our side (prompt-type hook config) not waiting for upstream Claude Code fix",
+    "Plugin and MCP server bumps will be coordinated minor releases (1.9.0 plugin, 1.19.0 server)",
+    "Bash hook scripts will get a uniform 2-line TWINING_DISABLED guard — exit 0 with no JSON is treated as allow/no-op by Claude Code"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Wrote design spec for plugin hygiene fixes (issues #8, #9, #10) at docs/superpowers/specs/. Issue #7 (decision/scope GC) deferred to separate Spec B.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KQTRRN4VEXME5DNAY93Y8B8J",
+  "rationale": "command hooks emit additionalContext JSON without needing ToolUseContext that resume sessions don't supply. Rejected narrowing matcher to startup-only because resume is exactly when the gate reminder is most useful. Rejected dropping the prompt hook entirely because it loses the moment-of-session signal.",
+  "reversible": true,
+  "scope": "docs/superpowers/specs/",
+  "status": "active",
+  "summary": "Chose to convert SessionStart prompt-type hook to command-type hook for issue #8",
+  "timestamp": "2026-05-05T00:31:47.867Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-03-20T19:18:31.740Z",
+  "id": "01KM6AYPHWZAJWCS92C52DXBAM",
+  "name": "01KM6AYNPW2HNY7B4RAY67V3NX",
+  "properties": {
+    "scope": "test/coordination/",
+    "summary": "Coordination effectiveness test suite using real stores with temp dirs, no mocking"
+  },
+  "type": "concept",
+  "updated_at": "2026-03-20T19:18:31.740Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-19T06:05:31.274Z",
+  "id": "01KM2B5Y8AFA8N50YD436TDB2M",
+  "properties": {
+    "decision_summary": "Graph auto-population disabled by default (opt-in via graph.auto_populate config)"
+  },
+  "source": "01KHMSDEJH7CQCE97XA0ZAP52A",
+  "target": "01KM2B5Y87B2A1HRT7JHC7TTB7",
+  "type": "decided_by"
+}

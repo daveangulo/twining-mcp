@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T17:23:21.694Z",
+  "id": "01KQWJMWEYX4K01FCQVPVFGF6K",
+  "properties": {
+    "decision_summary": "Snapshot file lives at .twining/.last-known-branches.json"
+  },
+  "source": "01KQWJMWCHMNXZCF41K3JQSG11",
+  "target": "01KQWJMWEW2EDR4F5DA8QXV5M1",
+  "type": "decided_by"
+}

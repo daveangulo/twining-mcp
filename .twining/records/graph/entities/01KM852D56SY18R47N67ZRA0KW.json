@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-03-21T12:14:10.598Z",
+  "id": "01KM852D56SY18R47N67ZRA0KW",
+  "name": "01KM852D143D6GKWFPNGY01W30",
+  "properties": {
+    "scope": "src/engine/context-assembler.ts",
+    "summary": "Add FILES TO CHECK BEFORE WRITING section to formatForLLM output"
+  },
+  "type": "concept",
+  "updated_at": "2026-03-21T12:14:10.598Z"
+}

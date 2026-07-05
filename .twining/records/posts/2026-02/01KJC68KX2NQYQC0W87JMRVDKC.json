@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Project name is already available via path.basename(projectRoot) in api-routes.ts. Adding it to the /api/status response and rendering it in the header h1 + page title is the minimal change. GitHub icon uses the standard octicon SVG inline to avoid extra dependencies.",
+  "entry_type": "decision",
+  "id": "01KJC68KX2NQYQC0W87JMRVDKC",
+  "scope": "src/dashboard/",
+  "summary": "Add project name to dashboard title/header and GitHub icon link — fixes #2 and #3",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-02-26T05:20:36.770Z"
+}

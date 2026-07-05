@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-05T15:34:07.480Z",
+  "id": "01KQWCCVVRYRSB9QWDEFCYX551",
+  "name": "01KQWCCVTVHC192K5759DSNSJH",
+  "properties": {
+    "scope": "plugin/hooks/",
+    "summary": "Chose sentinel-file + git-log-HEAD over transcript-grep"
+  },
+  "type": "concept",
+  "updated_at": "2026-05-05T15:34:07.480Z"
+}

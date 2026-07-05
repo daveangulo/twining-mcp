@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-02-28T13:56:16.827Z",
+  "id": "01KJJ8J8SVP6JJKRM8PBDDFASZ",
+  "name": "01KJJ8J83J8E76TTQG8NTC0Q7G",
+  "properties": {
+    "scope": "scripts/",
+    "summary": "Pure bash version bump script with sed for plugin version management"
+  },
+  "type": "concept",
+  "updated_at": "2026-02-28T13:56:16.827Z"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "the straggler re-run requirement means sqlite legitimately holds a superset of the legacy files on second runs; equality would make idempotent re-runs fail by design.",
+  "entry_type": "decision",
+  "id": "01KWMYW8HTA5R95AYF5MQB9JQM",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "9760a77372d1ab97e094ae23de89a67effed5510",
+    "recorded_at": "2026-07-03T21:41:40.011Z"
+  },
+  "scope": "src/migrate/",
+  "summary": "Migration verify uses subset-containment (source ⊆ target) rather than set equality",
+  "tags": [
+    "data-model"
+  ],
+  "timestamp": "2026-07-03T21:41:40.026Z"
+}

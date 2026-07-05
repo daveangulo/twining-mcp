@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "~/.claude/CLAUDE.md tends to be small). Implementation chose project-first because hit-rate ordering matters more than read-cost: most users have the marker in a project CLAUDE.md or project .claude/CLAUDE.local.md, so project-first short-circuits faster in the common case. The read-cost difference across 4 paths is microseconds; the hit-rate difference is meaningful. Supersedes the original spec ordering. Spec updated to match. Rejected: keeping global-first because it was the original spec; rejected because the original reasoning was wrong about which dimension matters.",
+  "entry_type": "decision",
+  "id": "01KQVA2PXC3TY8HS4BBA6SZ7BZ",
+  "scope": "docs/superpowers/specs/",
+  "summary": "Reconsidered SEARCH_PATHS marker-search order in ensure-claude-md-gates.sh. Original spec said global-first (cheapest,",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-05-05T05:34:23.148Z"
+}

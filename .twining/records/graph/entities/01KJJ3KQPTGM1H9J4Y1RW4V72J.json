@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-02-28T12:29:41.978Z",
+  "id": "01KJJ3KQPTGM1H9J4Y1RW4V72J",
+  "name": "01KJJ3KQG24Y0365NBFWXX129W",
+  "properties": {
+    "scope": "plugin/hooks/",
+    "summary": "Fix Stop hook to return required JSON decision format for Claude Code validation"
+  },
+  "type": "concept",
+  "updated_at": "2026-02-28T12:29:41.978Z"
+}

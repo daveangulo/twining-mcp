@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T00:31:47.796Z",
+  "id": "01KQTRRN2MP3ZCR78M2JEY5Q59",
+  "properties": {
+    "decision_summary": "Chose to keep CLAUDE.md gate authority over reporter's prompt-injection-only alternative for issue #9"
+  },
+  "source": "01KQTRRN19FPSG5PNV4QB0Y34P",
+  "target": "01KQTRRN2JN2KGHX81A3ZWMMQW",
+  "type": "decided_by"
+}

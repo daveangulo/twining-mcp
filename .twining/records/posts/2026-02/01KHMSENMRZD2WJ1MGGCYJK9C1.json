@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Blackboard pattern lets agents self-select into work based on visible shared state. Broadcasting needs rather than routing messages avoids coupling agents to each other.",
+  "entry_type": "decision",
+  "id": "01KHMSENMRZD2WJ1MGGCYJK9C1",
+  "scope": "project",
+  "summary": "Use blackboard pattern for agent coordination instead of pipeline/message-passing",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-02-17T03:14:11.736Z"
+}

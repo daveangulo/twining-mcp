@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-26T14:22:40.807Z",
+  "id": "01KJD595N79HPJKJ0SM1TAXQM8",
+  "properties": {
+    "decision_summary": "Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry"
+  },
+  "source": "01KJD595N6WRYRMGP4T88TPC67",
+  "target": "01KJD595MZJY0FB5ET3GN1CZ66",
+  "type": "decided_by"
+}

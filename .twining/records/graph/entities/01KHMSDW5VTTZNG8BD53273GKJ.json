@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-02-17T03:13:45.659Z",
+  "id": "01KHMSDW5VTTZNG8BD53273GKJ",
+  "name": "@modelcontextprotocol/sdk",
+  "properties": {
+    "description": "MCP SDK for server registration and tool handling",
+    "version": "^1.26.0"
+  },
+  "type": "dependency",
+  "updated_at": "2026-02-17T03:13:45.659Z"
+}

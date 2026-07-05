@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-03-20T19:44:58.765Z",
+  "id": "01KM6CF4CDGMX5TTTRNJK4EG72",
+  "name": "01KM6CF41DRF6ZNMBZRBEQXB9R",
+  "properties": {
+    "scope": "src/engine/context-assembler.ts",
+    "summary": "Enrich handoff data in AssembledContext to include individual results for detailed checklists"
+  },
+  "type": "concept",
+  "updated_at": "2026-03-20T19:44:58.765Z"
+}

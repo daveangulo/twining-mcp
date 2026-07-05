@@ -1,0 +1,39 @@
+{
+  "affected_files": [
+    "src/engine/context-assembler.ts",
+    "src/utils/types.ts"
+  ],
+  "affected_symbols": [
+    "formatForLLM",
+    "AssembledContext"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Keep summary-only handoffs",
+      "pros": [],
+      "reason_rejected": "Agents couldn't distinguish completed from blocked work items without reading handoff records separately"
+    },
+    {
+      "cons": [],
+      "option": "Include results in HandoffIndexEntry",
+      "pros": [],
+      "reason_rejected": "Would bloat the index file and change the storage format for all consumers"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "formatForLLM previously showed one-line handoff summaries. Agents couldn't tell what was done vs remaining without reading the full handoff record separately.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KM6CF41DRF6ZNMBZRBEQXB9R",
+  "rationale": "Loading full HandoffRecord (via handoffStore.get) costs one file read per handoff (max 5) but provides structured results with status icons ([x], [ ], [BLOCKED]) that give agents an actionable checklist of what to continue.",
+  "reversible": true,
+  "scope": "src/engine/context-assembler.ts",
+  "status": "active",
+  "summary": "Enrich handoff data in AssembledContext to include individual results for detailed checklists",
+  "timestamp": "2026-03-20T19:44:58.413Z"
+}

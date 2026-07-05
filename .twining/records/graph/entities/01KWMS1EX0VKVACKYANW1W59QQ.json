@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-03T19:59:38.912Z",
+  "id": "01KWMS1EX0VKVACKYANW1W59QQ",
+  "name": "01KWMS1ETGRRNV4BW25Q1CQHJA",
+  "properties": {
+    "scope": "src/storage/sync/",
+    "summary": "Fixed the multiwriter-soak crash-tolerance flake by giving the victim writer an unfinishable op budget (VICTIM_OPS = OPS*100)"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-03T19:59:38.912Z"
+}

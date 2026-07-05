@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-03T19:59:38.799Z",
+  "id": "01KWMS1ESF5WK9PVB29PEKHZZD",
+  "name": "01KWMS1EQ3HQM0Q3SH27A3CF1A",
+  "properties": {
+    "scope": "src/storage/sync/",
+    "summary": "Model inference never runs inside a transaction and all reconcile writes are single upsert/delete statements"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-03T19:59:38.799Z"
+}

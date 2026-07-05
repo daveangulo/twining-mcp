@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-05T16:07:06.445Z",
+  "id": "01KQWE98EDH17JEW3FP97XA2V9",
+  "name": "01KQWE98BS5015ZTYAS0QHXPYE",
+  "properties": {
+    "scope": "src/",
+    "summary": "Branch_gone signal is auto-neutralized when listLocalBranches() returns an empty set"
+  },
+  "type": "concept",
+  "updated_at": "2026-05-05T16:07:06.445Z"
+}

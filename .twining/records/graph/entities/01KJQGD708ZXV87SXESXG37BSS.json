@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-03-02T14:49:31.912Z",
+  "id": "01KJQGD708ZXV87SXESXG37BSS",
+  "name": "01KJQGD6V5SXMG7SJSQQWVXMVZ",
+  "properties": {
+    "scope": "test/eval/",
+    "summary": "7 category scorers with hybrid rule mapping: metadata from BehaviorSpec, custom check logic inline"
+  },
+  "type": "concept",
+  "updated_at": "2026-03-02T14:49:31.912Z"
+}

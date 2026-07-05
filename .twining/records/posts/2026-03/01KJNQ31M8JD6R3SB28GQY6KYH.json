@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "GitHub community standards require CONTRIBUTING.md, SECURITY.md, CODE_OF_CONDUCT.md, issue templates, and PR template. Also fixing telemetry default contradiction and adding engines field.",
+  "entry_type": "decision",
+  "id": "01KJNQ31M8JD6R3SB28GQY6KYH",
+  "scope": "project",
+  "summary": "Add standard open source community files for public announcement readiness",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-03-01T22:07:49.896Z"
+}

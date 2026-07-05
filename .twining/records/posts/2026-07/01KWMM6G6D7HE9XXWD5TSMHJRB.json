@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "follows the v1.20.0 precedent (898d29c) for release commits; the change is mechanical (version fields only) and already validated by the just-merged PR's CI. A PR would have been the alternative but squash-merging would break the tag-target relationship for no added safety.",
+  "entry_type": "decision",
+  "id": "01KWMM6G6D7HE9XXWD5TSMHJRB",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "97d1f7449b5e271497714d0ce4096f4da74b76f0",
+    "recorded_at": "2026-07-03T18:35:01.182Z"
+  },
+  "scope": "project",
+  "summary": "Committed the chore(release): v1.21.1 version bump directly to main instead of via PR",
+  "tags": [
+    "data-model"
+  ],
+  "timestamp": "2026-07-03T18:35:01.197Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-05T17:23:21.616Z",
+  "id": "01KQWJMWCGK6ZWW3EGD6661PTG",
+  "name": "01KQWJMW9NKDHKDCZYDP968RPJ",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Don't distinguish merged-and-deleted from force-deleted branches"
+  },
+  "type": "concept",
+  "updated_at": "2026-05-05T17:23:21.616Z"
+}

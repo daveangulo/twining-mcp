@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-21T19:28:24.460Z",
+  "id": "01KM8XXGCC50FM0QTG6T4ZEEQ9",
+  "properties": {
+    "decision_summary": "Include constraints and rejected alternatives in assembled decision output for pattern propagation"
+  },
+  "source": "01KM6CF4CT684HF4BZANYNC18G",
+  "target": "01KM8XXGBP5RVMBCSR56BCQTTH",
+  "type": "decided_by"
+}

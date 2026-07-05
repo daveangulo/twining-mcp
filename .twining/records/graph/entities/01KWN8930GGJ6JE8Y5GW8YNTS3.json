@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-04T00:25:57.520Z",
+  "id": "01KWN8930GGJ6JE8Y5GW8YNTS3",
+  "name": "01KWN892XYHWDFBFBRVQP8E67A",
+  "properties": {
+    "scope": "src/migrate/",
+    "summary": "Reverse under export_records:false SKIPS ingest and exports from the database alone"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-04T00:25:57.520Z"
+}

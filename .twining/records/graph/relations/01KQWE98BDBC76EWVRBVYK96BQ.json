@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T16:07:06.349Z",
+  "id": "01KQWE98BDBC76EWVRBVYK96BQ",
+  "properties": {
+    "decision_summary": "Added archived to DecisionStatus union rather than moving decision JSON files"
+  },
+  "source": "01KQWE98BCW4SXZR7KP8QNPNJK",
+  "target": "01KQWE98B1G1Y5T2DKQZEGFMH6",
+  "type": "decided_by"
+}

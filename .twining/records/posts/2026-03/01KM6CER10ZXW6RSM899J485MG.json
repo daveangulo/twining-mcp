@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Warnings (what NOT to do) are the most behavior-changing signal. Handoffs provide continuation context. Decisions are important but less urgent. Findings are background. This ordering front-loads the most actionable information into the first 500 tokens where agents are most likely to act on it.",
+  "entry_type": "decision",
+  "id": "01KM6CER10ZXW6RSM899J485MG",
+  "scope": "src/engine/context-assembler.ts",
+  "summary": "Reorder formatForLLM: warnings first, then handoffs, then decisions, then needs, then findings",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-03-20T19:44:46.112Z"
+}

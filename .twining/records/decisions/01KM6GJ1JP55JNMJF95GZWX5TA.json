@@ -1,0 +1,35 @@
+{
+  "affected_files": [
+    "test/coordination/benchmark-scenarios.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Keep original scoring — any fix gets high score regardless of redundancy",
+      "pros": [],
+      "reason_rejected": "Rewards coordination failure; agents that ignore prior context and redo work score identically to agents that check first"
+    },
+    {
+      "cons": [],
+      "option": "Score redundant re-fix at 0",
+      "pros": [],
+      "reason_rejected": "Too harsh — the bug is still fixed even if redundantly. 20 acknowledges the work happened but penalizes the coordination failure."
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Benchmark data showed Agent B re-fixing already-fixed bugs scored 85 (highest tier) — rewarding coordination failure. Meanwhile Agent B correctly verifying the fix was done scored 0.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KM6GJ1JP55JNMJF95GZWX5TA",
+  "rationale": "Verifying completed work (50 pts) should score higher than redundantly redoing it (20 pts). This directly measures whether coordination tools help agents avoid wasted rework, which is the core value proposition of Twining.",
+  "reversible": true,
+  "scope": "test/coordination/",
+  "status": "superseded",
+  "summary": "Bug-investigation resolution scorer penalizes redundant re-fixes when Agent A already completed the work",
+  "timestamp": "2026-03-20T20:56:28.532Z"
+}

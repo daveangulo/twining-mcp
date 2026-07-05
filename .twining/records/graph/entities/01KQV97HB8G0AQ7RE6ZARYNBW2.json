@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T05:19:32.712Z",
+  "id": "01KQV97HB8G0AQ7RE6ZARYNBW2",
+  "name": "plugin/hooks/pre-commit-hook.sh",
+  "properties": {
+    "scope": "plugin/hooks/"
+  },
+  "type": "file",
+  "updated_at": "2026-05-05T15:34:07.602Z"
+}

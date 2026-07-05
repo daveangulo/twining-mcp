@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "single consistent pattern `[[ \"${TWINING_DISABLED:-}\" = \"true\" ]] && exit 0` enables server-side gate bypass for all hook checks",
+  "entry_type": "decision",
+  "id": "01KQV97HA9KV7TWC8YHBDF2FJG",
+  "scope": "plugin/hooks",
+  "summary": "Added TWINING_DISABLED guard immediately after set -euo pipefail in all 3 hooks (pre-commit-hook.sh, stop-hook.sh, subagent-stop-hook.sh)",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-05-05T05:19:32.681Z"
+}

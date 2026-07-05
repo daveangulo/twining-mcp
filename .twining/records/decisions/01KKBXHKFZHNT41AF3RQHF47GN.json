@@ -1,0 +1,33 @@
+{
+  "affected_files": [
+    "plugin/BEHAVIORS.md",
+    "plugin/hooks/hooks.json",
+    "plugin/hooks/stop-hook.sh",
+    "plugin/skills/twining-handoff/SKILL.md",
+    "plugin/skills/twining-orient/SKILL.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Keep registration and handoff as SHOULD-level recommendations",
+      "pros": [],
+      "reason_rejected": "Agents consistently skipped optional coordination steps, defeating the purpose of multi-agent traceability"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Eval results showed agents skipping twining_register and twining_handoff, breaking multi-agent coordination traceability. The plugin hooks and behaviors needed strengthening.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KKBXHKFZHNT41AF3RQHF47GN",
+  "rationale": "Changed REGISTER rules from SHOULD to MUST, added GEN-01 through GEN-04 general principles prioritizing task completion, updated PreToolUse hook to require registration before assembly, enhanced stop-hook to block exit without handoff after code changes, and updated orient/handoff skills to reflect mandatory registration and handoff workflows.",
+  "reversible": true,
+  "scope": "plugin/",
+  "status": "active",
+  "summary": "Enforce mandatory agent registration and handoff in plugin v1.1.5",
+  "timestamp": "2026-03-10T13:03:55.908Z"
+}

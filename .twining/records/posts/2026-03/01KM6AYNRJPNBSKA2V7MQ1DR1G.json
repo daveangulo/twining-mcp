@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Real stores (BlackboardStore, DecisionStore, HandoffStore, AgentStore, GraphEngine) with temp dirs give accurate end-to-end coverage of the assemble pipeline. Only SearchEngine is null (no embeddings needed). This catches real integration issues that mocks would hide, while still running in ~1 second.",
+  "entry_type": "decision",
+  "id": "01KM6AYNRJPNBSKA2V7MQ1DR1G",
+  "scope": "test/coordination/",
+  "summary": "Coordination effectiveness test suite using real stores with temp dirs, no mocking",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-03-20T19:18:30.930Z"
+}

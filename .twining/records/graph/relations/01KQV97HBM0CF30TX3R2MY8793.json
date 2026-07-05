@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T05:19:32.724Z",
+  "id": "01KQV97HBM0CF30TX3R2MY8793",
+  "properties": {
+    "decision_summary": "Added TWINING_DISABLED guard immediately after set -euo pipefail in all 3 hooks (pre-commit-hook.sh, stop-hook.sh, subagent-stop-hook.sh)"
+  },
+  "source": "01KQV97HBKPSMMWW1TKM28C4WG",
+  "target": "01KQV97HB7S4PEWE3T7MCR6ET8",
+  "type": "decided_by"
+}

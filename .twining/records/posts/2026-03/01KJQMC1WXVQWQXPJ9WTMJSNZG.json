@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Separate config keeps synthetic and transcript runs independent per success criteria. Manifest file allows annotating fixtures with metadata (description, expected quality) for richer reporting vs bare glob discovery.",
+  "entry_type": "decision",
+  "id": "01KJQMC1WXVQWQXPJ9WTMJSNZG",
+  "scope": "test/eval/",
+  "summary": "Separate vitest config and npm script for transcript evals with manifest-based fixture discovery",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-03-02T15:58:48.221Z"
+}

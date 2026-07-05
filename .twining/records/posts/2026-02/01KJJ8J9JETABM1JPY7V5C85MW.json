@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Added plugin-version-check job that only runs on PRs (not pushes to main, since direct commits happen). Uses git diff to detect plugin/ changes and checks both version files for version line changes. Excludes plugin.json itself from the \"changed files\" check to avoid false positives when only the version is bumped.",
+  "entry_type": "decision",
+  "id": "01KJJ8J9JETABM1JPY7V5C85MW",
+  "scope": ".github/workflows/",
+  "summary": "CI job to enforce plugin version bumps on PRs that change plugin/ files",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-02-28T13:56:17.615Z"
+}

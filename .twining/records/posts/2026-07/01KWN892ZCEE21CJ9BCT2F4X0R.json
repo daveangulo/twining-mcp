@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "the records/ tree is stale in that config and ingest's deletion propagation would destroy unmirrored sqlite-era rows; refusing (forward's answer) was rejected because reverse is the escape hatch and must work for exactly this population.",
+  "entry_type": "decision",
+  "id": "01KWN892ZCEE21CJ9BCT2F4X0R",
+  "provenance": {
+    "branch": "claude/w3-migrate-tool",
+    "commit_sha": "2178f7674c0c3fae23df35f38e861eae21cf2cd2",
+    "recorded_at": "2026-07-04T00:25:57.468Z"
+  },
+  "scope": "src/migrate/",
+  "summary": "Reverse under export_records:false SKIPS ingest and exports from the database alone",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-04T00:25:57.484Z"
+}

@@ -6,3 +6,6 @@ pending-posts.jsonl
 pending-actions.jsonl
 .last-record
 .last-known-branches.json
+twining.db
+twining.db-wal
+twining.db-shm

@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "prior behavior misfired on mid-sentence 'as'/'since'/'because', causing summary and rationale to bleed. Alternative rejected: removing heuristic separators entirely (would break 'Chose X",
+  "entry_type": "decision",
+  "id": "01KQ0VBWP9QM9DCRA6DMA41ZVA",
+  "scope": "src/engine/record-parser.ts",
+  "summary": "Prefer explicit Rationale:/Why:/Reason:/Because: markers over heuristic split separators in record-parser",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-04-24T22:57:00.105Z"
+}

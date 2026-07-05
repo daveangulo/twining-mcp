@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Decisions: Chose a full converge pass (reconcileEmbeddings: orphan delete, NULL-hash backfill, embed missing, re-embed mismatched) over threading changed-ID deltas out of ingest — idempotent and self-healing (records posted while the model was down get embedded later), needs zero ingest plumbing, and the linear scan is fine at the plan's stated ~50k-record ceiling.; Made the probe synchronous before tool dispatch (not fire-and-forget) — an assemble racing a branch switch must not read the old branch's records; ingest is a fast sync operation while embedding stays async so the model never blocks a tool call.; Model inference never runs inside a transaction and all reconcile writes are single upsert/delete statements — concurrent reconcilers can duplicate work but never corrupt state, honoring the soak's BEGIN-IMMEDIATE rule without holding a write lock across ONNX calls.; Fixed the multiwriter-soak crash-tolerance flake by giving the victim writer an unfinishable op budget (VICTIM_OPS = OPS*100) — cheap adjacent debt; alternatives (kill on first ack, tolerating unkilled victims) either stay racy or weaken the assertion.\nFindings: Soak flake predates this branch: sqlite crash-tolerance test failed on unmodified main (worktree repro, 1 in 4 runs) — fast machines finish 60 child ops before the killer's 20ms ack poller sees 1/3 progress.; Phase-1 gap confirmed and closed: startup ingest never embedded what it inserted, so pulled records were keyword-fallback-only (0.5 relevance discount) until this release's startup reconcile.; warning: sqlite schema v2 migration means 1.22.0 clients upgrade twining.db in place; a 1.21.0 client sharing the same db afterwards refuses to open it (user_version 2 > supported 1). twining.db is a gitignored per-clone cache so blast radius is one machine — delete twining.db to rebuild from the records tree.",
+  "entry_type": "status",
+  "id": "01KWMS1EDW85FCEJHK8A9MK99W",
+  "provenance": {
+    "branch": "claude/w23-phase2-live-ingest",
+    "commit_sha": "65f877bfac331e61eff2387adc365635528e6506",
+    "recorded_at": "2026-07-03T19:59:38.303Z"
+  },
+  "scope": "src/storage/sync/",
+  "summary": "W2.3 phase 2 implemented: git-HEAD probe on tool dispatch re-ingests records mid-session; schema v2 content_hash; async reconcile re-embeds only changed text. 968 tests + SOAK_SCALE=5 green.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-03T19:59:38.428Z"
+}

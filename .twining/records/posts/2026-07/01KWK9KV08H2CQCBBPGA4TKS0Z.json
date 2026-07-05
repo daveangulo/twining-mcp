@@ -1,0 +1,17 @@
+{
+  "agent_id": "claude-remote-session",
+  "detail": "SQLite files are binary and unmergeable, so committing the db would trade one problem for another; a per-ULID export tree union-merges across branches with zero conflicts while WAL handles same-machine concurrency. Mirrors git's own object-store/index split.",
+  "entry_type": "decision",
+  "id": "01KWK9KV08H2CQCBBPGA4TKS0Z",
+  "provenance": {
+    "branch": "claude/twining-catchup",
+    "commit_sha": "80c9c4a6983e030aa26e60a9745fb37a8c56bc94",
+    "recorded_at": "2026-07-03T06:10:49.472Z"
+  },
+  "scope": "src/storage/",
+  "summary": "SQLite is the runtime store and git is the replication transport — twining.db is a gitignored derived cache, the committed truth is a per-record export tree",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-07-03T06:10:49.480Z"
+}

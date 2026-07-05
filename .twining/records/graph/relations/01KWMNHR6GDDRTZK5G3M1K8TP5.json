@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-03T18:58:38.416Z",
+  "id": "01KWMNHR6GDDRTZK5G3M1K8TP5",
+  "properties": {
+    "decision_summary": "Chose a new sync-manager module reusing branch-watcher's snapshot-and-diff pattern instead of literally extending src/engine/branch-watcher.ts"
+  },
+  "source": "01KWMNHR463F6JEF4SF8BQ84CK",
+  "target": "01KWMNHR6AWXE7QW6X9N2KZCM0",
+  "type": "decided_by"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-05T15:34:07.512Z",
+  "id": "01KQWCCVWRYFVRDDTE4AJXYM4Q",
+  "name": "01KQWCCVW5Y2403MVP42NTRAP1",
+  "properties": {
+    "scope": "plugin/hooks/",
+    "summary": "Wired sentinel into the three explicit recording tool handlers, not into engine methods"
+  },
+  "type": "concept",
+  "updated_at": "2026-05-05T15:34:07.512Z"
+}

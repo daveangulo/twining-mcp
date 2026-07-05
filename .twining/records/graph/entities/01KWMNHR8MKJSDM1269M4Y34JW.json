@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-03T18:58:38.484Z",
+  "id": "01KWMNHR8MKJSDM1269M4Y34JW",
+  "name": "01KWMNHR7144MJXS7DRGG6CGDV",
+  "properties": {
+    "scope": "docs/FOUNDATION-PLAN.md",
+    "summary": "Chose hash-based re-embedding (embeddings.content_hash column, schema v2) with NULL-hash backfill-without-re-embed"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-03T18:58:38.484Z"
+}

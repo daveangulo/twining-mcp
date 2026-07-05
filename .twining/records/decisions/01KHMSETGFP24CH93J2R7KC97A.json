@@ -1,0 +1,31 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "SQLite",
+      "pros": [],
+      "reason_rejected": "Binary format, not git-diffable, adds dependency"
+    },
+    {
+      "cons": [],
+      "option": "LevelDB/RocksDB",
+      "pros": [],
+      "reason_rejected": "Overkill for this use case, binary format"
+    }
+  ],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Need persistence that's git-trackable, human-inspectable, and zero-config.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01KHMSETGFP24CH93J2R7KC97A",
+  "rationale": "File-native storage means jq-queryable, git-diffable, no setup. JSONL for append-only streams (blackboard), JSON for indexed records (decisions, graph).",
+  "reversible": true,
+  "scope": "src/storage/",
+  "status": "active",
+  "summary": "All state stored as .jsonl and .json files in .twining/ directory — no external databases",
+  "timestamp": "2026-02-17T03:14:16.720Z"
+}

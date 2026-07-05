@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Bash + sed has zero dependencies, works on macOS and Linux, and keeps the script simple. Reads current version from plugin.json as source of truth, supports both exact versions and patch/minor/major auto-increment.",
+  "entry_type": "decision",
+  "id": "01KJJ8J84VQ8TT37P7AYR6NEHE",
+  "scope": "scripts/",
+  "summary": "Pure bash version bump script with sed for plugin version management",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-02-28T13:56:16.155Z"
+}

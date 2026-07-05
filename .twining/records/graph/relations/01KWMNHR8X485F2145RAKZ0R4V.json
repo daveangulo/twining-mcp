@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-03T18:58:38.493Z",
+  "id": "01KWMNHR8X485F2145RAKZ0R4V",
+  "properties": {
+    "decision_summary": "Chose hash-based re-embedding (embeddings.content_hash column, schema v2) with NULL-hash backfill-without-re-embed"
+  },
+  "source": "01KJJAP1393ZRMJY1SRKEQVBVQ",
+  "target": "01KWMNHR8MKJSDM1269M4Y34JW",
+  "type": "decided_by"
+}

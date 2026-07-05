@@ -1,0 +1,41 @@
+{
+  "affected_files": [
+    "src/engine/context-assembler.ts"
+  ],
+  "affected_symbols": [
+    "ContextAssembler/assemble"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Clean up blackboard entries (delete the 6 offending entries) instead of filtering",
+      "pros": [],
+      "reason_rejected": "Treats the symptom not the cause — more misclassified entries could appear in the future. Defensive filtering is more robust."
+    },
+    {
+      "cons": [],
+      "option": "Add runtime type guard in the scoring/result-building loop that checks for Decision-specific fields before casting",
+      "pros": [],
+      "reason_rejected": "More complex, scattered across multiple code paths. Filtering at source is simpler and prevents the entries from ever entering the scoring pipeline."
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "Blackboard entries with entry_type 'decision' are always misclassified and should never be treated as Decision objects",
+    "The decision store is the sole authoritative source for Decision records"
+  ],
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Blackboard entries with entry_type \"decision\" (an anti-pattern) were being scored as ScoredItem type \"decision\" and then cast to Decision objects. Since BlackboardEntry lacks rationale, confidence, affected_files etc., the output contained items with undefined fields — producing \"(undefined)\" in formatted briefings and risking runtime crashes.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KMT24SQ0EGJSH8Z9A6DDEXB4",
+  "rationale": "Filter at the assembler's entry-loading step (both scope-match and semantic-merge paths) rather than at the blackboard store level. The blackboard schema allows entry_type \"decision\" for backwards compatibility, but the assembler must not treat them as Decision objects. Filtering here is defensive — it protects against data that already exists and any future misuse.",
+  "reversible": true,
+  "scope": "src/engine/context-assembler.ts",
+  "status": "active",
+  "summary": "Filter out entry_type \"decision\" blackboard entries in assembler to prevent type confusion",
+  "timestamp": "2026-03-28T11:09:23.041Z"
+}

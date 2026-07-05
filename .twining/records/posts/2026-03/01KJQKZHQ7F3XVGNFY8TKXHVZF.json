@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Weighted aggregation via aggregateChecks helper gives MUST/MUST_NOT checks veto power (score 0) while SHOULD checks degrade gracefully (0.5). Threshold of 0.8 means a scenario can fail one SHOULD check and still pass, but any MUST failure is an automatic fail. Rule IDs trace to BEHAVIORS.md for auditability.",
+  "entry_type": "decision",
+  "id": "01KJQKZHQ7F3XVGNFY8TKXHVZF",
+  "scope": "test/eval/scorers/",
+  "summary": "Scorers use weighted severity aggregation: MUST fail=0, SHOULD fail=0.5, pass=1 with DEFAULT_THRESHOLD=0.8",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-03-02T15:51:58.439Z"
+}

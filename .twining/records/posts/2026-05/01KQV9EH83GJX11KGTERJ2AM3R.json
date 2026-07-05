@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "this is documented in the spec and verified in issue #8 investigation. The command-type with additionalContext is the only supported form for both startup and resume events.",
+  "entry_type": "decision",
+  "id": "01KQV9EH83GJX11KGTERJ2AM3R",
+  "scope": "plugin/hooks",
+  "summary": "Chose command-type hook with additionalContext JSON output over prompt-type hook because Claude Code does NOT support prompt-type hooks on SessionStart at all and crashes on resume",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-05-05T05:23:21.987Z"
+}

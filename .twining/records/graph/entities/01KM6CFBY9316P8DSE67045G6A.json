@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-03-20T19:45:06.505Z",
+  "id": "01KM6CFBY9316P8DSE67045G6A",
+  "name": "01KM6CFBQ7WWV6FAGY73N5E9D3",
+  "properties": {
+    "scope": "src/engine/context-assembler.ts",
+    "summary": "Filter redundant findings that substantially overlap with decision summaries in formatForLLM"
+  },
+  "type": "concept",
+  "updated_at": "2026-03-20T19:45:06.505Z"
+}

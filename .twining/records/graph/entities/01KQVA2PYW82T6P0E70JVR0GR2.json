@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-05T05:34:23.196Z",
+  "id": "01KQVA2PYW82T6P0E70JVR0GR2",
+  "name": "01KQVA2PWT7HWDEVH04MNXDM8S",
+  "properties": {
+    "scope": "docs/superpowers/specs/",
+    "summary": "Reconsidered SEARCH_PATHS marker-search order in ensure-claude-md-gates.sh. Original spec said global-first (cheapest,"
+  },
+  "type": "concept",
+  "updated_at": "2026-05-05T05:34:23.196Z"
+}

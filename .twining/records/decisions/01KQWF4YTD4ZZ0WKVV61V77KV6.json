@@ -1,0 +1,26 @@
+{
+  "affected_files": [
+    "src/utils/provenance.ts",
+    "src/engine/staleness.ts",
+    "src/analytics/analytics-engine.ts",
+    "src/utils/types.ts",
+    "test/unit/staleness.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "PR A review fixes: replaced knownBranchesEmpty heuristic with explicit null sentinel; added archived to ValueStats lifecycle; regression test for blackboard-only branch_gone audit.",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KQWF4YTD4ZZ0WKVV61V77KV6",
+  "rationale": "the prior knownBranchesEmpty heuristic produced false negatives whenever decisions[] was empty, silently dropping the branch_gone signal for blackboard-only audits.",
+  "reversible": true,
+  "scope": "src/engine/",
+  "status": "active",
+  "summary": "Used null sentinel from listLocalBranches() to distinguish 'enumeration failed' from 'legitimately empty branch set'",
+  "timestamp": "2026-05-05T16:22:14.093Z"
+}

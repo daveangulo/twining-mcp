@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-04T01:26:31.123Z",
+  "id": "01KWNBQZEKABSSHV0KQAWXCA84",
+  "properties": {
+    "decision_summary": "Incompatible CLI flag combos are rejected at parse time (exit 2) rather than reinterpreted"
+  },
+  "source": "01KJD595NBM3QK28EQJ3JG8QXV",
+  "target": "01KWNBQZECPT1R8CNM0K001NHD",
+  "type": "decided_by"
+}

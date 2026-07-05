@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "A single BEHAVIORS.md in plugin/ serves as both human documentation and eval input. A state-machine parser in test/eval/ transforms it into typed BehaviorSpec objects using shared Zod-validated interfaces. This avoids duplicating behavioral rules in code and keeps the spec authoritative.",
+  "entry_type": "decision",
+  "id": "01KJQBQDKSKSJK8092RJ5C4MNP",
+  "scope": "test/eval/",
+  "summary": "Behavioral spec as single Markdown document parsed by state machine into typed objects",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-03-02T13:27:43.481Z"
+}

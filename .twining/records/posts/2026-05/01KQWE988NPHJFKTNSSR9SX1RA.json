@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Decisions: Added archived to DecisionStatus union rather than moving decision JSON files — status-based exclusion already filters out non-active decisions in assemble/why/verify, so a one-token change covers it.; Branch_gone signal is auto-neutralized when listLocalBranches() returns an empty set — ensures non-git projects don't false-flag every provenance-stamped entry.; Staleness threshold is global-only (config.yml housekeeping.staleness_threshold, default 0.95). Per-decision sunset overrides not added — deferred until audit proves too aggressive in practice.",
+  "entry_type": "status",
+  "id": "01KQWE988NPHJFKTNSSR9SX1RA",
+  "scope": "src/",
+  "summary": "PR A complete: provenance stamping (Phase 1) + staleness detection (Phase 2) + housekeeping review flow (Phase 3) for issue #7. 887 tests pass. Server-only change; no plugin bump.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-05-05T16:07:06.261Z"
+}

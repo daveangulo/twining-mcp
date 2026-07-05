@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Constraints like 'All services must use EventBus.emit()' and rejected alternatives like 'Direct calls: tight coupling' give agents concrete directives about what to do and what not to do. This bridges the gap between abstract decision summaries and actionable implementation guidance.",
+  "entry_type": "decision",
+  "id": "01KM8XXG7RGSNDDJ5233NJHNVF",
+  "scope": "src/engine/context-assembler.ts",
+  "summary": "Include constraints and rejected alternatives in assembled decision output for pattern propagation",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-03-21T19:28:24.312Z"
+}

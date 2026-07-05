@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-17T03:15:04.702Z",
+  "id": "01KHMSG9BY321XXSDXSP4R8KA7",
+  "name": "blackboard-pattern",
+  "properties": {
+    "description": "Agents post to and read from shared state. Self-select into work based on visible needs. No routing, no coupling between agents."
+  },
+  "type": "pattern",
+  "updated_at": "2026-02-17T03:15:04.702Z"
+}

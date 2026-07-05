@@ -1,0 +1,17 @@
+{
+  "agent_id": "claude-remote-session",
+  "detail": "Deletion propagation keyed on per-kind directory existence means an absent tree is read as 'not synced', never as 'everything was deleted' — the failure mode that would wipe a database on first ingest.",
+  "entry_type": "decision",
+  "id": "01KWK9KV5VVZCRZ1JCS1M051YQ",
+  "provenance": {
+    "branch": "claude/twining-catchup",
+    "commit_sha": "80c9c4a6983e030aa26e60a9745fb37a8c56bc94",
+    "recorded_at": "2026-07-03T06:10:49.651Z"
+  },
+  "scope": "src/storage/sync/",
+  "summary": "Export tree excludes agents and embeddings, and ingest never deletes without the corresponding kind directory present",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-03T06:10:49.659Z"
+}

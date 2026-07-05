@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "second entry in SessionStart hooks array, after ensure-claude-md-gates.sh, so both hooks execute in order at session start.",
+  "entry_type": "decision",
+  "id": "01KQV9EHBJX8QJBTKXB48FFPMC",
+  "scope": "plugin/hooks",
+  "summary": "Placed the new session-start-context.sh",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-05-05T05:23:22.098Z"
+}

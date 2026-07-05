@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-03-21T12:14:01.729Z",
+  "id": "01KM8524G1ECE7JS9K5HXCVZNX",
+  "name": "01KM85240NSH8HHVG66VMK36EC",
+  "properties": {
+    "scope": "src/utils/types.ts",
+    "summary": "Add assumptions field to Decision type for assumption-based validation in assemble output"
+  },
+  "type": "concept",
+  "updated_at": "2026-03-21T12:14:01.729Z"
+}

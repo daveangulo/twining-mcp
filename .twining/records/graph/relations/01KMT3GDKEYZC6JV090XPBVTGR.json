@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-28T11:33:12.430Z",
+  "id": "01KMT3GDKEYZC6JV090XPBVTGR",
+  "properties": {
+    "decision_summary": "Remove fullSurface tool gate — all 34 MCP tools always registered"
+  },
+  "source": "01KHMSDNP6W0G4PM1EF27453CS",
+  "target": "01KMT3GDJYZWYW23H93CTQTM6K",
+  "type": "decided_by"
+}

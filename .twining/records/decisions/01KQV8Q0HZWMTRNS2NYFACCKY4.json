@@ -1,0 +1,20 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Created shared hook test helper at test/hooks/run-hook.ts",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KQV8Q0HZWMTRNS2NYFACCKY4",
+  "rationale": "functionality identical, types check cleanly without esModuleInterop",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Adapted import style from 'import path' to 'import * as path' to satisfy TypeScript strict ESM rules (verbatimModuleSyntax: true)",
+  "timestamp": "2026-05-05T05:10:31.231Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T05:19:32.762Z",
+  "id": "01KQV97HCSDR0VZWX5KRN281DG",
+  "properties": {
+    "decision_summary": "Created 3 test files (pre-commit-hook.test.ts, stop-hook.test.ts, subagent-stop-hook.test.ts) using existing run-hook helper"
+  },
+  "source": "01KQV97HBKPSMMWW1TKM28C4WG",
+  "target": "01KQV97HCFNE92QRC4WAWT5D2T",
+  "type": "decided_by"
+}

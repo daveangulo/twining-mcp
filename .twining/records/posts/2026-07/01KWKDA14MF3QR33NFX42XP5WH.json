@@ -1,0 +1,18 @@
+{
+  "agent_id": "claude-remote-session",
+  "detail": "949 tests green, token budget PASS (107 bytes headroom). package-lock.json must ride this push — the dependencies-section move breaks npm ci sync if omitted.",
+  "entry_type": "status",
+  "id": "01KWKDA14MF3QR33NFX42XP5WH",
+  "provenance": {
+    "branch": "claude/hygiene-1.21.1",
+    "commit_sha": "eceb30412aec06d66f429bd0615e10c3a8c80b24",
+    "recorded_at": "2026-07-03T07:15:22.383Z"
+  },
+  "scope": "project",
+  "summary": "Hygiene release staged: server 1.21.1 (transformers optional, lock healed) + plugin 1.10.1 (BEHAVIORS.md 35 tools, CI token-budget job, STATE.md refresh)",
+  "tags": [
+    "session-record",
+    "release"
+  ],
+  "timestamp": "2026-07-03T07:15:22.388Z"
+}

@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "immune to transcript text noise and same-turn flush latency. Rejected anchored transcript matching and file mtime.",
+  "entry_type": "decision",
+  "id": "01KQWCCVTW690814FWDP7BRFPD",
+  "scope": "plugin/hooks/",
+  "summary": "Chose sentinel-file + git-log-HEAD over transcript-grep",
+  "tags": [
+    "performance"
+  ],
+  "timestamp": "2026-05-05T15:34:07.452Z"
+}

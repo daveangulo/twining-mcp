@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "The failures were scorer precision issues, not plugin instruction gaps. Fixing scorers to respect scenario categories (only checking sequencing/completeness for the workflow matching the scenario's declared category) is more correct than warping plugin instructions to avoid triggering cross-category checks.",
+  "entry_type": "decision",
+  "id": "01KJR024YKE15KGR07NBV309AA",
+  "scope": "test/eval/",
+  "summary": "Category-aware scorer filtering eliminates false positives instead of modifying plugin skills",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-03-02T19:23:06.579Z"
+}

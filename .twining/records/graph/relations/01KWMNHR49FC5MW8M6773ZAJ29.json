@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-03T18:58:38.345Z",
+  "id": "01KWMNHR49FC5MW8M6773ZAJ29",
+  "properties": {
+    "decision_summary": "Chose lazy TTL-gated git-HEAD probe on tool dispatch over fs.watch on .twining/records/ for live re-ingest"
+  },
+  "source": "01KJJAP1393ZRMJY1SRKEQVBVQ",
+  "target": "01KWMNHR416F2FYJZAX7X9Y6ZS",
+  "type": "decided_by"
+}

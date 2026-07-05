@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "--reverse --check previously executed a real finalizing reverse under a 'check passed' banner; refusal is self-documenting where silent precedence rules would hide a destructive action.",
+  "entry_type": "decision",
+  "id": "01KWNBQZDCAM13BSPN8BYSN74E",
+  "provenance": {
+    "branch": "claude/w3-migrate-tool",
+    "commit_sha": "65d8b9ceddf4d263aea1c2ba397267459467a830",
+    "recorded_at": "2026-07-04T01:26:31.068Z"
+  },
+  "scope": "src/migrate/",
+  "summary": "Incompatible CLI flag combos are rejected at parse time (exit 2) rather than reinterpreted",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-04T01:26:31.084Z"
+}

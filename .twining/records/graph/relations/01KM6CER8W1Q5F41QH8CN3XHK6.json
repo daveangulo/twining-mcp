@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-20T19:44:46.364Z",
+  "id": "01KM6CER8W1Q5F41QH8CN3XHK6",
+  "properties": {
+    "decision_summary": "Reorder formatForLLM: warnings first, then handoffs, then decisions, then needs, then findings"
+  },
+  "source": "01KHXTXPP31RWYHVGNGXN9REW8",
+  "target": "01KM6CER8K0H7DW3NTKT2AW73Q",
+  "type": "decided_by"
+}

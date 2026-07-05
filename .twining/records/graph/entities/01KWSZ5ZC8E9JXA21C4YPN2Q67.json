@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-05T20:23:10.472Z",
+  "id": "01KWSZ5ZC8E9JXA21C4YPN2Q67",
+  "name": "01KWSZ5Z9K5J1X7XTJQHGCTJWW",
+  "properties": {
+    "scope": "project",
+    "summary": "Migrate this repo's own .twining to sqlite as user zero of the shipped tool on live state"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-05T20:23:10.472Z"
+}

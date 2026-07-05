@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-02-20T15:32:38.271Z",
+  "id": "01KHXTWYQZMQ3YWX4F5VXCKHK4",
+  "name": "01KHXTWYETCEF91HQD0HMA2SG4",
+  "properties": {
+    "scope": "src/engine/verify.ts",
+    "summary": "Switch execGit to execFileSync with argument arrays; replace broken shell operator blocklist with newline/null-byte validation"
+  },
+  "type": "concept",
+  "updated_at": "2026-02-20T15:32:38.271Z"
+}

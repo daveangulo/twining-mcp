@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-04T00:25:57.526Z",
+  "id": "01KWN8930P8H5960VABSAHN78Z",
+  "properties": {
+    "decision_summary": "Reverse under export_records:false SKIPS ingest and exports from the database alone"
+  },
+  "source": "01KWN4BCMBDHY2MCTWESYG2VVW",
+  "target": "01KWN8930GGJ6JE8Y5GW8YNTS3",
+  "type": "decided_by"
+}

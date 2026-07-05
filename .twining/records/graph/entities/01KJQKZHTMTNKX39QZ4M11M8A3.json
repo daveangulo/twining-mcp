@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-02T15:51:58.548Z",
+  "id": "01KJQKZHTMTNKX39QZ4M11M8A3",
+  "name": "test/eval/scorers/decision-hygiene.ts",
+  "properties": {
+    "scope": "test/eval/scorers/"
+  },
+  "type": "file",
+  "updated_at": "2026-03-02T15:51:58.548Z"
+}

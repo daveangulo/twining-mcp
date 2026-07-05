@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-02T19:23:06.681Z",
+  "id": "01KJR0251S3E1JXK4948K8VGYF",
+  "properties": {
+    "decision_summary": "Category-aware scorer filtering eliminates false positives instead of modifying plugin skills"
+  },
+  "source": "01KJQKZHTP48VSB04E0GQAYMFP",
+  "target": "01KJR0251G20Q6S3BD2XJEJ88D",
+  "type": "decided_by"
+}

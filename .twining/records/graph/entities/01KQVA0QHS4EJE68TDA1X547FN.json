@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-05T05:33:18.265Z",
+  "id": "01KQVA0QHS4EJE68TDA1X547FN",
+  "name": "01KQVA0QFTMEVK7AX9RXJK7178",
+  "properties": {
+    "scope": "project",
+    "summary": "Replaced tmpTranscript naming from Date.now() pattern to mkdtempSync in pre-commit-hook.test.ts and stop-hook.test.ts for parallel-safe temp file handling"
+  },
+  "type": "concept",
+  "updated_at": "2026-05-05T05:33:18.265Z"
+}

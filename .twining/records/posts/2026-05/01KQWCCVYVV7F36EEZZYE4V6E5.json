@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "fixes substring false-positives.",
+  "entry_type": "decision",
+  "id": "01KQWCCVYVV7F36EEZZYE4V6E5",
+  "scope": "plugin/hooks/",
+  "summary": "Token-aware trigger: argv[0]=='git' && argv[1]=='commit' after stripping pipes",
+  "tags": [
+    "security"
+  ],
+  "timestamp": "2026-05-05T15:34:07.579Z"
+}

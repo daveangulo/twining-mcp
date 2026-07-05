@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-04-24T22:57:00.181Z",
+  "id": "01KQ0VBWRNGV38M8F4BZ57QQZ8",
+  "properties": {
+    "decision_summary": "Replaced split(regex, 2) with single-split-on-first-match that preserves the full remainder"
+  },
+  "source": "01KQ0VBWQ4H8KWYG0WGZDS97J4",
+  "target": "01KQ0VBWRM2TG11S605ERXED8H",
+  "type": "decided_by"
+}

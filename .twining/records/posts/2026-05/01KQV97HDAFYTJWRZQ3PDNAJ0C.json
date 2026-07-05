@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Structured tests to verify disabled mode bypasses all enforcement: pre-commit blocks commits without recording, stop blocks sessions without recording, both disabled exit 0 silently",
+  "entry_type": "decision",
+  "id": "01KQV97HDAFYTJWRZQ3PDNAJ0C",
+  "scope": "plugin/hooks",
+  "summary": "Structured tests to verify disabled mode bypasses all enforcement: pre-commit blocks commits without recording, stop blocks sessions without recording, both disabled exit 0 silently",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-05-05T05:19:32.778Z"
+}

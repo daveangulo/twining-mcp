@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-02T13:27:43.975Z",
+  "id": "01KJQBQE37PW7JMV7W6PZ8GB6B",
+  "properties": {
+    "decision_summary": "Behavioral spec as single Markdown document parsed by state machine into typed objects"
+  },
+  "source": "01KJQBQE35Y4S3A6P8GCJHHJ35",
+  "target": "01KJQBQE311AR3KRCBRVE175T0",
+  "type": "decided_by"
+}

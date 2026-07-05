@@ -1,0 +1,28 @@
+{
+  "affected_files": [
+    "src/migrate/config-edit.ts",
+    "test/migrate/config-edit.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "W3 Task 2: config-edit.ts + 8 tests. Review hardened it: atomicWriteFileSync on overwrite, non-object-root guard, first-wins backup (forward-then-reverse can't clobber the original).",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01KWN25KRGBEC6KBNMMPNEFWKP",
+  "provenance": {
+    "branch": "claude/w3-migrate-tool",
+    "commit_sha": "49d10113ddf5d912c11e63ae0230e4b4020f2d57",
+    "recorded_at": "2026-07-03T22:39:12.126Z"
+  },
+  "rationale": "the first backup is the true pre-migration original; a later reverse run overwriting it would destroy the only copy. Alternative (timestamped backups) rejected as clutter for a file git usually tracks anyway.",
+  "reversible": true,
+  "scope": "src/migrate/",
+  "status": "active",
+  "summary": "config.yml backup is first-wins (.pre-migrate.bak never overwritten)",
+  "timestamp": "2026-07-03T22:39:12.144Z"
+}

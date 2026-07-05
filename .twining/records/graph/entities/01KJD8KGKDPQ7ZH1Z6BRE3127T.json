@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-26T15:20:45.421Z",
+  "id": "01KJD8KGKDPQ7ZH1Z6BRE3127T",
+  "name": "BlackboardStore/dismiss",
+  "properties": {
+    "scope": "src/tools/blackboard-tools.ts"
+  },
+  "type": "function",
+  "updated_at": "2026-02-26T15:20:45.421Z"
+}

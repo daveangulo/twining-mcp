@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "status",
+  "id": "01KWSYY43KSFXM1T26VPKGRMHF",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "935e94912050ddffaf72f84625446406592a6a8a",
+    "recorded_at": "2026-07-05T20:18:53.144Z"
+  },
+  "scope": "project",
+  "summary": "A/B numbers posted to issues #30 (briefing-composition impact by corpus scale) and #31 (dependency retrieval weak vs explicit links; front-loading lever) as design inputs.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-05T20:18:53.171Z"
+}

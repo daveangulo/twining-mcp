@@ -1,0 +1,17 @@
+{
+  "agent_id": "claude-remote-session",
+  "detail": "Nothing previously read config.version at all; the gate must be in the installed base before v2 flips the format, which is why it shipped in 1.21.0 ahead of the migration tooling.",
+  "entry_type": "decision",
+  "id": "01KWK9KV48907EVTMMS0AS09GA",
+  "provenance": {
+    "branch": "claude/twining-catchup",
+    "commit_sha": "80c9c4a6983e030aa26e60a9745fb37a8c56bc94",
+    "recorded_at": "2026-07-03T06:10:49.600Z"
+  },
+  "scope": "src/config.ts",
+  "summary": "Format version gate ships and soaks before any format change: config version newer than the release puts the server in read-only mode (FORMAT_VERSION_TOO_NEW) instead of silently diverging",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-07-03T06:10:49.608Z"
+}

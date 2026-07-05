@@ -1,0 +1,28 @@
+{
+  "affected_files": [
+    "docs/superpowers/plans/2026-07-03-w3-migrate-tool.md",
+    "docs/FOUNDATION-PLAN.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "W3 migrate tool planned: TDD plan at docs/superpowers/plans/2026-07-03-w3-migrate-tool.md — comparator, config edit, forward, reverse, CLI, golden fixture, release 1.23.0. Not executed.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KWMYW8EYSG7H5MWVSS19AZYQ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "9760a77372d1ab97e094ae23de89a67effed5510",
+    "recorded_at": "2026-07-03T21:41:39.917Z"
+  },
+  "rationale": "FOUNDATION-PLAN's finalize step (version: 2) belongs to the gated v2.0 cut; shipping it now would lock out 1.21+ teammates for a backend choice that is still opt-in.",
+  "reversible": true,
+  "scope": "src/migrate/",
+  "status": "active",
+  "summary": "W3 1.x migrate leaves config.version at 1 and only flips storage.backend",
+  "timestamp": "2026-07-03T21:41:39.934Z"
+}

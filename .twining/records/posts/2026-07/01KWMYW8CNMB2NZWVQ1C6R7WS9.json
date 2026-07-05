@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Decisions: W3 1.x migrate leaves config.version at 1 and only flips storage.backend — FOUNDATION-PLAN's finalize step (version: 2) belongs to the gated v2.0 cut; shipping it now would lock out 1.21+ teammates for a backend choice that is still opt-in.; Migration verify uses subset-containment (source ⊆ target) rather than set equality — the straggler re-run requirement means sqlite legitimately holds a superset of the legacy files on second runs; equality would make idempotent re-runs fail by design.; No legacy-v1/ full backup in the 1.x migrate — forward migration modifies exactly one file (config.yml, backed up to .pre-migrate.bak); all other legacy files are left byte-identical and are their own backup. Reverse migration does back up the file layout it overwrites (pre-reverse-backup/).; Reverse migration leaves records/ and twining.db in place but prints a FROZEN warning with remediation commands — deleting committed state is not the tool's call; the trap (stale tree resurrected on a later manual backend flip) is handled by instruction, not deletion.\nFindings: FOUNDATION-PLAN W3 text is stale in two places: entities/relations already carry ULIDs (graph-store mints them), so the migration needs zero ID minting; and the 'write tree then ordinary ingest' design means W2.3 shipped most of W3's machinery — the tool is ~5 small modules.; Plugin .mcp.json pins twining-mcp@^1.20.0 (caret), so 1.23.0 reaches plugin users with no plugin release.",
+  "entry_type": "status",
+  "id": "01KWMYW8CNMB2NZWVQ1C6R7WS9",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "9760a77372d1ab97e094ae23de89a67effed5510",
+    "recorded_at": "2026-07-03T21:41:39.834Z"
+  },
+  "scope": "src/migrate/",
+  "summary": "W3 migrate tool planned: TDD plan at docs/superpowers/plans/2026-07-03-w3-migrate-tool.md — comparator, config edit, forward, reverse, CLI, golden fixture, release 1.23.0. Not executed.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-03T21:41:39.861Z"
+}

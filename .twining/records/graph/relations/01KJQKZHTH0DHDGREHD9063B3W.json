@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-02T15:51:58.545Z",
+  "id": "01KJQKZHTH0DHDGREHD9063B3W",
+  "properties": {
+    "decision_summary": "Scorers use weighted severity aggregation: MUST fail=0, SHOULD fail=0.5, pass=1 with DEFAULT_THRESHOLD=0.8"
+  },
+  "source": "01KJQKZHTGR0EC014C8W7QKXG2",
+  "target": "01KJQKZHTCEKYS3H35CGJRN5H0",
+  "type": "decided_by"
+}

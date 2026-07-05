@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-02T19:59:48.075Z",
+  "id": "01KJR25AVB5G1SADY42CHCVYWH",
+  "properties": {
+    "decision_summary": "Fix LLM judge model ID and increase eval timeouts for LLM scorer runs"
+  },
+  "source": "01KJQKZ9T5VWREK2XPFYFFA2FB",
+  "target": "01KJR25AV0E8ZQ8J355P7VTNAT",
+  "type": "decided_by"
+}

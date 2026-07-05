@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-28T15:02:33.379Z",
+  "id": "01KJJCBM5355CDHK7C3MFRMABP",
+  "name": "buildTimelineGroups",
+  "properties": {
+    "scope": "src/dashboard/public/"
+  },
+  "type": "function",
+  "updated_at": "2026-02-28T15:02:33.379Z"
+}

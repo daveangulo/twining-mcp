@@ -1,0 +1,26 @@
+{
+  "affected_files": [
+    "src/utils/provenance.ts",
+    "src/engine/staleness.ts",
+    "src/analytics/analytics-engine.ts",
+    "src/utils/types.ts",
+    "test/unit/staleness.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "PR A review fixes: replaced knownBranchesEmpty heuristic with explicit null sentinel; added archived to ValueStats lifecycle; regression test for blackboard-only branch_gone audit.",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01KQWF4YRT25WNR4ZRK65PG9EH",
+  "rationale": "--abbrev-ref is global so the two-positional-arg form returns branch twice. Two execFileSync calls remain canonical; cost is ~1ms each which is acceptable. Will revisit via .git/HEAD parsing only if profiling shows it as a hot path.",
+  "reversible": true,
+  "scope": "src/engine/",
+  "status": "active",
+  "summary": "Reverted single-call git rev-parse optimization",
+  "timestamp": "2026-05-05T16:22:14.042Z"
+}

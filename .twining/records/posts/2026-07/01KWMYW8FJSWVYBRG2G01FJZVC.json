@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "FOUNDATION-PLAN's finalize step (version: 2) belongs to the gated v2.0 cut; shipping it now would lock out 1.21+ teammates for a backend choice that is still opt-in.",
+  "entry_type": "decision",
+  "id": "01KWMYW8FJSWVYBRG2G01FJZVC",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "9760a77372d1ab97e094ae23de89a67effed5510",
+    "recorded_at": "2026-07-03T21:41:39.938Z"
+  },
+  "scope": "src/migrate/",
+  "summary": "W3 1.x migrate leaves config.version at 1 and only flips storage.backend",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-03T21:41:39.954Z"
+}

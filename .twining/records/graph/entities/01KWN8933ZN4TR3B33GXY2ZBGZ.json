@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-04T00:25:57.631Z",
+  "id": "01KWN8933ZN4TR3B33GXY2ZBGZ",
+  "name": "01KWN893175YCE3S3KR6F2F1KQ",
+  "properties": {
+    "scope": "src/migrate/",
+    "summary": "pre-reverse-backup/ is deliberately LAST-WINS (unlike config-edit's first-wins .pre-migrate.bak): it means 'what this run is about to overwrite', which is what makes a mistaken second reverse recoverable."
+  },
+  "type": "concept",
+  "updated_at": "2026-07-04T00:25:57.631Z"
+}

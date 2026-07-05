@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-28T15:02:33.393Z",
+  "id": "01KJJCBM5HKQ2YMG75QNQ5GXQR",
+  "name": "getDecisionClassName",
+  "properties": {
+    "scope": "src/dashboard/public/"
+  },
+  "type": "function",
+  "updated_at": "2026-02-28T15:02:33.393Z"
+}

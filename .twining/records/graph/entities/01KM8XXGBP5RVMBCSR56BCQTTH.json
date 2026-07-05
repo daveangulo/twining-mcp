@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-03-21T19:28:24.438Z",
+  "id": "01KM8XXGBP5RVMBCSR56BCQTTH",
+  "name": "01KM8XXFXJ0MVVVZYX6RD064MB",
+  "properties": {
+    "scope": "src/engine/context-assembler.ts",
+    "summary": "Include constraints and rejected alternatives in assembled decision output for pattern propagation"
+  },
+  "type": "concept",
+  "updated_at": "2026-03-21T19:28:24.438Z"
+}

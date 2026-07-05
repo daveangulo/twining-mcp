@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Warnings fill first from the full budget (priority access). Non-warnings are capped at 90% of the budget to ensure warnings can always get in. This preserves the intent (warnings get priority) while handling edge cases (small budgets where 10% can't hold any entry).",
+  "entry_type": "decision",
+  "id": "01KHXTXPMAQJKY5DC9GF56XMVG",
+  "scope": "src/engine/context-assembler.ts",
+  "summary": "Fix token budget accounting: warnings get priority access to full budget, non-warnings capped at 90%",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-02-20T15:33:02.730Z"
+}

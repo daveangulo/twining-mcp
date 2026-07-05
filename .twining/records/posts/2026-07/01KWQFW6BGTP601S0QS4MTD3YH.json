@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "at-least-once semantics where duplicates are possible under concurrent drains but an appended post can never be lost; the original fixed-name swap had a microsecond cross-process unlink window the reviewer traced.",
+  "entry_type": "decision",
+  "id": "01KWQFW6BGTP601S0QS4MTD3YH",
+  "provenance": {
+    "branch": "claude/1.24-field-findings",
+    "commit_sha": "0a1a8205dbb51b940ef5255d52b3a8eafdcce6e0",
+    "recorded_at": "2026-07-04T21:17:12.415Z"
+  },
+  "scope": "src/engine/",
+  "summary": "Pending drain uses per-drain unique swap files with claim-by-rename recovery",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-04T21:17:12.432Z"
+}

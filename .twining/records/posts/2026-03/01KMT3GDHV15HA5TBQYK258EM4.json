@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Claude Code already defers MCP tool loading via ToolSearch — tool schemas are only loaded into context when needed. The fullSurface gate was premature optimization that actively broke mandatory functionality. Per Anthropic's tool context management docs, tool search is the correct pattern for large toolsets, and we already have it.",
+  "entry_type": "decision",
+  "id": "01KMT3GDHV15HA5TBQYK258EM4",
+  "scope": "src/tools/",
+  "summary": "Remove fullSurface tool gate — all 34 MCP tools always registered",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-03-28T11:33:12.379Z"
+}

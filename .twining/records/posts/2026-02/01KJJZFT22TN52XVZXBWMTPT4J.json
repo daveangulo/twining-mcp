@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Adding projectRoot to the health response lets isExistingDashboard() distinguish same-project dashboards (safe to skip, since they read from the same .twining/ on disk) from different-project dashboards (should auto-open a new tab). This is minimally invasive — only the health response and the dedup check change.",
+  "entry_type": "decision",
+  "id": "01KJJZFT22TN52XVZXBWMTPT4J",
+  "scope": "src/dashboard/http-server.ts",
+  "summary": "Include projectRoot in health endpoint to distinguish same-project vs different-project dashboard instances",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-02-28T20:36:53.442Z"
+}

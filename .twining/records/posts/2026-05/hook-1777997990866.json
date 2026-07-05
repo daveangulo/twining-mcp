@@ -1,0 +1,15 @@
+{
+  "agent_id": "feature-dev:code-reviewer",
+  "detail": "",
+  "dismissed": false,
+  "entry_type": "status",
+  "id": "hook-1777997990866",
+  "scope": "project",
+  "summary": "Subagent completed: feature-dev:code-reviewer",
+  "supersedes": null,
+  "tags": [
+    "subagent-stop",
+    "hook-generated"
+  ],
+  "timestamp": "2026-05-05T16:19:50.000Z"
+}

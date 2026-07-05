@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-19T06:05:17.473Z",
+  "id": "01KM2B5GS1K2F2QRGD4PHN9154",
+  "properties": {
+    "decision_summary": "Reduce default tool surface from 32 to 16 via full_surface config flag"
+  },
+  "source": "01KM2B5GRZ2ZRK58VDE348WBJC",
+  "target": "01KM2B5GR35WW0739SKS7WHAZB",
+  "type": "decided_by"
+}

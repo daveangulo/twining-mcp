@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-02-20T02:59:31.245Z",
+  "id": "01KHWFSYSDV41X3R91BRSRPWA1",
+  "name": "01KHWFSYQ88K7YE5XED2V5P38B",
+  "properties": {
+    "scope": "examples/",
+    "summary": "Build automated demo using playwright browser automation + screenshot capture + narration script"
+  },
+  "type": "concept",
+  "updated_at": "2026-02-20T02:59:31.245Z"
+}

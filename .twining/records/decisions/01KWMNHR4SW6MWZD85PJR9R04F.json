@@ -1,0 +1,43 @@
+{
+  "affected_files": [
+    "docs/FOUNDATION-PLAN.md",
+    "src/storage/sync/record-ingest.ts",
+    "src/storage/sqlite/db.ts",
+    "src/embeddings/embedder.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "literally extending src/engine/branch-watcher.ts",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "W2.3 phase 2 is sqlite-backend-only; file backend behavior unchanged",
+    "HEAD-sha comparison is a sufficient re-ingest trigger; manual edits to records/ without a git op are out of scope (startup ingest catches them)",
+    "No new user-facing config keys needed (probe TTL is a constant); no plugin changes, so no plugin version bump or token-budget impact",
+    "Ships as server 1.22.0"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "W2.3 phase 2 started on claude/w23-phase2-live-ingest. First commit: FOUNDATION-PLAN.md status section reconciling plan doc to shipped reality (W0–W2.3p1 done, phase 2 in progress, W3 next).",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01KWMNHR4SW6MWZD85PJR9R04F",
+  "provenance": {
+    "branch": "claude/w23-phase2-live-ingest",
+    "commit_sha": "94b90b5e8c7637aec6ee25b914a6f7232fbdaf1d",
+    "recorded_at": "2026-07-03T18:58:38.346Z"
+  },
+  "rationale": "that module is the housekeeping deleted-branch sweep with a different trigger (housekeeping runs) and signal (branch deletion); grafting HEAD-movement detection onto it would couple two unrelated lifecycles.",
+  "reversible": true,
+  "scope": "docs/FOUNDATION-PLAN.md",
+  "status": "active",
+  "summary": "Chose a new sync-manager module reusing branch-watcher's snapshot-and-diff pattern instead of literally extending src/engine/branch-watcher.ts",
+  "timestamp": "2026-07-03T18:58:38.361Z"
+}

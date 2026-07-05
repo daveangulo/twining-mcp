@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "cheap adjacent debt; alternatives (kill on first ack, tolerating unkilled victims) either stay racy or weaken the assertion.",
+  "entry_type": "decision",
+  "id": "01KWMS1EW0A5VZABXYV5DA9FVB",
+  "provenance": {
+    "branch": "claude/w23-phase2-live-ingest",
+    "commit_sha": "65f877bfac331e61eff2387adc365635528e6506",
+    "recorded_at": "2026-07-03T19:59:38.865Z"
+  },
+  "scope": "src/storage/sync/",
+  "summary": "Fixed the multiwriter-soak crash-tolerance flake by giving the victim writer an unfinishable op budget (VICTIM_OPS = OPS*100)",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-03T19:59:38.880Z"
+}

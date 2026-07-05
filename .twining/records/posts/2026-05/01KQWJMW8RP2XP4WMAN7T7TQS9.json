@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Decisions: Don't distinguish merged-and-deleted from force-deleted branches — once gone, the action (archive entries from it) is the same.; Snapshot file lives at .twining/.last-known-branches.json — consistent with the .last-record pattern; gitignored.; First-run is a no-op for archival — records initial snapshot, returns initial_record=true. Avoids spurious deletions on first install.",
+  "entry_type": "status",
+  "id": "01KQWJMW8RP2XP4WMAN7T7TQS9",
+  "scope": "src/engine/",
+  "summary": "PR B (Phase 4 of #7): twining_housekeeping merge_sweep flag — diff branches against .twining/.last-known-branches.json, flag entries provenance-stamped with deleted branches.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-05-05T17:23:21.497Z"
+}

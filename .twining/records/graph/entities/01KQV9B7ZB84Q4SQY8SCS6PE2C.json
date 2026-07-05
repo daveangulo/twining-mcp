@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-05T05:21:34.187Z",
+  "id": "01KQV9B7ZB84Q4SQY8SCS6PE2C",
+  "name": "01KQV9B7XSEREAPTSG3Y67N0BV",
+  "properties": {
+    "scope": "project",
+    "summary": "Replaced single-file marker check with broad search across 4 locations (project CLAUDE.md, CLAUDE.local.md, .claude/CLAUDE.local.md, global $HOME/.claude/CLAUDE.md) before deciding to append, avoiding duplicate markers"
+  },
+  "type": "concept",
+  "updated_at": "2026-05-05T05:21:34.187Z"
+}

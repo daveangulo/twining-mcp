@@ -1,0 +1,27 @@
+{
+  "affected_files": [
+    "docs/superpowers/specs/2026-04-29-plugin-hygiene-design.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": false,
+  "assumptions": [
+    "#8 root cause is on our side (prompt-type hook config) not waiting for upstream Claude Code fix",
+    "Plugin and MCP server bumps will be coordinated minor releases (1.9.0 plugin, 1.19.0 server)",
+    "Bash hook scripts will get a uniform 2-line TWINING_DISABLED guard — exit 0 with no JSON is treated as allow/no-op by Claude Code"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Wrote design spec for plugin hygiene fixes (issues #8, #9, #10) at docs/superpowers/specs/. Issue #7 (decision/scope GC) deferred to separate Spec B.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01KQTRRN3VE2S5D3B9ZRZGX752",
+  "rationale": "single layer at the server only would still leave hooks firing pre-commit blocks complaining about missing twining_record calls. Two layers gives invisible behavior. Rejected mid-session toggle scope per reporter answer (scenario 2 only).",
+  "reversible": true,
+  "scope": "docs/superpowers/specs/",
+  "status": "active",
+  "summary": "Chose two-layer disable for TWINING_DISABLED (hooks no-op + MCP server early-exit before tool registration)",
+  "timestamp": "2026-05-05T00:31:47.835Z"
+}

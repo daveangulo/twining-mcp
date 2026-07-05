@@ -1,0 +1,37 @@
+{
+  "affected_files": [
+    "src/engine/record-parser.ts",
+    "src/engine/decisions.ts",
+    "src/tools/record-tools.ts",
+    "test/unit/record-parser.test.ts",
+    "test/unit/record-tools.test.ts"
+  ],
+  "affected_symbols": [
+    "parseDecision",
+    "splitSummaryAndRationale",
+    "extractRejectedAlternatives",
+    "DecisionEngine.decide",
+    "buildFromNaturalLanguage",
+    "buildFromStructured"
+  ],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "assumptions": [
+    "MCP clients tolerate z.union schemas in Zod for the decisions array — Claude Code and MCP SDK both accept discriminated unions at the tool-input layer.",
+    "Callers who send structured decision objects prefer exact round-trip over inference; they will provide their own domain / confidence when they care."
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Fixed twining_record NL parser truncation + alternatives undercount; added structured decision schema variant and hardened decisions_created response. 19 new tests, 835 total passing (was 816).",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KQ0VBWT08012C3H6PYHFNC0A",
+  "rationale": "blackboard enforces summary <=200, and the decision file is already persisted by the time cross-post runs. Without the slice, decide() would throw after the write, leaving the file on disk but record-tools returning decisions_created: []. The slice preserves the blackboard surface while the unbounded full text stays in the decision JSON and in the detail field.",
+  "reversible": true,
+  "scope": "src/engine/record-parser.ts",
+  "status": "active",
+  "summary": "Sliced decision cross-post summary to 200 chars and wrapped in try/catch inside DecisionEngine.decide",
+  "timestamp": "2026-04-24T22:57:00.224Z"
+}

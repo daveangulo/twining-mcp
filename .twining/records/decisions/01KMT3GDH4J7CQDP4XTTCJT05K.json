@@ -1,0 +1,45 @@
+{
+  "affected_files": [
+    "src/server.ts",
+    "src/tools/blackboard-tools.ts",
+    "src/tools/context-tools.ts",
+    "src/tools/coordination-tools.ts",
+    "src/tools/decision-tools.ts",
+    "src/tools/export-tools.ts",
+    "src/tools/graph-tools.ts",
+    "src/tools/lifecycle-tools.ts",
+    "src/tools/verify-tools.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Default fullSurface to true instead of removing it",
+      "pros": [],
+      "reason_rejected": "Leaves dead code and a config option that does nothing useful. Cleaner to remove the gate entirely."
+    },
+    {
+      "cons": [],
+      "option": "Keep gate but move mandatory tools (verify, link_commit) out of it",
+      "pros": [],
+      "reason_rejected": "Partial fix — still hides useful tools for no benefit since Claude Code defers loading anyway."
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [
+    "c054d81"
+  ],
+  "confidence": "high",
+  "constraints": [],
+  "context": "The fullSurface config flag hid 16 tools (including mandatory Gate 3 tools twining_verify and twining_link_commit) behind a config boolean that defaulted to false. This meant agents were instructed to call tools they couldn't access.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01KMT3GDH4J7CQDP4XTTCJT05K",
+  "rationale": "Claude Code already defers MCP tool loading via ToolSearch — tool schemas are only loaded into context when needed. The fullSurface gate was premature optimization that actively broke mandatory functionality. Per Anthropic's tool context management docs, tool search is the correct pattern for large toolsets, and we already have it.",
+  "reversible": true,
+  "scope": "src/tools/",
+  "status": "superseded",
+  "summary": "Remove fullSurface tool gate — all 34 MCP tools always registered",
+  "timestamp": "2026-03-28T11:33:12.356Z"
+}

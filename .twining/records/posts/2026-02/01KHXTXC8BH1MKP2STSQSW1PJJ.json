@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Write-ahead pattern: entries are written to archive first, then removed from blackboard, all under the same lock. This ensures entries always exist in at least one location. Uses direct fs.appendFileSync instead of appendJSONL to avoid nested locking.",
+  "entry_type": "decision",
+  "id": "01KHXTXC8BH1MKP2STSQSW1PJJ",
+  "scope": "src/engine/archiver.ts",
+  "summary": "Move archive file writes inside blackboard lock to prevent data loss on crash",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-02-20T15:32:52.107Z"
+}

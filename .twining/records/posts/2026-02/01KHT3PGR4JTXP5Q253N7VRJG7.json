@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Claude Code + Twining MCP scores 15/15 because Claude Code is both MCP host and SWE agent natively, Twining provides persistent shared state through standard MCP tools, and subagents inherit connections automatically. Blackboard coordination fits MCP's request/response model (no push channel for orchestrator assignment), survives context resets (decisions persist in files), and enables token-budgeted selective injection. Academic research (LbMAS 2025) validates blackboard outperforming orchestrator patterns for LLM agents.",
+  "entry_type": "decision",
+  "id": "01KHT3PGR4JTXP5Q253N7VRJG7",
+  "scope": "docs/",
+  "summary": "Agent integration architecture doc recommends Claude Code + Twining as primary path, blackboard over orchestrator",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-02-19T04:49:26.788Z"
+}

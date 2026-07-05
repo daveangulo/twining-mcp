@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Added opt-out flag check that exits silently if $PROJECT_ROOT/.twining/.no-claude-md-gates exists, giving projects explicit control",
+  "entry_type": "decision",
+  "id": "01KQV9B7WSRWEV7TM3MWS0G8HV",
+  "scope": "project",
+  "summary": "Added opt-out flag check that exits silently if $PROJECT_ROOT/.twining/.no-claude-md-gates exists, giving projects explicit control",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-05-05T05:21:34.105Z"
+}

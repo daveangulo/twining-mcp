@@ -1,0 +1,17 @@
+{
+  "agent_id": "claude-remote-session",
+  "detail": "embedder.ts loads the package only via await import() inside doInitialize's try/catch (single import site, grep-verified); absence flips fallbackMode. npm skips failed optionalDependencies subtrees, so a blocked postinstall no longer kills the install.",
+  "entry_type": "decision",
+  "id": "01KWKD9EHXZRHN1YY0JX9GFK0W",
+  "provenance": {
+    "branch": "claude/hygiene-1.21.1",
+    "commit_sha": "eceb30412aec06d66f429bd0615e10c3a8c80b24",
+    "recorded_at": "2026-07-03T07:15:03.351Z"
+  },
+  "scope": "package.json",
+  "summary": "Moved @huggingface/transformers to optionalDependencies — the embedder already degrades to keyword search when the import fails",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-03T07:15:03.357Z"
+}

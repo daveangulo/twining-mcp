@@ -1,0 +1,36 @@
+{
+  "affected_files": [
+    "src/migrate/cli.ts",
+    "test/migrate/cli.test.ts",
+    "src/index.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "reinterpreted",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "W3 Task 5: migrate CLI + index.ts dispatch, 12 tests. Review caught critical --reverse --check combo (real reverse labeled as check) — bad combos now rejected at parse time; overflow-count fix.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KWNBQZBKKX7W1E2403PN5CZW",
+  "provenance": {
+    "branch": "claude/w3-migrate-tool",
+    "commit_sha": "65d8b9ceddf4d263aea1c2ba397267459467a830",
+    "recorded_at": "2026-07-04T01:26:31.010Z"
+  },
+  "rationale": "--reverse --check previously executed a real finalizing reverse under a 'check passed' banner; refusal is self-documenting where silent precedence rules would hide a destructive action.",
+  "reversible": true,
+  "scope": "src/migrate/",
+  "status": "active",
+  "summary": "Incompatible CLI flag combos are rejected at parse time (exit 2) rather than reinterpreted",
+  "timestamp": "2026-07-04T01:26:31.027Z"
+}

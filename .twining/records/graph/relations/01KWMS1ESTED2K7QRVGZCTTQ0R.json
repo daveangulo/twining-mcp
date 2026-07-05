@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-03T19:59:38.810Z",
+  "id": "01KWMS1ESTED2K7QRVGZCTTQ0R",
+  "properties": {
+    "decision_summary": "Model inference never runs inside a transaction and all reconcile writes are single upsert/delete statements"
+  },
+  "source": "01KWMS1EJY7VZ185A0WNT7D11E",
+  "target": "01KWMS1ESF5WK9PVB29PEKHZZD",
+  "type": "decided_by"
+}

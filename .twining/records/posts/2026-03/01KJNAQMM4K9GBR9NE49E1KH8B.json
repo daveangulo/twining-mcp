@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Playwright provides headless/headed browser control with built-in video recording, DOM injection for overlays, and programmatic tab/view switching. Using tsx for direct TypeScript execution avoids a separate build step. Data-driven tab switching (polling stat elements) is more reliable than hardcoded delays since claude -p execution time varies.",
+  "entry_type": "decision",
+  "id": "01KJNAQMM4K9GBR9NE49E1KH8B",
+  "scope": "examples/demo-automation/playwright/",
+  "summary": "Implement Playwright-based demo orchestrator replacing manual shell + tab-switching workflow",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-03-01T18:31:53.220Z"
+}

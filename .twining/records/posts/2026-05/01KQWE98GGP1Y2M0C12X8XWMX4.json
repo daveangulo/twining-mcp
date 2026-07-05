@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "deferred until audit proves too aggressive in practice.",
+  "entry_type": "decision",
+  "id": "01KQWE98GGP1Y2M0C12X8XWMX4",
+  "scope": "src/",
+  "summary": "Staleness threshold is global-only (config.yml housekeeping.staleness_threshold, default 0.95). Per-decision sunset overrides not added",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-05-05T16:07:06.512Z"
+}

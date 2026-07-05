@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Changed REGISTER rules from SHOULD to MUST, added GEN-01 through GEN-04 general principles prioritizing task completion, updated PreToolUse hook to require registration before assembly, enhanced stop-hook to block exit without handoff after code changes, and updated orient/handoff skills to reflect mandatory registration and handoff workflows.",
+  "entry_type": "decision",
+  "id": "01KKBXHKZNQX7GA0X6RK7FS4PH",
+  "scope": "plugin/",
+  "summary": "Enforce mandatory agent registration and handoff in plugin v1.1.5",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-03-10T13:03:56.405Z"
+}

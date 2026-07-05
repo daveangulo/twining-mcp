@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "status",
+  "id": "01KQW87RFJZ8YR1DX26AXRJ4C2",
+  "scope": "~/.claude/projects/-Users-dave-code-twining-mcp/memory/",
+  "summary": "Updated auto-memory with v1.19.0 release learnings: 4 new memory files (CLAUDE.md gate authority, subagent commit pattern, stdio test pattern, smoke sandbox) plus refreshed stale Project State.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-05-05T14:21:25.874Z"
+}

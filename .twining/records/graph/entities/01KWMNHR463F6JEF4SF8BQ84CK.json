@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-03T18:58:38.342Z",
+  "id": "01KWMNHR463F6JEF4SF8BQ84CK",
+  "name": "src/storage/sqlite/db.ts",
+  "properties": {
+    "scope": "src/storage/sync/"
+  },
+  "type": "file",
+  "updated_at": "2026-07-03T19:59:38.913Z"
+}

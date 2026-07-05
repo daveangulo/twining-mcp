@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-05T17:23:21.786Z",
+  "id": "01KQWJMWHTQK2V6Z0GQMXZNTV0",
+  "name": "01KQWJMWF88JGQRDRKFC6F6P8Y",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "First-run is a no-op for archival"
+  },
+  "type": "concept",
+  "updated_at": "2026-05-05T17:23:21.786Z"
+}

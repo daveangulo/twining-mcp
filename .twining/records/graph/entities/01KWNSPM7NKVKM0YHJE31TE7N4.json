@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-04T05:30:26.933Z",
+  "id": "01KWNSPM7NKVKM0YHJE31TE7N4",
+  "name": "01KWNSPM43J8D0SSGXNV37H7RB",
+  "properties": {
+    "scope": "src/",
+    "summary": "Subagent-stop hook posts nothing when agent identity is unknown"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-04T05:30:26.933Z"
+}

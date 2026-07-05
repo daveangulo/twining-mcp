@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T05:21:34.134Z",
+  "id": "01KQV9B7XPE540CYX4JZ6G29P8",
+  "properties": {
+    "decision_summary": "Added opt-out flag check that exits silently if $PROJECT_ROOT/.twining/.no-claude-md-gates exists, giving projects explicit control"
+  },
+  "source": "01KMT252XJ0BQPNM732439HQZB",
+  "target": "01KQV9B7XNSEVWMYPXTP8EPVXF",
+  "type": "decided_by"
+}

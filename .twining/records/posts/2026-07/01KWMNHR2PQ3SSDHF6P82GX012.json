@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "assemble is itself a tool call so acceptance ('assemble sees pulled records without restart') is met exactly, while fs.watch adds watcher lifecycle, self-triggered events from our own exports, and platform quirks in a long-lived stdio process. Polling timers rejected too: they keep the event loop alive and burn cycles when idle.",
+  "entry_type": "decision",
+  "id": "01KWMNHR2PQ3SSDHF6P82GX012",
+  "provenance": {
+    "branch": "claude/w23-phase2-live-ingest",
+    "commit_sha": "94b90b5e8c7637aec6ee25b914a6f7232fbdaf1d",
+    "recorded_at": "2026-07-03T18:58:38.281Z"
+  },
+  "scope": "docs/FOUNDATION-PLAN.md",
+  "summary": "Chose lazy TTL-gated git-HEAD probe on tool dispatch over fs.watch on .twining/records/ for live re-ingest",
+  "tags": [
+    "api-design"
+  ],
+  "timestamp": "2026-07-03T18:58:38.294Z"
+}

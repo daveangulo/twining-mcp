@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "node is already a hard dep. Rejected jq (new dependency).",
+  "entry_type": "decision",
+  "id": "01KQWCCVXR70FN2KEC278MK6NV",
+  "scope": "plugin/hooks/",
+  "summary": "Used node -e for JSON parsing in the hook",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-05-05T15:34:07.544Z"
+}

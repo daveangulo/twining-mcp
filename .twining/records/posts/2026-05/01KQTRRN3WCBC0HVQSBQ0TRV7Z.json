@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "single layer at the server only would still leave hooks firing pre-commit blocks complaining about missing twining_record calls. Two layers gives invisible behavior. Rejected mid-session toggle scope per reporter answer (scenario 2 only).",
+  "entry_type": "decision",
+  "id": "01KQTRRN3WCBC0HVQSBQ0TRV7Z",
+  "scope": "docs/superpowers/specs/",
+  "summary": "Chose two-layer disable for TWINING_DISABLED (hooks no-op + MCP server early-exit before tool registration)",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-05-05T00:31:47.836Z"
+}

@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Decisions: Chose sentinel-file + git-log-HEAD over transcript-grep — immune to transcript text noise and same-turn flush latency. Rejected anchored transcript matching and file mtime.; Wired sentinel into the three explicit recording tool handlers, not into engine methods — preserves gate semantics so internal posts don't reset.; Used node -e for JSON parsing in the hook — node is already a hard dep. Rejected jq (new dependency).; Token-aware trigger: argv[0]=='git' && argv[1]=='commit' after stripping pipes — fixes substring false-positives.",
+  "entry_type": "status",
+  "id": "01KQWCCVSNW230TRTH0X4ZYPY7",
+  "scope": "plugin/hooks/",
+  "summary": "Fixed pre-commit hook false-block (#11, #13). Sentinel file replaces transcript-grep; node JSON parse replaces bash regex; argv-tokenized trigger. Plugin 1.9.0→1.9.1.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-05-05T15:34:07.414Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-20T02:53:55.906Z",
+  "id": "01KHWFFQA295RGEQ5979BAG1T5",
+  "properties": {
+    "decision_summary": "Create comprehensive demo video plan with realistic multi-agent scenario"
+  },
+  "source": "01KHWFFQA1SGFYXJMVPGER7S2G",
+  "target": "01KHWFFQA09XT7WX24WW2XJVS1",
+  "type": "decided_by"
+}

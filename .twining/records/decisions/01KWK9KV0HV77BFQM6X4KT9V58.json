@@ -1,0 +1,40 @@
+{
+  "affected_files": [
+    "src/storage/backend-factory.ts",
+    "src/storage/sqlite/sqlite-stores.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "claude-remote-session",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "better-sqlite3",
+      "pros": [],
+      "reason_rejected": "Native build step adds npx cold-start failure modes on machines without toolchains."
+    },
+    {
+      "cons": [],
+      "option": "Bump engines to >=22.13 now",
+      "pros": [],
+      "reason_rejected": "Drops Node 18/20 users for an opt-in feature; belongs to the v2.0 release."
+    }
+  ],
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "node:sqlite needs Node >= 22.13 but the CI matrix and installed base include 18/20; the plan wants the backend baking in the field before the v2 default flip.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01KWK9KV0HV77BFQM6X4KT9V58",
+  "provenance": {
+    "branch": "claude/twining-catchup",
+    "commit_sha": "80c9c4a6983e030aa26e60a9745fb37a8c56bc94",
+    "recorded_at": "2026-07-03T06:10:49.483Z"
+  },
+  "rationale": "Zero native dependencies matter for an npx-launched server (this sandbox's proxy blocking onnxruntime's postinstall download proved the failure mode); opt-in with graceful fallback lets 18/20 users stay untouched until v2 bumps engines.",
+  "reversible": false,
+  "scope": "src/storage/",
+  "status": "active",
+  "summary": "Ship the SQLite backend opt-in (storage.backend config, warn-and-fallback) on node:sqlite instead of bumping engines or adding better-sqlite3",
+  "timestamp": "2026-07-03T06:10:49.489Z"
+}

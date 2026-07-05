@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "sqlite for new/migrated projects, files + migrate-nudge for unmigrated legacy projects — because flipping DEFAULT_CONFIG alone would boot legacy projects against an empty database (silent amnesia).",
+  "entry_type": "decision",
+  "id": "01KWNR9MSMXCXKRBT30YZ209XG",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "9be18d1f347e111d8538643df425061c57b4e607",
+    "recorded_at": "2026-07-04T05:05:52.932Z"
+  },
+  "scope": "project",
+  "summary": "Proposed (pending Dave's approval): the v2 backend default flip must use a legacy-detection resolution rule",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-04T05:05:52.948Z"
+}

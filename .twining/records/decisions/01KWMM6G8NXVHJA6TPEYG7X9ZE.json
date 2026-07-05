@@ -1,0 +1,38 @@
+{
+  "affected_files": [
+    "package.json",
+    "package-lock.json",
+    ".twining/blackboard.jsonl"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "discarding it",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [
+    "97d1f74"
+  ],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Shipped 1.21.1: PR #27 squash-merged (d32617d, all CI green incl. first plugin-token-budget run), version bumped + tagged v1.21.1, npm publish succeeded, plugin 1.10.1 live in marketplace.",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KWMM6G8NXVHJA6TPEYG7X9ZE",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "97d1f7449b5e271497714d0ce4096f4da74b76f0",
+    "recorded_at": "2026-07-03T18:35:01.253Z"
+  },
+  "rationale": "repo convention is to commit .twining/ state alongside changes, and discarding state silently is higher risk than carrying one noise entry.",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Folded the stray hook-generated blackboard entry (subagent-stop noise from the CI watch task) into the release commit rather than discarding it",
+  "timestamp": "2026-07-03T18:35:01.269Z"
+}

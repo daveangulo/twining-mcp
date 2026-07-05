@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-04T05:30:26.798Z",
+  "id": "01KWNSPM3ENE5WPGFKQMDMVQTK",
+  "name": "01KWNSPKZWPPYZ3HJ4QPS1BXHN",
+  "properties": {
+    "scope": "src/",
+    "summary": "twining_record truncates over-length summaries/findings (full text preserved in detail) instead of rejecting"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-04T05:30:26.798Z"
+}

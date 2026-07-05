@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Spec A (issues #8/#9/#10, plugin hygiene) ships fast as one plugin patch release; Spec B (issue #7, decision/scope GC) gets its own design pass because it has substantively different design surface",
+  "entry_type": "decision",
+  "id": "01KQTRRN0CFQCAT0N3KSXRNXW9",
+  "scope": "docs/superpowers/specs/",
+  "summary": "Chose two specs over one combined spec",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-05-05T00:31:47.725Z"
+}

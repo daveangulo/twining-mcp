@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T05:23:22.074Z",
+  "id": "01KQV9EHATCTV8PW9VBR4SRPYK",
+  "properties": {
+    "decision_summary": "Implemented session-start-context.sh with set -euo pipefail safety and TWINING_DISABLED guard to match pattern from phases 3-4 hooks."
+  },
+  "source": "01KJGX8KNG4BA8P7PFEXMTW51R",
+  "target": "01KQV9EHAP07P5TFHBBG3HARYH",
+  "type": "decided_by"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "status",
+  "id": "01KWQMDVP544YC0AG6TVCQJB89",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "dfd6adde65045e53aa29b34a7c589066a5ab1f34",
+    "recorded_at": "2026-07-04T22:36:45.605Z"
+  },
+  "scope": "project",
+  "summary": "Releasing 1.24.0: PR #36 squash-merged all-green (incl. plugin token budget + version lockstep). Version bumped; tagging and publishing next; plugin 1.11.0 rides the merge into the marketplace.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-04T22:36:45.637Z"
+}

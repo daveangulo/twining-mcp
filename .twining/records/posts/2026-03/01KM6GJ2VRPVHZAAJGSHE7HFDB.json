@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Verifying completed work (50 pts) should score higher than redundantly redoing it (20 pts). This directly measures whether coordination tools help agents avoid wasted rework, which is the core value proposition of Twining.",
+  "entry_type": "decision",
+  "id": "01KM6GJ2VRPVHZAAJGSHE7HFDB",
+  "scope": "test/coordination/",
+  "summary": "Bug-investigation resolution scorer penalizes redundant re-fixes when Agent A already completed the work",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-03-20T20:56:29.816Z"
+}

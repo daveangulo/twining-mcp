@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-05T16:07:06.337Z",
+  "id": "01KQWE98B1G1Y5T2DKQZEGFMH6",
+  "name": "01KQWE989N68PA3ARWEMRGQ5C4",
+  "properties": {
+    "scope": "src/",
+    "summary": "Added archived to DecisionStatus union rather than moving decision JSON files"
+  },
+  "type": "concept",
+  "updated_at": "2026-05-05T16:07:06.337Z"
+}

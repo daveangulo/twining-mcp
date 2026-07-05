@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Added dismiss at three layers: BlackboardStore.dismiss (lock, read, filter, rewrite with proper-lockfile), BlackboardEngine.dismiss (delegates to store, cleans up embeddings), and twining_dismiss tool (accepts ids array + optional reason). Follows the same lock-read-rewrite pattern as the archiver. The reason parameter is accepted but not stored — it serves as documentation in the tool call itself.",
+  "entry_type": "decision",
+  "id": "01KJD8KGCKRN7HA0M6D78YS50G",
+  "scope": "src/tools/blackboard-tools.ts",
+  "summary": "Add twining_dismiss tool for targeted removal of blackboard entries by ID",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-02-26T15:20:45.204Z"
+}

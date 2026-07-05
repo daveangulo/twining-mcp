@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-03T21:41:40.154Z",
+  "id": "01KWMYW8NTJ3Q9CZQMYHTPR6WG",
+  "properties": {
+    "decision_summary": "No legacy-v1/ full backup in the 1.x migrate"
+  },
+  "source": "01KWMYW8GP40R5K8EV8CGADYP8",
+  "target": "01KWMYW8NRYPV70K3QX8YGKR54",
+  "type": "decided_by"
+}

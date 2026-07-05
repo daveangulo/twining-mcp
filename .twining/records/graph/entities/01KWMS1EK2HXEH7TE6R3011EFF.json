@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-03T19:59:38.594Z",
+  "id": "01KWMS1EK2HXEH7TE6R3011EFF",
+  "name": "test/multiwriter-soak.test.ts",
+  "properties": {
+    "scope": "src/storage/sync/"
+  },
+  "type": "file",
+  "updated_at": "2026-07-03T19:59:38.926Z"
+}

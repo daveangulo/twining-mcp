@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-02T16:46:53.985Z",
+  "id": "01KJQQ44113F8XZ1VNR3ZMTYZA",
+  "name": "test/eval/transcript-manifest.json",
+  "properties": {
+    "scope": "test/eval/fixtures/"
+  },
+  "type": "file",
+  "updated_at": "2026-03-02T23:12:41.642Z"
+}

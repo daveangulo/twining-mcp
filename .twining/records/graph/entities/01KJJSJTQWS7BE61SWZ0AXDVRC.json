@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-02-28T18:53:40.988Z",
+  "id": "01KJJSJTQWS7BE61SWZ0AXDVRC",
+  "name": "01KJJSJT5XEWWY7AXY29KBCS6N",
+  "properties": {
+    "scope": "src/tools/coordination-tools.ts",
+    "summary": "Add twining_register MCP tool and subagent coordination integration (dispatch skill, SubagentStop hook, aware-worker agent)"
+  },
+  "type": "concept",
+  "updated_at": "2026-02-28T18:53:40.988Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-04T05:30:27.039Z",
+  "id": "01KWNSPMAZQ98GMGD38WPZW4KF",
+  "properties": {
+    "decision_summary": "migrateForward enumerates decisions by directory scan unioned with the index"
+  },
+  "source": "01KWNR9MTRRZ6SFVG3SZ7KV69V",
+  "target": "01KWNSPMATEAM8SAG43NBYFVG1",
+  "type": "decided_by"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Findings: No field-normalization drift between backends surfaced on the real corpus — the parity-first porting discipline from W2.2 paid off; the migration needed zero special-casing for pre-1.19 records.",
+  "entry_type": "status",
+  "id": "01KWNC48N0A8N386MZK047V6BZ",
+  "provenance": {
+    "branch": "claude/w3-migrate-tool",
+    "commit_sha": "166a69df13ba7ba9dffd4dcff300b9286142c3ec",
+    "recorded_at": "2026-07-04T01:33:13.733Z"
+  },
+  "scope": "test/migrate/",
+  "summary": "W3 Task 6: golden fixture passed first try — repo's own .twining (160 decisions, 296 posts, 347 entities) forward-migrates diff-clean, double-run no-ops, reverse round-trips.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-04T01:33:13.761Z"
+}

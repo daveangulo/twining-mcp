@@ -1,0 +1,35 @@
+{
+  "affected_files": [
+    "src/migrate/forward.ts",
+    "test/migrate/forward.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "mirrored in records/; refusing beats silently exporting from sqlite stores",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "W3 Task 3: forward.ts files→sqlite migration (export tree + ordinary ingest), 8 tests. Review added gitignore refresh at finalize, export_records:false re-run guard, and no-db --check UX.",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KWN4BCJVKH1X982JA0WDDS66",
+  "provenance": {
+    "branch": "claude/w3-migrate-tool",
+    "commit_sha": "28aad4e99f0bfdcd41b35e26c42e74ac2fb22a16",
+    "recorded_at": "2026-07-03T23:17:18.539Z"
+  },
+  "rationale": "ingest deletion-propagation would remove sqlite-era rows not mirrored in records/; refusing beats silently exporting from sqlite stores because the user disabled mirroring on purpose.",
+  "reversible": true,
+  "scope": "src/migrate/",
+  "status": "active",
+  "summary": "Forward migrate refuses to run when config is sqlite with export_records explicitly false",
+  "timestamp": "2026-07-03T23:17:18.555Z"
+}

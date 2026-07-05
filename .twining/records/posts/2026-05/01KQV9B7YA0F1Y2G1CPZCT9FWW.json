@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Replaced single-file marker check with broad search across 4 locations (project CLAUDE.md, CLAUDE.local.md, .claude/CLAUDE.local.md, global $HOME/.claude/CLAUDE.md) before deciding to append, avoiding duplicate markers",
+  "entry_type": "decision",
+  "id": "01KQV9B7YA0F1Y2G1CPZCT9FWW",
+  "scope": "project",
+  "summary": "Replaced single-file marker check with broad search across 4 locations (project CLAUDE.md, CLAUDE.local.md, .claude/CLAUDE.local.md, global $HOME/.claude/CLAUDE.md) before deciding to append, avoiding",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-05-05T05:21:34.154Z"
+}

@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Setting auto_populate to false by default removes overhead with zero measured downside. Graph tools remain available for manual use. Users who want auto-population can enable it in config.yml.",
+  "entry_type": "decision",
+  "id": "01KM2B5Y6EA39NHR6C9Z8CCAPK",
+  "scope": "src/engine/graph-auto-populator.ts",
+  "summary": "Graph auto-population disabled by default (opt-in via graph.auto_populate config)",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-03-19T06:05:31.214Z"
+}

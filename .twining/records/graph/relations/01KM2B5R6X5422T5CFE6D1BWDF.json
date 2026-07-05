@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-19T06:05:25.085Z",
+  "id": "01KM2B5R6X5422T5CFE6D1BWDF",
+  "properties": {
+    "decision_summary": "Assemble output includes structured markdown briefing and inline status summary"
+  },
+  "source": "01KHMSDMRQ5HSX2W6SBDT3RND2",
+  "target": "01KM2B5R6RWNYSWHAM97TF0R3N",
+  "type": "decided_by"
+}

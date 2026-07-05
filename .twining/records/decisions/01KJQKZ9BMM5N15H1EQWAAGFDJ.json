@@ -1,0 +1,41 @@
+{
+  "affected_files": [
+    "test/eval/eval-runner.eval.ts",
+    "test/eval/scenario-schema.ts",
+    "test/eval/scorer-types.ts",
+    "test/eval/scorers/index.ts",
+    "vitest.config.eval.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Single test per scenario with all scorers bundled",
+      "pros": [],
+      "reason_rejected": "Harder to debug which scorer failed; no per-scorer granularity in CI output"
+    },
+    {
+      "cons": [],
+      "option": "Jest instead of vitest for eval runner",
+      "pros": [],
+      "reason_rejected": "Project already uses vitest; consistency matters more than marginal eval-specific features"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [
+    "a5124b3"
+  ],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Phase 16 built the deterministic eval harness core for v1.4 Agent Behavior Quality milestone. Needed an architecture that scales to new scenarios and scorers without code changes.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01KJQKZ9BMM5N15H1EQWAAGFDJ",
+  "rationale": "Matrix approach (each scenario tested against every scorer) maximizes coverage and catches cross-category regressions. YAML scenarios are data-driven so adding new cases requires no code. Separate vitest config isolates eval runs from the main 700-test suite.",
+  "reversible": true,
+  "scope": "test/eval/",
+  "status": "active",
+  "summary": "Eval harness uses matrix testing: 22 scenarios × 7 scorers = 154 dynamic vitest tests",
+  "timestamp": "2026-03-02T15:51:49.882Z"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "the db is a gitignored derived cache, ingest is identical to server-startup convergence, and accurate dry-run counts require it; failing the review was rejected because no committed or user-visible state is touched.",
+  "entry_type": "decision",
+  "id": "01KWNEBH9KSMDXWQ57QA9GV67E",
+  "provenance": {
+    "branch": "claude/w3-migrate-tool",
+    "commit_sha": "2cddbbe4157f4f847435ff5e84ebf27c8f4dfcc5",
+    "recorded_at": "2026-07-04T02:12:09.125Z"
+  },
+  "scope": "src/migrate/",
+  "summary": "Judged reverse --dry-run's twining.db mutation (ingestRecords runs before the dryRun early-return in reverse.ts) a non-blocking Low rather than a merge blocker",
+  "tags": [
+    "performance"
+  ],
+  "timestamp": "2026-07-04T02:12:09.139Z"
+}

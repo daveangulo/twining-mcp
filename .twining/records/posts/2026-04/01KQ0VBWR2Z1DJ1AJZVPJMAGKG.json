@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "rationale",
+  "entry_type": "decision",
+  "id": "01KQ0VBWR2Z1DJ1AJZVPJMAGKG",
+  "scope": "src/engine/record-parser.ts",
+  "summary": "Replaced split(regex, 2) with single-split-on-first-match that preserves the full remainder",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-04-24T22:57:00.162Z"
+}

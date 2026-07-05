@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-28T20:36:53.517Z",
+  "id": "01KJJZFT4DV91M466VCKNPWGWH",
+  "name": "test/dashboard/http-server.test.ts",
+  "properties": {
+    "scope": "src/dashboard/http-server.ts"
+  },
+  "type": "file",
+  "updated_at": "2026-02-28T20:36:53.517Z"
+}

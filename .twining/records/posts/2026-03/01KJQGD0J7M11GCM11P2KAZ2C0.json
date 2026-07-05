@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Flat tool lists are simpler to write and maintain. Scorers infer patterns from sequences rather than relying on annotated step metadata. Per-scorer expectations (vs single pass/fail) allow scenarios to test mixed quality -- good sequencing but bad scope, for example.",
+  "entry_type": "decision",
+  "id": "01KJQGD0J7M11GCM11P2KAZ2C0",
+  "scope": "test/eval/",
+  "summary": "Eval scenarios use flat tool call lists with per-scorer pass/fail expectations",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-03-02T14:49:25.319Z"
+}

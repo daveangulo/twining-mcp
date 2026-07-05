@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-02-28T12:21:15.011Z",
+  "id": "01KJJ348M37630Q0SKPMZYGSAK",
+  "name": "01KJJ348G20Z2SYKBZ8WNXDQME",
+  "properties": {
+    "scope": "src/dashboard/http-server.ts",
+    "summary": "Prevent duplicate browser tabs by checking health endpoint before auto-opening"
+  },
+  "type": "concept",
+  "updated_at": "2026-02-28T12:21:15.011Z"
+}

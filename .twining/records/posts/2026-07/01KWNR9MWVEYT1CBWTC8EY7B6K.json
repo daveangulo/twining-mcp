@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "the plan predates the standalone migrate CLI; full-auto surprise-mutates tracked config.yml and drops records/ into every teammate's diff when one person upgrades.",
+  "entry_type": "decision",
+  "id": "01KWNR9MWVEYT1CBWTC8EY7B6K",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "9be18d1f347e111d8538643df425061c57b4e607",
+    "recorded_at": "2026-07-04T05:05:53.035Z"
+  },
+  "scope": "project",
+  "summary": "Proposed (pending approval): recommend startup NUDGE over FOUNDATION-PLAN's auto-migration",
+  "tags": [
+    "data-model"
+  ],
+  "timestamp": "2026-07-04T05:05:53.051Z"
+}

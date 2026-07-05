@@ -1,0 +1,40 @@
+{
+  "affected_files": [
+    "src/server.ts",
+    "src/config.ts",
+    "plugin/BEHAVIORS.md",
+    "plugin/skills/twining-map/SKILL.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Remove graph auto-populator code entirely",
+      "pros": [],
+      "reason_rejected": "Some users may benefit from graph building in non-benchmark scenarios; keeping code but disabling by default is safer"
+    },
+    {
+      "cons": [],
+      "option": "Keep auto-population enabled by default",
+      "pros": [],
+      "reason_rejected": "r=-0.01 correlation means zero measurable benefit while adding latency to every tool call"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [
+    "17321b3"
+  ],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Benchmark showed graph building has r=-0.01 correlation with coordination outcomes. Agents spend time building a knowledge graph that subsequent agents never query (neighbors and graph_query are never called).",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01KM2B5Y6D1YQVHER5F1SARJHD",
+  "rationale": "Setting auto_populate to false by default removes overhead with zero measured downside. Graph tools remain available for manual use. Users who want auto-population can enable it in config.yml.",
+  "reversible": true,
+  "scope": "src/engine/graph-auto-populator.ts",
+  "status": "active",
+  "summary": "Graph auto-population disabled by default (opt-in via graph.auto_populate config)",
+  "timestamp": "2026-03-19T06:05:31.213Z"
+}

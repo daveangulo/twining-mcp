@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Updated model to claude-haiku-4-5-20251001 (current Haiku). Increased eval timeout to 60s (synthetic — most scenarios need only 2-8s per LLM call) and transcript timeout to 120s (real transcripts have many more tool calls requiring many more judge API calls).",
+  "entry_type": "decision",
+  "id": "01KJR25ARY7YP1P1QGG2KXBHN7",
+  "scope": "test/eval/",
+  "summary": "Fix LLM judge model ID and increase eval timeouts for LLM scorer runs",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-03-02T19:59:47.998Z"
+}

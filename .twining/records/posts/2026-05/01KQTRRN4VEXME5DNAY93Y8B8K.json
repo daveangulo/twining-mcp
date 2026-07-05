@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "command hooks emit additionalContext JSON without needing ToolUseContext that resume sessions don't supply. Rejected narrowing matcher to startup-only because resume is exactly when the gate reminder is most useful. Rejected dropping the prompt hook entirely because it loses the moment-of-session signal.",
+  "entry_type": "decision",
+  "id": "01KQTRRN4VEXME5DNAY93Y8B8K",
+  "scope": "docs/superpowers/specs/",
+  "summary": "Chose to convert SessionStart prompt-type hook to command-type hook for issue #8",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-05-05T00:31:47.867Z"
+}

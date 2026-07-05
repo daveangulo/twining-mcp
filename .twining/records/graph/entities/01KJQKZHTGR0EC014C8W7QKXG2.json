@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-02T15:51:58.544Z",
+  "id": "01KJQKZHTGR0EC014C8W7QKXG2",
+  "name": "test/eval/scorers/scope-quality.ts",
+  "properties": {
+    "scope": "test/eval/scorers/"
+  },
+  "type": "file",
+  "updated_at": "2026-03-02T15:51:58.544Z"
+}

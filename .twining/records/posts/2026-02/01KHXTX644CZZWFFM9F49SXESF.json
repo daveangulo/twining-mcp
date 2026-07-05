@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Using a single index lock for the entire read-modify-write cycle ensures both the individual JSON file and the index are always consistent. The index lock is the natural serialization point since all queries go through the index. For HandoffStore, direct fs reads/writes inside the lock avoid nested locking (since writeJSONL/readJSONL have their own internal locks).",
+  "entry_type": "decision",
+  "id": "01KHXTX644CZZWFFM9F49SXESF",
+  "scope": "src/storage/",
+  "summary": "Fix race conditions by using single index lock for atomic file+index updates in DecisionStore and HandoffStore",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-02-20T15:32:45.828Z"
+}

@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Replaced tmpTranscript naming from Date.now() pattern to mkdtempSync in pre-commit-hook.test.ts and stop-hook.test.ts for parallel-safe temp file handling",
+  "entry_type": "decision",
+  "id": "01KQVA0QGVTSATFYSKWKVQGNYW",
+  "scope": "project",
+  "summary": "Replaced tmpTranscript naming from Date.now() pattern to mkdtempSync in pre-commit-hook.test.ts and stop-hook.test.ts for parallel-safe temp file handling",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-05-05T05:33:18.235Z"
+}

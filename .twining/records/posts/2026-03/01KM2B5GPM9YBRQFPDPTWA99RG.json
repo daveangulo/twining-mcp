@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Gating rarely-used tools behind tools.full_surface config (default false) reduces context overhead while keeping all tools available for power users. Each tool registration checks the flag individually, so no code is deleted and the change is fully reversible via config.",
+  "entry_type": "decision",
+  "id": "01KM2B5GPM9YBRQFPDPTWA99RG",
+  "scope": "src/tools/",
+  "summary": "Reduce default tool surface from 32 to 16 via full_surface config flag",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-03-19T06:05:17.396Z"
+}

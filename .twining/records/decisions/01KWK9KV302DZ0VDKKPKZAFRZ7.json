@@ -1,0 +1,26 @@
+{
+  "affected_files": [
+    "plugin/hooks/session-start-context.sh"
+  ],
+  "affected_symbols": [],
+  "agent_id": "claude-remote-session",
+  "alternatives": [],
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Issue #9: the plugin appended a gates block to the project's CLAUDE.md on every session start.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01KWK9KV302DZ0VDKKPKZAFRZ7",
+  "provenance": {
+    "branch": "claude/twining-catchup",
+    "commit_sha": "80c9c4a6983e030aa26e60a9745fb37a8c56bc94",
+    "recorded_at": "2026-07-03T06:10:49.560Z"
+  },
+  "rationale": "additionalContext puts the same guidance in the model's context with zero file writes and works on resume; the CLAUDE.md mutation was the root cause of #9 and produced surprise diffs.",
+  "reversible": false,
+  "scope": "plugin/",
+  "status": "active",
+  "summary": "Deliver lifecycle gates via SessionStart additionalContext and delete ensure-claude-md-gates.sh — the plugin never mutates user files",
+  "timestamp": "2026-07-03T06:10:49.568Z"
+}

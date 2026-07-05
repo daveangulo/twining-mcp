@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Compare line numbers of last Edit/Write call vs last twining_decide/post/verify/handoff call in the transcript. If the last code change comes after the last Twining recording, block. Same pure bash+grep approach, no new dependencies — just grep -n with tail -1 instead of grep -c.",
+  "entry_type": "decision",
+  "id": "01KJJAZENQCQ7AB67RDCET6XYK",
+  "scope": "plugin/hooks/",
+  "summary": "Stop hook uses line-number comparison for per-commit Twining coverage instead of session-wide counts",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-02-28T14:38:25.975Z"
+}

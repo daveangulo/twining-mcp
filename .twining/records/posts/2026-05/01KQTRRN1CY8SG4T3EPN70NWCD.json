@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "CLAUDE.md persists in system context every turn and survives compaction, while prompt-injected SessionStart content gets summarized away. Empirical evidence from prior testing showed Claude was finicky about calling twining_record without CLAUDE.md anchor. No new data shows that has changed; risk-asymmetric move is to keep authority. Filed follow-up to benchmark this on current models.",
+  "entry_type": "decision",
+  "id": "01KQTRRN1CY8SG4T3EPN70NWCD",
+  "scope": "docs/superpowers/specs/",
+  "summary": "Chose to keep CLAUDE.md gate authority over reporter's prompt-injection-only alternative for issue #9",
+  "tags": [
+    "security"
+  ],
+  "timestamp": "2026-05-05T00:31:47.756Z"
+}

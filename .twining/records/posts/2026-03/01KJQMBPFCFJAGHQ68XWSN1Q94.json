@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Capturing tool results alongside calls provides richer data for Phase 18 LLM-as-judge scoring. Including subagent calls captures the full picture of Twining usage since twining-aware-worker agents make most tool calls.",
+  "entry_type": "decision",
+  "id": "01KJQMBPFCFJAGHQ68XWSN1Q94",
+  "scope": "test/eval/",
+  "summary": "Transcript parser extracts both tool_use calls and tool_result blocks, follows subagent parentUuid chains",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-03-02T15:58:36.524Z"
+}

@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "formatForLLM() produces imperative markdown sections (decisions to respect, warnings, continue from, quick reference) optimized for LLM consumption. assembleWithStatus() merges status summary into the assemble call, eliminating a separate tool call. Both changes reduce turns and improve information utilization.",
+  "entry_type": "decision",
+  "id": "01KM2B5R53G6DNPACTVXBXD89G",
+  "scope": "src/engine/context-assembler.ts",
+  "summary": "Assemble output includes structured markdown briefing and inline status summary",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-03-19T06:05:25.027Z"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Reverse under export_records:false SKIPS ingest and exports from the database alone\" relates to:\n- 01KWMYW8EYSG7H5MWVSS19AZYQ: \"W3 1.x migrate leaves config.version at 1 and only flips storage.backend\"",
+  "entry_type": "finding",
+  "id": "01KWN892YDQAC3BXK72D6XV5JH",
+  "provenance": {
+    "branch": "claude/w3-migrate-tool",
+    "commit_sha": "2178f7674c0c3fae23df35f38e861eae21cf2cd2",
+    "recorded_at": "2026-07-04T00:25:57.439Z"
+  },
+  "scope": "src/migrate/",
+  "summary": "Related decisions in scope: 1 existing decision(s) overlap",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-04T00:25:57.453Z"
+}

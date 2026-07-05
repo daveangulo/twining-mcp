@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Layer 1 (value stats) computes from existing .twining/ data with zero new collection. Layer 2 (tool instrumentation) patches registerTool on McpServer instance before tool registration — zero changes to 8 tool files. Layer 3 (PostHog telemetry) is opt-in only, SHA-256 hashed identity, dynamic import for graceful degradation. This separation keeps privacy-sensitive code isolated and makes each layer independently testable.",
+  "entry_type": "decision",
+  "id": "01KJD595FGJVTDQ2VHHT2GPCW0",
+  "scope": "src/analytics/",
+  "summary": "Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-02-26T14:22:40.624Z"
+}

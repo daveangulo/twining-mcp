@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "all call sites tolerate it; a return-shape change would have rippled through override() and both tool handlers.",
+  "entry_type": "decision",
+  "id": "01KWQD4913Q18TDND7RHQH6DSE",
+  "provenance": {
+    "branch": "claude/1.24-field-findings",
+    "commit_sha": "04efbc9b5726206cd382d87708d5cbb1aa1a83d9",
+    "recorded_at": "2026-07-04T20:29:11.572Z"
+  },
+  "scope": "src/tools/",
+  "summary": "depends_on validation surfaces via an additive optional dropped_depends_on field on decide()'s existing return",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-07-04T20:29:11.587Z"
+}

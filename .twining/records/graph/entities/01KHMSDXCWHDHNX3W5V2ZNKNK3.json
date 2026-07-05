@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-02-17T03:13:46.908Z",
+  "id": "01KHMSDXCWHDHNX3W5V2ZNKNK3",
+  "name": "@huggingface/transformers",
+  "properties": {
+    "description": "Local embedding model (all-MiniLM-L6-v2) for semantic search, lazy-loaded",
+    "version": "^3.8.1"
+  },
+  "type": "dependency",
+  "updated_at": "2026-02-17T03:13:46.908Z"
+}

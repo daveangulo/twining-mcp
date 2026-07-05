@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "status-based exclusion already filters out non-active decisions in assemble/why/verify, so a one-token change covers it.",
+  "entry_type": "decision",
+  "id": "01KQWE98A340FMGFBFEX4ZDHGT",
+  "scope": "src/",
+  "summary": "Added archived to DecisionStatus union rather than moving decision JSON files",
+  "tags": [
+    "security"
+  ],
+  "timestamp": "2026-05-05T16:07:06.307Z"
+}

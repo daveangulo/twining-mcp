@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-28T15:33:03.806Z",
+  "id": "01KJJE3FNYRE1HB1DCYG35QC73",
+  "properties": {
+    "decision_summary": "Replace search bar multi-select with toggle chips, add search icon, and style filters to match toolbar design language"
+  },
+  "source": "01KJC68M4SHY3D3VYR8E7V05XC",
+  "target": "01KJJE3FNMETWC9QY5A8B5DCSZ",
+  "type": "decided_by"
+}

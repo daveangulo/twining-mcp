@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"config.yml backup is first-wins (.pre-migrate.bak never overwritten)\" relates to:\n- 01KWMYW8HA1TGCXRWNB26JD1EN: \"Migration verify uses subset-containment (source ⊆ target) rather than set equality\"\n- 01KWMYW8KA6NRARJDAWB3WCD2K: \"No legacy-v1/ full backup in the 1.x migrate\"\n- 01KWMYW8PEGZRWWBW1HJFDYCEG: \"Reverse migration leaves records/ and twining.db in place but prints a FROZEN warning with remediation commands\"",
+  "entry_type": "finding",
+  "id": "01KWN25KS1V6Q4XVK6RXV98686",
+  "provenance": {
+    "branch": "claude/w3-migrate-tool",
+    "commit_sha": "49d10113ddf5d912c11e63ae0230e4b4020f2d57",
+    "recorded_at": "2026-07-03T22:39:12.146Z"
+  },
+  "scope": "src/migrate/",
+  "summary": "Related decisions in scope: 3 existing decision(s) overlap",
+  "tags": [
+    "data-model"
+  ],
+  "timestamp": "2026-07-03T22:39:12.161Z"
+}

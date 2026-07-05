@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-28T13:56:16.847Z",
+  "id": "01KJJ8J8TFQN00XTFJH3CR9P5P",
+  "name": ".claude-plugin/marketplace.json",
+  "properties": {
+    "scope": "plugin/.claude-plugin/plugin.json, .claude-plugin/marketplace.json, package.json, CHANGELOG.md"
+  },
+  "type": "file",
+  "updated_at": "2026-05-05T05:25:23.938Z"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "pre-reverse-backup/ is deliberately LAST-WINS (unlike config-edit's first-wins .pre-migrate.bak): it means 'what this run is about to overwrite', which is what makes a mistaken second reverse recoverable.",
+  "entry_type": "decision",
+  "id": "01KWN8932V64GTJ1BES8WERB9V",
+  "provenance": {
+    "branch": "claude/w3-migrate-tool",
+    "commit_sha": "2178f7674c0c3fae23df35f38e861eae21cf2cd2",
+    "recorded_at": "2026-07-04T00:25:57.579Z"
+  },
+  "scope": "src/migrate/",
+  "summary": "pre-reverse-backup/ is deliberately LAST-WINS (unlike config-edit's first-wins .pre-migrate.bak): it means 'what this run is about to overwrite', which is what makes a mistaken second reverse recovera",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-04T00:25:57.596Z"
+}

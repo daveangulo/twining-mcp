@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-02-17T03:13:22.839Z",
+  "id": "01KHMSD5WQ8BBAQ8QPQMQXSMFH",
+  "name": "src/storage/graph-store.ts",
+  "properties": {
+    "description": "Entities and relations JSON persistence",
+    "layer": "storage"
+  },
+  "type": "file",
+  "updated_at": "2026-02-17T03:13:22.839Z"
+}

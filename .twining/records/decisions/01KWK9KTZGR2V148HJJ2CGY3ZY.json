@@ -1,0 +1,42 @@
+{
+  "affected_files": [
+    "src/storage/sqlite/db.ts",
+    "src/storage/sync/record-export.ts",
+    "src/storage/sync/record-ingest.ts",
+    "docs/FOUNDATION-PLAN.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "claude-remote-session",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Commit twining.db to git",
+      "pros": [],
+      "reason_rejected": "Binary, unmergeable; every merge would conflict."
+    },
+    {
+      "cons": [],
+      "option": "Keep JSON files as the runtime store",
+      "pros": [],
+      "reason_rejected": "Non-atomic whole-file rewrites, O(n) per op, lockfile races — all confirmed live by the multiwriter soak."
+    }
+  ],
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Design review found the JSON-file layout unsafe under the multi-session concurrency the product exists for, and its monolithic committed files (decisions/index.json, graph/*.json) are merge-conflict magnets.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01KWK9KTZGR2V148HJJ2CGY3ZY",
+  "provenance": {
+    "branch": "claude/twining-catchup",
+    "commit_sha": "80c9c4a6983e030aa26e60a9745fb37a8c56bc94",
+    "recorded_at": "2026-07-03T06:10:49.448Z"
+  },
+  "rationale": "SQLite files are binary and unmergeable, so committing the db would trade one problem for another; a per-ULID export tree union-merges across branches with zero conflicts while WAL handles same-machine concurrency. Mirrors git's own object-store/index split.",
+  "reversible": false,
+  "scope": "src/storage/",
+  "status": "active",
+  "summary": "SQLite is the runtime store and git is the replication transport — twining.db is a gitignored derived cache, the committed truth is a per-record export tree",
+  "timestamp": "2026-07-03T06:10:49.458Z"
+}

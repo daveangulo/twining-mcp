@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T05:02:46.415Z",
+  "id": "01KQV88TMFD4M4FBTBA1PENZTW",
+  "properties": {
+    "decision_summary": "Chose Vitest with child_process.spawnSync for hook tests over bats/shell-only"
+  },
+  "source": "01KQV88TMEW2CAYCBADGM5J8PX",
+  "target": "01KQV88TMD8MNZEPV3PPSH5AG9",
+  "type": "decided_by"
+}

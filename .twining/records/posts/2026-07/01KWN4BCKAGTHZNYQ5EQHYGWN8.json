@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "ingest deletion-propagation would remove sqlite-era rows not mirrored in records/; refusing beats silently exporting from sqlite stores because the user disabled mirroring on purpose.",
+  "entry_type": "decision",
+  "id": "01KWN4BCKAGTHZNYQ5EQHYGWN8",
+  "provenance": {
+    "branch": "claude/w3-migrate-tool",
+    "commit_sha": "28aad4e99f0bfdcd41b35e26c42e74ac2fb22a16",
+    "recorded_at": "2026-07-03T23:17:18.557Z"
+  },
+  "scope": "src/migrate/",
+  "summary": "Forward migrate refuses to run when config is sqlite with export_records explicitly false",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-07-03T23:17:18.570Z"
+}

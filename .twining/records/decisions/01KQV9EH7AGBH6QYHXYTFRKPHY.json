@@ -1,0 +1,37 @@
+{
+  "affected_files": [
+    "plugin/hooks/session-start-context.sh",
+    "plugin/hooks/hooks.json",
+    "test/hooks/session-start-context.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "prompt-type hook",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "support prompt-type hooks on SessionStart at all and crashes on resume",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Phase 5 complete: Fixed SessionStart prompt-type hook crash on session resume (issue #8). Replaced broken prompt hook with command hook that emits additionalContext JSON.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KQV9EH7AGBH6QYHXYTFRKPHY",
+  "rationale": "this is documented in the spec and verified in issue #8 investigation. The command-type with additionalContext is the only supported form for both startup and resume events.",
+  "reversible": true,
+  "scope": "plugin/hooks",
+  "status": "active",
+  "summary": "Chose command-type hook with additionalContext JSON output over prompt-type hook because Claude Code does NOT support prompt-type hooks on SessionStart at all and crashes on resume",
+  "timestamp": "2026-05-05T05:23:21.962Z"
+}

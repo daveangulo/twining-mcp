@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-28T11:09:32.467Z",
+  "id": "01KMT252XKNP0SJGCW2FJ18F3W",
+  "properties": {
+    "decision_summary": "Add SessionStart command hook to inject Twining Lifecycle Gates into project CLAUDE.md"
+  },
+  "source": "01KMT252XJ0BQPNM732439HQZB",
+  "target": "01KMT252XHPBBPMA6CA27Z9JE8",
+  "type": "decided_by"
+}

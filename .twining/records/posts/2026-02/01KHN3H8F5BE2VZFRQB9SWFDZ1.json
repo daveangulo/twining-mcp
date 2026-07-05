@@ -1,0 +1,12 @@
+{
+  "agent_id": "human",
+  "detail": "False-positive conflict detection — build order and coordination pattern are orthogonal. Restoring to active.",
+  "entry_type": "decision",
+  "id": "01KHN3H8F5BE2VZFRQB9SWFDZ1",
+  "scope": "project",
+  "summary": "Override: Build bottom-up: utils → storage → engine → embeddings → tools → server -- overridden by human",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-02-17T06:10:22.309Z"
+}

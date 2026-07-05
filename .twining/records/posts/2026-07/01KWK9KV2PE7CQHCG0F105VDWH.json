@@ -1,0 +1,17 @@
+{
+  "agent_id": "claude-remote-session",
+  "detail": "The Stop hook now compares .twining/.last-record against the newest dirty-file mtime; when no sentinel exists the record tools are unreachable, so blocking would be unsatisfiable — a coordination tool must never be the reason a commit is impossible.",
+  "entry_type": "decision",
+  "id": "01KWK9KV2PE7CQHCG0F105VDWH",
+  "provenance": {
+    "branch": "claude/twining-catchup",
+    "commit_sha": "80c9c4a6983e030aa26e60a9745fb37a8c56bc94",
+    "recorded_at": "2026-07-03T06:10:49.549Z"
+  },
+  "scope": "plugin/hooks/",
+  "summary": "All hook gates are sentinel-based and fail open when unsatisfiable — no transcript grepping anywhere, and a fresh clone or dead server never blocks commits or session exit",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-03T06:10:49.558Z"
+}

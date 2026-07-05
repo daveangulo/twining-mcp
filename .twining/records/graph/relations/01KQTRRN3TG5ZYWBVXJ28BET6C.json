@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T00:31:47.834Z",
+  "id": "01KQTRRN3TG5ZYWBVXJ28BET6C",
+  "properties": {
+    "decision_summary": "Chose broad marker search across 4 files (~/.claude/CLAUDE.md, project CLAUDE.md, project CLAUDE.local.md, project .claude/CLAUDE.local.md) plus opt-out flag .twining/.no-claude-md-gates for issue #9"
+  },
+  "source": "01KQTRRN19FPSG5PNV4QB0Y34P",
+  "target": "01KQTRRN3SFR10D7N7BPSFCA5K",
+  "type": "decided_by"
+}

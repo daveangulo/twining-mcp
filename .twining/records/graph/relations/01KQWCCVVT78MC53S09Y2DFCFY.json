@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T15:34:07.482Z",
+  "id": "01KQWCCVVT78MC53S09Y2DFCFY",
+  "properties": {
+    "decision_summary": "Chose sentinel-file + git-log-HEAD over transcript-grep"
+  },
+  "source": "01KQV97HB8G0AQ7RE6ZARYNBW2",
+  "target": "01KQWCCVVRYRSB9QWDEFCYX551",
+  "type": "decided_by"
+}

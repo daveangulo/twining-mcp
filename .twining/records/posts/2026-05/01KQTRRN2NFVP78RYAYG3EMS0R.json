@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "covers reporter's exact setup and provides explicit user-controlled escape hatch. Rejected env-var-only opt-out because flag files are project-scoped, visible in ls, and survive shell-environment differences across team members.",
+  "entry_type": "decision",
+  "id": "01KQTRRN2NFVP78RYAYG3EMS0R",
+  "scope": "docs/superpowers/specs/",
+  "summary": "Chose broad marker search across 4 files (~/.claude/CLAUDE.md, project CLAUDE.md, project CLAUDE.local.md, project .claude/CLAUDE.local.md) plus opt-out flag .twining/.no-claude-md-gates for issue #9",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-05-05T00:31:47.797Z"
+}

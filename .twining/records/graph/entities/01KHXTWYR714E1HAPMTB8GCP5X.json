@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-20T15:32:38.279Z",
+  "id": "01KHXTWYR714E1HAPMTB8GCP5X",
+  "name": "test/verify-engine.test.ts",
+  "properties": {
+    "scope": "src/engine/verify.ts"
+  },
+  "type": "file",
+  "updated_at": "2026-02-20T15:32:38.279Z"
+}

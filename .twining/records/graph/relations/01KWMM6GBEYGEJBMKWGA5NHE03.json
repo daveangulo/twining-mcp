@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-03T18:35:01.358Z",
+  "id": "01KWMM6GBEYGEJBMKWGA5NHE03",
+  "properties": {
+    "decision_summary": "Folded the stray hook-generated blackboard entry (subagent-stop noise from the CI watch task) into the release commit rather than discarding it"
+  },
+  "source": "01KJNAQMQVGD3TWE905M4KZ1ST",
+  "target": "01KWMM6GBC79GYPJDFFN3PT67Y",
+  "type": "decided_by"
+}

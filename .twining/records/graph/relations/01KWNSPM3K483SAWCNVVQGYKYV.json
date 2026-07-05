@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-04T05:30:26.803Z",
+  "id": "01KWNSPM3K483SAWCNVVQGYKYV",
+  "properties": {
+    "decision_summary": "twining_record truncates over-length summaries/findings (full text preserved in detail) instead of rejecting"
+  },
+  "source": "01KWNR9MTRRZ6SFVG3SZ7KV69V",
+  "target": "01KWNSPM3ENE5WPGFKQMDMVQTK",
+  "type": "decided_by"
+}

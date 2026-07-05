@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-02T15:58:36.660Z",
+  "id": "01KJQMBPKMR0D9S7JV3B9NP8H5",
+  "properties": {
+    "decision_summary": "Transcript parser extracts both tool_use calls and tool_result blocks, follows subagent parentUuid chains"
+  },
+  "source": "01KJQMBPKHX62F4KGE07VP2PDN",
+  "target": "01KJQMBPK533Q6KDMM8B7926G3",
+  "type": "decided_by"
+}

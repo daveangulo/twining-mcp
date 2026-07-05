@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Filter at the assembler's entry-loading step (both scope-match and semantic-merge paths) rather than at the blackboard store level. The blackboard schema allows entry_type \"decision\" for backwards compatibility, but the assembler must not treat them as Decision objects. Filtering here is defensive — it protects against data that already exists and any future misuse.",
+  "entry_type": "decision",
+  "id": "01KMT24SR22H8AF6971S97PG5G",
+  "scope": "src/engine/context-assembler.ts",
+  "summary": "Filter out entry_type \"decision\" blackboard entries in assembler to prevent type confusion",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-03-28T11:09:23.074Z"
+}

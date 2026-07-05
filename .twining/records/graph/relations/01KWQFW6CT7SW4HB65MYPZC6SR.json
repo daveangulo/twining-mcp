@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-04T21:17:12.474Z",
+  "id": "01KWQFW6CT7SW4HB65MYPZC6SR",
+  "properties": {
+    "decision_summary": "Pending drain uses per-drain unique swap files with claim-by-rename recovery"
+  },
+  "source": "01KWN8930HYTTFYZFBKZ6NC9DD",
+  "target": "01KWQFW6CGE5T2E6W4DYS1FACD",
+  "type": "decided_by"
+}

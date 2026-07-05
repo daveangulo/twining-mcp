@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-05T00:31:47.794Z",
+  "id": "01KQTRRN2JN2KGHX81A3ZWMMQW",
+  "name": "01KQTRRN1BN7VK7P363XRY45EE",
+  "properties": {
+    "scope": "docs/superpowers/specs/",
+    "summary": "Chose to keep CLAUDE.md gate authority over reporter's prompt-injection-only alternative for issue #9"
+  },
+  "type": "concept",
+  "updated_at": "2026-05-05T00:31:47.794Z"
+}

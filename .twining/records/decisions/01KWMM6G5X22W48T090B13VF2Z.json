@@ -1,0 +1,38 @@
+{
+  "affected_files": [
+    "package.json",
+    "package-lock.json",
+    ".twining/blackboard.jsonl"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "via PR",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [
+    "97d1f74"
+  ],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Shipped 1.21.1: PR #27 squash-merged (d32617d, all CI green incl. first plugin-token-budget run), version bumped + tagged v1.21.1, npm publish succeeded, plugin 1.10.1 live in marketplace.",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01KWMM6G5X22W48T090B13VF2Z",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "97d1f7449b5e271497714d0ce4096f4da74b76f0",
+    "recorded_at": "2026-07-03T18:35:01.165Z"
+  },
+  "rationale": "follows the v1.20.0 precedent (898d29c) for release commits; the change is mechanical (version fields only) and already validated by the just-merged PR's CI. A PR would have been the alternative but squash-merging would break the tag-target relationship for no added safety.",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Committed the chore(release): v1.21.1 version bump directly to main instead of via PR",
+  "timestamp": "2026-07-03T18:35:01.181Z"
+}

@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Added TWINING_DISABLED guard immediately after set -euo pipefail to bypass hook when disabled at server level",
+  "entry_type": "decision",
+  "id": "01KQV9B7VTQ4REZVXJ40EWDKKG",
+  "scope": "project",
+  "summary": "Added TWINING_DISABLED guard immediately after set -euo pipefail to bypass hook when disabled at server level",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-05-05T05:21:34.074Z"
+}

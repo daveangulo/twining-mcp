@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T05:21:34.102Z",
+  "id": "01KQV9B7WP5NCNV1T2638MECMK",
+  "properties": {
+    "decision_summary": "Added TWINING_DISABLED guard immediately after set -euo pipefail to bypass hook when disabled at server level"
+  },
+  "source": "01KMT252XJ0BQPNM732439HQZB",
+  "target": "01KQV9B7WMNFDBQXES1CTGM6QY",
+  "type": "decided_by"
+}

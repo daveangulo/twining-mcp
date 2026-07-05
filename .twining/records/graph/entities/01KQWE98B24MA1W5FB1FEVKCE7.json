@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T16:07:06.338Z",
+  "id": "01KQWE98B24MA1W5FB1FEVKCE7",
+  "name": "src/utils/provenance.ts",
+  "properties": {
+    "scope": "src/engine/"
+  },
+  "type": "file",
+  "updated_at": "2026-05-05T16:22:14.161Z"
+}

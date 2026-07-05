@@ -1,0 +1,25 @@
+{
+  "agent_id": "main",
+  "domain": "data-model",
+  "scope": "project",
+  "summary": "Migrate this repo's own .twining to sqlite as user zero of the shipped tool on live state",
+  "context": "Dogfood-migrating this repo's .twining to sqlite now (v2 decision 2, approved). This session's live server stays on files until restart; tail records are stragglers for an idempotent re-run.",
+  "rationale": "strongest possible field soak for the v2 gate; reverse migration is the tested escape hatch.",
+  "constraints": [],
+  "alternatives": [],
+  "depends_on": [],
+  "confidence": "medium",
+  "reversible": true,
+  "affected_files": [],
+  "affected_symbols": [],
+  "commit_hashes": [],
+  "assembled_before": true,
+  "provenance": {
+    "recorded_at": "2026-07-05T20:23:10.371Z",
+    "branch": "main",
+    "commit_sha": "935e94912050ddffaf72f84625446406592a6a8a"
+  },
+  "id": "01KWSZ5Z9K5J1X7XTJQHGCTJWW",
+  "timestamp": "2026-07-05T20:23:10.388Z",
+  "status": "active"
+}

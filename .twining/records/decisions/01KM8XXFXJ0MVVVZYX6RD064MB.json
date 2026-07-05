@@ -1,0 +1,27 @@
+{
+  "affected_files": [
+    "src/engine/context-assembler.ts",
+    "src/utils/types.ts"
+  ],
+  "affected_symbols": [
+    "formatForLLM",
+    "assemble",
+    "AssembledContext"
+  ],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Benchmark showed full-twining agents interpreting decisions independently, choosing different patterns (EventBus vs CallbackRegistry). shared-markdown agents copied concrete patterns from COORDINATION.md. Twining decisions had constraints and alternatives in the record but dropped them at assembly time.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KM8XXFXJ0MVVVZYX6RD064MB",
+  "rationale": "Constraints like 'All services must use EventBus.emit()' and rejected alternatives like 'Direct calls: tight coupling' give agents concrete directives about what to do and what not to do. This bridges the gap between abstract decision summaries and actionable implementation guidance.",
+  "reversible": true,
+  "scope": "src/engine/context-assembler.ts",
+  "status": "active",
+  "summary": "Include constraints and rejected alternatives in assembled decision output for pattern propagation",
+  "timestamp": "2026-03-21T19:28:23.996Z"
+}

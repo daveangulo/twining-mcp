@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T05:19:32.805Z",
+  "id": "01KQV97HE5E1PZ6J11Q8E47Y2Q",
+  "properties": {
+    "decision_summary": "Structured tests to verify disabled mode bypasses all enforcement: pre-commit blocks commits without recording, stop blocks sessions without recording, both disabled exit 0 silently"
+  },
+  "source": "01KQV97HB8G0AQ7RE6ZARYNBW2",
+  "target": "01KQV97HE3Y6NN056WMPCBCZ24",
+  "type": "decided_by"
+}

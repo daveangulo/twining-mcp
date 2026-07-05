@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "comprehensive coverage of TWINING_DISABLED=true behavior (immediate exit with no output) vs unset behavior (normal hook logic runs)",
+  "entry_type": "decision",
+  "id": "01KQV97HBNHVTKWGTG6JDSDFDH",
+  "scope": "plugin/hooks",
+  "summary": "Created 3 test files (pre-commit-hook.test.ts, stop-hook.test.ts, subagent-stop-hook.test.ts) using existing run-hook helper",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-05-05T05:19:32.725Z"
+}

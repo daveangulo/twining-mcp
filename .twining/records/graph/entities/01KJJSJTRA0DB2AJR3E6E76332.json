@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-28T18:53:41.002Z",
+  "id": "01KJJSJTRA0DB2AJR3E6E76332",
+  "name": "plugin/agents/twining-aware-worker.md",
+  "properties": {
+    "scope": "src/tools/coordination-tools.ts"
+  },
+  "type": "file",
+  "updated_at": "2026-02-28T18:53:41.002Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-26T21:57:39.769Z",
+  "id": "01KJDZA8SS4QE28SEJGH15YGW5",
+  "properties": {
+    "decision_summary": "Add CI (build-and-test on PRs) and Publish (npm publish on tags) GitHub Actions workflows"
+  },
+  "source": "01KJDZA8SS4QE28SEJGH15YGW4",
+  "target": "01KJDZA8SRT74H1X7D8EB40P6F",
+  "type": "decided_by"
+}

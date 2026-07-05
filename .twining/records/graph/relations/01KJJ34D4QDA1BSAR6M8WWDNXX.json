@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-28T12:21:19.639Z",
+  "id": "01KJJ34D4QDA1BSAR6M8WWDNXX",
+  "properties": {
+    "decision_summary": "Show session-ended overlay after 3 consecutive poll failures instead of attempting window.close()"
+  },
+  "source": "01KJC68M4REPRVABK2MC68D43H",
+  "target": "01KJJ34D4PHBXWY78VTZTNGX0V",
+  "type": "decided_by"
+}

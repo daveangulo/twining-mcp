@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-02T16:46:53.986Z",
+  "id": "01KJQQ44123X5HSEV3MNXYVDCA",
+  "properties": {
+    "decision_summary": "Transcript eval uses 0.6 threshold (vs 0.8 for synthetic) with aggregate average assertions instead of per-scorer"
+  },
+  "source": "01KJQQ44113F8XZ1VNR3ZMTYZA",
+  "target": "01KJQQ440YP4EZN1NMV7SPM3QJ",
+  "type": "decided_by"
+}

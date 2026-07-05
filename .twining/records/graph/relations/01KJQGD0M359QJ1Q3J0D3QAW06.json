@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-02T14:49:25.379Z",
+  "id": "01KJQGD0M359QJ1Q3J0D3QAW06",
+  "properties": {
+    "decision_summary": "Eval scenarios use flat tool call lists with per-scorer pass/fail expectations"
+  },
+  "source": "01KJQGD0M1SC235ES5APQRKH16",
+  "target": "01KJQGD0M0HCTNMDV6PXPRWXPR",
+  "type": "decided_by"
+}

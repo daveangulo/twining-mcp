@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Keeps .planning/ parsing isolated, testable, and reusable. ContextAssembler receives PlanningBridge via constructor injection.",
+  "entry_type": "decision",
+  "id": "01KHMV0F56CPNPX1NAH2R3HDBC",
+  "scope": "src/engine/planning-bridge.ts",
+  "summary": "PlanningBridge as separate engine module, not inline in ContextAssembler",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-02-17T03:41:23.494Z"
+}

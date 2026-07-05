@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-10T13:03:56.467Z",
+  "id": "01KKBXHM1K68XVFVKSVBNFAHM2",
+  "properties": {
+    "decision_summary": "Enforce mandatory agent registration and handoff in plugin v1.1.5"
+  },
+  "source": "01KJJAZET2V22WEVQPJAYE9EQZ",
+  "target": "01KKBXHM19830H3XB5RFF712FF",
+  "type": "decided_by"
+}

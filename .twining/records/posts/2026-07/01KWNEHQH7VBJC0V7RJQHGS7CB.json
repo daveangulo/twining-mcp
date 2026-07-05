@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "status",
+  "id": "01KWNEHQH7VBJC0V7RJQHGS7CB",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "a3a1caad60ca2164cb0897c42291a1fad10f98da",
+    "recorded_at": "2026-07-04T02:15:32.117Z"
+  },
+  "scope": "project",
+  "summary": "Releasing 1.23.0: PR #29 (W3 migrate tool) squash-merged with all CI green; version bumped, STATE.md refreshed. Tagging v1.23.0 and publishing to npm next. No plugin bump (caret pin covers it).",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-04T02:15:32.135Z"
+}

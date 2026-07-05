@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Track wasConnected and disconnectCount state. After 3 consecutive failed polls (~9 seconds), show a fullscreen overlay saying 'Session Ended' with blur backdrop. This avoids false positives from transient network issues while giving clear feedback. window.close() is attempted as a best-effort fallback.",
+  "entry_type": "decision",
+  "id": "01KJJ34D28ESS4P26WXGXQW5YW",
+  "scope": "src/dashboard/public/app.js",
+  "summary": "Show session-ended overlay after 3 consecutive poll failures instead of attempting window.close()",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-02-28T12:21:19.560Z"
+}

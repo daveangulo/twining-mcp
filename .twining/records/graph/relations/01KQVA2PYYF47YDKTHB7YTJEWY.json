@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T05:34:23.198Z",
+  "id": "01KQVA2PYYF47YDKTHB7YTJEWY",
+  "properties": {
+    "decision_summary": "Reconsidered SEARCH_PATHS marker-search order in ensure-claude-md-gates.sh. Original spec said global-first (cheapest,"
+  },
+  "source": "01KQTRRN19FPSG5PNV4QB0Y34P",
+  "target": "01KQVA2PYW82T6P0E70JVR0GR2",
+  "type": "decided_by"
+}

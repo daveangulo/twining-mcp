@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "finding",
+  "id": "01KWNED1XPZSSRS9ZYRFS83AKB",
+  "provenance": {
+    "branch": "claude/w3-migrate-tool",
+    "commit_sha": "2cddbbe4157f4f847435ff5e84ebf27c8f4dfcc5",
+    "recorded_at": "2026-07-04T02:12:58.917Z"
+  },
+  "scope": "src/migrate/",
+  "summary": "Deferred (Low): forward's export_records:false guard also blocks --check/--dry-run in that config — conservative, message mentions destructive re-runs even for harmless checks.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-04T02:12:58.934Z"
+}

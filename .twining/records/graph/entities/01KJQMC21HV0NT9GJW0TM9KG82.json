@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-02T15:58:48.369Z",
+  "id": "01KJQMC21HV0NT9GJW0TM9KG82",
+  "name": "vitest.config.transcript.ts",
+  "properties": {
+    "scope": "test/eval/"
+  },
+  "type": "file",
+  "updated_at": "2026-03-02T19:59:48.082Z"
+}

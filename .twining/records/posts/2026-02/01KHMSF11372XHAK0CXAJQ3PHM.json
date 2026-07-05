@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "ULIDs are timestamp-prefixed so they sort chronologically, are globally unique without coordination, and are more readable than UUIDs.",
+  "entry_type": "decision",
+  "id": "01KHMSF11372XHAK0CXAJQ3PHM",
+  "scope": "src/utils/ids.ts",
+  "summary": "Use ULIDs for all entity IDs — temporally sortable, globally unique",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-02-17T03:14:23.395Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-04T05:30:27.034Z",
+  "id": "01KWNSPMATEAM8SAG43NBYFVG1",
+  "name": "01KWNSPM8A4Q26CNYAXXF15KT9",
+  "properties": {
+    "scope": "src/",
+    "summary": "migrateForward enumerates decisions by directory scan unioned with the index"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-04T05:30:27.034Z"
+}

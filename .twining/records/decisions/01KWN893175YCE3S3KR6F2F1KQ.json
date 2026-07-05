@@ -1,0 +1,29 @@
+{
+  "affected_files": [
+    "src/migrate/reverse.ts",
+    "test/migrate/reverse.test.ts",
+    "src/migrate/forward.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "W3 Task 4: reverse.ts sqlite→files escape hatch, 8 tests. Hardened: export_records:false skips ingest, already-files re-run guard, verify-failure never flips config, stop-sessions note added.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KWN893175YCE3S3KR6F2F1KQ",
+  "provenance": {
+    "branch": "claude/w3-migrate-tool",
+    "commit_sha": "2178f7674c0c3fae23df35f38e861eae21cf2cd2",
+    "recorded_at": "2026-07-04T00:25:57.527Z"
+  },
+  "rationale": "pre-reverse-backup/ is deliberately LAST-WINS (unlike config-edit's first-wins .pre-migrate.bak): it means 'what this run is about to overwrite', which is what makes a mistaken second reverse recoverable.",
+  "reversible": true,
+  "scope": "src/migrate/",
+  "status": "active",
+  "summary": "pre-reverse-backup/ is deliberately LAST-WINS (unlike config-edit's first-wins .pre-migrate.bak): it means 'what this run is about to overwrite', which is what makes a mistaken second reverse recoverable.",
+  "timestamp": "2026-07-04T00:25:57.543Z"
+}

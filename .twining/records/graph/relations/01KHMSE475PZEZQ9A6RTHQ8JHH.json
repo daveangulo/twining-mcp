@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-17T03:13:53.896Z",
+  "id": "01KHMSE475PZEZQ9A6RTHQ8JHH",
+  "properties": {
+    "note": "cross-posts decisions to blackboard"
+  },
+  "source": "01KHMSD9312FRZ8WE5H1BGHP67",
+  "target": "01KHMSD7CPGWQFGCRWQTG14168",
+  "type": "depends_on"
+}

@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Lower threshold (0.6) accounts for real-world messiness while still differentiating good vs poor sessions. Aggregate average assertions (rather than per-scorer) prevent flaky tests from natural variance in individual dimensions. Phase 19 will tune thresholds with more data.",
+  "entry_type": "decision",
+  "id": "01KJQQ43YHBP0ZCWA018K0AE5A",
+  "scope": "test/eval/",
+  "summary": "Transcript eval uses 0.6 threshold (vs 0.8 for synthetic) with aggregate average assertions instead of per-scorer",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-03-02T16:46:53.906Z"
+}

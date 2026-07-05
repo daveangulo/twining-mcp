@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-26T15:20:45.418Z",
+  "id": "01KJD8KGKABX3Y5E7F8GBKGYGK",
+  "name": "test/blackboard-store.test.ts",
+  "properties": {
+    "scope": "src/tools/blackboard-tools.ts"
+  },
+  "type": "file",
+  "updated_at": "2026-02-26T15:20:45.418Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-03T21:41:40.258Z",
+  "id": "01KWMYW8S252R456ATNGFGM0PR",
+  "properties": {
+    "decision_summary": "Reverse migration leaves records/ and twining.db in place but prints a FROZEN warning with remediation commands"
+  },
+  "source": "01KWMYW8GP40R5K8EV8CGADYP8",
+  "target": "01KWMYW8S0F4Y2PC1CWGH6KKVB",
+  "type": "decided_by"
+}

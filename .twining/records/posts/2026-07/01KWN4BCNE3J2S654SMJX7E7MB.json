@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Migration finalize idempotently appends twining.db* lines to .twining/.gitignore\" relates to:\n- 01KWMYW8HA1TGCXRWNB26JD1EN: \"Migration verify uses subset-containment (source ⊆ target) rather than set equality\"\n- 01KWMYW8KA6NRARJDAWB3WCD2K: \"No legacy-v1/ full backup in the 1.x migrate\"\n- 01KWMYW8PEGZRWWBW1HJFDYCEG: \"Reverse migration leaves records/ and twining.db in place but prints a FROZEN warning with remediation commands\"\n- 01KWN25KRGBEC6KBNMMPNEFWKP: \"config.yml backup is first-wins (.pre-migrate.bak never overwritten)\"",
+  "entry_type": "finding",
+  "id": "01KWN4BCNE3J2S654SMJX7E7MB",
+  "provenance": {
+    "branch": "claude/w3-migrate-tool",
+    "commit_sha": "28aad4e99f0bfdcd41b35e26c42e74ac2fb22a16",
+    "recorded_at": "2026-07-03T23:17:18.624Z"
+  },
+  "scope": "src/migrate/",
+  "summary": "Related decisions in scope: 4 existing decision(s) overlap",
+  "tags": [
+    "data-model"
+  ],
+  "timestamp": "2026-07-03T23:17:18.638Z"
+}

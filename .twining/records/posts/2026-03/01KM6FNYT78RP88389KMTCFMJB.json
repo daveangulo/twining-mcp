@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "When there are no warnings, decisions, findings, needs, handoffs, or questions, the full markdown template is pure noise. A terse 'No prior context for scope: X' eliminates this overhead completely.",
+  "entry_type": "decision",
+  "id": "01KM6FNYT78RP88389KMTCFMJB",
+  "scope": "src/engine/context-assembler.ts",
+  "summary": "Empty-state short-circuit in formatForLLM returns terse one-liner when no content exists",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-03-20T20:41:08.167Z"
+}

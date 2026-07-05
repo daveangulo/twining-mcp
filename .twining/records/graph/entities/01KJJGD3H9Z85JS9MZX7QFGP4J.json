@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-02-28T16:13:16.201Z",
+  "id": "01KJJGD3H9Z85JS9MZX7QFGP4J",
+  "name": "01KJJGD37CDKWQE5VFJYW8DGFR",
+  "properties": {
+    "scope": "src/dashboard/",
+    "summary": "Add Stream View as alternate visualization for Blackboard tab"
+  },
+  "type": "concept",
+  "updated_at": "2026-02-28T16:13:16.201Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-02-26T21:57:39.768Z",
+  "id": "01KJDZA8SRT74H1X7D8EB40P6F",
+  "name": "01KJDZA8MSNPEYHRRSDHQ89EWQ",
+  "properties": {
+    "scope": ".github/workflows/",
+    "summary": "Add CI (build-and-test on PRs) and Publish (npm publish on tags) GitHub Actions workflows"
+  },
+  "type": "concept",
+  "updated_at": "2026-02-26T21:57:39.768Z"
+}

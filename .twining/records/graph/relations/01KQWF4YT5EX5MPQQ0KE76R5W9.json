@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T16:22:14.085Z",
+  "id": "01KQWF4YT5EX5MPQQ0KE76R5W9",
+  "properties": {
+    "decision_summary": "Reverted single-call git rev-parse optimization"
+  },
+  "source": "01KQWE98BCW4SXZR7KP8QNPNJK",
+  "target": "01KQWF4YT079WV3V3WTRDQQK2D",
+  "type": "decided_by"
+}

@@ -1,0 +1,57 @@
+{
+  "affected_files": [
+    "src/analytics/analytics-engine.ts",
+    "src/analytics/metrics-collector.ts",
+    "src/analytics/metrics-store.ts",
+    "src/analytics/instrumented-server.ts",
+    "src/analytics/telemetry-client.ts",
+    "src/server.ts",
+    "src/index.ts",
+    "src/utils/types.ts",
+    "src/config.ts",
+    "src/storage/init.ts",
+    "src/dashboard/api-routes.ts",
+    "src/dashboard/public/index.html",
+    "src/dashboard/public/app.js",
+    "src/dashboard/public/style.css"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Instrument each tool file individually with timing wrappers",
+      "pros": [],
+      "reason_rejected": "Requires modifying all 8 tool files, higher maintenance burden, easy to forget when adding new tools"
+    },
+    {
+      "cons": [],
+      "option": "Use middleware/interceptor at MCP SDK transport level",
+      "pros": [],
+      "reason_rejected": "SDK transport layer is not designed for this, would be fragile across SDK version updates"
+    },
+    {
+      "cons": [],
+      "option": "Skip telemetry entirely, local-only analytics",
+      "pros": [],
+      "reason_rejected": "Loses adoption insights needed for project growth; opt-in with strong privacy safeguards addresses the concern"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [
+    "c56b6f8",
+    "a9f1ba4"
+  ],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Twining-MCP has npm downloads but no visibility into actual adoption, feature usage, or value delivered. Need analytics across three dimensions: showing users their impact (local value stats), tracking tool usage locally (instrumented calls), and understanding adoption (opt-in telemetry).",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01KJD595ETVSHV91ZBGRKPWWZY",
+  "rationale": "Layer 1 (value stats) computes from existing .twining/ data with zero new collection. Layer 2 (tool instrumentation) patches registerTool on McpServer instance before tool registration — zero changes to 8 tool files. Layer 3 (PostHog telemetry) is opt-in only, SHA-256 hashed identity, dynamic import for graceful degradation. This separation keeps privacy-sensitive code isolated and makes each layer independently testable.",
+  "reversible": true,
+  "scope": "src/analytics/",
+  "status": "active",
+  "summary": "Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry",
+  "timestamp": "2026-02-26T14:22:40.608Z"
+}

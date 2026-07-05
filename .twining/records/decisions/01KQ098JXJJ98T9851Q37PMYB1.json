@@ -1,0 +1,30 @@
+{
+  "affected_files": [
+    "test/coordination/benchmark-scenarios.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "numeric scoring (50 pts verify vs 20 pts redundant re-fix)",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Bug-investigation scorer (50/20 pts) from prior provisional was not implemented — benchmark tests use qualitative assertions instead",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KQ098JXJJ98T9851Q37PMYB1",
+  "rationale": "supersedes prior scorer decision",
+  "reversible": true,
+  "scope": "test/coordination/",
+  "status": "active",
+  "summary": "Coordination benchmark uses assertion-based tests (pagination appears in assembly, affected_files correct, >=3 actionable signals) rather than numeric scoring (50 pts verify vs 20 pts redundant re-fix)",
+  "supersedes": "01KM6GJ1JP55JNMJF95GZWX5TA",
+  "timestamp": "2026-04-24T17:40:37.426Z"
+}

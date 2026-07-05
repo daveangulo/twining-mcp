@@ -1,0 +1,17 @@
+{
+  "agent_id": "claude-remote-session",
+  "detail": "Zero native dependencies matter for an npx-launched server (this sandbox's proxy blocking onnxruntime's postinstall download proved the failure mode); opt-in with graceful fallback lets 18/20 users stay untouched until v2 bumps engines.",
+  "entry_type": "decision",
+  "id": "01KWK9KV10PM89R94Z42XRY9G4",
+  "provenance": {
+    "branch": "claude/twining-catchup",
+    "commit_sha": "80c9c4a6983e030aa26e60a9745fb37a8c56bc94",
+    "recorded_at": "2026-07-03T06:10:49.499Z"
+  },
+  "scope": "src/storage/",
+  "summary": "Ship the SQLite backend opt-in (storage.backend config, warn-and-fallback) on node:sqlite instead of bumping engines or adding better-sqlite3",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-07-03T06:10:49.504Z"
+}

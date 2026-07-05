@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-02-26T15:20:45.408Z",
+  "id": "01KJD8KGK041FSET3EBFA8Y460",
+  "name": "01KJD8KGC5ZCFNQD5KETTQ32YH",
+  "properties": {
+    "scope": "src/tools/blackboard-tools.ts",
+    "summary": "Add twining_dismiss tool for targeted removal of blackboard entries by ID"
+  },
+  "type": "concept",
+  "updated_at": "2026-02-26T15:20:45.408Z"
+}

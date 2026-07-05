@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-05T05:17:09.993Z",
+  "id": "01KQV935Z9QS6HYWNRTZ2CN09A",
+  "name": "01KQV935Y7CWQWW12XRZ9CGH37",
+  "properties": {
+    "scope": "src/index.ts, test/server-startup.test.ts",
+    "summary": "Placed gate at line 21-23 in main() before any server initialization"
+  },
+  "type": "concept",
+  "updated_at": "2026-05-05T05:17:09.993Z"
+}

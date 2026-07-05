@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-05T05:25:23.933Z",
+  "id": "01KQV9J8AX36VFGDMY342VC16R",
+  "name": "01KQV9J89WBT2W8WXKA1T7T85X",
+  "properties": {
+    "scope": "plugin/.claude-plugin/plugin.json, .claude-plugin/marketplace.json, package.json, CHANGELOG.md",
+    "summary": "Executed phase plan as specified without deviations"
+  },
+  "type": "concept",
+  "updated_at": "2026-05-05T05:25:23.933Z"
+}

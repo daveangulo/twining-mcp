@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-02T11:49:51.943Z",
+  "id": "01KJQ647P7ES6JGYF3H9AMD3PW",
+  "properties": {
+    "decision_summary": "v1.4 milestone: Behavioral spec + eval harness + plugin tuning as single release"
+  },
+  "source": "01KJGX8KNEGEK425RKKX0DSKZ7",
+  "target": "01KJQ647NYB2T5YPX6RC622QYS",
+  "type": "decided_by"
+}

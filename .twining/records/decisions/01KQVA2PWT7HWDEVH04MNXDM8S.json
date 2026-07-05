@@ -1,0 +1,30 @@
+{
+  "affected_files": [
+    "docs/superpowers/specs/2026-04-29-plugin-hygiene-design.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "keeping global-first because it was the original spec; rejected because the original reasoning was wrong about which dimension matters",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Reconciled SEARCH_PATHS order in spec to match implementation: project-first then global. Supersedes spec's earlier global-first ordering.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KQVA2PWT7HWDEVH04MNXDM8S",
+  "rationale": "~/.claude/CLAUDE.md tends to be small). Implementation chose project-first because hit-rate ordering matters more than read-cost: most users have the marker in a project CLAUDE.md or project .claude/CLAUDE.local.md, so project-first short-circuits faster in the common case. The read-cost difference across 4 paths is microseconds; the hit-rate difference is meaningful. Supersedes the original spec ordering. Spec updated to match. Rejected: keeping global-first because it was the original spec; rejected because the original reasoning was wrong about which dimension matters.",
+  "reversible": true,
+  "scope": "docs/superpowers/specs/",
+  "status": "active",
+  "summary": "Reconsidered SEARCH_PATHS marker-search order in ensure-claude-md-gates.sh. Original spec said global-first (cheapest,",
+  "supersedes": "01KQTRRN2NFVP78RYAYG3EMS0Q",
+  "timestamp": "2026-05-05T05:34:23.130Z"
+}

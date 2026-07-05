@@ -1,0 +1,39 @@
+{
+  "affected_files": [
+    "test/eval/regression-baseline.ts",
+    "test/eval/results/regression-baseline.json",
+    "package.json"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Snapshot eval output files directly",
+      "pros": [],
+      "reason_rejected": "Raw output lacks structure for diff comparison and doesn't include token budget metrics"
+    },
+    {
+      "cons": [],
+      "option": "Hard-code expected values in test assertions",
+      "pros": [],
+      "reason_rejected": "Brittle — every intentional change requires updating multiple test files instead of regenerating one baseline"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [
+    "3e208db"
+  ],
+  "confidence": "high",
+  "constraints": [],
+  "context": "After tuning cycle achieved 100% effective pass rate, needed a way to detect future regressions when plugin artifacts change.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KJR02B54GDWZQSH2EQJEH23C",
+  "rationale": "A structured JSON baseline with per-scenario scores, thresholds, holdout results, and token budget enables automated CI comparison. The generator script (regression-baseline.ts) is rerunnable so baselines can be refreshed after intentional changes.",
+  "reversible": true,
+  "scope": "test/eval/",
+  "status": "active",
+  "summary": "Regression baseline captures full eval state as JSON for CI comparison",
+  "timestamp": "2026-03-02T19:23:12.935Z"
+}

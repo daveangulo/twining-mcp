@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "A vertical card-based activity stream best fits the conversational nature of blackboard data. Cards colored by entry type, grouped by time, with CSS thread lines for relates_to connections. Visually distinct from Timeline (horizontal time bands) and Graph (node network). Scales well for dozens-to-hundreds of entries kept active by archival.",
+  "entry_type": "decision",
+  "id": "01KJJGD37RWA8BF7427Y0TR0X2",
+  "scope": "src/dashboard/",
+  "summary": "Add Stream View as alternate visualization for Blackboard tab",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-02-28T16:13:15.896Z"
+}

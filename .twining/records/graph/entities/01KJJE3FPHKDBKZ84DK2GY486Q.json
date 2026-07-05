@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-28T15:33:03.825Z",
+  "id": "01KJJE3FPHKDBKZ84DK2GY486Q",
+  "name": "buildSearchUrl",
+  "properties": {
+    "scope": "src/dashboard/public/"
+  },
+  "type": "function",
+  "updated_at": "2026-02-28T15:33:03.825Z"
+}

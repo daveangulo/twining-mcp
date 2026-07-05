@@ -1,0 +1,17 @@
+{
+  "agent_id": "claude-remote-session",
+  "detail": "check-then-write pre-creates raced across processes and clobbered committed data; WAL serializes statements but not read-modify-write pairs; waiters gave up (ELOCKED) before proper-lockfile's stale window allowed stealing a dead process's lock.",
+  "entry_type": "decision",
+  "id": "01KWK9KV55MQSXHF42G1MG6APG",
+  "provenance": {
+    "branch": "claude/twining-catchup",
+    "commit_sha": "80c9c4a6983e030aa26e60a9745fb37a8c56bc94",
+    "recorded_at": "2026-07-03T06:10:49.629Z"
+  },
+  "scope": "src/storage/",
+  "summary": "Cross-process write-safety fixes from the multiwriter soak: exclusive-create (O_EXCL) for all file pre-creates, BEGIN IMMEDIATE around every sqlite read-modify-write, and lock retry budget (~24s) rais",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-03T06:10:49.637Z"
+}

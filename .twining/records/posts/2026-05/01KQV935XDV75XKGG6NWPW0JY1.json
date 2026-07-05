@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "any other value (1, yes, True) does NOT disable, maintaining opt-in semantics",
+  "entry_type": "decision",
+  "id": "01KQV935XDV75XKGG6NWPW0JY1",
+  "scope": "src/index.ts, test/server-startup.test.ts",
+  "summary": "Implemented strict equality check (=== 'true') for TWINING_DISABLED gate",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-05-05T05:17:09.933Z"
+}

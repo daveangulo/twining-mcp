@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-05T16:22:14.080Z",
+  "id": "01KQWF4YT079WV3V3WTRDQQK2D",
+  "name": "01KQWF4YRT25WNR4ZRK65PG9EH",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Reverted single-call git rev-parse optimization"
+  },
+  "type": "concept",
+  "updated_at": "2026-05-05T16:22:14.080Z"
+}

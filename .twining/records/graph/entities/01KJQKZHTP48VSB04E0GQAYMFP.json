@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-02T15:51:58.550Z",
+  "id": "01KJQKZHTP48VSB04E0GQAYMFP",
+  "name": "test/eval/scorers/workflow-completeness.ts",
+  "properties": {
+    "scope": "test/eval/"
+  },
+  "type": "file",
+  "updated_at": "2026-03-02T19:23:06.679Z"
+}

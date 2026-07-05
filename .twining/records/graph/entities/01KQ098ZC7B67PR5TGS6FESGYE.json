@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-04-24T17:40:50.183Z",
+  "id": "01KQ098ZC7B67PR5TGS6FESGYE",
+  "name": "01KQ098ZB0E70K71QJVA3NWQ55",
+  "properties": {
+    "scope": "test/coordination/",
+    "summary": "Bug-investigation benchmark uses assertion-based tests rather than numeric scoring"
+  },
+  "type": "concept",
+  "updated_at": "2026-04-24T17:40:50.183Z"
+}

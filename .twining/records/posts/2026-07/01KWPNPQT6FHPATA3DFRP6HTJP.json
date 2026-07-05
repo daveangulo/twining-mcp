@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "status",
+  "id": "01KWPNPQT6FHPATA3DFRP6HTJP",
+  "provenance": {
+    "branch": "claude/1.24-field-findings",
+    "commit_sha": "827d39437eefc492f8deccf18dc3398a7a20bd03",
+    "recorded_at": "2026-07-04T13:39:50.698Z"
+  },
+  "scope": "src/engine/",
+  "summary": "1.24 T1: archive loop killed — trigger counts only archivable entries (excludes decision cross-posts and archive-tagged summaries); archiver summary carries _skipAutoArchive, skipped at 0. 5 tests.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-04T13:39:50.726Z"
+}

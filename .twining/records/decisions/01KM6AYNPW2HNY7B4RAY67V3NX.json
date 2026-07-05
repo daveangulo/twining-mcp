@@ -1,0 +1,47 @@
+{
+  "affected_files": [
+    "vitest.config.coordination.ts",
+    "test/coordination/helpers.ts",
+    "test/coordination/fixtures/bug-investigation.ts",
+    "test/coordination/fixtures/architecture-cascade.ts",
+    "test/coordination/fixtures/context-recovery.ts",
+    "test/coordination/fixtures/conflict-resolution.ts",
+    "test/coordination/fixtures/refactoring-handoff.ts",
+    "test/coordination/coordination-quality.test.ts",
+    "test/coordination/decision-propagation.test.ts",
+    "test/coordination/graph-reachability.test.ts",
+    "test/coordination/decision-why.test.ts",
+    "test/coordination/overhead-measurement.test.ts",
+    "test/coordination/benchmark-scenarios.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Mock all stores and test assembler in isolation",
+      "pros": [],
+      "reason_rejected": "Would miss integration issues between stores and assembler — the exact gap that caused low coordination lift"
+    },
+    {
+      "cons": [],
+      "option": "Run full benchmark suite for feedback",
+      "pros": [],
+      "reason_rejected": "Takes 23+ hours and costs hundreds of dollars — too slow for iteration"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Benchmark results showed 92% tool engagement but near-zero coordination lift (d=0.01-0.14). Need fast-feedback tests (seconds, not hours) to measure whether assemble output is actionable and iterate on quality.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KM6AYNPW2HNY7B4RAY67V3NX",
+  "rationale": "Real stores (BlackboardStore, DecisionStore, HandoffStore, AgentStore, GraphEngine) with temp dirs give accurate end-to-end coverage of the assemble pipeline. Only SearchEngine is null (no embeddings needed). This catches real integration issues that mocks would hide, while still running in ~1 second.",
+  "reversible": true,
+  "scope": "test/coordination/",
+  "status": "active",
+  "summary": "Coordination effectiveness test suite using real stores with temp dirs, no mocking",
+  "timestamp": "2026-03-20T19:18:30.898Z"
+}

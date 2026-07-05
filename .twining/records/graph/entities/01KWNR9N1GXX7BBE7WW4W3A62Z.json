@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-04T05:05:53.200Z",
+  "id": "01KWNR9N1GXX7BBE7WW4W3A62Z",
+  "name": "01KWNR9MYF641JEKA9RG3AVNMS",
+  "properties": {
+    "scope": "project",
+    "summary": "Proposed (pending approval): v2.0.0-beta ships under npm dist-tag next, never latest"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-04T05:05:53.200Z"
+}

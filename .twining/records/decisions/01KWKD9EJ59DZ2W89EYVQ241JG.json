@@ -1,0 +1,35 @@
+{
+  "affected_files": [
+    "test/eval/types.ts",
+    "test/eval/behaviors-parser.test.ts",
+    "plugin/BEHAVIORS.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "claude-remote-session",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Demote RECORD-02/HK-02 to SHOULD",
+      "pros": [],
+      "reason_rejected": "They are correctness rules by the spec's own definition; the band exists to keep MUST meaningful, not to cap it."
+    }
+  ],
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Documenting twining_record / twining_housekeeping / twining_archive_stale in BEHAVIORS.md added 4 MUSTs (RECORD-01/02, HK-02, ARCH-01), busting the 8–12 scarcity band; the tool count is pinned in three places (zod schema .length, two test assertions), all moved 32→35.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KWKD9EJ59DZ2W89EYVQ241JG",
+  "provenance": {
+    "branch": "claude/hygiene-1.21.1",
+    "commit_sha": "eceb30412aec06d66f429bd0615e10c3a8c80b24",
+    "recorded_at": "2026-07-03T07:15:03.360Z"
+  },
+  "rationale": "Those four rules meet the documented MUST bar — violating any causes coordination failure or data loss (Gate-2 enforcement, execute-after-preview, human-confirmed archival). Demoting them to fit an arbitrary number would invert the criterion.",
+  "reversible": true,
+  "scope": "test/eval/",
+  "status": "active",
+  "summary": "Widened the behaviors-parser MUST-count band to 8–16 instead of demoting the new tools' MUST rules to SHOULD",
+  "timestamp": "2026-07-03T07:15:03.365Z"
+}

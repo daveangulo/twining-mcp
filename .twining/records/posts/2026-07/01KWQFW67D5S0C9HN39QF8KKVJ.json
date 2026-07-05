@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Decisions: Pending drain uses per-drain unique swap files with claim-by-rename recovery — at-least-once semantics where duplicates are possible under concurrent drains but an appended post can never be lost; the original fixed-name swap had a microsecond cross-process unlink window the reviewer traced.",
+  "entry_type": "status",
+  "id": "01KWQFW67D5S0C9HN39QF8KKVJ",
+  "provenance": {
+    "branch": "claude/1.24-field-findings",
+    "commit_sha": "0a1a8205dbb51b940ef5255d52b3a8eafdcce6e0",
+    "recorded_at": "2026-07-04T21:17:12.272Z"
+  },
+  "scope": "src/engine/",
+  "summary": "1.24 T3: pending queue drains every 60s with loss-proof rename-swap (unique names + claim-by-rename after review); migrate salvages index-orphaned decisions via directory scan.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-04T21:17:12.302Z"
+}

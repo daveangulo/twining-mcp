@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-28T01:30:10.707Z",
+  "id": "01KJGXW3WKNH9MCE8RNZS33HAN",
+  "name": "test/unit/instructions.test.ts",
+  "properties": {
+    "description": "Tests for TWINING_INSTRUCTIONS and config.instructions.auto_inject"
+  },
+  "type": "file",
+  "updated_at": "2026-02-28T01:30:10.707Z"
+}

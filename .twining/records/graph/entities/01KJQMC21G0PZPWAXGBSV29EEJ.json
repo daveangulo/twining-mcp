@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-03-02T15:58:48.368Z",
+  "id": "01KJQMC21G0PZPWAXGBSV29EEJ",
+  "name": "01KJQMC1WPEM30XZHNAMH9FCYT",
+  "properties": {
+    "scope": "test/eval/",
+    "summary": "Separate vitest config and npm script for transcript evals with manifest-based fixture discovery"
+  },
+  "type": "concept",
+  "updated_at": "2026-03-02T15:58:48.368Z"
+}

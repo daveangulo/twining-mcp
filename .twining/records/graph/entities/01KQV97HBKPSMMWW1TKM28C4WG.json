@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T05:19:32.723Z",
+  "id": "01KQV97HBKPSMMWW1TKM28C4WG",
+  "name": "test/hooks/subagent-stop-hook.test.ts",
+  "properties": {
+    "scope": "plugin/hooks"
+  },
+  "type": "file",
+  "updated_at": "2026-05-05T05:19:32.813Z"
+}

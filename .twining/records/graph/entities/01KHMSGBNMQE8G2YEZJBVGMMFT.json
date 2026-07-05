@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-17T03:15:07.058Z",
+  "id": "01KHMSGBNMQE8G2YEZJBVGMMFT",
+  "name": "selective-context-injection",
+  "properties": {
+    "description": "Agents query for relevant context via assemble(). Assembler builds tailored packages within token budget using recency/confidence scoring. Not a firehose."
+  },
+  "type": "pattern",
+  "updated_at": "2026-02-17T03:15:07.058Z"
+}

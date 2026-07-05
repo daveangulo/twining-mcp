@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-03-02T19:23:13.069Z",
+  "id": "01KJR02B9DCGJ1B45Z8DE8GGT4",
+  "name": "01KJR02B54GDWZQSH2EQJEH23C",
+  "properties": {
+    "scope": "test/eval/",
+    "summary": "Regression baseline captures full eval state as JSON for CI comparison"
+  },
+  "type": "concept",
+  "updated_at": "2026-03-02T19:23:13.069Z"
+}

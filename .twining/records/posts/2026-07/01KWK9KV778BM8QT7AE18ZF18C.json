@@ -1,0 +1,18 @@
+{
+  "agent_id": "claude-remote-session",
+  "detail": "Hit in the remote session's proxied sandbox (npm ci needed --ignore-scripts). Consider moving @huggingface/transformers to optionalDependencies — the embedder already degrades to keyword mode when unavailable.",
+  "entry_type": "warning",
+  "id": "01KWK9KV778BM8QT7AE18ZF18C",
+  "provenance": {
+    "branch": "claude/twining-catchup",
+    "commit_sha": "80c9c4a6983e030aa26e60a9745fb37a8c56bc94",
+    "recorded_at": "2026-07-03T06:10:49.695Z"
+  },
+  "scope": "package.json",
+  "summary": "npx installs of twining-mcp can fail in network-restricted sandboxes because @huggingface/transformers pulls onnxruntime-node, whose postinstall downloads binaries",
+  "tags": [
+    "install",
+    "embeddings"
+  ],
+  "timestamp": "2026-07-03T06:10:49.703Z"
+}

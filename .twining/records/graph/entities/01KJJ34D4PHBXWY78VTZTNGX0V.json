@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-02-28T12:21:19.638Z",
+  "id": "01KJJ34D4PHBXWY78VTZTNGX0V",
+  "name": "01KJJ34D0940TD59ET8M9TY5E2",
+  "properties": {
+    "scope": "src/dashboard/public/app.js",
+    "summary": "Show session-ended overlay after 3 consecutive poll failures instead of attempting window.close()"
+  },
+  "type": "concept",
+  "updated_at": "2026-02-28T12:21:19.638Z"
+}

@@ -1,0 +1,28 @@
+{
+  "affected_files": [
+    "src/storage/file-store.ts",
+    "src/storage/sqlite/db.ts",
+    "test/multiwriter-soak.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "claude-remote-session",
+  "alternatives": [],
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "The W2.2 acceptance soak (real processes, SIGKILL mid-stream, ack-after-commit audit) found three real lost-update/lockout bugs on its first runs.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KWK9KV4JQP61XDP1GDFXP764",
+  "provenance": {
+    "branch": "claude/twining-catchup",
+    "commit_sha": "80c9c4a6983e030aa26e60a9745fb37a8c56bc94",
+    "recorded_at": "2026-07-03T06:10:49.610Z"
+  },
+  "rationale": "check-then-write pre-creates raced across processes and clobbered committed data; WAL serializes statements but not read-modify-write pairs; waiters gave up (ELOCKED) before proper-lockfile's stale window allowed stealing a dead process's lock.",
+  "reversible": false,
+  "scope": "src/storage/",
+  "status": "active",
+  "summary": "Cross-process write-safety fixes from the multiwriter soak: exclusive-create (O_EXCL) for all file pre-creates, BEGIN IMMEDIATE around every sqlite read-modify-write, and lock retry budget (~24s) raised past the stale threshold (10s)",
+  "timestamp": "2026-07-03T06:10:49.618Z"
+}

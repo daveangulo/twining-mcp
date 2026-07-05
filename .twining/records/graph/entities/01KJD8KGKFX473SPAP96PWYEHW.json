@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-26T15:20:45.423Z",
+  "id": "01KJD8KGKFX473SPAP96PWYEHW",
+  "name": "BlackboardEngine/dismiss",
+  "properties": {
+    "scope": "src/tools/blackboard-tools.ts"
+  },
+  "type": "function",
+  "updated_at": "2026-02-26T15:20:45.423Z"
+}

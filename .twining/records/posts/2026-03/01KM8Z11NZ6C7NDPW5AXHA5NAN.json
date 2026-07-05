@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "12 sessions from 3 engineer personas with heterogeneous tasks (features, bugs, refactoring) and a mid-sprint requirement change (session 8: SMS added, invalidating email-only assumption from session 3). This tests decision persistence, assumption validation, cross-feature interference, and context recovery at realistic scale. Scores 5 dimensions including assumptionHandling which directly measures Twining's RECONSIDER mechanism.",
+  "entry_type": "decision",
+  "id": "01KM8Z11NZ6C7NDPW5AXHA5NAN",
+  "scope": "project",
+  "summary": "Sprint-simulation scenario: 12-session sprint with requirement change for long-horizon coordination testing",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-03-21T19:47:49.056Z"
+}

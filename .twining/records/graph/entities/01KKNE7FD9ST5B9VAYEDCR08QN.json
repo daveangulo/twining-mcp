@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-03-14T05:48:39.721Z",
+  "id": "01KKNE7FD9ST5B9VAYEDCR08QN",
+  "name": "01KKNE7FA2Q7EFFPGX34K7RPHH",
+  "properties": {
+    "scope": "src/engine/context-assembler.ts",
+    "summary": "Replace computeGraphConnectivity with computeGraphReachability using typed BFS and adaptive weight fallback"
+  },
+  "type": "concept",
+  "updated_at": "2026-03-14T05:48:39.721Z"
+}

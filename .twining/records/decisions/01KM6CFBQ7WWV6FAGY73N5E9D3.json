@@ -1,0 +1,24 @@
+{
+  "affected_files": [
+    "src/engine/context-assembler.ts"
+  ],
+  "affected_symbols": [
+    "formatForLLM"
+  ],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "When an agent records both a finding and a decision about the same thing (e.g., off-by-one bug), both appeared in the output, wasting token budget and diluting signal.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KM6CFBQ7WWV6FAGY73N5E9D3",
+  "rationale": "Substring overlap check (first 30 chars of lowercase summary) catches the common case where a finding is promoted to a decision. Non-overlapping findings are preserved. This is conservative — only filters obvious duplicates.",
+  "reversible": true,
+  "scope": "src/engine/context-assembler.ts",
+  "status": "active",
+  "summary": "Filter redundant findings that substantially overlap with decision summaries in formatForLLM",
+  "timestamp": "2026-03-20T19:45:06.279Z"
+}

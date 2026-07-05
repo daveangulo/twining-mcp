@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Code is already written, tested, and the engine is constructed at startup. Exposing it completes the coordination feature set and eliminates the dead-code smell. Removing would waste existing work.",
+  "entry_type": "decision",
+  "id": "01KHQ18BXX0VM305GRT44VTPV7",
+  "scope": "src/tools/coordination-tools.ts",
+  "summary": "Expose delegation and handoff as MCP tools rather than removing dead CoordinationEngine code",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-02-18T00:09:02.653Z"
+}

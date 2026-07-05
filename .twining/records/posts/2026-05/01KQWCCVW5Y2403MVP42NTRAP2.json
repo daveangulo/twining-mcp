@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "preserves gate semantics so internal posts don't reset.",
+  "entry_type": "decision",
+  "id": "01KQWCCVW5Y2403MVP42NTRAP2",
+  "scope": "plugin/hooks/",
+  "summary": "Wired sentinel into the three explicit recording tool handlers, not into engine methods",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-05-05T15:34:07.493Z"
+}

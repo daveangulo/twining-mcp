@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-03T23:17:18.604Z",
+  "id": "01KWN4BCMCR0J267RJXHVSSH0J",
+  "properties": {
+    "decision_summary": "Forward migrate refuses to run when config is sqlite with export_records explicitly false"
+  },
+  "source": "01KWN4BCMBDHY2MCTWESYG2VVW",
+  "target": "01KWN4BCMAGYTQ0NYV4HJHKF6G",
+  "type": "decided_by"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-28T14:33:17.168Z",
+  "id": "01KJJAP13GPHJQ5WPV0J4NFFJK",
+  "properties": {
+    "decision_summary": "Skip ONNX embedding initialization in test environment via process.env.VITEST check"
+  },
+  "source": "01KJJAP1393ZRMJY1SRKEQVBVQ",
+  "target": "01KJJAP137SKBA7V52S35HBPXR",
+  "type": "decided_by"
+}

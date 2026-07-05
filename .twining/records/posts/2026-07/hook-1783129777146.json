@@ -1,0 +1,15 @@
+{
+  "agent_id": "unknown-subagent",
+  "detail": "",
+  "dismissed": false,
+  "entry_type": "status",
+  "id": "hook-1783129777146",
+  "scope": "project",
+  "summary": "Subagent completed: unknown-subagent",
+  "supersedes": null,
+  "tags": [
+    "subagent-stop",
+    "hook-generated"
+  ],
+  "timestamp": "2026-07-04T01:49:37.000Z"
+}

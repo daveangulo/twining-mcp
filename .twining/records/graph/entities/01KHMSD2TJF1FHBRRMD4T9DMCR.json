@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-02-17T03:13:19.698Z",
+  "id": "01KHMSD2TJF1FHBRRMD4T9DMCR",
+  "name": "src/storage/file-store.ts",
+  "properties": {
+    "description": "Low-level file I/O with advisory locking — readJSON, writeJSON, readJSONL, appendJSONL, ensureDir",
+    "layer": "storage"
+  },
+  "type": "file",
+  "updated_at": "2026-02-17T03:13:19.698Z"
+}

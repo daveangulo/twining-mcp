@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-03T18:58:38.410Z",
+  "id": "01KWMNHR6AWXE7QW6X9N2KZCM0",
+  "name": "01KWMNHR4SW6MWZD85PJR9R04F",
+  "properties": {
+    "scope": "docs/FOUNDATION-PLAN.md",
+    "summary": "Chose a new sync-manager module reusing branch-watcher's snapshot-and-diff pattern instead of literally extending src/engine/branch-watcher.ts"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-03T18:58:38.410Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-03-02T15:51:58.540Z",
+  "id": "01KJQKZHTCEKYS3H35CGJRN5H0",
+  "name": "01KJQKZHQ24A55CE8HPGPAFXV6",
+  "properties": {
+    "scope": "test/eval/scorers/",
+    "summary": "Scorers use weighted severity aggregation: MUST fail=0, SHOULD fail=0.5, pass=1 with DEFAULT_THRESHOLD=0.8"
+  },
+  "type": "concept",
+  "updated_at": "2026-03-02T15:51:58.540Z"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Proposed (pending approval): v2.0.0-beta ships under npm dist-tag next, never latest\" relates to:\n- 01KM8Z11K436VRH2AK4KHB5GVX: \"Sprint-simulation scenario: 12-session sprint with requirement change for long-horizon coordination testing\"\n- 01KQVA0QBMFJ2CAQWNWQGE4Q49: \"Switched server-startup.test.ts tests 2 & 3 from spawnSync with input='' to spawn with manually-piped Readable stream that never sends EOF, allowing processes to hang to timeout and be killed with SIGTERM, which discriminates between gate firing (status 0) vs gate not firing (signal SIGTERM)\"\n- 01KQVA0QDZ5G1N8K65E5C17RFN: \"Added third test to session-start-context.test.ts verifying TWINING_DISABLED='1' does NOT trigger gate and hook emits JSON normally\"",
+  "entry_type": "finding",
+  "id": "01KWNR9MYZTJN8BN3JVZYZRKAR",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "9be18d1f347e111d8538643df425061c57b4e607",
+    "recorded_at": "2026-07-04T05:05:53.104Z"
+  },
+  "scope": "project",
+  "summary": "Related decisions in scope: 3 existing decision(s) overlap",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-07-04T05:05:53.119Z"
+}

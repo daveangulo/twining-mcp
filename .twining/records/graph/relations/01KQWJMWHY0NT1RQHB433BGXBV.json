@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T17:23:21.790Z",
+  "id": "01KQWJMWHY0NT1RQHB433BGXBV",
+  "properties": {
+    "decision_summary": "First-run is a no-op for archival"
+  },
+  "source": "01KQWJMWCKVJHND6Z53D18ZVMS",
+  "target": "01KQWJMWHTQK2V6Z0GQMXZNTV0",
+  "type": "decided_by"
+}

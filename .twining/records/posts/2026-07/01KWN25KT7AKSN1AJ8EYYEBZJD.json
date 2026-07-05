@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "the first backup is the true pre-migration original; a later reverse run overwriting it would destroy the only copy. Alternative (timestamped backups) rejected as clutter for a file git usually tracks anyway.",
+  "entry_type": "decision",
+  "id": "01KWN25KT7AKSN1AJ8EYYEBZJD",
+  "provenance": {
+    "branch": "claude/w3-migrate-tool",
+    "commit_sha": "49d10113ddf5d912c11e63ae0230e4b4020f2d57",
+    "recorded_at": "2026-07-03T22:39:12.183Z"
+  },
+  "scope": "src/migrate/",
+  "summary": "config.yml backup is first-wins (.pre-migrate.bak never overwritten)",
+  "tags": [
+    "data-model"
+  ],
+  "timestamp": "2026-07-03T22:39:12.199Z"
+}

@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "All three phases must ship together — a spec alone isn't a release, a harness without a spec has nothing to measure, and tuning without a harness is guesswork. The spec lives at plugin/BEHAVIORS.md since it primarily guides plugin development. Dual eval approach: LLM-as-judge for synthetic scenarios + transcript analysis of real dogfooding sessions.",
+  "entry_type": "decision",
+  "id": "01KJQ647JZM7MP44PHC3KZAK4D",
+  "scope": "plugin/",
+  "summary": "v1.4 milestone: Behavioral spec + eval harness + plugin tuning as single release",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-03-02T11:49:51.839Z"
+}

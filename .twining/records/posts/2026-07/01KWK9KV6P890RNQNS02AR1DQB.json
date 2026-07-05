@@ -1,0 +1,18 @@
+{
+  "agent_id": "claude-remote-session",
+  "detail": "Discovered when replicating commits through push_files: plugin/hooks/*.sh lost 0755. The bash-prefix invocation also protects zip-based plugin installs.",
+  "entry_type": "finding",
+  "id": "01KWK9KV6P890RNQNS02AR1DQB",
+  "provenance": {
+    "branch": "claude/twining-catchup",
+    "commit_sha": "80c9c4a6983e030aa26e60a9745fb37a8c56bc94",
+    "recorded_at": "2026-07-03T06:10:49.678Z"
+  },
+  "scope": "plugin/hooks/",
+  "summary": "GitHub contents-API pushes strip executable bits — hooks.json now invokes all hook scripts via explicit bash",
+  "tags": [
+    "ci",
+    "plugin"
+  ],
+  "timestamp": "2026-07-03T06:10:49.686Z"
+}

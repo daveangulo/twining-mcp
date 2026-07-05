@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-03T21:41:39.993Z",
+  "id": "01KWMYW8GSP2TJP1V366HTW8A2",
+  "properties": {
+    "decision_summary": "W3 1.x migrate leaves config.version at 1 and only flips storage.backend"
+  },
+  "source": "01KWMNHR416F2FYJZAX7X9Y6ZT",
+  "target": "01KWMYW8GN6EMWS3FGXX0GRE8K",
+  "type": "decided_by"
+}

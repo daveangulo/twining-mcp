@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-05T00:31:47.894Z",
+  "id": "01KQTRRN5PFFNJKSAP3EC63Y6X",
+  "name": "01KQTRRN4VEXME5DNAY93Y8B8J",
+  "properties": {
+    "scope": "docs/superpowers/specs/",
+    "summary": "Chose to convert SessionStart prompt-type hook to command-type hook for issue #8"
+  },
+  "type": "concept",
+  "updated_at": "2026-05-05T00:31:47.894Z"
+}

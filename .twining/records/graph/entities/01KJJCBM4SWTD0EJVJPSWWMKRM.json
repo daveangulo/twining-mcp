@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-28T15:02:33.369Z",
+  "id": "01KJJCBM4SWTD0EJVJPSWWMKRM",
+  "name": "initTimeline",
+  "properties": {
+    "scope": "src/dashboard/public/"
+  },
+  "type": "function",
+  "updated_at": "2026-02-28T15:02:33.369Z"
+}

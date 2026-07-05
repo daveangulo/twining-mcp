@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "--abbrev-ref is global so the two-positional-arg form returns branch twice. Two execFileSync calls remain canonical; cost is ~1ms each which is acceptable. Will revisit via .git/HEAD parsing only if profiling shows it as a hot path.",
+  "entry_type": "decision",
+  "id": "01KQWF4YRV6C5E3KJY4FPJSK3A",
+  "scope": "src/engine/",
+  "summary": "Reverted single-call git rev-parse optimization",
+  "tags": [
+    "data-model"
+  ],
+  "timestamp": "2026-05-05T16:22:14.043Z"
+}

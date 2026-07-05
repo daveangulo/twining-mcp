@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Explicit read directives as a checklist (Read src/events/bus.ts) push agents to open files before writing, improving pattern consistency and context recovery scores.",
+  "entry_type": "decision",
+  "id": "01KM852D3WP0SFSEXHV1SQQP0Z",
+  "scope": "src/engine/context-assembler.ts",
+  "summary": "Add FILES TO CHECK BEFORE WRITING section to formatForLLM output",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-03-21T12:14:10.556Z"
+}

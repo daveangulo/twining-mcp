@@ -1,0 +1,46 @@
+{
+  "affected_files": [
+    "src/storage/sqlite/db.ts",
+    "src/storage/sync/sync-manager.ts",
+    "src/storage/sync/embedding-reconcile.ts",
+    "src/embeddings/embed-text.ts",
+    "src/storage/backend-factory.ts",
+    "src/server.ts",
+    "test/multiwriter-soak.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "fire-and-forget)",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "read the old branch's records; ingest is a fast sync operation while embedding stays async so the model never blocks a tool call",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "W2.3 phase 2 implemented: git-HEAD probe on tool dispatch re-ingests records mid-session; schema v2 content_hash; async reconcile re-embeds only changed text. 968 tests + SOAK_SCALE=5 green.",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01KWMS1EKM6J8S8N6AAVENV5H2",
+  "provenance": {
+    "branch": "claude/w23-phase2-live-ingest",
+    "commit_sha": "65f877bfac331e61eff2387adc365635528e6506",
+    "recorded_at": "2026-07-03T19:59:38.596Z"
+  },
+  "rationale": "an assemble racing a branch switch must not read the old branch's records; ingest is a fast sync operation while embedding stays async so the model never blocks a tool call.",
+  "reversible": true,
+  "scope": "src/storage/sync/",
+  "status": "active",
+  "summary": "Made the probe synchronous before tool dispatch (not fire-and-forget)",
+  "timestamp": "2026-07-03T19:59:38.612Z"
+}

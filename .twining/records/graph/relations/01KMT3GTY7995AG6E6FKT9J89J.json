@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-28T11:33:26.087Z",
+  "id": "01KMT3GTY7995AG6E6FKT9J89J",
+  "properties": {
+    "decision_summary": "Layered instruction architecture: CLAUDE.md as authority, lean SessionStart prompt, third-person skill descriptions"
+  },
+  "source": "01KJJSJTRCZPX53HCXCX4XDR02",
+  "target": "01KMT3GTXMT8ZWZ5CCTZ3TAVSF",
+  "type": "decided_by"
+}

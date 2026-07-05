@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-26T14:49:49.341Z",
+  "id": "01KJD6TW0X2D2TWJFB1KF5GQNR",
+  "name": "test/analytics/",
+  "properties": {
+    "description": "Analytics test suite: 44 tests across 6 files covering analytics-engine, metrics-collector, metrics-store, instrumented-server, telemetry-client, and API routes"
+  },
+  "type": "module",
+  "updated_at": "2026-02-26T14:49:49.341Z"
+}

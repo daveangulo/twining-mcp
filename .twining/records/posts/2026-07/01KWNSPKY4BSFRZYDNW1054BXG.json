@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "the 7.6M-finding loop came from counting permanently-unarchivable decisions and the archiver re-arming itself.",
+  "entry_type": "decision",
+  "id": "01KWNSPKY4BSFRZYDNW1054BXG",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "9be18d1f347e111d8538643df425061c57b4e607",
+    "recorded_at": "2026-07-04T05:30:26.612Z"
+  },
+  "scope": "src/",
+  "summary": "Auto-archive trigger counts only archivable entries (excludes decision cross-posts and archive-tagged summaries) and the archiver's summary post carries _skipAutoArchive",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-07-04T05:30:26.628Z"
+}

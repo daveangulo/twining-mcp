@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Shell script runs before the prompt hook, checks for marker string 'Twining Lifecycle Gates', appends condensed 3-gate section if absent. Pure bash, no dependencies, 5s timeout. Creates CLAUDE.md if it doesn't exist. The content is a condensed version of docs/CLAUDE_TEMPLATE.md covering just the mandatory gates and critical rules.",
+  "entry_type": "decision",
+  "id": "01KMT252W66VBHD628H8MJ492B",
+  "scope": "plugin/hooks/",
+  "summary": "Add SessionStart command hook to inject Twining Lifecycle Gates into project CLAUDE.md",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-03-28T11:09:32.422Z"
+}

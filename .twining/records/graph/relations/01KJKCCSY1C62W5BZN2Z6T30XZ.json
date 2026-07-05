@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-01T00:22:26.497Z",
+  "id": "01KJKCCSY1C62W5BZN2Z6T30XZ",
+  "properties": {
+    "decision_summary": "Demo uses claude -p with explicit tool-call prompts for deterministic behavior"
+  },
+  "source": "01KJKCCSXY8KZ7WRPW0RMG06E2",
+  "target": "01KJKCCSXQVHPP6G6X6G37WFC8",
+  "type": "decided_by"
+}

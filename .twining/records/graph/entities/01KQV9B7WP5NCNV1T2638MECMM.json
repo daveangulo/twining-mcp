@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T05:21:34.102Z",
+  "id": "01KQV9B7WP5NCNV1T2638MECMM",
+  "name": "test/hooks/ensure-claude-md-gates.test.ts",
+  "properties": {
+    "scope": "project"
+  },
+  "type": "file",
+  "updated_at": "2026-05-05T05:21:34.190Z"
+}

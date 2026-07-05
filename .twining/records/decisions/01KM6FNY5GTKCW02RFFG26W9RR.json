@@ -1,0 +1,24 @@
+{
+  "affected_files": [
+    "src/engine/context-assembler.ts"
+  ],
+  "affected_symbols": [
+    "formatForLLM"
+  ],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Benchmark showed coordination overhead hurts in simple scenarios (conflict-resolution: -6 pts). The full section template was rendered even when empty.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KM6FNY5GTKCW02RFFG26W9RR",
+  "rationale": "When there are no warnings, decisions, findings, needs, handoffs, or questions, the full markdown template is pure noise. A terse 'No prior context for scope: X' eliminates this overhead completely.",
+  "reversible": true,
+  "scope": "src/engine/context-assembler.ts",
+  "status": "active",
+  "summary": "Empty-state short-circuit in formatForLLM returns terse one-liner when no content exists",
+  "timestamp": "2026-03-20T20:41:07.511Z"
+}

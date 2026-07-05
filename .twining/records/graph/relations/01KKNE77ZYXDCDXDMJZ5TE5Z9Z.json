@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-14T05:48:32.126Z",
+  "id": "01KKNE77ZYXDCDXDMJZ5TE5Z9Z",
+  "properties": {
+    "decision_summary": "Auto-populate knowledge graph from tool calls via GraphAutoPopulator"
+  },
+  "source": "01KKNE77ZVVMYK85M8D45XSR9D",
+  "target": "01KKNE77Z4XVAP74EWJX0YW6SE",
+  "type": "decided_by"
+}

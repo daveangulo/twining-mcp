@@ -1,0 +1,34 @@
+{
+  "affected_files": [
+    "docs/superpowers/specs/2026-04-29-plugin-hygiene-design.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "reporter's prompt-injection-only alternative for issue #9",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "assumptions": [
+    "#8 root cause is on our side (prompt-type hook config) not waiting for upstream Claude Code fix",
+    "Plugin and MCP server bumps will be coordinated minor releases (1.9.0 plugin, 1.19.0 server)",
+    "Bash hook scripts will get a uniform 2-line TWINING_DISABLED guard — exit 0 with no JSON is treated as allow/no-op by Claude Code"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Wrote design spec for plugin hygiene fixes (issues #8, #9, #10) at docs/superpowers/specs/. Issue #7 (decision/scope GC) deferred to separate Spec B.",
+  "depends_on": [],
+  "domain": "security",
+  "id": "01KQTRRN1BN7VK7P363XRY45EE",
+  "rationale": "CLAUDE.md persists in system context every turn and survives compaction, while prompt-injected SessionStart content gets summarized away. Empirical evidence from prior testing showed Claude was finicky about calling twining_record without CLAUDE.md anchor. No new data shows that has changed; risk-asymmetric move is to keep authority. Filed follow-up to benchmark this on current models.",
+  "reversible": true,
+  "scope": "docs/superpowers/specs/",
+  "status": "active",
+  "summary": "Chose to keep CLAUDE.md gate authority over reporter's prompt-injection-only alternative for issue #9",
+  "timestamp": "2026-05-05T00:31:47.755Z"
+}

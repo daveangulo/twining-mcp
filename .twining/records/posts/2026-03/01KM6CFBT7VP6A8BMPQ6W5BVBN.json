@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Substring overlap check (first 30 chars of lowercase summary) catches the common case where a finding is promoted to a decision. Non-overlapping findings are preserved. This is conservative — only filters obvious duplicates.",
+  "entry_type": "decision",
+  "id": "01KM6CFBT7VP6A8BMPQ6W5BVBN",
+  "scope": "src/engine/context-assembler.ts",
+  "summary": "Filter redundant findings that substantially overlap with decision summaries in formatForLLM",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-03-20T19:45:06.375Z"
+}

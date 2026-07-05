@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-02T14:49:31.915Z",
+  "id": "01KJQGD70BRTWRRX7E8RTV2GXV",
+  "properties": {
+    "decision_summary": "7 category scorers with hybrid rule mapping: metadata from BehaviorSpec, custom check logic inline"
+  },
+  "source": "01KJQGD709X1PF0TK5GQ338A0Z",
+  "target": "01KJQGD708ZXV87SXESXG37BSS",
+  "type": "decided_by"
+}

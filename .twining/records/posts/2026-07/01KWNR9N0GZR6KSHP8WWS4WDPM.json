@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "README's install path is unpinned npx, so a latest-tagged v2 flips every direct user instantly; the plugin's caret pin already firewalls plugin users until a deliberate 1.11 bump.",
+  "entry_type": "decision",
+  "id": "01KWNR9N0GZR6KSHP8WWS4WDPM",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "9be18d1f347e111d8538643df425061c57b4e607",
+    "recorded_at": "2026-07-04T05:05:53.153Z"
+  },
+  "scope": "project",
+  "summary": "Proposed (pending approval): v2.0.0-beta ships under npm dist-tag next, never latest",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-07-04T05:05:53.168Z"
+}

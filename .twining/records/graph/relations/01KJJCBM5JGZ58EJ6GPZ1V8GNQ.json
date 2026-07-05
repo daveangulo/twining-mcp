@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-28T15:02:33.394Z",
+  "id": "01KJJCBM5JGZ58EJ6GPZ1V8GNQ",
+  "properties": {
+    "decision_summary": "Fix timeline zoom by changing overflow:auto to overflow:hidden and add zoom controls toolbar"
+  },
+  "source": "01KJJCBM5HKQ2YMG75QNQ5GXQR",
+  "target": "01KJJCBM4J4MHE27MH9VMNEJRH",
+  "type": "decided_by"
+}

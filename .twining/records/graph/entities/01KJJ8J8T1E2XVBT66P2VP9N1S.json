@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-28T13:56:16.833Z",
+  "id": "01KJJ8J8T1E2XVBT66P2VP9N1S",
+  "name": "scripts/bump-plugin-version.sh",
+  "properties": {
+    "scope": "scripts/"
+  },
+  "type": "file",
+  "updated_at": "2026-02-28T13:56:16.833Z"
+}

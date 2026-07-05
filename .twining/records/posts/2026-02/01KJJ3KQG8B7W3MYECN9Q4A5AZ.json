@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Claude Code Stop hooks with type 'prompt' must return a JSON response with a decision field. Added explicit instruction at the end of the prompt telling the LLM to return {decision: approve, reason: Twining housekeeping complete} after completing its tasks.",
+  "entry_type": "decision",
+  "id": "01KJJ3KQG8B7W3MYECN9Q4A5AZ",
+  "scope": "plugin/hooks/",
+  "summary": "Fix Stop hook to return required JSON decision format for Claude Code validation",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-02-28T12:29:41.768Z"
+}

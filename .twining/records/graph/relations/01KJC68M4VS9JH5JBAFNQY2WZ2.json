@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-26T05:20:37.019Z",
+  "id": "01KJC68M4VS9JH5JBAFNQY2WZ2",
+  "properties": {
+    "decision_summary": "Add project name to dashboard title/header and GitHub icon link — fixes #2 and #3"
+  },
+  "source": "01KJC68M4TM0E6XEK1QCBYF5WG",
+  "target": "01KJC68M4JW78VXAARQMW60KA8",
+  "type": "decided_by"
+}

@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "once gone, the action (archive entries from it) is the same.",
+  "entry_type": "decision",
+  "id": "01KQWJMWBS1ESRHFJBY8R5P1VQ",
+  "scope": "src/engine/",
+  "summary": "Don't distinguish merged-and-deleted from force-deleted branches",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-05-05T17:23:21.593Z"
+}

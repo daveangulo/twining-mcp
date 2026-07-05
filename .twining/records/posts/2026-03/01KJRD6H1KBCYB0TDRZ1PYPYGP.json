@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Using the live session transcript captures real dogfooding behavior with the updated instructions. Adding it as a third 'good' fixture provides an A/B comparison: session-good-workflow (pre-fix) vs this session (post-fix). The scrub script already handles in-progress JSONL files correctly since it processes line-by-line. Three fixtures (2 good, 1 poor) give better signal than two.",
+  "entry_type": "decision",
+  "id": "01KJRD6H1KBCYB0TDRZ1PYPYGP",
+  "scope": "test/eval/fixtures/",
+  "summary": "Use current live session as third eval fixture — captures post-instruction-fix behavior for A/B comparison",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-03-02T23:12:41.523Z"
+}

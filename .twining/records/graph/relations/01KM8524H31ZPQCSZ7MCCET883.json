@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-21T12:14:01.763Z",
+  "id": "01KM8524H31ZPQCSZ7MCCET883",
+  "properties": {
+    "decision_summary": "Add assumptions field to Decision type for assumption-based validation in assemble output"
+  },
+  "source": "01KM8524H1ZBBRZ3A890WAXNMJ",
+  "target": "01KM8524G1ECE7JS9K5HXCVZNX",
+  "type": "decided_by"
+}

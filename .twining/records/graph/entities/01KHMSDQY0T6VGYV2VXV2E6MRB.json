@@ -1,0 +1,12 @@
+{
+  "created_at": "2026-02-17T03:13:41.312Z",
+  "id": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+  "name": "src/utils/types.ts",
+  "properties": {
+    "description": "Core type definitions: BlackboardEntry, Decision, Entity, Relation, AssembledContext, etc.",
+    "layer": "utils",
+    "scope": "src/engine/"
+  },
+  "type": "file",
+  "updated_at": "2026-05-05T16:22:14.167Z"
+}

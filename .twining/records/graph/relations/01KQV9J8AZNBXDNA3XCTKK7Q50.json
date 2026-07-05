@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T05:25:23.935Z",
+  "id": "01KQV9J8AZNBXDNA3XCTKK7Q50",
+  "properties": {
+    "decision_summary": "Executed phase plan as specified without deviations"
+  },
+  "source": "01KJNAQMQVGD3TWE905M4KZ1ST",
+  "target": "01KQV9J8AX36VFGDMY342VC16R",
+  "type": "decided_by"
+}

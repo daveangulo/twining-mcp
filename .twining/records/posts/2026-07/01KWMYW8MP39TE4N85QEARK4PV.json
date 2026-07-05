@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "forward migration modifies exactly one file (config.yml, backed up to .pre-migrate.bak); all other legacy files are left byte-identical and are their own backup. Reverse migration does back up the file layout it overwrites (pre-reverse-backup/).",
+  "entry_type": "decision",
+  "id": "01KWMYW8MP39TE4N85QEARK4PV",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "9760a77372d1ab97e094ae23de89a67effed5510",
+    "recorded_at": "2026-07-03T21:41:40.103Z"
+  },
+  "scope": "src/migrate/",
+  "summary": "No legacy-v1/ full backup in the 1.x migrate",
+  "tags": [
+    "data-model"
+  ],
+  "timestamp": "2026-07-03T21:41:40.118Z"
+}

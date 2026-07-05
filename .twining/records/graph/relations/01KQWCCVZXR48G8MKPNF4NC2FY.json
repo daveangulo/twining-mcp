@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T15:34:07.613Z",
+  "id": "01KQWCCVZXR48G8MKPNF4NC2FY",
+  "properties": {
+    "decision_summary": "Token-aware trigger: argv[0]=='git' && argv[1]=='commit' after stripping pipes"
+  },
+  "source": "01KHMSDEJH7CQCE97XA0ZAP52A",
+  "target": "01KQWCCVZHYM753YH00BCBSMQT",
+  "type": "decided_by"
+}

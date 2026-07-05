@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-03T21:41:40.058Z",
+  "id": "01KWMYW8JT3CQ6R17TDS7Q1Y3V",
+  "properties": {
+    "decision_summary": "Migration verify uses subset-containment (source ⊆ target) rather than set equality"
+  },
+  "source": "01KWMNHR416F2FYJZAX7X9Y6ZT",
+  "target": "01KWMYW8JPGY9SV63A6AJE8ZPG",
+  "type": "decided_by"
+}

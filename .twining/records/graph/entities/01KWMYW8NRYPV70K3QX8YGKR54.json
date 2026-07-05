@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-03T21:41:40.152Z",
+  "id": "01KWMYW8NRYPV70K3QX8YGKR54",
+  "name": "01KWMYW8KA6NRARJDAWB3WCD2K",
+  "properties": {
+    "scope": "src/migrate/",
+    "summary": "No legacy-v1/ full backup in the 1.x migrate"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-03T21:41:40.152Z"
+}

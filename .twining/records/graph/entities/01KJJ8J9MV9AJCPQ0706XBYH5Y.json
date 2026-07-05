@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-02-28T13:56:17.691Z",
+  "id": "01KJJ8J9MV9AJCPQ0706XBYH5Y",
+  "name": "01KJJ8J9H1DEBERV8W05A3XRPP",
+  "properties": {
+    "scope": ".github/workflows/",
+    "summary": "CI job to enforce plugin version bumps on PRs that change plugin/ files"
+  },
+  "type": "concept",
+  "updated_at": "2026-02-28T13:56:17.691Z"
+}

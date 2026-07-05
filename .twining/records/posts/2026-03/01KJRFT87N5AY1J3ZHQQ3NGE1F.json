@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Git tags (v1.x.x) are reserved for npm MCP server releases that trigger CI/CD publish. Plugin milestones are internal development milestones that don't correspond to npm version bumps.",
+  "entry_type": "decision",
+  "id": "01KJRFT87N5AY1J3ZHQQ3NGE1F",
+  "scope": ".planning/",
+  "summary": "No git tag for v1.4 — plugin-only milestones don't get npm release tags",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-03-02T23:58:25.013Z"
+}

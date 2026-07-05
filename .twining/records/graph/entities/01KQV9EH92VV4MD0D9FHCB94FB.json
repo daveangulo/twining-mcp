@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T05:23:22.018Z",
+  "id": "01KQV9EH92VV4MD0D9FHCB94FB",
+  "name": "plugin/hooks/session-start-context.sh",
+  "properties": {
+    "scope": "plugin/hooks"
+  },
+  "type": "file",
+  "updated_at": "2026-05-05T05:23:22.118Z"
+}

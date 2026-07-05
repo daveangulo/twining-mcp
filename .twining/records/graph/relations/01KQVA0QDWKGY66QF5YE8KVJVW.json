@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T05:33:18.140Z",
+  "id": "01KQVA0QDWKGY66QF5YE8KVJVW",
+  "properties": {
+    "decision_summary": "Switched server-startup.test.ts tests 2 & 3 from spawnSync with input='' to spawn with manually-piped Readable stream that never sends EOF, allowing processes to hang to timeout and be killed with SIGTERM, which discriminates between gate firing (status 0) vs gate not firing (signal SIGTERM)"
+  },
+  "source": "01KQV97HBEPZG7C8DQVQN1GQZJ",
+  "target": "01KQVA0QDQVNFSMSF6V0XHKKXJ",
+  "type": "decided_by"
+}

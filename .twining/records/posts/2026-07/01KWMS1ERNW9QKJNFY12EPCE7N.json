@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "concurrent reconcilers can duplicate work but never corrupt state, honoring the soak's BEGIN-IMMEDIATE rule without holding a write lock across ONNX calls.",
+  "entry_type": "decision",
+  "id": "01KWMS1ERNW9QKJNFY12EPCE7N",
+  "provenance": {
+    "branch": "claude/w23-phase2-live-ingest",
+    "commit_sha": "65f877bfac331e61eff2387adc365635528e6506",
+    "recorded_at": "2026-07-03T19:59:38.758Z"
+  },
+  "scope": "src/storage/sync/",
+  "summary": "Model inference never runs inside a transaction and all reconcile writes are single upsert/delete statements",
+  "tags": [
+    "data-model"
+  ],
+  "timestamp": "2026-07-03T19:59:38.773Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-02-28T01:19:31.491Z",
+  "id": "01KJGX8KN41B4YP7JVXE9E0K62",
+  "name": "01KJGX8KGYVHZZWY92KTDM4RK3",
+  "properties": {
+    "scope": "plugin/",
+    "summary": "Implement Twining as a Claude Code plugin with skills, hooks, agents, commands, and MCP server instructions"
+  },
+  "type": "concept",
+  "updated_at": "2026-02-28T01:19:31.491Z"
+}

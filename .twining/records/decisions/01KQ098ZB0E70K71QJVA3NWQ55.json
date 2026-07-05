@@ -1,0 +1,30 @@
+{
+  "affected_files": [
+    "test/coordination/benchmark-scenarios.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "numeric scoring",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Document that bug-investigation scorer decision was never implemented",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KQ098ZB0E70K71QJVA3NWQ55",
+  "rationale": "the prior decision describing a 50/20 point resolution scorer was never landed in code",
+  "reversible": true,
+  "scope": "test/coordination/",
+  "status": "active",
+  "summary": "Bug-investigation benchmark uses assertion-based tests rather than numeric scoring",
+  "supersedes": "01KM6GJ1JP55JNMJF95GZWX5TA",
+  "timestamp": "2026-04-24T17:40:50.145Z"
+}

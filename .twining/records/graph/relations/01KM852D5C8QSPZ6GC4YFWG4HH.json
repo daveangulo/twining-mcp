@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-21T12:14:10.604Z",
+  "id": "01KM852D5C8QSPZ6GC4YFWG4HH",
+  "properties": {
+    "decision_summary": "Add FILES TO CHECK BEFORE WRITING section to formatForLLM output"
+  },
+  "source": "01KM6CER90NABPVYNEB4DB8DQQ",
+  "target": "01KM852D56SY18R47N67ZRA0KW",
+  "type": "decided_by"
+}

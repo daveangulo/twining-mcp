@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-05T05:17:09.955Z",
+  "id": "01KQV935Y3C3C4KBFF6MT6QWY6",
+  "name": "01KQV935XB6AMVC404F344S6GY",
+  "properties": {
+    "scope": "src/index.ts, test/server-startup.test.ts",
+    "summary": "Implemented strict equality check (=== 'true') for TWINING_DISABLED gate"
+  },
+  "type": "concept",
+  "updated_at": "2026-05-05T05:17:09.955Z"
+}

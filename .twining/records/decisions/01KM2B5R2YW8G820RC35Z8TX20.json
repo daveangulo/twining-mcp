@@ -1,0 +1,38 @@
+{
+  "affected_files": [
+    "src/engine/context-assembler.ts",
+    "src/tools/context-tools.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Return markdown only without JSON data",
+      "pros": [],
+      "reason_rejected": "Tests and programmatic consumers depend on the JSON structure; breaking backward compatibility would be disruptive"
+    },
+    {
+      "cons": [],
+      "option": "Keep raw JSON output and rely on agent instructions to parse it",
+      "pros": [],
+      "reason_rejected": "Benchmark showed agents don't reliably act on unstructured JSON dumps"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [
+    "6b4f143"
+  ],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Agents don't reliably act on raw JSON assemble output. Agents also waste turns calling both status and assemble at session start. num_turns correlates strongly with cost (r=0.75) without quality gain.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01KM2B5R2YW8G820RC35Z8TX20",
+  "rationale": "formatForLLM() produces imperative markdown sections (decisions to respect, warnings, continue from, quick reference) optimized for LLM consumption. assembleWithStatus() merges status summary into the assemble call, eliminating a separate tool call. Both changes reduce turns and improve information utilization.",
+  "reversible": true,
+  "scope": "src/engine/context-assembler.ts",
+  "status": "active",
+  "summary": "Assemble output includes structured markdown briefing and inline status summary",
+  "timestamp": "2026-03-19T06:05:24.959Z"
+}

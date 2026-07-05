@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-03-21T12:24:20.042Z",
+  "id": "01KM85N0AA6XK23HCD09Q2JG90",
+  "name": "01KM85N01B2T9DA4GWVP5JE9DY",
+  "properties": {
+    "scope": "src/engine/context-assembler.ts",
+    "summary": "Assumption validation in assembler: check findings/warnings/decisions against decision assumptions"
+  },
+  "type": "concept",
+  "updated_at": "2026-03-21T12:24:20.042Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-20T19:45:06.511Z",
+  "id": "01KM6CFBYF91X5Z0ZR05N719B9",
+  "properties": {
+    "decision_summary": "Filter redundant findings that substantially overlap with decision summaries in formatForLLM"
+  },
+  "source": "01KHXTXPP31RWYHVGNGXN9REW8",
+  "target": "01KM6CFBY9316P8DSE67045G6A",
+  "type": "decided_by"
+}

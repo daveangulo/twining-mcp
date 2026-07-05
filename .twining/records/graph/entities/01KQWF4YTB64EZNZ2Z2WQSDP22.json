@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T16:22:14.091Z",
+  "id": "01KQWF4YTB64EZNZ2Z2WQSDP22",
+  "name": "test/unit/staleness.test.ts",
+  "properties": {
+    "scope": "src/engine/"
+  },
+  "type": "file",
+  "updated_at": "2026-05-05T16:22:14.170Z"
+}

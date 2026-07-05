@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T16:07:06.541Z",
+  "id": "01KQWE98HDYWARRQB6T5897K5P",
+  "properties": {
+    "decision_summary": "Staleness threshold is global-only (config.yml housekeeping.staleness_threshold, default 0.95). Per-decision sunset overrides not added"
+  },
+  "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+  "target": "01KQWE98H9DVZ6Z81XFB981GHM",
+  "type": "decided_by"
+}

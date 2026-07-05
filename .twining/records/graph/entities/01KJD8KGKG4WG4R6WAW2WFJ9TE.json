@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-26T15:20:45.424Z",
+  "id": "01KJD8KGKG4WG4R6WAW2WFJ9TE",
+  "name": "registerBlackboardTools",
+  "properties": {
+    "scope": "src/tools/blackboard-tools.ts"
+  },
+  "type": "function",
+  "updated_at": "2026-02-26T15:20:45.424Z"
+}

@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "supersedes prior decision describing 16-tool default, which was itself later changed in commit dc2d7ac to the narrower 5-tool core",
+  "entry_type": "decision",
+  "id": "01KQ09TCGTWPYHFAX2FRTMS6F9",
+  "scope": "src/tools/",
+  "summary": "Default tool surface is 5 core tools gated behind full_surface flag",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-04-24T17:50:20.698Z"
+}

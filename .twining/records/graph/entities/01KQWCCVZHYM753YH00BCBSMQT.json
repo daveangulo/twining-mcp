@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-05T15:34:07.601Z",
+  "id": "01KQWCCVZHYM753YH00BCBSMQT",
+  "name": "01KQWCCVYVV7F36EEZZYE4V6E4",
+  "properties": {
+    "scope": "plugin/hooks/",
+    "summary": "Token-aware trigger: argv[0]=='git' && argv[1]=='commit' after stripping pipes"
+  },
+  "type": "concept",
+  "updated_at": "2026-05-05T15:34:07.601Z"
+}

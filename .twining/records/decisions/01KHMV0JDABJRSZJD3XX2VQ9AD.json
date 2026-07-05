@@ -1,0 +1,22 @@
+{
+  "affected_files": [
+    "src/engine/decisions.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "decide() needs to append summaries to .planning/STATE.md, which is an external GSD file, not .twining/ data",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KHMV0JDABJRSZJD3XX2VQ9AD",
+  "overridden_by": "human",
+  "override_reason": "False-positive conflict detection — STATE.md fs exception and commit tracking are orthogonal. Restoring to active.",
+  "rationale": "file-store.ts is for .twining/ data with advisory locking. STATE.md is external — using direct fs is cleaner than extending storage abstractions for a single external file.",
+  "reversible": true,
+  "scope": "src/engine/decisions.ts",
+  "status": "superseded",
+  "summary": "Direct fs calls in DecisionEngine for STATE.md sync — deliberate exception to storage-layer convention",
+  "timestamp": "2026-02-17T03:41:26.826Z"
+}

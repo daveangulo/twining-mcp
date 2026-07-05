@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-04T05:30:26.662Z",
+  "id": "01KWNSPKZ65KV7VTCS8FABJKRC",
+  "name": "01KWNSPKV8AE6VH87QP1ZWG6NZ",
+  "properties": {
+    "scope": "src/",
+    "summary": "Auto-archive trigger counts only archivable entries (excludes decision cross-posts and archive-tagged summaries) and the archiver's summary post carries _skipAutoArchive"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-04T05:30:26.662Z"
+}

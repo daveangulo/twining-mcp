@@ -1,0 +1,39 @@
+{
+  "affected_files": [
+    "src/utils/provenance.ts",
+    "src/utils/types.ts",
+    "src/engine/blackboard.ts",
+    "src/engine/decisions.ts",
+    "src/engine/staleness.ts",
+    "src/engine/housekeeping.ts",
+    "src/engine/exporter.ts",
+    "src/tools/housekeeping-tools.ts",
+    "src/tools/decision-tools.ts",
+    "src/server.ts",
+    "src/config.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "added",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "PR A complete: provenance stamping (Phase 1) + staleness detection (Phase 2) + housekeeping review flow (Phase 3) for issue #7. 887 tests pass. Server-only change; no plugin bump.",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KQWE98F42J3FJKQW1Q6T0PFF",
+  "rationale": "deferred until audit proves too aggressive in practice.",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Staleness threshold is global-only (config.yml housekeeping.staleness_threshold, default 0.95). Per-decision sunset overrides not added",
+  "timestamp": "2026-05-05T16:07:06.468Z"
+}

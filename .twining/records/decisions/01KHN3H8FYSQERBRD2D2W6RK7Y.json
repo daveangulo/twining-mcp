@@ -1,0 +1,20 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "human",
+  "alternatives": [],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "False-positive conflict detection — build order and coordination pattern are orthogonal. Restoring to active.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01KHN3H8FYSQERBRD2D2W6RK7Y",
+  "rationale": "False-positive conflict detection — build order and coordination pattern are orthogonal. Restoring to active.",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Build bottom-up: utils → storage → engine → embeddings → tools → server",
+  "supersedes": "01KHMSF3TDDFDGZJQYY4HXQJ00",
+  "timestamp": "2026-02-17T06:10:22.334Z"
+}

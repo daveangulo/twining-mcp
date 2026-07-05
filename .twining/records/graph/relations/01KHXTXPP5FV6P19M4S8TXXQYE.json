@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-20T15:33:02.789Z",
+  "id": "01KHXTXPP5FV6P19M4S8TXXQYE",
+  "properties": {
+    "decision_summary": "Fix token budget accounting: warnings get priority access to full budget, non-warnings capped at 90%"
+  },
+  "source": "01KHXTXPP31RWYHVGNGXN9REW8",
+  "target": "01KHXTXPP2QH6GPW7GX6NEY0YX",
+  "type": "decided_by"
+}

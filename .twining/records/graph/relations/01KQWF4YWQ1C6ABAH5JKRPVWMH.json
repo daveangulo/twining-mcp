@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T16:22:14.167Z",
+  "id": "01KQWF4YWQ1C6ABAH5JKRPVWMH",
+  "properties": {
+    "decision_summary": "Used null sentinel from listLocalBranches() to distinguish 'enumeration failed' from 'legitimately empty branch set'"
+  },
+  "source": "01KJD595N0RKSR7M7APP0CWETH",
+  "target": "01KQWF4YWFWJEP453B2Y84MDJ1",
+  "type": "decided_by"
+}

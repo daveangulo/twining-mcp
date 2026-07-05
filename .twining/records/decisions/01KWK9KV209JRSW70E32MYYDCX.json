@@ -1,0 +1,34 @@
+{
+  "affected_files": [
+    "plugin/hooks/stop-hook.sh",
+    "plugin/hooks/pre-commit-hook.sh"
+  ],
+  "affected_symbols": [],
+  "agent_id": "claude-remote-session",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Keep transcript grepping with better regexes",
+      "pros": [],
+      "reason_rejected": "Prose mentioning tool names still counts as calls; transcript format drift breaks it silently — the same bug class recurs."
+    }
+  ],
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "6 of 9 externally-filed issues were hook-layer failures; the pre-commit hook had already abandoned transcript grepping (#11/#13) but the Stop hook still used it and fired in non-twining repos.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KWK9KV209JRSW70E32MYYDCX",
+  "provenance": {
+    "branch": "claude/twining-catchup",
+    "commit_sha": "80c9c4a6983e030aa26e60a9745fb37a8c56bc94",
+    "recorded_at": "2026-07-03T06:10:49.528Z"
+  },
+  "rationale": "The Stop hook now compares .twining/.last-record against the newest dirty-file mtime; when no sentinel exists the record tools are unreachable, so blocking would be unsatisfiable — a coordination tool must never be the reason a commit is impossible.",
+  "reversible": false,
+  "scope": "plugin/hooks/",
+  "status": "active",
+  "summary": "All hook gates are sentinel-based and fail open when unsatisfiable — no transcript grepping anywhere, and a fresh clone or dead server never blocks commits or session exit",
+  "timestamp": "2026-07-03T06:10:49.536Z"
+}

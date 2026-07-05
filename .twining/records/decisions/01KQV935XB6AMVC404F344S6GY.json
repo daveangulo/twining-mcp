@@ -1,0 +1,39 @@
+{
+  "affected_files": [
+    "src/index.ts",
+    "test/server-startup.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "disable, maintaining opt-in semantics",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "TWINING_DISABLED env var propagates from plugin settings.json to MCP server process (verified in Phase 0)",
+    "process.exit(0) before transport.connect() is safe and does not corrupt JSON-RPC state",
+    "All 839 existing tests remain passing after gate addition"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [
+    "Must use strict string match === 'true' (not truthy check) per spec",
+    "Must exit before server.connect() call to avoid transport initialization",
+    "Gate must not affect normal server startup when TWINING_DISABLED is unset or set to non-true values"
+  ],
+  "context": "Implemented TDD loop for MCP server TWINING_DISABLED gate (Tasks 5+6): created failing test suite, implemented gate, verified all tests pass",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KQV935XB6AMVC404F344S6GY",
+  "rationale": "any other value (1, yes, True) does NOT disable, maintaining opt-in semantics",
+  "reversible": true,
+  "scope": "src/index.ts, test/server-startup.test.ts",
+  "status": "active",
+  "summary": "Implemented strict equality check (=== 'true') for TWINING_DISABLED gate",
+  "timestamp": "2026-05-05T05:17:09.931Z"
+}

@@ -1,0 +1,24 @@
+{
+  "affected_files": [
+    "plugin/hooks/session-start-context.sh",
+    "plugin/hooks/hooks.json",
+    "test/hooks/session-start-context.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Phase 5 complete: Fixed SessionStart prompt-type hook crash on session resume (issue #8). Replaced broken prompt hook with command hook that emits additionalContext JSON.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01KQV9EH97F1RYJTE9NKYB27PS",
+  "rationale": "Implemented session-start-context.sh with set -euo pipefail safety and TWINING_DISABLED guard to match pattern from phases 3-4 hooks.",
+  "reversible": true,
+  "scope": "plugin/hooks",
+  "status": "active",
+  "summary": "Implemented session-start-context.sh with set -euo pipefail safety and TWINING_DISABLED guard to match pattern from phases 3-4 hooks.",
+  "timestamp": "2026-05-05T05:23:22.023Z"
+}

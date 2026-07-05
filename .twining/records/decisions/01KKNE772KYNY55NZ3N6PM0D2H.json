@@ -1,0 +1,44 @@
+{
+  "affected_files": [
+    "src/engine/graph-auto-populator.ts",
+    "src/engine/decisions.ts",
+    "src/engine/blackboard.ts",
+    "src/tools/coordination-tools.ts",
+    "src/server.ts",
+    "src/utils/types.ts"
+  ],
+  "affected_symbols": [
+    "GraphAutoPopulator",
+    "DecisionEngine",
+    "BlackboardEngine"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Keep manual graph-building via agent instructions",
+      "pros": [],
+      "reason_rejected": "Agents waste 28% of coordination calls on graph bookkeeping that nothing downstream queries"
+    },
+    {
+      "cons": [],
+      "option": "Remove the knowledge graph entirely",
+      "pros": [],
+      "reason_rejected": "Graph-powered retrieval in assemble finds structurally connected decisions that embedding similarity misses — the graph has value when auto-populated and queried"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Benchmark run 4005bc41 showed agents spend 28% of coordination calls on manual graph-building that nothing queries. The graph was write-only overhead.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01KKNE772KYNY55NZ3N6PM0D2H",
+  "rationale": "Centralizing auto-extraction in GraphAutoPopulator removes manual overhead while making the graph useful. Each engine method (decide, post, handoff, linkCommit, register, reconsider, override) calls the populator after its primary operation. All calls are try/catch wrapped — graph is an optimization layer, not correctness requirement.",
+  "reversible": true,
+  "scope": "src/engine/",
+  "status": "active",
+  "summary": "Auto-populate knowledge graph from tool calls via GraphAutoPopulator",
+  "timestamp": "2026-03-14T05:48:31.193Z"
+}

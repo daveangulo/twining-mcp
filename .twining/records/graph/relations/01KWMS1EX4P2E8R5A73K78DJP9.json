@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-03T19:59:38.916Z",
+  "id": "01KWMS1EX4P2E8R5A73K78DJP9",
+  "properties": {
+    "decision_summary": "Fixed the multiwriter-soak crash-tolerance flake by giving the victim writer an unfinishable op budget (VICTIM_OPS = OPS*100)"
+  },
+  "source": "01KWMS1EJQZX9M5TVYN3SGTWW0",
+  "target": "01KWMS1EX0VKVACKYANW1W59QQ",
+  "type": "decided_by"
+}

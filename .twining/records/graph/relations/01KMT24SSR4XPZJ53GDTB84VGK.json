@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-28T11:09:23.128Z",
+  "id": "01KMT24SSR4XPZJ53GDTB84VGK",
+  "properties": {
+    "decision_summary": "Filter out entry_type \"decision\" blackboard entries in assembler to prevent type confusion"
+  },
+  "source": "01KHXTXPP31RWYHVGNGXN9REW8",
+  "target": "01KMT24SSP6H18CX49WWPM0XXG",
+  "type": "decided_by"
+}

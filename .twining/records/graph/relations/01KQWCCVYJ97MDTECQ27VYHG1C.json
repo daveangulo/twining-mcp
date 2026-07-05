@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T15:34:07.570Z",
+  "id": "01KQWCCVYJ97MDTECQ27VYHG1C",
+  "properties": {
+    "decision_summary": "Used node -e for JSON parsing in the hook"
+  },
+  "source": "01KQWCCVVV864JRQVQCHHZTCNR",
+  "target": "01KQWCCVYEZJP1BTBMVX8P81G2",
+  "type": "decided_by"
+}

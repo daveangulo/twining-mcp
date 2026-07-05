@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-28T15:02:33.373Z",
+  "id": "01KJJCBM4XSMNWJRXE15NK8W7P",
+  "name": "buildTimelineItems",
+  "properties": {
+    "scope": "src/dashboard/public/"
+  },
+  "type": "function",
+  "updated_at": "2026-02-28T15:02:33.373Z"
+}

@@ -1,0 +1,26 @@
+{
+  "affected_files": [
+    "src/server.ts",
+    "src/config.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [
+    "dc2d7ac"
+  ],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Supersede prior tool-surface decision that described the 32→16 reduction",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KQ09TCGSFY75732ZAEN7WHZF",
+  "rationale": "supersedes prior decision describing 16-tool default, which was itself later changed in commit dc2d7ac to the narrower 5-tool core",
+  "reversible": true,
+  "scope": "src/tools/",
+  "status": "active",
+  "summary": "Default tool surface is 5 core tools gated behind full_surface flag",
+  "supersedes": "01KM2B5GACRK2B5X6P2S4JQ6D5",
+  "timestamp": "2026-04-24T17:50:20.697Z"
+}

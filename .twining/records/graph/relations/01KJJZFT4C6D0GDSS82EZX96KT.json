@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-28T20:36:53.516Z",
+  "id": "01KJJZFT4C6D0GDSS82EZX96KT",
+  "properties": {
+    "decision_summary": "Include projectRoot in health endpoint to distinguish same-project vs different-project dashboard instances"
+  },
+  "source": "01KJJ341TGMA86K2CA4W55S7BP",
+  "target": "01KJJZFT4ACHRMHKM2NZR475YR",
+  "type": "decided_by"
+}

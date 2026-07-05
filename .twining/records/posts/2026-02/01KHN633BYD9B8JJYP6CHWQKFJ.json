@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Serena MCP pattern proven: in-process HTTP server, vanilla frontend, polling updates. Native http module avoids Express dependency. Cytoscape.js (109KB) and vis-timeline (186KB) are mature, zero-framework graph/timeline libraries. No build step required for frontend.",
+  "entry_type": "decision",
+  "id": "01KHN633BYD9B8JJYP6CHWQKFJ",
+  "scope": "project",
+  "summary": "Embedded HTTP dashboard using native Node.js http module, vanilla HTML/JS, cytoscape.js for graph, vis-timeline for timeline",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-02-17T06:55:04.062Z"
+}

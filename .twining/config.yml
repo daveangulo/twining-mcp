@@ -16,3 +16,5 @@ conflict_resolution: human
 analytics:
   telemetry:
     enabled: false
+storage:
+  backend: sqlite

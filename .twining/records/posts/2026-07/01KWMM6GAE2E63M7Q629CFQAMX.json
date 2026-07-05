@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "repo convention is to commit .twining/ state alongside changes, and discarding state silently is higher risk than carrying one noise entry.",
+  "entry_type": "decision",
+  "id": "01KWMM6GAE2E63M7Q629CFQAMX",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "97d1f7449b5e271497714d0ce4096f4da74b76f0",
+    "recorded_at": "2026-07-03T18:35:01.311Z"
+  },
+  "scope": "project",
+  "summary": "Folded the stray hook-generated blackboard entry (subagent-stop noise from the CI watch task) into the release commit rather than discarding it",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-07-03T18:35:01.326Z"
+}

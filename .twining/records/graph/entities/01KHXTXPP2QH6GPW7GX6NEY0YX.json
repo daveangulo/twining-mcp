@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-02-20T15:33:02.786Z",
+  "id": "01KHXTXPP2QH6GPW7GX6NEY0YX",
+  "name": "01KHXTXPM9EVV02HGF8X0V6ZYX",
+  "properties": {
+    "scope": "src/engine/context-assembler.ts",
+    "summary": "Fix token budget accounting: warnings get priority access to full budget, non-warnings capped at 90%"
+  },
+  "type": "concept",
+  "updated_at": "2026-02-20T15:33:02.786Z"
+}

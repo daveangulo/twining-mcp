@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-03T19:59:38.699Z",
+  "id": "01KWMS1EPBBYCDQX8NVETGKFSR",
+  "properties": {
+    "decision_summary": "Made the probe synchronous before tool dispatch (not fire-and-forget)"
+  },
+  "source": "01KWMS1EJTZBTKCVTZ7BGTE265",
+  "target": "01KWMS1EP4M7NW1P04AAPG72QB",
+  "type": "decided_by"
+}

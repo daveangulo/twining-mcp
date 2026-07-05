@@ -1,0 +1,28 @@
+{
+  "affected_files": [
+    "plugin/hooks/ensure-claude-md-gates.sh",
+    "test/hooks/ensure-claude-md-gates.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "assumptions": [
+    "All three test groups pass (disabled guard, opt-out flag, broad marker search)",
+    "Test helper run-hook.ts already available and working",
+    "Existing 845 tests still pass after new implementation"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Implemented Phase 4 of plugin hygiene plan: added TWINING_DISABLED guard, opt-out flag check, and broad marker search to ensure-claude-md-gates.sh with comprehensive test coverage",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KQV9B7WR6J71JFGHN5EDCA3E",
+  "rationale": "Added opt-out flag check that exits silently if $PROJECT_ROOT/.twining/.no-claude-md-gates exists, giving projects explicit control",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Added opt-out flag check that exits silently if $PROJECT_ROOT/.twining/.no-claude-md-gates exists, giving projects explicit control",
+  "timestamp": "2026-05-05T05:21:34.104Z"
+}

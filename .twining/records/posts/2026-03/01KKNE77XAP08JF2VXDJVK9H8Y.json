@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Centralizing auto-extraction in GraphAutoPopulator removes manual overhead while making the graph useful. Each engine method (decide, post, handoff, linkCommit, register, reconsider, override) calls the populator after its primary operation. All calls are try/catch wrapped — graph is an optimization layer, not correctness requirement.",
+  "entry_type": "decision",
+  "id": "01KKNE77XAP08JF2VXDJVK9H8Y",
+  "scope": "src/engine/",
+  "summary": "Auto-populate knowledge graph from tool calls via GraphAutoPopulator",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-03-14T05:48:32.042Z"
+}

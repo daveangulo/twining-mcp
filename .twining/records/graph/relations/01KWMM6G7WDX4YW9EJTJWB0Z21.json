@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-03T18:35:01.244Z",
+  "id": "01KWMM6G7WDX4YW9EJTJWB0Z21",
+  "properties": {
+    "decision_summary": "Committed the chore(release): v1.21.1 version bump directly to main instead of via PR"
+  },
+  "source": "01KWMM6G7V9BC0547K98JW0PA4",
+  "target": "01KWMM6G7QGS13B7AM8BFP7T78",
+  "type": "decided_by"
+}

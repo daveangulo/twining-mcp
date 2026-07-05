@@ -1,0 +1,38 @@
+{
+  "affected_files": [
+    "test/eval/transcript-analyzer.ts",
+    "test/eval/scenario-schema.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Extract only tool_use calls without results",
+      "pros": [],
+      "reason_rejected": "Would require re-parsing transcripts in Phase 18 when LLM judge needs result context"
+    },
+    {
+      "cons": [],
+      "option": "Main conversation only, no subagent tracking",
+      "pros": [],
+      "reason_rejected": "Most Twining usage happens in subagents — would miss the majority of tool calls"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [
+    "0378e9d"
+  ],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Phase 17 requires parsing real Claude Code JSONL session logs. Sessions contain multiple message types and may include subagent conversations via the Agent tool.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01KJQMBPC9DJGGS68591W3STWD",
+  "rationale": "Capturing tool results alongside calls provides richer data for Phase 18 LLM-as-judge scoring. Including subagent calls captures the full picture of Twining usage since twining-aware-worker agents make most tool calls.",
+  "reversible": true,
+  "scope": "test/eval/",
+  "status": "active",
+  "summary": "Transcript parser extracts both tool_use calls and tool_result blocks, follows subagent parentUuid chains",
+  "timestamp": "2026-03-02T15:58:36.426Z"
+}

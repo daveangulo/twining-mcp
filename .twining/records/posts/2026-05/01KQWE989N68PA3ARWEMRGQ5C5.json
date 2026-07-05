@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Added archived to DecisionStatus union rather than moving decision JSON files\" relates to:\n- 01KJDWTR95TCGQR2S0X2G86TT7: \"Remove hardcoded PostHog API key, read from POSTHOG_API_KEY env var or config instead\"",
+  "entry_type": "finding",
+  "id": "01KQWE989N68PA3ARWEMRGQ5C5",
+  "scope": "src/",
+  "summary": "Related decisions in scope: 1 existing decision(s) overlap",
+  "tags": [
+    "security"
+  ],
+  "timestamp": "2026-05-05T16:07:06.293Z"
+}

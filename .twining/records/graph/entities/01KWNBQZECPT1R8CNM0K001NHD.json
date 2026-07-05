@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-04T01:26:31.116Z",
+  "id": "01KWNBQZECPT1R8CNM0K001NHD",
+  "name": "01KWNBQZBKKX7W1E2403PN5CZW",
+  "properties": {
+    "scope": "src/migrate/",
+    "summary": "Incompatible CLI flag combos are rejected at parse time (exit 2) rather than reinterpreted"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-04T01:26:31.116Z"
+}

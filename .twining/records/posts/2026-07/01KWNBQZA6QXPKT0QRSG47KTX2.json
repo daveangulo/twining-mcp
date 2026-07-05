@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Decisions: Incompatible CLI flag combos are rejected at parse time (exit 2) rather than reinterpreted — --reverse --check previously executed a real finalizing reverse under a 'check passed' banner; refusal is self-documenting where silent precedence rules would hide a destructive action.\nFindings: Latent: DecisionStore.getIndex() throws raw ENOENT when decisions/index.json is absent (only hand-rolled partial .twining/ dirs — initTwiningDir always creates it). Migrate refuses loudly rather than silently migrating zero decisions; left unfixed as out of W3 scope.",
+  "entry_type": "status",
+  "id": "01KWNBQZA6QXPKT0QRSG47KTX2",
+  "provenance": {
+    "branch": "claude/w3-migrate-tool",
+    "commit_sha": "65d8b9ceddf4d263aea1c2ba397267459467a830",
+    "recorded_at": "2026-07-04T01:26:30.841Z"
+  },
+  "scope": "src/migrate/",
+  "summary": "W3 Task 5: migrate CLI + index.ts dispatch, 12 tests. Review caught critical --reverse --check combo (real reverse labeled as check) — bad combos now rejected at parse time; overflow-count fix.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-04T01:26:30.982Z"
+}

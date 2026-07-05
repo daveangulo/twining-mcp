@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-03-01T00:22:26.487Z",
+  "id": "01KJKCCSXQVHPP6G6X6G37WFC8",
+  "name": "01KJKCCSDXQBDCPRBTZBD1ESRW",
+  "properties": {
+    "scope": "examples/demo-automation/",
+    "summary": "Demo uses claude -p with explicit tool-call prompts for deterministic behavior"
+  },
+  "type": "concept",
+  "updated_at": "2026-03-01T00:22:26.487Z"
+}

@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Demo should follow a narrative arc showing how agents use Twining throughout a realistic development workflow. Better to show the \"why\" (solving real coordination problems) rather than just feature enumeration. Will use a multi-agent scenario where agents coordinate on adding authentication to a web app, demonstrating blackboard, decisions, knowledge graph, context assembly, verification, and handoffs.",
+  "entry_type": "decision",
+  "id": "01KHWFFQ7TC3D96AY4X71BZV35",
+  "scope": "docs/",
+  "summary": "Create comprehensive demo video plan with realistic multi-agent scenario",
+  "tags": [
+    "documentation"
+  ],
+  "timestamp": "2026-02-20T02:53:55.834Z"
+}

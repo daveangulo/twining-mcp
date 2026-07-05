@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-02-26T14:22:40.799Z",
+  "id": "01KJD595MZJY0FB5ET3GN1CZ66",
+  "name": "01KJD595ETVSHV91ZBGRKPWWZY",
+  "properties": {
+    "scope": "src/analytics/",
+    "summary": "Three-layer analytics: local value stats, tool call instrumentation via registerTool patch, opt-in PostHog telemetry"
+  },
+  "type": "concept",
+  "updated_at": "2026-02-26T14:22:40.799Z"
+}

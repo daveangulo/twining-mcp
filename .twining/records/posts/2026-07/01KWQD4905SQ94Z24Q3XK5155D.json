@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"depends_on validation surfaces via an additive optional dropped_depends_on field on decide()'s existing return\" relates to:\n- 01KQ09TCGSFY75732ZAEN7WHZF: \"Default tool surface is 5 core tools gated behind full_surface flag\"",
+  "entry_type": "finding",
+  "id": "01KWQD4905SQ94Z24Q3XK5155D",
+  "provenance": {
+    "branch": "claude/1.24-field-findings",
+    "commit_sha": "04efbc9b5726206cd382d87708d5cbb1aa1a83d9",
+    "recorded_at": "2026-07-04T20:29:11.543Z"
+  },
+  "scope": "src/tools/",
+  "summary": "Related decisions in scope: 1 existing decision(s) overlap",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-07-04T20:29:11.557Z"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "pulled decision status changes are the common ingest update and leave embed text unchanged, so hash comparison makes them free; NULL backfill avoids a one-time mass re-embed at migration since record embed-text is immutable in practice.",
+  "entry_type": "decision",
+  "id": "01KWMNHR7FNSW0329ENM29CN4C",
+  "provenance": {
+    "branch": "claude/w23-phase2-live-ingest",
+    "commit_sha": "94b90b5e8c7637aec6ee25b914a6f7232fbdaf1d",
+    "recorded_at": "2026-07-03T18:58:38.434Z"
+  },
+  "scope": "docs/FOUNDATION-PLAN.md",
+  "summary": "Chose hash-based re-embedding (embeddings.content_hash column, schema v2) with NULL-hash backfill-without-re-embed",
+  "tags": [
+    "data-model"
+  ],
+  "timestamp": "2026-07-03T18:58:38.447Z"
+}

@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "functionality identical, types check cleanly without esModuleInterop",
+  "entry_type": "decision",
+  "id": "01KQV8Q0J0WQSA6N7RJV30WFTX",
+  "scope": "project",
+  "summary": "Adapted import style from 'import path' to 'import * as path' to satisfy TypeScript strict ESM rules (verbatimModuleSyntax: true)",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-05-05T05:10:31.232Z"
+}

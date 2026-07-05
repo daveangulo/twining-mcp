@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-03T23:17:18.605Z",
+  "id": "01KWN4BCMD22J8B4CZT3P35HH5",
+  "name": "test/migrate/forward.test.ts",
+  "properties": {
+    "scope": "src/migrate/"
+  },
+  "type": "file",
+  "updated_at": "2026-07-03T23:17:18.710Z"
+}

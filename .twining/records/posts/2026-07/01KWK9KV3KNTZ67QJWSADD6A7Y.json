@@ -1,0 +1,17 @@
+{
+  "agent_id": "claude-remote-session",
+  "detail": "additionalContext puts the same guidance in the model's context with zero file writes and works on resume; the CLAUDE.md mutation was the root cause of #9 and produced surprise diffs.",
+  "entry_type": "decision",
+  "id": "01KWK9KV3KNTZ67QJWSADD6A7Y",
+  "provenance": {
+    "branch": "claude/twining-catchup",
+    "commit_sha": "80c9c4a6983e030aa26e60a9745fb37a8c56bc94",
+    "recorded_at": "2026-07-03T06:10:49.579Z"
+  },
+  "scope": "plugin/",
+  "summary": "Deliver lifecycle gates via SessionStart additionalContext and delete ensure-claude-md-gates.sh — the plugin never mutates user files",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-07-03T06:10:49.587Z"
+}

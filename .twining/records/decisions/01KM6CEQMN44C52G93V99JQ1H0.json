@@ -1,0 +1,37 @@
+{
+  "affected_files": [
+    "src/engine/context-assembler.ts"
+  ],
+  "affected_symbols": [
+    "formatForLLM"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Keep original order (decisions first)",
+      "pros": [],
+      "reason_rejected": "Decisions are informational; warnings are imperative. Agents ignored decisions because they weren't urgent enough to change behavior."
+    },
+    {
+      "cons": [],
+      "option": "Interleave warnings inline with decisions",
+      "pros": [],
+      "reason_rejected": "Harder to scan. Dedicated sections with clear hierarchy are more actionable."
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Benchmark showed near-zero coordination lift despite high tool engagement. The output format wasn't directive enough — agents read it but didn't change behavior.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KM6CEQMN44C52G93V99JQ1H0",
+  "rationale": "Warnings (what NOT to do) are the most behavior-changing signal. Handoffs provide continuation context. Decisions are important but less urgent. Findings are background. This ordering front-loads the most actionable information into the first 500 tokens where agents are most likely to act on it.",
+  "reversible": true,
+  "scope": "src/engine/context-assembler.ts",
+  "status": "active",
+  "summary": "Reorder formatForLLM: warnings first, then handoffs, then decisions, then needs, then findings",
+  "timestamp": "2026-03-20T19:44:45.728Z"
+}

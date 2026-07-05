@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-02T11:49:51.937Z",
+  "id": "01KJQ647P1MGGRERHA1JH2BE8T",
+  "name": "plugin/BEHAVIORS.md",
+  "properties": {
+    "scope": "src/engine/graph-auto-populator.ts"
+  },
+  "type": "file",
+  "updated_at": "2026-03-19T06:05:31.277Z"
+}

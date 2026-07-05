@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "overflow:hidden lets vis-timeline handle all scroll/zoom internally without interference. Added explicit zoom controls (zoom in/out, fit all, jump to now) as a secondary zoom mechanism so users are never stuck. Also added domain swim lanes, domain filter chips, gradient confidence-coded items, custom dark tooltips, and entrance animations for visual polish.",
+  "entry_type": "decision",
+  "id": "01KJJCBM1KASDHNDYBPDTH9DWG",
+  "scope": "src/dashboard/public/",
+  "summary": "Fix timeline zoom by changing overflow:auto to overflow:hidden and add zoom controls toolbar",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-02-28T15:02:33.267Z"
+}

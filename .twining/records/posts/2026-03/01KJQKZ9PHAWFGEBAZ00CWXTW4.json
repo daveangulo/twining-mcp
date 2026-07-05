@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Matrix approach (each scenario tested against every scorer) maximizes coverage and catches cross-category regressions. YAML scenarios are data-driven so adding new cases requires no code. Separate vitest config isolates eval runs from the main 700-test suite.",
+  "entry_type": "decision",
+  "id": "01KJQKZ9PHAWFGEBAZ00CWXTW4",
+  "scope": "test/eval/",
+  "summary": "Eval harness uses matrix testing: 22 scenarios × 7 scorers = 154 dynamic vitest tests",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-03-02T15:51:50.225Z"
+}

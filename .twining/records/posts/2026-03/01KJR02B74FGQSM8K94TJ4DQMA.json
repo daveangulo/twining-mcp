@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "A structured JSON baseline with per-scenario scores, thresholds, holdout results, and token budget enables automated CI comparison. The generator script (regression-baseline.ts) is rerunnable so baselines can be refreshed after intentional changes.",
+  "entry_type": "decision",
+  "id": "01KJR02B74FGQSM8K94TJ4DQMA",
+  "scope": "test/eval/",
+  "summary": "Regression baseline captures full eval state as JSON for CI comparison",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-03-02T19:23:12.996Z"
+}

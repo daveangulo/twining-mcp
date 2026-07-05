@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Loading full HandoffRecord (via handoffStore.get) costs one file read per handoff (max 5) but provides structured results with status icons ([x], [ ], [BLOCKED]) that give agents an actionable checklist of what to continue.",
+  "entry_type": "decision",
+  "id": "01KM6CF49GK0PN06YABN2V26TA",
+  "scope": "src/engine/context-assembler.ts",
+  "summary": "Enrich handoff data in AssembledContext to include individual results for detailed checklists",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-03-20T19:44:58.673Z"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "strongest possible field soak for the v2 gate; reverse migration is the tested escape hatch.",
+  "entry_type": "decision",
+  "id": "01KWSZ5ZB8JZK7HHVKMKSDY6EY",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "935e94912050ddffaf72f84625446406592a6a8a",
+    "recorded_at": "2026-07-05T20:23:10.424Z"
+  },
+  "scope": "project",
+  "summary": "Migrate this repo's own .twining to sqlite as user zero of the shipped tool on live state",
+  "tags": [
+    "data-model"
+  ],
+  "timestamp": "2026-07-05T20:23:10.440Z"
+}

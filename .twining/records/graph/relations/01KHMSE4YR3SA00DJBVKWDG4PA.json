@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-17T03:13:54.648Z",
+  "id": "01KHMSE4YR3SA00DJBVKWDG4PA",
+  "properties": {
+    "note": "optional — for semantic decision search"
+  },
+  "source": "01KHMSD9312FRZ8WE5H1BGHP67",
+  "target": "01KHMSDD1VJKTH8EEPX5WD4PKE",
+  "type": "depends_on"
+}

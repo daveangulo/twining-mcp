@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-28T13:56:16.840Z",
+  "id": "01KJJ8J8T824QXXGSRM6CYGFFW",
+  "properties": {
+    "decision_summary": "Pure bash version bump script with sed for plugin version management"
+  },
+  "source": "01KJJ8J8T1E2XVBT66P2VP9N1S",
+  "target": "01KJJ8J8SVP6JJKRM8PBDDFASZ",
+  "type": "decided_by"
+}

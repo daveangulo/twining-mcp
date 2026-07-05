@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "the prior knownBranchesEmpty heuristic produced false negatives whenever decisions[] was empty, silently dropping the branch_gone signal for blackboard-only audits.",
+  "entry_type": "decision",
+  "id": "01KQWF4YVPNBZYW28V9Z1EXFKG",
+  "scope": "src/engine/",
+  "summary": "Used null sentinel from listLocalBranches() to distinguish 'enumeration failed' from 'legitimately empty branch set'",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-05-05T16:22:14.134Z"
+}

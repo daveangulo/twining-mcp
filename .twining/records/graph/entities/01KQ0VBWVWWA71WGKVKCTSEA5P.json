@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-04-24T22:57:00.284Z",
+  "id": "01KQ0VBWVWWA71WGKVKCTSEA5P",
+  "name": "01KQ0VBWT08012C3H6PYHFNC0A",
+  "properties": {
+    "scope": "src/engine/record-parser.ts",
+    "summary": "Sliced decision cross-post summary to 200 chars and wrapped in try/catch inside DecisionEngine.decide"
+  },
+  "type": "concept",
+  "updated_at": "2026-04-24T22:57:00.284Z"
+}

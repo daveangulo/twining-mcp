@@ -1,0 +1,29 @@
+{
+  "affected_files": [
+    "test/server-startup.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "increasing test timeout (doesn't fix root cause), holding stdin open differently with raw fd manipulation (fragile, more code)",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "CI fix v2: server-startup tests now discriminate by stderr content (empty when gate fires; ~200 bytes of [twining] output when it doesn't). Cross-platform reliable.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KQW7AZB771D3WQHPRH98VE29",
+  "rationale": "Rewrote server-startup test discrimination from signal/exit-code to stderr content. Empirical observation: with EOF stdin, both gate-firing and gate-not-firing exit with code 0 (no signal), but only the gate-not-firing path produces [twining] stderr output (dashboard startup, config warnings). The signal-based test was attempting to keep stdin open with a Readable.pipe to force SIGTERM on timeout, but Linux closes the pipe early when the source Readable enters end state. Stderr-content discrimination is platform-independent and 10x faster (343ms vs 3155ms). Rejected: increasing test timeout (doesn't fix root cause), holding stdin open differently with raw fd manipulation (fragile, more code).",
+  "reversible": true,
+  "scope": "test/",
+  "status": "active",
+  "summary": "Rewrote server-startup test discrimination from signal/exit-code to stderr content. Empirical observation: with EOF stdin, both gate-firing and gate-not-firing exit with code 0 (no signal), but only the gate-not-firing path produces [twining] stderr output (dashboard startup, config warnings). The signal-based test was attempting to keep stdin open with a Readable.pipe to force SIGTERM on timeout, but Linux closes the pipe early when the source Readable enters end state. Stderr-content discrimination is platform-independent and 10x faster (343ms vs 3155ms). Rejected: increasing test timeout (doesn't fix root cause), holding stdin open differently with raw fd manipulation (fragile, more code).",
+  "timestamp": "2026-05-05T14:05:42.631Z"
+}

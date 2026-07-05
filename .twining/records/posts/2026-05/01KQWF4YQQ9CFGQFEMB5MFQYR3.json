@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Decisions: Reverted single-call git rev-parse optimization — --abbrev-ref is global so the two-positional-arg form returns branch twice. Two execFileSync calls remain canonical; cost is ~1ms each which is acceptable. Will revisit via .git/HEAD parsing only if profiling shows it as a hot path.; Used null sentinel from listLocalBranches() to distinguish 'enumeration failed' from 'legitimately empty branch set' — the prior knownBranchesEmpty heuristic produced false negatives whenever decisions[] was empty, silently dropping the branch_gone signal for blackboard-only audits.",
+  "entry_type": "status",
+  "id": "01KQWF4YQQ9CFGQFEMB5MFQYR3",
+  "scope": "src/engine/",
+  "summary": "PR A review fixes: replaced knownBranchesEmpty heuristic with explicit null sentinel; added archived to ValueStats lifecycle; regression test for blackboard-only branch_gone audit.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-05-05T16:22:14.007Z"
+}

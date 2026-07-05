@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T05:17:09.996Z",
+  "id": "01KQV935ZC4WQX2GK7BT9NYRRS",
+  "properties": {
+    "decision_summary": "Placed gate at line 21-23 in main() before any server initialization"
+  },
+  "source": "01KQV935Y6BSXE7V7HN5Z2KRM7",
+  "target": "01KQV935Z9QS6HYWNRTZ2CN09A",
+  "type": "decided_by"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-02T19:23:13.076Z",
+  "id": "01KJR02B9MFZECXSAKA8RY16AW",
+  "properties": {
+    "decision_summary": "Regression baseline captures full eval state as JSON for CI comparison"
+  },
+  "source": "01KJNAQMQVGD3TWE905M4KZ1ST",
+  "target": "01KJR02B9DCGJ1B45Z8DE8GGT4",
+  "type": "decided_by"
+}

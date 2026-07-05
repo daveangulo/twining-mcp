@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-03-02T15:58:43.184Z",
+  "id": "01KJQMBWZG421JJW18480WFV63",
+  "name": "01KJQMBWPYBSX70PS3XTG77HW5",
+  "properties": {
+    "scope": "test/eval/",
+    "summary": "Segment transcripts into workflow chunks and extend NormalizedToolCall with optional result field"
+  },
+  "type": "concept",
+  "updated_at": "2026-03-02T15:58:43.184Z"
+}

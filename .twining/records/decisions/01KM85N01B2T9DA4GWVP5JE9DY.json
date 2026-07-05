@@ -1,0 +1,40 @@
+{
+  "affected_files": [
+    "src/engine/context-assembler.ts",
+    "src/utils/types.ts"
+  ],
+  "affected_symbols": [
+    "formatForLLM",
+    "assemble",
+    "AssembledContext"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "LLM-based assumption validation",
+      "pros": [],
+      "reason_rejected": "Adds latency and cost to every assemble call. The heuristic is good enough for obvious contradictions."
+    },
+    {
+      "cons": [],
+      "option": "Exact string matching",
+      "pros": [],
+      "reason_rejected": "Too brittle. Term extraction with negation patterns catches semantic contradictions like 'real-time subscriptions are now required' vs assumption 'No real-time subscriptions needed'."
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Assumptions field was display-only. To be useful, assembler needs to detect when evidence contradicts assumptions and flag decisions for reconsideration.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KM85N01B2T9DA4GWVP5JE9DY",
+  "rationale": "Lightweight term-matching with negation detection. Extracts key terms from assumptions, checks if evidence corpus contains those terms near negation words (not, no longer, changed, replaced, removed, etc). Challenged assumptions get RECONSIDER directive in formatForLLM; unchallenged get 'follow exactly'. No LLM call needed — pure heuristic keeps it fast.",
+  "reversible": true,
+  "scope": "src/engine/context-assembler.ts",
+  "status": "active",
+  "summary": "Assumption validation in assembler: check findings/warnings/decisions against decision assumptions",
+  "timestamp": "2026-03-21T12:24:19.757Z"
+}

@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Enables twining_why to answer 'why was this commit made?' and twining_commits to find decisions by commit hash. Bridges the gap between decision rationale and actual code changes.",
+  "entry_type": "decision",
+  "id": "01KHMSF83PFEB43JZ7HMWGT585",
+  "scope": "src/engine/decisions.ts",
+  "summary": "Decisions track commit hashes to link architectural choices to git history",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-02-17T03:14:30.646Z"
+}

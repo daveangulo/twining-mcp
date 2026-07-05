@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-03-02T15:58:36.645Z",
+  "id": "01KJQMBPK533Q6KDMM8B7926G3",
+  "name": "01KJQMBPC9DJGGS68591W3STWD",
+  "properties": {
+    "scope": "test/eval/",
+    "summary": "Transcript parser extracts both tool_use calls and tool_result blocks, follows subagent parentUuid chains"
+  },
+  "type": "concept",
+  "updated_at": "2026-03-02T15:58:36.645Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-03T19:59:38.588Z",
+  "id": "01KWMS1EJW2MGFEFPY7T0WNSCH",
+  "name": "src/embeddings/embed-text.ts",
+  "properties": {
+    "scope": "src/storage/sync/"
+  },
+  "type": "file",
+  "updated_at": "2026-07-03T19:59:38.919Z"
+}

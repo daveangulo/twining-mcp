@@ -1,0 +1,12 @@
+{
+  "created_at": "2026-02-17T03:41:13.235Z",
+  "id": "01KHMV054KMRR5YY12YA6H7EKQ",
+  "name": "PlanningBridge",
+  "properties": {
+    "description": "Reads .planning/STATE.md and REQUIREMENTS.md into PlanningState — resilient regex parsing, never throws",
+    "file": "src/engine/planning-bridge.ts",
+    "methods": "readPlanningState, isAvailable"
+  },
+  "type": "class",
+  "updated_at": "2026-02-17T03:41:13.235Z"
+}

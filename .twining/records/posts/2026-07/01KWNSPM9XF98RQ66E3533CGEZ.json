@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "the field analysis found 109 index-orphaned decisions that index-driven migration would silently exclude while verify passed.",
+  "entry_type": "decision",
+  "id": "01KWNSPM9XF98RQ66E3533CGEZ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "9be18d1f347e111d8538643df425061c57b4e607",
+    "recorded_at": "2026-07-04T05:30:26.989Z"
+  },
+  "scope": "src/",
+  "summary": "migrateForward enumerates decisions by directory scan unioned with the index",
+  "tags": [
+    "performance"
+  ],
+  "timestamp": "2026-07-04T05:30:27.005Z"
+}

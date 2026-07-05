@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Lightweight term-matching with negation detection. Extracts key terms from assumptions, checks if evidence corpus contains those terms near negation words (not, no longer, changed, replaced, removed, etc). Challenged assumptions get RECONSIDER directive in formatForLLM; unchallenged get 'follow exactly'. No LLM call needed — pure heuristic keeps it fast.",
+  "entry_type": "decision",
+  "id": "01KM85N07RD1R1AX1GVG42KV6Z",
+  "scope": "src/engine/context-assembler.ts",
+  "summary": "Assumption validation in assembler: check findings/warnings/decisions against decision assumptions",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-03-21T12:24:19.960Z"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "claude-remote-session",
+  "detail": "Those four rules meet the documented MUST bar — violating any causes coordination failure or data loss (Gate-2 enforcement, execute-after-preview, human-confirmed archival). Demoting them to fit an arbitrary number would invert the criterion.",
+  "entry_type": "decision",
+  "id": "01KWKD9EJKA3833NT09ERT6DXS",
+  "provenance": {
+    "branch": "claude/hygiene-1.21.1",
+    "commit_sha": "eceb30412aec06d66f429bd0615e10c3a8c80b24",
+    "recorded_at": "2026-07-03T07:15:03.374Z"
+  },
+  "scope": "test/eval/",
+  "summary": "Widened the behaviors-parser MUST-count band to 8–16 instead of demoting the new tools' MUST rules to SHOULD",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-03T07:15:03.379Z"
+}

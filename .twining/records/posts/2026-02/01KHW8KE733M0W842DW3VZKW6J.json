@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Git log provides file modification timestamps and commit hashes with minimal overhead. execSync with timeout and shell operator rejection provides sandboxed execution. Both follow the existing VerifyEngine pattern of returning structured check results.",
+  "entry_type": "decision",
+  "id": "01KHW8KE733M0W842DW3VZKW6J",
+  "scope": "src/engine/verify.ts",
+  "summary": "Implement drift detection via git log and sandboxed constraint checking via execSync",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-02-20T00:53:37.635Z"
+}

@@ -1,0 +1,40 @@
+{
+  "affected_files": [
+    "src/dashboard/http-server.ts"
+  ],
+  "affected_symbols": [
+    "isExistingDashboard",
+    "startDashboard"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Use a PID lock file to prevent multiple instances",
+      "pros": [],
+      "reason_rejected": "More complex, requires cleanup on crash, and doesn't solve the case where multiple instances are intentionally running for different projects"
+    },
+    {
+      "cons": [],
+      "option": "Check all ports in range before binding",
+      "pros": [],
+      "reason_rejected": "Over-engineered; the health endpoint check on the original port is sufficient and simpler"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [
+    "6acead3"
+  ],
+  "confidence": "high",
+  "constraints": [],
+  "context": "When both plugin config and .mcp.json configure the Twining MCP server, two server instances start on different ports, each opening a browser tab. The second instance gets a different port via EADDRINUSE retry.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KJJ348G20Z2SYKBZ8WNXDQME",
+  "rationale": "If the server bound to a different port than configured (port !== config.port), check the original port's health endpoint for a 'twining-mcp' server signature. If found, skip auto-open. This is non-blocking (1s timeout) and gracefully handles the case without requiring cross-process coordination.",
+  "reversible": true,
+  "scope": "src/dashboard/http-server.ts",
+  "status": "active",
+  "summary": "Prevent duplicate browser tabs by checking health endpoint before auto-opening",
+  "timestamp": "2026-02-28T12:21:14.882Z"
+}

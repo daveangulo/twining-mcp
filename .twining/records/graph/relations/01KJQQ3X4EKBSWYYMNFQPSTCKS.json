@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-02T16:46:46.926Z",
+  "id": "01KJQQ3X4EKBSWYYMNFQPSTCKS",
+  "properties": {
+    "decision_summary": "Transcript parser uses two-pass JSONL extraction with workflow segmentation at twining_assemble boundaries"
+  },
+  "source": "01KJQQ3X48T4PYAX2WDFDNZH7J",
+  "target": "01KJQQ3X4454AH02SZDP07J5BZ",
+  "type": "decided_by"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "claude-remote-session",
+  "detail": "New decision \"Ship the SQLite backend opt-in (storage.backend config, warn-and-fallback) on node:sqlite instead of bumping engines or adding better-sqlite3\" relates to:\n- 01KHMSETGFP24CH93J2R7KC97A: \"All state stored as .jsonl and .json files in .twining/ directory — no external databases\"\n- 01KWK9KTZGR2V148HJJ2CGY3ZY: \"SQLite is the runtime store and git is the replication transport — twining.db is a gitignored derived cache, the committed truth is a per-record export tree\"",
+  "entry_type": "finding",
+  "id": "01KWK9KV0SRTF0YV376TKE7Z64",
+  "provenance": {
+    "branch": "claude/twining-catchup",
+    "commit_sha": "80c9c4a6983e030aa26e60a9745fb37a8c56bc94",
+    "recorded_at": "2026-07-03T06:10:49.492Z"
+  },
+  "scope": "src/storage/",
+  "summary": "Related decisions in scope: 2 existing decision(s) overlap",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-07-03T06:10:49.498Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-20T19:18:31.753Z",
+  "id": "01KM6AYPJ9GZ90TP6RY726JSJ4",
+  "properties": {
+    "decision_summary": "Coordination effectiveness test suite using real stores with temp dirs, no mocking"
+  },
+  "source": "01KM6AYPJ6S4V5JGT1Y3X14ZZE",
+  "target": "01KM6AYPHWZAJWCS92C52DXBAM",
+  "type": "decided_by"
+}

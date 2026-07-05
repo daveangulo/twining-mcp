@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-17T03:41:35.780Z",
+  "id": "01KHMV0V5417QXMX15XK378Z7H",
+  "name": "gsd-planning-bridge",
+  "properties": {
+    "description": "Bidirectional bridge: PlanningBridge reads .planning/ state into assemble/summarize (read-side), DecisionEngine.decide() syncs summaries back to STATE.md (write-side)"
+  },
+  "type": "pattern",
+  "updated_at": "2026-02-17T03:41:35.780Z"
+}

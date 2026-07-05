@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-21T12:14:01.761Z",
+  "id": "01KM8524H1ZBBRZ3A890WAXNMJ",
+  "name": "decide",
+  "properties": {
+    "scope": "src/utils/types.ts"
+  },
+  "type": "function",
+  "updated_at": "2026-03-21T12:14:01.761Z"
+}

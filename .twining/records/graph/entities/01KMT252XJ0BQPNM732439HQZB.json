@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-28T11:09:32.466Z",
+  "id": "01KMT252XJ0BQPNM732439HQZB",
+  "name": "plugin/hooks/ensure-claude-md-gates.sh",
+  "properties": {
+    "scope": "project"
+  },
+  "type": "file",
+  "updated_at": "2026-05-05T05:21:34.188Z"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "idempotent and self-healing (records posted while the model was down get embedded later), needs zero ingest plumbing, and the linear scan is fine at the plan's stated ~50k-record ceiling.",
+  "entry_type": "decision",
+  "id": "01KWMS1EH94JSMGMXKZ3WWXYY4",
+  "provenance": {
+    "branch": "claude/w23-phase2-live-ingest",
+    "commit_sha": "65f877bfac331e61eff2387adc365635528e6506",
+    "recorded_at": "2026-07-03T19:59:38.523Z"
+  },
+  "scope": "src/storage/sync/",
+  "summary": "Chose a full converge pass (reconcileEmbeddings: orphan delete, NULL-hash backfill, embed missing, re-embed mismatched) over threading changed-ID deltas out of ingest",
+  "tags": [
+    "data-model"
+  ],
+  "timestamp": "2026-07-03T19:59:38.537Z"
+}

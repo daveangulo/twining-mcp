@@ -1,0 +1,39 @@
+{
+  "affected_files": [
+    "src/utils/provenance.ts",
+    "src/utils/types.ts",
+    "src/engine/blackboard.ts",
+    "src/engine/decisions.ts",
+    "src/engine/staleness.ts",
+    "src/engine/housekeeping.ts",
+    "src/engine/exporter.ts",
+    "src/tools/housekeeping-tools.ts",
+    "src/tools/decision-tools.ts",
+    "src/server.ts",
+    "src/config.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "moving decision JSON files",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "PR A complete: provenance stamping (Phase 1) + staleness detection (Phase 2) + housekeeping review flow (Phase 3) for issue #7. 887 tests pass. Server-only change; no plugin bump.",
+  "depends_on": [],
+  "domain": "security",
+  "id": "01KQWE989N68PA3ARWEMRGQ5C4",
+  "rationale": "status-based exclusion already filters out non-active decisions in assemble/why/verify, so a one-token change covers it.",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Added archived to DecisionStatus union rather than moving decision JSON files",
+  "timestamp": "2026-05-05T16:07:06.293Z"
+}

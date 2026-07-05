@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-04T20:29:11.618Z",
+  "id": "01KWQD4922NFYHZJHX18DZ69M4",
+  "name": "01KWQD48ZPSMZZSQ34WNBK28TJ",
+  "properties": {
+    "scope": "src/tools/",
+    "summary": "depends_on validation surfaces via an additive optional dropped_depends_on field on decide()'s existing return"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-04T20:29:11.618Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-03-19T06:05:25.080Z",
+  "id": "01KM2B5R6RWNYSWHAM97TF0R3N",
+  "name": "01KM2B5R2YW8G820RC35Z8TX20",
+  "properties": {
+    "scope": "src/engine/context-assembler.ts",
+    "summary": "Assemble output includes structured markdown briefing and inline status summary"
+  },
+  "type": "concept",
+  "updated_at": "2026-03-19T06:05:25.080Z"
+}

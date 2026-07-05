@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-04-24T22:57:00.298Z",
+  "id": "01KQ0VBWWAXGS1MA0EHWCDJ6T6",
+  "properties": {
+    "decision_summary": "Sliced decision cross-post summary to 200 chars and wrapped in try/catch inside DecisionEngine.decide"
+  },
+  "source": "01KQ0VBWQJVCVSHHVMX2006WZX",
+  "target": "01KQ0VBWVWWA71WGKVKCTSEA5P",
+  "type": "decided_by"
+}

@@ -1,0 +1,29 @@
+{
+  "affected_files": [
+    "src/migrate/reverse.ts",
+    "test/migrate/reverse.test.ts",
+    "src/migrate/forward.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "W3 Task 4: reverse.ts sqlite→files escape hatch, 8 tests. Hardened: export_records:false skips ingest, already-files re-run guard, verify-failure never flips config, stop-sessions note added.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KWN892XYHWDFBFBRVQP8E67A",
+  "provenance": {
+    "branch": "claude/w3-migrate-tool",
+    "commit_sha": "2178f7674c0c3fae23df35f38e861eae21cf2cd2",
+    "recorded_at": "2026-07-04T00:25:57.421Z"
+  },
+  "rationale": "the records/ tree is stale in that config and ingest's deletion propagation would destroy unmirrored sqlite-era rows; refusing (forward's answer) was rejected because reverse is the escape hatch and must work for exactly this population.",
+  "reversible": true,
+  "scope": "src/migrate/",
+  "status": "active",
+  "summary": "Reverse under export_records:false SKIPS ingest and exports from the database alone",
+  "timestamp": "2026-07-04T00:25:57.438Z"
+}

@@ -1,0 +1,47 @@
+{
+  "affected_files": [
+    "src/config.ts",
+    "src/server.ts",
+    "src/utils/types.ts",
+    "src/tools/blackboard-tools.ts",
+    "src/tools/decision-tools.ts",
+    "src/tools/coordination-tools.ts",
+    "src/tools/graph-tools.ts",
+    "src/tools/lifecycle-tools.ts",
+    "src/tools/export-tools.ts",
+    "src/tools/verify-tools.ts",
+    "src/tools/context-tools.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Delete the 16 unused tools entirely",
+      "pros": [],
+      "reason_rejected": "Users may need them in non-benchmark scenarios; deletion is irreversible and removes functionality"
+    },
+    {
+      "cons": [],
+      "option": "Keep all 32 tools registered by default",
+      "pros": [],
+      "reason_rejected": "Benchmark shows 16 tools are never called, adding context noise with no measured benefit (d=0.25, below MDES)"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [
+    "c608240"
+  ],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Benchmark data (440 runs) showed 16 of 32 tools were never called. The unused tools add context noise and consume prompt tokens on every turn without measurable benefit.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01KM2B5GACRK2B5X6P2S4JQ6D5",
+  "rationale": "Gating rarely-used tools behind tools.full_surface config (default false) reduces context overhead while keeping all tools available for power users. Each tool registration checks the flag individually, so no code is deleted and the change is fully reversible via config.",
+  "reversible": true,
+  "scope": "src/tools/",
+  "status": "superseded",
+  "summary": "Reduce default tool surface from 32 to 16 via full_surface config flag",
+  "timestamp": "2026-03-19T06:05:17.006Z"
+}

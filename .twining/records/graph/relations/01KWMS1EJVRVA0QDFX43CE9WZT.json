@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-03T19:59:38.587Z",
+  "id": "01KWMS1EJVRVA0QDFX43CE9WZT",
+  "properties": {
+    "decision_summary": "Chose a full converge pass (reconcileEmbeddings: orphan delete, NULL-hash backfill, embed missing, re-embed mismatched) over threading changed-ID deltas out of ingest"
+  },
+  "source": "01KWMS1EJTZBTKCVTZ7BGTE265",
+  "target": "01KWMS1EJMG0D38QM7MPCSN6PB",
+  "type": "decided_by"
+}

@@ -1,0 +1,12 @@
+{
+  "created_at": "2026-02-17T03:13:24.374Z",
+  "id": "01KHMSD7CPGWQFGCRWQTG14168",
+  "name": "BlackboardEngine",
+  "properties": {
+    "description": "Manages blackboard entries with optional embedding-based semantic search",
+    "file": "src/engine/blackboard.ts",
+    "methods": "post, read, query, recent"
+  },
+  "type": "class",
+  "updated_at": "2026-02-17T03:13:24.374Z"
+}

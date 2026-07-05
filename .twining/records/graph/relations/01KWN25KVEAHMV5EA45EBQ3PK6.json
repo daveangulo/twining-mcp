@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-03T22:39:12.238Z",
+  "id": "01KWN25KVEAHMV5EA45EBQ3PK6",
+  "properties": {
+    "decision_summary": "config.yml backup is first-wins (.pre-migrate.bak never overwritten)"
+  },
+  "source": "01KWN25KVD4ENKEWNTE40GQKFW",
+  "target": "01KWN25KVAZQ8GEF44V3BP3DJM",
+  "type": "decided_by"
+}

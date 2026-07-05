@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-04-24T22:57:00.353Z",
+  "id": "01KQ0VBWY1BW5HCFF0RJ6TN81R",
+  "name": "01KQ0VBWWEXR62BG3MYGE79FB7",
+  "properties": {
+    "scope": "src/engine/record-parser.ts",
+    "summary": "Surfaced per-decision persistence errors in the twining_record response"
+  },
+  "type": "concept",
+  "updated_at": "2026-04-24T22:57:00.353Z"
+}

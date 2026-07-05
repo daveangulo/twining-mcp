@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-21T12:24:20.054Z",
+  "id": "01KM85N0APMTC4B1AZN17QFH4J",
+  "properties": {
+    "decision_summary": "Assumption validation in assembler: check findings/warnings/decisions against decision assumptions"
+  },
+  "source": "01KM85N0AMX69HPETXVRC8DW89",
+  "target": "01KM85N0AA6XK23HCD09Q2JG90",
+  "type": "decided_by"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T15:34:07.517Z",
+  "id": "01KQWCCVWXDCZ05JA9GK9SDAKE",
+  "properties": {
+    "decision_summary": "Wired sentinel into the three explicit recording tool handlers, not into engine methods"
+  },
+  "source": "01KQ0VBWQ83J4NGF3K4XWAMT14",
+  "target": "01KQWCCVWRYFVRDDTE4AJXYM4Q",
+  "type": "decided_by"
+}

@@ -1,0 +1,18 @@
+{
+  "agent_id": "claude-remote-session",
+  "detail": "The 1.21.0 publish failed with 404 on PUT after build/test/pack/provenance all succeeded; token rotation fixed it. npm returns 404 instead of 401 to avoid leaking package existence.",
+  "entry_type": "finding",
+  "id": "01KWK9KV6E54R7NE9M7QC76V40",
+  "provenance": {
+    "branch": "claude/twining-catchup",
+    "commit_sha": "80c9c4a6983e030aa26e60a9745fb37a8c56bc94",
+    "recorded_at": "2026-07-03T06:10:49.670Z"
+  },
+  "scope": "project",
+  "summary": "npm publish E404 'not in this registry' is the disguise for an expired/revoked NPM_TOKEN",
+  "tags": [
+    "release",
+    "ci"
+  ],
+  "timestamp": "2026-07-03T06:10:49.678Z"
+}

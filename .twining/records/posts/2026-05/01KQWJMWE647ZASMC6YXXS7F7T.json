@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "consistent with the .last-record pattern; gitignored.",
+  "entry_type": "decision",
+  "id": "01KQWJMWE647ZASMC6YXXS7F7T",
+  "scope": "src/engine/",
+  "summary": "Snapshot file lives at .twining/.last-known-branches.json",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-05-05T17:23:21.670Z"
+}

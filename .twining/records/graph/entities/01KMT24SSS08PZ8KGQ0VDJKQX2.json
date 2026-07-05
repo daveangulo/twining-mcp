@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-28T11:09:23.129Z",
+  "id": "01KMT24SSS08PZ8KGQ0VDJKQX2",
+  "name": "ContextAssembler/assemble",
+  "properties": {
+    "scope": "src/engine/context-assembler.ts"
+  },
+  "type": "function",
+  "updated_at": "2026-03-28T11:09:23.129Z"
+}

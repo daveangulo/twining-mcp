@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-03-20T19:44:58.770Z",
+  "id": "01KM6CF4CJ12Y885T8CSAZ39YC",
+  "properties": {
+    "decision_summary": "Enrich handoff data in AssembledContext to include individual results for detailed checklists"
+  },
+  "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+  "target": "01KM6CF4CDGMX5TTTRNJK4EG72",
+  "type": "decided_by"
+}

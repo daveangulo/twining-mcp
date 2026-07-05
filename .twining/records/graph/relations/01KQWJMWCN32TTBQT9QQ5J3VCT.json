@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T17:23:21.621Z",
+  "id": "01KQWJMWCN32TTBQT9QQ5J3VCT",
+  "properties": {
+    "decision_summary": "Don't distinguish merged-and-deleted from force-deleted branches"
+  },
+  "source": "01KQWJMWCKVJHND6Z53D18ZVMS",
+  "target": "01KQWJMWCGK6ZWW3EGD6661PTG",
+  "type": "decided_by"
+}

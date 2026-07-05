@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "ensures immediate exit without transport overhead or JSON-RPC protocol violations",
+  "entry_type": "decision",
+  "id": "01KQV935YN8FJ8S1KT3480XNQS",
+  "scope": "src/index.ts, test/server-startup.test.ts",
+  "summary": "Placed gate at line 21-23 in main() before any server initialization",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-05-05T05:17:09.973Z"
+}

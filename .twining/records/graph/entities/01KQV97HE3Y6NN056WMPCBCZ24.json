@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-05T05:19:32.803Z",
+  "id": "01KQV97HE3Y6NN056WMPCBCZ24",
+  "name": "01KQV97HCTH6WBDJFZK543EXM7",
+  "properties": {
+    "scope": "plugin/hooks",
+    "summary": "Structured tests to verify disabled mode bypasses all enforcement: pre-commit blocks commits without recording, stop blocks sessions without recording, both disabled exit 0 silently"
+  },
+  "type": "concept",
+  "updated_at": "2026-05-05T05:19:32.803Z"
+}

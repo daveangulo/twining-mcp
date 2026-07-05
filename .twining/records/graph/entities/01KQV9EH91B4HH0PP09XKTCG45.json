@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-05T05:23:22.017Z",
+  "id": "01KQV9EH91B4HH0PP09XKTCG45",
+  "name": "01KQV9EH7AGBH6QYHXYTFRKPHY",
+  "properties": {
+    "scope": "plugin/hooks",
+    "summary": "Chose command-type hook with additionalContext JSON output over prompt-type hook because Claude Code does NOT support prompt-type hooks on SessionStart at all and crashes on resume"
+  },
+  "type": "concept",
+  "updated_at": "2026-05-05T05:23:22.017Z"
+}

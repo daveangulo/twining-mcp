@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-04-24T17:40:50.186Z",
+  "id": "01KQ098ZCAEW0EJJ4G62Q5ZB2G",
+  "properties": {
+    "decision_summary": "Bug-investigation benchmark uses assertion-based tests rather than numeric scoring"
+  },
+  "source": "01KM6AYPKS6FQK95YZNXZ85MR7",
+  "target": "01KQ098ZC7B67PR5TGS6FESGYE",
+  "type": "decided_by"
+}

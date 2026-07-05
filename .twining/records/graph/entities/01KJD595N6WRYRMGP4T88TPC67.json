@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-26T14:22:40.806Z",
+  "id": "01KJD595N6WRYRMGP4T88TPC67",
+  "name": "src/analytics/instrumented-server.ts",
+  "properties": {
+    "scope": "src/analytics/"
+  },
+  "type": "file",
+  "updated_at": "2026-02-26T14:22:40.806Z"
+}

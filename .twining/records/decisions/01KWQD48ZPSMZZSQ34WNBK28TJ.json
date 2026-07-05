@@ -1,0 +1,29 @@
+{
+  "affected_files": [
+    "src/tools/record-tools.ts",
+    "src/engine/decisions.ts",
+    "src/tools/decision-tools.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "1.24 T2: record hardening — status/finding summaries truncate at 200 w/ full text in detail, finding failures surfaced not swallowed, unknown depends_on ids dropped and reported via both tool paths.",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KWQD48ZPSMZZSQ34WNBK28TJ",
+  "provenance": {
+    "branch": "claude/1.24-field-findings",
+    "commit_sha": "04efbc9b5726206cd382d87708d5cbb1aa1a83d9",
+    "recorded_at": "2026-07-04T20:29:11.524Z"
+  },
+  "rationale": "all call sites tolerate it; a return-shape change would have rippled through override() and both tool handlers.",
+  "reversible": true,
+  "scope": "src/tools/",
+  "status": "active",
+  "summary": "depends_on validation surfaces via an additive optional dropped_depends_on field on decide()'s existing return",
+  "timestamp": "2026-07-04T20:29:11.542Z"
+}

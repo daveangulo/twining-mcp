@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T16:07:06.467Z",
+  "id": "01KQWE98F39T70H7Y3KN4EKT0F",
+  "properties": {
+    "decision_summary": "Branch_gone signal is auto-neutralized when listLocalBranches() returns an empty set"
+  },
+  "source": "01KJD595ND5YACA06PBGYTRRXA",
+  "target": "01KQWE98EDH17JEW3FP97XA2V9",
+  "type": "decided_by"
+}

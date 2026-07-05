@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "CLAUDE.md is the single source of truth for gate definitions (persistent, survives context compression). SessionStart prompt is now a 40-token pointer to CLAUDE.md. Skills focus on HOW-TO workflows with third-person descriptions and when-to-use triggers for discovery. MCP instructions remain as condensed fallback for non-plugin clients.",
+  "entry_type": "decision",
+  "id": "01KMT3GTWCD8TQZ8GMD4SAYS69",
+  "scope": "plugin/",
+  "summary": "Layered instruction architecture: CLAUDE.md as authority, lean SessionStart prompt, third-person skill descriptions",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-03-28T11:33:26.028Z"
+}

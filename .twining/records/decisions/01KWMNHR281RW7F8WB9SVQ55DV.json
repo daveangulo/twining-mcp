@@ -1,0 +1,43 @@
+{
+  "affected_files": [
+    "docs/FOUNDATION-PLAN.md",
+    "src/storage/sync/record-ingest.ts",
+    "src/storage/sqlite/db.ts",
+    "src/embeddings/embedder.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "fs.watch on .twining/records/ for live re-ingest",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "W2.3 phase 2 is sqlite-backend-only; file backend behavior unchanged",
+    "HEAD-sha comparison is a sufficient re-ingest trigger; manual edits to records/ without a git op are out of scope (startup ingest catches them)",
+    "No new user-facing config keys needed (probe TTL is a constant); no plugin changes, so no plugin version bump or token-budget impact",
+    "Ships as server 1.22.0"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "W2.3 phase 2 started on claude/w23-phase2-live-ingest. First commit: FOUNDATION-PLAN.md status section reconciling plan doc to shipped reality (W0–W2.3p1 done, phase 2 in progress, W3 next).",
+  "depends_on": [],
+  "domain": "api-design",
+  "id": "01KWMNHR281RW7F8WB9SVQ55DV",
+  "provenance": {
+    "branch": "claude/w23-phase2-live-ingest",
+    "commit_sha": "94b90b5e8c7637aec6ee25b914a6f7232fbdaf1d",
+    "recorded_at": "2026-07-03T18:58:38.265Z"
+  },
+  "rationale": "assemble is itself a tool call so acceptance ('assemble sees pulled records without restart') is met exactly, while fs.watch adds watcher lifecycle, self-triggered events from our own exports, and platform quirks in a long-lived stdio process. Polling timers rejected too: they keep the event loop alive and burn cycles when idle.",
+  "reversible": true,
+  "scope": "docs/FOUNDATION-PLAN.md",
+  "status": "active",
+  "summary": "Chose lazy TTL-gated git-HEAD probe on tool dispatch over fs.watch on .twining/records/ for live re-ingest",
+  "timestamp": "2026-07-03T18:58:38.280Z"
+}

@@ -1,0 +1,40 @@
+{
+  "affected_files": [
+    "plugin/hooks/hooks.json",
+    "plugin/hooks/ensure-claude-md-gates.sh",
+    "plugin/skills/twining-orient/SKILL.md",
+    "plugin/skills/twining-decide/SKILL.md",
+    "plugin/skills/twining-verify/SKILL.md",
+    "plugin/skills/twining-handoff/SKILL.md",
+    "plugin/skills/twining-coordinate/SKILL.md",
+    "plugin/skills/twining-map/SKILL.md",
+    "plugin/skills/twining-review/SKILL.md",
+    "plugin/skills/twining-dispatch/SKILL.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Keep full gate definitions in SessionStart prompt alongside CLAUDE.md injection",
+      "pros": [],
+      "reason_rejected": "~400 tokens of duplication every session. CLAUDE.md already carries the authoritative content; the prompt just needs a pointer."
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [
+    "46d232d"
+  ],
+  "confidence": "high",
+  "constraints": [],
+  "context": "The 3-gate content was duplicated ~4 times across SessionStart prompt, CLAUDE.md template, MCP instructions, and skills. Per Anthropic's skill best practices, each layer should serve a distinct purpose without repeating content.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01KMT3GTVCP5QC22X5PZ9TYF1W",
+  "rationale": "CLAUDE.md is the single source of truth for gate definitions (persistent, survives context compression). SessionStart prompt is now a 40-token pointer to CLAUDE.md. Skills focus on HOW-TO workflows with third-person descriptions and when-to-use triggers for discovery. MCP instructions remain as condensed fallback for non-plugin clients.",
+  "reversible": true,
+  "scope": "plugin/",
+  "status": "active",
+  "summary": "Layered instruction architecture: CLAUDE.md as authority, lean SessionStart prompt, third-person skill descriptions",
+  "timestamp": "2026-03-28T11:33:25.996Z"
+}

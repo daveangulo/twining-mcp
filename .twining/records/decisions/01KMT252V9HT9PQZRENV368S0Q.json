@@ -1,0 +1,36 @@
+{
+  "affected_files": [
+    "plugin/hooks/ensure-claude-md-gates.sh",
+    "plugin/hooks/hooks.json"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Rely on prompt hook alone for gate enforcement",
+      "pros": [],
+      "reason_rejected": "Prompt content is transient — it doesn't survive context compression and has weaker authority than CLAUDE.md instructions. Agents in long sessions lose the gates."
+    },
+    {
+      "cons": [],
+      "option": "Inject the full CLAUDE_TEMPLATE.md (121 lines) instead of condensed gates",
+      "pros": [],
+      "reason_rejected": "Too verbose for automatic injection into user's CLAUDE.md. The condensed version covers the 3 gates and critical rules; detailed workflow guidance belongs in docs/CLAUDE_TEMPLATE.md for manual adoption."
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "The SessionStart prompt hook provides transient gate instructions that don't survive context compression. CLAUDE.md has persistent authority — content there is loaded every session and survives compression. Adding a command hook that idempotently appends the gates section to CLAUDE.md gives the gates durable enforcement.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KMT252V9HT9PQZRENV368S0Q",
+  "rationale": "Shell script runs before the prompt hook, checks for marker string 'Twining Lifecycle Gates', appends condensed 3-gate section if absent. Pure bash, no dependencies, 5s timeout. Creates CLAUDE.md if it doesn't exist. The content is a condensed version of docs/CLAUDE_TEMPLATE.md covering just the mandatory gates and critical rules.",
+  "reversible": true,
+  "scope": "plugin/hooks/",
+  "status": "active",
+  "summary": "Add SessionStart command hook to inject Twining Lifecycle Gates into project CLAUDE.md",
+  "timestamp": "2026-03-28T11:09:32.393Z"
+}

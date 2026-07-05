@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "keeps everything in the existing test runner so npm test catches hook regressions, and avoids introducing a new test dependency. Single shared test/hooks/run-hook.ts helper keeps hook tests DRY.",
+  "entry_type": "decision",
+  "id": "01KQV88TKHG29D06K6B40WV2CW",
+  "scope": "docs/superpowers/plans/",
+  "summary": "Chose Vitest with child_process.spawnSync for hook tests over bats/shell-only",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-05-05T05:02:46.385Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-05T15:34:07.566Z",
+  "id": "01KQWCCVYEZJP1BTBMVX8P81G2",
+  "name": "01KQWCCVX48E3NFJ5NVCJXZKGS",
+  "properties": {
+    "scope": "plugin/hooks/",
+    "summary": "Used node -e for JSON parsing in the hook"
+  },
+  "type": "concept",
+  "updated_at": "2026-05-05T15:34:07.566Z"
+}

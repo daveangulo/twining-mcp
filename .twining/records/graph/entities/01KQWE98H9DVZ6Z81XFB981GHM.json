@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-05T16:07:06.537Z",
+  "id": "01KQWE98H9DVZ6Z81XFB981GHM",
+  "name": "01KQWE98F42J3FJKQW1Q6T0PFF",
+  "properties": {
+    "scope": "src/",
+    "summary": "Staleness threshold is global-only (config.yml housekeeping.staleness_threshold, default 0.95). Per-decision sunset overrides not added"
+  },
+  "type": "concept",
+  "updated_at": "2026-05-05T16:07:06.537Z"
+}

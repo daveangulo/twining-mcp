@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Typed BFS traversal follows specific relation types (decided_by, affects, depends_on, etc.) with depth-based path scoring and relation type bonuses. Adaptive weight fallback redistributes the 35% graph weight proportionally when all graph scores are 0, preventing score compression for sparse/empty graphs. Relevance paths annotate assembled decisions with how they were found.",
+  "entry_type": "decision",
+  "id": "01KKNE7FA4PG6AX8A5APQH05M4",
+  "scope": "src/engine/context-assembler.ts",
+  "summary": "Replace computeGraphConnectivity with computeGraphReachability using typed BFS and adaptive weight fallback",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-03-14T05:48:39.620Z"
+}

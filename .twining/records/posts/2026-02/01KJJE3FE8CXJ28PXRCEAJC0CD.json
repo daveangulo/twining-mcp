@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Toggle chips match the filter pattern used in timeline domain filters and graph type filters, providing a consistent UX. Pill-shaped input with embedded search/clear icons is more modern. Custom-styled select and labeled date inputs improve visual cohesion. All changes are CSS/HTML/JS only with no new dependencies.",
+  "entry_type": "decision",
+  "id": "01KJJE3FE8CXJ28PXRCEAJC0CD",
+  "scope": "src/dashboard/public/",
+  "summary": "Replace search bar multi-select with toggle chips, add search icon, and style filters to match toolbar design language",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-02-28T15:33:03.560Z"
+}

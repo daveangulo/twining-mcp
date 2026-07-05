@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "records initial snapshot, returns initial_record=true. Avoids spurious deletions on first install.",
+  "entry_type": "decision",
+  "id": "01KQWJMWH4GT9WS6QHGABZP8TE",
+  "scope": "src/engine/",
+  "summary": "First-run is a no-op for archival",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-05-05T17:23:21.764Z"
+}

@@ -1,0 +1,26 @@
+{
+  "affected_files": [
+    "src/utils/git-branches.ts",
+    "src/engine/branch-watcher.ts",
+    "src/engine/staleness.ts",
+    "src/engine/housekeeping.ts",
+    "src/tools/housekeeping-tools.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "PR B (Phase 4 of #7): twining_housekeeping merge_sweep flag — diff branches against .twining/.last-known-branches.json, flag entries provenance-stamped with deleted branches.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KQWJMW9NKDHKDCZYDP968RPJ",
+  "rationale": "once gone, the action (archive entries from it) is the same.",
+  "reversible": true,
+  "scope": "src/engine/",
+  "status": "active",
+  "summary": "Don't distinguish merged-and-deleted from force-deleted branches",
+  "timestamp": "2026-05-05T17:23:21.525Z"
+}

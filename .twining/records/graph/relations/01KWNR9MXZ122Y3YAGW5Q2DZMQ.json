@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-04T05:05:53.087Z",
+  "id": "01KWNR9MXZ122Y3YAGW5Q2DZMQ",
+  "properties": {
+    "decision_summary": "Proposed (pending approval): recommend startup NUDGE over FOUNDATION-PLAN's auto-migration"
+  },
+  "source": "01KWNR9MTRRZ6SFVG3SZ7KV69V",
+  "target": "01KWNR9MXX7YZNRQVKBGZ56PHH",
+  "type": "decided_by"
+}

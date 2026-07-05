@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-03T18:58:38.337Z",
+  "id": "01KWMNHR416F2FYJZAX7X9Y6ZS",
+  "name": "01KWMNHR281RW7F8WB9SVQ55DV",
+  "properties": {
+    "scope": "docs/FOUNDATION-PLAN.md",
+    "summary": "Chose lazy TTL-gated git-HEAD probe on tool dispatch over fs.watch on .twining/records/ for live re-ingest"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-03T18:58:38.337Z"
+}

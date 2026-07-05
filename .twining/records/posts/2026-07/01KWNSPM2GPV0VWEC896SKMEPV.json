@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "the gate tool failed 38% of calls in the field on a cap the schema never disclosed; direct twining_post keeps strict validation.",
+  "entry_type": "decision",
+  "id": "01KWNSPM2GPV0VWEC896SKMEPV",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "9be18d1f347e111d8538643df425061c57b4e607",
+    "recorded_at": "2026-07-04T05:30:26.752Z"
+  },
+  "scope": "src/",
+  "summary": "twining_record truncates over-length summaries/findings (full text preserved in detail) instead of rejecting",
+  "tags": [
+    "data-model"
+  ],
+  "timestamp": "2026-07-04T05:30:26.768Z"
+}

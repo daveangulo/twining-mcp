@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-02-17T03:41:32.028Z",
+  "id": "01KHMV0QFVVA5Y1NPPXP517255",
+  "properties": {
+    "note": "injected via constructor, provides planning_state to assemble/summarize"
+  },
+  "source": "01KHMV054KMRR5YY12YA6H7EKQ",
+  "target": "01KHMSDBP3TTNQ89EMB48RWGQ1",
+  "type": "affects"
+}

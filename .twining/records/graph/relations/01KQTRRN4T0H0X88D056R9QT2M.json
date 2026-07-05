@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-05-05T00:31:47.866Z",
+  "id": "01KQTRRN4T0H0X88D056R9QT2M",
+  "properties": {
+    "decision_summary": "Chose two-layer disable for TWINING_DISABLED (hooks no-op + MCP server early-exit before tool registration)"
+  },
+  "source": "01KQTRRN19FPSG5PNV4QB0Y34P",
+  "target": "01KQTRRN4RYD8JCCC502DV1S09",
+  "type": "decided_by"
+}

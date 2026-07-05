@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-03T23:17:18.709Z",
+  "id": "01KWN4BCQNV5PSWTVCRR52PW56",
+  "properties": {
+    "decision_summary": "Migration finalize idempotently appends twining.db* lines to .twining/.gitignore"
+  },
+  "source": "01KWN4BCMBDHY2MCTWESYG2VVW",
+  "target": "01KWN4BCQKZCJ7VX98QWHG3HST",
+  "type": "decided_by"
+}

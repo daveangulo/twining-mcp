@@ -1,0 +1,46 @@
+{
+  "affected_files": [
+    "src/dashboard/public/style.css",
+    "src/dashboard/public/app.js",
+    "src/dashboard/public/index.html"
+  ],
+  "affected_symbols": [
+    "initTimeline",
+    "buildTimelineItems",
+    "buildTimelineGroups",
+    "wireTimelineControls",
+    "renderTimelineLegend",
+    "renderTimelineDomainFilters",
+    "updateTimelineData",
+    "getDecisionClassName"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Use zoomKey option to require ctrl+scroll for zoom",
+      "pros": [],
+      "reason_rejected": "Doesn't fix the root overflow issue and adds friction to zooming. Users expect scroll-to-zoom on a timeline."
+    },
+    {
+      "cons": [],
+      "option": "Replace vis-timeline with a custom canvas-based timeline",
+      "pros": [],
+      "reason_rejected": "Massive overengineering for a bug fix. vis-timeline works well once the overflow conflict is resolved."
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "The timeline view under the Decisions tab had a zoom bug: once zoomed in, users couldn't zoom back out to see a larger timescale. The root cause was overflow:auto on #timeline-container which created a scrollable container that intercepted scroll wheel events before vis-timeline could process them for zoom.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KJJCBK7NW40PQ9RE2625AJ9B",
+  "rationale": "overflow:hidden lets vis-timeline handle all scroll/zoom internally without interference. Added explicit zoom controls (zoom in/out, fit all, jump to now) as a secondary zoom mechanism so users are never stuck. Also added domain swim lanes, domain filter chips, gradient confidence-coded items, custom dark tooltips, and entrance animations for visual polish.",
+  "reversible": true,
+  "scope": "src/dashboard/public/",
+  "status": "active",
+  "summary": "Fix timeline zoom by changing overflow:auto to overflow:hidden and add zoom controls toolbar",
+  "timestamp": "2026-02-28T15:02:32.455Z"
+}

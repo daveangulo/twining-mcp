@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-03-19T06:05:31.271Z",
+  "id": "01KM2B5Y87B2A1HRT7JHC7TTB7",
+  "name": "01KM2B5Y6D1YQVHER5F1SARJHD",
+  "properties": {
+    "scope": "src/engine/graph-auto-populator.ts",
+    "summary": "Graph auto-population disabled by default (opt-in via graph.auto_populate config)"
+  },
+  "type": "concept",
+  "updated_at": "2026-03-19T06:05:31.271Z"
+}

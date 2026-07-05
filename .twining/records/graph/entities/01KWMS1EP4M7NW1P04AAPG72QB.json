@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-03T19:59:38.692Z",
+  "id": "01KWMS1EP4M7NW1P04AAPG72QB",
+  "name": "01KWMS1EKM6J8S8N6AAVENV5H2",
+  "properties": {
+    "scope": "src/storage/sync/",
+    "summary": "Made the probe synchronous before tool dispatch (not fire-and-forget)"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-03T19:59:38.692Z"
+}

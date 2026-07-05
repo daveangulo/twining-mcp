@@ -1,0 +1,15 @@
+{
+  "agent_id": "general-purpose",
+  "detail": "",
+  "dismissed": false,
+  "entry_type": "status",
+  "id": "hook-1783120617755",
+  "scope": "project",
+  "summary": "Subagent completed: general-purpose",
+  "supersedes": null,
+  "tags": [
+    "subagent-stop",
+    "hook-generated"
+  ],
+  "timestamp": "2026-07-03T23:16:57.000Z"
+}

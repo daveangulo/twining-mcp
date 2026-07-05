@@ -1,0 +1,12 @@
+{
+  "created_at": "2026-02-17T03:13:27.320Z",
+  "id": "01KHMSDA8RFWGEZ13T5GBP697J",
+  "name": "GraphEngine",
+  "properties": {
+    "description": "Lightweight knowledge graph with BFS traversal and entity upsert",
+    "file": "src/engine/graph.ts",
+    "methods": "addEntity, addRelation, neighbors, query, resolveEntity"
+  },
+  "type": "class",
+  "updated_at": "2026-02-17T03:13:27.320Z"
+}

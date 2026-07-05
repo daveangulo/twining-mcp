@@ -1,0 +1,12 @@
+{
+  "agent_id": "main",
+  "detail": "Key constraint: embedding system is enhancement, not requirement. Lazy loading defers heavy init. Fallback to keyword search (substring matching) ensures all query tools work regardless.",
+  "entry_type": "decision",
+  "id": "01KHMSEXTX8D5WG0DX9ME4XX95",
+  "scope": "src/embeddings/",
+  "summary": "Embeddings must be lazy-loaded and fall back gracefully to keyword search if ONNX/transformers fails",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-02-17T03:14:20.125Z"
+}
