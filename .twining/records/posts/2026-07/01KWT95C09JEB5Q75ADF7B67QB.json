@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "loadConfig's deepMerge only copies keys present in the TARGET (DEFAULT_CONFIG), so removing the default key would silently drop a user's explicit storage.backend, and a loadConfig-signature side-channel for explicitness would churn every caller. The \"auto\" sentinel survives the merge, keeps explicit files/sqlite pins working unchanged, and localizes the resolution rule in src/storage/backend-resolve.ts with the ambiguity rule: anything unreadable/malformed counts as legacy content so misdetection lands on files (safe), never an empty database.",
+  "entry_type": "decision",
+  "id": "01KWT95C09JEB5Q75ADF7B67QB",
+  "provenance": {
+    "branch": "v2.0-beta",
+    "commit_sha": "9ba8bafa5fcf37148b52d78ff766fc2d499efc0e",
+    "recorded_at": "2026-07-05T23:17:36.377Z"
+  },
+  "scope": "src/storage/",
+  "summary": "Implemented the v2 default backend flip as an \"auto\" sentinel in DEFAULT_CONFIG resolved at createStores time, not a blind default change",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-07-05T23:17:36.393Z"
+}

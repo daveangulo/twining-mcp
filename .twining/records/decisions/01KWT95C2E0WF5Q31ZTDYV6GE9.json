@@ -1,0 +1,49 @@
+{
+  "affected_files": [
+    "src/storage/backend-resolve.ts",
+    "src/storage/backend-factory.ts",
+    "src/storage/init.ts",
+    "src/config.ts",
+    "src/utils/types.ts",
+    "src/migrate/auto.ts",
+    "src/migrate/config-edit.ts",
+    "src/migrate/forward.ts",
+    "src/migrate/reverse.ts",
+    "src/index.ts",
+    ".github/workflows/publish.yml",
+    ".github/workflows/ci.yml",
+    "package.json",
+    "docs/UPGRADE-v2.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Stamp sqlite unconditionally (proposal rule 3 as written)",
+      "pros": [],
+      "reason_rejected": "creates an in-team empty-database edge when the project creator runs old Node"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Built v2.0.0-beta.1 scope (V1-V5) on branch v2.0-beta: engines 22.13 + CI 22/24 + prerelease dist-tag routing, auto backend resolution with legacy nudge, SUPPORTED_CONFIG_VERSION=2 with migrate stamps, init stamping, opt-in auto-migrate, upgrade docs. Full gates green (1063 tests, SOAK_SCALE=5).",
+  "depends_on": [
+    "01KWT0FEW6ETY4GD1G3C273Z3Y"
+  ],
+  "domain": "architecture",
+  "id": "01KWT95C2E0WF5Q31ZTDYV6GE9",
+  "provenance": {
+    "branch": "v2.0-beta",
+    "commit_sha": "9ba8bafa5fcf37148b52d78ff766fc2d499efc0e",
+    "recorded_at": "2026-07-05T23:17:36.448Z"
+  },
+  "rationale": "Unconditional sqlite stamping on an old-Node creator's machine produces a config claiming sqlite while the server runs the files fallback and accumulates legacy state — a new-Node teammate would then boot an empty database next to real legacy files, exactly the silent-amnesia scenario the resolution rule exists to prevent, but inside a team. Stamping what will actually run keeps config.yml honest; files-stamped projects keep version 1 so 1.x teammates still work.",
+  "reversible": true,
+  "scope": "src/storage/",
+  "status": "active",
+  "summary": "DEVIATION from proposal: fresh init stamps backend by sqliteAvailable() (sqlite/version-2 when available, files/version-1 otherwise) instead of stamping sqlite unconditionally",
+  "timestamp": "2026-07-05T23:17:36.462Z"
+}

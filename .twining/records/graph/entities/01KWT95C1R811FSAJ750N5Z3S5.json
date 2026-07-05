@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-05T23:17:36.440Z",
+  "id": "01KWT95C1R811FSAJ750N5Z3S5",
+  "name": "src/migrate/auto.ts",
+  "properties": {
+    "scope": "src/storage/"
+  },
+  "type": "file",
+  "updated_at": "2026-07-05T23:17:36.803Z"
+}

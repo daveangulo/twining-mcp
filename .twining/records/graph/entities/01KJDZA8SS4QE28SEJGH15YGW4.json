@@ -3,8 +3,8 @@
   "id": "01KJDZA8SS4QE28SEJGH15YGW4",
   "name": ".github/workflows/ci.yml",
   "properties": {
-    "scope": "docs/superpowers/plans/2026-07-04-v2.0-prep-proposal.md"
+    "scope": "src/storage/"
   },
   "type": "file",
-  "updated_at": "2026-07-05T20:45:49.903Z"
+  "updated_at": "2026-07-05T23:17:36.807Z"
 }

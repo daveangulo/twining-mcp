@@ -1,0 +1,42 @@
+{
+  "affected_files": [
+    "src/storage/backend-resolve.ts",
+    "src/storage/backend-factory.ts",
+    "src/storage/init.ts",
+    "src/config.ts",
+    "src/utils/types.ts",
+    "src/migrate/auto.ts",
+    "src/migrate/config-edit.ts",
+    "src/migrate/forward.ts",
+    "src/migrate/reverse.ts",
+    "src/index.ts",
+    ".github/workflows/publish.yml",
+    ".github/workflows/ci.yml",
+    "package.json",
+    "docs/UPGRADE-v2.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Built v2.0.0-beta.1 scope (V1-V5) on branch v2.0-beta: engines 22.13 + CI 22/24 + prerelease dist-tag routing, auto backend resolution with legacy nudge, SUPPORTED_CONFIG_VERSION=2 with migrate stamps, init stamping, opt-in auto-migrate, upgrade docs. Full gates green (1063 tests, SOAK_SCALE=5).",
+  "depends_on": [
+    "01KWT0FEW6ETY4GD1G3C273Z3Y"
+  ],
+  "domain": "implementation",
+  "id": "01KWT95C6HJ382RN2X04CM27AV",
+  "provenance": {
+    "branch": "v2.0-beta",
+    "commit_sha": "9ba8bafa5fcf37148b52d78ff766fc2d499efc0e",
+    "recorded_at": "2026-07-05T23:17:36.576Z"
+  },
+  "rationale": "The version-2 stamp exists to lock stale 1.x clients read-only on migrated repos; reverse is the escape hatch whose purpose is returning to a state 1.x clients can use, so it must undo the lockout too.",
+  "reversible": true,
+  "scope": "src/storage/",
+  "status": "active",
+  "summary": "migrate --reverse now restores config version to 1 (forward finalize stamps 2)",
+  "timestamp": "2026-07-05T23:17:36.593Z"
+}

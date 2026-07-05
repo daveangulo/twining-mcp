@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-05T23:17:36.676Z",
+  "id": "01KWT95C946YSGC6E0MQASD8HS",
+  "name": "01KWT95C6HJ382RN2X04CM27AV",
+  "properties": {
+    "scope": "src/storage/",
+    "summary": "migrate --reverse now restores config version to 1 (forward finalize stamps 2)"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-05T23:17:36.676Z"
+}

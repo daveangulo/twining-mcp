@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "The beta flow makes tag/version mismatch a real failure mode (tagging v2.0.0-beta.1 with package.json still 1.24.1 would publish the wrong artifact under the wrong tag); guard fails before publish. Action major bumps clear the Node-20 deprecation annotations and are validated by the same CI run and the workflow_dispatch dry-run.",
+  "entry_type": "decision",
+  "id": "01KWT95CBVE1XR1Y4XZTSHFQ84",
+  "provenance": {
+    "branch": "v2.0-beta",
+    "commit_sha": "9ba8bafa5fcf37148b52d78ff766fc2d499efc0e",
+    "recorded_at": "2026-07-05T23:17:36.748Z"
+  },
+  "scope": "src/storage/",
+  "summary": "Publish workflow gained a tag-vs-package.json version guard and prerelease GH-release marking alongside the dist-tag routing; checkout/setup-node bumped to v5",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-05T23:17:36.763Z"
+}

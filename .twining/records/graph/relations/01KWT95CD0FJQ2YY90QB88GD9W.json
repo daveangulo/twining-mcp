@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-05T23:17:36.800Z",
+  "id": "01KWT95CD0FJQ2YY90QB88GD9W",
+  "properties": {
+    "decision_summary": "Publish workflow gained a tag-vs-package.json version guard and prerelease GH-release marking alongside the dist-tag routing; checkout/setup-node bumped to v5"
+  },
+  "source": "01KWT95C1MT6B34212DA3V7A44",
+  "target": "01KWT95CCZPCY12RB3CEN2T383",
+  "type": "decided_by"
+}
