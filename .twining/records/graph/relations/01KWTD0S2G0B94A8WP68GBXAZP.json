@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-06T00:25:00.240Z",
+  "id": "01KWTD0S2G0B94A8WP68GBXAZP",
+  "properties": {
+    "decision_summary": "Dogfood the v2 beta via the project .mcp.json pin (twining-mcp@next), NOT the plugin pin and NOT a version-2 config stamp yet"
+  },
+  "source": "01KWTD0S2FEG661K4CVCQTV3PP",
+  "target": "01KWTD0S2FEG661K4CVCQTV3PN",
+  "type": "decided_by"
+}
