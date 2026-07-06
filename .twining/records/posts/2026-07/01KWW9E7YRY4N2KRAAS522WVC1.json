@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Kicked off the v2 eval gate: synthetic suite (npm run eval) running in background with LLM judges enabled via the user's zshrc key (commented-out there; passed per-process, never exported or printed). Holdout suite queued next.\nFindings: No 1.23-era eval baseline exists: test/eval/results/regression-baseline.json and latest.json both date to 2026-03-02 (plugin 1.1.3 era, synthetic 0.8848 / holdout 0.9951, 100% effective pass rate). The v2 ship-gate comparison is therefore v2-tree vs March baseline + absolute scorer thresholds; a true 1.23 comparison requires checking out the v1.23.0 tag and re-running the suite there.; ANTHROPIC_API_KEY is deliberately commented out in ~/.zshrc (likely to avoid clashing with Claude Code auth) — eval judge scorers skip silently without it; future eval runs must inject it per-process the same way.",
+  "entry_type": "status",
+  "id": "01KWW9E7YRY4N2KRAAS522WVC1",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8944030e25a09f793b87c435188d7acde40ccbd6",
+    "recorded_at": "2026-07-06T18:00:56.007Z"
+  },
+  "scope": "test/eval/",
+  "summary": "Kicked off the v2 eval gate: synthetic suite (npm run eval) running in background with LLM judges enabled via the user's zshrc key (commented-out there; passed per-process, never exported or printe…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-06T18:00:56.024Z"
+}

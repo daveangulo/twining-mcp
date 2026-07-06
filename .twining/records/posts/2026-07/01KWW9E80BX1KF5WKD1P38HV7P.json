@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: No 1.23-era eval baseline exists: test/eval/results/regression-baseline.json and latest.json both date to 2026-03-02 (plugin 1.1.3 era, synthetic 0.8848 / holdout 0.9951, 100% effective pass rate). The v2 ship-gate comparison is therefore v2-tree vs March baseline + absolute scorer thresholds; a true 1.23 comparison requires checking out the v1.23.0 tag and re-running the suite there.",
+  "entry_type": "finding",
+  "id": "01KWW9E80BX1KF5WKD1P38HV7P",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8944030e25a09f793b87c435188d7acde40ccbd6",
+    "recorded_at": "2026-07-06T18:00:56.059Z"
+  },
+  "scope": "test/eval/",
+  "summary": "No 1.23-era eval baseline exists: test/eval/results/regression-baseline.json and latest.json both date to 2026-03-02 (plugin 1.1.3 era, synthetic 0.8848 / holdout 0.9951, 100% effective pass rate).…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-06T18:00:56.075Z"
+}

@@ -1,10 +1,10 @@
 {
-  "timestamp": "2026-03-02T22:54:23.323Z",
+  "timestamp": "2026-07-06T18:12:11.327Z",
   "summary": {
     "total_scenarios": 6,
-    "total_checks": 89,
-    "passed_checks": 87,
-    "overall_score": 0.9951
+    "total_checks": 78,
+    "passed_checks": 76,
+    "overall_score": 0.9937
   },
   "scenarios": [
     {
@@ -59,20 +59,6 @@
           "threshold": 0.7,
           "checks_passed": 1,
           "checks_total": 1
-        },
-        "rationale-judge": {
-          "score": 1,
-          "passed": true,
-          "threshold": 0.5,
-          "checks_passed": 0,
-          "checks_total": 0
-        },
-        "scope-judge": {
-          "score": 1,
-          "passed": true,
-          "threshold": 0.5,
-          "checks_passed": 1,
-          "checks_total": 1
         }
       }
     },
@@ -112,8 +98,8 @@
           "score": 1,
           "passed": true,
           "threshold": 0.8,
-          "checks_passed": 0,
-          "checks_total": 0
+          "checks_passed": 1,
+          "checks_total": 1
         },
         "anti-patterns": {
           "score": 0.9,
@@ -128,20 +114,6 @@
           "threshold": 0.7,
           "checks_passed": 4,
           "checks_total": 4
-        },
-        "rationale-judge": {
-          "score": 1,
-          "passed": true,
-          "threshold": 0.5,
-          "checks_passed": 1,
-          "checks_total": 1
-        },
-        "scope-judge": {
-          "score": 1,
-          "passed": true,
-          "threshold": 0.5,
-          "checks_passed": 2,
-          "checks_total": 2
         }
       }
     },
@@ -197,20 +169,6 @@
           "threshold": 0.7,
           "checks_passed": 4,
           "checks_total": 4
-        },
-        "rationale-judge": {
-          "score": 1,
-          "passed": true,
-          "threshold": 0.5,
-          "checks_passed": 1,
-          "checks_total": 1
-        },
-        "scope-judge": {
-          "score": 1,
-          "passed": true,
-          "threshold": 0.5,
-          "checks_passed": 1,
-          "checks_total": 1
         }
       }
     },
@@ -266,20 +224,6 @@
           "threshold": 0.7,
           "checks_passed": 2,
           "checks_total": 2
-        },
-        "rationale-judge": {
-          "score": 1,
-          "passed": true,
-          "threshold": 0.5,
-          "checks_passed": 0,
-          "checks_total": 0
-        },
-        "scope-judge": {
-          "score": 1,
-          "passed": true,
-          "threshold": 0.5,
-          "checks_passed": 2,
-          "checks_total": 2
         }
       }
     },
@@ -291,8 +235,8 @@
           "score": 1,
           "passed": true,
           "threshold": 0.9,
-          "checks_passed": 1,
-          "checks_total": 1
+          "checks_passed": 0,
+          "checks_total": 0
         },
         "scope-quality": {
           "score": 1,
@@ -335,20 +279,6 @@
           "threshold": 0.7,
           "checks_passed": 2,
           "checks_total": 2
-        },
-        "rationale-judge": {
-          "score": 1,
-          "passed": true,
-          "threshold": 0.5,
-          "checks_passed": 0,
-          "checks_total": 0
-        },
-        "scope-judge": {
-          "score": 1,
-          "passed": true,
-          "threshold": 0.5,
-          "checks_passed": 1,
-          "checks_total": 1
         }
       }
     },
@@ -402,20 +332,6 @@
           "score": 1,
           "passed": true,
           "threshold": 0.7,
-          "checks_passed": 2,
-          "checks_total": 2
-        },
-        "rationale-judge": {
-          "score": 1,
-          "passed": true,
-          "threshold": 0.5,
-          "checks_passed": 0,
-          "checks_total": 0
-        },
-        "scope-judge": {
-          "score": 1,
-          "passed": true,
-          "threshold": 0.5,
           "checks_passed": 2,
           "checks_total": 2
         }
