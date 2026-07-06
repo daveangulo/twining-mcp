@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "status",
+  "id": "01KWW21M64375VY3VAETZBSRJ5",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "211510824c071e4dbc38de74482e8333ddb0db36",
+    "recorded_at": "2026-07-06T15:51:42.506Z"
+  },
+  "scope": "project",
+  "summary": "Beta soak marker: first write through twining-mcp 2.0.0-beta.1 (project pin @next, reconnected 08:50) — sqlite backend, dogfood soak officially on the v2 beta build.",
+  "tags": [
+    "v2-beta-soak"
+  ],
+  "timestamp": "2026-07-06T15:51:42.533Z"
+}

@@ -110,6 +110,7 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - DEVIATION from proposal: fresh init stamps backend by sqliteAvailable() (sqlite/version-2 when available, files/version-1 otherwise) instead of stamping sqlite unconditionally
 - migrate --reverse now restores config version to 1 (forward finalize stamps 2)
 - Publish workflow gained a tag-vs-package.json version guard and prerelease GH-release marking alongside the dist-tag routing; checkout/setup-node bumped to v5
+- Dogfood the v2 beta via the project .mcp.json pin (twining-mcp@next), NOT the plugin pin and NOT a version-2 config stamp yet
 
 ### Pending Todos
 
