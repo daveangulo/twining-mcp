@@ -32,7 +32,10 @@ beforeEach(() => {
 });
 afterEach(() => { fs.rmSync(projectRoot, { recursive: true, force: true }); });
 
-const filesConfig = (): TwiningConfig => ({ ...DEFAULT_CONFIG });
+const filesConfig = (): TwiningConfig => ({
+  ...DEFAULT_CONFIG,
+  storage: { ...DEFAULT_CONFIG.storage, backend: "files" },
+});
 const sqliteConfig = (): TwiningConfig => ({
   ...DEFAULT_CONFIG,
   storage: { backend: "sqlite", export_records: true },
@@ -75,7 +78,7 @@ describe.skipIf(!HAS_SQLITE)("migrateForward", () => {
       version: number; storage: { backend: string };
     };
     expect(cfg.storage.backend).toBe("sqlite");
-    expect(cfg.version).toBe(1); // gated v2 flip untouched
+    expect(cfg.version).toBe(2); // finalize stamps the v2 format — stale 1.x clients go read-only here
 
     const sqlite = createStores(twiningDir, sqliteConfig());
     expect(sqlite.backend).toBe("sqlite");

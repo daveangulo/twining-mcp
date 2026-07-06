@@ -23,7 +23,10 @@ const HAS_SQLITE = (() => {
   try { require("node:sqlite"); return true; } catch { return false; }
 })();
 
-const filesConfig = (): TwiningConfig => ({ ...DEFAULT_CONFIG });
+const filesConfig = (): TwiningConfig => ({
+  ...DEFAULT_CONFIG,
+  storage: { ...DEFAULT_CONFIG.storage, backend: "files" },
+});
 const sqliteConfig = (): TwiningConfig => ({
   ...DEFAULT_CONFIG,
   storage: { backend: "sqlite", export_records: true },

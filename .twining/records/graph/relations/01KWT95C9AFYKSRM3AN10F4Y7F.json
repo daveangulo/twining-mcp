@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-05T23:17:36.682Z",
+  "id": "01KWT95C9AFYKSRM3AN10F4Y7F",
+  "properties": {
+    "decision_summary": "migrate --reverse now restores config version to 1 (forward finalize stamps 2)"
+  },
+  "source": "01KJD595NBM3QK28EQJ3JG8QXV",
+  "target": "01KWT95C946YSGC6E0MQASD8HS",
+  "type": "decided_by"
+}

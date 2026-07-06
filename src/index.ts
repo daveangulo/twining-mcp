@@ -37,6 +37,11 @@ async function main(): Promise<void> {
     projectRoot = process.argv[projectArgIndex + 1]!;
   }
 
+  // Opt-in only (TWINING_AUTO_MIGRATE=1 / storage.auto_migrate) — the
+  // default path for legacy projects is the createStores nudge.
+  const { maybeAutoMigrate } = await import("./migrate/auto.js");
+  await maybeAutoMigrate(projectRoot);
+
   const { server, metricsCollector, config, dashboardDeps } = createServer(projectRoot);
   const transport = new StdioServerTransport();
   await server.connect(transport);

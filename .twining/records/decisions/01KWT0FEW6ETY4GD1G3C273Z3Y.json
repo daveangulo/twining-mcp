@@ -1,0 +1,51 @@
+{
+  "affected_files": [
+    "docs/superpowers/plans/2026-07-04-v2.0-prep-proposal.md",
+    "package.json",
+    "src/config.ts",
+    "src/storage/backend-factory.ts",
+    ".github/workflows/ci.yml",
+    ".github/workflows/publish.yml"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Full-auto migration at startup (FOUNDATION-PLAN original)",
+      "pros": [],
+      "reason_rejected": "Surprise-mutates tracked config.yml and drops records/ into every teammate's diff; nudge + explicit opt-in is the conservative default now that the migrate CLI exists"
+    },
+    {
+      "cons": [],
+      "option": "engine-strict refusal on old Node",
+      "pros": [],
+      "reason_rejected": "A coordination server must not brick a session; warn-and-fallback keeps old-Node bootable on the file backend"
+    },
+    {
+      "cons": [],
+      "option": "Beta straight to latest",
+      "pros": [],
+      "reason_rejected": "README install path is unpinned npx — a latest-tagged v2 flips every direct user instantly"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Dave approved all recommended v2.0 prep decision points; execution of V1-V5 on a beta branch begins now",
+  "depends_on": [],
+  "domain": "release",
+  "id": "01KWT0FEW6ETY4GD1G3C273Z3Y",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "ef55f45062af81ea46d66c3a975f8e72c61e42e3",
+    "recorded_at": "2026-07-05T20:45:49.815Z"
+  },
+  "rationale": "Dave approved the recommended option for every decision point in docs/superpowers/plans/2026-07-04-v2.0-prep-proposal.md, resolving the three 'proposed (pending approval)' decisions: (1) startup NUDGE over auto-migration, with TWINING_AUTO_MIGRATE=1 / storage.auto_migrate: true as explicit opt-in; (2) v2.0.0-beta under npm dist-tag next, never latest; (3) legacy-detection resolution rule for the default backend flip. Also approved: soft engines bump (no engine-strict, warn-and-fallback keeps old-Node sessions bootable), go-stable follows evidence gates (earliest ~mid-July 2026), SUPPORTED_CONFIG_VERSION=2 stamped at v2-migrate finalize. V6 (plugin pin bump to ^2.0.0) deferred to after stable.",
+  "reversible": true,
+  "scope": "docs/superpowers/plans/2026-07-04-v2.0-prep-proposal.md",
+  "status": "active",
+  "summary": "Approved (Dave, 2026-07-05): all recommended v2.0 prep options — startup nudge, soft engines>=22.13 with warn-and-fallback, beta on dist-tag next, evidence-gated stable timing, version-2 stamp at migrate finalize",
+  "timestamp": "2026-07-05T20:45:49.831Z"
+}

@@ -184,11 +184,13 @@ export interface TwiningConfig {
   embedding_model: string;
   storage?: {
     /**
-     * Persistence backend. "files" (default) is the JSON-file layout;
-     * "sqlite" is the opt-in single-database backend (requires Node with
-     * node:sqlite, >= 22.13; silently falls back to "files" when absent).
+     * Persistence backend. "auto" (v2 default) resolves by legacy
+     * detection: sqlite state → sqlite, legacy content → files (with a
+     * migrate nudge), fresh → sqlite. Explicit "files"/"sqlite" pins the
+     * choice. sqlite requires node:sqlite (Node >= 22.13) and falls back
+     * to "files" with a warning when unavailable.
      */
-    backend?: "files" | "sqlite";
+    backend?: "files" | "sqlite" | "auto";
     /**
      * Maintain the committable per-record export tree (.twining/records/)
      * alongside the sqlite database, and converge the database to it on
@@ -197,6 +199,13 @@ export interface TwiningConfig {
      * between users, branches, and worktrees). Default: true.
      */
     export_records?: boolean;
+    /**
+     * Opt-in (v2): when the auto-resolved backend is "files" because of
+     * legacy content, run `twining-mcp migrate` automatically at startup
+     * instead of only nudging. Equivalent to TWINING_AUTO_MIGRATE=1.
+     * Default: false — migration is a deliberate act.
+     */
+    auto_migrate?: boolean;
   };
   archive: {
     auto_archive_on_commit: boolean;

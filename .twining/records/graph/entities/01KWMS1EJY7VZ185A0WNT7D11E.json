@@ -3,8 +3,8 @@
   "id": "01KWMS1EJY7VZ185A0WNT7D11E",
   "name": "src/storage/backend-factory.ts",
   "properties": {
-    "scope": "src/storage/sync/"
+    "scope": "src/storage/"
   },
   "type": "file",
-  "updated_at": "2026-07-03T19:59:38.922Z"
+  "updated_at": "2026-07-05T23:17:36.800Z"
 }

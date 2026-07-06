@@ -12,7 +12,7 @@ import type { TwiningConfig } from "./utils/types.js";
  * newer Twining release — this server must not write there (see
  * formatVersionRefusal), or old and new clients silently diverge.
  */
-export const SUPPORTED_CONFIG_VERSION = 1;
+export const SUPPORTED_CONFIG_VERSION = 2;
 
 /**
  * Returns a human-readable refusal reason when the on-disk format is newer
@@ -39,8 +39,9 @@ export const DEFAULT_CONFIG: TwiningConfig = {
   project_name: "",
   embedding_model: "all-MiniLM-L6-v2",
   storage: {
-    backend: "files",        // "sqlite" opts into the single-database backend (Node >= 22.13)
+    backend: "auto",         // v2: resolve by legacy detection — sqlite state → sqlite, legacy content → files + nudge, fresh → sqlite
     export_records: true,    // sqlite only: maintain committable .twining/records/ tree + ingest on startup
+    auto_migrate: false,     // opt-in: auto-run `twining-mcp migrate` at startup on legacy projects (or TWINING_AUTO_MIGRATE=1)
   },
   archive: {
     auto_archive_on_commit: true,

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-05T23:17:36.443Z",
+  "id": "01KWT95C1VR0R8JWS036BD93SH",
+  "properties": {
+    "decision_summary": "Implemented the v2 default backend flip as an \"auto\" sentinel in DEFAULT_CONFIG resolved at createStores time, not a blind default change"
+  },
+  "source": "01KWN8930HYTTFYZFBKZ6NC9DD",
+  "target": "01KWT95C1MT6B34212DA3V7A43",
+  "type": "decided_by"
+}

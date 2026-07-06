@@ -2,7 +2,7 @@
 
 Companion to [DESIGN-REVIEW-2026-07.md](./DESIGN-REVIEW-2026-07.md). That document says *what* is wrong and *where* to go; this one says *how to get there* without losing a single record in any existing `.twining/` instance.
 
-## Status (as of 2026-07-03)
+## Status (as of 2026-07-05)
 
 | Workstream | State | Shipped in |
 |---|---|---|
@@ -12,11 +12,12 @@ Companion to [DESIGN-REVIEW-2026-07.md](./DESIGN-REVIEW-2026-07.md). That docume
 | W2.2 SQLite backend (opt-in `storage.backend`, node:sqlite, warn-and-fallback, multiwriter soak) | ✅ done | server 1.21.0 |
 | W2.3 git sync — phase 1: per-ULID export tree + startup ingest | ✅ done | server 1.21.0 |
 | W2.3 git sync — phase 2: live re-ingest on git changes + content-hash re-embedding | ✅ done | server 1.22.0 |
-| W3 migration tool (`twining-mcp migrate`, files ⇄ sqlite, verify-gated) | ✅ done (v2-gated parts open: version-2 flip, startup auto-migration) | server 1.23.0 |
+| W3 migration tool (`twining-mcp migrate`, files ⇄ sqlite, verify-gated) | ✅ done | server 1.23.0 |
+| v2.0 cut V1–V5 (engines 22.13, backend default flip via legacy detection, config version 2, nudge + opt-in auto-migrate, upgrade docs) | ✅ implemented, in beta | 2.0.0-beta.1 (dist-tag `next`) |
 | W4 repo-scoped daemon | ⬜ not started | v2.1.0 |
 | W5 surface & hygiene (BEHAVIORS.md 35 tools, CI token budget, STATE.md) | ✅ ongoing, current | server 1.21.1 / plugin 1.10.1 |
 
-Deviations from the original release map: version numbers compressed — W0/W2.1/W2.2/W2.3-phase-1 all landed in 1.21.0 rather than spreading across 1.21–1.23; hook hardening rode plugin releases independently of server versions. The v2.0 gate (D6 engines bump, backend default flip, config version 2) still holds: **do not ship v2.0 without explicit go-ahead** — 1.21.x needs field soak first.
+Deviations from the original release map: version numbers compressed — W0/W2.1/W2.2/W2.3-phase-1 all landed in 1.21.0 rather than spreading across 1.21–1.23; hook hardening rode plugin releases independently of server versions. The v2.0 gate was **lifted 2026-07-05** (explicit go-ahead on all decision points in [superpowers/plans/2026-07-04-v2.0-prep-proposal.md](superpowers/plans/2026-07-04-v2.0-prep-proposal.md)): V1–V5 built on the `v2.0-beta` branch for `2.0.0-beta.1` under dist-tag `next`. Go-stable remains evidence-gated (field-quiet window, ≥2 external beta projects, eval comparison vs 1.23). Note the approved deviation from this plan's "Auto-migration" paragraph below: v2.0 ships a startup **nudge** with auto-migration as explicit opt-in (`TWINING_AUTO_MIGRATE=1` / `storage.auto_migrate: true`), not auto-run — full-auto remains a v2.1 option if beta feedback demands it.
 
 ## Locked-in design decisions
 

@@ -128,6 +128,18 @@ Resolution requires explicit action:
 
 Conflicts surface in the next `twining_assemble` call as high-priority warnings.
 
+### Cross-Branch Contradictions (v2 contract)
+
+On the v2 sqlite backend, sync is set-union by construction: records are immutable ULID-named files under `.twining/records/`, so a git merge is "both sets of files land" — conflict-free at merge time. The consequence (FOUNDATION-PLAN D3): **contradictory decisions made on different branches coexist after the merge**, each labeled with its provenance (agent, branch, timestamp).
+
+Contradiction handling therefore happens at read time, not merge time:
+
+1. `twining_assemble` and housekeeping surface cross-branch contradictions the same way as same-branch conflicts above
+2. The staleness/reconsider flow archives the losers
+3. Both decisions *were* made — surfacing, not silent merging, is the contract
+
+This is a deliberate contract change in v2: teams should expect to occasionally see both sides of a branch-divergent decision in a briefing and resolve it with `twining_override` / `twining_reconsider`, rather than never seeing the contradiction at all.
+
 ### Drift Detection
 
 Decisions capture intent at a point in time. Code evolves. When a file listed in `affected_files` is modified after the decision timestamp without a superseding decision, that's **drift** — the documented rationale no longer matches reality.

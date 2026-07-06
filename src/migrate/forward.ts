@@ -15,7 +15,8 @@
  * stale clients. Verification is subset-containment (files ⊆ sqlite) so
  * re-runs verify clean after sqlite-era writes exist. Embeddings are not
  * migrated: the 1.22 startup reconcile rebuilds them by content hash.
- * config.version stays 1 — the format-v2 flip ships with v2.0, not here.
+ * Finalize stamps config.version 2 (v2.0): stale 1.x clients go read-only
+ * on the migrated repo — the W0.4 mixed-team lockout.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -238,8 +239,9 @@ export async function migrateForward(opts: ForwardOptions): Promise<MigrateRepor
       };
     }
 
-    // 4. Finalize: flip the backend. version stays 1 — the v2 flip is gated.
-    const edit = setStorageBackend(twiningDir, "sqlite");
+    // 4. Finalize: flip the backend and stamp the v2 format version —
+    // this is what turns stale 1.x clients read-only on the migrated repo.
+    const edit = setStorageBackend(twiningDir, "sqlite", { formatVersion: 2 });
     if (ensureDbGitignored(twiningDir)) {
       notes.push("added twining.db* to .twining/.gitignore (predates the sqlite backend)");
     }

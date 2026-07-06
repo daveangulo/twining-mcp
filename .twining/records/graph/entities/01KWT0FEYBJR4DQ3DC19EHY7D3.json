@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-05T20:45:49.899Z",
+  "id": "01KWT0FEYBJR4DQ3DC19EHY7D3",
+  "name": "01KWT0FEW6ETY4GD1G3C273Z3Y",
+  "properties": {
+    "scope": "docs/superpowers/plans/2026-07-04-v2.0-prep-proposal.md",
+    "summary": "Approved (Dave, 2026-07-05): all recommended v2.0 prep options — startup nudge, soft engines>=22.13 with warn-and-fallback, beta on dist-tag next, evidence-gated stable timing, version-2 stamp at migrate finalize"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-05T20:45:49.899Z"
+}

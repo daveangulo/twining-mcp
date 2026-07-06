@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Unconditional sqlite stamping on an old-Node creator's machine produces a config claiming sqlite while the server runs the files fallback and accumulates legacy state — a new-Node teammate would then boot an empty database next to real legacy files, exactly the silent-amnesia scenario the resolution rule exists to prevent, but inside a team. Stamping what will actually run keeps config.yml honest; files-stamped projects keep version 1 so 1.x teammates still work.",
+  "entry_type": "decision",
+  "id": "01KWT95C4F10Q6Q19K1ED36RFK",
+  "provenance": {
+    "branch": "v2.0-beta",
+    "commit_sha": "9ba8bafa5fcf37148b52d78ff766fc2d499efc0e",
+    "recorded_at": "2026-07-05T23:17:36.512Z"
+  },
+  "scope": "src/storage/",
+  "summary": "DEVIATION from proposal: fresh init stamps backend by sqliteAvailable() (sqlite/version-2 when available, files/version-1 otherwise) instead of stamping sqlite unconditionally",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-07-05T23:17:36.527Z"
+}

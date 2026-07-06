@@ -3,8 +3,8 @@
   "id": "01KJDZA8ST4BQ0MQGRNKQQT1BP",
   "name": ".github/workflows/publish.yml",
   "properties": {
-    "scope": ".github/workflows/"
+    "scope": "src/storage/"
   },
   "type": "file",
-  "updated_at": "2026-02-26T21:57:39.770Z"
+  "updated_at": "2026-07-05T23:17:36.806Z"
 }

@@ -2,7 +2,10 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
+import yaml from "js-yaml";
 import { initTwiningDir, ensureInitialized } from "../src/storage/init.js";
+import { sqliteAvailable } from "../src/storage/sqlite/db.js";
+import { SUPPORTED_CONFIG_VERSION } from "../src/config.js";
 
 describe("initTwiningDir", () => {
   let tmpDir: string;
@@ -13,6 +16,20 @@ describe("initTwiningDir", () => {
 
   afterEach(() => {
     fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  it("fresh init stamps an explicit backend and matching format version", () => {
+    initTwiningDir(tmpDir);
+    const parsed = yaml.load(
+      fs.readFileSync(path.join(tmpDir, ".twining", "config.yml"), "utf-8"),
+    ) as { version: number; storage: { backend: string } };
+    if (sqliteAvailable()) {
+      expect(parsed.storage.backend).toBe("sqlite");
+      expect(parsed.version).toBe(SUPPORTED_CONFIG_VERSION);
+    } else {
+      expect(parsed.storage.backend).toBe("files");
+      expect(parsed.version).toBe(1);
+    }
   });
 
   it("creates .twining/agents/ directory", () => {

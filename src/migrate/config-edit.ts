@@ -1,9 +1,10 @@
 // src/migrate/config-edit.ts
 /**
  * Surgical config.yml edit for migrations: set storage.backend, preserve
- * everything else, back up the original. Deliberately does NOT touch
- * `version` — the config-format v2 flip belongs to the gated v2.0 release,
- * not to backend migration.
+ * everything else, back up the original. Touches `version` only on
+ * explicit request (opts.formatVersion): forward finalize stamps 2 — the
+ * W0.4 mixed-team lockout that turns stale 1.x clients read-only on a
+ * migrated repo — and reverse restores 1 so 1.x clients work again.
  *
  * yaml.load→dump drops comments; the caller must warn (using hadComments)
  * and point at the backup. Twining itself never writes comments.
@@ -26,11 +27,15 @@ export interface ConfigEditResult {
 export function setStorageBackend(
   twiningDir: string,
   backend: "files" | "sqlite",
+  opts?: { formatVersion?: number },
 ): ConfigEditResult {
   const configPath = path.join(twiningDir, "config.yml");
 
   if (!fs.existsSync(configPath)) {
-    fs.writeFileSync(configPath, yaml.dump({ version: 1, storage: { backend } }));
+    fs.writeFileSync(
+      configPath,
+      yaml.dump({ version: opts?.formatVersion ?? 1, storage: { backend } }),
+    );
     return { backedUpTo: null, hadComments: false };
   }
 
@@ -51,6 +56,9 @@ export function setStorageBackend(
   const storage = (parsed.storage ?? {}) as Record<string, unknown>;
   storage.backend = backend;
   parsed.storage = storage;
+  if (opts?.formatVersion !== undefined) {
+    parsed.version = opts.formatVersion;
+  }
   atomicWriteFileSync(configPath, yaml.dump(parsed));
 
   return { backedUpTo: backupPath, hadComments: raw.includes("#") };

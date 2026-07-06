@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "The version-2 stamp exists to lock stale 1.x clients read-only on migrated repos; reverse is the escape hatch whose purpose is returning to a state 1.x clients can use, so it must undo the lockout too.",
+  "entry_type": "decision",
+  "id": "01KWT95C8B74C5W1BZZE816SQT",
+  "provenance": {
+    "branch": "v2.0-beta",
+    "commit_sha": "9ba8bafa5fcf37148b52d78ff766fc2d499efc0e",
+    "recorded_at": "2026-07-05T23:17:36.635Z"
+  },
+  "scope": "src/storage/",
+  "summary": "migrate --reverse now restores config version to 1 (forward finalize stamps 2)",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-05T23:17:36.651Z"
+}
