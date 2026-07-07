@@ -18,5 +18,6 @@
   "scope": "src/engine/decisions.ts",
   "status": "superseded",
   "summary": "Direct fs calls in DecisionEngine for STATE.md sync — deliberate exception to storage-layer convention",
+  "superseded_by": "01KHN3H7GHVWN89R1WVCHANX2V",
   "timestamp": "2026-02-17T03:41:26.826Z"
 }

@@ -16,5 +16,6 @@
   "scope": "project",
   "status": "superseded",
   "summary": "Build bottom-up: utils → storage → engine → embeddings → tools → server",
+  "superseded_by": "01KHN3H8FYSQERBRD2D2W6RK7Y",
   "timestamp": "2026-02-17T03:14:26.253Z"
 }

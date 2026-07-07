@@ -41,5 +41,6 @@
   "scope": "src/tools/",
   "status": "superseded",
   "summary": "Remove fullSurface tool gate — all 34 MCP tools always registered",
+  "superseded_by": "01KQ098D6RHXSBRHK40GFY70PB",
   "timestamp": "2026-03-28T11:33:12.356Z"
 }

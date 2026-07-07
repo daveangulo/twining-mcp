@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Repair pass for the pre-1.24.0 auto-archive feedback loop (#35).\nDropped 1 archiver-generated summary findings (\"Archive: N entries archived\"); 794 entries preserved; 0 emptied file(s) deleted.\n.twining/archive/2026-04-24-blackboard.jsonl: dropped 1, kept 324",
+  "entry_type": "finding",
+  "id": "01KWXFAB9B2WEZ7YEJWNXFG3TV",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "f65102f0731bb74587cffbaf6d64ed357efaa226",
+    "recorded_at": "2026-07-07T05:02:54.236Z"
+  },
+  "scope": "project",
+  "summary": "Archive compaction: dropped 1 loop-junk entries from 1 archive file(s), reclaimed ~1.2 KB",
+  "tags": [
+    "housekeeping",
+    "archive-compaction"
+  ],
+  "timestamp": "2026-07-07T05:02:54.252Z"
+}

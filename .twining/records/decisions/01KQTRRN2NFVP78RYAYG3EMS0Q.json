@@ -23,5 +23,6 @@
   "scope": "docs/superpowers/specs/",
   "status": "superseded",
   "summary": "Chose broad marker search across 4 files (~/.claude/CLAUDE.md, project CLAUDE.md, project CLAUDE.local.md, project .claude/CLAUDE.local.md) plus opt-out flag .twining/.no-claude-md-gates for issue #9",
+  "superseded_by": "01KQVA2PWT7HWDEVH04MNXDM8S",
   "timestamp": "2026-05-05T00:31:47.797Z"
 }

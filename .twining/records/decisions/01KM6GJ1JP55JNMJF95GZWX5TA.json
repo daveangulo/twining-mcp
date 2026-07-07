@@ -31,5 +31,6 @@
   "scope": "test/coordination/",
   "status": "superseded",
   "summary": "Bug-investigation resolution scorer penalizes redundant re-fixes when Agent A already completed the work",
+  "superseded_by": "01KQ098ZB0E70K71QJVA3NWQ55",
   "timestamp": "2026-03-20T20:56:28.532Z"
 }

@@ -33,5 +33,6 @@
   "scope": "src/engine/record-parser.ts",
   "status": "superseded",
   "summary": "Sliced decision cross-post summary to 200 chars and wrapped in try/catch inside DecisionEngine.decide",
+  "superseded_by": "01KWX2BSJAHZMRTEXS25N30ENB",
   "timestamp": "2026-04-24T22:57:00.224Z"
 }
