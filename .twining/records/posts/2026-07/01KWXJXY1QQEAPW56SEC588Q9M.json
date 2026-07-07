@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Beta enrollment drafts created (Gmail drafts-only, Dave sends): full beta.2 enrollment to Lanny.Ripple@gmail.com (first genuinely external tester, identified via GitHub issue authorship + public email), and a beta.2 delta reply on the existing dangulo@salesforce.com thread. Session wrap.\nDecisions: Chose to draft a short delta reply on the existing salesforce thread rather than re-send full enrollment — that project already holds the beta.1 instructions, which remain current except the >=beta.2 requirement line; a full re-send buries the one change that matters.; Chose Lanny.Ripple@gmail.com as the external-tester recipient — only non-Dave GitHub issue author on the repo, public email, and his repos hold the real pre-1.24 archive damage, making him the ideal compact_archives field test; Dave adds any additional testers to the draft before sending.\nFindings: Stable-gate note: the '≥2 external beta projects' gate counts projects, and dangulo@salesforce.com is Dave's own work address — Lanny's enrollment (Gmail draft r2930978860476125227, delta reply r-3715664772201766400) is the first genuinely external party. Until he or another outside tester enrolls, the long-pole gate has zero qualifying projects.",
+  "entry_type": "status",
+  "id": "01KWXJXY1QQEAPW56SEC588Q9M",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "06dc8f72c0ecc4ea024649ef75b4b090797d0c8d",
+    "recorded_at": "2026-07-07T06:06:01.766Z"
+  },
+  "scope": "project",
+  "summary": "Beta enrollment drafts created (Gmail drafts-only, Dave sends): full beta.2 enrollment to Lanny.Ripple@gmail.com (first genuinely external tester, identified via GitHub issue authorship + public em…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-07T06:06:01.783Z"
+}

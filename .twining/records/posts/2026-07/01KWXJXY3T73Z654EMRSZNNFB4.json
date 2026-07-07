@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Chose to draft a short delta reply on the existing salesforce thread rather than re-send full enrollment\" relates to:\n- 01KQV8Q0HZWMTRNS2NYFACCKY4: \"Adapted import style from 'import path' to 'import * as path' to satisfy TypeScript strict ESM rules (verbatimModuleSyntax: true)\"\n- 01KQV9B7VA60ZGGZM1SMR0DVME: \"Added TWINING_DISABLED guard immediately after set -euo pipefail to bypass hook when disabled at server level\"\n- 01KWNR9MQXG8NXX3SW1NXYXQ1F: \"Proposed (pending Dave's approval): the v2 backend default flip must use a legacy-detection resolution rule\"\n- 01KWXB9FK7JF1M1WSCVA39WSK7: \"Chose patch-based integration (git apply --3way of each worktree's diff onto main) over committing in worktrees and merging\"\n- 01KWXB9FPGZBA8RZWFJKW6D7CH: \"Chose a single 2.0.0-beta.2 changelog section framing the release as the v2.0 issue-burndown beta\"",
+  "entry_type": "finding",
+  "id": "01KWXJXY3T73Z654EMRSZNNFB4",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "06dc8f72c0ecc4ea024649ef75b4b090797d0c8d",
+    "recorded_at": "2026-07-07T06:06:01.835Z"
+  },
+  "scope": "project",
+  "summary": "Related decisions in scope: 5 existing decision(s) overlap",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-07T06:06:01.850Z"
+}

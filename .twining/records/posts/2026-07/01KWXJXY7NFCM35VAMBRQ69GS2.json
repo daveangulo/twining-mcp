@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "only non-Dave GitHub issue author on the repo, public email, and his repos hold the real pre-1.24 archive damage, making him the ideal compact_archives field test; Dave adds any additional testers to the draft before sending.",
+  "entry_type": "decision",
+  "id": "01KWXJXY7NFCM35VAMBRQ69GS2",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "06dc8f72c0ecc4ea024649ef75b4b090797d0c8d",
+    "recorded_at": "2026-07-07T06:06:01.958Z"
+  },
+  "scope": "project",
+  "summary": "Chose Lanny.Ripple@gmail.com as the external-tester recipient",
+  "tags": [
+    "security"
+  ],
+  "timestamp": "2026-07-07T06:06:01.973Z"
+}

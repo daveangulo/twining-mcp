@@ -1,0 +1,25 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Beta enrollment drafts created (Gmail drafts-only, Dave sends): full beta.2 enrollment to Lanny.Ripple@gmail.com (first genuinely external tester, identified via GitHub issue authorship + public email), and a beta.2 delta reply on the existing dangulo@salesforce.com thread. Session wrap.",
+  "depends_on": [],
+  "domain": "security",
+  "id": "01KWXJXY6BYZG6704RQCG8C8VC",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "06dc8f72c0ecc4ea024649ef75b4b090797d0c8d",
+    "recorded_at": "2026-07-07T06:06:01.915Z"
+  },
+  "rationale": "only non-Dave GitHub issue author on the repo, public email, and his repos hold the real pre-1.24 archive damage, making him the ideal compact_archives field test; Dave adds any additional testers to the draft before sending.",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Chose Lanny.Ripple@gmail.com as the external-tester recipient",
+  "timestamp": "2026-07-07T06:06:01.931Z"
+}

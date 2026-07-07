@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "that project already holds the beta.1 instructions, which remain current except the >=beta.2 requirement line; a full re-send buries the one change that matters.",
+  "entry_type": "decision",
+  "id": "01KWXJXY58B7JJ503RX57F9Y1C",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "06dc8f72c0ecc4ea024649ef75b4b090797d0c8d",
+    "recorded_at": "2026-07-07T06:06:01.880Z"
+  },
+  "scope": "project",
+  "summary": "Chose to draft a short delta reply on the existing salesforce thread rather than re-send full enrollment",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-07T06:06:01.896Z"
+}

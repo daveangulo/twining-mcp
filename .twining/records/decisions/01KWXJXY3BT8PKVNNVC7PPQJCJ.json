@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "re-send full enrollment",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Beta enrollment drafts created (Gmail drafts-only, Dave sends): full beta.2 enrollment to Lanny.Ripple@gmail.com (first genuinely external tester, identified via GitHub issue authorship + public email), and a beta.2 delta reply on the existing dangulo@salesforce.com thread. Session wrap.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KWXJXY3BT8PKVNNVC7PPQJCJ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "06dc8f72c0ecc4ea024649ef75b4b090797d0c8d",
+    "recorded_at": "2026-07-07T06:06:01.819Z"
+  },
+  "rationale": "that project already holds the beta.1 instructions, which remain current except the >=beta.2 requirement line; a full re-send buries the one change that matters.",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Chose to draft a short delta reply on the existing salesforce thread rather than re-send full enrollment",
+  "timestamp": "2026-07-07T06:06:01.835Z"
+}
