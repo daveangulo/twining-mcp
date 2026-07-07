@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:16:30.258Z",
+  "id": "01KWX2BSNJJ341YC42NJ07GR6R",
+  "properties": {
+    "decision_summary": "Kept the _internal blackboard post flag and the assemble/auto-archive entry_type \"decision\" exclusions as legacy-data defenses"
+  },
+  "source": "01KHMSDJZEQM1FXSMNYBYTST24",
+  "target": "01KWX2BSNHMVSE69RS1NHZB5KP",
+  "type": "decided_by"
+}

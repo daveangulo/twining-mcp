@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-07T00:46:55.286Z",
+  "id": "01KWX0NM9PTVAQSE097B124MRF",
+  "name": "01KWX0NM8DY4QATJ6ASY4GGWGQ",
+  "properties": {
+    "scope": "docs/",
+    "summary": "Chose to put the deprecation note only in server docs (README.md, docs/TWINING-REFERENCE.md, docs/UPGRADE-v2.md), not plugin/BEHAVIORS.md or plugin skills"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-07T00:46:55.286Z"
+}

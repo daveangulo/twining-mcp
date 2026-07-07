@@ -183,7 +183,7 @@ Remove specific blackboard entries by ID. Use to clean up false-positive warning
 <!-- tier: 1 -->
 
 #### Context
-Record a decision with full rationale, alternatives considered, and traceability. Creates a decision record and cross-posts to the blackboard. This is the core value proposition of Twining -- preserving the "why" behind technical choices so future agents and sessions can understand, respect, or intentionally override past decisions.
+Record a decision with full rationale, alternatives considered, and traceability. Creates a decision record in the decision store (as of server v2.0, decisions are no longer cross-posted to the blackboard; twining_query/twining_recent read the decision store directly). This is the core value proposition of Twining -- preserving the "why" behind technical choices so future agents and sessions can understand, respect, or intentionally override past decisions.
 
 #### Rules
 | ID | Level | Rule |
@@ -639,7 +639,7 @@ Archive old blackboard entries. Moves entries older than a cutoff timestamp to a
 #### Rules
 | ID | Level | Rule |
 |----|-------|------|
-| ARCHIVE-01 | SHOULD | Keep keep_decisions set to true (default) to preserve decision cross-posts in the active blackboard |
+| ARCHIVE-01 | SHOULD | Keep keep_decisions set to true (default) to preserve legacy pre-v2.0 decision mirror entries in the active blackboard |
 | ARCHIVE-02 | SHOULD | Only archive when twining_status warns about high entry counts, not preemptively |
 
 ### twining_verify

@@ -38,3 +38,6 @@ examples/demo-automation/recordings/*.webm
 # Eval results (generated)
 test/eval/results/latest.json
 test/eval/results/transcript-latest.json
+
+# Agent worktrees (cmux/Claude Code parallel sessions)
+.claude/worktrees/

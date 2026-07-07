@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "dogfoods v2 parallel work streams as requested; controller integrates and commits per the subagent-commit-race feedback memory.",
+  "entry_type": "decision",
+  "id": "01KWX0NMBF1653D7DC2PSKS60W",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T00:46:55.328Z"
+  },
+  "scope": "docs/",
+  "summary": "Chose worktree-isolated named teammates (weights-34, crosspost-30, supersede-31, archive-35) sharing one Twining blackboard with distinct agent_ids",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-07T00:46:55.343Z"
+}

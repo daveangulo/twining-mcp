@@ -248,7 +248,11 @@ export function createServer(projectRoot: string): ServerContext {
   // Core tools (always registered in both full and lite modes)
   registerRecordTools(server, blackboardEngine, decisionEngine, projectRoot, twiningDir);
   registerHousekeepingTools(server, housekeepingEngine, blackboardEngine, decisionStore);
-  registerBlackboardTools(server, blackboardEngine, twiningDir, { fullSurface });
+  registerBlackboardTools(server, blackboardEngine, twiningDir, {
+    fullSurface,
+    decisionEngine,
+    decisionStore,
+  });
   registerDecisionTools(server, decisionEngine, twiningDir, { fullSurface });
   registerContextTools(server, contextAssembler, { fullSurface });
   if (fullSurface) {

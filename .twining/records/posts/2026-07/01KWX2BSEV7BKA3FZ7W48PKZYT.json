@@ -1,0 +1,17 @@
+{
+  "agent_id": "crosspost-30",
+  "detail": "New decision \"Merge logic lives in the blackboard-tools handlers, with decisionEngine + decisionStore passed via the options object; no new methods on DecisionEngine\" relates to:\n- 01KHMV0F547RBYZ2854EFTM3ZC: \"PlanningBridge as separate engine module, not inline in ContextAssembler\"\n- 01KKNE772KYNY55NZ3N6PM0D2H: \"Auto-populate knowledge graph from tool calls via GraphAutoPopulator\"\n- 01KKNE7FA2Q7EFFPGX34K7RPHH: \"Replace computeGraphConnectivity with computeGraphReachability using typed BFS and adaptive weight fallback\"\n- 01KM2B5R2YW8G820RC35Z8TX20: \"Assemble output includes structured markdown briefing and inline status summary\"\n- 01KM2B5Y6D1YQVHER5F1SARJHD: \"Graph auto-population disabled by default (opt-in via graph.auto_populate config)\"\n- 01KQ0VBWYKNP65S6HR21J0X296: \"Added matchAll with /g flag for rejection-pattern extraction and two new pattern classes: (a) labelled rejections ('Alternative rejected: X.' / 'Rejected: X.') and (b) numbered-list items ('(1) X, (2) Y, (3) Z, (4) W') scoped to contexts that contain 'rejected' or 'alternatives'. Deduplication by lowercased content prevents 'over Y' + 'instead of Y' from double-counting the same option.\"\n- 01KQWJMWCVXYD14YGWJ9S1G943: \"Snapshot file lives at .twining/.last-known-branches.json\"",
+  "entry_type": "finding",
+  "id": "01KWX2BSEV7BKA3FZ7W48PKZYT",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T01:16:30.029Z"
+  },
+  "scope": "src/engine/",
+  "summary": "Related decisions in scope: 7 existing decision(s) overlap",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-07-07T01:16:30.043Z"
+}

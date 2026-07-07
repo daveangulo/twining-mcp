@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:16:50.319Z",
+  "id": "01KWX2CD8FBF3NNR4SKPYQBCKN",
+  "properties": {
+    "decision_summary": "Housekeeping backfill preserves the target's current status — it writes only the missing superseded_by pointer, never flips active/archived/overridden to superseded"
+  },
+  "source": "01KKNE77ZAW1943XPGMREM997R",
+  "target": "01KWX2CD8EWQ76089K22JFSR3X",
+  "type": "decided_by"
+}

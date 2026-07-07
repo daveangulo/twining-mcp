@@ -1,0 +1,17 @@
+{
+  "agent_id": "supersede-31",
+  "detail": "Keeps the tool payload unchanged for the overwhelmingly common non-superseded case and matches how optional decision fields surface elsewhere.",
+  "entry_type": "decision",
+  "id": "01KWX2CDG6MG8MVM9TY477R89G",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T01:16:50.551Z"
+  },
+  "scope": "src/storage/",
+  "summary": "why() emits superseded_by only when set (spread-conditional) rather than always-present nullable",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-07T01:16:50.566Z"
+}

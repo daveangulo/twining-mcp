@@ -383,8 +383,7 @@ Record a decision with full rationale.
 **Side effects:**
 - Creates decision file in `decisions/{ulid}.json`
 - Updates `decisions/index.json`
-- Posts a "decision" entry to the blackboard
-- If `supersedes` is set, marks the old decision as `status: "superseded"`
+- If `supersedes` is set, marks the old decision as `status: "superseded"` and writes a `superseded_by` back-link onto it (v2.0, #31)
 - Generates and stores embedding
 - Creates/updates knowledge graph entities for affected files/symbols with "decided_by" relations
 
@@ -719,13 +718,13 @@ Archiving happens:
 
 ### 6.2 Archive Process
 1. Select entries to archive based on timestamp/threshold
-2. Keep all "decision" type entries in the active blackboard (decisions are permanent)
+2. Keep any legacy "decision" type entries in the active blackboard (pre-v2.0 mirrors; see 6.3)
 3. Move selected entries to `archive/{YYYY-MM-DD}-blackboard.jsonl`
 4. If `summarize: true`, concatenate summaries of archived entries and post a single "finding" entry: "Archive summary: {count} entries archived covering {topics}. Key items: {top 5 summaries}"
 5. Rebuild embedding index for remaining active entries
 
-### 6.3 Decision entries are never archived
-Decision entries remain in the active blackboard indefinitely. They are the permanent record. Only their corresponding full Decision files in `decisions/` contain the complete rationale.
+### 6.3 Decision entries on the blackboard are legacy-only
+As of v2.0 (#30), decisions are no longer cross-posted to the blackboard — they live only in the decision store, and `twining_query`/`twining_recent` read the decision store directly. Blackboards written by pre-v2.0 versions still hold "decision" mirror entries; the archiver keeps them (`keep_decisions`, default true) and `twining_assemble` filters them, both as legacy-data defense. The Decision files in `decisions/` are the permanent record.
 
 ---
 

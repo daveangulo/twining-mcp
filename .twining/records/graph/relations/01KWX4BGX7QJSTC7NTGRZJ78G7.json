@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:51:18.439Z",
+  "id": "01KWX4BGX7QJSTC7NTGRZJ78G7",
+  "properties": {
+    "decision_summary": "compact_archives is an opt-in housekeeping flag (like staleness_review/merge_sweep), not part of the default pass"
+  },
+  "source": "01KWX4BGRZ6W3C7BMQZ60H6NN5",
+  "target": "01KWX4BGX322NJZFAEA24P866C",
+  "type": "decided_by"
+}

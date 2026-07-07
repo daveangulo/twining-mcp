@@ -2,7 +2,28 @@
 
 All notable changes to Twining MCP are documented here.
 
-## [2.0.0-beta.1] - unreleased (dist-tag `next`)
+## [2.0.0-beta.2] - unreleased (dist-tag `next`)
+
+The v2.0 issue-burndown beta: the four field-findings issues milestoned for v2.0 (#30, #31, #34, #35), built as four parallel agent work streams coordinating through Twining itself. Closes out the design work deferred from 1.24.0; the remaining field findings (#16, #32, #33) are milestoned v2.1.
+
+### Changed
+- **Decisions are no longer cross-posted to the blackboard** — they live only in the decision store (#30). Every `decide` (and `override`) previously mirrored an entry that `twining_assemble` filtered out on read: 1,412 dead entries in the heaviest field repo, ~1 MB read and discarded per assemble. `twining_query` and `twining_recent` now read the decision store directly, returning matches in a sibling `decisions` array marked `type: "decision"` — which also makes overridden and superseded decisions searchable, something the mirrors never were. Legacy mirror entries already on disk are untouched; the assembler's filter and the archiver's `keep_decisions` handling remain as legacy-data defense.
+- **`twining_handoff` / `twining_acknowledge` are deprecated** (#33). Field analysis found zero calls across three heavy-use repos, while the same repos accumulated 40+ rich, git-committed markdown handoff documents doing the job the API was designed for. Both tools keep working throughout v2.x; the redesign-vs-v3-removal decision is the #33 design pass, informed by the W4 agent-identity work (#32).
+
+### Fixed
+- **Partial `priority_weights` no longer silently discarded** (#34). A config listing a subset of weights summing to 1.0 deep-merged with defaults (adding `graph_reachability` 0.35), tripped the sum check, and threw away ALL user weights — the user's config looked applied but never was (this repo's own config hit it on every run). User sets summing to ~1.0 are now taken as complete (missing keys become 0); any other shape is merged and rescaled proportionally to 1.0; full defaults only on genuinely invalid input (negative/non-numeric/all-zero). Every warning now states what was provided, what was done, and the final effective weights.
+- **Superseded decisions now point at their replacement** (#31). `supersedes` was one-directional: the retired decision's status flipped but no back-link was written, so nothing led from a superseded decision to what replaced it. Superseding now writes `superseded_by` onto the retired decision (both backends), `twining_why` surfaces it, and the status flip happens after the replacement is created — a failed create no longer strands the old decision retired with no successor.
+
+### Added
+- **Archive compaction repair pass** in `twining_housekeeping` (`compact_archives: true`) for repos damaged by the pre-1.24.0 auto-archive feedback loop (#35). Streams `.twining/archive/*.jsonl` line-by-line (bounded memory, ~1 GB/s — the 3.0 GB field repo repairs in seconds) and drops only entries matching the archiver's own six-field summary signature ("Archive: N entries archived" findings — one field repo held 7,595,308 of them). Preview reports per-file junk/survivor counts and reclaimable bytes; `execute: true` compacts atomically, deletes archive files left empty, and posts an audit-trail finding. Corrupt lines and all agent-authored entries are always preserved. Backend-agnostic — also the cleanup path after `migrate`, which leaves `archive/` untouched.
+- **`superseded_by` backfill pass** in `twining_housekeeping` (#31): scans decisions carrying `supersedes` links and repairs historical one-directional links — preview reports, execute applies, dangling targets are counted and skipped, idempotent.
+
+## Plugin [1.11.1] - unreleased
+
+### Changed
+- BEHAVIORS.md updated for the server v2.0 contract: decisions are no longer cross-posted to the blackboard; `keep_decisions` guidance now framed as legacy-data defense.
+
+## [2.0.0-beta.1] - 2026-07-05 (dist-tag `next`)
 
 The v2.0 cut: the sqlite backend becomes the default — safely. Published under the npm dist-tag `next`; unpinned installs stay on 1.x until stable. Upgrade guide: [docs/UPGRADE-v2.md](docs/UPGRADE-v2.md).
 

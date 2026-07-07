@@ -8,10 +8,11 @@ archive:
 context_assembly:
   default_max_tokens: 4000
   priority_weights:
-    recency: 0.3
-    relevance: 0.4
-    decision_confidence: 0.2
+    recency: 0.2
+    relevance: 0.2
+    decision_confidence: 0.15
     warning_boost: 0.1
+    graph_reachability: 0.35
 conflict_resolution: human
 analytics:
   telemetry:

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:04:37.518Z",
+  "id": "01KWX1P1MEBGBWD0J7YHK8XPC1",
+  "properties": {
+    "decision_summary": "Chose to resolve priority_weights from the raw parsed YAML (parsed.context_assembly.priority_weights) rather than the deep-merged config"
+  },
+  "source": "01KJD595ND5YACA06PBGYTRRXA",
+  "target": "01KWX1P1MDHV3PF5BF585957B7",
+  "type": "decided_by"
+}

@@ -1,0 +1,49 @@
+{
+  "affected_files": [
+    "src/engine/archive-compactor.ts",
+    "src/engine/housekeeping.ts",
+    "src/tools/housekeeping-tools.ts",
+    "test/archive-compactor.test.ts",
+    "test/integration/tools/archive-compaction-tools.test.ts"
+  ],
+  "affected_symbols": [
+    "compactArchives",
+    "isArchiverLoopJunk",
+    "HousekeepingEngine.run",
+    "registerHousekeepingTools"
+  ],
+  "agent_id": "archive-35",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Match on summary regex + entry_type only",
+      "pros": [],
+      "reason_rejected": "looser than necessary; archaeology showed the tighter signature costs nothing"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "The field repo's junk was generated exclusively by the archiver code paths present in git history (no forked/patched variants in the wild)"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [
+    "No commits, no version bumps, no CHANGELOG edits (controller merges)",
+    "archive/ is backend-agnostic plain files — pass must work under both file and sqlite backends"
+  ],
+  "context": "Fixed #35: added opt-in compact_archives pass to twining_housekeeping — streaming repair for archive/*.jsonl junk from the pre-1.24.0 auto-archive loop. Preview reports counts/bytes; execute compacts atomically, deletes emptied files, posts audit finding.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KWX4BGN8MA7ECV7YZDX5XKKS",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T01:51:18.169Z"
+  },
+  "rationale": "Git archaeology across every commit touching src/engine/archiver.ts (1135323→dfd6add) plus the blackboard post default (db64f9c) proved all six fields stable since inception, so the full conjunction loses no junk while making a false drop of a human/agent entry practically impossible. Corrupt/unparseable lines always survive.",
+  "reversible": true,
+  "scope": "src/engine/",
+  "status": "active",
+  "summary": "Junk signature requires all six archiver-stamped fields: entry_type finding, summary /^Archive: \\d+ entries archived$/, tags including \"archive\", scope \"project\", agent_id \"main\", detail /^Archive summary: \\d+ entries archived\\./",
+  "timestamp": "2026-07-07T01:51:18.184Z"
+}

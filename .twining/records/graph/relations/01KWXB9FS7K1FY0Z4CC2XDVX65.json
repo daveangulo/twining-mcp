@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T03:52:31.783Z",
+  "id": "01KWXB9FS7K1FY0Z4CC2XDVX65",
+  "properties": {
+    "decision_summary": "Chose a single 2.0.0-beta.2 changelog section framing the release as the v2.0 issue-burndown beta"
+  },
+  "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+  "target": "01KWXB9FS2CTDYWK02508G1WNM",
+  "type": "decided_by"
+}

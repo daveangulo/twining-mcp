@@ -1,0 +1,41 @@
+{
+  "affected_files": [
+    "src/engine/decisions.ts",
+    "src/tools/blackboard-tools.ts",
+    "src/server.ts",
+    "src/engine/context-assembler.ts",
+    "src/engine/blackboard.ts"
+  ],
+  "affected_symbols": [
+    "DecisionEngine.decide",
+    "DecisionEngine.override",
+    "registerBlackboardTools",
+    "BlackboardEngine.post",
+    "ContextAssembler.assemble"
+  ],
+  "agent_id": "crosspost-30",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [
+    "No commits, no version bumps, no CHANGELOG edits from this worktree",
+    "Keep src/engine/decisions.ts diff minimal — teammate supersede-31 concurrently modifying it"
+  ],
+  "context": "Fixed #30: removed decision→blackboard cross-post (decide + override); twining_query/twining_recent now merge decision-store results with type markers; assemble decision filter kept as legacy-data defense.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KWX2BSJAHZMRTEXS25N30ENB",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T01:16:30.139Z"
+  },
+  "rationale": "Field blackboards hold years of mirror entries (1,412 in the heaviest repo); the filters protect against them and _internal is the only way tests can simulate that legacy data. Comments updated to say so.",
+  "reversible": true,
+  "scope": "src/engine/",
+  "status": "active",
+  "summary": "Kept the _internal blackboard post flag and the assemble/auto-archive entry_type \"decision\" exclusions as legacy-data defenses",
+  "supersedes": "01KQ0VBWT08012C3H6PYHFNC0A",
+  "timestamp": "2026-07-07T01:16:30.154Z"
+}

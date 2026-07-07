@@ -1,0 +1,17 @@
+{
+  "agent_id": "supersede-31",
+  "detail": "New decision \"why() emits superseded_by only when set (spread-conditional) rather than always-present nullable\" relates to:\n- 01KHXTX64263644BDF1JDRFD30: \"Fix race conditions by using single index lock for atomic file+index updates in DecisionStore and HandoffStore\"\n- 01KWK9KV4JQP61XDP1GDFXP764: \"Cross-process write-safety fixes from the multiwriter soak: exclusive-create (O_EXCL) for all file pre-creates, BEGIN IMMEDIATE around every sqlite read-modify-write, and lock retry budget (~24s) raised past the stale threshold (10s)\"\n- 01KWK9KV5FW2NC9RA2SJ4G0C57: \"Export tree excludes agents and embeddings, and ingest never deletes without the corresponding kind directory present\"\n- 01KWMS1ETGRRNV4BW25Q1CQHJA: \"Fixed the multiwriter-soak crash-tolerance flake by giving the victim writer an unfinishable op budget (VICTIM_OPS = OPS*100)\"\n- 01KWT95C6HJ382RN2X04CM27AV: \"migrate --reverse now restores config version to 1 (forward finalize stamps 2)\"\n- 01KWT95C9X8RE8M9Z77N72Q475: \"Publish workflow gained a tag-vs-package.json version guard and prerelease GH-release marking alongside the dist-tag routing; checkout/setup-node bumped to v5\"\n- 01KWX2CCWHH3QVCASADJ8N0TRZ: \"Back-link rides the existing updateStatus(id, status, extra) path — no IDecisionStore interface change, no sqlite schema column\"\n- 01KWX2CD0DTRMWETSZEQGTVVG8: \"Moved the supersede status flip in DecisionEngine.decide from before create to after create, writing status and superseded_by in one updateStatus call; conflict scan now excludes the supersede target\"\n- 01KWX2CD4YXB4HT5WBFKD0J4RT: \"Housekeeping backfill preserves the target's current status — it writes only the missing superseded_by pointer, never flips active/archived/overridden to superseded\"\n- 01KWX2CD96VAG2X662E2B4MDVC: \"Backfill pass runs by default (no opt-in flag), preview-reports / execute-applies like dedup; dangling supersedes targets are counted and skipped; newest supersessor wins when several point at one target\"",
+  "entry_type": "finding",
+  "id": "01KWX2CDE1K9CWB99V2P106ZJQ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T01:16:50.483Z"
+  },
+  "scope": "src/storage/",
+  "summary": "Related decisions in scope: 10 existing decision(s) overlap",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-07T01:16:50.497Z"
+}

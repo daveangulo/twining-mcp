@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "need",
+  "id": "01KWXB9FZ9Y0D33S0JRWGZ7GN6",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T03:52:31.963Z"
+  },
+  "scope": "project",
+  "summary": "supersedes is not validated at write time the way 1.24.0 validates depends_on — housekeeping backfill reports dangles it finds; write-time validation is a candidate 2.x follow-up.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-07T03:52:31.977Z"
+}

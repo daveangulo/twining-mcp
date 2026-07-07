@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: #35 sequencing fact: twining-mcp migrate leaves archive/ untouched (src/migrate/forward.ts:118) — junk archives are NOT ingested into sqlite on migration, so archive repair is wanted-for-cleanup but not a v2 migration-correctness blocker.",
+  "entry_type": "finding",
+  "id": "01KWWX3P755G9SX3KNMNNBQK35",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-06T23:44:41.686Z"
+  },
+  "scope": "project",
+  "summary": "#35 sequencing fact: twining-mcp migrate leaves archive/ untouched (src/migrate/forward.ts:118) — junk archives are NOT ingested into sqlite on migration, so archive repair is wanted-for-cleanup bu…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-06T23:44:41.701Z"
+}

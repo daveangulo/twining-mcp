@@ -1,0 +1,55 @@
+{
+  "affected_files": [
+    "src/utils/types.ts",
+    "src/engine/decisions.ts",
+    "src/engine/housekeeping.ts",
+    "src/tools/housekeeping-tools.ts",
+    "test/decision-engine.test.ts",
+    "test/sqlite-backend.test.ts",
+    "test/housekeeping-backfill.test.ts",
+    "test/migrate/reverse.test.ts"
+  ],
+  "affected_symbols": [
+    "Decision",
+    "DecisionEngine/decide",
+    "DecisionEngine/why",
+    "HousekeepingEngine/run",
+    "IDecisionStore/updateStatus"
+  ],
+  "agent_id": "supersede-31",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Dedicated sqlite column + interface method setSupersededBy()",
+      "pros": [],
+      "reason_rejected": "Invents a new storage pattern the codebase deliberately avoids for optional decision fields; widens the interface for one write site."
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "The engine decide() path is the only supersede write site (override() routes through decide(); record-tools passes supersedes into decide()) — grep for updateStatus(...\"superseded\") confirms no other caller.",
+    "Housekeeping loading every decision file for the scan is acceptable at field scale (staleness review already does the same)."
+  ],
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [
+    "No plugin/ changes (adoption surface shipped in plugin 1.24.1)",
+    "No commits, no version bumps, no CHANGELOG edits from this worktree",
+    "Keep decisions.ts and housekeeping.ts diffs modular — teammates crosspost-30 and archive-35 are editing the same files concurrently"
+  ],
+  "context": "Fixed #31 server half: superseded_by back-links now written at supersede time in both backends, surfaced by twining_why, and backfilled for historical decisions by a new housekeeping pass. TDD, 1075 tests green, build/typecheck clean.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KWX2CCWHH3QVCASADJ8N0TRZ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T01:16:49.922Z"
+  },
+  "rationale": "Both backends already apply extra via Object.assign and persist the full Decision JSON (file: decisions/<id>.json; sqlite: decisions.data blob), exactly how overridden_by/assumptions/provenance are stored. The export tree and migrate forward/reverse round-trip the full object, so the optional field survives migration with zero migration-layer changes — proven by a new round-trip test.",
+  "reversible": true,
+  "scope": "src/storage/",
+  "status": "active",
+  "summary": "Back-link rides the existing updateStatus(id, status, extra) path — no IDecisionStore interface change, no sqlite schema column",
+  "timestamp": "2026-07-07T01:16:49.937Z"
+}

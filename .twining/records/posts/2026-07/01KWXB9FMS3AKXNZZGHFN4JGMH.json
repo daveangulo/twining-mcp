@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "worktree .twining sentinels were stale (teammate records went to the shared main .twining), so worktree commits would fight the pre-commit hook; patches keep the controller-commits convention intact. One conflict at the predicted housekeeping.ts seam, resolved by keeping #31's backfill as pass 9 and renumbering #35's compaction to pass 10.",
+  "entry_type": "decision",
+  "id": "01KWXB9FMS3AKXNZZGHFN4JGMH",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T03:52:31.627Z"
+  },
+  "scope": "project",
+  "summary": "Chose patch-based integration (git apply --3way of each worktree's diff onto main) over committing in worktrees and merging",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-07T03:52:31.641Z"
+}

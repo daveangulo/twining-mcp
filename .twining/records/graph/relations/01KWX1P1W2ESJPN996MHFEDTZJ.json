@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:04:37.762Z",
+  "id": "01KWX1P1W2ESJPN996MHFEDTZJ",
+  "properties": {
+    "decision_summary": "Chose a new sibling test file test/config-priority-weights.test.ts over extending test/config-version-gate.test.ts"
+  },
+  "source": "01KJNQ31NXFQNGNB6TH18JJGGZ",
+  "target": "01KWX1P1W0R394WDD3GAM7EV46",
+  "type": "decided_by"
+}

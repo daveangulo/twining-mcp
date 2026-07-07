@@ -1,0 +1,17 @@
+{
+  "agent_id": "supersede-31",
+  "detail": "The replacement id does not exist until create returns, so a pre-create back-link is impossible without pre-generating ids (invasive store change) or double-writing (two locks, two export-tree writes). Post-create also fixes a latent inconsistency: previously, if create threw, the old decision was left superseded with no successor. The conflict-filter exclusion (entry.id !== input.supersedes) preserves the prior behavior where the already-flipped target never appeared as a conflict.",
+  "entry_type": "decision",
+  "id": "01KWX2CD31QBRYZF6DEF0XJQYA",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T01:16:50.129Z"
+  },
+  "scope": "src/storage/",
+  "summary": "Moved the supersede status flip in DecisionEngine.decide from before create to after create, writing status and superseded_by in one updateStatus call; conflict scan now excludes the supersede target",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-07T01:16:50.145Z"
+}

@@ -5,15 +5,28 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { BlackboardEngine } from "../engine/blackboard.js";
+import type { DecisionEngine } from "../engine/decisions.js";
+import type { IDecisionStore } from "../storage/interfaces.js";
 import { ENTRY_TYPES } from "../utils/types.js";
 import { toolResult, toolError, TwiningError } from "../utils/errors.js";
 import { writeRecordSentinel } from "../utils/record-sentinel.js";
+
+/** Whether an entry_types filter admits decision-store results. */
+function includesDecisions(entryTypes?: string[]): boolean {
+  return !entryTypes || entryTypes.includes("decision");
+}
 
 export function registerBlackboardTools(
   server: McpServer,
   engine: BlackboardEngine,
   twiningDir: string,
-  options: { fullSurface?: boolean } = {},
+  options: {
+    fullSurface?: boolean;
+    // Decisions live only in the decision store (issue #30) — query/recent
+    // merge decision-store results into their output when these are provided.
+    decisionEngine?: DecisionEngine;
+    decisionStore?: IDecisionStore;
+  } = {},
 ): void {
   // twining_post — Post an entry to the shared blackboard
   server.registerTool(
@@ -116,13 +129,15 @@ export function registerBlackboardTools(
     "twining_query",
     {
       description:
-        "Semantic search across blackboard entries. Uses embeddings when available, falls back to keyword search. Returns entries ranked by relevance.",
+        "Semantic search across blackboard entries and recorded decisions. Uses embeddings when available, falls back to keyword search. Returns blackboard entries in `results` and decision-store matches in `decisions`, each ranked by relevance.",
       inputSchema: {
         query: z.string().describe("Natural language query"),
         entry_types: z
           .array(z.string())
           .optional()
-          .describe("Optional type filter"),
+          .describe(
+            'Optional type filter. Include "decision" (or omit the filter) to also search recorded decisions.',
+          ),
         limit: z
           .number()
           .optional()
@@ -135,7 +150,23 @@ export function registerBlackboardTools(
           entry_types: args.entry_types,
           limit: args.limit,
         });
-        return toolResult(result);
+
+        // Merge decision-store matches (issue #30): decisions are no longer
+        // mirrored on the blackboard, so search them directly.
+        let decisions: Array<Record<string, unknown>> = [];
+        if (options.decisionEngine && includesDecisions(args.entry_types)) {
+          const decisionSearch = await options.decisionEngine.searchDecisions(
+            args.query,
+            undefined,
+            args.limit ?? 10,
+          );
+          decisions = decisionSearch.results.map((d) => ({
+            type: "decision" as const,
+            ...d,
+          }));
+        }
+
+        return toolResult({ ...result, decisions });
       } catch (e) {
         return toolError(
           e instanceof Error ? e.message : "Unknown error",
@@ -150,7 +181,7 @@ export function registerBlackboardTools(
     "twining_recent",
     {
       description:
-        "Get the most recent blackboard entries. Quick way to see latest activity without specifying filters.",
+        "Get the most recent blackboard entries and recorded decisions. Quick way to see latest activity without specifying filters. Blackboard entries are returned in `entries`, decision-store records in `decisions`.",
       inputSchema: {
         n: z
           .number()
@@ -159,13 +190,37 @@ export function registerBlackboardTools(
         entry_types: z
           .array(z.string())
           .optional()
-          .describe("Optional type filter"),
+          .describe(
+            'Optional type filter. Include "decision" (or omit the filter) to also get recent recorded decisions.',
+          ),
       },
     },
     async (args) => {
       try {
         const result = await engine.recent(args.n, args.entry_types);
-        return toolResult(result);
+
+        // Merge recent decision-store records (issue #30): decisions are no
+        // longer mirrored on the blackboard, so read the store directly.
+        let decisions: Array<Record<string, unknown>> = [];
+        if (options.decisionStore && includesDecisions(args.entry_types)) {
+          const index = await options.decisionStore.getIndex();
+          decisions = index
+            .slice()
+            .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
+            .slice(0, args.n ?? 20)
+            .map((d) => ({
+              type: "decision" as const,
+              id: d.id,
+              timestamp: d.timestamp,
+              summary: d.summary,
+              domain: d.domain,
+              scope: d.scope,
+              status: d.status,
+              confidence: d.confidence,
+            }));
+        }
+
+        return toolResult({ ...result, decisions });
       } catch (e) {
         return toolError(
           e instanceof Error ? e.message : "Unknown error",

@@ -12,6 +12,11 @@ import type { GraphEngine } from "./graph.js";
 import type { BlackboardEntry, Decision } from "../utils/types.js";
 import { auditStaleness, type StaleItem } from "./staleness.js";
 import { detectDeletedBranches } from "./branch-watcher.js";
+import {
+  compactArchives,
+  formatBytes,
+  type ArchiveCompactionReport,
+} from "./archive-compactor.js";
 import type { IBlackboardStore, IDecisionStore } from "../storage/interfaces.js";
 
 /** Default: flag provisionals older than 7 days. */
@@ -45,6 +50,11 @@ export interface HousekeepingResult {
   dangling_warnings: { count: number; items: DanglingWarning[] };
   graph_pruned: { removed: number };
   metrics_rotated: { removed: number };
+  superseded_backfill: {
+    fixed: number;
+    dangling: number;
+    items: Array<{ id: string; superseded_by: string }>;
+  };
   staleness_review?: {
     threshold: number;
     candidates: StaleItem[];
@@ -65,6 +75,7 @@ export interface HousekeepingResult {
       recorded_at?: string;
     }>;
   };
+  archive_compaction?: ArchiveCompactionReport;
   dry_run: boolean;
   summary: string;
 }
@@ -87,6 +98,7 @@ export class HousekeepingEngine {
     promote_provisionals?: boolean;
     staleness_review?: boolean;
     merge_sweep?: boolean;
+    compact_archives?: boolean;
   }): Promise<HousekeepingResult> {
     const staleDays = options?.stale_days ?? STALE_PROVISIONAL_DAYS;
     const metricsRetentionDays = options?.metrics_retention_days ?? METRICS_RETENTION_DAYS;
@@ -94,6 +106,7 @@ export class HousekeepingEngine {
     const promoteProvisionals = options?.promote_provisionals ?? false;
     const stalenessReview = options?.staleness_review ?? false;
     const mergeSweep = options?.merge_sweep ?? false;
+    const compactArchivesOpt = options?.compact_archives ?? false;
 
     const result: HousekeepingResult = {
       archived: { count: 0, file: "" },
@@ -103,6 +116,7 @@ export class HousekeepingEngine {
       dangling_warnings: { count: 0, items: [] },
       graph_pruned: { removed: 0 },
       metrics_rotated: { removed: 0 },
+      superseded_backfill: { fixed: 0, dangling: 0, items: [] },
       dry_run: !execute,
       summary: "",
     };
@@ -318,6 +332,65 @@ export class HousekeepingEngine {
       }
     }
 
+    // 9. Superseded back-link backfill — supersede was one-directional before
+    // v1.25 (#31): the target's status flipped but superseded_by was never
+    // written, so a retired decision could not point at its replacement. Scan
+    // decisions carrying a supersedes link; where the target exists and lacks
+    // the back-link, report it (preview) or write it (execute). The write
+    // preserves the target's current status — backfill fills the pointer, it
+    // does not relitigate lifecycle. Dangling targets (historical supersedes
+    // of since-deleted decisions) are counted and skipped, never fabricated.
+    try {
+      const index = await this.decisionStore.getIndex();
+      // target id → superseding id; index order is chronological (ULID), so a
+      // later supersessor of the same target overwrites an earlier one.
+      const pending = new Map<string, string>();
+      let dangling = 0;
+      for (const entry of index) {
+        const d = await this.decisionStore.get(entry.id);
+        if (!d?.supersedes) continue;
+        const target = await this.decisionStore.get(d.supersedes);
+        if (!target) {
+          dangling++;
+          continue;
+        }
+        if (target.superseded_by) continue;
+        pending.set(target.id, d.id);
+      }
+
+      if (execute) {
+        for (const [targetId, supersededBy] of pending) {
+          const target = await this.decisionStore.get(targetId);
+          if (!target) continue;
+          await this.decisionStore.updateStatus(targetId, target.status, {
+            superseded_by: supersededBy,
+          });
+        }
+      }
+
+      result.superseded_backfill.items = [...pending].map(
+        ([id, superseded_by]) => ({ id, superseded_by }),
+      );
+      result.superseded_backfill.fixed = pending.size;
+      result.superseded_backfill.dangling = dangling;
+    } catch {
+      // Non-fatal
+    }
+
+    // 10. Archive compaction — opt-in repair pass for the pre-1.24.0
+    // auto-archive feedback loop (#35). Streams archive/*.jsonl, drops only
+    // entries matching the archiver's own summary signature, and (execute
+    // only) atomically rewrites files, deleting any left empty.
+    if (compactArchivesOpt) {
+      try {
+        result.archive_compaction = await compactArchives(this.twiningDir, {
+          execute,
+        });
+      } catch {
+        // Non-fatal — compaction is opt-in and shouldn't break housekeeping
+      }
+    }
+
     // Dedupe: if both staleness_review and merge_sweep ran, an entry from a
     // recently-deleted branch will appear in both candidate lists (branch_gone
     // signal vs deleted-branch sweep). Remove the staleness duplicate so the
@@ -340,6 +413,8 @@ export class HousekeepingEngine {
     if (result.promoted_provisionals.count > 0) parts.push(`promoted ${result.promoted_provisionals.count} provisionals`);
     if (result.graph_pruned.removed > 0) parts.push(`${verb}prune ${result.graph_pruned.removed} orphaned entities`);
     if (result.metrics_rotated.removed > 0) parts.push(`${verb}rotate ${result.metrics_rotated.removed} old metrics`);
+    if (result.superseded_backfill.fixed > 0) parts.push(`${verb}backfill ${result.superseded_backfill.fixed} superseded_by back-link(s)`);
+    if (result.superseded_backfill.dangling > 0) parts.push(`${result.superseded_backfill.dangling} dangling supersedes target(s) skipped`);
     if (result.staleness_review && result.staleness_review.candidates.length > 0) {
       parts.push(`${result.staleness_review.candidates.length} items ≥ score ${result.staleness_review.threshold} flagged stale`);
     }
@@ -349,6 +424,12 @@ export class HousekeepingEngine {
       } else if (result.merge_sweep.deleted_branches.length > 0) {
         parts.push(`merge_sweep: ${result.merge_sweep.deleted_branches.length} deleted branch(es), ${result.merge_sweep.candidates.length} entries from them`);
       }
+    }
+    if (result.archive_compaction && result.archive_compaction.total_junk > 0) {
+      const ac = result.archive_compaction;
+      parts.push(
+        `${verb}drop ${ac.total_junk} loop-junk archive entries (~${formatBytes(ac.total_bytes_reclaimable)})`,
+      );
     }
     result.summary = parts.length > 0
       ? prefix + parts.join(", ")

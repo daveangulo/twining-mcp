@@ -178,6 +178,68 @@ describe("ContextAssembler", () => {
       expect(result.recent_questions).toHaveLength(1);
     });
 
+    it("produces identical output when the blackboard holds legacy decision mirror entries (issue #30)", async () => {
+      // Baseline: one real decision in the store, one finding on the blackboard
+      await decisionStore.create({
+        agent_id: "test",
+        domain: "implementation",
+        scope: "src/auth/",
+        summary: "Use JWT for auth",
+        context: "Need stateless auth",
+        rationale: "Enables horizontal scaling",
+        constraints: [],
+        alternatives: [],
+        depends_on: [],
+        confidence: "high",
+        reversible: true,
+        affected_files: [],
+        affected_symbols: [],
+      });
+      await blackboardStore.append({
+        agent_id: "test",
+        entry_type: "finding",
+        tags: [],
+        scope: "src/auth/",
+        summary: "Found existing session middleware",
+        detail: "",
+      });
+
+      const assembler = new ContextAssembler(
+        blackboardStore,
+        decisionStore,
+        null,
+        config,
+      );
+      const before = await assembler.assemble("update auth", "src/auth/");
+
+      // Simulate legacy on-disk decision mirrors (pre-#30 cross-posts)
+      for (let i = 0; i < 3; i++) {
+        await blackboardStore.append({
+          agent_id: "test",
+          entry_type: "decision",
+          tags: ["implementation"],
+          scope: "src/auth/",
+          summary: `Legacy mirror decision ${i}`,
+          detail: "rationale text",
+        });
+      }
+
+      const after = await assembler.assemble("update auth", "src/auth/");
+
+      // Legacy mirrors are filtered out — output is unchanged
+      expect(after.active_decisions.map((d) => d.summary)).toEqual(
+        before.active_decisions.map((d) => d.summary),
+      );
+      expect(after.recent_findings.map((f) => f.summary)).toEqual(
+        before.recent_findings.map((f) => f.summary),
+      );
+      expect(after.active_warnings).toEqual(before.active_warnings);
+      expect(after.open_needs).toEqual(before.open_needs);
+      expect(after.recent_questions).toEqual(before.recent_questions);
+      const allSummaries = JSON.stringify(after);
+      expect(allSummaries).not.toContain("Legacy mirror decision");
+    });
+
     it("should respect token budget", async () => {
       // Create many entries to exceed a small budget
       for (let i = 0; i < 20; i++) {

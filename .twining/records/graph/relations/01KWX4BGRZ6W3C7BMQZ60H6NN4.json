@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:51:18.303Z",
+  "id": "01KWX4BGRZ6W3C7BMQZ60H6NN4",
+  "properties": {
+    "decision_summary": "Junk signature requires all six archiver-stamped fields: entry_type finding, summary /^Archive: \\d+ entries archived$/, tags including \"archive\", scope \"project\", agent_id \"main\", detail /^Archive summary: \\d+ entries archived\\./"
+  },
+  "source": "01KWX4BGRZ6W3C7BMQZ60H6NN3",
+  "target": "01KWX4BGRVVQ3HKNN9QQJ6VPRN",
+  "type": "decided_by"
+}

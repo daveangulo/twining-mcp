@@ -3,8 +3,8 @@
   "id": "01KQV9J8B49121D9ZY3ZNPCK77",
   "name": "CHANGELOG.md",
   "properties": {
-    "scope": "plugin/.claude-plugin/plugin.json, .claude-plugin/marketplace.json, package.json, CHANGELOG.md"
+    "scope": "project"
   },
   "type": "file",
-  "updated_at": "2026-05-05T05:25:23.940Z"
+  "updated_at": "2026-07-07T03:52:31.884Z"
 }

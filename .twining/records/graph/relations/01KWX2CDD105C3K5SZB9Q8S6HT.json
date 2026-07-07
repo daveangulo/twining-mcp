@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:16:50.465Z",
+  "id": "01KWX2CDD105C3K5SZB9Q8S6HT",
+  "properties": {
+    "decision_summary": "Backfill pass runs by default (no opt-in flag), preview-reports / execute-applies like dedup; dangling supersedes targets are counted and skipped; newest supersessor wins when several point at one target"
+  },
+  "source": "01KWX2CCZWN7B3T9ZJ74VCDF7Z",
+  "target": "01KWX2CDCSD9YJAA2E0MS6XAK4",
+  "type": "decided_by"
+}

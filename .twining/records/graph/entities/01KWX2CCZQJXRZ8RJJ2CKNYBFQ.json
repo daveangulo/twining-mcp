@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:16:50.039Z",
+  "id": "01KWX2CCZQJXRZ8RJJ2CKNYBFQ",
+  "name": "test/decision-engine.test.ts",
+  "properties": {
+    "scope": "src/storage/"
+  },
+  "type": "file",
+  "updated_at": "2026-07-07T01:16:50.584Z"
+}

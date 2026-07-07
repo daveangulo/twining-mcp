@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T03:52:31.678Z",
+  "id": "01KWXB9FNYTBX0FCY4MNMWZ4FV",
+  "properties": {
+    "decision_summary": "Chose patch-based integration (git apply --3way of each worktree's diff onto main) over committing in worktrees and merging"
+  },
+  "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+  "target": "01KWXB9FNR9QP6P03R2PH0SPN9",
+  "type": "decided_by"
+}

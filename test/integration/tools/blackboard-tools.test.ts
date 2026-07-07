@@ -94,6 +94,50 @@ describe("twining_query", () => {
     const parsed = parseToolResponse(res) as { results: unknown[] };
     expect(parsed).toHaveProperty("results");
   });
+
+  it("returns matching decisions from the decision store with a type marker (issue #30)", async () => {
+    await callTool(server, "twining_decide", {
+      domain: "architecture",
+      scope: "src/auth/",
+      summary: "Use JWT with jose library for stateless auth",
+      context: "Need stateless auth",
+      rationale: "jose is well-maintained",
+    });
+    const res = await callTool(server, "twining_query", {
+      query: "JWT stateless auth",
+    });
+    const parsed = parseToolResponse(res) as {
+      results: Array<{ entry: { entry_type: string } }>;
+      decisions: Array<{ type: string; summary: string; id: string }>;
+    };
+    expect(parsed).toHaveProperty("decisions");
+    const match = parsed.decisions.find((d) =>
+      d.summary.includes("Use JWT with jose library"),
+    );
+    expect(match).toBeDefined();
+    expect(match!.type).toBe("decision");
+    expect(match!.id).toHaveLength(26);
+    // Decision must not appear as a blackboard mirror in results
+    for (const r of parsed.results) {
+      expect(r.entry.entry_type).not.toBe("decision");
+    }
+  });
+
+  it("omits decisions when entry_types filter excludes them", async () => {
+    await callTool(server, "twining_decide", {
+      domain: "architecture",
+      scope: "src/auth/",
+      summary: "Use JWT for auth",
+      context: "ctx",
+      rationale: "why",
+    });
+    const res = await callTool(server, "twining_query", {
+      query: "JWT auth",
+      entry_types: ["finding"],
+    });
+    const parsed = parseToolResponse(res) as { decisions?: unknown[] };
+    expect(parsed.decisions ?? []).toHaveLength(0);
+  });
 });
 
 describe("twining_recent", () => {
@@ -117,5 +161,50 @@ describe("twining_recent", () => {
     expect(parsed.entries.length).toBeGreaterThanOrEqual(2);
     // Most recent first
     expect(parsed.entries[0]!.summary).toBe("Entry 2");
+  });
+
+  it("includes recent decisions from the decision store with a type marker (issue #30)", async () => {
+    await callTool(server, "twining_post", {
+      entry_type: "finding",
+      summary: "A finding",
+      tags: [],
+      scope: "project",
+    });
+    await callTool(server, "twining_decide", {
+      domain: "implementation",
+      scope: "src/db/",
+      summary: "Use sqlite for storage",
+      context: "ctx",
+      rationale: "why",
+    });
+    const res = await callTool(server, "twining_recent", { n: 5 });
+    const parsed = parseToolResponse(res) as {
+      entries: Array<{ entry_type: string }>;
+      decisions: Array<{ type: string; summary: string }>;
+    };
+    expect(parsed).toHaveProperty("decisions");
+    expect(parsed.decisions.length).toBeGreaterThanOrEqual(1);
+    expect(parsed.decisions[0]!.type).toBe("decision");
+    expect(parsed.decisions[0]!.summary).toBe("Use sqlite for storage");
+    // No decision mirrors among blackboard entries
+    for (const e of parsed.entries) {
+      expect(e.entry_type).not.toBe("decision");
+    }
+  });
+
+  it("omits decisions when entry_types filter excludes them", async () => {
+    await callTool(server, "twining_decide", {
+      domain: "implementation",
+      scope: "src/db/",
+      summary: "Use sqlite for storage",
+      context: "ctx",
+      rationale: "why",
+    });
+    const res = await callTool(server, "twining_recent", {
+      n: 5,
+      entry_types: ["finding"],
+    });
+    const parsed = parseToolResponse(res) as { decisions?: unknown[] };
+    expect(parsed.decisions ?? []).toHaveLength(0);
   });
 });

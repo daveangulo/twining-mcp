@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:51:18.305Z",
+  "id": "01KWX4BGS172CJFFVSGD15N4K5",
+  "name": "HousekeepingEngine.run",
+  "properties": {
+    "scope": "src/engine/"
+  },
+  "type": "function",
+  "updated_at": "2026-07-07T01:51:18.976Z"
+}

@@ -1,0 +1,29 @@
+{
+  "affected_files": [
+    "README.md",
+    "docs/TWINING-REFERENCE.md",
+    "docs/UPGRADE-v2.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Handoff API deprecated in v2.0 docs (issue #33 decision-only deliverable): README, TWINING-REFERENCE, UPGRADE-v2 note twining_handoff/acknowledge deprecation; redesign-vs-v3-removal deferred to v2.1 design pass. Milestones v2.0/v2.1 created; 4 teammates fanned out on #30/#31/#34/#35.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KWX0NMA8BP7BY6R33RTRJME6",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T00:46:55.289Z"
+  },
+  "rationale": "dogfoods v2 parallel work streams as requested; controller integrates and commits per the subagent-commit-race feedback memory.",
+  "reversible": true,
+  "scope": "docs/",
+  "status": "active",
+  "summary": "Chose worktree-isolated named teammates (weights-34, crosspost-30, supersede-31, archive-35) sharing one Twining blackboard with distinct agent_ids",
+  "timestamp": "2026-07-07T00:46:55.304Z"
+}

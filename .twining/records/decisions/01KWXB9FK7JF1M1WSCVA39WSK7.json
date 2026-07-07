@@ -1,0 +1,43 @@
+{
+  "affected_files": [
+    "src/engine/decisions.ts",
+    "src/engine/housekeeping.ts",
+    "src/engine/archive-compactor.ts",
+    "src/config.ts",
+    "src/tools/blackboard-tools.ts",
+    "src/tools/housekeeping-tools.ts",
+    "src/utils/types.ts",
+    "CHANGELOG.md",
+    "package.json",
+    "plugin/BEHAVIORS.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "committing in worktrees and merging",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Integrated 4 parallel work streams into main for 2.0.0-beta.2: #30 cross-post removal, #31 superseded_by back-links + backfill, #34 priority_weights normalization, #35 archive compaction. Suite 1113 passed, eval gate 0.8909 (no regression vs beta.1), plugin 1.11.1 doc sync.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KWXB9FK7JF1M1WSCVA39WSK7",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T03:52:31.575Z"
+  },
+  "rationale": "worktree .twining sentinels were stale (teammate records went to the shared main .twining), so worktree commits would fight the pre-commit hook; patches keep the controller-commits convention intact. One conflict at the predicted housekeeping.ts seam, resolved by keeping #31's backfill as pass 9 and renumbering #35's compaction to pass 10.",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Chose patch-based integration (git apply --3way of each worktree's diff onto main) over committing in worktrees and merging",
+  "timestamp": "2026-07-07T03:52:31.591Z"
+}

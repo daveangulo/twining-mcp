@@ -189,8 +189,10 @@ For advanced workflows — deep decision management, graph exploration, multi-ag
 | **Blackboard** | `twining_read`, `twining_query`, `twining_recent`, `twining_dismiss` |
 | **Context** | `twining_summarize`, `twining_what_changed` |
 | **Graph** | `twining_add_entity`, `twining_add_relation`, `twining_neighbors`, `twining_graph_query`, `twining_prune_graph` |
-| **Coordination** | `twining_register`, `twining_agents`, `twining_discover`, `twining_delegate`, `twining_handoff`, `twining_acknowledge` |
+| **Coordination** | `twining_register`, `twining_agents`, `twining_discover`, `twining_delegate`, `twining_handoff`†, `twining_acknowledge`† |
 | **Lifecycle** | `twining_verify`, `twining_status`, `twining_archive`, `twining_export` |
+
+† Deprecated in v2.0 — real handoffs happen as git-committed markdown docs; redesign or v3 removal tracked in [#33](https://github.com/daveangulo/twining-mcp/issues/33).
 
 Enable with `.twining/config.yml`:
 ```yaml

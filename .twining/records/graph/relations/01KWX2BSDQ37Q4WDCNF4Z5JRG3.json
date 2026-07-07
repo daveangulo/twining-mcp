@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:16:30.007Z",
+  "id": "01KWX2BSDQ37Q4WDCNF4Z5JRG3",
+  "properties": {
+    "decision_summary": "twining_query/twining_recent merge decisions as a sibling `decisions` array (items marked type:\"decision\") rather than interleaving into results/entries"
+  },
+  "source": "01KHMSDJZEQM1FXSMNYBYTST24",
+  "target": "01KWX2BSDN5N1BPVS5KKQW1WHE",
+  "type": "decided_by"
+}

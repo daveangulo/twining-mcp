@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-07T01:04:37.575Z",
+  "id": "01KWX1P1P7DX3A501S5E99MP1G",
+  "name": "01KWX1P1N11M4M6936XN94J20G",
+  "properties": {
+    "scope": "src/config.ts",
+    "summary": "Chose rule order: user keys summing to 1.0 ±0.01 treated as a complete set (missing keys zeroed) before any merge; otherwise merge over defaults and rescale proportionally to sum 1.0; full-default fallback reserved for genuinely invalid input (negative, non-numeric, all-zero, or priority_weights not a mapping)"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-07T01:04:37.575Z"
+}

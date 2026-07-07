@@ -58,6 +58,9 @@ export class BlackboardEngine {
     scope?: string;
     relates_to?: string[];
     agent_id?: string;
+    // Bypasses the entry_type "decision" rejection. No production callers
+    // since issue #30 removed the decision cross-post; kept so tests can
+    // simulate legacy mirror entries still present on field blackboards.
     _internal?: boolean;
     _skipAutoArchive?: boolean;
   }): Promise<{ id: string; timestamp: string }> {
@@ -124,10 +127,12 @@ export class BlackboardEngine {
     }
 
     // Auto-archive if threshold exceeded (fire-and-forget, non-fatal) — spec §6.1.3
-    // Counts only archivable entries: decisions are never archived while
-    // keep_decisions defaults true, and entries tagged "archive" are the
-    // archiver's own summary posts — including either in the count would let
-    // the trigger permanently re-arm itself (the archive-loop field bug).
+    // Counts only archivable entries: decision entries (legacy cross-post
+    // mirrors — new decisions no longer post to the blackboard, issue #30)
+    // are never archived while keep_decisions defaults true, and entries
+    // tagged "archive" are the archiver's own summary posts — including
+    // either in the count would let the trigger permanently re-arm itself
+    // (the archive-loop field bug).
     if (this.archiver && this.archiveThreshold && !input._skipAutoArchive) {
       const { entries } = await this.store.read();
       const archivableCount = entries.filter(

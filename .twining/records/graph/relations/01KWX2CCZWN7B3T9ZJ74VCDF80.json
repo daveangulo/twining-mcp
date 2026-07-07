@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:16:50.044Z",
+  "id": "01KWX2CCZWN7B3T9ZJ74VCDF80",
+  "properties": {
+    "decision_summary": "Back-link rides the existing updateStatus(id, status, extra) path — no IDecisionStore interface change, no sqlite schema column"
+  },
+  "source": "01KWX2CCZWN7B3T9ZJ74VCDF7Z",
+  "target": "01KWX2CCZK7PZ8RW2R7JGSRY58",
+  "type": "decided_by"
+}

@@ -95,6 +95,42 @@ describe.skipIf(!HAS_SQLITE)("migrateReverse", () => {
     expect((await files.graphStore.getEntities()).map((e) => e.name).sort()).toEqual(["auth", "db"]);
   });
 
+  it("round-trips superseded_by: the back-link survives forward and reverse (#31)", async () => {
+    const legacy = createStores(twiningDir, filesConfig());
+    const decisionInput = (summary: string, extra: Record<string, unknown> = {}) => ({
+      agent_id: "m", domain: "architecture", scope: "src/", summary,
+      context: "c", rationale: "r", constraints: [], alternatives: [], depends_on: [],
+      confidence: "medium" as const, affected_files: [], affected_symbols: [],
+      commit_hashes: [], reversible: true, ...extra,
+    });
+    const a = await legacy.decisionStore.create(decisionInput("old"));
+    const b = await legacy.decisionStore.create(decisionInput("new", { supersedes: a.id }));
+    await legacy.decisionStore.updateStatus(a.id, "superseded", { superseded_by: b.id });
+
+    const fwd = await migrateForward({ projectRoot, dryRun: false });
+    expect(fwd.verified).toBe(true);
+
+    // The export tree record carries the back-link.
+    const exported = JSON.parse(fs.readFileSync(
+      path.join(twiningDir, "records", "decisions", `${a.id}.json`), "utf-8",
+    )) as { superseded_by?: string };
+    expect(exported.superseded_by).toBe(b.id);
+
+    // The sqlite backend reads it back.
+    const sqlite = createStores(twiningDir, sqliteConfig());
+    expect((await sqlite.decisionStore.get(a.id))?.superseded_by).toBe(b.id);
+
+    const rev = await migrateReverse({ projectRoot, dryRun: false });
+    expect(rev.verified).toBe(true);
+    expect(rev.finalized).toBe(true);
+
+    // The regenerated file backend still carries the back-link.
+    const files = createStores(twiningDir, filesConfig());
+    const restored = await files.decisionStore.get(a.id);
+    expect(restored?.superseded_by).toBe(b.id);
+    expect(restored?.status).toBe("superseded");
+  });
+
   it("heals an index desync: an orphaned decision salvaged by forward is regenerated into index.json by reverse", async () => {
     const legacy = createStores(twiningDir, filesConfig());
     const dec = await legacy.decisionStore.create({

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "tryListen retries EADDRINUSE +1 up to 5 times since v1.10.0, dashboard startup is non-fatal to the MCP server, and TWINING_DASHBOARD_PORT is the escape hatch; asked reporter to reopen with stderr if reproducible on ≥1.24.1.",
+  "entry_type": "decision",
+  "id": "01KWWX3P379P0WC0PZGZ1KWW0A",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-06T23:44:41.560Z"
+  },
+  "scope": "project",
+  "summary": "Chose to close #19 (Serena port fight) as already-implemented",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-07-06T23:44:41.575Z"
+}

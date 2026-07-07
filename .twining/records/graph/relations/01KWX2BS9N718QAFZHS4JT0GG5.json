@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:16:29.877Z",
+  "id": "01KWX2BS9N718QAFZHS4JT0GG5",
+  "properties": {
+    "decision_summary": "Removed the override() decision-type blackboard post along with decide()'s cross-post — both write entry_type \"decision\" mirrors that assemble filters out"
+  },
+  "source": "01KJD8KGK434DH6PX2BNXW4W71",
+  "target": "01KWX2BS9DCMFEJ4Q68KSP4KYN",
+  "type": "decided_by"
+}

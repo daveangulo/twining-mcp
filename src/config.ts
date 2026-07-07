@@ -126,6 +126,121 @@ function deepMerge(
   return result;
 }
 
+/** Tolerance for treating a weight sum as "equal to 1.0". */
+const WEIGHT_SUM_TOLERANCE = 0.01;
+
+type PriorityWeights = TwiningConfig["context_assembly"]["priority_weights"];
+
+function formatWeights(weights: Record<string, number>): string {
+  return Object.entries(weights)
+    .map(([k, v]) => `${k}=${Number(v.toFixed(4))}`)
+    .join(", ");
+}
+
+/**
+ * Resolve effective priority weights from what the user actually wrote in
+ * config.yml (issue #34). deepMerge fills unspecified keys from defaults, so
+ * a partial user set that sums to 1.0 on its own would look over-budget after
+ * the merge — the old code then silently discarded ALL user weights.
+ *
+ * Rules:
+ * 1. User keys alone sum to ~1.0 (±0.01): the set is complete — missing keys
+ *    become 0. User intent is explicit.
+ * 2. Otherwise: merge user keys over defaults and rescale proportionally so
+ *    the set sums to 1.0. User weights are never silently discarded.
+ * 3. Full defaults only for genuinely invalid input (non-numeric, negative,
+ *    all-zero, or priority_weights not a mapping) — with a warning saying so.
+ *
+ * Returns the effective weights plus an actionable warning (what was
+ * provided, what was done, final effective weights) or null when nothing
+ * needed to change.
+ */
+function resolvePriorityWeights(
+  rawUserWeights: unknown,
+  defaults: Record<string, number>,
+): { weights: Record<string, number>; warning: string | null } {
+  if (rawUserWeights === undefined || rawUserWeights === null) {
+    return { weights: { ...defaults }, warning: null };
+  }
+  if (typeof rawUserWeights !== "object" || Array.isArray(rawUserWeights)) {
+    return {
+      weights: { ...defaults },
+      warning:
+        `priority_weights must be a mapping of weight names to numbers ` +
+        `(got ${JSON.stringify(rawUserWeights)}). Using defaults: ` +
+        `${formatWeights(defaults)}.`,
+    };
+  }
+
+  const userEntries = Object.entries(rawUserWeights as Record<string, unknown>);
+  if (userEntries.length === 0) {
+    return { weights: { ...defaults }, warning: null };
+  }
+
+  const invalid = userEntries.filter(
+    ([, v]) => typeof v !== "number" || !Number.isFinite(v) || v < 0,
+  );
+  if (invalid.length > 0) {
+    return {
+      weights: { ...defaults },
+      warning:
+        `priority_weights has invalid values ` +
+        `(${invalid.map(([k, v]) => `${k}=${JSON.stringify(v)}`).join(", ")}); ` +
+        `weights must be non-negative numbers. Using defaults: ` +
+        `${formatWeights(defaults)}.`,
+    };
+  }
+
+  const user = Object.fromEntries(userEntries) as Record<string, number>;
+  const userSum = Object.values(user).reduce((a, b) => a + b, 0);
+
+  if (userSum === 0) {
+    return {
+      weights: { ...defaults },
+      warning:
+        `priority_weights are all zero (${formatWeights(user)}); nothing to ` +
+        `normalize. Using defaults: ${formatWeights(defaults)}.`,
+    };
+  }
+
+  // Rule 1: the user's own keys sum to ~1.0 — treat the set as complete.
+  if (Math.abs(userSum - 1.0) <= WEIGHT_SUM_TOLERANCE) {
+    const weights: Record<string, number> = {};
+    for (const key of Object.keys(defaults)) weights[key] = 0;
+    Object.assign(weights, user);
+    const zeroed = Object.keys(defaults).filter((k) => !(k in user));
+    if (zeroed.length === 0) {
+      return { weights, warning: null };
+    }
+    return {
+      weights,
+      warning:
+        `priority_weights (${formatWeights(user)}) sum to 1.0 on their own, ` +
+        `so the set was treated as complete: unlisted keys ` +
+        `${zeroed.join(", ")} set to 0. Effective weights: ` +
+        `${formatWeights(weights)}. List all keys explicitly to silence this.`,
+    };
+  }
+
+  // Rule 2: merge over defaults and rescale proportionally to sum 1.0.
+  const merged: Record<string, number> = { ...defaults, ...user };
+  const mergedSum = Object.values(merged).reduce((a, b) => a + b, 0);
+  if (Math.abs(mergedSum - 1.0) <= WEIGHT_SUM_TOLERANCE) {
+    return { weights: merged, warning: null };
+  }
+  const weights = Object.fromEntries(
+    Object.entries(merged).map(([k, v]) => [k, v / mergedSum]),
+  );
+  return {
+    weights,
+    warning:
+      `priority_weights (${formatWeights(user)}) merged with defaults sum to ` +
+      `${Number(mergedSum.toFixed(4))}, expected 1.0; rescaled all weights ` +
+      `proportionally. Effective weights: ${formatWeights(weights)}. ` +
+      `Provide a full set summing to 1.0 to silence this.`,
+  };
+}
+
 /**
  * Load config from .twining/config.yml, deep-merged with defaults.
  * If the file doesn't exist, returns DEFAULT_CONFIG.
@@ -145,14 +260,20 @@ export function loadConfig(twiningDir: string): TwiningConfig {
     parsed as Record<string, unknown>,
   ) as unknown as TwiningConfig;
 
-  // Validate priority weights sum to 1.0
-  const weights = config.context_assembly.priority_weights;
-  const weightSum = Object.values(weights).reduce((a, b) => (a ?? 0) + (b ?? 0), 0) as number;
-  if (Math.abs(weightSum - 1.0) > 0.01) {
-    console.error(
-      `[twining] Warning: priority_weights sum to ${weightSum}, expected 1.0. Using defaults.`,
-    );
-    config.context_assembly.priority_weights = { ...DEFAULT_CONFIG.context_assembly.priority_weights };
+  // Resolve priority weights from the RAW user config, not the merged one —
+  // after deepMerge, user-provided keys are indistinguishable from defaults.
+  const parsedCa = (parsed as Record<string, unknown>)["context_assembly"];
+  const rawUserWeights =
+    parsedCa !== null && typeof parsedCa === "object" && !Array.isArray(parsedCa)
+      ? (parsedCa as Record<string, unknown>)["priority_weights"]
+      : undefined;
+  const { weights, warning } = resolvePriorityWeights(
+    rawUserWeights,
+    DEFAULT_CONFIG.context_assembly.priority_weights as Record<string, number>,
+  );
+  config.context_assembly.priority_weights = weights as PriorityWeights;
+  if (warning) {
+    console.error(`[twining] Warning: ${warning}`);
   }
 
   return config;

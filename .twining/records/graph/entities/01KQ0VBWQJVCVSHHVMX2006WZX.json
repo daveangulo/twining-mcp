@@ -3,8 +3,8 @@
   "id": "01KQ0VBWQJVCVSHHVMX2006WZX",
   "name": "DecisionEngine.decide",
   "properties": {
-    "scope": "src/engine/record-parser.ts"
+    "scope": "src/engine/"
   },
   "type": "function",
-  "updated_at": "2026-04-24T22:57:00.367Z"
+  "updated_at": "2026-07-07T01:16:30.260Z"
 }

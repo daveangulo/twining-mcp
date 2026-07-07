@@ -1,0 +1,17 @@
+{
+  "agent_id": "supersede-31",
+  "detail": "Both backends already apply extra via Object.assign and persist the full Decision JSON (file: decisions/<id>.json; sqlite: decisions.data blob), exactly how overridden_by/assumptions/provenance are stored. The export tree and migrate forward/reverse round-trip the full object, so the optional field survives migration with zero migration-layer changes — proven by a new round-trip test.",
+  "entry_type": "decision",
+  "id": "01KWX2CCYN8HC7KB551V4B5RFD",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T01:16:49.990Z"
+  },
+  "scope": "src/storage/",
+  "summary": "Back-link rides the existing updateStatus(id, status, extra) path — no IDecisionStore interface change, no sqlite schema column",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-07T01:16:50.005Z"
+}

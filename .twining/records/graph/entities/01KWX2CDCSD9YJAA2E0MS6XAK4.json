@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-07T01:16:50.457Z",
+  "id": "01KWX2CDCSD9YJAA2E0MS6XAK4",
+  "name": "01KWX2CD96VAG2X662E2B4MDVC",
+  "properties": {
+    "scope": "src/storage/",
+    "summary": "Backfill pass runs by default (no opt-in flag), preview-reports / execute-applies like dedup; dangling supersedes targets are counted and skipped; newest supersessor wins when several point at one target"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-07T01:16:50.457Z"
+}

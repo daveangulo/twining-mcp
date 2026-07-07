@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:04:37.685Z",
+  "id": "01KWX1P1SN8DNBWP0VJ4FRAP43",
+  "properties": {
+    "decision_summary": "Chose to rewrite this repo's .twining/config.yml priority_weights as the five explicit default values (0.2/0.2/0.15/0.1/0.35) rather than keeping the four legacy values with an explicit graph_reachability: 0"
+  },
+  "source": "01KWX1P1MHWJX8QDGVTDA6ERG2",
+  "target": "01KWX1P1SHY1DXK3KE2YSYMFNK",
+  "type": "decided_by"
+}

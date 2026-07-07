@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:16:50.587Z",
+  "id": "01KWX2CDGVHA03VCH42514TS2Y",
+  "properties": {
+    "decision_summary": "why() emits superseded_by only when set (spread-conditional) rather than always-present nullable"
+  },
+  "source": "01KM8524GHDS32ZYANGNYFHFXS",
+  "target": "01KWX2CDGNHYP4YPZ16BEYX2T0",
+  "type": "decided_by"
+}

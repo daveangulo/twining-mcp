@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:04:37.518Z",
+  "id": "01KWX1P1MEBGBWD0J7YHK8XPC2",
+  "name": "test/config-priority-weights.test.ts",
+  "properties": {
+    "scope": "src/config.ts"
+  },
+  "type": "file",
+  "updated_at": "2026-07-07T01:04:37.761Z"
+}

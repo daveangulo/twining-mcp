@@ -50,15 +50,16 @@ describe("DecisionEngine.decide", () => {
     expect(result.timestamp).toBeTruthy();
   });
 
-  it("cross-posts decision to blackboard", async () => {
+  it("does not cross-post the decision to the blackboard (issue #30)", async () => {
     await decisionEngine.decide(validDecisionInput());
     const { entries } = await blackboardEngine.read({
       entry_types: ["decision"],
     });
-    expect(entries).toHaveLength(1);
-    expect(entries[0]!.summary).toBe("Use JWT for auth");
-    expect(entries[0]!.detail).toBe("Enables horizontal scaling");
-    expect(entries[0]!.tags).toEqual(["architecture"]);
+    expect(entries).toHaveLength(0);
+    // Decision lives only in the decision store
+    const index = await decisionStore.getIndex();
+    expect(index).toHaveLength(1);
+    expect(index[0]!.summary).toBe("Use JWT for auth");
   });
 
   it("throws TwiningError for missing domain", async () => {
@@ -103,6 +104,46 @@ describe("DecisionEngine.decide", () => {
     const { decisions } = await decisionEngine.why("src/auth/");
     const firstDecision = decisions.find((d) => d.summary === "First decision");
     expect(firstDecision!.status).toBe("superseded");
+  });
+
+  it("writes the superseded_by back-link onto the superseded decision (#31)", async () => {
+    const first = await decisionEngine.decide(
+      validDecisionInput({ summary: "First decision" }),
+    );
+    const second = await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Second decision",
+        supersedes: first.id,
+      }),
+    );
+    const stored = await decisionStore.get(first.id);
+    expect(stored!.superseded_by).toBe(second.id);
+    // The replacement itself carries no back-link.
+    const replacement = await decisionStore.get(second.id);
+    expect(replacement!.superseded_by).toBeUndefined();
+  });
+
+  it("does not flag the superseded decision as a conflict of its replacement", async () => {
+    const first = await decisionEngine.decide(
+      validDecisionInput({ summary: "First decision" }),
+    );
+    const result = await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Second decision",
+        supersedes: first.id,
+      }),
+    );
+    expect(result.conflicts ?? []).toEqual([]);
+  });
+
+  it("silently tolerates a dangling supersedes target", async () => {
+    const result = await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Replacement of a ghost",
+        supersedes: "01GHOST00000000000000000000",
+      }),
+    );
+    expect(result.id).toHaveLength(26);
   });
 
   it("applies defaults (confidence, reversible, agent_id)", async () => {
@@ -345,6 +386,20 @@ describe("DecisionEngine.why", () => {
     expect(result.decisions[0]!.alternatives_count).toBe(2);
   });
 
+  it("surfaces superseded_by on retired decisions so readers can find the replacement (#31)", async () => {
+    const first = await decisionEngine.decide(
+      validDecisionInput({ summary: "First decision" }),
+    );
+    const second = await decisionEngine.decide(
+      validDecisionInput({ summary: "Second decision", supersedes: first.id }),
+    );
+    const { decisions } = await decisionEngine.why("src/auth/");
+    const retired = decisions.find((d) => d.id === first.id);
+    expect(retired!.superseded_by).toBe(second.id);
+    const replacement = decisions.find((d) => d.id === second.id);
+    expect(replacement!.superseded_by).toBeUndefined();
+  });
+
   it("includes commit_hashes for decisions with linked commits", async () => {
     await decisionEngine.decide(
       validDecisionInput({ commit_hash: "abc123" }),
@@ -578,7 +633,7 @@ describe("DecisionEngine.override", () => {
     );
   });
 
-  it("posts override entry to blackboard", async () => {
+  it("does not post a decision-type entry to the blackboard (issue #30)", async () => {
     const d1 = await decisionEngine.decide(validDecisionInput());
     await decisionEngine.override(
       d1.id,
@@ -590,12 +645,11 @@ describe("DecisionEngine.override", () => {
     const { entries } = await blackboardEngine.read({
       entry_types: ["decision"],
     });
-    const overrideEntry = entries.find((e) =>
-      e.summary.includes("Override:"),
-    );
-    expect(overrideEntry).toBeTruthy();
-    expect(overrideEntry!.summary).toContain("overridden by architect-agent");
-    expect(overrideEntry!.detail).toBe("Changed requirements");
+    expect(entries).toHaveLength(0);
+    // The override outcome lives in the decision store
+    const decision = await decisionStore.get(d1.id);
+    expect(decision!.status).toBe("overridden");
+    expect(decision!.override_reason).toBe("Changed requirements");
   });
 
   it("auto-creates replacement decision when newDecision is provided", async () => {

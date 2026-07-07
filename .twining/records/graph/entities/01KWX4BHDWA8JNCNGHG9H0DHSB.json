@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-07T01:51:18.972Z",
+  "id": "01KWX4BHDWA8JNCNGHG9H0DHSB",
+  "name": "01KWX4BHAEKWMMSF0HVETK03TG",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Compaction scans every *.jsonl under .twining/archive/ regardless of filename"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-07T01:51:18.972Z"
+}

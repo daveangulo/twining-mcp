@@ -1,0 +1,48 @@
+{
+  "affected_files": [
+    "src/utils/types.ts",
+    "src/engine/decisions.ts",
+    "src/engine/housekeeping.ts",
+    "src/tools/housekeeping-tools.ts",
+    "test/decision-engine.test.ts",
+    "test/sqlite-backend.test.ts",
+    "test/housekeeping-backfill.test.ts",
+    "test/migrate/reverse.test.ts"
+  ],
+  "affected_symbols": [
+    "Decision",
+    "DecisionEngine/decide",
+    "DecisionEngine/why",
+    "HousekeepingEngine/run",
+    "IDecisionStore/updateStatus"
+  ],
+  "agent_id": "supersede-31",
+  "alternatives": [],
+  "assembled_before": true,
+  "assumptions": [
+    "The engine decide() path is the only supersede write site (override() routes through decide(); record-tools passes supersedes into decide()) — grep for updateStatus(...\"superseded\") confirms no other caller.",
+    "Housekeeping loading every decision file for the scan is acceptable at field scale (staleness review already does the same)."
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [
+    "No plugin/ changes (adoption surface shipped in plugin 1.24.1)",
+    "No commits, no version bumps, no CHANGELOG edits from this worktree",
+    "Keep decisions.ts and housekeeping.ts diffs modular — teammates crosspost-30 and archive-35 are editing the same files concurrently"
+  ],
+  "context": "Fixed #31 server half: superseded_by back-links now written at supersede time in both backends, surfaced by twining_why, and backfilled for historical decisions by a new housekeeping pass. TDD, 1075 tests green, build/typecheck clean.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KWX2CD96VAG2X662E2B4MDVC",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T01:16:50.326Z"
+  },
+  "rationale": "The pass is cheap (one pass over decisions), idempotent (skips targets with superseded_by already set), and follows the existing preview/execute contract. Dangles are historical (1.24.0 only drops unknown depends_on at write time, not supersedes) and must not be fabricated. ULID index order makes last-write-wins deterministic and chronological.",
+  "reversible": true,
+  "scope": "src/storage/",
+  "status": "active",
+  "summary": "Backfill pass runs by default (no opt-in flag), preview-reports / execute-applies like dedup; dangling supersedes targets are counted and skipped; newest supersessor wins when several point at one target",
+  "timestamp": "2026-07-07T01:16:50.342Z"
+}

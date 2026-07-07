@@ -66,6 +66,8 @@ export interface Decision {
   alternatives: DecisionAlternative[];
   depends_on: string[];
   supersedes?: string;
+  /** Back-link written when another decision supersedes this one (#31). */
+  superseded_by?: string;
   confidence: DecisionConfidence;
   status: DecisionStatus;
   reversible: boolean;

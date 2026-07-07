@@ -111,6 +111,33 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - migrate --reverse now restores config version to 1 (forward finalize stamps 2)
 - Publish workflow gained a tag-vs-package.json version guard and prerelease GH-release marking alongside the dist-tag routing; checkout/setup-node bumped to v5
 - Dogfood the v2 beta via the project .mcp.json pin (twining-mcp@next), NOT the plugin pin and NOT a version-2 config stamp yet
+- Chose to close #19 (Serena port fight) as already-implemented
+- Chose to close #18 (hook lets Claude slack on findings) as addressed-by-guidance rather than keep open
+- Chose to deprecate twining_handoff/twining_acknowledge in v2.0 rather than redesign or remove now
+- Chose to put the deprecation note only in server docs (README.md, docs/TWINING-REFERENCE.md, docs/UPGRADE-v2.md), not plugin/BEHAVIORS.md or plugin skills
+- Chose worktree-isolated named teammates (weights-34, crosspost-30, supersede-31, archive-35) sharing one Twining blackboard with distinct agent_ids
+- Chose to resolve priority_weights from the raw parsed YAML (parsed.context_assembly.priority_weights) rather than the deep-merged config
+- Chose rule order: user keys summing to 1.0 ±0.01 treated as a complete set (missing keys zeroed) before any merge; otherwise merge over defaults and rescale proportionally to sum 1.0; full-default fallback reserved for genuinely invalid input (negative, non-numeric, all-zero, or priority_weights not a mapping)
+- Chose to rewrite this repo's .twining/config.yml priority_weights as the five explicit default values (0.2/0.2/0.15/0.1/0.35) rather than keeping the four legacy values with an explicit graph_reachability: 0
+- Chose a new sibling test file test/config-priority-weights.test.ts over extending test/config-version-gate.test.ts
+- Removed the override() decision-type blackboard post along with decide()'s cross-post — both write entry_type "decision" mirrors that assemble filters out
+- twining_query/twining_recent merge decisions as a sibling `decisions` array (items marked type:"decision") rather than interleaving into results/entries
+- Merge logic lives in the blackboard-tools handlers, with decisionEngine + decisionStore passed via the options object; no new methods on DecisionEngine
+- Kept the _internal blackboard post flag and the assemble/auto-archive entry_type "decision" exclusions as legacy-data defenses
+- Back-link rides the existing updateStatus(id, status, extra) path — no IDecisionStore interface change, no sqlite schema column
+- Moved the supersede status flip in DecisionEngine.decide from before create to after create, writing status and superseded_by in one updateStatus call; conflict scan now excludes the supersede target
+- Housekeeping backfill preserves the target's current status — it writes only the missing superseded_by pointer, never flips active/archived/overridden to superseded
+- Backfill pass runs by default (no opt-in flag), preview-reports / execute-applies like dedup; dangling supersedes targets are counted and skipped; newest supersessor wins when several point at one target
+- why() emits superseded_by only when set (spread-conditional) rather than always-present nullable
+- Junk signature requires all six archiver-stamped fields: entry_type finding, summary /^Archive: \d+ entries archived$/, tags including "archive", scope "project", agent_id "main", detail /^Archive summary: \d+ entries archived\./
+- compact_archives is an opt-in housekeeping flag (like staleness_review/merge_sweep), not part of the default pass
+- Compactor is a standalone module (src/engine/archive-compactor.ts) with ~15-line wiring into HousekeepingEngine.run — chose modularity over inlining because teammate supersede-31 is concurrently adding another housekeeping pass and merge conflicts must stay trivial
+- Audit-trail finding is posted from the tool layer (housekeeping-tools.ts) with _skipAutoArchive, mirroring twining_archive_stale, rather than from the engine
+- Execute mode streams survivors to a lazily-created same-directory temp file then renames atomically; files with zero junk are never rewritten; files that were already empty are not deleted
+- Compaction scans every *.jsonl under .twining/archive/ regardless of filename
+- Chose patch-based integration (git apply --3way of each worktree's diff onto main) over committing in worktrees and merging
+- Chose a single 2.0.0-beta.2 changelog section framing the release as the v2.0 issue-burndown beta
+- Chose to add a pretest npm hook running inject-posthog-key.mjs
 
 ### Pending Todos
 

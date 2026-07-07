@@ -135,9 +135,11 @@ export class ContextAssembler {
     }
 
     // 3. Retrieve scope-matched blackboard entries (filter from cached allEntries)
-    // Exclude entry_type "decision" — these are misclassified blackboard entries
-    // that would be cast as Decision objects, causing undefined field errors.
-    // Real decisions live in the decision store, not the blackboard.
+    // Exclude entry_type "decision" — legacy-data defense (issue #30). New
+    // decisions are no longer cross-posted to the blackboard, but existing
+    // field blackboards still hold years of mirror entries; without this
+    // filter they would be cast as Decision objects, causing undefined field
+    // errors. Real decisions live in the decision store.
     const scopeEntries = allEntries.filter(
       (e) =>
         e.entry_type !== "decision" &&

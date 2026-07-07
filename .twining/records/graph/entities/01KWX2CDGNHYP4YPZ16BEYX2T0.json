@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-07T01:16:50.581Z",
+  "id": "01KWX2CDGNHYP4YPZ16BEYX2T0",
+  "name": "01KWX2CDDJ2WKGD12X966SE96M",
+  "properties": {
+    "scope": "src/storage/",
+    "summary": "why() emits superseded_by only when set (spread-conditional) rather than always-present nullable"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-07T01:16:50.581Z"
+}

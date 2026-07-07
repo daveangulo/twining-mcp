@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-07T01:16:50.182Z",
+  "id": "01KWX2CD46SRNSJNPM2PNYM6N2",
+  "name": "01KWX2CD0DTRMWETSZEQGTVVG8",
+  "properties": {
+    "scope": "src/storage/",
+    "summary": "Moved the supersede status flip in DecisionEngine.decide from before create to after create, writing status and superseded_by in one updateStatus call; conflict scan now excludes the supersede target"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-07T01:16:50.182Z"
+}

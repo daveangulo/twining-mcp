@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:16:50.186Z",
+  "id": "01KWX2CD4AKMFTM47675KF33S8",
+  "properties": {
+    "decision_summary": "Moved the supersede status flip in DecisionEngine.decide from before create to after create, writing status and superseded_by in one updateStatus call; conflict scan now excludes the supersede target"
+  },
+  "source": "01KWX2CCZQJXRZ8RJJ2CKNYBFS",
+  "target": "01KWX2CD46SRNSJNPM2PNYM6N2",
+  "type": "decided_by"
+}

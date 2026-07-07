@@ -31,7 +31,7 @@
   "rationale": "blackboard enforces summary <=200, and the decision file is already persisted by the time cross-post runs. Without the slice, decide() would throw after the write, leaving the file on disk but record-tools returning decisions_created: []. The slice preserves the blackboard surface while the unbounded full text stays in the decision JSON and in the detail field.",
   "reversible": true,
   "scope": "src/engine/record-parser.ts",
-  "status": "active",
+  "status": "superseded",
   "summary": "Sliced decision cross-post summary to 200 chars and wrapped in try/catch inside DecisionEngine.decide",
   "timestamp": "2026-04-24T22:57:00.224Z"
 }

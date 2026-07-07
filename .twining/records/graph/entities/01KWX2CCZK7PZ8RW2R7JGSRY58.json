@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-07T01:16:50.035Z",
+  "id": "01KWX2CCZK7PZ8RW2R7JGSRY58",
+  "name": "01KWX2CCWHH3QVCASADJ8N0TRZ",
+  "properties": {
+    "scope": "src/storage/",
+    "summary": "Back-link rides the existing updateStatus(id, status, extra) path — no IDecisionStore interface change, no sqlite schema column"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-07T01:16:50.035Z"
+}

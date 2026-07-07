@@ -124,24 +124,17 @@ describe("Integration: End-to-end workflow", () => {
     expect(jwtDecision!.confidence).toBe("high");
     expect(jwtDecision!.alternatives_count).toBe(2);
 
-    // 7. Verify the decision also appears as a blackboard entry (cross-post)
+    // 7. Verify the decision does NOT appear as a blackboard entry (issue #30:
+    // decisions live only in the decision store; the cross-post was removed)
     const { entries: decisionEntries } = await bbEngine.read({
       entry_types: ["decision"],
     });
-    expect(decisionEntries.length).toBeGreaterThanOrEqual(1);
-    const crossPosted = decisionEntries.find(
-      (e) =>
-        e.summary === "Use JWT with jose library for stateless auth",
-    );
-    expect(crossPosted).toBeDefined();
-    expect(crossPosted!.detail).toBe(
-      "jose is well-maintained, has no known vulns, supports all JWT features",
-    );
+    expect(decisionEntries).toHaveLength(0);
 
     // 8. Verify status counts
-    // Total blackboard entries: 3 original + 1 decision cross-post = 4
+    // Total blackboard entries: 3 original, no decision cross-post
     const { total_count: bbCount } = await bbEngine.read();
-    expect(bbCount).toBe(4);
+    expect(bbCount).toBe(3);
 
     // Active decisions: 1
     const index = await dcsnStore.getIndex();

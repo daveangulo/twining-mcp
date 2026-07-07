@@ -1,0 +1,17 @@
+{
+  "agent_id": "supersede-31",
+  "detail": "The pass is cheap (one pass over decisions), idempotent (skips targets with superseded_by already set), and follows the existing preview/execute contract. Dangles are historical (1.24.0 only drops unknown depends_on at write time, not supersedes) and must not be fabricated. ULID index order makes last-write-wins deterministic and chronological.",
+  "entry_type": "decision",
+  "id": "01KWX2CDBTM3SYF3R4A11D9G0C",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T01:16:50.410Z"
+  },
+  "scope": "src/storage/",
+  "summary": "Backfill pass runs by default (no opt-in flag), preview-reports / execute-applies like dedup; dangling supersedes targets are counted and skipped; newest supersessor wins when several point at one tar",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-07T01:16:50.426Z"
+}

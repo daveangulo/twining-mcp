@@ -69,6 +69,10 @@ v2's sync model is set-union by construction: records are immutable ULID-named f
 - `twining_assemble` and housekeeping surface cross-branch contradictions; the staleness/reconsider flow archives the losers.
 - This is correct blackboard semantics — both decisions *were* made. What changes is where you deal with it: at read time, guided by the tools, not in a git conflict marker.
 
+## Deprecated in v2.0: `twining_handoff` / `twining_acknowledge`
+
+The structured handoff API is deprecated as of v2.0. Field analysis across three heavy-use repos found zero calls to either tool, while the same repos accumulated 40+ rich, git-committed markdown handoff documents doing exactly the job the API was designed for — the structured surface is too shallow for how projects actually hand off. Both tools keep working throughout v2.x; the replacement (a redesign around document-shaped payloads, or removal in v3) is tracked in [#33](https://github.com/daveangulo/twining-mcp/issues/33).
+
 ## Beta channel
 
 During the beta, v2 ships under the npm dist-tag `next`:

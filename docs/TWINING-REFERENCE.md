@@ -67,8 +67,10 @@ Note: `twining_decide` auto-creates `file`/`function` entities with `decided_by`
 | `twining_agents` | List registered agents with capabilities and liveness |
 | `twining_discover` | Find agents matching capabilities, ranked by overlap and liveness |
 | `twining_delegate` | Post a delegation request with capability requirements |
-| `twining_handoff` | Hand off work with results and auto-assembled context snapshot |
-| `twining_acknowledge` | Accept a handoff |
+| `twining_handoff` | **Deprecated in v2.0** — hand off work with results and auto-assembled context snapshot |
+| `twining_acknowledge` | **Deprecated in v2.0** — accept a handoff |
+
+> **Deprecation note (v2.0):** `twining_handoff`/`twining_acknowledge` are deprecated. Field usage shows real handoffs happen as rich, git-committed markdown documents; the structured API is too shallow for that job and saw zero field calls. The tools still work in v2.x. Their replacement — a redesign around document-shaped payloads, or removal in v3 — is tracked in [#33](https://github.com/daveangulo/twining-mcp/issues/33).
 
 ### Verification
 | Tool | Purpose |

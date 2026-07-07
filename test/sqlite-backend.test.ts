@@ -28,6 +28,8 @@ import {
   SqliteIndexManager,
 } from "../src/storage/sqlite/sqlite-stores.js";
 import { createStores } from "../src/storage/backend-factory.js";
+import { BlackboardEngine } from "../src/engine/blackboard.js";
+import { DecisionEngine } from "../src/engine/decisions.js";
 import { BlackboardStore } from "../src/storage/blackboard-store.js";
 import { DecisionStore } from "../src/storage/decision-store.js";
 import { GraphStore } from "../src/storage/graph-store.js";
@@ -208,11 +210,37 @@ describe.skipIf(!HAS_SQLITE)("sqlite backend", () => {
     it("updateStatus applies status and extras, silently no-ops on missing id", async () => {
       const store = new SqliteDecisionStore(db);
       const d = await store.create(decisionInput("mutate me"));
-      await store.updateStatus(d.id, "superseded", { superseded_by: "Z" } as never);
+      await store.updateStatus(d.id, "superseded", { superseded_by: "Z" });
       const updated = await store.get(d.id);
       expect(updated?.status).toBe("superseded");
-      expect((updated as unknown as { superseded_by: string }).superseded_by).toBe("Z");
+      expect(updated?.superseded_by).toBe("Z");
       await expect(store.updateStatus("missing", "active")).resolves.toBeUndefined();
+    });
+
+    it("DecisionEngine.decide over sqlite writes the superseded_by back-link (#31)", async () => {
+      const store = new SqliteDecisionStore(db);
+      const engine = new DecisionEngine(
+        store,
+        new BlackboardEngine(new SqliteBlackboardStore(db)),
+      );
+      const first = await engine.decide({
+        domain: "architecture",
+        scope: "src/",
+        summary: "first",
+        context: "ctx",
+        rationale: "because",
+      });
+      const second = await engine.decide({
+        domain: "architecture",
+        scope: "src/",
+        summary: "second",
+        context: "ctx",
+        rationale: "because",
+        supersedes: first.id,
+      });
+      const retired = await store.get(first.id);
+      expect(retired?.status).toBe("superseded");
+      expect(retired?.superseded_by).toBe(second.id);
     });
 
     it("linkCommit dedupes and throws on missing; getByCommitHash finds it", async () => {
@@ -435,6 +463,31 @@ describe.skipIf(!HAS_SQLITE)("sqlite backend", () => {
       } finally {
         fs.rmSync(sub, { recursive: true, force: true });
       }
+    });
+  });
+
+  describe("engine over sqlite stores", () => {
+    it("decide() does not cross-post to the blackboard (issue #30)", async () => {
+      const { BlackboardEngine } = await import("../src/engine/blackboard.js");
+      const { DecisionEngine } = await import("../src/engine/decisions.js");
+      const bbStore = new SqliteBlackboardStore(db);
+      const dcStore = new SqliteDecisionStore(db);
+      const bbEngine = new BlackboardEngine(bbStore);
+      const dcEngine = new DecisionEngine(dcStore, bbEngine);
+
+      await dcEngine.decide({
+        domain: "implementation",
+        scope: "src/db/",
+        summary: "Use sqlite for storage",
+        context: "ctx",
+        rationale: "why",
+      });
+
+      const { entries } = await bbEngine.read({ entry_types: ["decision"] });
+      expect(entries).toHaveLength(0);
+      const index = await dcStore.getIndex();
+      expect(index).toHaveLength(1);
+      expect(index[0]!.summary).toBe("Use sqlite for storage");
     });
   });
 

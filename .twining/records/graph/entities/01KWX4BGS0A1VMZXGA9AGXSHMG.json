@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:51:18.304Z",
+  "id": "01KWX4BGS0A1VMZXGA9AGXSHMG",
+  "name": "isArchiverLoopJunk",
+  "properties": {
+    "scope": "src/engine/"
+  },
+  "type": "function",
+  "updated_at": "2026-07-07T01:51:18.976Z"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "crosspost-30",
+  "detail": "Field blackboards hold years of mirror entries (1,412 in the heaviest repo); the filters protect against them and _internal is the only way tests can simulate that legacy data. Comments updated to say so.",
+  "entry_type": "decision",
+  "id": "01KWX2BSMY5PEDNVXSW83PPF1Z",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T01:16:30.223Z"
+  },
+  "scope": "src/engine/",
+  "summary": "Kept the _internal blackboard post flag and the assemble/auto-archive entry_type \"decision\" exclusions as legacy-data defenses",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-07T01:16:30.238Z"
+}

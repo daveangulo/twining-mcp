@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T03:52:31.885Z",
+  "id": "01KWXB9FWDTHFZE71XSJPMY4SM",
+  "properties": {
+    "decision_summary": "Chose to add a pretest npm hook running inject-posthog-key.mjs"
+  },
+  "source": "01KJNAQMQVGD3TWE905M4KZ1ST",
+  "target": "01KWXB9FW7FVMPND9NY64FSE13",
+  "type": "decided_by"
+}

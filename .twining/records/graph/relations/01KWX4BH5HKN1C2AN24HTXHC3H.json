@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:51:18.705Z",
+  "id": "01KWX4BH5HKN1C2AN24HTXHC3H",
+  "properties": {
+    "decision_summary": "Audit-trail finding is posted from the tool layer (housekeeping-tools.ts) with _skipAutoArchive, mirroring twining_archive_stale, rather than from the engine"
+  },
+  "source": "01KWX4BGS0A1VMZXGA9AGXSHMG",
+  "target": "01KWX4BH5C1KH6Q4SYH4FKBB19",
+  "type": "decided_by"
+}

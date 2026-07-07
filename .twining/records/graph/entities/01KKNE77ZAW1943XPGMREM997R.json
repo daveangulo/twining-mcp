@@ -3,8 +3,8 @@
   "id": "01KKNE77ZAW1943XPGMREM997R",
   "name": "src/engine/decisions.ts",
   "properties": {
-    "scope": "src/tools/"
+    "scope": "project"
   },
   "type": "file",
-  "updated_at": "2026-07-04T20:29:11.621Z"
+  "updated_at": "2026-07-07T03:52:31.879Z"
 }

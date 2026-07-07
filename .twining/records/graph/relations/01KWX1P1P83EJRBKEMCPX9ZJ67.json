@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:04:37.576Z",
+  "id": "01KWX1P1P83EJRBKEMCPX9ZJ67",
+  "properties": {
+    "decision_summary": "Chose rule order: user keys summing to 1.0 ±0.01 treated as a complete set (missing keys zeroed) before any merge; otherwise merge over defaults and rescale proportionally to sum 1.0; full-default fallback reserved for genuinely invalid input (negative, non-numeric, all-zero, or priority_weights not a mapping)"
+  },
+  "source": "01KJD595ND5YACA06PBGYTRRXA",
+  "target": "01KWX1P1P7DX3A501S5E99MP1G",
+  "type": "decided_by"
+}

@@ -3,8 +3,8 @@
   "id": "01KJQ647P1MGGRERHA1JH2BE8T",
   "name": "plugin/BEHAVIORS.md",
   "properties": {
-    "scope": "src/engine/graph-auto-populator.ts"
+    "scope": "project"
   },
   "type": "file",
-  "updated_at": "2026-03-19T06:05:31.277Z"
+  "updated_at": "2026-07-07T03:52:31.885Z"
 }

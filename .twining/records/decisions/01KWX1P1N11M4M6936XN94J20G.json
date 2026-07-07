@@ -1,0 +1,49 @@
+{
+  "affected_files": [
+    "src/config.ts",
+    "test/config-priority-weights.test.ts",
+    ".twining/config.yml"
+  ],
+  "affected_symbols": [
+    "loadConfig",
+    "resolvePriorityWeights"
+  ],
+  "agent_id": "weights-34",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "defaults and rescale proportionally to sum 1.0; full-default fallback reserved for genuinely invalid input (negative, non-numeric, all-zero, or priority_weights not a mapping)",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "a mapping)",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "No other code depends on the old discard-to-defaults behavior of loadConfig weight validation (only consumer is context-assembler reading named keys).",
+    "±0.01 tolerance from the original check is the settled tolerance for both the rule-1 completeness test and the already-normalized merged check."
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Fixed #34: loadConfig no longer discards user priority_weights when a partial set deep-merges over 1.0 — user sets summing to ~1.0 are treated as complete (missing keys 0), otherwise merged weights rescale proportionally; defaults only on invalid input.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KWX1P1N11M4M6936XN94J20G",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T01:04:37.522Z"
+  },
+  "rationale": "per the settled design in issue #34, so user weights are never silently discarded.",
+  "reversible": true,
+  "scope": "src/config.ts",
+  "status": "active",
+  "summary": "Chose rule order: user keys summing to 1.0 ±0.01 treated as a complete set (missing keys zeroed) before any merge; otherwise merge over defaults and rescale proportionally to sum 1.0; full-default fallback reserved for genuinely invalid input (negative, non-numeric, all-zero, or priority_weights not a mapping)",
+  "timestamp": "2026-07-07T01:04:37.537Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:16:50.040Z",
+  "id": "01KWX2CCZRX1AC96H1DQVFERW8",
+  "name": "test/housekeeping-backfill.test.ts",
+  "properties": {
+    "scope": "src/storage/"
+  },
+  "type": "file",
+  "updated_at": "2026-07-07T01:16:50.586Z"
+}

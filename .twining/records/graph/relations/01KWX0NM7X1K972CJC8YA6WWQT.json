@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T00:46:55.229Z",
+  "id": "01KWX0NM7X1K972CJC8YA6WWQT",
+  "properties": {
+    "decision_summary": "Chose to deprecate twining_handoff/twining_acknowledge in v2.0 rather than redesign or remove now"
+  },
+  "source": "01KWT95C1YAK43W4C438E8YNYV",
+  "target": "01KWX0NM7V9HFSG45AD5CQFQ7A",
+  "type": "decided_by"
+}

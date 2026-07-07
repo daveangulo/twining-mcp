@@ -1,0 +1,17 @@
+{
+  "agent_id": "weights-34",
+  "detail": "Full summary: Latent bug fixed in passing: a scalar priority_weights (e.g. 'priority_weights: lots') survived deepMerge as a string replacing the whole weights object — deepMerge's object-check falls through to raw assignment; now caught and defaulted with a warning.",
+  "entry_type": "finding",
+  "id": "01KWX1P1WKW1WDEAG4BCCTVRZA",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T01:04:37.764Z"
+  },
+  "scope": "src/config.ts",
+  "summary": "Latent bug fixed in passing: a scalar priority_weights (e.g. 'priority_weights: lots') survived deepMerge as a string replacing the whole weights object — deepMerge's object-check falls through to …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-07T01:04:37.779Z"
+}

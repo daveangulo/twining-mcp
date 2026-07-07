@@ -1,0 +1,17 @@
+{
+  "agent_id": "crosspost-30",
+  "detail": "The design brief named the decide/record path, but override() posts the same entry_type \"decision\" mirror subject to the identical contradiction. The override outcome is fully preserved in the decision store (status overridden, overridden_by, override_reason) and is now reachable via the decision-store read paths.",
+  "entry_type": "decision",
+  "id": "01KWX2BS8NEY7V9CYSB9P3PWP0",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T01:16:29.829Z"
+  },
+  "scope": "src/engine/",
+  "summary": "Removed the override() decision-type blackboard post along with decide()'s cross-post — both write entry_type \"decision\" mirrors that assemble filters out",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-07T01:16:29.845Z"
+}

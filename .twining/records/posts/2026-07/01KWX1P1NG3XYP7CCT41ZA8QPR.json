@@ -1,0 +1,17 @@
+{
+  "agent_id": "weights-34",
+  "detail": "per the settled design in issue #34, so user weights are never silently discarded.",
+  "entry_type": "decision",
+  "id": "01KWX1P1NG3XYP7CCT41ZA8QPR",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T01:04:37.538Z"
+  },
+  "scope": "src/config.ts",
+  "summary": "Chose rule order: user keys summing to 1.0 ±0.01 treated as a complete set (missing keys zeroed) before any merge; otherwise merge over defaults and rescale proportionally to sum 1.0; full-default fal",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-07T01:04:37.552Z"
+}

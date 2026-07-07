@@ -1,0 +1,17 @@
+{
+  "agent_id": "weights-34",
+  "detail": "Full summary: Fixed #34: loadConfig no longer discards user priority_weights when a partial set deep-merges over 1.0 — user sets summing to ~1.0 are treated as complete (missing keys 0), otherwise merged weights rescale proportionally; defaults only on invalid input.\nDecisions: Chose to resolve priority_weights from the raw parsed YAML (parsed.context_assembly.priority_weights) rather than the deep-merged config — after deepMerge, user-provided keys are indistinguishable from defaults, which was the root cause of #34; the alternative of threading an explicitness flag through deepMerge would churn every merge call for one key.; Chose rule order: user keys summing to 1.0 ±0.01 treated as a complete set (missing keys zeroed) before any merge; otherwise merge over defaults and rescale proportionally to sum 1.0; full-default fallback reserved for genuinely invalid input (negative, non-numeric, all-zero, or priority_weights not a mapping) — per the settled design in issue #34, so user weights are never silently discarded.; Chose to rewrite this repo's .twining/config.yml priority_weights as the five explicit default values (0.2/0.2/0.15/0.1/0.35) rather than keeping the four legacy values with an explicit graph_reachability: 0 — git history shows the four-key set (5cb0049, 2026-02-18) predates graph_reachability (4846d70, 2026-03-13), so zero graph weight was never intended, and the bug meant full defaults were what actually ran since v1.9.0; explicit defaults preserve live assemble behavior exactly while silencing the warning. Rejected: keeping four keys + graph 0 (would change live ranking as a bugfix side effect) and rescaling the stale emphasis into 0.65 (invents numbers).; Chose a new sibling test file test/config-priority-weights.test.ts over extending test/config-version-gate.test.ts — that file is specifically about the format-version gate; same tempdir pattern, clearer ownership.\nFindings: Latent bug fixed in passing: a scalar priority_weights (e.g. 'priority_weights: lots') survived deepMerge as a string replacing the whole weights object — deepMerge's object-check falls through to raw assignment; now caught and defaulted with a warning.; deepMerge silently drops user keys absent from DEFAULT_CONFIG (it iterates target keys only) — the optional legacy graph_connectivity key in types.ts would be dropped from a user config; resolvePriorityWeights preserves extra user weight keys, but the general deepMerge behavior remains for other config sections.; need: two test suites fail in a fresh worktree before npm run build (server-startup needs dist/index.js; telemetry-client imports generated _generated-posthog-key.js) — build-order artifact, not a test bug, but surprising for parallel-worktree workflows.",
+  "entry_type": "status",
+  "id": "01KWX1P1GZEFW0AMXB419EC6V7",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T01:04:37.383Z"
+  },
+  "scope": "src/config.ts",
+  "summary": "Fixed #34: loadConfig no longer discards user priority_weights when a partial set deep-merges over 1.0 — user sets summing to ~1.0 are treated as complete (missing keys 0), otherwise merged weights…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-07T01:04:37.407Z"
+}

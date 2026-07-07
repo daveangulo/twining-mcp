@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:16:50.042Z",
+  "id": "01KWX2CCZTFK1WTN94Z494DR80",
+  "name": "DecisionEngine/decide",
+  "properties": {
+    "scope": "src/storage/"
+  },
+  "type": "function",
+  "updated_at": "2026-07-07T01:16:50.587Z"
+}

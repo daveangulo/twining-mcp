@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:16:29.877Z",
+  "id": "01KWX2BS9N718QAFZHS4JT0GG7",
+  "name": "DecisionEngine.override",
+  "properties": {
+    "scope": "src/engine/"
+  },
+  "type": "function",
+  "updated_at": "2026-07-07T01:16:30.261Z"
+}

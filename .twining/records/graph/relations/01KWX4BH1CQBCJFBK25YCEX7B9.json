@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:51:18.572Z",
+  "id": "01KWX4BH1CQBCJFBK25YCEX7B9",
+  "properties": {
+    "decision_summary": "Compactor is a standalone module (src/engine/archive-compactor.ts) with ~15-line wiring into HousekeepingEngine.run — chose modularity over inlining because teammate supersede-31 is concurrently adding another housekeeping pass and merge conflicts must stay trivial"
+  },
+  "source": "01KWX4BGRZ6W3C7BMQZ60H6NN3",
+  "target": "01KWX4BH190FX3YT9B603AJ0RB",
+  "type": "decided_by"
+}

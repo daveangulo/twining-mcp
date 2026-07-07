@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T00:46:55.368Z",
+  "id": "01KWX0NMC89H1P1CHTX1CQENZB",
+  "properties": {
+    "decision_summary": "Chose worktree-isolated named teammates (weights-34, crosspost-30, supersede-31, archive-35) sharing one Twining blackboard with distinct agent_ids"
+  },
+  "source": "01KWT95C1YAK43W4C438E8YNYV",
+  "target": "01KWX0NMC6JBG2MQVW1G5CJBE3",
+  "type": "decided_by"
+}

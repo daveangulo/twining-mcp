@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Handoff API deprecated in v2.0 docs (issue #33 decision-only deliverable): README, TWINING-REFERENCE, UPGRADE-v2 note twining_handoff/acknowledge deprecation; redesign-vs-v3-removal deferred to v2.1 design pass. Milestones v2.0/v2.1 created; 4 teammates fanned out on #30/#31/#34/#35.\nDecisions: Chose to deprecate twining_handoff/twining_acknowledge in v2.0 rather than redesign or remove now — field data (zero calls, 40+ markdown handoff docs) shows the surface doesn't fit usage, but the replacement design should be informed by W4 agent-identity work (#32), so the redesign-vs-v3-removal call moves to the v2.1 design pass. Tools keep working through v2.x.; Chose to put the deprecation note only in server docs (README.md, docs/TWINING-REFERENCE.md, docs/UPGRADE-v2.md), not plugin/BEHAVIORS.md or plugin skills — touching plugin/ forces a plugin version bump per CI, and the plugin-side handoff skill update belongs with the v2.1 design pass.; Chose worktree-isolated named teammates (weights-34, crosspost-30, supersede-31, archive-35) sharing one Twining blackboard with distinct agent_ids — dogfoods v2 parallel work streams as requested; controller integrates and commits per the subagent-commit-race feedback memory.",
+  "entry_type": "status",
+  "id": "01KWX0NM3PZ6VR0G2DEPKXZDFJ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T00:46:55.066Z"
+  },
+  "scope": "docs/",
+  "summary": "Handoff API deprecated in v2.0 docs (issue #33 decision-only deliverable): README, TWINING-REFERENCE, UPGRADE-v2 note twining_handoff/acknowledge deprecation; redesign-vs-v3-removal deferred to v2.…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-07T00:46:55.094Z"
+}

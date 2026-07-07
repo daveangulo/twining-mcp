@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:51:18.976Z",
+  "id": "01KWX4BHE0C0S4HZTQKTH5MA0V",
+  "properties": {
+    "decision_summary": "Compaction scans every *.jsonl under .twining/archive/ regardless of filename"
+  },
+  "source": "01KWX4BGRZ6W3C7BMQZ60H6NN5",
+  "target": "01KWX4BHDWA8JNCNGHG9H0DHSB",
+  "type": "decided_by"
+}

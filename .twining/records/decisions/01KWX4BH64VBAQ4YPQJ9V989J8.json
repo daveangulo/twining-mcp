@@ -1,0 +1,42 @@
+{
+  "affected_files": [
+    "src/engine/archive-compactor.ts",
+    "src/engine/housekeeping.ts",
+    "src/tools/housekeeping-tools.ts",
+    "test/archive-compactor.test.ts",
+    "test/integration/tools/archive-compaction-tools.test.ts"
+  ],
+  "affected_symbols": [
+    "compactArchives",
+    "isArchiverLoopJunk",
+    "HousekeepingEngine.run",
+    "registerHousekeepingTools"
+  ],
+  "agent_id": "archive-35",
+  "alternatives": [],
+  "assembled_before": true,
+  "assumptions": [
+    "The field repo's junk was generated exclusively by the archiver code paths present in git history (no forked/patched variants in the wild)"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [
+    "No commits, no version bumps, no CHANGELOG edits (controller merges)",
+    "archive/ is backend-agnostic plain files — pass must work under both file and sqlite backends"
+  ],
+  "context": "Fixed #35: added opt-in compact_archives pass to twining_housekeeping — streaming repair for archive/*.jsonl junk from the pre-1.24.0 auto-archive loop. Preview reports counts/bytes; execute compacts atomically, deletes emptied files, posts audit finding.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KWX4BH64VBAQ4YPQJ9V989J8",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T01:51:18.707Z"
+  },
+  "rationale": "Line-by-line readline streaming keeps memory bounded on hundreds-of-MB files (proven by a ~120MB synthetic test sampling peak heap); same-dir temp makes rename atomic; skipping clean files avoids pointless churn; an already-empty file contains nothing provably junk so deletion isn't justified.",
+  "reversible": true,
+  "scope": "src/engine/",
+  "status": "active",
+  "summary": "Execute mode streams survivors to a lazily-created same-directory temp file then renames atomically; files with zero junk are never rewritten; files that were already empty are not deleted",
+  "timestamp": "2026-07-07T01:51:18.724Z"
+}

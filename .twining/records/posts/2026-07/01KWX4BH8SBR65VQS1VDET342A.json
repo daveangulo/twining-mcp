@@ -1,0 +1,17 @@
+{
+  "agent_id": "archive-35",
+  "detail": "Line-by-line readline streaming keeps memory bounded on hundreds-of-MB files (proven by a ~120MB synthetic test sampling peak heap); same-dir temp makes rename atomic; skipping clean files avoids pointless churn; an already-empty file contains nothing provably junk so deletion isn't justified.",
+  "entry_type": "decision",
+  "id": "01KWX4BH8SBR65VQS1VDET342A",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T01:51:18.793Z"
+  },
+  "scope": "src/engine/",
+  "summary": "Execute mode streams survivors to a lazily-created same-directory temp file then renames atomically; files with zero junk are never rewritten; files that were already empty are not deleted",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-07T01:51:18.809Z"
+}

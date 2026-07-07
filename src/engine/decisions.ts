@@ -1,7 +1,8 @@
 /**
  * Decision business logic.
- * Validates input, applies defaults, delegates to IDecisionStore,
- * and cross-posts to blackboard.
+ * Validates input, applies defaults, delegates to IDecisionStore.
+ * Decisions live only in the decision store (issue #30) — they are no
+ * longer cross-posted to the blackboard.
  * Phase 3: Adds trace, reconsider, override, and conflict detection.
  * Generates embeddings on decide (Phase 2) with graceful fallback.
  * Phase 5: Syncs decision summaries to .planning/STATE.md for GSD bridge.
@@ -166,21 +167,18 @@ export class DecisionEngine {
       throw new TwiningError("rationale is required", "INVALID_INPUT");
     }
 
-    // If supersedes, mark old decision
-    if (input.supersedes) {
-      await this.decisionStore.updateStatus(input.supersedes, "superseded");
-    }
-
     // Conflict detection: scan for active decisions in same domain with same or narrower scope.
     // Only flag conflicts when the existing decision is at the same level or more specific —
     // a broad decision at src/ should not conflict with a specific one at src/auth/.
+    // The supersede target is excluded: it is being retired below, not conflicted with.
     const index = await this.decisionStore.getIndex();
     const conflicts = index.filter(
       (entry) =>
         entry.domain === input.domain &&
         entry.scope.startsWith(input.scope) &&
         entry.status === "active" &&
-        entry.summary !== input.summary,
+        entry.summary !== input.summary &&
+        entry.id !== input.supersedes,
     );
 
     // Validate depends_on against the decision store — dangling ids (e.g. from a
@@ -231,6 +229,16 @@ export class DecisionEngine {
       provenance: captureProvenance(this.projectRoot),
     });
 
+    // Retire the superseded decision and write the superseded_by back-link so
+    // the retired record points at its replacement (#31). Done after create so
+    // the replacement id exists; if create throws, the old decision is
+    // untouched. Silently no-ops on a dangling target (store semantics).
+    if (input.supersedes) {
+      await this.decisionStore.updateStatus(input.supersedes, "superseded", {
+        superseded_by: decision.id,
+      });
+    }
+
     // If conflicts exist, post an informational finding (not a warning — warnings get
     // priority-boosted in assemble output and dominate context, causing rework cascades).
     // Keep the new decision active; only mark provisional if it duplicates an existing summary.
@@ -248,25 +256,10 @@ export class DecisionEngine {
       });
     }
 
-    // Cross-post to blackboard (internal — bypasses decision rejection).
-    // Blackboard enforces a 200-char summary limit; decision summaries are
-    // unbounded, so slice for the cross-post and keep the full text in detail.
-    try {
-      await this.blackboardEngine.post({
-        entry_type: "decision",
-        summary: decision.summary.slice(0, 200),
-        detail: decision.rationale,
-        tags: [decision.domain],
-        scope: decision.scope,
-        agent_id: decision.agent_id,
-        _internal: true,
-      });
-    } catch (error) {
-      console.error(
-        "[twining] Decision cross-post failed (non-fatal):",
-        error,
-      );
-    }
+    // No blackboard cross-post (issue #30): decisions live only in the
+    // decision store. The old entry_type "decision" mirrors were filtered out
+    // by twining_assemble anyway; twining_query/twining_recent now read the
+    // decision store directly.
 
     // Generate embedding (Phase 2) — never let embedding failure prevent the decide
     if (this.embedder && this.indexManager) {
@@ -341,6 +334,7 @@ export class DecisionEngine {
       timestamp: string;
       alternatives_count: number;
       commit_hashes: string[];
+      superseded_by?: string;
     }>;
     active_count: number;
     provisional_count: number;
@@ -356,6 +350,8 @@ export class DecisionEngine {
       timestamp: d.timestamp,
       alternatives_count: d.alternatives.length,
       commit_hashes: d.commit_hashes ?? [],
+      // Retired decisions point at their replacement (#31).
+      ...(d.superseded_by ? { superseded_by: d.superseded_by } : {}),
     }));
 
     const active_count = decisions.filter((d) => d.status === "active").length;
@@ -603,21 +599,8 @@ export class DecisionEngine {
       override_reason: reason,
     });
 
-    // Post override entry to blackboard (internal — bypasses decision rejection)
-    const overrider = overriddenBy ?? "human";
-    await this.blackboardEngine.post({
-      entry_type: "decision",
-      summary:
-        `Override: ${decision.summary} -- overridden by ${overrider}`.slice(
-          0,
-          200,
-        ),
-      detail: reason,
-      tags: [decision.domain],
-      scope: decision.scope,
-      agent_id: overrider,
-      _internal: true,
-    });
+    // No blackboard cross-post (issue #30): the override outcome lives in the
+    // decision store (status "overridden", overridden_by, override_reason).
 
     // Auto-populate graph with challenged relation
     if (this.graphPopulator) {

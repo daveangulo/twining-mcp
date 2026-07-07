@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:16:30.135Z",
+  "id": "01KWX2BSHQENFHVR9THG0JYG5K",
+  "properties": {
+    "decision_summary": "Merge logic lives in the blackboard-tools handlers, with decisionEngine + decisionStore passed via the options object; no new methods on DecisionEngine"
+  },
+  "source": "01KWX2BS9N718QAFZHS4JT0GG7",
+  "target": "01KWX2BSHK5RPX5XCCPHXSQJM6",
+  "type": "decided_by"
+}

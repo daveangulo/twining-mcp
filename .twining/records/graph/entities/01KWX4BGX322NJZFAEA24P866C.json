@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-07T01:51:18.435Z",
+  "id": "01KWX4BGX322NJZFAEA24P866C",
+  "name": "01KWX4BGSKRFAM6JN6PSPC1A8A",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "compact_archives is an opt-in housekeeping flag (like staleness_review/merge_sweep), not part of the default pass"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-07T01:51:18.435Z"
+}

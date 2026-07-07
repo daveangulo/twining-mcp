@@ -1,0 +1,18 @@
+{
+  "agent_id": "general-purpose",
+  "detail": "",
+  "entry_type": "status",
+  "id": "01KWX2Q8M6J1FHP0QHKS9TRN80",
+  "provenance": {
+    "branch": "worktree-agent-a58d7efc58b22adc8",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T01:22:46.006Z"
+  },
+  "scope": "project",
+  "summary": "Subagent completed: general-purpose",
+  "tags": [
+    "subagent-stop",
+    "hook-generated"
+  ],
+  "timestamp": "2026-07-07T01:22:46.023Z"
+}

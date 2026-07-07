@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-07T01:16:30.257Z",
+  "id": "01KWX2BSNHMVSE69RS1NHZB5KP",
+  "name": "01KWX2BSJAHZMRTEXS25N30ENB",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Kept the _internal blackboard post flag and the assemble/auto-archive entry_type \"decision\" exclusions as legacy-data defenses"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-07T01:16:30.257Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:51:18.839Z",
+  "id": "01KWX4BH9Q6D8T0GAHNR1WCWCB",
+  "properties": {
+    "decision_summary": "Execute mode streams survivors to a lazily-created same-directory temp file then renames atomically; files with zero junk are never rewritten; files that were already empty are not deleted"
+  },
+  "source": "01KWX4BGRWFM550MY3JC4PACV7",
+  "target": "01KWX4BH9PZF5EKGQE1WQG47PW",
+  "type": "decided_by"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-07T01:16:30.005Z",
+  "id": "01KWX2BSDN5N1BPVS5KKQW1WHE",
+  "name": "01KWX2BSA92FGQ6S5B0P2912RR",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "twining_query/twining_recent merge decisions as a sibling `decisions` array (items marked type:\"decision\") rather than interleaving into results/entries"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-07T01:16:30.005Z"
+}

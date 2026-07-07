@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Issues #30–#35 all verified still unresolved in 2.0.0-beta.1: assemble still hard-filters decision cross-posts (src/engine/context-assembler.ts:138-144), priority_weights still discards user weights on sum≠1.0 (src/config.ts:148-155), no superseded_by anywhere in src/, no registry auto-touch on record/decide/post writes, no archive compaction pass in housekeeping.",
+  "entry_type": "finding",
+  "id": "01KWWX3P664PS38D9A65SGZ0YB",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-06T23:44:41.655Z"
+  },
+  "scope": "project",
+  "summary": "Issues #30–#35 all verified still unresolved in 2.0.0-beta.1: assemble still hard-filters decision cross-posts (src/engine/context-assembler.ts:138-144), priority_weights still discards user weight…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-06T23:44:41.670Z"
+}

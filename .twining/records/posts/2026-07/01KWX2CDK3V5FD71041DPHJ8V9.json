@@ -1,0 +1,17 @@
+{
+  "agent_id": "supersede-31",
+  "detail": "",
+  "entry_type": "finding",
+  "id": "01KWX2CDK3V5FD71041DPHJ8V9",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T01:16:50.644Z"
+  },
+  "scope": "src/storage/",
+  "summary": "Fresh worktrees fail test/analytics until `node scripts/inject-posthog-key.mjs` (the prebuild step) generates src/analytics/_generated-posthog-key.ts — npm ci alone is not enough to run npm test.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-07T01:16:50.659Z"
+}

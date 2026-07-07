@@ -1,0 +1,17 @@
+{
+  "agent_id": "archive-35",
+  "detail": "Damaged repos hold GBs of archive files; scanning them on every routine housekeeping preview would make the default call unacceptably slow. Within the flag, the standard preview-default/execute semantics apply.",
+  "entry_type": "decision",
+  "id": "01KWX4BGWD73ACBHAP5P30MW23",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T01:51:18.396Z"
+  },
+  "scope": "src/engine/",
+  "summary": "compact_archives is an opt-in housekeeping flag (like staleness_review/merge_sweep), not part of the default pass",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-07T01:51:18.413Z"
+}

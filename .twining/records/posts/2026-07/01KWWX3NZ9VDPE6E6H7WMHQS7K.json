@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Decisions: Chose to close #19 (Serena port fight) as already-implemented — tryListen retries EADDRINUSE +1 up to 5 times since v1.10.0, dashboard startup is non-fatal to the MCP server, and TWINING_DASHBOARD_PORT is the escape hatch; asked reporter to reopen with stderr if reproducible on ≥1.24.1.; Chose to close #18 (hook lets Claude slack on findings) as addressed-by-guidance rather than keep open — the concrete ask (more direction on what to record) shipped across record-tools findings schema (1.21.0 'under-recording' guidance), stop-hook block message, SessionStart context, and 1.24.1 front-load hints; the residual author-bias phenomenon is tracked via field analysis, not this issue.\nFindings: Issues #30–#35 all verified still unresolved in 2.0.0-beta.1: assemble still hard-filters decision cross-posts (src/engine/context-assembler.ts:138-144), priority_weights still discards user weights on sum≠1.0 (src/config.ts:148-155), no superseded_by anywhere in src/, no registry auto-touch on record/decide/post writes, no archive compaction pass in housekeeping.; #35 sequencing fact: twining-mcp migrate leaves archive/ untouched (src/migrate/forward.ts:118) — junk archives are NOT ingested into sqlite on migration, so archive repair is wanted-for-cleanup but not a v2 migration-correctness blocker.; #31 is half-shipped: the adoption-surface half (housekeeping nudge) exists in v1.24.1's plugin session-start-context.sh; the server half (superseded_by back-links at supersede time) is unimplemented.",
+  "entry_type": "status",
+  "id": "01KWWX3NZ9VDPE6E6H7WMHQS7K",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-06T23:44:41.427Z"
+  },
+  "scope": "project",
+  "summary": "Triaged all 9 open GitHub issues against v1.24.1: closed #18 (record guidance shipped 1.21–1.24.1) and #19 (dashboard port retry + non-fatal startup shipped since 1.10.0). 7 remain for v2.0 planning.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-06T23:44:41.450Z"
+}

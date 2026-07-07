@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-06T23:44:41.654Z",
+  "id": "01KWWX3P5PJ9KWJTGN6PWKY03Z",
+  "name": "01KWWX3P4F4ERKPEDTJV0A3BKX",
+  "properties": {
+    "scope": "project",
+    "summary": "Chose to close #18 (hook lets Claude slack on findings) as addressed-by-guidance rather than keep open"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-06T23:44:41.654Z"
+}

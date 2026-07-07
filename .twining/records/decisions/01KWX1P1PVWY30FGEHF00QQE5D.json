@@ -1,0 +1,43 @@
+{
+  "affected_files": [
+    "src/config.ts",
+    "test/config-priority-weights.test.ts",
+    ".twining/config.yml"
+  ],
+  "affected_symbols": [
+    "loadConfig",
+    "resolvePriorityWeights"
+  ],
+  "agent_id": "weights-34",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "keeping four keys + graph 0 (would change live ranking as a bugfix side effect) and rescaling the stale emphasis into 0",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "No other code depends on the old discard-to-defaults behavior of loadConfig weight validation (only consumer is context-assembler reading named keys).",
+    "±0.01 tolerance from the original check is the settled tolerance for both the rule-1 completeness test and the already-normalized merged check."
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Fixed #34: loadConfig no longer discards user priority_weights when a partial set deep-merges over 1.0 — user sets summing to ~1.0 are treated as complete (missing keys 0), otherwise merged weights rescale proportionally; defaults only on invalid input.",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KWX1P1PVWY30FGEHF00QQE5D",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8a7bde31665c75098be98afab0ad0e0e59cf1fe8",
+    "recorded_at": "2026-07-07T01:04:37.580Z"
+  },
+  "rationale": "git history shows the four-key set (5cb0049, 2026-02-18) predates graph_reachability (4846d70, 2026-03-13), so zero graph weight was never intended, and the bug meant full defaults were what actually ran since v1.9.0; explicit defaults preserve live assemble behavior exactly while silencing the warning. Rejected: keeping four keys + graph 0 (would change live ranking as a bugfix side effect) and rescaling the stale emphasis into 0.65 (invents numbers).",
+  "reversible": true,
+  "scope": "src/config.ts",
+  "status": "active",
+  "summary": "Chose to rewrite this repo's .twining/config.yml priority_weights as the five explicit default values (0.2/0.2/0.15/0.1/0.35) rather than keeping the four legacy values with an explicit graph_reachability: 0",
+  "timestamp": "2026-07-07T01:04:37.595Z"
+}

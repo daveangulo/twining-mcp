@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-07T01:51:18.303Z",
+  "id": "01KWX4BGRZ6W3C7BMQZ60H6NN3",
+  "name": "test/integration/tools/archive-compaction-tools.test.ts",
+  "properties": {
+    "scope": "src/engine/"
+  },
+  "type": "file",
+  "updated_at": "2026-07-07T01:51:18.975Z"
+}
