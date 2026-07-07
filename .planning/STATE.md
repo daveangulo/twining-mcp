@@ -138,6 +138,8 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Chose patch-based integration (git apply --3way of each worktree's diff onto main) over committing in worktrees and merging
 - Chose a single 2.0.0-beta.2 changelog section framing the release as the v2.0 issue-burndown beta
 - Chose to add a pretest npm hook running inject-posthog-key.mjs
+- Chose to draft a short delta reply on the existing salesforce thread rather than re-send full enrollment
+- Chose Lanny.Ripple@gmail.com as the external-tester recipient
 
 ### Pending Todos
 
