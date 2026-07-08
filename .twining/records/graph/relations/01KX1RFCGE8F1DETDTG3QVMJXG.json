@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-08T20:59:54.254Z",
+  "id": "01KX1RFCGE8F1DETDTG3QVMJXG",
+  "properties": {
+    "decision_summary": "Chose to amend beta enrollment instructions (Gmail draft + UPGRADE-v2.md) with a mandatory plugin step rather than relying on testers to notice the dual server"
+  },
+  "source": "01KWT95C1YAK43W4C438E8YNYV",
+  "target": "01KX1RFCGCDA5ETM5398P09VG1",
+  "type": "decided_by"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-08T20:59:54.182Z",
+  "id": "01KX1RFCE61C1MCQ0E1XA6YMYT",
+  "properties": {
+    "decision_summary": "Chose disabledMcpjsonServers in shared .claude/settings.json over disabling the plugin or env-var version switching in plugin/.mcp.json"
+  },
+  "source": "01KWT95C1YAK43W4C438E8YNYV",
+  "target": "01KX1RFCE4A08FKTXEGGV1W8M1",
+  "type": "decided_by"
+}

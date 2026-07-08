@@ -31,6 +31,9 @@
       "Bash(git push *)"
     ]
   },
+  "disabledMcpjsonServers": [
+    "plugin:twining:twining"
+  ],
   "enabledPlugins": {
     "github@claude-plugins-official": true,
     "feature-dev@claude-plugins-official": true,

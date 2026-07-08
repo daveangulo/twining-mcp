@@ -83,3 +83,18 @@ npx -y twining-mcp               # stays on latest 1.x until v2.0.0 is stable
 ```
 
 The Claude Code plugin keeps its `^1.x` server pin until after v2.0.0 stable ships.
+
+### If you use the Claude Code plugin
+
+The plugin bundles its own `twining` MCP server pinned to `^1.x`. Adding a project-level `.mcp.json` with `twining-mcp@next` therefore registers **two** servers against the same `.twining/` — they land in different tool namespaces (`twining` and `plugin:twining:twining`), so nothing collides at registration, but the model may call either one per tool call. Both open the same database (safe at the SQLite level — the schema versions currently match), yet 1.x writes don't maintain v2 invariants (superseded_by back-links, weight normalization), both servers race on the `records/` export tree, and both contend for the dashboard port. The moment a beta release bumps the schema version, the plugin's 1.x server will refuse to start.
+
+Disable the plugin's copy in each enrolled project — the plugin's hooks, skills, and gates stay active:
+
+```json
+// .claude/settings.json in the enrolled project
+{
+  "disabledMcpjsonServers": ["plugin:twining:twining"]
+}
+```
+
+(or disable `plugin:twining:twining` for the project via the `/mcp` UI). When leaving the beta, remove this alongside the `.mcp.json` entry.

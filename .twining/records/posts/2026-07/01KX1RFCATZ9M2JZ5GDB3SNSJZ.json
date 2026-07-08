@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Fixed dual twining MCP server issue from beta enrollment: disabled plugin:twining:twining in shared .claude/settings.json, added plugin caveat to UPGRADE-v2.md beta section, created amended enrollment draft in Gmail\nDecisions: [object Object]; [object Object]\nFindings: Dual-server risk profile: 1.24.1 and 2.0.0-beta.2 both have SQLITE_SCHEMA_VERSION=2 so WAL sharing is safe today, but 1.x writes skip v2 invariants (#31 superseded_by, #34 weight normalization), both race on .twining/records/ export tree, both contend for dashboard port 24282, and any future schema bump makes the plugin's 1.x server fail startup via the newer-schema guard; need: consider v2.x defense-in-depth — sibling-server detection via version-stamped pidfile in .twining/ that logs a loud warning when two twining servers open the same project; warning: this session itself ran both servers; any writes made through the mcp__plugin_twining_twining__ namespace this session went through 1.24.1 semantics",
+  "entry_type": "status",
+  "id": "01KX1RFCATZ9M2JZ5GDB3SNSJZ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "7dd13b221eb8cdd2dfcb6d783cbf998725562282",
+    "recorded_at": "2026-07-08T20:59:54.057Z"
+  },
+  "scope": "docs/",
+  "summary": "Fixed dual twining MCP server issue from beta enrollment: disabled plugin:twining:twining in shared .claude/settings.json, added plugin caveat to UPGRADE-v2.md beta section, created amended enrollm…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-08T20:59:54.074Z"
+}
