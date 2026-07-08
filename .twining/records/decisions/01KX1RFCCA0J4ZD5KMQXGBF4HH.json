@@ -42,7 +42,8 @@
   "rationale": "Disabling just the plugin's MCP server (key: plugin:twining:twining, verified via claude mcp list) keeps the plugin's hooks, skills, and gates active while eliminating the duplicate 1.x server. Placed in the checked-in shared settings.json rather than settings.local.json because this repo's .mcp.json pins @next for everyone, so the plugin server is redundant for every contributor. The elegant alternative — ${TWINING_MCP_VERSION:-^1.20.0} expansion in plugin/.mcp.json — is blocked upstream: env expansion does not work in plugin .mcp.json (anthropics/claude-code#9427).",
   "reversible": true,
   "scope": "docs/",
-  "status": "active",
+  "status": "superseded",
   "summary": "Chose disabledMcpjsonServers in shared .claude/settings.json over disabling the plugin or env-var version switching in plugin/.mcp.json",
+  "superseded_by": "01KX1W92JPGKD6AV3EVKD4SS7B",
   "timestamp": "2026-07-08T20:59:54.122Z"
 }

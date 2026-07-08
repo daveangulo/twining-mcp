@@ -88,13 +88,20 @@ The Claude Code plugin keeps its `^1.x` server pin until after v2.0.0 stable shi
 
 The plugin bundles its own `twining` MCP server pinned to `^1.x`. Adding a project-level `.mcp.json` with `twining-mcp@next` therefore registers **two** servers against the same `.twining/` — they land in different tool namespaces (`twining` and `plugin:twining:twining`), so nothing collides at registration, but the model may call either one per tool call. Both open the same database (safe at the SQLite level — the schema versions currently match), yet 1.x writes don't maintain v2 invariants (superseded_by back-links, weight normalization), both servers race on the `records/` export tree, and both contend for the dashboard port. The moment a beta release bumps the schema version, the plugin's 1.x server will refuse to start.
 
-Disable the plugin's copy in each enrolled project — the plugin's hooks, skills, and gates stay active:
+Disable the plugin's copy in each enrolled project — the plugin's hooks, skills, and gates stay active. Two ways:
+
+**Per-user (officially supported):** run `/mcp` in the project, select `plugin:twining:twining`, and disable it. This persists per-user per-project (in `~/.claude.json`); each collaborator does it once. Note: `disabledMcpjsonServers` in settings does **not** work here — that key only governs project `.mcp.json` servers, not plugin-bundled ones.
+
+**Checked-in (one commit covers the whole team):** add to the project's `.claude/settings.json`:
 
 ```json
-// .claude/settings.json in the enrolled project
 {
-  "disabledMcpjsonServers": ["plugin:twining:twining"]
+  "deniedMcpServers": [
+    { "serverCommand": ["npx", "-y", "twining-mcp@^1.20.0", "--project", "."] }
+  ]
 }
 ```
 
-(or disable `plugin:twining:twining` for the project via the `/mcp` UI). When leaving the beta, remove this alongside the `.mcp.json` entry.
+The deny matches the plugin server by its exact launch command, so it can't touch your `@next` server (both are named `twining`, which is why name-based matching won't work). Caveats: the deny-from-project-settings behavior is verified on Claude Code 2.1.205 but documented primarily as an enterprise key, and the command array must match the plugin's pin exactly — if a plugin update changes the pin, re-check with `claude mcp list` (the denied server disappears from the list when the block is working).
+
+When leaving the beta, remove whichever you added alongside the `.mcp.json` entry.

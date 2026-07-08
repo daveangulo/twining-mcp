@@ -31,8 +31,10 @@
       "Bash(git push *)"
     ]
   },
-  "disabledMcpjsonServers": [
-    "plugin:twining:twining"
+  "deniedMcpServers": [
+    {
+      "serverCommand": ["npx", "-y", "twining-mcp@^1.20.0", "--project", "."]
+    }
   ],
   "enabledPlugins": {
     "github@claude-plugins-official": true,

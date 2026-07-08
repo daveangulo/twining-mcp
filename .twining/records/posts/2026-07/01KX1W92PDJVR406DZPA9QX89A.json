@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "finding",
+  "id": "01KX1W92PDJVR406DZPA9QX89A",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "2f92be53469d00b765fabb7b1fc88a7ebf7a27d5",
+    "recorded_at": "2026-07-08T22:06:21.885Z"
+  },
+  "scope": "docs/",
+  "summary": "claude mcp list ignores disabledMcpServers (still lists disabled servers as Connected) but does reflect deniedMcpServers (denied servers vanish from the list) — use it to verify deny-based blocks only",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-08T22:06:21.901Z"
+}

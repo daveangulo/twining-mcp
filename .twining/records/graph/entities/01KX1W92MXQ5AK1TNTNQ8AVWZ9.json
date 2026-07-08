@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-08T22:06:21.853Z",
+  "id": "01KX1W92MXQ5AK1TNTNQ8AVWZ9",
+  "name": "01KX1W92JPGKD6AV3EVKD4SS7B",
+  "properties": {
+    "scope": "docs/",
+    "summary": "Chose checked-in deniedMcpServers serverCommand deny over per-user /mcp disable or the ineffective disabledMcpjsonServers key"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-08T22:06:21.853Z"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: disabledMcpjsonServers in Claude Code settings only governs project .mcp.json servers — it silently no-ops for plugin-bundled MCP servers; the working per-user mechanism is /mcp disable (persists to disabledMcpServers in ~/.claude.json project entry), the working committable mechanism is deniedMcpServers with serverCommand matching",
+  "entry_type": "warning",
+  "id": "01KX1W92NF1G0SHKZ606W423JQ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "2f92be53469d00b765fabb7b1fc88a7ebf7a27d5",
+    "recorded_at": "2026-07-08T22:06:21.856Z"
+  },
+  "scope": "docs/",
+  "summary": "disabledMcpjsonServers in Claude Code settings only governs project .mcp.json servers — it silently no-ops for plugin-bundled MCP servers; the working per-user mechanism is /mcp disable (persists t…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-08T22:06:21.871Z"
+}

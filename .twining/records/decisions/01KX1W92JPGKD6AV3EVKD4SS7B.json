@@ -1,0 +1,46 @@
+{
+  "affected_files": [
+    ".claude/settings.json",
+    "docs/UPGRADE-v2.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Per-user /mcp disable plugin:twining:twining",
+      "pros": [],
+      "reason_rejected": "Works (verified via headless probe when written to disabledMcpServers in ~/.claude.json) but is per-user per-machine — does not satisfy the apply-to-all-users requirement; kept as the documented fallback for testers"
+    },
+    {
+      "cons": [],
+      "option": "Keep disabledMcpjsonServers in settings.json",
+      "pros": [],
+      "reason_rejected": "Empirically does nothing for plugin-bundled servers — user restarted and both servers still ran; the mcpjson in the key name is literal"
+    }
+  ],
+  "assembled_before": false,
+  "assumptions": [
+    "deniedMcpServers merging from project settings is verified on Claude Code 2.1.205; it is documented primarily as an enterprise key and could narrow in a future CLI release",
+    "the deny's command array must exactly match the plugin's pin — a future plugin pin bump silently un-denies until the array is updated"
+  ],
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Superseded the disabledMcpjsonServers fix — it silently does nothing for plugin servers. Replaced with checked-in deniedMcpServers serverCommand deny in .claude/settings.json; verified plugin server no longer loads",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KX1W92JPGKD6AV3EVKD4SS7B",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "2f92be53469d00b765fabb7b1fc88a7ebf7a27d5",
+    "recorded_at": "2026-07-08T22:06:21.765Z"
+  },
+  "rationale": "Root cause of the failed first fix: disabledMcpjsonServers only governs project .mcp.json servers — the CLI's own embedded help text says plugin/user-scope servers are disabled via /mcp disable, persisting to disabledMcpServers in the ~/.claude.json project entry (per-user, not committable). The committable mechanism is deniedMcpServers, whose deny check reads merged settings from all sources (verified in CLI 2.1.205 binary: only the allowlist is managed-only). Matched by serverCommand rather than serverName because both servers are literally named 'twining' — a name deny could hit the @next server too; the exact 1.x launch command targets only the plugin's copy. Verified: with the per-user disable removed and only the checked-in deny active, claude mcp list shows only the @next server.",
+  "reversible": true,
+  "scope": "docs/",
+  "status": "active",
+  "summary": "Chose checked-in deniedMcpServers serverCommand deny over per-user /mcp disable or the ineffective disabledMcpjsonServers key",
+  "supersedes": "01KX1RFCCA0J4ZD5KMQXGBF4HH",
+  "timestamp": "2026-07-08T22:06:21.782Z"
+}
