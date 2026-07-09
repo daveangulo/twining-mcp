@@ -1,0 +1,35 @@
+{
+  "affected_files": [
+    "src/dashboard/public/js/timeline-scale.js",
+    "test/dashboard/timeline-scale.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "calendar-exact bucketing",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Task 10 (inline): timeline-scale.js pure bucketing math TDD'd — chooseBucket (smallest unit ≤120 buckets), bucketize (epoch-aligned sparse buckets, colorKey with entry_type fallback), makeScale (linear transforms). 9 tests green.",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01KX4EEFR0ES0E1E9SZD223PY2",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "ee5fabf0ef7fdbb305652eb374136399d5e286dc",
+    "recorded_at": "2026-07-09T22:02:22.321Z"
+  },
+  "rationale": "the histogram conveys visual density, axis labels come from real Dates, and pure ms math keeps the module trivially testable; revisit only if users read bucket boundaries as calendar months.",
+  "reversible": true,
+  "scope": "src/dashboard/public/js/",
+  "status": "active",
+  "summary": "Chose epoch-multiple bucket alignment with fixed 30d/365d month/year approximations over calendar-exact bucketing",
+  "timestamp": "2026-07-09T22:02:22.336Z"
+}

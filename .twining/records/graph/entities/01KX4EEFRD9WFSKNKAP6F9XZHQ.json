@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-09T22:02:22.348Z",
+  "id": "01KX4EEFRD9WFSKNKAP6F9XZHQ",
+  "name": "01KX4EEFR0ES0E1E9SZD223PY2",
+  "properties": {
+    "scope": "src/dashboard/public/js/",
+    "summary": "Chose epoch-multiple bucket alignment with fixed 30d/365d month/year approximations over calendar-exact bucketing"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-09T22:02:22.348Z"
+}
