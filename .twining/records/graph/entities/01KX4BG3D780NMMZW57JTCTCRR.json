@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-09T21:10:49.511Z",
+  "id": "01KX4BG3D780NMMZW57JTCTCRR",
+  "name": "01KX4BG3BH66MF38DFX029MNFR",
+  "properties": {
+    "scope": "src/dashboard/",
+    "summary": "Accepted implementer judgment: /api/graph/entities sort is a fixed degree-desc/name-asc default and the sort query param is ignored rather than switchable"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-09T21:10:49.511Z"
+}

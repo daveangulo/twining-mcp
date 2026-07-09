@@ -170,6 +170,49 @@ function createLargeTestProject(): { projectRoot: string; publicDir: string } {
   return { projectRoot, publicDir };
 }
 
+/**
+ * Create a temp project with .twining/graph/{entities,relations}.json for
+ * /api/graph/summary + /api/graph/entities testing.
+ *
+ * 6 entities across 3 types, 5 relations, 1 orphan entity (E6/orphan.ts).
+ * Degrees: alpha.ts=3, zulu=3, yankee=2, bravo.ts=1, mike=1, orphan.ts=0.
+ */
+function createGraphTestProject(): { projectRoot: string; publicDir: string } {
+  const projectRoot = fs.mkdtempSync(
+    path.join(os.tmpdir(), "twining-query-graph-test-"),
+  );
+  const twiningDir = path.join(projectRoot, ".twining");
+  const graphDir = path.join(twiningDir, "graph");
+  const publicDir = path.join(projectRoot, "public");
+
+  fs.mkdirSync(graphDir, { recursive: true });
+  fs.mkdirSync(publicDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(publicDir, "index.html"),
+    "<html><body>Dashboard</body></html>",
+  );
+
+  const entities = [
+    { id: "E1", name: "alpha.ts", type: "file", properties: {}, created_at: "2026-02-17T08:00:00.000Z", updated_at: "2026-02-17T08:00:00.000Z" },
+    { id: "E2", name: "bravo.ts", type: "file", properties: {}, created_at: "2026-02-17T08:01:00.000Z", updated_at: "2026-02-17T08:01:00.000Z" },
+    { id: "E3", name: "zulu", type: "function", properties: {}, created_at: "2026-02-17T08:02:00.000Z", updated_at: "2026-02-17T08:02:00.000Z" },
+    { id: "E4", name: "yankee", type: "function", properties: {}, created_at: "2026-02-17T08:03:00.000Z", updated_at: "2026-02-17T08:03:00.000Z" },
+    { id: "E5", name: "mike", type: "class", properties: {}, created_at: "2026-02-17T08:04:00.000Z", updated_at: "2026-02-17T08:04:00.000Z" },
+    { id: "E6", name: "orphan.ts", type: "file", properties: {}, created_at: "2026-02-17T08:05:00.000Z", updated_at: "2026-02-17T08:05:00.000Z" },
+  ];
+  const relations = [
+    { id: "R1", source: "E1", target: "E3", type: "contains", properties: {}, created_at: "2026-02-17T09:00:00.000Z" },
+    { id: "R2", source: "E1", target: "E4", type: "contains", properties: {}, created_at: "2026-02-17T09:01:00.000Z" },
+    { id: "R3", source: "E2", target: "E3", type: "contains", properties: {}, created_at: "2026-02-17T09:02:00.000Z" },
+    { id: "R4", source: "E3", target: "E4", type: "calls", properties: {}, created_at: "2026-02-17T09:03:00.000Z" },
+    { id: "R5", source: "E1", target: "E5", type: "imports", properties: {}, created_at: "2026-02-17T09:04:00.000Z" },
+  ];
+  fs.writeFileSync(path.join(graphDir, "entities.json"), JSON.stringify(entities, null, 2));
+  fs.writeFileSync(path.join(graphDir, "relations.json"), JSON.stringify(relations, null, 2));
+
+  return { projectRoot, publicDir };
+}
+
 /* ------------------------------------------------------------------ */
 /* Test suite: initialized project                                    */
 /* ------------------------------------------------------------------ */
@@ -483,5 +526,312 @@ describe("GET /api/index - uninitialized project", () => {
       blackboard: 0,
       decisions: { active: 0, provisional: 0, superseded: 0, overridden: 0 },
     });
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* Test suite: GET /api/graph/summary                                 */
+/* ------------------------------------------------------------------ */
+
+describe("GET /api/graph/summary", () => {
+  let server: http.Server;
+  let port: number;
+  let projectRoot: string;
+
+  beforeAll(async () => {
+    const project = createGraphTestProject();
+    projectRoot = project.projectRoot;
+
+    server = http.createServer(
+      handleRequest(project.publicDir, project.projectRoot),
+    );
+    await new Promise<void>((resolve) => {
+      server.listen(0, "127.0.0.1", () => resolve());
+    });
+    const addr = server.address();
+    port = typeof addr === "object" && addr !== null ? addr.port : 0;
+  });
+
+  afterAll(async () => {
+    await new Promise<void>((resolve) => {
+      server.close(() => resolve());
+    });
+    fs.rmSync(projectRoot, { recursive: true, force: true });
+  });
+
+  it("returns groups with correct per-type counts", async () => {
+    const res = await httpGet(port, "/api/graph/summary");
+    expect(res.status).toBe(200);
+    expect(res.headers["content-type"]).toContain("application/json");
+
+    const body = JSON.parse(res.body.toString("utf-8"));
+    expect(body.initialized).toBe(true);
+
+    const groupsByType: Record<string, number> = {};
+    for (const g of body.groups) groupsByType[g.type] = g.count;
+    expect(groupsByType).toEqual({ file: 3, function: 2, class: 1 });
+  });
+
+  it("aggregates group_edges by unordered type-pair with per-relation-type counts", async () => {
+    const res = await httpGet(port, "/api/graph/summary");
+    const body = JSON.parse(res.body.toString("utf-8"));
+
+    expect(body.group_edges).toHaveLength(3);
+
+    const fileFunction = body.group_edges.find(
+      (e: { source_type: string; target_type: string }) =>
+        e.source_type === "file" && e.target_type === "function",
+    );
+    expect(fileFunction).toBeDefined();
+    expect(fileFunction.relation_counts).toEqual({ contains: 3 });
+    expect(fileFunction.total).toBe(3);
+
+    const functionFunction = body.group_edges.find(
+      (e: { source_type: string; target_type: string }) =>
+        e.source_type === "function" && e.target_type === "function",
+    );
+    expect(functionFunction).toBeDefined();
+    expect(functionFunction.relation_counts).toEqual({ calls: 1 });
+    expect(functionFunction.total).toBe(1);
+
+    // class + file pair: sorted alphabetically -> class, file (regardless of
+    // actual relation direction, which is file(E1) -> class(E5) here).
+    const classFile = body.group_edges.find(
+      (e: { source_type: string; target_type: string }) =>
+        e.source_type === "class" && e.target_type === "file",
+    );
+    expect(classFile).toBeDefined();
+    expect(classFile.relation_counts).toEqual({ imports: 1 });
+    expect(classFile.total).toBe(1);
+  });
+
+  it("sorts hubs by degree desc, ties broken by name asc, top 20", async () => {
+    const res = await httpGet(port, "/api/graph/summary");
+    const body = JSON.parse(res.body.toString("utf-8"));
+
+    const names = body.hubs.map((h: { name: string }) => h.name);
+    expect(names).toEqual(["alpha.ts", "zulu", "yankee", "bravo.ts", "mike", "orphan.ts"]);
+
+    const degrees = body.hubs.map((h: { degree: number }) => h.degree);
+    expect(degrees).toEqual([3, 3, 2, 1, 1, 0]);
+  });
+
+  it("computes orphan_count, entity_count, relation_count", async () => {
+    const res = await httpGet(port, "/api/graph/summary");
+    const body = JSON.parse(res.body.toString("utf-8"));
+
+    expect(body.orphan_count).toBe(1);
+    expect(body.entity_count).toBe(6);
+    expect(body.relation_count).toBe(5);
+  });
+});
+
+describe("GET /api/graph/summary - uninitialized project", () => {
+  let server: http.Server;
+  let port: number;
+  let projectRoot: string;
+
+  beforeAll(async () => {
+    projectRoot = fs.mkdtempSync(
+      path.join(os.tmpdir(), "twining-query-graphsummary-uninit-"),
+    );
+    const publicDir = path.join(projectRoot, "public");
+    fs.mkdirSync(publicDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(publicDir, "index.html"),
+      "<html><body>Empty</body></html>",
+    );
+
+    server = http.createServer(handleRequest(publicDir, projectRoot));
+    await new Promise<void>((resolve) => {
+      server.listen(0, "127.0.0.1", () => resolve());
+    });
+    const addr = server.address();
+    port = typeof addr === "object" && addr !== null ? addr.port : 0;
+  });
+
+  afterAll(async () => {
+    await new Promise<void>((resolve) => {
+      server.close(() => resolve());
+    });
+    fs.rmSync(projectRoot, { recursive: true, force: true });
+  });
+
+  it("returns initialized:false with empty groups/hubs and zeroed counts", async () => {
+    const res = await httpGet(port, "/api/graph/summary");
+    expect(res.status).toBe(200);
+
+    const body = JSON.parse(res.body.toString("utf-8"));
+    expect(body.initialized).toBe(false);
+    expect(body.groups).toEqual([]);
+    expect(body.group_edges).toEqual([]);
+    expect(body.hubs).toEqual([]);
+    expect(body.orphan_count).toBe(0);
+    expect(body.entity_count).toBe(0);
+    expect(body.relation_count).toBe(0);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* Test suite: GET /api/graph/entities                                */
+/* ------------------------------------------------------------------ */
+
+describe("GET /api/graph/entities", () => {
+  let server: http.Server;
+  let port: number;
+  let projectRoot: string;
+
+  beforeAll(async () => {
+    const project = createGraphTestProject();
+    projectRoot = project.projectRoot;
+
+    server = http.createServer(
+      handleRequest(project.publicDir, project.projectRoot),
+    );
+    await new Promise<void>((resolve) => {
+      server.listen(0, "127.0.0.1", () => resolve());
+    });
+    const addr = server.address();
+    port = typeof addr === "object" && addr !== null ? addr.port : 0;
+  });
+
+  afterAll(async () => {
+    await new Promise<void>((resolve) => {
+      server.close(() => resolve());
+    });
+    fs.rmSync(projectRoot, { recursive: true, force: true });
+  });
+
+  it("defaults to offset 0, limit 50, sorted degree desc then name asc", async () => {
+    const res = await httpGet(port, "/api/graph/entities");
+    expect(res.status).toBe(200);
+    expect(res.headers["content-type"]).toContain("application/json");
+
+    const body = JSON.parse(res.body.toString("utf-8"));
+    expect(body.total).toBe(6);
+    expect(body.offset).toBe(0);
+
+    const names = body.entities.map((e: { name: string }) => e.name);
+    expect(names).toEqual(["alpha.ts", "zulu", "yankee", "bravo.ts", "mike", "orphan.ts"]);
+    expect(body.entities[0]).toHaveProperty("id");
+    expect(body.entities[0]).toHaveProperty("type");
+    expect(body.entities[0]).toHaveProperty("degree");
+  });
+
+  it("filters by type", async () => {
+    const res = await httpGet(port, "/api/graph/entities?type=file");
+    const body = JSON.parse(res.body.toString("utf-8"));
+
+    expect(body.total).toBe(3);
+    const names = body.entities.map((e: { name: string }) => e.name);
+    expect(names).toEqual(["alpha.ts", "bravo.ts", "orphan.ts"]);
+  });
+
+  it("filters by case-insensitive name substring q", async () => {
+    const res = await httpGet(port, "/api/graph/entities?q=ZUL");
+    const body = JSON.parse(res.body.toString("utf-8"));
+
+    expect(body.total).toBe(1);
+    expect(body.entities[0].name).toBe("zulu");
+  });
+
+  it("paginates with offset/limit; total reflects filtered count pre-paging", async () => {
+    const res = await httpGet(port, "/api/graph/entities?offset=2&limit=2");
+    const body = JSON.parse(res.body.toString("utf-8"));
+
+    expect(body.total).toBe(6);
+    expect(body.offset).toBe(2);
+    const names = body.entities.map((e: { name: string }) => e.name);
+    expect(names).toEqual(["yankee", "bravo.ts"]);
+  });
+});
+
+describe("GET /api/graph/entities - uninitialized project", () => {
+  let server: http.Server;
+  let port: number;
+  let projectRoot: string;
+
+  beforeAll(async () => {
+    projectRoot = fs.mkdtempSync(
+      path.join(os.tmpdir(), "twining-query-graphentities-uninit-"),
+    );
+    const publicDir = path.join(projectRoot, "public");
+    fs.mkdirSync(publicDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(publicDir, "index.html"),
+      "<html><body>Empty</body></html>",
+    );
+
+    server = http.createServer(handleRequest(publicDir, projectRoot));
+    await new Promise<void>((resolve) => {
+      server.listen(0, "127.0.0.1", () => resolve());
+    });
+    const addr = server.address();
+    port = typeof addr === "object" && addr !== null ? addr.port : 0;
+  });
+
+  afterAll(async () => {
+    await new Promise<void>((resolve) => {
+      server.close(() => resolve());
+    });
+    fs.rmSync(projectRoot, { recursive: true, force: true });
+  });
+
+  it("returns empty entities with total 0", async () => {
+    const res = await httpGet(port, "/api/graph/entities");
+    expect(res.status).toBe(200);
+
+    const body = JSON.parse(res.body.toString("utf-8"));
+    expect(body.entities).toEqual([]);
+    expect(body.total).toBe(0);
+    expect(body.offset).toBe(0);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* Test suite: legacy /api/graph exact-match route not shadowed       */
+/* ------------------------------------------------------------------ */
+
+describe("GET /api/graph - legacy exact-match route", () => {
+  let server: http.Server;
+  let port: number;
+  let projectRoot: string;
+
+  beforeAll(async () => {
+    const project = createGraphTestProject();
+    projectRoot = project.projectRoot;
+
+    server = http.createServer(
+      handleRequest(project.publicDir, project.projectRoot),
+    );
+    await new Promise<void>((resolve) => {
+      server.listen(0, "127.0.0.1", () => resolve());
+    });
+    const addr = server.address();
+    port = typeof addr === "object" && addr !== null ? addr.port : 0;
+  });
+
+  afterAll(async () => {
+    await new Promise<void>((resolve) => {
+      server.close(() => resolve());
+    });
+    fs.rmSync(projectRoot, { recursive: true, force: true });
+  });
+
+  it("does not intercept the legacy exact-match /api/graph route", async () => {
+    const res = await httpGet(port, "/api/graph");
+    expect(res.status).toBe(200);
+
+    const body = JSON.parse(res.body.toString("utf-8"));
+    // Legacy shape: full entities/relations arrays, not the scale-oriented
+    // summary shape (no groups/hubs/group_edges).
+    expect(body).toHaveProperty("entities");
+    expect(body).toHaveProperty("relations");
+    expect(body).toHaveProperty("entity_count");
+    expect(body).toHaveProperty("relation_count");
+    expect(body).not.toHaveProperty("groups");
+    expect(body).not.toHaveProperty("hubs");
+    expect(body.entities).toHaveLength(6);
+    expect(body.relations).toHaveLength(5);
   });
 });

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Graph endpoint semantics pinned: degree increments both endpoints per relation; group_edges aggregate by unordered type pair and skip relations with missing endpoint entities (still counted in relation_count); hubs top-20 by degree with name-asc ties.",
+  "entry_type": "finding",
+  "id": "01KX4BG3DSWARN1GKV5Y0ATWJT",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "00e8488ef43c3643f349b726d0edd269c8f13cc9",
+    "recorded_at": "2026-07-09T21:10:49.513Z"
+  },
+  "scope": "src/dashboard/",
+  "summary": "Graph endpoint semantics pinned: degree increments both endpoints per relation; group_edges aggregate by unordered type pair and skip relations with missing endpoint entities (still counted in rela…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-09T21:10:49.529Z"
+}

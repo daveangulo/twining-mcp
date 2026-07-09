@@ -12,11 +12,29 @@ import { DecisionStore } from "../storage/decision-store.js";
 import { GraphStore } from "../storage/graph-store.js";
 import type { DashboardDeps } from "./api-routes.js";
 import type { IBlackboardStore, IDecisionStore, IGraphStore } from "../storage/interfaces.js";
+import type { Relation } from "../utils/types.js";
 
 const SUMMARY_MAX = 120;
+const HUB_LIMIT = 20;
+const DEFAULT_ENTITIES_LIMIT = 50;
 
 function truncate(s: string): string {
   return s.length <= SUMMARY_MAX ? s : s.slice(0, SUMMARY_MAX - 1) + "…";
+}
+
+/** Each relation increments the degree of both its source and target entity. */
+function buildDegreeMap(relations: Relation[]): Map<string, number> {
+  const degree = new Map<string, number>();
+  for (const r of relations) {
+    degree.set(r.source, (degree.get(r.source) ?? 0) + 1);
+    degree.set(r.target, (degree.get(r.target) ?? 0) + 1);
+  }
+  return degree;
+}
+
+/** Lexicographic name comparator (no locale surprises — plain string ordering). */
+function compareNames(a: string, b: string): number {
+  return a === b ? 0 : a < b ? -1 : 1;
 }
 
 /** Send JSON, gzipping when the client accepts it and the body is large. */
@@ -45,7 +63,6 @@ export function createQueryHandler(
   const blackboardStore: IBlackboardStore = deps?.blackboardStore ?? new BlackboardStore(twiningDir);
   const decisionStore: IDecisionStore = deps?.decisionStore ?? new DecisionStore(twiningDir);
   const graphStore: IGraphStore = deps?.graphStore ?? new GraphStore(twiningDir);
-  void graphStore; // used from Task 4 on
 
   return async (req, res) => {
     const url = req.url || "/";
@@ -116,6 +133,105 @@ export function createQueryHandler(
         });
       } catch (err) {
         console.error("[twining] /api/index error:", err);
+        sendJSON(req, res, { error: "Internal server error" }, 500);
+      }
+      return true;
+    }
+
+    if (route === "/api/graph/summary") {
+      try {
+        if (!fs.existsSync(twiningDir)) {
+          sendJSON(req, res, {
+            initialized: false, groups: [], group_edges: [], hubs: [],
+            orphan_count: 0, entity_count: 0, relation_count: 0,
+          });
+          return true;
+        }
+
+        const [entities, relations] = await Promise.all([
+          graphStore.getEntities(),
+          graphStore.getRelations(),
+        ]);
+        const degreeMap = buildDegreeMap(relations);
+        const entityById = new Map(entities.map((e) => [e.id, e]));
+
+        const groupCounts = new Map<string, number>();
+        for (const e of entities) groupCounts.set(e.type, (groupCounts.get(e.type) ?? 0) + 1);
+        const groups = [...groupCounts.entries()].map(([type, count]) => ({ type, count }));
+
+        // group_edges: unordered type-pair aggregation. Relations whose
+        // source/target entity is missing are skipped here (but still
+        // counted in relation_count below).
+        const edgeMap = new Map<string, { source_type: string; target_type: string; relation_counts: Record<string, number>; total: number }>();
+        for (const r of relations) {
+          const srcEntity = entityById.get(r.source);
+          const tgtEntity = entityById.get(r.target);
+          if (!srcEntity || !tgtEntity) continue;
+          const typeA = srcEntity.type <= tgtEntity.type ? srcEntity.type : tgtEntity.type;
+          const typeB = srcEntity.type <= tgtEntity.type ? tgtEntity.type : srcEntity.type;
+          const key = `${typeA}→${typeB}`;
+          let edge = edgeMap.get(key);
+          if (!edge) {
+            edge = { source_type: typeA, target_type: typeB, relation_counts: {}, total: 0 };
+            edgeMap.set(key, edge);
+          }
+          edge.relation_counts[r.type] = (edge.relation_counts[r.type] ?? 0) + 1;
+          edge.total += 1;
+        }
+        const group_edges = [...edgeMap.values()];
+
+        const hubs = entities
+          .map((e) => ({ id: e.id, name: e.name, type: e.type, degree: degreeMap.get(e.id) ?? 0 }))
+          .sort((a, b) => b.degree - a.degree || compareNames(a.name, b.name))
+          .slice(0, HUB_LIMIT);
+
+        const orphan_count = entities.filter((e) => (degreeMap.get(e.id) ?? 0) === 0).length;
+
+        sendJSON(req, res, {
+          initialized: true, groups, group_edges, hubs, orphan_count,
+          entity_count: entities.length, relation_count: relations.length,
+        });
+      } catch (err) {
+        console.error("[twining] /api/graph/summary error:", err);
+        sendJSON(req, res, { error: "Internal server error" }, 500);
+      }
+      return true;
+    }
+
+    if (route === "/api/graph/entities") {
+      try {
+        if (!fs.existsSync(twiningDir)) {
+          sendJSON(req, res, { entities: [], total: 0, offset: 0 });
+          return true;
+        }
+
+        const [entities, relations] = await Promise.all([
+          graphStore.getEntities(),
+          graphStore.getRelations(),
+        ]);
+        const degreeMap = buildDegreeMap(relations);
+
+        const typeFilter = parsed.searchParams.get("type");
+        const q = parsed.searchParams.get("q");
+        const offsetParam = parseInt(parsed.searchParams.get("offset") ?? "", 10);
+        const limitParam = parseInt(parsed.searchParams.get("limit") ?? "", 10);
+        const offset = Number.isFinite(offsetParam) && offsetParam >= 0 ? offsetParam : 0;
+        const limit = Number.isFinite(limitParam) && limitParam >= 0 ? limitParam : DEFAULT_ENTITIES_LIMIT;
+
+        let list = entities.map((e) => ({ id: e.id, name: e.name, type: e.type, degree: degreeMap.get(e.id) ?? 0 }));
+        if (typeFilter) list = list.filter((e) => e.type === typeFilter);
+        if (q) {
+          const qLower = q.toLowerCase();
+          list = list.filter((e) => e.name.toLowerCase().includes(qLower));
+        }
+        list.sort((a, b) => b.degree - a.degree || compareNames(a.name, b.name));
+
+        const total = list.length;
+        const paged = list.slice(offset, offset + limit);
+
+        sendJSON(req, res, { entities: paged, total, offset });
+      } catch (err) {
+        console.error("[twining] /api/graph/entities error:", err);
         sendJSON(req, res, { error: "Internal server error" }, 500);
       }
       return true;

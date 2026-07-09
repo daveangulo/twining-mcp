@@ -1,0 +1,35 @@
+{
+  "affected_files": [
+    "src/dashboard/query-routes.ts",
+    "test/dashboard/query-routes.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "switchable",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Task 4 (/api/graph/summary + /api/graph/entities endpoints) implemented via subagent, TDD green (22/22 endpoint tests, suite 1136 pass, tsc clean), legacy /api/graph regression test added. Review running; commit follows approval.",
+  "depends_on": [],
+  "domain": "api-design",
+  "id": "01KX4BG3BH66MF38DFX029MNFR",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "00e8488ef43c3643f349b726d0edd269c8f13cc9",
+    "recorded_at": "2026-07-09T21:10:49.441Z"
+  },
+  "rationale": "the plan's frontend (graph drill list) only ever sorts by degree; YAGNI. Revisit only if Phase 4 needs a sort toggle.",
+  "reversible": true,
+  "scope": "src/dashboard/",
+  "status": "active",
+  "summary": "Accepted implementer judgment: /api/graph/entities sort is a fixed degree-desc/name-asc default and the sort query param is ignored rather than switchable",
+  "timestamp": "2026-07-09T21:10:49.457Z"
+}
