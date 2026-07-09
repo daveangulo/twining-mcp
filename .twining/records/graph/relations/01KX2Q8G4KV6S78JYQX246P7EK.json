@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T05:57:54.451Z",
+  "id": "01KX2Q8G4KV6S78JYQX246P7EK",
+  "properties": {
+    "decision_summary": "Rescoped the plugin token budget to count only context-loaded files (skills + agents), baseline 30514 = skills+agents at the original v1.4 tuning commit cd0497b, same +20% cap — approved by Dave over rebase-to-today, comment-trimming, and reverting the hook warning"
+  },
+  "source": "01KJJ8J8TFQN00XTFJH3CR9P5P",
+  "target": "01KX2Q8G4GH7GM7143REZ9W09G",
+  "type": "decided_by"
+}
