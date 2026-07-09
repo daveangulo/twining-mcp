@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T21:57:30.346Z",
+  "id": "01KX4E5JKAZC1JXWPJPEGR9FR1",
+  "properties": {
+    "decision_summary": "Kept renderBlackboardDetail in app.js (not yet moved) because navigateToId cross-links still render from legacy state"
+  },
+  "source": "01KX4E5JHE63ZJ5FVRD25H4A1K",
+  "target": "01KX4E5JK753DS7978NY7B9P69",
+  "type": "decided_by"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Discovered need: the Blackboard STREAM view still renders one card per entry (O(dataset) DOM) — plan didn't cover it; folded into Phase 5 cleanup (options: window it onto the shared list or retire it).",
+  "entry_type": "finding",
+  "id": "01KX4E5JNQM1CJ4FA1CE7JY80V",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "fd4b1767eebda75f6c117a142de1b4cf2128ccaa",
+    "recorded_at": "2026-07-09T21:57:30.408Z"
+  },
+  "scope": "src/dashboard/public/js/",
+  "summary": "Discovered need: the Blackboard STREAM view still renders one card per entry (O(dataset) DOM) — plan didn't cover it; folded into Phase 5 cleanup (options: window it onto the shared list or retire …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-09T21:57:30.423Z"
+}

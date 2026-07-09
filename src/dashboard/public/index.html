@@ -15,6 +15,7 @@
   <script src="vendor/cytoscape.min.js" defer></script>
   <script src="vendor/vis-timeline-graph2d.min.js" defer></script>
   <script src="app.js" defer></script>
+  <script type="module" src="js/main.js"></script>
 </head>
 <body>
   <!-- Session ended overlay (shown when server disconnects) -->
@@ -247,18 +248,7 @@
       <div class="view-table" id="blackboard-table-view">
         <div class="content-area">
           <div class="list-panel">
-            <table class="data-table" id="blackboard-table">
-              <thead>
-                <tr>
-                  <th class="sortable-header" data-sort-key="timestamp">Timestamp</th>
-                  <th class="sortable-header" data-sort-key="entry_type">Type</th>
-                  <th class="sortable-header" data-sort-key="scope">Scope</th>
-                  <th class="sortable-header" data-sort-key="summary">Summary</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-            <div class="pagination" id="blackboard-pagination"></div>
+            <div id="blackboard-listview"></div>
           </div>
           <div class="detail-panel" id="blackboard-detail">
             <p class="placeholder">Select an entry to view details</p>

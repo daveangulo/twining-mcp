@@ -168,7 +168,7 @@ function fetchBlackboard() {
       state.blackboard.data = data.entries || [];
       state.connected = true;
       updateConnectionIndicator();
-      renderBlackboard();
+      // Table view is owned by js/main.js (virtualized list); stream still renders here.
       // Refresh stream if visible
       var streamView = document.getElementById('blackboard-stream-view');
       if (streamView && streamView.style.display !== 'none') {
@@ -449,7 +449,6 @@ function handleSort(tabName, key) {
   tabState.page = 1;
 
   if (tabName === "blackboard") {
-    renderBlackboard();
     var streamView = document.getElementById('blackboard-stream-view');
     if (streamView && streamView.style.display !== 'none') {
       renderStream();
@@ -626,69 +625,9 @@ function renderRecentActivity() {
 }
 
 /* ========== Render: Blackboard ========== */
-
-function renderBlackboard() {
-  var ts = state.blackboard;
-  var scoped = applyGlobalScope(ts.data, "scope");
-  var sorted = sortData(scoped, ts.sortKey, ts.sortDir);
-  var page = paginate(sorted, ts.page, ts.pageSize);
-
-  updateSortHeaders("blackboard-table", ts.sortKey, ts.sortDir);
-
-  var tbody = document.querySelector("#blackboard-table tbody");
-  if (!tbody) return;
-  clearElement(tbody);
-
-  for (var i = 0; i < page.length; i++) {
-    var entry = page[i];
-    var tr = el("tr");
-    tr.setAttribute("data-id", entry.id || "");
-    if (ts.selectedId && (entry.id === ts.selectedId)) {
-      tr.classList.add("selected");
-    }
-
-    var tdTime = el("td", null, formatTimestamp(entry.timestamp));
-    var tdType = el("td", null, entry.entry_type || "--");
-    var tdScope = el("td", null, entry.scope || "--");
-    var tdSummary = el("td", null, truncate(entry.summary, 80));
-
-    tr.appendChild(tdTime);
-    tr.appendChild(tdType);
-    tr.appendChild(tdScope);
-    tr.appendChild(tdSummary);
-
-    (function(e) {
-      tr.addEventListener("click", function() {
-        ts.selectedId = e.id;
-        renderBlackboard();
-        renderBlackboardDetail(e);
-      });
-    })(entry);
-
-    tbody.appendChild(tr);
-  }
-
-  renderPagination("blackboard-pagination", sorted.length, ts, renderBlackboard);
-
-  // If selected item exists, show its detail
-  if (ts.selectedId) {
-    var found = null;
-    for (var k = 0; k < ts.data.length; k++) {
-      if (ts.data[k].id === ts.selectedId) {
-        found = ts.data[k];
-        break;
-      }
-    }
-    if (!found) {
-      var panel = document.getElementById("blackboard-detail");
-      if (panel) {
-        clearElement(panel);
-        panel.appendChild(el("p", "placeholder", "Item no longer exists"));
-        ts.selectedId = null;
-      }
-    }
-  }
-}
+/* Table view replaced by the virtualized list in js/main.js (Plan Task 8).
+   renderBlackboardDetail stays for navigateToId cross-links until routing
+   lands in Phase 5. */
 
 function renderBlackboardDetail(entry) {
   var panel = document.getElementById("blackboard-detail");
@@ -1671,7 +1610,6 @@ function navigateToId(id) {
     if (state.blackboard.data[i].id === id) {
       switchTab("blackboard");
       state.blackboard.selectedId = id;
-      renderBlackboard();
       renderBlackboardDetail(state.blackboard.data[i]);
       return;
     }

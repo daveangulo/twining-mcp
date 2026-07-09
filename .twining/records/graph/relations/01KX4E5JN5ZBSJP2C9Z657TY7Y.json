@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T21:57:30.405Z",
+  "id": "01KX4E5JN5ZBSJP2C9Z657TY7Y",
+  "properties": {
+    "decision_summary": "main.js runs its own 5s /api/status poll for store delta detection rather than intercepting app.js's fetchStatus"
+  },
+  "source": "01KX4E5JHDP9RY55NA912A2FV2",
+  "target": "01KX4E5JN4H3VFC0ZT39TNEPEQ",
+  "type": "decided_by"
+}

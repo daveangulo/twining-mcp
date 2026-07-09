@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-09T21:57:30.343Z",
+  "id": "01KX4E5JK753DS7978NY7B9P69",
+  "name": "01KX4E5JJ0GW410CBBHE3GC8N3",
+  "properties": {
+    "scope": "src/dashboard/public/js/",
+    "summary": "Kept renderBlackboardDetail in app.js (not yet moved) because navigateToId cross-links still render from legacy state"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-09T21:57:30.343Z"
+}

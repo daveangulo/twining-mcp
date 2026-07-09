@@ -3,8 +3,8 @@
   "id": "01KJC68M4SHY3D3VYR8E7V05XC",
   "name": "src/dashboard/public/style.css",
   "properties": {
-    "scope": "src/dashboard/"
+    "scope": "src/dashboard/public/js/"
   },
   "type": "file",
-  "updated_at": "2026-02-28T16:13:16.209Z"
+  "updated_at": "2026-07-09T21:57:30.407Z"
 }

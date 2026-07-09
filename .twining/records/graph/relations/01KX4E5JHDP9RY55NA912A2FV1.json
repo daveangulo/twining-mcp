@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T21:57:30.285Z",
+  "id": "01KX4E5JHDP9RY55NA912A2FV1",
+  "properties": {
+    "decision_summary": "Fixed a discovered edge in virtualization during browser verification: filtering while scrolled deep left scrollTop beyond the shrunken content, rendering an empty window"
+  },
+  "source": "01KX4E5JHCECEA7GK4WVWXSS13",
+  "target": "01KX4E5JHCECEA7GK4WVWXSS12",
+  "type": "decided_by"
+}

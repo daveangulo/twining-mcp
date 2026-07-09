@@ -1,0 +1,39 @@
+{
+  "affected_files": [
+    "src/dashboard/public/js/list-view.js",
+    "src/dashboard/public/js/main.js",
+    "src/dashboard/public/js/util.js",
+    "src/dashboard/public/index.html",
+    "src/dashboard/public/app.js",
+    "src/dashboard/public/style.css"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "reset-to-top so poll-driven rebuilds don't yank the user's scroll position",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Task 8 (inline): virtualized faceted list view (js/list-view.js) + orchestrator (js/main.js) + util.js; Blackboard table view replaced — verified in browser at 5k: 23-32 DOM rows for 5000 visible records, 42ms facet filter, day-group headers, detail via /api/blackboard/:id, zero console errors. Legacy renderBlackboard deleted from app.js. Suite 1164 green.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KX4E5JGRSACAGCGF0EJ0N0MV",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "fd4b1767eebda75f6c117a142de1b4cf2128ccaa",
+    "recorded_at": "2026-07-09T21:57:30.249Z"
+  },
+  "rationale": "rebuild() now clamps scrollTop to the new max before rendering. Chose clamping over reset-to-top so poll-driven rebuilds don't yank the user's scroll position.",
+  "reversible": true,
+  "scope": "src/dashboard/public/js/",
+  "status": "active",
+  "summary": "Fixed a discovered edge in virtualization during browser verification: filtering while scrolled deep left scrollTop beyond the shrunken content, rendering an empty window",
+  "timestamp": "2026-07-09T21:57:30.264Z"
+}
