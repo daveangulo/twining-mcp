@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-09T21:49:46.909Z",
+  "id": "01KX4DQE0XQC7Q2M339TBC9MY8",
+  "name": "01KX4DQE0G2C7R4V018AD71GQ0",
+  "properties": {
+    "scope": "src/dashboard/public/js/",
+    "summary": "Chose union-of-keys generic status-count comparison in the store's validation (countsMatch iterates the union of local and server decision-status keys)"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-09T21:49:46.909Z"
+}

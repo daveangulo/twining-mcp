@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T21:49:46.942Z",
+  "id": "01KX4DQE1Y5AP7Q1M7W34CY47Y",
+  "properties": {
+    "decision_summary": "Documented a known blind spot rather than engineering around it: a superseded→archived flip with no other project activity is invisible to /api/status counts, so the store catches it on the next real change via post-merge count validation"
+  },
+  "source": "01KX4DQE0XQC7Q2M339TBC9MY9",
+  "target": "01KX4DQE1Y5AP7Q1M7W34CY47X",
+  "type": "decided_by"
+}

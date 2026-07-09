@@ -1,0 +1,35 @@
+{
+  "affected_files": [
+    "src/dashboard/public/js/store.js",
+    "test/dashboard/store-logic.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "engineering around it: a superseded→archived flip with no other project activity is invisible to /api/status counts, so the store catches it on the next real change via post-merge count validation",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Task 7 (inline): client index store implemented TDD-first — src/dashboard/public/js/store.js (pure ESM, no DOM) with load/delta-poll/count-validation/filter/facetCounts/scopeChildren; 12 unit tests green, full suite 1164 pass.",
+  "depends_on": [],
+  "domain": "api-design",
+  "id": "01KX4DQE1FXKH46X5B21RS3E6M",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "635248c58b04fbc80b15720452df00baddffb1b0",
+    "recorded_at": "2026-07-09T21:49:46.912Z"
+  },
+  "rationale": "accepted because twining_archive always posts an archiver summary to the blackboard in practice, which changes blackboard counts and triggers the poll anyway.",
+  "reversible": true,
+  "scope": "src/dashboard/public/js/",
+  "status": "active",
+  "summary": "Documented a known blind spot rather than engineering around it: a superseded→archived flip with no other project activity is invisible to /api/status counts, so the store catches it on the next real change via post-merge count validation",
+  "timestamp": "2026-07-09T21:49:46.927Z"
+}

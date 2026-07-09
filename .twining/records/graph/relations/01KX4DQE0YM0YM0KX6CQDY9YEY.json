@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T21:49:46.910Z",
+  "id": "01KX4DQE0YM0YM0KX6CQDY9YEY",
+  "properties": {
+    "decision_summary": "Chose union-of-keys generic status-count comparison in the store's validation (countsMatch iterates the union of local and server decision-status keys)"
+  },
+  "source": "01KX4DQE0XQC7Q2M339TBC9MY9",
+  "target": "01KX4DQE0XQC7Q2M339TBC9MY8",
+  "type": "decided_by"
+}
