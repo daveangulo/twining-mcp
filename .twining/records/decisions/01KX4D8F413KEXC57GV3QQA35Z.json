@@ -1,0 +1,47 @@
+{
+  "affected_files": [
+    "src/dashboard/query-routes.ts",
+    "test/dashboard/query-routes.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "decision INDEX entries instead of calling auditStaleness()",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "calling auditStaleness()",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "present on the index. The endpoint is a fast candidates preview, not an exhaustive audit; twining_housekeeping keeps full fidelity",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Task 6 (/api/health-report) implemented via subagent: 7 new tests green, suite 1152 pass, tsc clean, 5k fixture cold 91ms / cached 0.4ms. Review subagent running; commit follows approval. Phase 1 nearly complete.",
+  "depends_on": [],
+  "domain": "performance",
+  "id": "01KX4D8F413KEXC57GV3QQA35Z",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "77d0660fd7212e371a45292d0b74a7e6e58380f1",
+    "recorded_at": "2026-07-09T21:41:36.497Z"
+  },
+  "rationale": "avoids O(all-decisions) full-file reads (91ms vs multi-second at 5k), at the cost of the branch_gone signal which needs provenance not present on the index. The endpoint is a fast candidates preview, not an exhaustive audit; twining_housekeeping keeps full fidelity.",
+  "reversible": true,
+  "scope": "src/dashboard/",
+  "status": "active",
+  "summary": "Accepted implementer judgment: health-report composes scoreItem/buildProbes over decision INDEX entries instead of calling auditStaleness()",
+  "timestamp": "2026-07-09T21:41:36.513Z"
+}

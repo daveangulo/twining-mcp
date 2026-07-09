@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-09T21:41:36.567Z",
+  "id": "01KX4D8F5Q6SW2XR1DFN3BVK9Q",
+  "name": "01KX4D8F413KEXC57GV3QQA35Z",
+  "properties": {
+    "scope": "src/dashboard/",
+    "summary": "Accepted implementer judgment: health-report composes scoreItem/buildProbes over decision INDEX entries instead of calling auditStaleness()"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-09T21:41:36.567Z"
+}

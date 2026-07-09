@@ -1,0 +1,28 @@
+{
+  "affected_files": [
+    "src/dashboard/query-routes.ts",
+    "test/dashboard/query-routes.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Task 6 (/api/health-report) implemented via subagent: 7 new tests green, suite 1152 pass, tsc clean, 5k fixture cold 91ms / cached 0.4ms. Review subagent running; commit follows approval. Phase 1 nearly complete.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KX4D8F24TSWW2FRPRJY48Z6H",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "77d0660fd7212e371a45292d0b74a7e6e58380f1",
+    "recorded_at": "2026-07-09T21:41:36.437Z"
+  },
+  "rationale": "the JSON contract has no stale-blackboard slot and the spec's health card is 'stale decision candidates'; blackboard staleness remains twining_housekeeping's job.",
+  "reversible": true,
+  "scope": "src/dashboard/",
+  "status": "active",
+  "summary": "Accepted implementer judgment: health-report staleness scores decisions only",
+  "timestamp": "2026-07-09T21:41:36.452Z"
+}

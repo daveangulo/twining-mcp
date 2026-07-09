@@ -10,14 +10,19 @@ import zlib from "node:zlib";
 import { BlackboardStore } from "../storage/blackboard-store.js";
 import { DecisionStore } from "../storage/decision-store.js";
 import { GraphStore } from "../storage/graph-store.js";
+import { HandoffStore } from "../storage/handoff-store.js";
+import { scoreItem, buildProbes } from "../engine/staleness.js";
+import { loadConfig } from "../config.js";
 import type { DashboardDeps } from "./api-routes.js";
-import type { IBlackboardStore, IDecisionStore, IGraphStore } from "../storage/interfaces.js";
-import type { Entity, Relation } from "../utils/types.js";
+import type { IBlackboardStore, IDecisionStore, IGraphStore, IHandoffStore } from "../storage/interfaces.js";
+import type { DecisionIndexEntry, Entity, Relation } from "../utils/types.js";
 
 const SUMMARY_MAX = 120;
 const HUB_LIMIT = 20;
 const DEFAULT_ENTITIES_LIMIT = 50;
 const DEFAULT_NEIGHBORHOOD_LIMIT = 150;
+const HEALTH_LIST_CAP = 50;
+const HEALTH_CACHE_TTL_MS = 60_000;
 
 function truncate(s: string): string {
   return s.length <= SUMMARY_MAX ? s : s.slice(0, SUMMARY_MAX - 1) + "…";
@@ -36,6 +41,64 @@ function buildDegreeMap(relations: Relation[]): Map<string, number> {
 /** Lexicographic name comparator (no locale surprises — plain string ordering). */
 function compareNames(a: string, b: string): number {
   return a === b ? 0 : a < b ? -1 : 1;
+}
+
+/** Whole days between an ISO timestamp and now. */
+function ageDays(timestamp: string): number {
+  return Math.floor((Date.now() - new Date(timestamp).getTime()) / 86_400_000);
+}
+
+/**
+ * Walk `superseded_by` links to find supersession chains of length >= 2.
+ * Reads FULL decisions only for index entries with status === "superseded"
+ * (bounded by that count, never the total decision count) since the link
+ * field isn't carried on the lightweight index. A chain's "head" is its
+ * terminal node (the most-current decision, which may itself be active and
+ * not require a file read at all — its summary comes from the index).
+ */
+async function buildSupersededChains(
+  decisionStore: IDecisionStore,
+  index: DecisionIndexEntry[],
+): Promise<Array<{ head_id: string; head_summary: string; length: number }>> {
+  const supersededEntries = index.filter((e) => e.status === "superseded");
+  if (supersededEntries.length === 0) return [];
+
+  const summaryById = new Map(index.map((e) => [e.id, e.summary]));
+  const linkMap = new Map<string, string>(); // id -> the decision that superseded it
+  for (const entry of supersededEntries) {
+    const decision = await decisionStore.get(entry.id);
+    if (decision?.superseded_by) {
+      linkMap.set(entry.id, decision.superseded_by);
+    }
+  }
+
+  const supersededIds = new Set(supersededEntries.map((e) => e.id));
+  const pointedTo = new Set(linkMap.values());
+  // A chain root is a superseded decision nobody else's link points at —
+  // i.e. the earliest link in its chain. Walking from every superseded
+  // entry would report the same chain once per node.
+  const roots = [...supersededIds].filter((id) => !pointedTo.has(id));
+
+  const chains: Array<{ head_id: string; head_summary: string; length: number }> = [];
+  for (const root of roots) {
+    const visited = new Set<string>([root]);
+    let current = root;
+    while (linkMap.has(current)) {
+      const next = linkMap.get(current)!;
+      if (visited.has(next)) break; // cycle guard against malformed data
+      visited.add(next);
+      current = next;
+    }
+    if (visited.size < 2) continue;
+    chains.push({
+      head_id: current,
+      head_summary: summaryById.get(current) ?? "",
+      length: visited.size,
+    });
+  }
+
+  chains.sort((a, b) => b.length - a.length || compareNames(a.head_id, b.head_id));
+  return chains.slice(0, HEALTH_LIST_CAP);
 }
 
 /** Send JSON, gzipping when the client accepts it and the body is large. */
@@ -64,6 +127,12 @@ export function createQueryHandler(
   const blackboardStore: IBlackboardStore = deps?.blackboardStore ?? new BlackboardStore(twiningDir);
   const decisionStore: IDecisionStore = deps?.decisionStore ?? new DecisionStore(twiningDir);
   const graphStore: IGraphStore = deps?.graphStore ?? new GraphStore(twiningDir);
+  const handoffStore: IHandoffStore = deps?.handoffStore ?? new HandoffStore(twiningDir);
+
+  // Whole computed report, cached for HEALTH_CACHE_TTL_MS — chain-building
+  // reads O(superseded) decision files and staleness scoring walks every
+  // decision's scope/affected_files on disk, so this must not run per poll.
+  let healthReportCache: { at: number; body: unknown } | null = null;
 
   return async (req, res) => {
     const url = req.url || "/";
@@ -422,6 +491,93 @@ export function createQueryHandler(
         });
       } catch (err) {
         console.error("[twining] /api/graph/neighborhood error:", err);
+        sendJSON(req, res, { error: "Internal server error" }, 500);
+      }
+      return true;
+    }
+
+    if (route === "/api/health-report") {
+      try {
+        if (!fs.existsSync(twiningDir)) {
+          sendJSON(req, res, {
+            stale_decisions: [], unresolved_warnings: [], superseded_chains: [],
+            orphan_entities: { count: 0, sample: [] }, unacknowledged_handoffs: [],
+            generated_at: new Date().toISOString(),
+          });
+          return true;
+        }
+
+        const now = Date.now();
+        if (healthReportCache && now - healthReportCache.at < HEALTH_CACHE_TTL_MS) {
+          sendJSON(req, res, healthReportCache.body);
+          return true;
+        }
+
+        const config = loadConfig(twiningDir);
+        const threshold = config.housekeeping?.staleness_threshold ?? 0.95;
+
+        const [decIndex, { entries: warningEntries }, entities, relations, handoffEntries] = await Promise.all([
+          decisionStore.getIndex(),
+          blackboardStore.read({ entry_types: ["warning"] }),
+          graphStore.getEntities(),
+          graphStore.getRelations(),
+          handoffStore.list({}),
+        ]);
+
+        // Stale decisions: score against the lightweight index, not full
+        // decision files — O(fs.existsSync calls) rather than O(full-file
+        // reads) across every decision. Trades away the branch_gone signal
+        // for decisions (provenance isn't carried on the index entry);
+        // scope/affected_files checks are the common case and this must run
+        // over the whole decision set on every cache miss.
+        const probes = buildProbes(projectRoot);
+        const staleDecisions = decIndex
+          .map((d) => {
+            const { score, reasons } = scoreItem(
+              { scope: d.scope, affected_files: d.affected_files },
+              probes,
+            );
+            return { id: d.id, summary: d.summary, scope: d.scope, score, reasons: reasons.map((r) => r.detail) };
+          })
+          .filter((d) => d.score >= threshold && d.reasons.length > 0)
+          .sort((a, b) => b.score - a.score)
+          .slice(0, HEALTH_LIST_CAP);
+
+        const unresolvedWarnings = warningEntries
+          .slice()
+          .sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+          .slice(0, HEALTH_LIST_CAP)
+          .map((e) => ({ id: e.id, summary: e.summary, scope: e.scope, age_days: ageDays(e.timestamp) }));
+
+        const supersededChains = await buildSupersededChains(decisionStore, decIndex);
+
+        const degreeMap = buildDegreeMap(relations);
+        const orphanEntities = entities
+          .filter((e) => (degreeMap.get(e.id) ?? 0) === 0)
+          .sort((a, b) => compareNames(a.name, b.name));
+        const orphanSample = orphanEntities
+          .slice(0, HEALTH_LIST_CAP)
+          .map((e) => ({ id: e.id, name: e.name, type: e.type }));
+
+        const unacknowledgedHandoffs = handoffEntries
+          .filter((h) => !h.acknowledged)
+          .sort((a, b) => a.created_at.localeCompare(b.created_at))
+          .slice(0, HEALTH_LIST_CAP)
+          .map((h) => ({ id: h.id, summary: h.summary, age_days: ageDays(h.created_at) }));
+
+        const body = {
+          stale_decisions: staleDecisions,
+          unresolved_warnings: unresolvedWarnings,
+          superseded_chains: supersededChains,
+          orphan_entities: { count: orphanEntities.length, sample: orphanSample },
+          unacknowledged_handoffs: unacknowledgedHandoffs,
+          generated_at: new Date().toISOString(),
+        };
+
+        healthReportCache = { at: now, body };
+        sendJSON(req, res, body);
+      } catch (err) {
+        console.error("[twining] /api/health-report error:", err);
         sendJSON(req, res, { error: "Internal server error" }, 500);
       }
       return true;

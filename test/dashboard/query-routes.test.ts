@@ -1186,3 +1186,290 @@ describe("GET /api/graph - legacy exact-match route", () => {
     expect(body.relations).toHaveLength(5);
   });
 });
+
+/* ------------------------------------------------------------------ */
+/* Test suite: GET /api/health-report                                 */
+/* ------------------------------------------------------------------ */
+
+/** Fill in the required Decision fields not relevant to a given test with plausible defaults. */
+function minimalDecisionFields(overrides: Record<string, unknown>): Record<string, unknown> {
+  return {
+    id: "PLACEHOLDER",
+    timestamp: "2026-02-17T09:00:00.000Z",
+    agent_id: "test-agent",
+    domain: "architecture",
+    scope: "project",
+    summary: "placeholder",
+    context: "",
+    rationale: "",
+    constraints: [],
+    alternatives: [],
+    depends_on: [],
+    confidence: "medium",
+    status: "active",
+    reversible: true,
+    affected_files: [],
+    affected_symbols: [],
+    commit_hashes: [],
+    ...overrides,
+  };
+}
+
+/**
+ * Fixture covering every health-report check:
+ *  - DEC-STALE: scope is a nonexistent file path -> stale.
+ *  - DEC-A -> DEC-B -> DEC-C: 3-link superseded chain, head DEC-C, length 3.
+ *  - DEC-OTHER: unrelated active decision (must not appear anywhere).
+ *  - 2 blackboard warnings at different ages (+ 1 non-warning entry, must be excluded).
+ *  - 3 graph entities, 1 relation -> exactly 1 orphan (GE3).
+ *  - 2 handoffs, 1 acknowledged (must be excluded), 1 not.
+ *
+ * Non-stale decisions use scope "project" deliberately — staleness.ts treats
+ * "project"/"global" as categorical (no path check); a path-like scope like
+ * "src/" would falsely flag them stale since the temp project root has no
+ * such directory on disk.
+ */
+function createHealthReportTestProject(): { projectRoot: string; publicDir: string } {
+  const projectRoot = fs.mkdtempSync(
+    path.join(os.tmpdir(), "twining-query-health-test-"),
+  );
+  const twiningDir = path.join(projectRoot, ".twining");
+  const decisionsDir = path.join(twiningDir, "decisions");
+  const graphDir = path.join(twiningDir, "graph");
+  const handoffsDir = path.join(twiningDir, "handoffs");
+  const publicDir = path.join(projectRoot, "public");
+
+  fs.mkdirSync(decisionsDir, { recursive: true });
+  fs.mkdirSync(graphDir, { recursive: true });
+  fs.mkdirSync(handoffsDir, { recursive: true });
+  fs.mkdirSync(publicDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(publicDir, "index.html"),
+    "<html><body>Dashboard</body></html>",
+  );
+
+  const bbEntries = [
+    {
+      id: "BBW1",
+      timestamp: "2026-01-01T08:00:00.000Z", // older
+      agent_id: "test-agent",
+      entry_type: "warning",
+      tags: [],
+      scope: "project",
+      summary: "Older warning",
+      detail: "detail",
+    },
+    {
+      id: "BBW2",
+      timestamp: "2026-02-01T08:00:00.000Z", // newer
+      agent_id: "test-agent",
+      entry_type: "warning",
+      tags: [],
+      scope: "project",
+      summary: "Newer warning",
+      detail: "detail",
+    },
+    {
+      id: "BBF1",
+      timestamp: "2026-02-02T08:00:00.000Z",
+      agent_id: "test-agent",
+      entry_type: "finding",
+      tags: [],
+      scope: "project",
+      summary: "Not a warning — must not appear",
+      detail: "detail",
+    },
+  ];
+  fs.writeFileSync(
+    path.join(twiningDir, "blackboard.jsonl"),
+    bbEntries.map((e) => JSON.stringify(e)).join("\n") + "\n",
+  );
+
+  const indexEntries = [
+    { id: "DEC-STALE", timestamp: "2026-02-17T09:00:00.000Z", domain: "architecture", scope: "does/not/exist/file.ts", summary: "Decision with a dead scope path", confidence: "high", status: "active", affected_files: [], affected_symbols: [], commit_hashes: [] },
+    { id: "DEC-A", timestamp: "2026-02-17T09:01:00.000Z", domain: "architecture", scope: "project", summary: "Decision A (earliest)", confidence: "medium", status: "superseded", affected_files: [], affected_symbols: [], commit_hashes: [] },
+    { id: "DEC-B", timestamp: "2026-02-17T09:02:00.000Z", domain: "architecture", scope: "project", summary: "Decision B (middle)", confidence: "medium", status: "superseded", affected_files: [], affected_symbols: [], commit_hashes: [] },
+    { id: "DEC-C", timestamp: "2026-02-17T09:03:00.000Z", domain: "architecture", scope: "project", summary: "Decision C (chain head)", confidence: "medium", status: "active", affected_files: [], affected_symbols: [], commit_hashes: [] },
+    { id: "DEC-OTHER", timestamp: "2026-02-17T09:04:00.000Z", domain: "api", scope: "project", summary: "Unrelated active decision", confidence: "high", status: "active", affected_files: [], affected_symbols: [], commit_hashes: [] },
+  ];
+  fs.writeFileSync(path.join(decisionsDir, "index.json"), JSON.stringify(indexEntries, null, 2));
+
+  // Full decision files only for status==="superseded" entries — the chain
+  // walk must read FULL decisions bounded by the superseded count, never
+  // the full decision set (checked by the timing pass against the 5k fixture).
+  fs.writeFileSync(
+    path.join(decisionsDir, "DEC-A.json"),
+    JSON.stringify(minimalDecisionFields({ id: "DEC-A", summary: "Decision A (earliest)", status: "superseded", superseded_by: "DEC-B" }), null, 2),
+  );
+  fs.writeFileSync(
+    path.join(decisionsDir, "DEC-B.json"),
+    JSON.stringify(minimalDecisionFields({ id: "DEC-B", summary: "Decision B (middle)", status: "superseded", superseded_by: "DEC-C" }), null, 2),
+  );
+
+  const entities = [
+    { id: "GE1", name: "hub.ts", type: "file", properties: {}, created_at: "2026-02-17T08:00:00.000Z", updated_at: "2026-02-17T08:00:00.000Z" },
+    { id: "GE2", name: "leaf.ts", type: "file", properties: {}, created_at: "2026-02-17T08:01:00.000Z", updated_at: "2026-02-17T08:01:00.000Z" },
+    { id: "GE3", name: "orphan.ts", type: "file", properties: {}, created_at: "2026-02-17T08:02:00.000Z", updated_at: "2026-02-17T08:02:00.000Z" },
+  ];
+  const relations = [
+    { id: "GR1", source: "GE1", target: "GE2", type: "contains", properties: {}, created_at: "2026-02-17T09:00:00.000Z" },
+  ];
+  fs.writeFileSync(path.join(graphDir, "entities.json"), JSON.stringify(entities, null, 2));
+  fs.writeFileSync(path.join(graphDir, "relations.json"), JSON.stringify(relations, null, 2));
+
+  const handoffIndexEntries = [
+    { id: "HO1", created_at: "2026-01-15T08:00:00.000Z", source_agent: "agent-a", target_agent: "agent-b", scope: "project", summary: "Unacknowledged handoff", result_status: "completed", acknowledged: false },
+    { id: "HO2", created_at: "2026-01-20T08:00:00.000Z", source_agent: "agent-a", target_agent: "agent-b", scope: "project", summary: "Acknowledged handoff", result_status: "completed", acknowledged: true },
+  ];
+  fs.writeFileSync(
+    path.join(handoffsDir, "index.jsonl"),
+    handoffIndexEntries.map((e) => JSON.stringify(e)).join("\n") + "\n",
+  );
+
+  return { projectRoot, publicDir };
+}
+
+describe("GET /api/health-report", () => {
+  let server: http.Server;
+  let port: number;
+  let projectRoot: string;
+
+  beforeAll(async () => {
+    const project = createHealthReportTestProject();
+    projectRoot = project.projectRoot;
+
+    server = http.createServer(
+      handleRequest(project.publicDir, project.projectRoot),
+    );
+    await new Promise<void>((resolve) => {
+      server.listen(0, "127.0.0.1", () => resolve());
+    });
+    const addr = server.address();
+    port = typeof addr === "object" && addr !== null ? addr.port : 0;
+  });
+
+  afterAll(async () => {
+    await new Promise<void>((resolve) => {
+      server.close(() => resolve());
+    });
+    fs.rmSync(projectRoot, { recursive: true, force: true });
+  });
+
+  it("flags the decision with a dead scope path as stale, worst-first, with string reasons", async () => {
+    const res = await httpGet(port, "/api/health-report");
+    expect(res.status).toBe(200);
+    expect(res.headers["content-type"]).toContain("application/json");
+
+    const body = JSON.parse(res.body.toString("utf-8"));
+    const stale = body.stale_decisions.find((d: { id: string }) => d.id === "DEC-STALE");
+    expect(stale).toBeDefined();
+    expect(stale.scope).toBe("does/not/exist/file.ts");
+    expect(stale.score).toBeGreaterThanOrEqual(0.95);
+    expect(Array.isArray(stale.reasons)).toBe(true);
+    expect(stale.reasons.length).toBeGreaterThan(0);
+    expect(typeof stale.reasons[0]).toBe("string");
+
+    expect(body.stale_decisions.some((d: { id: string }) => d.id === "DEC-OTHER")).toBe(false);
+  });
+
+  it("returns unresolved warnings sorted oldest first, excluding non-warning entries", async () => {
+    const res = await httpGet(port, "/api/health-report");
+    const body = JSON.parse(res.body.toString("utf-8"));
+
+    const ids = body.unresolved_warnings.map((w: { id: string }) => w.id);
+    expect(ids).toEqual(["BBW1", "BBW2"]);
+    expect(body.unresolved_warnings[0].age_days).toBeGreaterThanOrEqual(
+      body.unresolved_warnings[1].age_days,
+    );
+    expect(
+      body.unresolved_warnings.every(
+        (w: { summary: string }) => w.summary !== "Not a warning — must not appear",
+      ),
+    ).toBe(true);
+  });
+
+  it("walks a 3-link superseded chain to its terminal head", async () => {
+    const res = await httpGet(port, "/api/health-report");
+    const body = JSON.parse(res.body.toString("utf-8"));
+
+    expect(body.superseded_chains).toHaveLength(1);
+    expect(body.superseded_chains[0]).toEqual({
+      head_id: "DEC-C",
+      head_summary: "Decision C (chain head)",
+      length: 3,
+    });
+  });
+
+  it("reports orphan entity count and a capped sample", async () => {
+    const res = await httpGet(port, "/api/health-report");
+    const body = JSON.parse(res.body.toString("utf-8"));
+
+    expect(body.orphan_entities.count).toBe(1);
+    expect(body.orphan_entities.sample).toHaveLength(1);
+    expect(body.orphan_entities.sample[0]).toEqual({ id: "GE3", name: "orphan.ts", type: "file" });
+  });
+
+  it("returns only unacknowledged handoffs", async () => {
+    const res = await httpGet(port, "/api/health-report");
+    const body = JSON.parse(res.body.toString("utf-8"));
+
+    expect(body.unacknowledged_handoffs).toHaveLength(1);
+    expect(body.unacknowledged_handoffs[0].id).toBe("HO1");
+    expect(body.unacknowledged_handoffs[0]).toHaveProperty("age_days");
+  });
+
+  it("caches the whole report for 60s — two consecutive requests return identical generated_at", async () => {
+    const res1 = await httpGet(port, "/api/health-report");
+    const res2 = await httpGet(port, "/api/health-report");
+    const body1 = JSON.parse(res1.body.toString("utf-8"));
+    const body2 = JSON.parse(res2.body.toString("utf-8"));
+
+    expect(body2.generated_at).toBe(body1.generated_at);
+    expect(body2).toEqual(body1);
+  });
+});
+
+describe("GET /api/health-report - uninitialized project", () => {
+  let server: http.Server;
+  let port: number;
+  let projectRoot: string;
+
+  beforeAll(async () => {
+    projectRoot = fs.mkdtempSync(
+      path.join(os.tmpdir(), "twining-query-health-uninit-"),
+    );
+    const publicDir = path.join(projectRoot, "public");
+    fs.mkdirSync(publicDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(publicDir, "index.html"),
+      "<html><body>Empty</body></html>",
+    );
+
+    server = http.createServer(handleRequest(publicDir, projectRoot));
+    await new Promise<void>((resolve) => {
+      server.listen(0, "127.0.0.1", () => resolve());
+    });
+    const addr = server.address();
+    port = typeof addr === "object" && addr !== null ? addr.port : 0;
+  });
+
+  afterAll(async () => {
+    await new Promise<void>((resolve) => {
+      server.close(() => resolve());
+    });
+    fs.rmSync(projectRoot, { recursive: true, force: true });
+  });
+
+  it("returns empty lists when .twining/ does not exist", async () => {
+    const res = await httpGet(port, "/api/health-report");
+    expect(res.status).toBe(200);
+
+    const body = JSON.parse(res.body.toString("utf-8"));
+    expect(body.stale_decisions).toEqual([]);
+    expect(body.unresolved_warnings).toEqual([]);
+    expect(body.superseded_chains).toEqual([]);
+    expect(body.orphan_entities).toEqual({ count: 0, sample: [] });
+    expect(body.unacknowledged_handoffs).toEqual([]);
+    expect(typeof body.generated_at).toBe("string");
+  });
+});
