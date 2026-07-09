@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-09T13:41:14.928Z",
+  "id": "01KX3HRX1GEYQ0WJH7A25BPYNG",
+  "name": "01KX3HRWZ3GC6R2VP672AP8E65",
+  "properties": {
+    "scope": "src/dashboard/",
+    "summary": "Added .playwright-mcp/ to .gitignore"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-09T13:41:14.928Z"
+}

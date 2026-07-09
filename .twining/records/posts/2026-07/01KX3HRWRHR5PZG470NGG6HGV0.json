@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Chose to keep vanilla JS split into native ES modules over adding a build step\" relates to:\n- 01KJC68KWE17FYM6D111ZD4PVM: \"Add project name to dashboard title/header and GitHub icon link — fixes #2 and #3\"\n- 01KJJ340SQV8S2GN1S4FWXMKBP: \"Redesign dashboard UI with dark-first professional theme using Sora/DM Sans/JetBrains Mono fonts and teal accent color\"\n- 01KJJ348G20Z2SYKBZ8WNXDQME: \"Prevent duplicate browser tabs by checking health endpoint before auto-opening\"\n- 01KJJ34D0940TD59ET8M9TY5E2: \"Show session-ended overlay after 3 consecutive poll failures instead of attempting window.close()\"\n- 01KJJCBK7NW40PQ9RE2625AJ9B: \"Fix timeline zoom by changing overflow:auto to overflow:hidden and add zoom controls toolbar\"\n- 01KJJE3F7YJJBF74FJWVP4ESHK: \"Replace search bar multi-select with toggle chips, add search icon, and style filters to match toolbar design language\"\n- 01KJJZFSFB5CD2Q804A0HGJCMB: \"Include projectRoot in health endpoint to distinguish same-project vs different-project dashboard instances\"\n- 01KX3HED595XAZC4AT4F1VP8FM: \"Recommended scale-native redesign of timeline/graph/lists (canvas density timeline, aggregated meta-graph + ego-network explorer capped ~200 nodes, server-windowed virtual lists, new Health panel, scope as first-class drill-down) over (a) conservative retrofit of vis-timeline/cytoscape which both lack aggregation modes and would stay mediocre, and (b) full framework rewrite which touches all 7 tabs to fix 3 and adds a build toolchain to a zero-config npm package. Not yet user-approved\"",
+  "entry_type": "finding",
+  "id": "01KX3HRWRHR5PZG470NGG6HGV0",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "86f742ebf04cf3c674c1402fe4d3cf25b8c7d1c2",
+    "recorded_at": "2026-07-09T13:41:14.627Z"
+  },
+  "scope": "src/dashboard/",
+  "summary": "Related decisions in scope: 8 existing decision(s) overlap",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-09T13:41:14.641Z"
+}

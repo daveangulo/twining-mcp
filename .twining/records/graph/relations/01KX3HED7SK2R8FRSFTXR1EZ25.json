@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T13:35:31.065Z",
+  "id": "01KX3HED7SK2R8FRSFTXR1EZ25",
+  "properties": {
+    "decision_summary": "Recommended scale-native redesign of timeline/graph/lists (canvas density timeline, aggregated meta-graph + ego-network explorer capped ~200 nodes, server-windowed virtual lists, new Health panel, scope as first-class drill-down) over (a) conservative retrofit of vis-timeline/cytoscape which both lack aggregation modes and would stay mediocre, and (b) full framework rewrite which touches all 7 tabs to fix 3 and adds a build toolchain to a zero-config npm package. Not yet user-approved"
+  },
+  "source": "01KJC68M4REPRVABK2MC68D43H",
+  "target": "01KX3HED7RP2EC1DNS1YR93N3J",
+  "type": "decided_by"
+}

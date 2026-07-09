@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-09T13:41:14.703Z",
+  "id": "01KX3HRWTFE13TFHHDH57SW4BN",
+  "name": "01KX3HRWR3J2ETM9A6X2S9NDEB",
+  "properties": {
+    "scope": "src/dashboard/",
+    "summary": "Chose to keep vanilla JS split into native ES modules over adding a build step"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-09T13:41:14.703Z"
+}

@@ -41,3 +41,6 @@ test/eval/results/transcript-latest.json
 
 # Agent worktrees (cmux/Claude Code parallel sessions)
 .claude/worktrees/
+
+# Playwright MCP browser artifacts
+.playwright-mcp/

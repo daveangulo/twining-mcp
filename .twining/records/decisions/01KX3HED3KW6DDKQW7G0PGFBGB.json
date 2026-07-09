@@ -1,0 +1,40 @@
+{
+  "affected_files": [
+    "src/dashboard/api-routes.ts",
+    "src/dashboard/public/app.js",
+    "src/dashboard/public/index.html"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "pure client-side fixes",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "~5k records per store is the design envelope (user-confirmed)",
+    "Dashboard API consumers are only the bundled frontend and tests, so additive endpoint changes are safe"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Brainstorming session: dashboard scale redesign for projects with 1000s of decisions/entries. Explored code + live UI, confirmed structural scale problems, proposed 3 approaches; awaiting user pick (B recommended).",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01KX3HED3KW6DDKQW7G0PGFBGB",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "86f742ebf04cf3c674c1402fe4d3cf25b8c7d1c2",
+    "recorded_at": "2026-07-09T13:35:30.915Z"
+  },
+  "rationale": "no frontend idiom survives shipping 5k full records per poll tick.",
+  "reversible": true,
+  "scope": "src/dashboard/",
+  "status": "active",
+  "summary": "Chose to require a server-side query layer (pagination, scope/type/time filters, aggregation endpoints) as the foundation of any dashboard scale redesign over pure client-side fixes",
+  "timestamp": "2026-07-09T13:35:30.931Z"
+}

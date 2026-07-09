@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T13:35:30.969Z",
+  "id": "01KX3HED4SQ8EKA37WFVYJA7AJ",
+  "properties": {
+    "decision_summary": "Chose to require a server-side query layer (pagination, scope/type/time filters, aggregation endpoints) as the foundation of any dashboard scale redesign over pure client-side fixes"
+  },
+  "source": "01KJC68M4Q2KAAT3ZEC51JGVJV",
+  "target": "01KX3HED4PQC9KJJQ5FMGNHJAA",
+  "type": "decided_by"
+}

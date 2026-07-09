@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T13:41:14.806Z",
+  "id": "01KX3HRWXPNDEJ2ZZMQBBWAZ67",
+  "properties": {
+    "decision_summary": "Chose to delete vis-timeline but retain cytoscape"
+  },
+  "source": "01KJNAQMQZ9DKYRR1SEP2M3HVX",
+  "target": "01KX3HRWXMN0PADCR1NNZPK77P",
+  "type": "decided_by"
+}

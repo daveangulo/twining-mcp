@@ -3,8 +3,8 @@
   "id": "01KJNAQMQZ9DKYRR1SEP2M3HVX",
   "name": ".gitignore",
   "properties": {
-    "scope": "project"
+    "scope": "src/dashboard/"
   },
   "type": "file",
-  "updated_at": "2026-03-01T22:07:49.954Z"
+  "updated_at": "2026-07-09T13:41:14.929Z"
 }

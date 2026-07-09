@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T13:41:14.704Z",
+  "id": "01KX3HRWTGH3PWPV6ZYRN8A7JY",
+  "properties": {
+    "decision_summary": "Chose to keep vanilla JS split into native ES modules over adding a build step"
+  },
+  "source": "01KX3HRWQHVN47W4ZQ6RHTGW0S",
+  "target": "01KX3HRWTFE13TFHHDH57SW4BN",
+  "type": "decided_by"
+}

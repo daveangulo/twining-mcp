@@ -1,0 +1,52 @@
+{
+  "affected_files": [
+    "src/dashboard/api-routes.ts",
+    "src/dashboard/public/app.js",
+    "src/dashboard/public/index.html"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "(a) conservative retrofit of vis-timeline/cytoscape which both lack aggregation modes and would stay mediocre, and (b) full framework rewrite which touches all 7 tabs to fix 3 and adds a build toolchain to a zero-config npm package. Not yet user-approved",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "yet user-approved",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "written",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "~5k records per store is the design envelope (user-confirmed)",
+    "Dashboard API consumers are only the bundled frontend and tests, so additive endpoint changes are safe"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Brainstorming session: dashboard scale redesign for projects with 1000s of decisions/entries. Explored code + live UI, confirmed structural scale problems, proposed 3 approaches; awaiting user pick (B recommended).",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KX3HED595XAZC4AT4F1VP8FM",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "86f742ebf04cf3c674c1402fe4d3cf25b8c7d1c2",
+    "recorded_at": "2026-07-09T13:35:30.970Z"
+  },
+  "rationale": "brainstorming in progress, design doc not written.",
+  "reversible": true,
+  "scope": "src/dashboard/",
+  "status": "active",
+  "summary": "Recommended scale-native redesign of timeline/graph/lists (canvas density timeline, aggregated meta-graph + ego-network explorer capped ~200 nodes, server-windowed virtual lists, new Health panel, scope as first-class drill-down) over (a) conservative retrofit of vis-timeline/cytoscape which both lack aggregation modes and would stay mediocre, and (b) full framework rewrite which touches all 7 tabs to fix 3 and adds a build toolchain to a zero-config npm package. Not yet user-approved",
+  "timestamp": "2026-07-09T13:35:30.985Z"
+}

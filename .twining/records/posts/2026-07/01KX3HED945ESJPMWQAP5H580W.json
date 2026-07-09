@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Graph Visual view renders ALL entities+relations through cytoscape cose force layout — already an unreadable hairball at 425 entities in this repo; superlinear layout cost makes 5k nodes freeze. buildGraphElements (app.js:2823) has no cap or clustering.",
+  "entry_type": "finding",
+  "id": "01KX3HED945ESJPMWQAP5H580W",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "86f742ebf04cf3c674c1402fe4d3cf25b8c7d1c2",
+    "recorded_at": "2026-07-09T13:35:31.094Z"
+  },
+  "scope": "src/dashboard/",
+  "summary": "Graph Visual view renders ALL entities+relations through cytoscape cose force layout — already an unreadable hairball at 425 entities in this repo; superlinear layout cost makes 5k nodes freeze. bu…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-09T13:35:31.108Z"
+}
