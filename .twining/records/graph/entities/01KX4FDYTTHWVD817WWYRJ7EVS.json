@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-09T22:19:33.594Z",
+  "id": "01KX4FDYTTHWVD817WWYRJ7EVS",
+  "name": "01KX4FDYS595P096H4PCFEYPT6",
+  "properties": {
+    "scope": "src/dashboard/public/js/",
+    "summary": "Overview meta-graph drops self-loop type edges (file→file etc.)"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-09T22:19:33.594Z"
+}

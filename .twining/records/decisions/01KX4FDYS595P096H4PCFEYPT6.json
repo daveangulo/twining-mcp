@@ -1,0 +1,31 @@
+{
+  "affected_files": [
+    "src/dashboard/public/js/graph-view.js",
+    "src/dashboard/public/js/main.js",
+    "src/dashboard/public/app.js",
+    "src/dashboard/public/index.html",
+    "src/dashboard/public/style.css"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Tasks 12+13 (inline): graph drill-down explorer shipped (js/graph-view.js) — overview meta-graph (6 type nodes at 5k), searchable paged entity lists, ego explorer capped at 150 with per-type overflow chip paging, re-anchor breadcrumb, 200-node eviction cap; graph table repointed to paged /api/graph/entities. Legacy render-everything path deleted (~700 lines: buildGraphStyles, initGraphVis, buildGraphElements, expandNeighbors, updateGraphData, renderGraph). Browser-verified at 5k, 0 console errors. PHASE 4 COMPLETE.",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KX4FDYS595P096H4PCFEYPT6",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "559920092c166a18b3fa398f2a50c991ef8159d0",
+    "recorded_at": "2026-07-09T22:19:33.527Z"
+  },
+  "rationale": "they dominate visually on a circle layout while carrying little orientation value; counts still appear in group_edges data.",
+  "reversible": true,
+  "scope": "src/dashboard/public/js/",
+  "status": "active",
+  "summary": "Overview meta-graph drops self-loop type edges (file→file etc.)",
+  "timestamp": "2026-07-09T22:19:33.541Z"
+}

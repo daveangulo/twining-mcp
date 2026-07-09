@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T22:19:33.524Z",
+  "id": "01KX4FDYRMYCM88SQFE9ATPKWW",
+  "properties": {
+    "decision_summary": "Graph table detail panel shows name/type/degree + 'Explore in graph' button instead of the old properties JSON"
+  },
+  "source": "01KJC68M4REPRVABK2MC68D43H",
+  "target": "01KX4FDYRJEYJDPRJYWY709G10",
+  "type": "decided_by"
+}

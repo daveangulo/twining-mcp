@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Graph table detail panel shows name/type/degree + 'Explore in graph' button instead of the old properties JSON\" relates to:\n- 01KX4EEFR0ES0E1E9SZD223PY2: \"Chose epoch-multiple bucket alignment with fixed 30d/365d month/year approximations over calendar-exact bucketing\"\n- 01KX4FDYN7N75QD22KCVN1DFM9: \"Committed Tasks 12 and 13 as one commit rather than the plan's two\"",
+  "entry_type": "finding",
+  "id": "01KX4FDYQK53GCAQ5FBN9CTT7T",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "559920092c166a18b3fa398f2a50c991ef8159d0",
+    "recorded_at": "2026-07-09T22:19:33.477Z"
+  },
+  "scope": "src/dashboard/public/js/",
+  "summary": "Related decisions in scope: 2 existing decision(s) overlap",
+  "tags": [
+    "data-model"
+  ],
+  "timestamp": "2026-07-09T22:19:33.491Z"
+}

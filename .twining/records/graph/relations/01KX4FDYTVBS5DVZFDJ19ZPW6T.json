@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T22:19:33.595Z",
+  "id": "01KX4FDYTVBS5DVZFDJ19ZPW6T",
+  "properties": {
+    "decision_summary": "Overview meta-graph drops self-loop type edges (file→file etc.)"
+  },
+  "source": "01KX4FDYPJ0Z3Q4CMBJPBFCGN4",
+  "target": "01KX4FDYTTHWVD817WWYRJ7EVS",
+  "type": "decided_by"
+}

@@ -1,0 +1,38 @@
+{
+  "affected_files": [
+    "src/dashboard/public/js/graph-view.js",
+    "src/dashboard/public/js/main.js",
+    "src/dashboard/public/app.js",
+    "src/dashboard/public/index.html",
+    "src/dashboard/public/style.css"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "the old properties JSON",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Tasks 12+13 (inline): graph drill-down explorer shipped (js/graph-view.js) — overview meta-graph (6 type nodes at 5k), searchable paged entity lists, ego explorer capped at 150 with per-type overflow chip paging, re-anchor breadcrumb, 200-node eviction cap; graph table repointed to paged /api/graph/entities. Legacy render-everything path deleted (~700 lines: buildGraphStyles, initGraphVis, buildGraphElements, expandNeighbors, updateGraphData, renderGraph). Browser-verified at 5k, 0 console errors. PHASE 4 COMPLETE.",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01KX4FDYQ5NAKT1EJGPW9V5RHN",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "559920092c166a18b3fa398f2a50c991ef8159d0",
+    "recorded_at": "2026-07-09T22:19:33.463Z"
+  },
+  "rationale": "the paged endpoint doesn't carry properties; full property detail remains reachable via legacy navigateToId and can move to a single-entity endpoint later if missed.",
+  "reversible": true,
+  "scope": "src/dashboard/public/js/",
+  "status": "active",
+  "summary": "Graph table detail panel shows name/type/degree + 'Explore in graph' button instead of the old properties JSON",
+  "timestamp": "2026-07-09T22:19:33.477Z"
+}

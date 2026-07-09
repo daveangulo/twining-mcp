@@ -10,6 +10,7 @@
 import { createIndexStore } from "./store.js";
 import { createListView, COLUMNS } from "./list-view.js";
 import { createDensityTimeline } from "./density-timeline.js";
+import { createGraphView } from "./graph-view.js";
 import { el, clearElement, formatTimestamp } from "./util.js";
 
 const POLL_MS = 5000;
@@ -184,6 +185,81 @@ window.__twiningTimelineShown = () => {
 };
 
 /* ------------------------------------------------------------------ */
+/* Graph tab: drill-down explorer (visual) + paged entity table        */
+/* ------------------------------------------------------------------ */
+
+let graphView = null;
+
+// Legacy toggleView (app.js) calls this bridge when the Visual view is shown.
+window.__twiningGraphShown = () => {
+  const host = document.getElementById("graph-canvas");
+  if (!host) return;
+  if (!graphView) graphView = createGraphView(host, {});
+  else graphView.refresh();
+};
+
+function exploreInGraph(entityId) {
+  if (typeof window.toggleView === "function") window.toggleView("graph", "visual");
+  requestAnimationFrame(() => {
+    if (!graphView) window.__twiningGraphShown();
+    if (graphView) graphView.focus(entityId);
+  });
+}
+
+const graphTablePage = { offset: 0, limit: 50, total: 0 };
+
+async function renderGraphTablePage() {
+  const tbody = document.querySelector("#graph-table tbody");
+  if (!tbody) return;
+  let body;
+  try {
+    const res = await fetch(`/api/graph/entities?offset=${graphTablePage.offset}&limit=${graphTablePage.limit}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    body = await res.json();
+  } catch {
+    return;
+  }
+  graphTablePage.total = body.total;
+  clearElement(tbody);
+  for (const ent of body.entities) {
+    const tr = el("tr");
+    for (const text of [ent.name, ent.type, String(ent.degree)]) tr.appendChild(el("td", null, text));
+    tr.addEventListener("click", () => {
+      const panel = document.getElementById("graph-detail");
+      if (!panel) return;
+      clearElement(panel);
+      panel.appendChild(el("h3", null, "Entity"));
+      for (const [label, value] of [["Name", ent.name], ["Type", ent.type], ["Degree", ent.degree], ["ID", ent.id]]) {
+        const div = el("div", "detail-field");
+        div.appendChild(el("div", "detail-label", label));
+        div.appendChild(el("div", "detail-value", String(value)));
+        panel.appendChild(div);
+      }
+      const btn = el("button", "lv-chip", "Explore in graph →");
+      btn.type = "button";
+      btn.addEventListener("click", () => exploreInGraph(ent.id));
+      panel.appendChild(btn);
+    });
+    tbody.appendChild(tr);
+  }
+  const info = document.getElementById("graph-relations-info");
+  if (info) info.textContent = `${graphTablePage.offset + 1}–${graphTablePage.offset + body.entities.length} of ${body.total} entities (by degree)`;
+  const pager = document.getElementById("graph-pagination");
+  if (pager) {
+    clearElement(pager);
+    const prev = el("button", "lv-chip", "← Prev");
+    const next = el("button", "lv-chip", "Next →");
+    prev.type = next.type = "button";
+    prev.disabled = graphTablePage.offset === 0;
+    next.disabled = graphTablePage.offset + graphTablePage.limit >= body.total;
+    prev.addEventListener("click", () => { graphTablePage.offset = Math.max(0, graphTablePage.offset - graphTablePage.limit); renderGraphTablePage(); });
+    next.addEventListener("click", () => { graphTablePage.offset += graphTablePage.limit; renderGraphTablePage(); });
+    pager.appendChild(prev);
+    pager.appendChild(next);
+  }
+}
+
+/* ------------------------------------------------------------------ */
 /* Boot + polling                                                      */
 /* ------------------------------------------------------------------ */
 
@@ -209,8 +285,14 @@ async function boot() {
       const tab = btn.getAttribute("data-tab");
       if (tab === "blackboard" && blackboardList) blackboardList.refresh();
       if (tab === "decisions" && decisionsList) decisionsList.refresh();
+      if (tab === "graph") {
+        renderGraphTablePage();
+        const visual = document.getElementById("graph-visual-view");
+        if (visual && visual.style.display !== "none") window.__twiningGraphShown();
+      }
     });
   });
+  renderGraphTablePage();
 
   setInterval(async () => {
     try {

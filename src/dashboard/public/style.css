@@ -1943,3 +1943,24 @@ tr.delegation-expired td { text-decoration: line-through; }
 .dt-mode { color: var(--text-tertiary); font-size: 0.72rem; font-family: var(--font-mono); margin-left: auto; }
 #timeline-legend { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-xs); padding: var(--space-sm) 0; }
 #timeline-synced-list .lv-viewport { height: 260px; min-height: 200px; }
+
+/* ---------- Graph Explorer (js/graph-view.js) ---------- */
+
+.gv-hubs { display: flex; flex-direction: column; gap: 2px; margin: var(--space-sm) 0; }
+.gv-hub-row {
+  display: flex; align-items: center; gap: var(--space-sm);
+  padding: 5px var(--space-sm); border: none; border-radius: var(--radius-sm);
+  background: transparent; color: var(--text-primary); cursor: pointer;
+  font-size: 0.8rem; text-align: left; transition: background var(--transition-fast);
+}
+.gv-hub-row:hover { background: var(--bg-hover); }
+.gv-hub-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-mono); font-size: 0.75rem; }
+.gv-hub-degree { color: var(--text-tertiary); font-family: var(--font-mono); font-size: 0.72rem; }
+.dt-toast {
+  position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+  padding: var(--space-sm) var(--space-lg); z-index: 20;
+  background: var(--bg-elevated); color: var(--text-primary);
+  border: 1px solid var(--border-strong); border-radius: var(--radius-md);
+  font-size: 0.8rem; box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+#graph-pagination { display: flex; gap: var(--space-sm); padding: var(--space-sm) 0; }
