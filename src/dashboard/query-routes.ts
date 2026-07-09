@@ -12,11 +12,12 @@ import { DecisionStore } from "../storage/decision-store.js";
 import { GraphStore } from "../storage/graph-store.js";
 import type { DashboardDeps } from "./api-routes.js";
 import type { IBlackboardStore, IDecisionStore, IGraphStore } from "../storage/interfaces.js";
-import type { Relation } from "../utils/types.js";
+import type { Entity, Relation } from "../utils/types.js";
 
 const SUMMARY_MAX = 120;
 const HUB_LIMIT = 20;
 const DEFAULT_ENTITIES_LIMIT = 50;
+const DEFAULT_NEIGHBORHOOD_LIMIT = 150;
 
 function truncate(s: string): string {
   return s.length <= SUMMARY_MAX ? s : s.slice(0, SUMMARY_MAX - 1) + "…";
@@ -232,6 +233,195 @@ export function createQueryHandler(
         sendJSON(req, res, { entities: paged, total, offset });
       } catch (err) {
         console.error("[twining] /api/graph/entities error:", err);
+        sendJSON(req, res, { error: "Internal server error" }, 500);
+      }
+      return true;
+    }
+
+    if (route === "/api/graph/neighborhood") {
+      try {
+        const anchorId = parsed.searchParams.get("id");
+        if (!anchorId) {
+          sendJSON(req, res, { error: "id query parameter required" }, 400);
+          return true;
+        }
+
+        if (!fs.existsSync(twiningDir)) {
+          sendJSON(req, res, { error: "Entity not found" }, 404);
+          return true;
+        }
+
+        const [entities, relations] = await Promise.all([
+          graphStore.getEntities(),
+          graphStore.getRelations(),
+        ]);
+        const entityById = new Map(entities.map((e) => [e.id, e]));
+        const anchorEntity = entityById.get(anchorId);
+        if (!anchorEntity) {
+          sendJSON(req, res, { error: "Entity not found" }, 404);
+          return true;
+        }
+
+        const degreeMap = buildDegreeMap(relations);
+
+        // Adjacency built once per request: entity id -> relations touching it.
+        const adjacency = new Map<string, Relation[]>();
+        for (const r of relations) {
+          if (!adjacency.has(r.source)) adjacency.set(r.source, []);
+          adjacency.get(r.source)!.push(r);
+          if (r.source !== r.target) {
+            if (!adjacency.has(r.target)) adjacency.set(r.target, []);
+            adjacency.get(r.target)!.push(r);
+          }
+        }
+
+        /** Entities on the other end of any relation touching nodeId, deduped, sorted (degree desc, name asc). */
+        function neighborsOf(nodeId: string): Entity[] {
+          const rels = adjacency.get(nodeId) ?? [];
+          const seen = new Set<string>();
+          const result: Entity[] = [];
+          for (const r of rels) {
+            const otherId = r.source === nodeId ? r.target : r.source;
+            if (otherId === nodeId || seen.has(otherId)) continue;
+            seen.add(otherId);
+            const e = entityById.get(otherId);
+            if (e) result.push(e);
+          }
+          result.sort((a, b) => (degreeMap.get(b.id) ?? 0) - (degreeMap.get(a.id) ?? 0) || compareNames(a.name, b.name));
+          return result;
+        }
+
+        const toEntityOut = (e: Entity) => ({ id: e.id, name: e.name, type: e.type, degree: degreeMap.get(e.id) ?? 0 });
+        const toRelationOut = (r: Relation) => ({ id: r.id, source: r.source, target: r.target, type: r.type });
+
+        const typeParam = parsed.searchParams.get("type");
+        if (typeParam !== null) {
+          // Overflow-paging variant: sorted neighbors of anchor filtered to
+          // `type`, sliced offset..offset+limit.
+          const offsetParam = parseInt(parsed.searchParams.get("offset") ?? "", 10);
+          const limitParam = parseInt(parsed.searchParams.get("limit") ?? "", 10);
+          const offset = Number.isFinite(offsetParam) && offsetParam >= 0 ? offsetParam : 0;
+          const limit = Number.isFinite(limitParam) && limitParam >= 0 ? limitParam : DEFAULT_ENTITIES_LIMIT;
+
+          const filtered = neighborsOf(anchorId).filter((e) => e.type === typeParam);
+          const total_of_type = filtered.length;
+          const page = filtered.slice(offset, offset + limit);
+          const pageIds = new Set(page.map((e) => e.id));
+          const relOut = relations
+            .filter((r) => (r.source === anchorId && pageIds.has(r.target)) || (r.target === anchorId && pageIds.has(r.source)))
+            .map(toRelationOut);
+
+          sendJSON(req, res, {
+            anchor: anchorId,
+            entities: page.map(toEntityOut),
+            relations: relOut,
+            total_of_type,
+          });
+          return true;
+        }
+
+        // depth/limit ego-network variant.
+        const depthParam = parsed.searchParams.get("depth");
+        let depth = 1;
+        if (depthParam !== null) {
+          const d = parseInt(depthParam, 10);
+          if (d !== 1 && d !== 2) {
+            sendJSON(req, res, { error: "depth must be 1 or 2" }, 400);
+            return true;
+          }
+          depth = d;
+        }
+        const limitParam = parseInt(parsed.searchParams.get("limit") ?? "", 10);
+        const limit = Number.isFinite(limitParam) && limitParam > 0 ? limitParam : DEFAULT_NEIGHBORHOOD_LIMIT;
+
+        const includedIds = new Set<string>([anchorId]);
+        const orderedIncluded: Entity[] = [anchorEntity];
+        const overflow: Array<{ from: string; type: string; omitted: number }> = [];
+        let budget = limit - 1; // excludes anchor
+
+        // Depth 1: group anchor's neighbors by type, round-robin across
+        // type groups (alphabetical) taking the best remaining candidate
+        // from each non-empty group until budget or groups are exhausted.
+        const anchorNeighbors = neighborsOf(anchorId);
+        const byType = new Map<string, Entity[]>();
+        for (const e of anchorNeighbors) {
+          if (!byType.has(e.type)) byType.set(e.type, []);
+          byType.get(e.type)!.push(e);
+        }
+        const typeKeysSorted = [...byType.keys()].sort(compareNames);
+        const cursors = new Map<string, number>(typeKeysSorted.map((t) => [t, 0]));
+        const depth1Chosen: Entity[] = [];
+
+        let progressed = budget > 0 && typeKeysSorted.length > 0;
+        while (progressed) {
+          progressed = false;
+          for (const t of typeKeysSorted) {
+            if (budget <= 0) break;
+            const idx = cursors.get(t)!;
+            const list = byType.get(t)!;
+            const candidate = list[idx];
+            if (candidate) {
+              cursors.set(t, idx + 1);
+              if (!includedIds.has(candidate.id)) {
+                includedIds.add(candidate.id);
+                orderedIncluded.push(candidate);
+                depth1Chosen.push(candidate);
+              }
+              budget--;
+              progressed = true;
+            }
+          }
+        }
+        for (const t of typeKeysSorted) {
+          const idx = cursors.get(t)!;
+          const omitted = byType.get(t)!.length - idx;
+          if (omitted > 0) overflow.push({ from: anchorId, type: t, omitted });
+        }
+
+        // Depth 2: with remaining budget, walk chosen depth-1 nodes in
+        // (degree desc, name asc) order, adding not-yet-included neighbors
+        // (same sort) until budget is exhausted.
+        if (depth === 2 && budget > 0) {
+          const walkOrder = [...depth1Chosen].sort(
+            (a, b) => (degreeMap.get(b.id) ?? 0) - (degreeMap.get(a.id) ?? 0) || compareNames(a.name, b.name),
+          );
+          for (const node of walkOrder) {
+            if (budget <= 0) break;
+            const candidates = neighborsOf(node.id).filter((e) => !includedIds.has(e.id));
+            let added = 0;
+            for (const c of candidates) {
+              if (budget <= 0) break;
+              includedIds.add(c.id);
+              orderedIncluded.push(c);
+              budget--;
+              added++;
+            }
+            // Cut candidates may span multiple entity types (unlike the
+            // depth-1 phase, which walks pre-grouped type buckets) — group
+            // the leftover by type so every overflow entry carries `type`.
+            const cut = candidates.slice(added);
+            if (cut.length > 0) {
+              const cutByType = new Map<string, number>();
+              for (const c of cut) cutByType.set(c.type, (cutByType.get(c.type) ?? 0) + 1);
+              for (const t of [...cutByType.keys()].sort(compareNames)) {
+                overflow.push({ from: node.id, type: t, omitted: cutByType.get(t)! });
+              }
+            }
+          }
+        }
+
+        const relOut = relations
+          .filter((r) => includedIds.has(r.source) && includedIds.has(r.target))
+          .map(toRelationOut);
+
+        sendJSON(req, res, {
+          anchor: anchorId,
+          entities: orderedIncluded.map(toEntityOut),
+          relations: relOut,
+          overflow,
+        });
+      } catch (err) {
+        console.error("[twining] /api/graph/neighborhood error:", err);
         sendJSON(req, res, { error: "Internal server error" }, 500);
       }
       return true;

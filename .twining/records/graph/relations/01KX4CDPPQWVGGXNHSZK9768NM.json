@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T21:26:59.543Z",
+  "id": "01KX4CDPPQWVGGXNHSZK9768NM",
+  "properties": {
+    "decision_summary": "Accepted reviewer-flagged behavior as-is: depth-1 nodes never visited by the depth-2 walk emit no overflow entry"
+  },
+  "source": "01KX4AE92Y42PQ99N14K2YZ65G",
+  "target": "01KX4CDPPP1EC5D5RY05J2HKYB",
+  "type": "decided_by"
+}

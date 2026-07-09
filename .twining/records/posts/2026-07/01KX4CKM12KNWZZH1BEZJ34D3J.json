@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "finding",
+  "id": "01KX4CKM12KNWZZH1BEZJ34D3J",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "c03ffafc6ee5c1e22f27d9222d8d49563aab69df",
+    "recorded_at": "2026-07-09T21:30:13.395Z"
+  },
+  "scope": "src/dashboard/",
+  "summary": "Test-count discrepancy explained: implementer's '30' was the file's post-add total, not new-test count — 8 new it() blocks originally, 9 after the fix (31 file total). Report corrected in place.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-09T21:30:13.410Z"
+}

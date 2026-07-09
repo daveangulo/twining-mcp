@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T21:26:59.573Z",
+  "id": "01KX4CDPQNQFDHSA7K4MAPCEG3",
+  "properties": {
+    "decision_summary": "Core neighborhood algorithm confirmed correct by reviewer hand-trace of both fixtures"
+  },
+  "source": "01KX4AE9308NVSWRB2R3EWC3TV",
+  "target": "01KX4CDPQK8ZVKDDF6QHE1HVWP",
+  "type": "decided_by"
+}

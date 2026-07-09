@@ -789,6 +789,357 @@ describe("GET /api/graph/entities - uninitialized project", () => {
 });
 
 /* ------------------------------------------------------------------ */
+/* Test suite: GET /api/graph/neighborhood                            */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Star fixture: anchor A1 ("root") with 30 direct neighbors split evenly
+ * across two entity types — 15 "file" (file01..file15) and 15 "function"
+ * (fn01..fn15). Each neighbor has exactly one relation (to the anchor), so
+ * every neighbor has degree=1 and ties are broken purely by name asc.
+ * Anchor degree=30.
+ */
+function pad2(n: number): string {
+  return String(n).padStart(2, "0");
+}
+
+function createStarTestProject(): { projectRoot: string; publicDir: string } {
+  const projectRoot = fs.mkdtempSync(
+    path.join(os.tmpdir(), "twining-query-star-test-"),
+  );
+  const twiningDir = path.join(projectRoot, ".twining");
+  const graphDir = path.join(twiningDir, "graph");
+  const publicDir = path.join(projectRoot, "public");
+
+  fs.mkdirSync(graphDir, { recursive: true });
+  fs.mkdirSync(publicDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(publicDir, "index.html"),
+    "<html><body>Dashboard</body></html>",
+  );
+
+  const entities: Array<{ id: string; name: string; type: string; properties: Record<string, unknown>; created_at: string; updated_at: string }> = [
+    { id: "A1", name: "root", type: "module", properties: {}, created_at: "2026-02-17T08:00:00.000Z", updated_at: "2026-02-17T08:00:00.000Z" },
+  ];
+  const relations: Array<{ id: string; source: string; target: string; type: string; properties: Record<string, unknown>; created_at: string }> = [];
+
+  for (let i = 1; i <= 15; i++) {
+    entities.push({ id: `F${i}`, name: `file${pad2(i)}`, type: "file", properties: {}, created_at: "2026-02-17T08:00:00.000Z", updated_at: "2026-02-17T08:00:00.000Z" });
+    relations.push({ id: `RF${i}`, source: "A1", target: `F${i}`, type: "related_to", properties: {}, created_at: "2026-02-17T09:00:00.000Z" });
+  }
+  for (let i = 1; i <= 15; i++) {
+    entities.push({ id: `N${i}`, name: `fn${pad2(i)}`, type: "function", properties: {}, created_at: "2026-02-17T08:00:00.000Z", updated_at: "2026-02-17T08:00:00.000Z" });
+    relations.push({ id: `RN${i}`, source: "A1", target: `N${i}`, type: "related_to", properties: {}, created_at: "2026-02-17T09:00:00.000Z" });
+  }
+
+  fs.writeFileSync(path.join(graphDir, "entities.json"), JSON.stringify(entities, null, 2));
+  fs.writeFileSync(path.join(graphDir, "relations.json"), JSON.stringify(relations, null, 2));
+
+  return { projectRoot, publicDir };
+}
+
+/**
+ * Second-ring fixture for depth=2 tests.
+ * A1 (anchor) -> E2 (file, becomes degree 3: A1-E2, E2-E5, E2-E6)
+ *             -> E3 (file, degree 2: A1-E3, E3-E7)
+ * E2 -> E5 (file, leaf), E2 -> E6 (file, leaf)
+ * E3 -> E7 (file, leaf)
+ */
+function createSecondRingTestProject(): { projectRoot: string; publicDir: string } {
+  const projectRoot = fs.mkdtempSync(
+    path.join(os.tmpdir(), "twining-query-ring2-test-"),
+  );
+  const twiningDir = path.join(projectRoot, ".twining");
+  const graphDir = path.join(twiningDir, "graph");
+  const publicDir = path.join(projectRoot, "public");
+
+  fs.mkdirSync(graphDir, { recursive: true });
+  fs.mkdirSync(publicDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(publicDir, "index.html"),
+    "<html><body>Dashboard</body></html>",
+  );
+
+  const entities = [
+    { id: "A1", name: "root", type: "module", properties: {}, created_at: "2026-02-17T08:00:00.000Z", updated_at: "2026-02-17T08:00:00.000Z" },
+    { id: "E2", name: "e2", type: "file", properties: {}, created_at: "2026-02-17T08:00:00.000Z", updated_at: "2026-02-17T08:00:00.000Z" },
+    { id: "E3", name: "e3", type: "file", properties: {}, created_at: "2026-02-17T08:00:00.000Z", updated_at: "2026-02-17T08:00:00.000Z" },
+    { id: "E5", name: "e5", type: "file", properties: {}, created_at: "2026-02-17T08:00:00.000Z", updated_at: "2026-02-17T08:00:00.000Z" },
+    { id: "E6", name: "e6", type: "file", properties: {}, created_at: "2026-02-17T08:00:00.000Z", updated_at: "2026-02-17T08:00:00.000Z" },
+    { id: "E7", name: "e7", type: "file", properties: {}, created_at: "2026-02-17T08:00:00.000Z", updated_at: "2026-02-17T08:00:00.000Z" },
+  ];
+  const relations = [
+    { id: "R1", source: "A1", target: "E2", type: "related_to", properties: {}, created_at: "2026-02-17T09:00:00.000Z" },
+    { id: "R2", source: "A1", target: "E3", type: "related_to", properties: {}, created_at: "2026-02-17T09:01:00.000Z" },
+    { id: "R3", source: "E2", target: "E5", type: "related_to", properties: {}, created_at: "2026-02-17T09:02:00.000Z" },
+    { id: "R4", source: "E2", target: "E6", type: "related_to", properties: {}, created_at: "2026-02-17T09:03:00.000Z" },
+    { id: "R5", source: "E3", target: "E7", type: "related_to", properties: {}, created_at: "2026-02-17T09:04:00.000Z" },
+  ];
+  fs.writeFileSync(path.join(graphDir, "entities.json"), JSON.stringify(entities, null, 2));
+  fs.writeFileSync(path.join(graphDir, "relations.json"), JSON.stringify(relations, null, 2));
+
+  return { projectRoot, publicDir };
+}
+
+/**
+ * Second-ring fixture with a MIXED-type cut: A1 (anchor) -> E2 (file, degree
+ * 6: A1-E2 plus 5 children) and E3 (file, degree 2: A1-E3, E3-E7, leaf,
+ * unused by the depth-2 walk once budget is exhausted on E2).
+ * E2's children, sorted (degree desc [all =1], name asc): m1(file), m2
+ * (function), m3(file), m4(file), m5(function) — deliberately interleaved
+ * so a 2-item budget cut lands mid-type-group on both sides.
+ */
+function createSecondRingMixedTypeTestProject(): { projectRoot: string; publicDir: string } {
+  const projectRoot = fs.mkdtempSync(
+    path.join(os.tmpdir(), "twining-query-ring2-mixed-test-"),
+  );
+  const twiningDir = path.join(projectRoot, ".twining");
+  const graphDir = path.join(twiningDir, "graph");
+  const publicDir = path.join(projectRoot, "public");
+
+  fs.mkdirSync(graphDir, { recursive: true });
+  fs.mkdirSync(publicDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(publicDir, "index.html"),
+    "<html><body>Dashboard</body></html>",
+  );
+
+  const entities = [
+    { id: "A1", name: "root", type: "module", properties: {}, created_at: "2026-02-17T08:00:00.000Z", updated_at: "2026-02-17T08:00:00.000Z" },
+    { id: "E2", name: "e2", type: "file", properties: {}, created_at: "2026-02-17T08:00:00.000Z", updated_at: "2026-02-17T08:00:00.000Z" },
+    { id: "E3", name: "e3", type: "file", properties: {}, created_at: "2026-02-17T08:00:00.000Z", updated_at: "2026-02-17T08:00:00.000Z" },
+    { id: "E7", name: "e7", type: "file", properties: {}, created_at: "2026-02-17T08:00:00.000Z", updated_at: "2026-02-17T08:00:00.000Z" },
+    { id: "M1", name: "m1", type: "file", properties: {}, created_at: "2026-02-17T08:00:00.000Z", updated_at: "2026-02-17T08:00:00.000Z" },
+    { id: "M2", name: "m2", type: "function", properties: {}, created_at: "2026-02-17T08:00:00.000Z", updated_at: "2026-02-17T08:00:00.000Z" },
+    { id: "M3", name: "m3", type: "file", properties: {}, created_at: "2026-02-17T08:00:00.000Z", updated_at: "2026-02-17T08:00:00.000Z" },
+    { id: "M4", name: "m4", type: "file", properties: {}, created_at: "2026-02-17T08:00:00.000Z", updated_at: "2026-02-17T08:00:00.000Z" },
+    { id: "M5", name: "m5", type: "function", properties: {}, created_at: "2026-02-17T08:00:00.000Z", updated_at: "2026-02-17T08:00:00.000Z" },
+  ];
+  const relations = [
+    { id: "R1", source: "A1", target: "E2", type: "related_to", properties: {}, created_at: "2026-02-17T09:00:00.000Z" },
+    { id: "R2", source: "A1", target: "E3", type: "related_to", properties: {}, created_at: "2026-02-17T09:01:00.000Z" },
+    { id: "R3", source: "E3", target: "E7", type: "related_to", properties: {}, created_at: "2026-02-17T09:02:00.000Z" },
+    { id: "R4", source: "E2", target: "M1", type: "related_to", properties: {}, created_at: "2026-02-17T09:03:00.000Z" },
+    { id: "R5", source: "E2", target: "M2", type: "related_to", properties: {}, created_at: "2026-02-17T09:04:00.000Z" },
+    { id: "R6", source: "E2", target: "M3", type: "related_to", properties: {}, created_at: "2026-02-17T09:05:00.000Z" },
+    { id: "R7", source: "E2", target: "M4", type: "related_to", properties: {}, created_at: "2026-02-17T09:06:00.000Z" },
+    { id: "R8", source: "E2", target: "M5", type: "related_to", properties: {}, created_at: "2026-02-17T09:07:00.000Z" },
+  ];
+  fs.writeFileSync(path.join(graphDir, "entities.json"), JSON.stringify(entities, null, 2));
+  fs.writeFileSync(path.join(graphDir, "relations.json"), JSON.stringify(relations, null, 2));
+
+  return { projectRoot, publicDir };
+}
+
+describe("GET /api/graph/neighborhood - depth=1 round-robin + overflow", () => {
+  let server: http.Server;
+  let port: number;
+  let projectRoot: string;
+
+  beforeAll(async () => {
+    const project = createStarTestProject();
+    projectRoot = project.projectRoot;
+
+    server = http.createServer(
+      handleRequest(project.publicDir, project.projectRoot),
+    );
+    await new Promise<void>((resolve) => {
+      server.listen(0, "127.0.0.1", () => resolve());
+    });
+    const addr = server.address();
+    port = typeof addr === "object" && addr !== null ? addr.port : 0;
+  });
+
+  afterAll(async () => {
+    await new Promise<void>((resolve) => {
+      server.close(() => resolve());
+    });
+    fs.rmSync(projectRoot, { recursive: true, force: true });
+  });
+
+  it("round-robins across the two type groups (5 file + 5 function) at limit=11 and reports 10/10 overflow", async () => {
+    const res = await httpGet(port, "/api/graph/neighborhood?id=A1&limit=11");
+    expect(res.status).toBe(200);
+
+    const body = JSON.parse(res.body.toString("utf-8"));
+    expect(body.anchor).toBe("A1");
+    expect(body.entities).toHaveLength(11); // anchor + 10
+
+    const fileNames = body.entities
+      .filter((e: { type: string }) => e.type === "file")
+      .map((e: { name: string }) => e.name)
+      .sort();
+    const fnNames = body.entities
+      .filter((e: { type: string }) => e.type === "function")
+      .map((e: { name: string }) => e.name)
+      .sort();
+    expect(fileNames).toEqual(["file01", "file02", "file03", "file04", "file05"]);
+    expect(fnNames).toEqual(["fn01", "fn02", "fn03", "fn04", "fn05"]);
+
+    expect(body.entities.some((e: { id: string }) => e.id === "A1")).toBe(true);
+
+    expect(body.overflow).toHaveLength(2);
+    const fileOverflow = body.overflow.find((o: { type: string }) => o.type === "file");
+    const fnOverflow = body.overflow.find((o: { type: string }) => o.type === "function");
+    expect(fileOverflow).toEqual({ from: "A1", type: "file", omitted: 10 });
+    expect(fnOverflow).toEqual({ from: "A1", type: "function", omitted: 10 });
+
+    // relations[] includes only relations among included entities.
+    expect(body.relations).toHaveLength(10);
+    for (const r of body.relations) {
+      expect(r.source === "A1" || r.target === "A1").toBe(true);
+    }
+  });
+
+  it("is deterministic across repeated identical calls", async () => {
+    const res1 = await httpGet(port, "/api/graph/neighborhood?id=A1&limit=11");
+    const res2 = await httpGet(port, "/api/graph/neighborhood?id=A1&limit=11");
+    expect(res1.body.toString("utf-8")).toBe(res2.body.toString("utf-8"));
+  });
+
+  it("defaults to depth=1, limit=150", async () => {
+    const res = await httpGet(port, "/api/graph/neighborhood?id=A1");
+    const body = JSON.parse(res.body.toString("utf-8"));
+    // 31 total entities in the fixture, well under 150 -> everything included, no overflow.
+    expect(body.entities).toHaveLength(31);
+    expect(body.overflow).toEqual([]);
+  });
+
+  it("returns 404 for an unknown anchor id", async () => {
+    const res = await httpGet(port, "/api/graph/neighborhood?id=NOPE999");
+    expect(res.status).toBe(404);
+    const body = JSON.parse(res.body.toString("utf-8"));
+    expect(body.error).toBeTruthy();
+  });
+
+  it("returns 400 for a depth value other than 1 or 2", async () => {
+    const res = await httpGet(port, "/api/graph/neighborhood?id=A1&depth=3");
+    expect(res.status).toBe(400);
+  });
+
+  it("paging variant returns the requested slice, linking relations, and total_of_type", async () => {
+    const res = await httpGet(port, "/api/graph/neighborhood?id=A1&type=file&offset=5&limit=5");
+    expect(res.status).toBe(200);
+    const body = JSON.parse(res.body.toString("utf-8"));
+
+    expect(body.anchor).toBe("A1");
+    expect(body.total_of_type).toBe(15);
+    const names = body.entities.map((e: { name: string }) => e.name);
+    expect(names).toEqual(["file06", "file07", "file08", "file09", "file10"]);
+
+    expect(body.relations).toHaveLength(5);
+    for (const r of body.relations) {
+      expect(r.source === "A1" || r.target === "A1").toBe(true);
+    }
+  });
+});
+
+describe("GET /api/graph/neighborhood - depth=2", () => {
+  let server: http.Server;
+  let port: number;
+  let projectRoot: string;
+
+  beforeAll(async () => {
+    const project = createSecondRingTestProject();
+    projectRoot = project.projectRoot;
+
+    server = http.createServer(
+      handleRequest(project.publicDir, project.projectRoot),
+    );
+    await new Promise<void>((resolve) => {
+      server.listen(0, "127.0.0.1", () => resolve());
+    });
+    const addr = server.address();
+    port = typeof addr === "object" && addr !== null ? addr.port : 0;
+  });
+
+  afterAll(async () => {
+    await new Promise<void>((resolve) => {
+      server.close(() => resolve());
+    });
+    fs.rmSync(projectRoot, { recursive: true, force: true });
+  });
+
+  it("pulls second-ring nodes within budget and records per-node overflow for the node that got cut", async () => {
+    // budget = limit - 1 = 3. Depth-1 phase takes E2, E3 (both "file", degree
+    // desc order: E2 degree=3 before E3 degree=2) -> budget left = 1.
+    // Depth-2 walk order is [E2, E3] (same degree-desc/name-asc order).
+    // E2's not-yet-included neighbors are [E5, E6] (both leaves, degree=1,
+    // name asc, both type "file") -> only E5 fits in the remaining budget of
+    // 1 -> overflow {from: E2, type: "file", omitted: 1}. Budget hits 0
+    // before E3 is ever visited, so E3 gets no overflow entry despite E7
+    // being excluded.
+    const res = await httpGet(port, "/api/graph/neighborhood?id=A1&depth=2&limit=4");
+    expect(res.status).toBe(200);
+    const body = JSON.parse(res.body.toString("utf-8"));
+
+    const ids = body.entities.map((e: { id: string }) => e.id).sort();
+    expect(ids).toEqual(["A1", "E2", "E3", "E5"]);
+
+    expect(body.overflow).toEqual([{ from: "E2", type: "file", omitted: 1 }]);
+  });
+
+  it("depth=1 does not pull second-ring nodes even when budget would allow it", async () => {
+    const res = await httpGet(port, "/api/graph/neighborhood?id=A1&depth=1&limit=10");
+    const body = JSON.parse(res.body.toString("utf-8"));
+    const ids = body.entities.map((e: { id: string }) => e.id).sort();
+    expect(ids).toEqual(["A1", "E2", "E3"]);
+    expect(body.overflow).toEqual([]);
+  });
+});
+
+describe("GET /api/graph/neighborhood - depth=2 mixed-type overflow", () => {
+  let server: http.Server;
+  let port: number;
+  let projectRoot: string;
+
+  beforeAll(async () => {
+    const project = createSecondRingMixedTypeTestProject();
+    projectRoot = project.projectRoot;
+
+    server = http.createServer(
+      handleRequest(project.publicDir, project.projectRoot),
+    );
+    await new Promise<void>((resolve) => {
+      server.listen(0, "127.0.0.1", () => resolve());
+    });
+    const addr = server.address();
+    port = typeof addr === "object" && addr !== null ? addr.port : 0;
+  });
+
+  afterAll(async () => {
+    await new Promise<void>((resolve) => {
+      server.close(() => resolve());
+    });
+    fs.rmSync(projectRoot, { recursive: true, force: true });
+  });
+
+  it("groups a single node's depth-2 cut by type when the cut neighbors span multiple types", async () => {
+    // budget = limit - 1 = 3. Depth-1 phase takes E2 (degree 6, "file") then
+    // E3 (degree 2, "file") -> budget left = 1... wait: depth-1 group "file"
+    // has exactly [E2, E3], both taken, leaving budget = 3 - 2 = 1 for
+    // depth-2. Depth-2 walk order [E2 (degree 6), E3 (degree 2)]. E2's
+    // not-yet-included neighbors sorted (degree desc [all =1], name asc):
+    // [M1(file), M2(function), M3(file), M4(file), M5(function)]. Budget=1
+    // -> only M1 added; cut = [M2(function), M3(file), M4(file), M5
+    // (function)] -> grouped: file:2, function:2. Budget hits 0, E3 never
+    // visited (no overflow entry for E3 despite E7 excluded).
+    const res = await httpGet(port, "/api/graph/neighborhood?id=A1&depth=2&limit=4");
+    expect(res.status).toBe(200);
+    const body = JSON.parse(res.body.toString("utf-8"));
+
+    const ids = body.entities.map((e: { id: string }) => e.id).sort();
+    expect(ids).toEqual(["A1", "E2", "E3", "M1"]);
+
+    expect(body.overflow).toHaveLength(2);
+    const fileOverflow = body.overflow.find((o: { type: string }) => o.type === "file");
+    const fnOverflow = body.overflow.find((o: { type: string }) => o.type === "function");
+    expect(fileOverflow).toEqual({ from: "E2", type: "file", omitted: 2 });
+    expect(fnOverflow).toEqual({ from: "E2", type: "function", omitted: 2 });
+  });
+});
+
+/* ------------------------------------------------------------------ */
 /* Test suite: legacy /api/graph exact-match route not shadowed       */
 /* ------------------------------------------------------------------ */
 

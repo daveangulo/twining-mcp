@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Task 5 (/api/graph/neighborhood) review returned Needs Fixes: Critical depth-2 overflow entries omit the type field, violating the {from,type,omitted} contract the ego-explorer chips render from. Fix dispatched to the implementer (per-type grouping at the cut point + mixed-type test); re-review then commit.\nDecisions: Accepted reviewer-flagged behavior as-is: depth-1 nodes never visited by the depth-2 walk emit no overflow entry — defensible reading of 'cut', pinned by tests; revisit only if Task 13's ego UI needs an exhaustive-cut signal.; Core neighborhood algorithm confirmed correct by reviewer hand-trace of both fixtures — round-robin, budgeted depth-2 walk, induced-subgraph relations, determinism all match the normative spec.\nFindings: Implementer report headline claimed 30 new tests; diff contains 8 new it() blocks — copy/paste artifact in the report, corrected in ledger. Reminder: reports are unverified claims; the review layer caught it.",
+  "entry_type": "status",
+  "id": "01KX4CDPM1HQE8V899NHMYPE1B",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "c03ffafc6ee5c1e22f27d9222d8d49563aab69df",
+    "recorded_at": "2026-07-09T21:26:59.435Z"
+  },
+  "scope": "src/dashboard/",
+  "summary": "Task 5 (/api/graph/neighborhood) review returned Needs Fixes: Critical depth-2 overflow entries omit the type field, violating the {from,type,omitted} contract the ego-explorer chips render from. F…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-09T21:26:59.457Z"
+}

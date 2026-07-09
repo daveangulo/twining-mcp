@@ -1,0 +1,28 @@
+{
+  "affected_files": [
+    "src/dashboard/query-routes.ts",
+    "test/dashboard/query-routes.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Task 5 (/api/graph/neighborhood) review returned Needs Fixes: Critical depth-2 overflow entries omit the type field, violating the {from,type,omitted} contract the ego-explorer chips render from. Fix dispatched to the implementer (per-type grouping at the cut point + mixed-type test); re-review then commit.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KX4CDPNEQ638R6VNR4TATZAN",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "c03ffafc6ee5c1e22f27d9222d8d49563aab69df",
+    "recorded_at": "2026-07-09T21:26:59.486Z"
+  },
+  "rationale": "defensible reading of 'cut', pinned by tests; revisit only if Task 13's ego UI needs an exhaustive-cut signal.",
+  "reversible": true,
+  "scope": "src/dashboard/",
+  "status": "active",
+  "summary": "Accepted reviewer-flagged behavior as-is: depth-1 nodes never visited by the depth-2 walk emit no overflow entry",
+  "timestamp": "2026-07-09T21:26:59.502Z"
+}
