@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Discovered need (from Task 1 subagent): DecisionStore.create() throws ENOENT unless decisions/index.json pre-exists — bare mkdirSync is insufficient; fixture uses src/storage/init.ts initTwiningDir(). DecisionStore lacks GraphStore's defensive ensureFiles() pattern — future hardening candidate, out of scope here.",
+  "entry_type": "finding",
+  "id": "01KX49RDRRXQ5P0SKRF3TKHAAD",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "31a428f03d25e8d4355705746de9b650f97e046c",
+    "recorded_at": "2026-07-09T20:40:25.095Z"
+  },
+  "scope": "src/dashboard/",
+  "summary": "Discovered need (from Task 1 subagent): DecisionStore.create() throws ENOENT unless decisions/index.json pre-exists — bare mkdirSync is insufficient; fixture uses src/storage/init.ts initTwiningDir…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-09T20:40:25.112Z"
+}

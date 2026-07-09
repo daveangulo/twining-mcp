@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T20:40:24.993Z",
+  "id": "01KX49RDN119RB0C86D8XP86X9",
+  "properties": {
+    "decision_summary": "Chose a feature branch (dashboard-scale-redesign) over committing the redesign directly to main"
+  },
+  "source": "01KJNAQMQVGD3TWE905M4KZ1ST",
+  "target": "01KX49RDN0A9DR6MBSX91YT860",
+  "type": "decided_by"
+}

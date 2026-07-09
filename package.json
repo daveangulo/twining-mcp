@@ -28,7 +28,8 @@
     "demo:record": "npx tsx examples/demo-automation/playwright/record-demo.ts",
     "demo:record:pause": "DEMO_PAUSE=1 npx tsx examples/demo-automation/playwright/record-demo.ts",
     "test:coordination": "vitest run --config vitest.config.coordination.ts",
-    "test:coordination:watch": "vitest --config vitest.config.coordination.ts"
+    "test:coordination:watch": "vitest --config vitest.config.coordination.ts",
+    "seed:scale": "npx tsx scripts/seed-scale-fixture.ts"
   },
   "keywords": [
     "mcp",

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-09T20:40:25.093Z",
+  "id": "01KX49RDR5D9DMYP71YE0ME5X6",
+  "name": "01KX49RDNJAEM58R6CQXVV9RMR",
+  "properties": {
+    "scope": "src/dashboard/",
+    "summary": "Chose controller-commits with working-tree review packages over subagent commits"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-09T20:40:25.093Z"
+}

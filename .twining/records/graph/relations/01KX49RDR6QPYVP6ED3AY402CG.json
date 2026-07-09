@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T20:40:25.094Z",
+  "id": "01KX49RDR6QPYVP6ED3AY402CG",
+  "properties": {
+    "decision_summary": "Chose controller-commits with working-tree review packages over subagent commits"
+  },
+  "source": "01KX49RDN0A9DR6MBSX91YT861",
+  "target": "01KX49RDR5D9DMYP71YE0ME5X6",
+  "type": "decided_by"
+}

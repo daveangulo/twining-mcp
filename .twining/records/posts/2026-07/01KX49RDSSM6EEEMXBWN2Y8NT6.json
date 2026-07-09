@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Task 1 verification: 5k seed run 54s, 5000 bb lines / 5001 decision files / 5000 entities / 7998 relations, 18mo spread, 7.6% superseded; npm test 1114 passed / 2 skipped; tsc clean. Note scripts/ is outside tsconfig include — standalone tsc check needed matching flags.",
+  "entry_type": "finding",
+  "id": "01KX49RDSSM6EEEMXBWN2Y8NT6",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "31a428f03d25e8d4355705746de9b650f97e046c",
+    "recorded_at": "2026-07-09T20:40:25.129Z"
+  },
+  "scope": "src/dashboard/",
+  "summary": "Task 1 verification: 5k seed run 54s, 5000 bb lines / 5001 decision files / 5000 entities / 7998 relations, 18mo spread, 7.6% superseded; npm test 1114 passed / 2 skipped; tsc clean. Note scripts/ …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-09T20:40:25.145Z"
+}
