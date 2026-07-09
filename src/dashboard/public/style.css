@@ -1964,3 +1964,10 @@ tr.delegation-expired td { text-decoration: line-through; }
   font-size: 0.8rem; box-shadow: 0 4px 16px rgba(0,0,0,0.4);
 }
 #graph-pagination { display: flex; gap: var(--space-sm); padding: var(--space-sm) 0; }
+
+/* ---------- Health Cards (js/health.js) ---------- */
+
+.health-card { text-align: left; cursor: pointer; border: 1px solid var(--border); transition: border-color var(--transition-fast); }
+.health-card:hover { border-color: var(--accent); }
+.health-attention { color: var(--warning); }
+.health-row { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

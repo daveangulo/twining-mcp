@@ -11,6 +11,7 @@ import { createIndexStore } from "./store.js";
 import { createListView, COLUMNS } from "./list-view.js";
 import { createDensityTimeline } from "./density-timeline.js";
 import { createGraphView } from "./graph-view.js";
+import { renderHealthCards } from "./health.js";
 import { el, clearElement, formatTimestamp } from "./util.js";
 
 const POLL_MS = 5000;
@@ -260,6 +261,28 @@ async function renderGraphTablePage() {
 }
 
 /* ------------------------------------------------------------------ */
+/* Health cards (Insights tab)                                         */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Cross-view navigation: switch tab (via legacy switchTab global) and apply
+ * a filter to the target list view. router.js reroutes this through the URL
+ * hash when it lands (Task 16).
+ */
+function navigate({ tab, filter }) {
+  if (typeof window.switchTab === "function") window.switchTab(tab);
+  requestAnimationFrame(() => {
+    if (tab === "blackboard" && blackboardList && filter) blackboardList.setFilter(filter);
+    if (tab === "decisions" && decisionsList && filter) decisionsList.setFilter(filter);
+  });
+}
+
+function mountHealth() {
+  const host = document.getElementById("health-cards");
+  if (host) renderHealthCards(host, navigate);
+}
+
+/* ------------------------------------------------------------------ */
 /* Boot + polling                                                      */
 /* ------------------------------------------------------------------ */
 
@@ -290,6 +313,7 @@ async function boot() {
         const visual = document.getElementById("graph-visual-view");
         if (visual && visual.style.display !== "none") window.__twiningGraphShown();
       }
+      if (tab === "insights") mountHealth();
     });
   });
   renderGraphTablePage();
