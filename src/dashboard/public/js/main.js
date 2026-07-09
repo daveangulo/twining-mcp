@@ -13,6 +13,19 @@ import { createDensityTimeline } from "./density-timeline.js";
 import { createGraphView } from "./graph-view.js";
 import { renderHealthCards } from "./health.js";
 import { createScopeNav } from "./scope-nav.js";
+import { readRoute, writeRoute, onRouteChange, syncCurrent } from "./router.js";
+
+// True while applyRoute() is driving the views — suppresses writeRoute echoes.
+let applyingRoute = false;
+function route(partial, opts) {
+  if (applyingRoute) return;
+  if (partial.filter) {
+    // kinds (fixed per view) and scope (own hash param) are internal keys.
+    const { kinds: _k, scope: _s, ...rest } = partial.filter;
+    partial = { ...partial, filter: Object.keys(rest).length ? rest : undefined };
+  }
+  writeRoute(partial, opts);
+}
 import { el, clearElement, formatTimestamp } from "./util.js";
 
 const POLL_MS = 5000;
@@ -92,7 +105,13 @@ function mountBlackboard() {
       { filterKey: "entryTypes", field: "entry_type", label: "Type" },
       { filterKey: "tags", field: "tags", label: "Tags" },
     ],
-    onSelect: showBlackboardDetail,
+    onSelect: (row) => {
+      route({ sel: row.id }, { push: true });
+      showBlackboardDetail(row);
+    },
+    onFilterChange: (f) => {
+      if (activeTab() === "blackboard") route({ filter: f });
+    },
   });
 }
 
@@ -137,7 +156,13 @@ function mountDecisions() {
       { filterKey: "domains", field: "domain", label: "Domain" },
       { filterKey: "confidences", field: "confidence", label: "Conf" },
     ],
-    onSelect: showDecisionDetail,
+    onSelect: (row) => {
+      route({ sel: row.id }, { push: true });
+      showDecisionDetail(row);
+    },
+    onFilterChange: (f) => {
+      if (activeTab() === "decisions") route({ filter: f });
+    },
   });
 }
 
@@ -156,6 +181,7 @@ function mountTimeline() {
     store,
     onSelect: (row) => showDecisionDetail(row, "decisions-timeline-detail"),
     onRangeChange: (brush, filterPatch) => {
+      route({ range: brush || undefined });
       if (!timelineSyncedList) return;
       const f = filterPatch || timeline.getFilter();
       timelineSyncedList.setFilter({
@@ -178,6 +204,7 @@ function mountTimeline() {
 
 // Legacy toggleView (app.js) calls this bridge when the timeline view is shown.
 window.__twiningTimelineShown = () => {
+  route({ view: "timeline" });
   mountTimeline();
   if (timeline) {
     timeline.refresh();
@@ -194,9 +221,10 @@ let graphView = null;
 
 // Legacy toggleView (app.js) calls this bridge when the Visual view is shown.
 window.__twiningGraphShown = () => {
+  route({ view: "visual" });
   const host = document.getElementById("graph-canvas");
   if (!host) return;
-  if (!graphView) graphView = createGraphView(host, {});
+  if (!graphView) graphView = createGraphView(host, { onEntitySelect: (id) => route({ anchor: id }, { push: true }) });
   else graphView.refresh();
 };
 
@@ -290,6 +318,7 @@ function mountHealth() {
 let scopeNav = null;
 
 function setGlobalScope(scope) {
+  route({ scope: scope || undefined });
   // New views
   const patch = { scope: scope || undefined };
   if (blackboardList) blackboardList.setFilter(patch);
@@ -318,6 +347,36 @@ function activeTab() {
   return btn ? btn.getAttribute("data-tab") : "stats";
 }
 
+/** Drive the views from a route object (initial load, back/forward). */
+function applyRoute(r) {
+  applyingRoute = true;
+  try {
+    if (r.tab && typeof window.switchTab === "function") window.switchTab(r.tab);
+    if (r.view === "timeline" && typeof window.toggleView === "function") window.toggleView("decisions", "timeline");
+    if (r.view === "visual" && typeof window.toggleView === "function") window.toggleView("graph", "visual");
+    if (r.scope !== undefined && scopeNav) scopeNav.setScope(r.scope || "");
+    if (r.filter) {
+      if (r.tab === "blackboard" && blackboardList) blackboardList.setFilter(r.filter);
+      if (r.tab === "decisions" && decisionsList) decisionsList.setFilter(r.filter);
+    }
+    if (r.range && timeline) timeline.setRange(r.range.fromMs, r.range.toMs);
+    if (r.anchor) {
+      requestAnimationFrame(() => {
+        if (graphView) graphView.focus(r.anchor);
+      });
+    }
+    if (r.sel) {
+      const row = store.rows.find((row) => row.id === r.sel);
+      if (row) {
+        if (row.kind === "blackboard") showBlackboardDetail(row);
+        else showDecisionDetail(row, r.view === "timeline" ? "decisions-timeline-detail" : "decisions-detail");
+      }
+    }
+  } finally {
+    applyingRoute = false;
+  }
+}
+
 async function boot() {
   try {
     await store.load();
@@ -334,6 +393,7 @@ async function boot() {
     // Re-render the freshly shown tab: virtualized viewports measure 0 while hidden.
     requestAnimationFrame(() => {
       const tab = btn.getAttribute("data-tab");
+      route({ tab, sel: undefined, filter: undefined, anchor: undefined, view: undefined }, { push: true });
       if (tab === "blackboard" && blackboardList) blackboardList.refresh();
       if (tab === "decisions" && decisionsList) decisionsList.refresh();
       if (tab === "graph") {
@@ -345,6 +405,14 @@ async function boot() {
     });
   });
   renderGraphTablePage();
+
+  // Apply a deep-link route (reload / shared URL), then follow back/forward.
+  const initial = readRoute();
+  if (initial) {
+    syncCurrent(initial);
+    applyRoute(initial);
+  }
+  onRouteChange(applyRoute);
 
   setInterval(async () => {
     try {

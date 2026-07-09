@@ -457,6 +457,10 @@ export function createDensityTimeline(container, { store, onSelect, onRangeChang
       invalidate();
     },
     getRange: () => ({ fromMs: state.from, toMs: state.to }),
+    setRange(fromMs, toMs) {
+      [state.from, state.to] = clampRange(fromMs, toMs);
+      invalidate();
+    },
     getFilter: () => ({ ...state.filter }),
     destroy() {
       unsubscribe();

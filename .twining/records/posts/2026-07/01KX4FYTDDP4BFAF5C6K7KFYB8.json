@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Task 16 (inline): hash routing shipped (js/router.js) — tab/view/scope/filter/selection/range/anchor in the URL; pushState for tab/sel/anchor (back button restores views), replaceState for filter tweaks; deep-link reload verified at 5k (blackboard + src/ scope + warning facet -> 932 records restored), back-button restore verified. Filter keys sanitized (kinds/scope stripped from f= param).\nFindings: Verification gotcha: Playwright goto to the same URL with a different hash does NOT reload the page — the first deep-link test read stale DOM from the previous page state and looked like a routing bug; a true reload showed routing working. Applies to any future hash-based UI verification.",
+  "entry_type": "status",
+  "id": "01KX4FYTDDP4BFAF5C6K7KFYB8",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "ee2ae46c84c611f96d19b9bd211790ee29c8ee4c",
+    "recorded_at": "2026-07-09T22:28:46.108Z"
+  },
+  "scope": "src/dashboard/public/js/",
+  "summary": "Task 16 (inline): hash routing shipped (js/router.js) — tab/view/scope/filter/selection/range/anchor in the URL; pushState for tab/sel/anchor (back button restores views), replaceState for filter t…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-09T22:28:46.125Z"
+}

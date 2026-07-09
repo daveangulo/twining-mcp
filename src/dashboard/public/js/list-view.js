@@ -113,6 +113,7 @@ export function createListView(container, opts) {
       }
       state.displayList.push({ row });
     }
+    if (opts.onFilterChange) opts.onFilterChange({ ...state.filter });
     spacer.style.height = `${state.displayList.length * rowHeight}px`;
     // Clamp scroll when the list shrinks (e.g. a filter applied while scrolled
     // deep) — layout may not have caught up before renderWindow reads it.

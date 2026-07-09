@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Verification gotcha: Playwright goto to the same URL with a different hash does NOT reload the page — the first deep-link test read stale DOM from the previous page state and looked like a routing bug; a true reload showed routing working. Applies to any future hash-based UI verification.",
+  "entry_type": "finding",
+  "id": "01KX4FYTEN8R10DMQSYP3HZ1KX",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "ee2ae46c84c611f96d19b9bd211790ee29c8ee4c",
+    "recorded_at": "2026-07-09T22:28:46.149Z"
+  },
+  "scope": "src/dashboard/public/js/",
+  "summary": "Verification gotcha: Playwright goto to the same URL with a different hash does NOT reload the page — the first deep-link test read stale DOM from the previous page state and looked like a routing …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-09T22:28:46.165Z"
+}
