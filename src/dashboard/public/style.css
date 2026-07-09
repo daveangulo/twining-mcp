@@ -1971,3 +1971,36 @@ tr.delegation-expired td { text-decoration: line-through; }
 .health-card:hover { border-color: var(--accent); }
 .health-attention { color: var(--warning); }
 .health-row { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ---------- Scope Breadcrumb (js/scope-nav.js) ---------- */
+
+.sn-breadcrumb { display: flex; align-items: center; gap: 2px; position: relative; }
+.sn-crumb {
+  padding: 3px 8px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--bg-surface); color: var(--text-primary); cursor: pointer;
+  font-family: var(--font-mono); font-size: 0.72rem; position: relative;
+}
+.sn-crumb:hover { border-color: var(--accent); }
+.sn-crumb.active { color: var(--text-tertiary); }
+.sn-sep { color: var(--text-tertiary); font-size: 0.7rem; }
+.sn-menu {
+  position: absolute; top: calc(100% + 4px); left: 0; z-index: 100;
+  min-width: 220px; max-height: 320px; overflow-y: auto;
+  background: var(--bg-elevated); border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md); box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+  padding: var(--space-xs); display: flex; flex-direction: column;
+}
+.sn-item {
+  display: flex; justify-content: space-between; gap: var(--space-md);
+  padding: 5px 8px; border: none; border-radius: var(--radius-sm);
+  background: transparent; color: var(--text-primary); cursor: pointer;
+  font-family: var(--font-mono); font-size: 0.74rem; text-align: left;
+}
+.sn-item:hover { background: var(--bg-hover); }
+.sn-count { color: var(--text-tertiary); }
+.sn-free {
+  margin-top: var(--space-xs); padding: 4px 8px;
+  background: var(--bg-surface); color: var(--text-primary);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  font-family: var(--font-mono); font-size: 0.74rem;
+}

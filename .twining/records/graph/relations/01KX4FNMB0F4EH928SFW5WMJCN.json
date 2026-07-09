@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T22:23:44.992Z",
+  "id": "01KX4FNMB0F4EH928SFW5WMJCN",
+  "properties": {
+    "decision_summary": "Scope changes propagate two ways during the transition: setFilter({scope}) on module views and state.globalScope+refreshData() for legacy applyGlobalScope consumers (Search, Agents)"
+  },
+  "source": "01KX4FNMB0F4EH928SFW5WMJCM",
+  "target": "01KX4FNMB0F4EH928SFW5WMJCK",
+  "type": "decided_by"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Scope changes propagate two ways during the transition: setFilter({scope}) on module views and state.globalScope+refreshData() for legacy applyGlobalScope consumers (Search, Agents)\" relates to:\n- 01KX4E5JGRSACAGCGF0EJ0N0MV: \"Fixed a discovered edge in virtualization during browser verification: filtering while scrolled deep left scrollTop beyond the shrunken content, rendering an empty window\"\n- 01KX4E5JJ0GW410CBBHE3GC8N3: \"Kept renderBlackboardDetail in app.js (not yet moved) because navigateToId cross-links still render from legacy state\"\n- 01KX4EV8P9WYA0A98XB9HDZNQY: \"Kept the existing toolbar/legend/chips DOM ids (timeline-zoom-in/out/fit/today, timeline-legend, timeline-domain-filters) so the HTML shell and its styling carried over unchanged\"\n- 01KX4EV8REJS5WBPH7RQRMFX81: \"Lozenge lane layout uses first-fit lane assignment with label-width-aware collision (measureText) rather than vis-timeline-style stacking\"",
+  "entry_type": "finding",
+  "id": "01KX4FNM9HAHMNTGNPG4YNFYWD",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "b62db2827d53a366f5b4369ec7f5ded7a613d2ae",
+    "recorded_at": "2026-07-09T22:23:44.932Z"
+  },
+  "scope": "src/dashboard/public/js/",
+  "summary": "Related decisions in scope: 4 existing decision(s) overlap",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-09T22:23:44.945Z"
+}

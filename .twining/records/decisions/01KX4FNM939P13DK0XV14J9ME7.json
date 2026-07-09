@@ -1,0 +1,30 @@
+{
+  "affected_files": [
+    "src/dashboard/public/js/scope-nav.js",
+    "src/dashboard/public/js/main.js",
+    "src/dashboard/public/index.html",
+    "src/dashboard/public/style.css"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Task 15 (inline): scope breadcrumb replaces the free-text header input — dropdown per level with child-scope counts from the client index, free-text row retained, writes back to legacy state.globalScope + refreshData() so Search/Agents keep working. Verified at 5k: drill all→src/→children, lists+timeline filter live.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KX4FNM939P13DK0XV14J9ME7",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "b62db2827d53a366f5b4369ec7f5ded7a613d2ae",
+    "recorded_at": "2026-07-09T22:23:44.916Z"
+  },
+  "rationale": "single source of truth consolidates when those tabs migrate.",
+  "reversible": true,
+  "scope": "src/dashboard/public/js/",
+  "status": "active",
+  "summary": "Scope changes propagate two ways during the transition: setFilter({scope}) on module views and state.globalScope+refreshData() for legacy applyGlobalScope consumers (Search, Agents)",
+  "timestamp": "2026-07-09T22:23:44.931Z"
+}

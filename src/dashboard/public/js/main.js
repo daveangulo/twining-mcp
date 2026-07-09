@@ -12,6 +12,7 @@ import { createListView, COLUMNS } from "./list-view.js";
 import { createDensityTimeline } from "./density-timeline.js";
 import { createGraphView } from "./graph-view.js";
 import { renderHealthCards } from "./health.js";
+import { createScopeNav } from "./scope-nav.js";
 import { el, clearElement, formatTimestamp } from "./util.js";
 
 const POLL_MS = 5000;
@@ -283,6 +284,32 @@ function mountHealth() {
 }
 
 /* ------------------------------------------------------------------ */
+/* Scope breadcrumb (header)                                           */
+/* ------------------------------------------------------------------ */
+
+let scopeNav = null;
+
+function setGlobalScope(scope) {
+  // New views
+  const patch = { scope: scope || undefined };
+  if (blackboardList) blackboardList.setFilter(patch);
+  if (decisionsList) decisionsList.setFilter(patch);
+  if (timeline) timeline.setFilter(patch);
+  if (timelineSyncedList) timelineSyncedList.setFilter(patch);
+  // Legacy views (search/agents) read state.globalScope via applyGlobalScope
+  if (window.state) {
+    window.state.globalScope = scope;
+    if (typeof window.refreshData === "function") window.refreshData();
+  }
+}
+
+function mountScopeNav() {
+  const host = document.getElementById("scope-breadcrumb");
+  if (!host || scopeNav) return;
+  scopeNav = createScopeNav(host, { store, onChange: setGlobalScope });
+}
+
+/* ------------------------------------------------------------------ */
 /* Boot + polling                                                      */
 /* ------------------------------------------------------------------ */
 
@@ -299,6 +326,7 @@ async function boot() {
   }
   mountBlackboard();
   mountDecisions();
+  mountScopeNav();
 
   document.addEventListener("click", (evt) => {
     const btn = evt.target.closest && evt.target.closest(".tab-btn");
