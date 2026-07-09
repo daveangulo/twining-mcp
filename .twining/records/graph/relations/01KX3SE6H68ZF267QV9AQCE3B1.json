@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T15:55:12.806Z",
+  "id": "01KX3SE6H68ZF267QV9AQCE3B1",
+  "properties": {
+    "decision_summary": "Seed fixture writes through the concrete store classes (the one allowed direct-class use, as dev tooling) with deterministic mulberry32 PRNG and post-hoc timestamp spread over 18 months with bursts"
+  },
+  "source": "01KX3SE6B7RHR6QBVYZ2VY2RVF",
+  "target": "01KX3SE6H5YMFCJDV4N6P48BPZ",
+  "type": "decided_by"
+}

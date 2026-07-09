@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T15:55:12.775Z",
+  "id": "01KX3SE6G7AZJDTQ2VS5VS9Q0Q",
+  "properties": {
+    "decision_summary": "Plan includes full code for server endpoints and pins module contracts/algorithms (round-robin neighborhood selection, virtualization math, count-mismatch refetch) for frontend components rather than dumping complete UI code into the plan"
+  },
+  "source": "01KX3SE6B7RHR6QBVYZ2VY2RVF",
+  "target": "01KX3SE6G6SRV22PGSV791YHTN",
+  "type": "decided_by"
+}

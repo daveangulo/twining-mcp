@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-09T15:55:12.615Z",
+  "id": "01KX3SE6B7RHR6QBVYZ2VY2RVE",
+  "name": "01KX3SE69HW0VFG4E216355NVV",
+  "properties": {
+    "scope": "src/dashboard/",
+    "summary": "Resolved spec 1.1 delta-polling decision point: decision status flips are detected by comparing per-status decision counts (from /api/index total_counts vs client-held counts) triggering a single full refetch"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-09T15:55:12.615Z"
+}

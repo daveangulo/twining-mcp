@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T15:55:12.718Z",
+  "id": "01KX3SE6EEE3Y0R5VBRXNSEZ3F",
+  "properties": {
+    "decision_summary": "Chose transitional coexistence of legacy app.js and new ES modules (main.js mounts new views per tab, window.__twiningStore bridge, legacy renderers deleted task-by-task) over a big-bang module conversion of the 3454-line app.js"
+  },
+  "source": "01KX3SE6B7RHR6QBVYZ2VY2RVF",
+  "target": "01KX3SE6EEE3Y0R5VBRXNSEZ3E",
+  "type": "decided_by"
+}
