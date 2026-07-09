@@ -1,5 +1,6 @@
 // test/hooks/session-start-context.test.ts
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -49,6 +50,32 @@ describe("session-start-context.sh", () => {
     });
     expect(result.exitCode).toBe(0);
     expect(result.stdout.trim()).toBe("");
+  });
+
+  it("emits a PATH warning instead of the gates when npx is not on PATH", () => {
+    fs.mkdirSync(path.join(dir, ".twining"));
+    // Simulate a PATH-restricted spawn (e.g. a cmux teammate): a shim dir
+    // holding only the utilities the hook needs, with npx absent.
+    const shimDir = path.join(dir, "shim-bin");
+    fs.mkdirSync(shimDir);
+    for (const util of ["bash", "dirname", "cat"]) {
+      const real = spawnSync("bash", ["-c", `command -v ${util}`], { encoding: "utf8" })
+        .stdout.trim();
+      fs.symlinkSync(real, path.join(shimDir, util));
+    }
+    const result = runHook({
+      script: "session-start-context.sh",
+      env: { PATH: shimDir },
+      cwd: dir,
+    });
+    expect(result.exitCode).toBe(0);
+    const payload = JSON.parse(result.stdout);
+    expect(payload.hookSpecificOutput.hookEventName).toBe("SessionStart");
+    expect(payload.hookSpecificOutput.additionalContext).toContain("npx");
+    expect(payload.hookSpecificOutput.additionalContext).toContain("MCP server unavailable");
+    // The gates must be suppressed — they are unsatisfiable without the server.
+    expect(payload.hookSpecificOutput.additionalContext).not.toContain("Gate 1");
+    expect(payload.hookSpecificOutput.additionalContext).not.toContain(EXPECTED_CONTEXT_FRAGMENT);
   });
 
   it("emits the JSON envelope when TWINING_DISABLED is set to a non-true value (e.g. '1')", () => {

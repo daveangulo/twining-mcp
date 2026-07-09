@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-09T05:38:54.830Z",
+  "id": "01KX2P5Q7F5GRFJPZTBQ5WGVEK",
+  "name": "01KX2P5Q4YSS460M1CFZJTJJ10",
+  "properties": {
+    "scope": "plugin/",
+    "summary": "Chose SessionStart-hook detection (warn loudly + suppress gates when npx is unresolvable) over changing plugin/.mcp.json to the sh -lc wrapper"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-09T05:38:54.830Z"
+}

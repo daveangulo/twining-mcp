@@ -3,8 +3,8 @@
   "id": "01KJGX8KN41B4YP7JVXE9E0K63",
   "name": "plugin/.claude-plugin/plugin.json",
   "properties": {
-    "scope": "plugin/.claude-plugin/plugin.json, .claude-plugin/marketplace.json, package.json, CHANGELOG.md"
+    "scope": "plugin/"
   },
   "type": "file",
-  "updated_at": "2026-05-05T05:25:23.936Z"
+  "updated_at": "2026-07-09T05:38:54.838Z"
 }

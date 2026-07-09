@@ -134,6 +134,29 @@ Or add to `.mcp.json`:
 
 MCP server instructions are included automatically in the initialize response.
 
+### PATH-restricted environments (agent teams, GUI launches)
+
+When Claude Code is spawned with a minimal environment — agent-team teammates (e.g. cmux split panes), GUI-launched apps, some CI shells — the directory holding `npx` (Homebrew, nvm, etc.) may not be on `PATH`. The stdio server then fails to spawn and twining's tools are **silently absent**: no error surfaces in the session, the tools just never appear. Confirm by checking the MCP log (`~/Library/Caches/claude-cli-nodejs/<project>/mcp-logs-twining/` on macOS) for:
+
+```
+Connection failed: Executable not found in $PATH: "npx"
+```
+
+Fix (macOS/Linux): wrap the server command in a login shell so `PATH` is rebuilt from the login profile (`path_helper` on macOS):
+
+```json
+{
+  "mcpServers": {
+    "twining": {
+      "command": "sh",
+      "args": ["-lc", "exec npx -y twining-mcp --project ."]
+    }
+  }
+}
+```
+
+Windows sessions normally inherit the registry `PATH` and are not affected; if needed, use an absolute path to `npx.cmd` instead (`sh` is not reliably available there). The plugin's bundled server is subject to the same failure mode — its SessionStart hook detects the condition and injects a warning into the session instead of failing silently.
+
 ### Upgrading from Manual Install
 
 If you previously configured Twining manually, switch to the plugin:

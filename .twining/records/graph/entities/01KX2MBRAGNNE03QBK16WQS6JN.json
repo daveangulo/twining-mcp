@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-09T05:07:15.408Z",
+  "id": "01KX2MBRAGNNE03QBK16WQS6JN",
+  "name": "01KX2MBR9STMRM0H3ECCH90WM3",
+  "properties": {
+    "scope": ".mcp.json",
+    "summary": "Chose sh -lc login-shell wrapper in .mcp.json (`sh -lc \"exec npx -y twining-mcp@next --project .\"`) over absolute npx path, cmux-level PATH fix, or re-enabling the plugin's bundled server"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-09T05:07:15.408Z"
+}

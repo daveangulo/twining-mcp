@@ -105,3 +105,22 @@ Disable the plugin's copy in each enrolled project — the plugin's hooks, skill
 The deny matches the plugin server by its exact launch command, so it can't touch your `@next` server (both are named `twining`, which is why name-based matching won't work). Caveats: the deny-from-project-settings behavior is verified on Claude Code 2.1.205 but documented primarily as an enterprise key, and the command array must match the plugin's pin exactly — if a plugin update changes the pin, re-check with `claude mcp list` (the denied server disappears from the list when the block is working).
 
 When leaving the beta, remove whichever you added alongside the `.mcp.json` entry.
+
+### Agent teams and GUI-spawned sessions: wrap the server command in a login shell
+
+Sessions spawned with a minimal environment — agent-team teammates (e.g. cmux split panes), GUI-launched apps — may lack the `PATH` entry that holds `npx` (Homebrew, nvm). The `.mcp.json` server then fails to spawn in ~10ms and twining is **silently absent** from those sessions: no error appears, the tools just never register, and with the plugin's 1.x server denied there is no fallback. The MCP log (`~/Library/Caches/claude-cli-nodejs/<project>/mcp-logs-twining/`) shows `Executable not found in $PATH: "npx"`.
+
+Enroll with a login-shell wrapper instead of a bare `npx` command (macOS/Linux):
+
+```json
+{
+  "mcpServers": {
+    "twining": {
+      "command": "sh",
+      "args": ["-lc", "exec npx -y twining-mcp@next --project ."]
+    }
+  }
+}
+```
+
+The login shell rebuilds `PATH` (`path_helper` on macOS, `/etc/profile` + `~/.profile` on Linux), and `exec` keeps signal delivery pointed at the server process. Windows testers: skip the wrapper — `sh` is not reliably available; Windows sessions inherit the registry `PATH` and don't hit this failure.

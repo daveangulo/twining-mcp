@@ -1,0 +1,51 @@
+{
+  "affected_files": [
+    "README.md",
+    "docs/UPGRADE-v2.md",
+    "plugin/hooks/session-start-context.sh",
+    "test/hooks/session-start-context.test.ts",
+    ".claude-plugin/marketplace.json",
+    "plugin/.claude-plugin/plugin.json"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "sh -lc wrapper in plugin/.mcp.json",
+      "pros": [],
+      "reason_rejected": "sh not reliably on PATH for Windows MCP stdio spawns; would trade a macOS-teammate fix for a Windows regression"
+    },
+    {
+      "cons": [],
+      "option": "env PATH-append hack in plugin/.mcp.json (\"env\": {\"PATH\": \"${PATH}:/opt/homebrew/bin:...\"})",
+      "pros": [],
+      "reason_rejected": "depends on env expansion in plugin .mcp.json which is broken upstream (#9427), and only covers hardcoded install locations — misses nvm/asdf"
+    },
+    {
+      "cons": [],
+      "option": "do nothing in the plugin, docs only",
+      "pros": [],
+      "reason_rejected": "leaves the failure silent for plugin users; the whole problem is that nothing tells the session why twining is missing"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Follow-up to the cmux teammate minimal-PATH diagnosis: the plugin bundles the same npx-launched stdio server and fails the same way.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KX2P5Q4YSS460M1CFZJTJJ10",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "1f9d7a73ad672cf1316ab3ffa4ecdd23d03d5975",
+    "recorded_at": "2026-07-09T05:38:54.734Z"
+  },
+  "rationale": "The hook runs with the same environment Claude Code uses to spawn stdio MCP servers, so `command -v npx` there sees exactly what the server spawn saw — a faithful detector. It converts the silent failure into an actionable in-context warning and stops the gates from demanding tool calls the session cannot make (consistent with the fail-open hook doctrine). Changing the plugin's server command to `sh -lc` would fix POSIX minimal-PATH spawns but risks breaking Windows plugin users: `sh` does not reliably resolve on Windows, static MCP JSON cannot be platform-conditional, and env-var expansion in plugin .mcp.json is broken upstream (anthropics/claude-code#9427). Windows sessions inherit the registry PATH and largely don't hit this failure, so the wrapper's benefit there is nil while its risk is total.",
+  "reversible": true,
+  "scope": "plugin/",
+  "status": "active",
+  "summary": "Chose SessionStart-hook detection (warn loudly + suppress gates when npx is unresolvable) over changing plugin/.mcp.json to the sh -lc wrapper",
+  "timestamp": "2026-07-09T05:38:54.750Z"
+}

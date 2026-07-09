@@ -1,0 +1,46 @@
+{
+  "affected_files": [
+    ".mcp.json"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Absolute path /opt/homebrew/bin/npx in .mcp.json",
+      "pros": [],
+      "reason_rejected": ".mcp.json is tracked in git; a machine-specific path breaks other contributors and beta testers"
+    },
+    {
+      "cons": [],
+      "option": "Fix PATH at the cmux level (teammate spawn environment)",
+      "pros": [],
+      "reason_rejected": "Upstream issue we don't control; worth reporting to cmux, but the repo needs a fix that works today"
+    },
+    {
+      "cons": [],
+      "option": "Re-enable plugin's bundled MCP server as fallback for teammates",
+      "pros": [],
+      "reason_rejected": "Would reintroduce the dual-server split-brain the beta enrollment deliberately eliminated via deniedMcpServers"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "cmux-spawned named teammates could not connect to twining; MCP log showed 'Connection failed after 8ms: Executable not found in $PATH: npx' for the teammate session while the main session and headless claude -p worked fine (they inherit the full user PATH).",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KX2MBR9STMRM0H3ECCH90WM3",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "1f9d7a73ad672cf1316ab3ffa4ecdd23d03d5975",
+    "recorded_at": "2026-07-09T05:07:15.368Z"
+  },
+  "rationale": "sh -lc makes macOS run path_helper, which rebuilds PATH from /etc/paths.d (including homebrew), so npx resolves regardless of the spawning environment's PATH. Verified under the teammate's exact minimal PATH and end-to-end via a cmux-spawned teammate that connected in 859ms and posted successfully. `exec` keeps signal delivery (SIGINT/SIGTERM) going to the node process instead of the wrapper shell.",
+  "reversible": true,
+  "scope": ".mcp.json",
+  "status": "active",
+  "summary": "Chose sh -lc login-shell wrapper in .mcp.json (`sh -lc \"exec npx -y twining-mcp@next --project .\"`) over absolute npx path, cmux-level PATH fix, or re-enabling the plugin's bundled server",
+  "timestamp": "2026-07-09T05:07:15.385Z"
+}
