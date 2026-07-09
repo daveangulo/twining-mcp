@@ -326,6 +326,119 @@ describe("GET /api/index - gzip", () => {
 /* Test suite: uninitialized project (no .twining/ directory)         */
 /* ------------------------------------------------------------------ */
 
+/* ------------------------------------------------------------------ */
+/* Test suite: GET /api/blackboard/:id                                 */
+/* ------------------------------------------------------------------ */
+
+describe("GET /api/blackboard/:id", () => {
+  let server: http.Server;
+  let port: number;
+  let projectRoot: string;
+
+  beforeAll(async () => {
+    const project = createTestProject();
+    projectRoot = project.projectRoot;
+
+    server = http.createServer(
+      handleRequest(project.publicDir, project.projectRoot),
+    );
+    await new Promise<void>((resolve) => {
+      server.listen(0, "127.0.0.1", () => resolve());
+    });
+    const addr = server.address();
+    port = typeof addr === "object" && addr !== null ? addr.port : 0;
+  });
+
+  afterAll(async () => {
+    await new Promise<void>((resolve) => {
+      server.close(() => resolve());
+    });
+    fs.rmSync(projectRoot, { recursive: true, force: true });
+  });
+
+  it("returns the full blackboard entry including detail for an existing id", async () => {
+    const res = await httpGet(port, "/api/blackboard/BB001");
+    expect(res.status).toBe(200);
+    expect(res.headers["content-type"]).toContain("application/json");
+
+    const body = JSON.parse(res.body.toString("utf-8"));
+    expect(body.id).toBe("BB001");
+    expect(body.detail).toBe("detail one");
+    expect(body.summary).toBe("Short summary one");
+    expect(body.entry_type).toBe("finding");
+    expect(body.tags).toEqual(["a"]);
+  });
+
+  it("returns 404 for an unknown id", async () => {
+    const res = await httpGet(port, "/api/blackboard/NOPE999");
+    expect(res.status).toBe(404);
+
+    const body = JSON.parse(res.body.toString("utf-8"));
+    expect(body.error).toBeTruthy();
+  });
+
+  it("returns 400 when the id segment is empty", async () => {
+    const res = await httpGet(port, "/api/blackboard/");
+    expect(res.status).toBe(400);
+  });
+
+  it("does not intercept the legacy exact-match /api/blackboard route", async () => {
+    const res = await httpGet(port, "/api/blackboard");
+    expect(res.status).toBe(200);
+
+    const body = JSON.parse(res.body.toString("utf-8"));
+    expect(body).toHaveProperty("entries");
+    expect(body).toHaveProperty("total_count");
+    expect(body.entries).toHaveLength(2);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* Test suite: GET /api/blackboard/:id - uninitialized project         */
+/* ------------------------------------------------------------------ */
+
+describe("GET /api/blackboard/:id - uninitialized project", () => {
+  let server: http.Server;
+  let port: number;
+  let projectRoot: string;
+
+  beforeAll(async () => {
+    projectRoot = fs.mkdtempSync(
+      path.join(os.tmpdir(), "twining-query-bbdetail-uninit-"),
+    );
+    const publicDir = path.join(projectRoot, "public");
+    fs.mkdirSync(publicDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(publicDir, "index.html"),
+      "<html><body>Empty</body></html>",
+    );
+
+    // No .twining/ directory created
+
+    server = http.createServer(handleRequest(publicDir, projectRoot));
+    await new Promise<void>((resolve) => {
+      server.listen(0, "127.0.0.1", () => resolve());
+    });
+    const addr = server.address();
+    port = typeof addr === "object" && addr !== null ? addr.port : 0;
+  });
+
+  afterAll(async () => {
+    await new Promise<void>((resolve) => {
+      server.close(() => resolve());
+    });
+    fs.rmSync(projectRoot, { recursive: true, force: true });
+  });
+
+  it("returns 404 when .twining/ does not exist", async () => {
+    const res = await httpGet(port, "/api/blackboard/BB001");
+    expect(res.status).toBe(404);
+
+    const body = JSON.parse(res.body.toString("utf-8"));
+    expect(body.error).toBeTruthy();
+  });
+});
+
 describe("GET /api/index - uninitialized project", () => {
   let server: http.Server;
   let port: number;

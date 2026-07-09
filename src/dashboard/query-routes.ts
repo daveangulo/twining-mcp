@@ -52,6 +52,34 @@ export function createQueryHandler(
     const parsed = new URL(url, "http://localhost");
     const route = parsed.pathname;
 
+    if (route.startsWith("/api/blackboard/")) {
+      try {
+        const id = route.slice("/api/blackboard/".length);
+        if (!id) {
+          sendJSON(req, res, { error: "Blackboard entry ID required" }, 400);
+          return true;
+        }
+
+        if (!fs.existsSync(twiningDir)) {
+          sendJSON(req, res, { error: "Blackboard entry not found" }, 404);
+          return true;
+        }
+
+        const { entries } = await blackboardStore.read();
+        const entry = entries.find((e) => e.id === id);
+        if (!entry) {
+          sendJSON(req, res, { error: "Blackboard entry not found" }, 404);
+          return true;
+        }
+
+        sendJSON(req, res, entry);
+      } catch (err) {
+        console.error("[twining] /api/blackboard/:id error:", err);
+        sendJSON(req, res, { error: "Internal server error" }, 500);
+      }
+      return true;
+    }
+
     if (route === "/api/index") {
       try {
         if (!fs.existsSync(twiningDir)) {

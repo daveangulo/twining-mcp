@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "finding",
+  "id": "01KX4AXZVXBE8CFYE5QYH9AHB2",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "1af2e2ab5aa206f81792df3884345df6f1492888",
+    "recorded_at": "2026-07-09T21:00:56.046Z"
+  },
+  "scope": "src/dashboard/",
+  "summary": "Route ids are not URL-decoded in /api/blackboard/:id — deliberate consistency with the existing /api/decisions/:id and /api/handoffs/:id convention (also undecoded); ULIDs never need decoding.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-09T21:00:56.061Z"
+}
