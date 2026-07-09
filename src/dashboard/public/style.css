@@ -1083,11 +1083,6 @@ footer p {
 /* ---------- Visualization Containers ---------- */
 
 #timeline-container {
-  height: 600px;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  background: var(--bg-surface);
   position: relative;
 }
 
@@ -1931,3 +1926,20 @@ tr.delegation-expired td { text-decoration: line-through; }
   text-transform: uppercase; letter-spacing: 0.08em;
   border-bottom: 1px solid var(--border);
 }
+
+/* ---------- Density Timeline (js/density-timeline.js) ---------- */
+
+.dt-wrap {
+  position: relative; height: 340px; width: 100%;
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  background: var(--bg-secondary); overflow: hidden;
+}
+.dt-canvas { display: block; cursor: crosshair; }
+.dt-legend-item {
+  display: inline-flex; align-items: center; gap: 5px;
+  margin-right: var(--space-md); font-size: 0.75rem; color: var(--text-secondary);
+}
+.dt-swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.dt-mode { color: var(--text-tertiary); font-size: 0.72rem; font-family: var(--font-mono); margin-left: auto; }
+#timeline-legend { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-xs); padding: var(--space-sm) 0; }
+#timeline-synced-list .lv-viewport { height: 260px; min-height: 200px; }

@@ -9,6 +9,7 @@
  */
 import { createIndexStore } from "./store.js";
 import { createListView, COLUMNS } from "./list-view.js";
+import { createDensityTimeline } from "./density-timeline.js";
 import { el, clearElement, formatTimestamp } from "./util.js";
 
 const POLL_MS = 5000;
@@ -98,8 +99,8 @@ function mountBlackboard() {
 
 let decisionsList = null;
 
-async function showDecisionDetail(row) {
-  const panel = document.getElementById("decisions-detail");
+async function showDecisionDetail(row, panelId = "decisions-detail") {
+  const panel = document.getElementById(panelId);
   if (!panel) return;
   clearElement(panel);
   panel.appendChild(el("p", "placeholder", "Loading…"));
@@ -110,7 +111,7 @@ async function showDecisionDetail(row) {
     // Rich renderer (alternatives, supersession chain links) still lives in
     // app.js; reachable because app.js is a classic script.
     if (typeof window.renderDecisionDetail === "function") {
-      window.renderDecisionDetail(decision, "decisions-detail");
+      window.renderDecisionDetail(decision, panelId);
     } else {
       clearElement(panel);
       panel.appendChild(el("pre", null, JSON.stringify(decision, null, 2)));
@@ -136,6 +137,51 @@ function mountDecisions() {
     onSelect: showDecisionDetail,
   });
 }
+
+/* ------------------------------------------------------------------ */
+/* Decisions timeline (canvas density timeline + synced list)          */
+/* ------------------------------------------------------------------ */
+
+let timeline = null;
+let timelineSyncedList = null;
+
+function mountTimeline() {
+  const host = document.getElementById("timeline-container");
+  const listHost = document.getElementById("timeline-synced-list");
+  if (!host || timeline) return;
+  timeline = createDensityTimeline(host, {
+    store,
+    onSelect: (row) => showDecisionDetail(row, "decisions-timeline-detail"),
+    onRangeChange: (brush, filterPatch) => {
+      if (!timelineSyncedList) return;
+      const f = filterPatch || timeline.getFilter();
+      timelineSyncedList.setFilter({
+        ...f,
+        from: brush ? new Date(brush.fromMs).toISOString() : undefined,
+        to: brush ? new Date(brush.toMs).toISOString() : undefined,
+      });
+    },
+  });
+  if (listHost) {
+    timelineSyncedList = createListView(listHost, {
+      store,
+      kinds: ["decision"],
+      columns: [COLUMNS.time, COLUMNS.status, COLUMNS.domain, COLUMNS.summary],
+      facets: [],
+      onSelect: (row) => showDecisionDetail(row, "decisions-timeline-detail"),
+    });
+  }
+}
+
+// Legacy toggleView (app.js) calls this bridge when the timeline view is shown.
+window.__twiningTimelineShown = () => {
+  mountTimeline();
+  if (timeline) {
+    timeline.refresh();
+    requestAnimationFrame(() => timeline.fit());
+  }
+  if (timelineSyncedList) timelineSyncedList.refresh();
+};
 
 /* ------------------------------------------------------------------ */
 /* Boot + polling                                                      */

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Task 11 (inline): canvas density timeline shipped, vis-timeline deleted (2 vendor files, ~250 lines of glue). Browser-verified at 5k: stacked weekly bars with burst pattern, semantic zoom flips to lozenge lanes under 150 visible (superseded struck through), click-to-detail, synced list, domain chips, color-by toggle, now-marker. Suite 1173 green, build copies js/ into dist. PHASE 3 COMPLETE.\nDecisions: Kept the existing toolbar/legend/chips DOM ids (timeline-zoom-in/out/fit/today, timeline-legend, timeline-domain-filters) so the HTML shell and its styling carried over unchanged — only the rendering engine swapped.; Lozenge lane layout uses first-fit lane assignment with label-width-aware collision (measureText) rather than vis-timeline-style stacking — O(n·lanes), no DOM, and lanes below the fold are simply not drawn at extreme densities (mode note tells the user to zoom).; Removed the fetchDecisions→timeline sync side effect entirely — the new timeline subscribes to the shared index store, so legacy state.decisions.data no longer feeds any visualization.\nFindings: Old #timeline-container CSS (fixed 600px height for vis-timeline) left a large empty box under the new 340px canvas — trimmed to position:relative only. Watch for similar stale sizing rules when the graph view is replaced in Phase 4.",
+  "entry_type": "status",
+  "id": "01KX4EV8MM2EYPSHJWWEVVMHNQ",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "516b5f45c394cfed62f15acbb80be230db13c5dd",
+    "recorded_at": "2026-07-09T22:09:21.028Z"
+  },
+  "scope": "src/dashboard/public/js/",
+  "summary": "Task 11 (inline): canvas density timeline shipped, vis-timeline deleted (2 vendor files, ~250 lines of glue). Browser-verified at 5k: stacked weekly bars with burst pattern, semantic zoom flips to …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-09T22:09:21.044Z"
+}

@@ -1,0 +1,31 @@
+{
+  "affected_files": [
+    "src/dashboard/public/js/density-timeline.js",
+    "src/dashboard/public/js/main.js",
+    "src/dashboard/public/index.html",
+    "src/dashboard/public/app.js",
+    "src/dashboard/public/style.css"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Task 11 (inline): canvas density timeline shipped, vis-timeline deleted (2 vendor files, ~250 lines of glue). Browser-verified at 5k: stacked weekly bars with burst pattern, semantic zoom flips to lozenge lanes under 150 visible (superseded struck through), click-to-detail, synced list, domain chips, color-by toggle, now-marker. Suite 1173 green, build copies js/ into dist. PHASE 3 COMPLETE.",
+  "depends_on": [],
+  "domain": "performance",
+  "id": "01KX4EV8TPNS3ZBZBPQ4ZCQCSH",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "516b5f45c394cfed62f15acbb80be230db13c5dd",
+    "recorded_at": "2026-07-09T22:09:21.223Z"
+  },
+  "rationale": "the new timeline subscribes to the shared index store, so legacy state.decisions.data no longer feeds any visualization.",
+  "reversible": true,
+  "scope": "src/dashboard/public/js/",
+  "status": "active",
+  "summary": "Removed the fetchDecisions→timeline sync side effect entirely",
+  "timestamp": "2026-07-09T22:09:21.238Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T22:09:21.145Z",
+  "id": "01KX4EV8QSGGGC5ZZG5GK8BHXN",
+  "properties": {
+    "decision_summary": "Kept the existing toolbar/legend/chips DOM ids (timeline-zoom-in/out/fit/today, timeline-legend, timeline-domain-filters) so the HTML shell and its styling carried over unchanged"
+  },
+  "source": "01KX4EV8QR167BA1C6F5NF6GMP",
+  "target": "01KX4EV8QR167BA1C6F5NF6GMN",
+  "type": "decided_by"
+}
