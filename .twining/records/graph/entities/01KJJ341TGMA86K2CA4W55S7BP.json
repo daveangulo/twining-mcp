@@ -3,8 +3,8 @@
   "id": "01KJJ341TGMA86K2CA4W55S7BP",
   "name": "src/dashboard/http-server.ts",
   "properties": {
-    "scope": "src/dashboard/http-server.ts"
+    "scope": "src/dashboard/"
   },
   "type": "file",
-  "updated_at": "2026-02-28T20:36:53.515Z"
+  "updated_at": "2026-07-09T20:56:27.116Z"
 }

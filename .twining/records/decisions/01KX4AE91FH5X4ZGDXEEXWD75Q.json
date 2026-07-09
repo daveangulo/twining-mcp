@@ -1,0 +1,36 @@
+{
+  "affected_files": [
+    "src/dashboard/query-routes.ts",
+    "src/dashboard/http-server.ts",
+    "test/dashboard/query-routes.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "`handled ? undefined : ...`",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Task 2 (/api/index endpoint) implemented via subagent, TDD green (6 new tests, full suite 1120 pass, tsc clean); review subagent running. Task 1 committed as 262ce0f after approved review.",
+  "depends_on": [],
+  "domain": "api-design",
+  "id": "01KX4AE91FH5X4ZGDXEEXWD75Q",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "262ce0f2ede356f6f08c9aaaed6182293c09b6fa",
+    "recorded_at": "2026-07-09T20:52:21.152Z"
+  },
+  "rationale": "the plan's literal snippet drops the handled=true signal and triggers a spurious static-file fallback after every successful query route; reviewer instructed to verify both short-circuit and fallback behaviors.",
+  "reversible": true,
+  "scope": "src/dashboard/",
+  "status": "active",
+  "summary": "Accepted implementer's deviation from the plan's http-server.ts wiring snippet: `handled ? true : apiHandler(req,res)` instead of `handled ? undefined : ...`",
+  "timestamp": "2026-07-09T20:52:21.167Z"
+}

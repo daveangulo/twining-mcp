@@ -11,6 +11,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { getDashboardConfig } from "./dashboard-config.js";
 import { createApiHandler, type DashboardDeps } from "./api-routes.js";
+import { createQueryHandler } from "./query-routes.js";
 
 /**
  * Check if a Twining dashboard for the SAME project is already running on the given port.
@@ -152,12 +153,14 @@ export function handleRequest(
   deps?: DashboardDeps,
 ): (req: http.IncomingMessage, res: http.ServerResponse) => void {
   const staticHandler = serveStatic(publicDir);
+  const queryHandler = createQueryHandler(projectRoot, deps);
   const apiHandler = createApiHandler(projectRoot, deps);
   const resolvedProjectRoot = path.resolve(projectRoot);
 
   return (req: http.IncomingMessage, res: http.ServerResponse) => {
-    // Try API routes first (async)
-    apiHandler(req, res)
+    // Try scale-oriented query routes first, then the existing API routes (async)
+    queryHandler(req, res)
+      .then((queryHandled) => (queryHandled ? true : apiHandler(req, res)))
       .then((handled) => {
         if (handled) return;
 

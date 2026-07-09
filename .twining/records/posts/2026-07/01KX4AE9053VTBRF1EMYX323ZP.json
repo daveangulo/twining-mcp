@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Decisions: Accepted implementer's deviation from the plan's http-server.ts wiring snippet: `handled ? true : apiHandler(req,res)` instead of `handled ? undefined : ...` — the plan's literal snippet drops the handled=true signal and triggers a spurious static-file fallback after every successful query route; reviewer instructed to verify both short-circuit and fallback behaviors.\nFindings: Contract note for the upcoming client index store: DecisionStatus includes 'archived', so /api/index total_counts.decisions can carry a 5th key beyond active/provisional/superseded/overridden — client count comparison must iterate all keys generically.; Contract note: /api/index blackboard rows omit the tags key entirely when tags are empty (not tags: []) — client must treat tags as optional.",
+  "entry_type": "status",
+  "id": "01KX4AE9053VTBRF1EMYX323ZP",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "262ce0f2ede356f6f08c9aaaed6182293c09b6fa",
+    "recorded_at": "2026-07-09T20:52:21.109Z"
+  },
+  "scope": "src/dashboard/",
+  "summary": "Task 2 (/api/index endpoint) implemented via subagent, TDD green (6 new tests, full suite 1120 pass, tsc clean); review subagent running. Task 1 committed as 262ce0f after approved review.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-09T20:52:21.125Z"
+}

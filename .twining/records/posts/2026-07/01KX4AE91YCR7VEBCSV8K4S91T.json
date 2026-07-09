@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Accepted implementer's deviation from the plan's http-server.ts wiring snippet: `handled ? true : apiHandler(req,res)` instead of `handled ? undefined : ...`\" relates to:\n- 01KX3HRWY6BJP6K7PKH326GB60: \"Chose Health as a section in the Insights tab over an 8th tab\"\n- 01KX3SE6EYBP8GS17ASMY7MCW0: \"Plan includes full code for server endpoints and pins module contracts/algorithms (round-robin neighborhood selection, virtualization math, count-mismatch refetch) for frontend components rather than dumping complete UI code into the plan\"",
+  "entry_type": "finding",
+  "id": "01KX4AE91YCR7VEBCSV8K4S91T",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "262ce0f2ede356f6f08c9aaaed6182293c09b6fa",
+    "recorded_at": "2026-07-09T20:52:21.168Z"
+  },
+  "scope": "src/dashboard/",
+  "summary": "Related decisions in scope: 2 existing decision(s) overlap",
+  "tags": [
+    "api-design"
+  ],
+  "timestamp": "2026-07-09T20:52:21.183Z"
+}

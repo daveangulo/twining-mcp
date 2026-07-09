@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-09T20:52:21.214Z",
+  "id": "01KX4AE92Y42PQ99N14K2YZ65F",
+  "name": "01KX4AE91FH5X4ZGDXEEXWD75Q",
+  "properties": {
+    "scope": "src/dashboard/",
+    "summary": "Accepted implementer's deviation from the plan's http-server.ts wiring snippet: `handled ? true : apiHandler(req,res)` instead of `handled ? undefined : ...`"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-09T20:52:21.214Z"
+}

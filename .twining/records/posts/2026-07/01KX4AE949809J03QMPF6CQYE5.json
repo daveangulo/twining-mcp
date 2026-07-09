@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "finding",
+  "id": "01KX4AE949809J03QMPF6CQYE5",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "262ce0f2ede356f6f08c9aaaed6182293c09b6fa",
+    "recorded_at": "2026-07-09T20:52:21.242Z"
+  },
+  "scope": "src/dashboard/",
+  "summary": "Contract note: /api/index blackboard rows omit the tags key entirely when tags are empty (not tags: []) — client must treat tags as optional.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-09T20:52:21.257Z"
+}

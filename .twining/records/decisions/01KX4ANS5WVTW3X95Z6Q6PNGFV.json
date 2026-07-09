@@ -1,0 +1,37 @@
+{
+  "affected_files": [
+    "src/dashboard/query-routes.ts",
+    "src/dashboard/http-server.ts",
+    "test/dashboard/query-routes.test.ts",
+    "docs/superpowers/plans/2026-07-09-dashboard-scale-redesign.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "silently ignoring the finding",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Task 2 approved by review (2 plan-mandated Important findings resolved by controller); committing /api/index endpoint. Wiring deviation verified correct by reviewer trace.",
+  "depends_on": [],
+  "domain": "api-design",
+  "id": "01KX4ANS5WVTW3X95Z6Q6PNGFV",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "262ce0f2ede356f6f08c9aaaed6182293c09b6fa",
+    "recorded_at": "2026-07-09T20:56:27.053Z"
+  },
+  "rationale": "at the 5k envelope a delta poll costs milliseconds server-side and polls only fire when /api/status counts change; store-level since-filtering is a later optimization only if profiling at larger envelopes shows server CPU. Recorded as decision-not-taken rather than silently ignoring the finding.",
+  "reversible": true,
+  "scope": "src/dashboard/",
+  "status": "active",
+  "summary": "Resolved review finding on delta requests re-reading the full store: deliberately deferred",
+  "timestamp": "2026-07-09T20:56:27.068Z"
+}

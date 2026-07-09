@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T20:56:27.116Z",
+  "id": "01KX4ANS7C7FM45QGXB03WF7HJ",
+  "properties": {
+    "decision_summary": "Resolved review finding on delta requests re-reading the full store: deliberately deferred"
+  },
+  "source": "01KX4AE92Y42PQ99N14K2YZ65G",
+  "target": "01KX4ANS7BNT92A898HDMH5VWB",
+  "type": "decided_by"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-09T20:56:27.115Z",
+  "id": "01KX4ANS7BNT92A898HDMH5VWB",
+  "name": "01KX4ANS5WVTW3X95Z6Q6PNGFV",
+  "properties": {
+    "scope": "src/dashboard/",
+    "summary": "Resolved review finding on delta requests re-reading the full store: deliberately deferred"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-09T20:56:27.115Z"
+}

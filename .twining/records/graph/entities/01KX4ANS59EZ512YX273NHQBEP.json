@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-09T20:56:27.049Z",
+  "id": "01KX4ANS59EZ512YX273NHQBEP",
+  "name": "01KX4ANS3RBDYE72Z5EMD9EMBG",
+  "properties": {
+    "scope": "src/dashboard/",
+    "summary": "Resolved review finding on total_counts.decisions shape: keep server emitting open-ended per-status counts (archived is real and reachable via twining_archive) and fix the PLAN's documented contract instead"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-09T20:56:27.049Z"
+}

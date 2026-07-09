@@ -1,0 +1,37 @@
+{
+  "affected_files": [
+    "src/dashboard/query-routes.ts",
+    "src/dashboard/http-server.ts",
+    "test/dashboard/query-routes.test.ts",
+    "docs/superpowers/plans/2026-07-09-dashboard-scale-redesign.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "filtering archived out server-side — hides data the dashboard exists to show",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Task 2 approved by review (2 plan-mandated Important findings resolved by controller); committing /api/index endpoint. Wiring deviation verified correct by reviewer trace.",
+  "depends_on": [],
+  "domain": "performance",
+  "id": "01KX4ANS3RBDYE72Z5EMD9EMBG",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "262ce0f2ede356f6f08c9aaaed6182293c09b6fa",
+    "recorded_at": "2026-07-09T20:56:26.985Z"
+  },
+  "rationale": "client store.js (Task 7) must iterate status keys generically; archived decisions stay in index rows with status as the signal, serving decision archaeology. Alternative rejected: filtering archived out server-side — hides data the dashboard exists to show.",
+  "reversible": true,
+  "scope": "src/dashboard/",
+  "status": "active",
+  "summary": "Resolved review finding on total_counts.decisions shape: keep server emitting open-ended per-status counts (archived is real and reachable via twining_archive) and fix the PLAN's documented contract instead",
+  "timestamp": "2026-07-09T20:56:27.000Z"
+}

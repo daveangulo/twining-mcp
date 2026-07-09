@@ -263,6 +263,8 @@ git commit -m "feat(dashboard): seed-scale-fixture generator for 5k-record testi
               "confidence": "high" } ],
   "total_counts": { "blackboard": 5000,
                     "decisions": { "active": 4600, "provisional": 0, "superseded": 380, "overridden": 20 } },
+  // decisions keys are OPEN-ENDED per-status counts (DecisionStatus includes "archived" and may grow) —
+  // clients must iterate keys generically, never hardcode the four shown here
   "generated_at": "ISO"
 }
 ```
