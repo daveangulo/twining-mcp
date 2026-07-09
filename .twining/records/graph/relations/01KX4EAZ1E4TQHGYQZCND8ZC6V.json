@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-09T22:00:26.926Z",
+  "id": "01KX4EAZ1E4TQHGYQZCND8ZC6V",
+  "properties": {
+    "decision_summary": "Reused app.js's renderDecisionDetail for the new list's detail panel via the classic-script window bridge instead of porting ~180 lines now"
+  },
+  "source": "01KJC68M4Q2KAAT3ZEC51JGVJV",
+  "target": "01KX4EAZ1CFEQ5WC69FRMNJHX8",
+  "type": "decided_by"
+}

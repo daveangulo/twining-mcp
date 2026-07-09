@@ -93,6 +93,51 @@ function mountBlackboard() {
 }
 
 /* ------------------------------------------------------------------ */
+/* Decisions tab                                                       */
+/* ------------------------------------------------------------------ */
+
+let decisionsList = null;
+
+async function showDecisionDetail(row) {
+  const panel = document.getElementById("decisions-detail");
+  if (!panel) return;
+  clearElement(panel);
+  panel.appendChild(el("p", "placeholder", "Loading…"));
+  try {
+    const res = await fetch(`/api/decisions/${encodeURIComponent(row.id)}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const decision = await res.json();
+    // Rich renderer (alternatives, supersession chain links) still lives in
+    // app.js; reachable because app.js is a classic script.
+    if (typeof window.renderDecisionDetail === "function") {
+      window.renderDecisionDetail(decision, "decisions-detail");
+    } else {
+      clearElement(panel);
+      panel.appendChild(el("pre", null, JSON.stringify(decision, null, 2)));
+    }
+  } catch {
+    clearElement(panel);
+    panel.appendChild(el("p", "placeholder", "Could not load decision."));
+  }
+}
+
+function mountDecisions() {
+  const host = document.getElementById("decisions-listview");
+  if (!host || decisionsList) return;
+  decisionsList = createListView(host, {
+    store,
+    kinds: ["decision"],
+    columns: [COLUMNS.time, COLUMNS.status, COLUMNS.domain, COLUMNS.scope, COLUMNS.confidence, COLUMNS.summary],
+    facets: [
+      { filterKey: "statuses", field: "status", label: "Status" },
+      { filterKey: "domains", field: "domain", label: "Domain" },
+      { filterKey: "confidences", field: "confidence", label: "Conf" },
+    ],
+    onSelect: showDecisionDetail,
+  });
+}
+
+/* ------------------------------------------------------------------ */
 /* Boot + polling                                                      */
 /* ------------------------------------------------------------------ */
 
@@ -108,13 +153,16 @@ async function boot() {
     // Connection banner is app.js's job; the store retries on next poll.
   }
   mountBlackboard();
+  mountDecisions();
 
   document.addEventListener("click", (evt) => {
     const btn = evt.target.closest && evt.target.closest(".tab-btn");
     if (!btn) return;
     // Re-render the freshly shown tab: virtualized viewports measure 0 while hidden.
     requestAnimationFrame(() => {
-      if (btn.getAttribute("data-tab") === "blackboard" && blackboardList) blackboardList.refresh();
+      const tab = btn.getAttribute("data-tab");
+      if (tab === "blackboard" && blackboardList) blackboardList.refresh();
+      if (tab === "decisions" && decisionsList) decisionsList.refresh();
     });
   });
 

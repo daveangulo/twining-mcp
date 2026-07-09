@@ -193,7 +193,12 @@ function fetchDecisions() {
       state.decisions.data = data.decisions || [];
       state.connected = true;
       updateConnectionIndicator();
-      renderDecisions();
+      // Table view is owned by js/main.js (virtualized list); keep the
+      // timeline in sync while it still renders from this state (Phase 3).
+      var timelineView = document.getElementById('decisions-timeline-view');
+      if (timelineView && timelineView.style.display !== 'none' && window.timelineInstance) {
+        updateTimelineData();
+      }
     })
     .catch(function() {
       state.connected = false;
@@ -453,8 +458,7 @@ function handleSort(tabName, key) {
     if (streamView && streamView.style.display !== 'none') {
       renderStream();
     }
-  } else if (tabName === "decisions") renderDecisions();
-  else if (tabName === "graph") renderGraph();
+  } else if (tabName === "graph") renderGraph();
   else if (tabName === "search") renderSearchResults();
   else if (tabName === "agents") renderAgents();
   else if (tabName === "delegations") renderDelegations();
@@ -686,82 +690,9 @@ function renderBlackboardDetail(entry) {
 
 /* ========== Render: Decisions ========== */
 
-function renderDecisions() {
-  var ts = state.decisions;
-  var scoped = applyGlobalScope(ts.data, "scope");
-  var sorted = sortData(scoped, ts.sortKey, ts.sortDir);
-  var page = paginate(sorted, ts.page, ts.pageSize);
-
-  updateSortHeaders("decisions-table", ts.sortKey, ts.sortDir);
-
-  var tbody = document.querySelector("#decisions-table tbody");
-  if (!tbody) return;
-  clearElement(tbody);
-
-  for (var i = 0; i < page.length; i++) {
-    var decision = page[i];
-    var tr = el("tr");
-    tr.setAttribute("data-id", decision.id || "");
-    if (ts.selectedId && (decision.id === ts.selectedId)) {
-      tr.classList.add("selected");
-    }
-
-    var tdTime = el("td", null, formatTimestamp(decision.timestamp));
-    var tdDomain = el("td", null, decision.domain || "--");
-    var tdScope = el("td", null, decision.scope || "--");
-    var tdSummary = el("td", null, truncate(decision.summary, 80));
-
-    var tdStatus = el("td");
-    tdStatus.appendChild(createBadge(decision.status));
-
-    var tdConf = el("td");
-    tdConf.appendChild(createBadge(decision.confidence));
-
-    tr.appendChild(tdTime);
-    tr.appendChild(tdDomain);
-    tr.appendChild(tdScope);
-    tr.appendChild(tdSummary);
-    tr.appendChild(tdStatus);
-    tr.appendChild(tdConf);
-
-    (function(d) {
-      tr.addEventListener("click", function() {
-        ts.selectedId = d.id;
-        renderDecisions();
-        fetchDecisionDetail(d.id);
-      });
-    })(decision);
-
-    tbody.appendChild(tr);
-  }
-
-  renderPagination("decisions-pagination", sorted.length, ts, renderDecisions);
-
-  // Update timeline if it is visible
-  var timelineView = document.getElementById('decisions-timeline-view');
-  if (timelineView && timelineView.style.display !== 'none' && window.timelineInstance) {
-    updateTimelineData();
-  }
-
-  // Check if selected item still exists
-  if (ts.selectedId) {
-    var found = false;
-    for (var k = 0; k < ts.data.length; k++) {
-      if (ts.data[k].id === ts.selectedId) {
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      var panel = document.getElementById("decisions-detail");
-      if (panel) {
-        clearElement(panel);
-        panel.appendChild(el("p", "placeholder", "Item no longer exists"));
-        ts.selectedId = null;
-      }
-    }
-  }
-}
+/* Decisions table view replaced by the virtualized list in js/main.js
+   (Plan Task 9). renderDecisionDetail stays: it serves the new list's
+   detail panel (via the window bridge), navigateToId, and the timeline. */
 
 function renderDecisionDetail(decision, panelId) {
   var panel = document.getElementById(panelId || "decisions-detail");
@@ -1619,7 +1550,6 @@ function navigateToId(id) {
     if (state.decisions.data[j].id === id) {
       switchTab("decisions");
       state.decisions.selectedId = id;
-      renderDecisions();
       fetchDecisionDetail(id);
       return;
     }

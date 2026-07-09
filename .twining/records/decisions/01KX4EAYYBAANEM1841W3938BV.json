@@ -1,0 +1,29 @@
+{
+  "affected_files": [
+    "src/dashboard/public/js/main.js",
+    "src/dashboard/public/index.html",
+    "src/dashboard/public/app.js"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Task 9 (inline): Decisions table replaced with the shared virtualized list (status/domain/confidence facets, superseded strikethrough, rich detail via window.renderDecisionDetail bridge). Browser-verified at 5k: 22 DOM rows, facet counts match fixture (4619 active/381 superseded), zero console errors. PHASE 2 COMPLETE.",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KX4EAYYBAANEM1841W3938BV",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "776798f5cd8f519d4f489cdd1b4afde277e24780",
+    "recorded_at": "2026-07-09T22:00:26.812Z"
+  },
+  "rationale": "the timeline still renders from legacy state until Phase 3 replaces it.",
+  "reversible": true,
+  "scope": "src/dashboard/public/js/",
+  "status": "active",
+  "summary": "Preserved renderDecisions' hidden side effect (timeline refresh on fresh data) by moving it into fetchDecisions when deleting the function",
+  "timestamp": "2026-07-09T22:00:26.827Z"
+}

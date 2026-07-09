@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Task 9 (inline): Decisions table replaced with the shared virtualized list (status/domain/confidence facets, superseded strikethrough, rich detail via window.renderDecisionDetail bridge). Browser-verified at 5k: 22 DOM rows, facet counts match fixture (4619 active/381 superseded), zero console errors. PHASE 2 COMPLETE.\nDecisions: Preserved renderDecisions' hidden side effect (timeline refresh on fresh data) by moving it into fetchDecisions when deleting the function — the timeline still renders from legacy state until Phase 3 replaces it.; Reused app.js's renderDecisionDetail for the new list's detail panel via the classic-script window bridge instead of porting ~180 lines now — it ports in Phase 5 when navigateToId is replaced by routing; porting twice would create drift risk.",
+  "entry_type": "status",
+  "id": "01KX4EAYX5CG8QYX2PVKN5TWGN",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "776798f5cd8f519d4f489cdd1b4afde277e24780",
+    "recorded_at": "2026-07-09T22:00:26.773Z"
+  },
+  "scope": "src/dashboard/public/js/",
+  "summary": "Task 9 (inline): Decisions table replaced with the shared virtualized list (status/domain/confidence facets, superseded strikethrough, rich detail via window.renderDecisionDetail bridge). Browser-v…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-09T22:00:26.789Z"
+}

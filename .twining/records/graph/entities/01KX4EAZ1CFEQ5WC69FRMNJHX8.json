@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-09T22:00:26.924Z",
+  "id": "01KX4EAZ1CFEQ5WC69FRMNJHX8",
+  "name": "01KX4EAZ03B6QQWSMEMA18F5K8",
+  "properties": {
+    "scope": "src/dashboard/public/js/",
+    "summary": "Reused app.js's renderDecisionDetail for the new list's detail panel via the classic-script window bridge instead of porting ~180 lines now"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-09T22:00:26.924Z"
+}
