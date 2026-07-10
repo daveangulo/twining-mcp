@@ -3,8 +3,8 @@
   "id": "01KJGX8KNRTGKE7PVC2GH1QSTE",
   "name": "README.md",
   "properties": {
-    "scope": "plugin/"
+    "scope": "src/dashboard/"
   },
   "type": "file",
-  "updated_at": "2026-07-09T05:38:54.832Z"
+  "updated_at": "2026-07-10T00:12:14.145Z"
 }

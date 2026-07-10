@@ -2263,10 +2263,9 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!table) return;
         var tableId = table.id;
         var tabName = null;
-        if (tableId === "blackboard-table") tabName = "blackboard";
-        else if (tableId === "decisions-table") tabName = "decisions";
-        else if (tableId === "graph-table") tabName = "graph";
-        else if (tableId === "search-table") tabName = "search";
+        // blackboard/decisions/graph tables moved to js/ modules (no sortable
+        // headers remain there); only the legacy tabs below still sort here.
+        if (tableId === "search-table") tabName = "search";
         else if (tableId === "agents-table") tabName = "agents";
         else if (tableId === "delegations-table") tabName = "delegations";
         else if (tableId === "handoffs-table") tabName = "handoffs";
@@ -2324,33 +2323,8 @@ document.addEventListener("DOMContentLoaded", function() {
     })(typeChips[tc]);
   }
 
-  // Global scope filter
-  var globalScopeInput = document.getElementById("global-scope");
-  if (globalScopeInput) {
-    var debouncedScope = debounce(function() {
-      state.globalScope = globalScopeInput.value.trim();
-      // Visual indicator
-      if (state.globalScope) {
-        globalScopeInput.classList.add("scope-active");
-        var indicator = document.getElementById("scope-indicator");
-        if (indicator) { indicator.style.display = "inline"; indicator.textContent = "Filtered: " + state.globalScope; }
-      } else {
-        globalScopeInput.classList.remove("scope-active");
-        var indicator2 = document.getElementById("scope-indicator");
-        if (indicator2) indicator2.style.display = "none";
-      }
-      // Reset pagination, re-render active tab
-      streamTypeFilter = null;
-      state.blackboard.page = 1;
-      state.decisions.page = 1;
-      state.graph.page = 1;
-      state.agents.page = 1;
-      state.delegations.page = 1;
-      state.handoffs.page = 1;
-      refreshData();
-    }, 300);
-    globalScopeInput.addEventListener("input", debouncedScope);
-  }
+  // Global scope is owned by the breadcrumb in js/scope-nav.js, which writes
+  // state.globalScope and calls refreshData() for the legacy tabs.
 
   // Initial data load
   refreshData();

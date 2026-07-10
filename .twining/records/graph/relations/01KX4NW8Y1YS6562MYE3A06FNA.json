@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-10T00:12:14.145Z",
+  "id": "01KX4NW8Y1YS6562MYE3A06FNA",
+  "properties": {
+    "decision_summary": "Deferred the Blackboard Stream view rework (still O(dataset) DOM)"
+  },
+  "source": "01KJC68M4REPRVABK2MC68D43H",
+  "target": "01KX4NW8Y0RRD2TV76J0MANYSQ",
+  "type": "decided_by"
+}

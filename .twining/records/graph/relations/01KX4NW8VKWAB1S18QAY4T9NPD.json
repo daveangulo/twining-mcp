@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-10T00:12:14.067Z",
+  "id": "01KX4NW8VKWAB1S18QAY4T9NPD",
+  "properties": {
+    "decision_summary": "Kept paginate/renderPagination/sortData/applyGlobalScope in app.js"
+  },
+  "source": "01KJGX8KNRTGKE7PVC2GH1QSTE",
+  "target": "01KX4NW8VH3XRDV3PH5JV418Z2",
+  "type": "decided_by"
+}

@@ -1,0 +1,35 @@
+{
+  "affected_files": [
+    "src/dashboard/public/app.js",
+    "README.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "being unilaterally deleted",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Task 17 (inline): cleanup + full verification. Dead code removed (orphaned sort branches, legacy scope-input listener), README dashboard sections updated. 5k sweep: DOMContentLoaded 55ms, every tab DOM ≤345 elements vs 10k records, graph overview 6 nodes, light+dark themes clean, 0 console errors. Regression on real .twining (554 records): all 7 tabs incl. untouched Search/Agents work. Suite 1173 green, build ok. PHASE 5 AND ALL 17 PLAN TASKS COMPLETE.",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KX4NW8W4WTVKREQTRHNAP32M",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "61861a577cf357aa04f076ca9e0084cac3875b9b",
+    "recorded_at": "2026-07-10T00:12:14.068Z"
+  },
+  "rationale": "flagged as a discovered need in Task 8; retiring or windowing it is a user-facing product call (the stream is a deliberate presentation mode), so it goes to the wrap-up report rather than being unilaterally deleted.",
+  "reversible": true,
+  "scope": "src/dashboard/",
+  "status": "active",
+  "summary": "Deferred the Blackboard Stream view rework (still O(dataset) DOM)",
+  "timestamp": "2026-07-10T00:12:14.084Z"
+}

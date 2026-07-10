@@ -175,6 +175,8 @@ The plugin handles agent instructions automatically via skills. For the MCP-only
 
 A web dashboard starts automatically at `http://localhost:24282` — browse decisions, blackboard entries, knowledge graph, and agent state. Configurable via `TWINING_DASHBOARD_PORT`.
 
+Built to stay usable at scale: lists are virtualized with live facet counts, the decisions timeline is a zoomable density histogram that switches to individual items as you zoom in, and the knowledge graph opens as a readable type-level overview you drill into (never a hairball). Every view respects the scope breadcrumb, and the URL captures tab/filters/selection for shareable deep links.
+
 <p align="center">
   <img src="assets/dashboard-stats.png" alt="Dashboard — Stats overview" width="700"><br>
   <em>Stats overview: blackboard entries, decisions, graph entities, and activity breakdown</em>
@@ -232,7 +234,7 @@ All state lives in `.twining/` as plain, committable files. Everything is `jq`-q
 - **Storage** — File-backed stores with locking for concurrent access
 - **Engine** — Decision tracking, blackboard, graph traversal, context assembly with token budgeting, agent coordination
 - **Embeddings** — Local all-MiniLM-L6-v2 via `@huggingface/transformers`, lazy-loaded, with keyword fallback. The server never fails to start because of embedding issues.
-- **Dashboard** — Read-only web UI with cytoscape.js graph visualization and vis-timeline
+- **Dashboard** — Read-only web UI built for scale (1000s of records): virtualized faceted lists, a canvas density timeline with semantic zoom, a drill-down graph explorer (cytoscape.js), health cards, scope breadcrumb navigation, and shareable deep links
 - **Tools** — MCP tool definitions validated with Zod, mapping 1:1 to the tool surface
 
 See [TWINING-DESIGN-SPEC.md](TWINING-DESIGN-SPEC.md) for the full specification.
