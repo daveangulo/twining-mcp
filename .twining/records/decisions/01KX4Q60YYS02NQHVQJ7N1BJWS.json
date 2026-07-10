@@ -1,0 +1,36 @@
+{
+  "affected_files": [
+    "src/dashboard/public/app.js",
+    "src/dashboard/public/js/main.js",
+    "src/dashboard/public/js/graph-view.js"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "deferring",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Re-review APPROVED for merge; took the three fix-at-leisure regressions now (R1 unknown-id cross-links stay in place with inline message via a limit=1 neighborhood probe, graph entities still open the explorer; R2 cross-link = one history entry + facets preserved; R3 dead renderers fetchDecisionDetail/renderBlackboardDetail/renderGraphDetail + exports deleted) plus the pre-existing overview/ego fetch race (monotonic nav epoch guard in graph-view). All browser-verified; suite 1173 green.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KX4Q60YYS02NQHVQJ7N1BJWS",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "19d40e525e5c26d53bbf64a2dbe61523d7f23f9f",
+    "recorded_at": "2026-07-10T00:35:02.221Z"
+  },
+  "rationale": "~30 lines in files just touched, zero delivery-time impact (the cheap-adjacent-fix criterion); deferring would have shipped two user-visible cross-linking regressions.",
+  "reversible": true,
+  "scope": "src/dashboard/",
+  "status": "active",
+  "summary": "Took R1-R3 + race guard immediately instead of deferring",
+  "timestamp": "2026-07-10T00:35:02.238Z"
+}

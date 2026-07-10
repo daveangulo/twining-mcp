@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-10T00:35:02.430Z",
+  "id": "01KX4Q614YNTVXZ5Q2WXXRX52J",
+  "name": "01KX4Q6127VC60FYFWS0RH4T79",
+  "properties": {
+    "scope": "src/dashboard/",
+    "summary": "Unknown-id resolution probes /api/graph/neighborhood with limit=1 before navigating"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-10T00:35:02.430Z"
+}

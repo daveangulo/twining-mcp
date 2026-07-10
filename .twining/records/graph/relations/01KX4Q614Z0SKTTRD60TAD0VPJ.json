@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-10T00:35:02.431Z",
+  "id": "01KX4Q614Z0SKTTRD60TAD0VPJ",
+  "properties": {
+    "decision_summary": "Unknown-id resolution probes /api/graph/neighborhood with limit=1 before navigating"
+  },
+  "source": "01KX4E5JHDP9RY55NA912A2FV2",
+  "target": "01KX4Q614YNTVXZ5Q2WXXRX52J",
+  "type": "decided_by"
+}

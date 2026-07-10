@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-10T00:35:02.324Z",
+  "id": "01KX4Q611MT32G0HXTYZ5XHYD4",
+  "name": "01KX4Q60YYS02NQHVQJ7N1BJWS",
+  "properties": {
+    "scope": "src/dashboard/",
+    "summary": "Took R1-R3 + race guard immediately instead of deferring"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-10T00:35:02.324Z"
+}

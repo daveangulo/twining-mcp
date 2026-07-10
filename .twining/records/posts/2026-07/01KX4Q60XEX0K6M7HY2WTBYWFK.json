@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Re-review APPROVED for merge; took the three fix-at-leisure regressions now (R1 unknown-id cross-links stay in place with inline message via a limit=1 neighborhood probe, graph entities still open the explorer; R2 cross-link = one history entry + facets preserved; R3 dead renderers fetchDecisionDetail/renderBlackboardDetail/renderGraphDetail + exports deleted) plus the pre-existing overview/ego fetch race (monotonic nav epoch guard in graph-view). All browser-verified; suite 1173 green.\nDecisions: Took R1-R3 + race guard immediately instead of deferring — ~30 lines in files just touched, zero delivery-time impact (the cheap-adjacent-fix criterion); deferring would have shipped two user-visible cross-linking regressions.; Unknown-id resolution probes /api/graph/neighborhood with limit=1 before navigating — one cheap request per cross-link click buys never yanking the user off their current tab for a dead id. The browser logs the probe's 404 in the console (network log, not an exception) — cosmetic and accepted.",
+  "entry_type": "status",
+  "id": "01KX4Q60XEX0K6M7HY2WTBYWFK",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "19d40e525e5c26d53bbf64a2dbe61523d7f23f9f",
+    "recorded_at": "2026-07-10T00:35:02.175Z"
+  },
+  "scope": "src/dashboard/",
+  "summary": "Re-review APPROVED for merge; took the three fix-at-leisure regressions now (R1 unknown-id cross-links stay in place with inline message via a limit=1 neighborhood probe, graph entities still open …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-10T00:35:02.190Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-10T00:35:02.326Z",
+  "id": "01KX4Q611PHTGCA05QEKDPDGS2",
+  "properties": {
+    "decision_summary": "Took R1-R3 + race guard immediately instead of deferring"
+  },
+  "source": "01KX4E5JHDP9RY55NA912A2FV2",
+  "target": "01KX4Q611MT32G0HXTYZ5XHYD4",
+  "type": "decided_by"
+}

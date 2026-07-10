@@ -183,28 +183,6 @@ function fetchBlackboard() {
     });
 }
 
-function fetchDecisionDetail(id) {
-  fetch("/api/decisions/" + encodeURIComponent(id))
-    .then(function(res) {
-      if (res.status === 404) {
-        renderDecisionDetailNotFound();
-        return null;
-      }
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      return res.json();
-    })
-    .then(function(data) {
-      if (data) {
-        renderDecisionDetail(data);
-      }
-    })
-    .catch(function() {
-      renderDecisionDetailNotFound();
-    });
-}
-
-/* ========== Agent Coordination Fetching ========== */
-
 function fetchAgents() {
   fetch("/api/agents")
     .then(function(res) {
@@ -596,71 +574,12 @@ function renderRecentActivity() {
   }
 }
 
-/* ========== Render: Blackboard ========== */
-/* Table view replaced by the virtualized list in js/main.js (Plan Task 8).
-   renderBlackboardDetail stays for navigateToId cross-links until routing
-   lands in Phase 5. */
-
-function renderBlackboardDetail(entry) {
-  var panel = document.getElementById("blackboard-detail");
-  if (!panel) return;
-  clearElement(panel);
-
-  panel.appendChild(el("h3", null, "Entry Details"));
-
-  var fields = [
-    { label: "ID", value: entry.id },
-    { label: "Timestamp", value: formatTimestamp(entry.timestamp) },
-    { label: "Type", value: entry.entry_type },
-    { label: "Summary", value: entry.summary },
-    { label: "Scope", value: entry.scope },
-    { label: "Agent ID", value: entry.agent_id },
-    { label: "Tags", value: (entry.tags && entry.tags.length) ? entry.tags.join(", ") : null }
-  ];
-
-  for (var i = 0; i < fields.length; i++) {
-    var f = fields[i];
-    if (f.value === undefined || f.value === null) continue;
-    var div = el("div", "detail-field");
-    div.appendChild(el("div", "detail-label", f.label));
-    // Use clickable ID rendering for ID field
-    if (f.label === "ID") {
-      var valDiv = el("div", "detail-value");
-      renderIdValue(valDiv, String(f.value));
-      div.appendChild(valDiv);
-    } else {
-      div.appendChild(el("div", "detail-value", String(f.value)));
-    }
-    panel.appendChild(div);
-  }
-
-  // Relates To with clickable IDs
-  if (entry.relates_to && entry.relates_to.length) {
-    var rtDiv = el("div", "detail-field");
-    rtDiv.appendChild(el("div", "detail-label", "Relates To"));
-    var rtVal = el("div", "detail-value");
-    renderIdList(rtVal, entry.relates_to);
-    rtDiv.appendChild(rtVal);
-    panel.appendChild(rtDiv);
-  }
-
-  // Detail field (long text)
-  if (entry.detail) {
-    var detailDiv = el("div", "detail-field");
-    detailDiv.appendChild(el("div", "detail-label", "Detail"));
-    var valDiv = el("div", "detail-value");
-    var pre = el("pre", null, entry.detail);
-    valDiv.appendChild(pre);
-    detailDiv.appendChild(valDiv);
-    panel.appendChild(detailDiv);
-  }
-}
+/* Blackboard rendering (table + detail) lives in js/main.js. */
 
 /* ========== Render: Decisions ========== */
 
-/* Decisions table view replaced by the virtualized list in js/main.js
-   (Plan Task 9). renderDecisionDetail stays: it serves the new list's
-   detail panel (via the window bridge), navigateToId, and the timeline. */
+/* Decisions table view lives in js/main.js. renderDecisionDetail stays:
+   it renders the rich detail panel for the new views via the window bridge. */
 
 function renderDecisionDetail(decision, panelId) {
   var panel = document.getElementById(panelId || "decisions-detail");
@@ -803,86 +722,7 @@ function renderDecisionDetailNotFound() {
   panel.appendChild(el("p", "placeholder", "Decision not found"));
 }
 
-/* ========== Render: Graph ========== */
-
-/* Table view repointed to /api/graph/entities in js/main.js (Plan Task 12).
-   renderGraphDetail stays for navigateToId cross-links. */
-
-function renderGraphDetail(entity, panelId) {
-  var panel = document.getElementById(panelId || "graph-detail");
-  if (!panel) return;
-  clearElement(panel);
-
-  panel.appendChild(el("h3", null, "Entity Details"));
-
-  var fields = [
-    { label: "ID", value: entity.id },
-    { label: "Name", value: entity.name },
-    { label: "Type", value: entity.type },
-    { label: "Timestamp", value: formatTimestamp(entity.timestamp) }
-  ];
-
-  for (var i = 0; i < fields.length; i++) {
-    var f = fields[i];
-    if (f.value === undefined || f.value === null) continue;
-    var div = el("div", "detail-field");
-    div.appendChild(el("div", "detail-label", f.label));
-    // Use clickable ID rendering for ID field
-    if (f.label === "ID") {
-      var valDiv = el("div", "detail-value");
-      renderIdValue(valDiv, String(f.value));
-      div.appendChild(valDiv);
-    } else {
-      div.appendChild(el("div", "detail-value", String(f.value)));
-    }
-    panel.appendChild(div);
-  }
-
-  // Properties as key-value pairs
-  if (entity.properties && typeof entity.properties === "object") {
-    var propsDiv = el("div", "detail-field");
-    propsDiv.appendChild(el("div", "detail-label", "Properties"));
-    var keys = Object.keys(entity.properties);
-    if (keys.length === 0) {
-      propsDiv.appendChild(el("div", "detail-value", "(none)"));
-    } else {
-      for (var k = 0; k < keys.length; k++) {
-        var pDiv = el("div", "detail-value");
-        var val = entity.properties[keys[k]];
-        pDiv.textContent = keys[k] + ": " + (typeof val === "object" ? JSON.stringify(val) : String(val));
-        propsDiv.appendChild(pDiv);
-      }
-    }
-    panel.appendChild(propsDiv);
-  }
-
-  // Relations involving this entity (with clickable source/target IDs)
-  var entityId = entity.id || entity.name;
-  var relatedRelations = state.graph.relations.filter(function(r) {
-    return r.source === entityId || r.target === entityId;
-  });
-  if (relatedRelations.length > 0) {
-    var relDiv = el("div", "detail-field");
-    relDiv.appendChild(el("div", "detail-label", "Relations (" + relatedRelations.length + ")"));
-    for (var r = 0; r < relatedRelations.length; r++) {
-      var rel = relatedRelations[r];
-      var relBlock = el("div");
-      relBlock.style.marginBottom = "0.25rem";
-      relBlock.style.fontSize = "0.8125rem";
-
-      var sourceSpan = el("span");
-      renderIdValue(sourceSpan, rel.source || "--");
-      relBlock.appendChild(sourceSpan);
-      relBlock.appendChild(document.createTextNode(" --[" + (rel.type || "?") + "]--> "));
-      var targetSpan = el("span");
-      renderIdValue(targetSpan, rel.target || "--");
-      relBlock.appendChild(targetSpan);
-
-      relDiv.appendChild(relBlock);
-    }
-    panel.appendChild(relDiv);
-  }
-}
+/* Graph rendering (table, explorer, detail) lives in js/main.js + js/graph-view.js. */
 
 /* ========== Render: Agents ========== */
 
@@ -2300,8 +2140,6 @@ window.switchTab = switchTab;
 window.toggleView = toggleView;
 window.refreshData = refreshData;
 window.renderDecisionDetail = renderDecisionDetail;
-window.renderGraphDetail = renderGraphDetail;
-window.renderBlackboardDetail = renderBlackboardDetail;
 window.renderIdValue = renderIdValue;
 window.renderIdList = renderIdList;
 window.renderActivityBreakdown = renderActivityBreakdown;

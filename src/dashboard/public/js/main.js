@@ -312,18 +312,37 @@ window.__twiningNavigateToId = (id) => {
   const row = store.rows.find((r) => r.id === id);
   if (row) {
     const tab = row.kind === "blackboard" ? "blackboard" : "decisions";
-    navigate({ tab });
-    route({ sel: id }, { push: true });
+    // Single history entry, and no filter replace — the user's facets on the
+    // destination list survive a cross-link jump (re-review R2).
+    route({ tab, sel: id, anchor: undefined, view: undefined }, { push: true });
+    if (typeof window.switchTab === "function") window.switchTab(tab);
     requestAnimationFrame(() => {
       if (row.kind === "blackboard") showBlackboardDetail(row);
       else showDecisionDetail(row);
     });
     return true;
   }
-  // Not in the index — assume a graph entity; the ego explorer 404-toasts
-  // back to overview if it isn't one.
-  exploreInGraph(id);
-  if (typeof window.switchTab === "function") window.switchTab("graph");
+  // Not in the index: probe for a graph entity before moving the user
+  // anywhere — an unresolvable id keeps them where they are with an inline
+  // message instead of yanking them to the Graph tab (re-review R1).
+  (async () => {
+    try {
+      const res = await fetch(`/api/graph/neighborhood?id=${encodeURIComponent(id)}&depth=1&limit=1`);
+      if (res.ok) {
+        exploreInGraph(id);
+        if (typeof window.switchTab === "function") window.switchTab("graph");
+        route({ tab: "graph", view: "visual", anchor: id, sel: undefined }, { push: true });
+        return;
+      }
+    } catch {
+      /* fall through to the inline message */
+    }
+    const bar = document.getElementById("search-status-bar");
+    if (bar) {
+      clearElement(bar);
+      bar.appendChild(el("span", null, `ID not found: ${id}`));
+    }
+  })();
   return true;
 };
 

@@ -122,6 +122,7 @@ export function createGraphView(container, opts = {}) {
     trail: [], // anchor history for breadcrumb
     shown: new Map(), // ego: `${from}:${type}` -> count paged in beyond initial
     summary: null,
+    epoch: 0, // monotonic nav counter: a fetch that loses the race must not makeCy()
   };
 
   const crumbHost = document.getElementById("graph-type-filters"); // reused as breadcrumb/level bar
@@ -156,6 +157,7 @@ export function createGraphView(container, opts = {}) {
   /* ---------------- Level 0: overview ---------------- */
 
   async function showOverview() {
+    const epoch = ++state.epoch;
     state.level = "overview";
     state.anchor = null;
     state.trail = [];
@@ -166,6 +168,7 @@ export function createGraphView(container, opts = {}) {
       toast("Could not load graph summary");
       return;
     }
+    if (epoch !== state.epoch) return; // a later navigation superseded this fetch
     state.summary = summary;
     const elements = [];
     for (const g of summary.groups) {
@@ -274,6 +277,7 @@ export function createGraphView(container, opts = {}) {
   /* ---------------- Level 2: ego ---------------- */
 
   async function showEgo(anchorId, pushTrail = true) {
+    const epoch = ++state.epoch;
     let body;
     try {
       body = await getJSON(`/api/graph/neighborhood?id=${encodeURIComponent(anchorId)}&depth=1&limit=${EGO_LIMIT}`);
@@ -286,6 +290,7 @@ export function createGraphView(container, opts = {}) {
       }
       return;
     }
+    if (epoch !== state.epoch) return; // a later navigation superseded this fetch
     if (pushTrail && state.anchor && state.anchor !== anchorId) state.trail.push(state.anchor);
     state.level = "ego";
     state.anchor = anchorId;
