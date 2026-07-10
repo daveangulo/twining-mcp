@@ -318,8 +318,11 @@ export function createGraphView(container, opts = {}) {
     const from = chipNode.data("from");
     const type = chipNode.data("chipType");
     const key = `${from}:${type}`;
-    // Initial ego already showed some of this type; page from what's on screen.
-    const shownOfType = cy.nodes(`[type="${type}"]`).filter((n) => !n.data("chip")).length;
+    // Initial ego already showed some of this type; page from what's on
+    // screen. Exclude `from` itself: the server pages NEIGHBORS of `from`,
+    // which never include it — counting it skips one neighbor forever when
+    // the anchor shares the chip's type (final-review finding I1).
+    const shownOfType = cy.nodes(`[type="${type}"]`).filter((n) => !n.data("chip") && n.id() !== from).length;
     const offset = (state.shown.get(key) || shownOfType);
     let body;
     try {

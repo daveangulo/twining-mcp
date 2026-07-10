@@ -3,8 +3,8 @@
   "id": "01KX4FDYPJ0Z3Q4CMBJPBFCGN4",
   "name": "src/dashboard/public/js/graph-view.js",
   "properties": {
-    "scope": "src/dashboard/public/js/"
+    "scope": "src/dashboard/"
   },
   "type": "file",
-  "updated_at": "2026-07-09T22:19:33.594Z"
+  "updated_at": "2026-07-10T00:27:11.031Z"
 }

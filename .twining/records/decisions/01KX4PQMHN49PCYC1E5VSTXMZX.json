@@ -1,0 +1,38 @@
+{
+  "affected_files": [
+    "src/dashboard/public/app.js",
+    "src/dashboard/public/js/main.js",
+    "src/dashboard/public/js/router.js",
+    "src/dashboard/public/js/list-view.js",
+    "src/dashboard/public/js/graph-view.js"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "dispatching a fix subagent",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Final-review fix wave applied and browser-verified: C1 legacy full-dataset polling eliminated (stats/lists read compact index; fetchBlackboard survives only for the visible Stream view; fetchDecisions/fetchGraph deleted; navigateToId delegates to an index-store bridge), I1 chip-paging off-by-one (exclude `from` from on-canvas count), I2 explicit window bridge exports in app.js, I3 setFilter replace semantics so back/deep-links clear facets, I4 navigate() writes the route (health-card deep links shareable), I5 f= param allowlist sanitizer in router.js. 16s network audit: zero full-dataset calls; suite 1173 green.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01KX4PQMHN49PCYC1E5VSTXMZX",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "522d7cdab0b73e5a11c70fb25bb65f74ad734045",
+    "recorded_at": "2026-07-10T00:27:10.757Z"
+  },
+  "rationale": "I implemented Phases 2-5 and hold the bridge-architecture context; the 6 fixes cross-cut app.js/main.js/router.js and a fresh subagent would rebuild that context at higher risk. The whole-branch reviewer re-reviews the fix diff regardless.",
+  "reversible": true,
+  "scope": "src/dashboard/",
+  "status": "active",
+  "summary": "Fixed the final-review findings inline rather than dispatching a fix subagent",
+  "timestamp": "2026-07-10T00:27:10.773Z"
+}

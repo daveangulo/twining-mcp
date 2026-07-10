@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Final-review fix wave applied and browser-verified: C1 legacy full-dataset polling eliminated (stats/lists read compact index; fetchBlackboard survives only for the visible Stream view; fetchDecisions/fetchGraph deleted; navigateToId delegates to an index-store bridge), I1 chip-paging off-by-one (exclude `from` from on-canvas count), I2 explicit window bridge exports in app.js, I3 setFilter replace semantics so back/deep-links clear facets, I4 navigate() writes the route (health-card deep links shareable), I5 f= param allowlist sanitizer in router.js. 16s network audit: zero full-dataset calls; suite 1173 green.\nDecisions: Fixed the final-review findings inline rather than dispatching a fix subagent — I implemented Phases 2-5 and hold the bridge-architecture context; the 6 fixes cross-cut app.js/main.js/router.js and a fresh subagent would rebuild that context at higher risk. The whole-branch reviewer re-reviews the fix diff regardless.; navigateToId cross-links now resolve through the index store (blackboard/decision rows) with graph-entity fallback into the ego explorer — replaced three full-dataset lazy fetches with zero-fetch resolution; unknown ids get the explorer's 404 toast.; Ledger corrected: Task 16's 'filter param sanitized' claim was inaccurate at the time (only internal keys were stripped on WRITE); the read-side allowlist now actually exists in router.js.\nFindings: The whole-branch review earned its cost: C1 (steady-state full-dataset polling) was invisible to every per-task reviewer because each task correctly removed its render path while the fetch path kept one surviving legacy consumer — only a cross-cutting view caught the aggregate. First-paint and DOM-bound verification measure the wrong axis for steady-state network cost; future scale verification should include a poll-tick network audit (performance.getEntriesByType('resource')).",
+  "entry_type": "status",
+  "id": "01KX4PQMFGEXB3M06MT62FSMNH",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "522d7cdab0b73e5a11c70fb25bb65f74ad734045",
+    "recorded_at": "2026-07-10T00:27:10.690Z"
+  },
+  "scope": "src/dashboard/",
+  "summary": "Final-review fix wave applied and browser-verified: C1 legacy full-dataset polling eliminated (stats/lists read compact index; fetchBlackboard survives only for the visible Stream view; fetchDecisi…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-10T00:27:10.704Z"
+}

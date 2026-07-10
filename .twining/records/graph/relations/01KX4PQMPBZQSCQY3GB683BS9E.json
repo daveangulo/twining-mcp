@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-10T00:27:10.923Z",
+  "id": "01KX4PQMPBZQSCQY3GB683BS9E",
+  "properties": {
+    "decision_summary": "navigateToId cross-links now resolve through the index store (blackboard/decision rows) with graph-entity fallback into the ego explorer"
+  },
+  "source": "01KX4E5JHCECEA7GK4WVWXSS13",
+  "target": "01KX4PQMP8P10E1431BYXET5DV",
+  "type": "decided_by"
+}

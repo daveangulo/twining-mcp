@@ -178,7 +178,10 @@ export function createListView(container, opts) {
   rebuild();
 
   return {
-    setFilter(patch) {
+    setFilter(patch, { replace = false } = {}) {
+      // replace: reset to the view's base (its fixed kinds) before applying —
+      // required so back/forward and deep links can CLEAR facets, not only add.
+      if (replace) state.filter = { kinds: kinds ? kinds.slice() : undefined };
       Object.assign(state.filter, patch);
       for (const k of Object.keys(state.filter)) {
         if (state.filter[k] === undefined) delete state.filter[k];

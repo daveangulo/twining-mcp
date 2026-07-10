@@ -294,17 +294,38 @@ async function renderGraphTablePage() {
 /* ------------------------------------------------------------------ */
 
 /**
- * Cross-view navigation: switch tab (via legacy switchTab global) and apply
- * a filter to the target list view. router.js reroutes this through the URL
- * hash when it lands (Task 16).
+ * Cross-view navigation: writes the route (so the URL stays shareable and
+ * back returns here), switches tab, and REPLACES the target list's filter.
  */
 function navigate({ tab, filter }) {
+  route({ tab, filter, sel: undefined, anchor: undefined, view: undefined }, { push: true });
   if (typeof window.switchTab === "function") window.switchTab(tab);
   requestAnimationFrame(() => {
-    if (tab === "blackboard" && blackboardList && filter) blackboardList.setFilter(filter);
-    if (tab === "decisions" && decisionsList && filter) decisionsList.setFilter(filter);
+    const scoped = { ...(filter || {}), scope: scopeNav ? scopeNav.getScope() || undefined : undefined };
+    if (tab === "blackboard" && blackboardList) blackboardList.setFilter(scoped, { replace: true });
+    if (tab === "decisions" && decisionsList) decisionsList.setFilter(scoped, { replace: true });
   });
 }
+
+/** Cross-link resolution for legacy navigateToId (app.js delegates here). */
+window.__twiningNavigateToId = (id) => {
+  const row = store.rows.find((r) => r.id === id);
+  if (row) {
+    const tab = row.kind === "blackboard" ? "blackboard" : "decisions";
+    navigate({ tab });
+    route({ sel: id }, { push: true });
+    requestAnimationFrame(() => {
+      if (row.kind === "blackboard") showBlackboardDetail(row);
+      else showDecisionDetail(row);
+    });
+    return true;
+  }
+  // Not in the index — assume a graph entity; the ego explorer 404-toasts
+  // back to overview if it isn't one.
+  exploreInGraph(id);
+  if (typeof window.switchTab === "function") window.switchTab("graph");
+  return true;
+};
 
 function mountHealth() {
   const host = document.getElementById("health-cards");
@@ -354,11 +375,12 @@ function applyRoute(r) {
     if (r.tab && typeof window.switchTab === "function") window.switchTab(r.tab);
     if (r.view === "timeline" && typeof window.toggleView === "function") window.toggleView("decisions", "timeline");
     if (r.view === "visual" && typeof window.toggleView === "function") window.toggleView("graph", "visual");
-    if (r.scope !== undefined && scopeNav) scopeNav.setScope(r.scope || "");
-    if (r.filter) {
-      if (r.tab === "blackboard" && blackboardList) blackboardList.setFilter(r.filter);
-      if (r.tab === "decisions" && decisionsList) decisionsList.setFilter(r.filter);
-    }
+    if (scopeNav) scopeNav.setScope(r.scope || "");
+    // REPLACE filters (base + route filter + scope) so back/forward can clear
+    // facets, not only add them (final-review finding I3).
+    const routeFilter = { ...(r.filter || {}), scope: r.scope || undefined };
+    if (r.tab === "blackboard" && blackboardList) blackboardList.setFilter(routeFilter, { replace: true });
+    if (r.tab === "decisions" && decisionsList) decisionsList.setFilter(routeFilter, { replace: true });
     if (r.range && timeline) timeline.setRange(r.range.fromMs, r.range.toMs);
     if (r.anchor) {
       requestAnimationFrame(() => {
@@ -386,6 +408,15 @@ async function boot() {
   mountBlackboard();
   mountDecisions();
   mountScopeNav();
+
+  // Stats-tab activity renders now read the compact index (C1): re-render
+  // them whenever the store changes, replacing the old fetchBlackboard tie.
+  const renderStats = () => {
+    if (typeof window.renderActivityBreakdown === "function") window.renderActivityBreakdown();
+    if (typeof window.renderRecentActivity === "function") window.renderRecentActivity();
+  };
+  store.subscribe(renderStats);
+  renderStats();
 
   document.addEventListener("click", (evt) => {
     const btn = evt.target.closest && evt.target.closest(".tab-btn");

@@ -183,45 +183,6 @@ function fetchBlackboard() {
     });
 }
 
-function fetchDecisions() {
-  fetch("/api/decisions")
-    .then(function(res) {
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      return res.json();
-    })
-    .then(function(data) {
-      state.decisions.data = data.decisions || [];
-      state.connected = true;
-      updateConnectionIndicator();
-      // Table + timeline views are owned by js/main.js; this state now only
-      // serves navigateToId and legacy detail rendering.
-    })
-    .catch(function() {
-      state.connected = false;
-      updateConnectionIndicator();
-    });
-}
-
-function fetchGraph() {
-  fetch("/api/graph")
-    .then(function(res) {
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      return res.json();
-    })
-    .then(function(data) {
-      state.graph.data = data.entities || [];
-      state.graph.relations = data.relations || [];
-      state.connected = true;
-      updateConnectionIndicator();
-      // Graph views are owned by js/main.js + js/graph-view.js; this state
-      // now only serves navigateToId.
-    })
-    .catch(function() {
-      state.connected = false;
-      updateConnectionIndicator();
-    });
-}
-
 function fetchDecisionDetail(id) {
   fetch("/api/decisions/" + encodeURIComponent(id))
     .then(function(res) {
@@ -363,10 +324,14 @@ function fetchInsights() {
 function refreshData() {
   fetchStatus();
   var tab = state.activeTab;
-  if (tab === "stats") fetchBlackboard();
-  else if (tab === "blackboard") fetchBlackboard();
-  else if (tab === "decisions") fetchDecisions();
-  else if (tab === "graph") fetchGraph();
+  // Scale rule (spec §1): NO full-dataset fetch on the poll path. Stats and
+  // the module-owned tabs render from the compact index (js/store.js).
+  // fetchBlackboard survives ONLY for the Stream sub-view, which still
+  // renders every entry from legacy state.
+  if (tab === "blackboard") {
+    var streamVisible = document.getElementById('blackboard-stream-view');
+    if (streamVisible && streamVisible.style.display !== 'none') fetchBlackboard();
+  }
   else if (tab === "search" && state.search.query) fetchSearch();
   else if (tab === "agents") {
     if (state.agentsSubView === "agents-list") fetchAgents();
@@ -410,10 +375,7 @@ function switchTab(tabName) {
 
   state.activeTab = tabName;
 
-  // Ensure data is loaded for the target tab (needed for navigateToId)
-  if (tabName === "blackboard" && state.blackboard.data.length === 0) fetchBlackboard();
-  if (tabName === "decisions" && state.decisions.data.length === 0) fetchDecisions();
-  if (tabName === "graph" && state.graph.data.length === 0) fetchGraph();
+  // Module-owned tabs load from the compact index; only Agents lazy-loads here.
   if (tabName === "agents" && state.agents.data.length === 0) fetchAgents();
 
   stopPolling();
@@ -556,11 +518,20 @@ function renderStatus() {
   renderRecentActivity();
 }
 
+function blackboardIndexRows() {
+  // Compact index rows (js/store.js) carry timestamp/entry_type/summary —
+  // all the stats renders need — without detail bodies.
+  if (window.__twiningStore) {
+    return window.__twiningStore.rows.filter(function(r) { return r.kind === 'blackboard'; });
+  }
+  return state.blackboard.data || [];
+}
+
 function renderActivityBreakdown() {
   var container = document.getElementById('activity-breakdown');
   if (!container) return;
 
-  var entries = state.blackboard.data || [];
+  var entries = blackboardIndexRows();
   var typeCounts = {};
 
   for (var i = 0; i < entries.length; i++) {
@@ -592,7 +563,7 @@ function renderRecentActivity() {
   var container = document.getElementById('recent-activity');
   if (!container) return;
 
-  var entries = state.blackboard.data || [];
+  var entries = blackboardIndexRows();
   var sorted = entries.slice().sort(function(a, b) {
     return new Date(b.timestamp) - new Date(a.timestamp);
   });
@@ -1450,38 +1421,12 @@ function renderIdList(container, ids) {
 }
 
 function navigateToId(id) {
-  // Check blackboard
-  for (var i = 0; i < state.blackboard.data.length; i++) {
-    if (state.blackboard.data[i].id === id) {
-      switchTab("blackboard");
-      state.blackboard.selectedId = id;
-      renderBlackboardDetail(state.blackboard.data[i]);
-      return;
-    }
-  }
-  // Check decisions
-  for (var j = 0; j < state.decisions.data.length; j++) {
-    if (state.decisions.data[j].id === id) {
-      switchTab("decisions");
-      state.decisions.selectedId = id;
-      fetchDecisionDetail(id);
-      return;
-    }
-  }
-  // Check graph entities
-  for (var k = 0; k < state.graph.data.length; k++) {
-    if (state.graph.data[k].id === id) {
-      switchTab("graph");
-      state.graph.selectedId = id;
-      renderGraphDetail(state.graph.data[k]);
-      return;
-    }
-  }
-  // Not found -- data may not be loaded yet
+  // Resolution moved to js/main.js (index store + graph explorer).
+  if (typeof window.__twiningNavigateToId === 'function' && window.__twiningNavigateToId(id)) return;
   var statusBar = document.getElementById("search-status-bar");
   if (statusBar) {
     clearElement(statusBar);
-    statusBar.appendChild(el("span", null, "ID not found in loaded data: " + id));
+    statusBar.appendChild(el("span", null, "ID not found: " + id));
   }
 }
 
@@ -1737,7 +1682,10 @@ function toggleView(tab, viewName) {
   if (tab === 'blackboard') {
     document.getElementById('blackboard-table-view').style.display = viewName === 'table' ? 'block' : 'none';
     document.getElementById('blackboard-stream-view').style.display = viewName === 'stream' ? 'block' : 'none';
-    if (viewName === 'stream' && typeof renderStream === 'function') renderStream();
+    if (viewName === 'stream') {
+      if (state.blackboard.data.length === 0) fetchBlackboard();
+      else renderStream();
+    }
   }
 }
 
@@ -2342,3 +2290,19 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 });
+
+/* ========== Module bridge exports ==========
+   js/main.js (an ES module) consumes these. Explicit assignments so the
+   contract survives a future "use strict" or module conversion of this file —
+   implicit var/function globals would silently evaporate. */
+window.state = state;
+window.switchTab = switchTab;
+window.toggleView = toggleView;
+window.refreshData = refreshData;
+window.renderDecisionDetail = renderDecisionDetail;
+window.renderGraphDetail = renderGraphDetail;
+window.renderBlackboardDetail = renderBlackboardDetail;
+window.renderIdValue = renderIdValue;
+window.renderIdList = renderIdList;
+window.renderActivityBreakdown = renderActivityBreakdown;
+window.renderRecentActivity = renderRecentActivity;

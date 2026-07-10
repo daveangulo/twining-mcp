@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Fixed the final-review findings inline rather than dispatching a fix subagent\" relates to:\n- 01KJJGD37CDKWQE5VFJYW8DGFR: \"Add Stream View as alternate visualization for Blackboard tab\"\n- 01KX3HED3KW6DDKQW7G0PGFBGB: \"Chose to require a server-side query layer (pagination, scope/type/time filters, aggregation endpoints) as the foundation of any dashboard scale redesign over pure client-side fixes\"",
+  "entry_type": "finding",
+  "id": "01KX4PQMJ37W0KBP7DZD7VQMNR",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "522d7cdab0b73e5a11c70fb25bb65f74ad734045",
+    "recorded_at": "2026-07-10T00:27:10.774Z"
+  },
+  "scope": "src/dashboard/",
+  "summary": "Related decisions in scope: 2 existing decision(s) overlap",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-07-10T00:27:10.787Z"
+}

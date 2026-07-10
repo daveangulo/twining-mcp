@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: The whole-branch review earned its cost: C1 (steady-state full-dataset polling) was invisible to every per-task reviewer because each task correctly removed its render path while the fetch path kept one surviving legacy consumer — only a cross-cutting view caught the aggregate. First-paint and DOM-bound verification measure the wrong axis for steady-state network cost; future scale verification should include a poll-tick network audit (performance.getEntriesByType('resource')).",
+  "entry_type": "finding",
+  "id": "01KX4PQMT76VC87X7D48EGBSDG",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "522d7cdab0b73e5a11c70fb25bb65f74ad734045",
+    "recorded_at": "2026-07-10T00:27:11.032Z"
+  },
+  "scope": "src/dashboard/",
+  "summary": "The whole-branch review earned its cost: C1 (steady-state full-dataset polling) was invisible to every per-task reviewer because each task correctly removed its render path while the fetch path kep…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-10T00:27:11.047Z"
+}

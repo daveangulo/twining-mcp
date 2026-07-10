@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-10T00:27:11.032Z",
+  "id": "01KX4PQMSRN7RENHT5WQ5X9HQD",
+  "properties": {
+    "decision_summary": "Ledger corrected: Task 16's 'filter param sanitized' claim was inaccurate at the time (only internal keys were stripped on WRITE); the read-side allowlist now actually exists in router.js."
+  },
+  "source": "01KX4FDYPJ0Z3Q4CMBJPBFCGN4",
+  "target": "01KX4PQMSMNXBCP4GG0R4VZZAV",
+  "type": "decided_by"
+}

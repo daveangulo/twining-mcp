@@ -1,0 +1,31 @@
+{
+  "affected_files": [
+    "src/dashboard/public/app.js",
+    "src/dashboard/public/js/main.js",
+    "src/dashboard/public/js/router.js",
+    "src/dashboard/public/js/list-view.js",
+    "src/dashboard/public/js/graph-view.js"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Final-review fix wave applied and browser-verified: C1 legacy full-dataset polling eliminated (stats/lists read compact index; fetchBlackboard survives only for the visible Stream view; fetchDecisions/fetchGraph deleted; navigateToId delegates to an index-store bridge), I1 chip-paging off-by-one (exclude `from` from on-canvas count), I2 explicit window bridge exports in app.js, I3 setFilter replace semantics so back/deep-links clear facets, I4 navigate() writes the route (health-card deep links shareable), I5 f= param allowlist sanitizer in router.js. 16s network audit: zero full-dataset calls; suite 1173 green.",
+  "depends_on": [],
+  "domain": "performance",
+  "id": "01KX4PQMKX1J97HCXA8NEV7216",
+  "provenance": {
+    "branch": "dashboard-scale-redesign",
+    "commit_sha": "522d7cdab0b73e5a11c70fb25bb65f74ad734045",
+    "recorded_at": "2026-07-10T00:27:10.830Z"
+  },
+  "rationale": "replaced three full-dataset lazy fetches with zero-fetch resolution; unknown ids get the explorer's 404 toast.",
+  "reversible": true,
+  "scope": "src/dashboard/",
+  "status": "active",
+  "summary": "navigateToId cross-links now resolve through the index store (blackboard/decision rows) with graph-entity fallback into the ego explorer",
+  "timestamp": "2026-07-10T00:27:10.845Z"
+}
