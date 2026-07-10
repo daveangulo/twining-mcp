@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: v2.0.0-beta.3 published to npm dist-tag next via CI (workflow succeeded, npm view confirms next=2.0.0-beta.3, latest untouched at 1.24.1). Headline feature: the dashboard scale redesign. Since this session runs twining-mcp@next, the new dashboard arrives here on the next MCP server restart.",
+  "entry_type": "status",
+  "id": "01KX58K6E37Z081PPNAZYTAB4J",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "1e8d523d0f90310a850392fd29b07f6187beb570",
+    "recorded_at": "2026-07-10T05:39:19.604Z"
+  },
+  "scope": "package.json",
+  "summary": "v2.0.0-beta.3 published to npm dist-tag next via CI (workflow succeeded, npm view confirms next=2.0.0-beta.3, latest untouched at 1.24.1). Headline feature: the dashboard scale redesign. Since this…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-10T05:39:19.619Z"
+}
