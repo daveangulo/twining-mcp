@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-20T16:25:53.732Z",
+  "id": "01KY05J9A4JMKAMDE7WGFWS7QB",
+  "properties": {
+    "decision_summary": "Judged the external-tester gate satisfied only weakly and proceeded anyway on Dave's explicit direction ('soak complete, no errors surfaced, continue with plan')"
+  },
+  "source": "01KY05J97YWV9D2M8X7PHJ00BD",
+  "target": "01KY05J9A169AC1BVJPTCXGXC6",
+  "type": "decided_by"
+}

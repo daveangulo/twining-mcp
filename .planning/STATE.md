@@ -140,6 +140,59 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Chose to add a pretest npm hook running inject-posthog-key.mjs
 - Chose to draft a short delta reply on the existing salesforce thread rather than re-send full enrollment
 - Chose Lanny.Ripple@gmail.com as the external-tester recipient
+- Chose disabledMcpjsonServers in shared .claude/settings.json over disabling the plugin or env-var version switching in plugin/.mcp.json
+- Chose to amend beta enrollment instructions (Gmail draft + UPGRADE-v2.md) with a mandatory plugin step rather than relying on testers to notice the dual server
+- Chose checked-in deniedMcpServers serverCommand deny over per-user /mcp disable or the ineffective disabledMcpjsonServers key
+- Chose sh -lc login-shell wrapper in .mcp.json (`sh -lc "exec npx -y twining-mcp@next --project ."`) over absolute npx path, cmux-level PATH fix, or re-enabling the plugin's bundled server
+- Chose SessionStart-hook detection (warn loudly + suppress gates when npx is unresolvable) over changing plugin/.mcp.json to the sh -lc wrapper
+- Rescoped the plugin token budget to count only context-loaded files (skills + agents), baseline 30514 = skills+agents at the original v1.4 tuning commit cd0497b, same +20% cap — approved by Dave over rebase-to-today, comment-trimming, and reverting the hook warning
+- Chose to require a server-side query layer (pagination, scope/type/time filters, aggregation endpoints) as the foundation of any dashboard scale redesign over pure client-side fixes
+- Recommended scale-native redesign of timeline/graph/lists (canvas density timeline, aggregated meta-graph + ego-network explorer capped ~200 nodes, server-windowed virtual lists, new Health panel, scope as first-class drill-down) over (a) conservative retrofit of vis-timeline/cytoscape which both lack aggregation modes and would stay mediocre, and (b) full framework rewrite which touches all 7 tabs to fix 3 and adds a build toolchain to a zero-config npm package. Not yet user-approved
+- Chose client-side compact index (~200KB gzipped at 5k+5k, delta polling via since param with count-mismatch full refetch) over fully server-windowed queries
+- Chose to keep vanilla JS split into native ES modules over adding a build step
+- Chose to delete vis-timeline but retain cytoscape
+- Chose Health as a section in the Insights tab over an 8th tab
+- Added .playwright-mcp/ to .gitignore
+- Resolved spec 1.1 delta-polling decision point: decision status flips are detected by comparing per-status decision counts (from /api/index total_counts vs client-held counts) triggering a single full refetch
+- Chose transitional coexistence of legacy app.js and new ES modules (main.js mounts new views per tab, window.__twiningStore bridge, legacy renderers deleted task-by-task) over a big-bang module conversion of the 3454-line app.js
+- Plan includes full code for server endpoints and pins module contracts/algorithms (round-robin neighborhood selection, virtualization math, count-mismatch refetch) for frontend components rather than dumping complete UI code into the plan
+- Seed fixture writes through the concrete store classes (the one allowed direct-class use, as dev tooling) with deterministic mulberry32 PRNG and post-hoc timestamp spread over 18 months with bursts
+- Chose a feature branch (dashboard-scale-redesign) over committing the redesign directly to main
+- Chose controller-commits with working-tree review packages over subagent commits
+- Accepted implementer's deviation from the plan's http-server.ts wiring snippet: `handled ? true : apiHandler(req,res)` instead of `handled ? undefined : ...`
+- Resolved review finding on total_counts.decisions shape: keep server emitting open-ended per-status counts (archived is real and reachable via twining_archive) and fix the PLAN's documented contract instead
+- Resolved review finding on delta requests re-reading the full store: deliberately deferred
+- Accepted implementer judgment: /api/graph/entities sort is a fixed degree-desc/name-asc default and the sort query param is ignored rather than switchable
+- Accepted reviewer-flagged behavior as-is: depth-1 nodes never visited by the depth-2 walk emit no overflow entry
+- Core neighborhood algorithm confirmed correct by reviewer hand-trace of both fixtures
+- Accepted implementer judgment: health-report staleness scores decisions only
+- Accepted implementer judgment: health-report composes scoreItem/buildProbes over decision INDEX entries instead of calling auditStaleness()
+- Chose union-of-keys generic status-count comparison in the store's validation (countsMatch iterates the union of local and server decision-status keys)
+- Documented a known blind spot rather than engineering around it: a superseded→archived flip with no other project activity is invisible to /api/status counts, so the store catches it on the next real change via post-merge count validation
+- Fixed a discovered edge in virtualization during browser verification: filtering while scrolled deep left scrollTop beyond the shrunken content, rendering an empty window
+- Kept renderBlackboardDetail in app.js (not yet moved) because navigateToId cross-links still render from legacy state
+- main.js runs its own 5s /api/status poll for store delta detection rather than intercepting app.js's fetchStatus
+- Preserved renderDecisions' hidden side effect (timeline refresh on fresh data) by moving it into fetchDecisions when deleting the function
+- Reused app.js's renderDecisionDetail for the new list's detail panel via the classic-script window bridge instead of porting ~180 lines now
+- Chose epoch-multiple bucket alignment with fixed 30d/365d month/year approximations over calendar-exact bucketing
+- Kept the existing toolbar/legend/chips DOM ids (timeline-zoom-in/out/fit/today, timeline-legend, timeline-domain-filters) so the HTML shell and its styling carried over unchanged
+- Lozenge lane layout uses first-fit lane assignment with label-width-aware collision (measureText) rather than vis-timeline-style stacking
+- Removed the fetchDecisions→timeline sync side effect entirely
+- Committed Tasks 12 and 13 as one commit rather than the plan's two
+- Graph table detail panel shows name/type/degree + 'Explore in graph' button instead of the old properties JSON
+- Overview meta-graph drops self-loop type edges (file→file etc.)
+- Scope changes propagate two ways during the transition: setFilter({scope}) on module views and state.globalScope+refreshData() for legacy applyGlobalScope consumers (Search, Agents)
+- Kept paginate/renderPagination/sortData/applyGlobalScope in app.js
+- Deferred the Blackboard Stream view rework (still O(dataset) DOM)
+- Fixed the final-review findings inline rather than dispatching a fix subagent
+- navigateToId cross-links now resolve through the index store (blackboard/decision rows) with graph-entity fallback into the ego explorer
+- Ledger corrected: Task 16's 'filter param sanitized' claim was inaccurate at the time (only internal keys were stripped on WRITE); the read-side allowlist now actually exists in router.js.
+- Took R1-R3 + race guard immediately instead of deferring
+- Unknown-id resolution probes /api/graph/neighborhood with limit=1 before navigating
+- Exercised the reverse-migrate stable gate on a scratchpad copy of this repo's live sqlite state instead of the live store or an external project
+- Judged the external-tester gate satisfied only weakly and proceeded anyway on Dave's explicit direction ('soak complete, no errors surfaced, continue with plan')
+- Chose a rollup [2.0.0] changelog section leading with the Node floor and migrate contract, plus a backfilled [2.0.0-beta.3] section (which had never been written), over rewriting the beta sections into one
+- Left this repo's .mcp.json twining-mcp@next pin and the plugin server pin untouched at stable cut
 
 ### Pending Todos
 

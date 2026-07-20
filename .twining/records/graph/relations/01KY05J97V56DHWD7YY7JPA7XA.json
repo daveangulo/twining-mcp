@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-20T16:25:53.659Z",
+  "id": "01KY05J97V56DHWD7YY7JPA7XA",
+  "properties": {
+    "decision_summary": "Exercised the reverse-migrate stable gate on a scratchpad copy of this repo's live sqlite state instead of the live store or an external project"
+  },
+  "source": "01KJNAQMQVGD3TWE905M4KZ1ST",
+  "target": "01KY05J97TS60DA2E2HS3Q3V4K",
+  "type": "decided_by"
+}

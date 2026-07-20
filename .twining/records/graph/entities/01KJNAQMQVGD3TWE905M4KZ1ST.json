@@ -3,8 +3,8 @@
   "id": "01KJNAQMQVGD3TWE905M4KZ1ST",
   "name": "package.json",
   "properties": {
-    "scope": "src/dashboard/"
+    "scope": "project"
   },
   "type": "file",
-  "updated_at": "2026-07-09T20:40:25.094Z"
+  "updated_at": "2026-07-20T16:25:53.885Z"
 }

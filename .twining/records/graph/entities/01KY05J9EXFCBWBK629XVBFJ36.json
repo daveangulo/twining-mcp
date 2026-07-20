@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-20T16:25:53.885Z",
+  "id": "01KY05J9EXFCBWBK629XVBFJ36",
+  "name": "01KY05J9DA8H2FYYVEJ5D6R262",
+  "properties": {
+    "scope": "project",
+    "summary": "Left this repo's .mcp.json twining-mcp@next pin and the plugin server pin untouched at stable cut"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-20T16:25:53.885Z"
+}

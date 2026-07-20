@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-20T16:25:53.729Z",
+  "id": "01KY05J9A169AC1BVJPTCXGXC6",
+  "name": "01KY05J98F9X4CNBJVCSPS5MHC",
+  "properties": {
+    "scope": "project",
+    "summary": "Judged the external-tester gate satisfied only weakly and proceeded anyway on Dave's explicit direction ('soak complete, no errors surfaced, continue with plan')"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-20T16:25:53.729Z"
+}

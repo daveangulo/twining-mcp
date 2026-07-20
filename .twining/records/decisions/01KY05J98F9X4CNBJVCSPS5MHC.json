@@ -1,0 +1,30 @@
+{
+  "affected_files": [
+    "package.json",
+    "package-lock.json",
+    "CHANGELOG.md",
+    ".planning/STATE.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Cut v2.0.0 stable: verified the three stable gates, exercised the reverse-migrate gate on a copy of this repo's live sqlite state (round-trip clean, counts identical), bumped 2.0.0, wrote the stable + missing beta.3 changelog sections. Tag v2.0.0 routes to dist-tag latest via CI.",
+  "depends_on": [],
+  "domain": "security",
+  "id": "01KY05J98F9X4CNBJVCSPS5MHC",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "7588d3b42501b47a7bad73114c4860aaba403265",
+    "recorded_at": "2026-07-20T16:25:53.664Z"
+  },
+  "rationale": "the salesforce project was enrolled (beta.1+beta.2 emails sent, no reply = no data-loss report) but no sent mail to Lanny.Ripple@gmail.com exists, so that enrollment likely remained an unsent draft. Dave is the authority on field reports; the git-push ask-rule prompt is his final go/no-go checkpoint.",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Judged the external-tester gate satisfied only weakly and proceeded anyway on Dave's explicit direction ('soak complete, no errors surfaced, continue with plan')",
+  "timestamp": "2026-07-20T16:25:53.679Z"
+}

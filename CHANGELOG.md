@@ -2,7 +2,33 @@
 
 All notable changes to Twining MCP are documented here.
 
-## [2.0.0-beta.2] - unreleased (dist-tag `next`)
+## [2.0.0] - 2026-07-20
+
+v2 stable — the first release on dist-tag `latest` since 1.24.1. Identical code to 2.0.0-beta.3; this section is the rollup of the beta line (beta.1–beta.3 below). Upgrade guide: [docs/UPGRADE-v2.md](docs/UPGRADE-v2.md).
+
+The two things to know before upgrading:
+
+- **Node floor is 22.13** (`engines.node: ">=22.13.0"`, for `node:sqlite`). Soft: npm warns, and on older Node the server still boots — sqlite-backed projects fall back to the file backend with a loud stderr warning.
+- **Nothing migrates implicitly.** Existing file-backend projects keep working unchanged and get a one-line nudge; the sqlite flip only happens through the verify-gated `npx twining-mcp migrate` (escape hatch: `migrate --reverse`). Migrate's finalize stamps `version: 2`, which turns 1.21–1.24 clients read-only on that project — upgrade teammates first. Fresh projects start on sqlite.
+
+Stable gates behind this cut: two-week field soak across beta.1–beta.3 with zero new issue classes, eval parity with the pre-v2 baseline (synthetic 0.8909, holdout 42/42), and a reverse+re-forward migration round-trip exercised on a copy of this repo's live production state (all record counts byte-verified identical).
+
+## [2.0.0-beta.3] - 2026-07-09 (dist-tag `next`)
+
+The dashboard scale redesign: every dashboard surface now stays responsive at 5k+ blackboard entries and 5k+ decisions (verified against a seeded 5k/5k fixture, `npm run seed:scale`).
+
+### Changed
+- **Server-side query layer.** The dashboard HTTP server gains real API endpoints (compact index with delta polling via `since`, graph neighborhood/entities, status counts, health report) instead of shipping the full dataset to the browser on every poll. The client keeps a compact index (~200 KB gzipped at 5k+5k) and detects missed changes by count-mismatch, triggering a single full refetch.
+- **Virtualized faceted lists.** Blackboard and Decisions tabs render through windowed virtual lists with facet filters — DOM cost is now O(viewport), not O(dataset).
+- **Canvas density timeline.** vis-timeline is removed (dependency deleted); the timeline is a canvas density view with epoch-aligned bucketing, zoom/fit controls, and domain filters.
+- **Graph drill-down explorer.** The render-everything graph view is replaced by an aggregated meta-graph overview plus an ego-network explorer capped at ~200 nodes (cytoscape retained for layout).
+- **Scope as first-class navigation.** Scope breadcrumb drill-down across tabs, plus shareable hash routing for deep links.
+
+### Added
+- **Health panel** in the Insights tab: staleness scoring and probe cards over the decision index.
+- Deterministic 5k/5k seed fixture (`npm run seed:scale`) for scale verification.
+
+## [2.0.0-beta.2] - 2026-07-06 (dist-tag `next`)
 
 The v2.0 issue-burndown beta: the four field-findings issues milestoned for v2.0 (#30, #31, #34, #35), built as four parallel agent work streams coordinating through Twining itself. Closes out the design work deferred from 1.24.0; the remaining field findings (#16, #32, #33) are milestoned v2.1.
 
@@ -18,7 +44,7 @@ The v2.0 issue-burndown beta: the four field-findings issues milestoned for v2.0
 - **Archive compaction repair pass** in `twining_housekeeping` (`compact_archives: true`) for repos damaged by the pre-1.24.0 auto-archive feedback loop (#35). Streams `.twining/archive/*.jsonl` line-by-line (bounded memory, ~1 GB/s — the 3.0 GB field repo repairs in seconds) and drops only entries matching the archiver's own six-field summary signature ("Archive: N entries archived" findings — one field repo held 7,595,308 of them). Preview reports per-file junk/survivor counts and reclaimable bytes; `execute: true` compacts atomically, deletes archive files left empty, and posts an audit-trail finding. Corrupt lines and all agent-authored entries are always preserved. Backend-agnostic — also the cleanup path after `migrate`, which leaves `archive/` untouched.
 - **`superseded_by` backfill pass** in `twining_housekeeping` (#31): scans decisions carrying `supersedes` links and repairs historical one-directional links — preview reports, execute applies, dangling targets are counted and skipped, idempotent.
 
-## Plugin [1.11.1] - unreleased
+## Plugin [1.11.1] - 2026-07-06
 
 ### Changed
 - BEHAVIORS.md updated for the server v2.0 contract: decisions are no longer cross-posted to the blackboard; `keep_decisions` guidance now framed as legacy-data defense.

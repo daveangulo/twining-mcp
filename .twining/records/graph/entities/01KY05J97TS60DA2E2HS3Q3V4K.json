@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-20T16:25:53.658Z",
+  "id": "01KY05J97TS60DA2E2HS3Q3V4K",
+  "name": "01KY05J964HD4KVKT8XT6QYRSG",
+  "properties": {
+    "scope": "project",
+    "summary": "Exercised the reverse-migrate stable gate on a scratchpad copy of this repo's live sqlite state instead of the live store or an external project"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-20T16:25:53.658Z"
+}

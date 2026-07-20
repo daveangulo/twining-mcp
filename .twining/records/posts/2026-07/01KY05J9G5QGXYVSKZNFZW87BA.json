@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: migrate --reverse prints 'previous config backed up to config.yml.pre-migrate.bak' even when the first-wins rule correctly skips the write because the backup already exists — cosmetic misreport, same class as issue #39 preview counts. Worth folding into #39 or a small v2.1 issue.",
+  "entry_type": "finding",
+  "id": "01KY05J9G5QGXYVSKZNFZW87BA",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "7588d3b42501b47a7bad73114c4860aaba403265",
+    "recorded_at": "2026-07-20T16:25:53.911Z"
+  },
+  "scope": "project",
+  "summary": "migrate --reverse prints 'previous config backed up to config.yml.pre-migrate.bak' even when the first-wins rule correctly skips the write because the backup already exists — cosmetic misreport, sa…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-20T16:25:53.926Z"
+}

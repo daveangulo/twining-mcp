@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: external beta enrollment to Lanny.Ripple@gmail.com appears never sent — Gmail shows no sent mail to that address (connector is drafts-only; the draft was likely never dispatched). The ≥2-external-projects gate was effectively met by one project (salesforce) with silence-as-no-reports.",
+  "entry_type": "warning",
+  "id": "01KY05J9H1V3X2Z1R55N958GE1",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "7588d3b42501b47a7bad73114c4860aaba403265",
+    "recorded_at": "2026-07-20T16:25:53.938Z"
+  },
+  "scope": "project",
+  "summary": "external beta enrollment to Lanny.Ripple@gmail.com appears never sent — Gmail shows no sent mail to that address (connector is drafts-only; the draft was likely never dispatched). The ≥2-external-p…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-20T16:25:53.953Z"
+}
