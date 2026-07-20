@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-20T17:19:32.572Z",
+  "id": "01KY08MGPWS86Y37DH3K5ZJMV4",
+  "name": "01KY08MGP09PJZ18N52PJTT9K9",
+  "properties": {
+    "scope": ".twining/config.yml",
+    "summary": "Stamped version: 2 by manual config edit instead of re-running twining-mcp migrate"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-20T17:19:32.572Z"
+}

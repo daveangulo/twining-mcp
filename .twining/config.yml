@@ -1,4 +1,4 @@
-version: 1
+version: 2
 project_name: .
 embedding_model: all-MiniLM-L6-v2
 archive:

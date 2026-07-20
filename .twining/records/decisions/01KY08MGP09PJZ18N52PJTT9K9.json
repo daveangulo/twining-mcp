@@ -1,0 +1,34 @@
+{
+  "affected_files": [
+    ".twining/config.yml"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "re-running twining-mcp migrate",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Stamped version: 2 into this repo's .twining/config.yml (Dave's call), completing the v2 format adoption. Manual one-line edit chosen over a forward-migrate re-run — the state is already sqlite+records, so the stamp was the only delta a re-run would make, and migrate can't run under a live session.",
+  "depends_on": [],
+  "domain": "api-design",
+  "id": "01KY08MGP09PJZ18N52PJTT9K9",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "be85900aa76b9090623a87073671815bcd93c766",
+    "recorded_at": "2026-07-20T17:19:32.529Z"
+  },
+  "rationale": "the migrate path requires no attached sessions (this session's stdio server is attached and cannot be restarted without permanent disconnect), while on an already-migrated sqlite+records project the stamp is the ONLY change a re-run would make; the reverse-migrate exercise on the state copy confirmed re-forward produces exactly this config. Supersedes the soak-era posture of keeping version: 1 to protect the 1.24 plugin server — moot since plugin 1.12.0 bundles ^2.0.0. Consequence: any straggler 1.21–1.24 client touching this repo now goes read-only, which is the designed v2 contract.",
+  "reversible": true,
+  "scope": ".twining/config.yml",
+  "status": "active",
+  "summary": "Stamped version: 2 by manual config edit instead of re-running twining-mcp migrate",
+  "timestamp": "2026-07-20T17:19:32.545Z"
+}

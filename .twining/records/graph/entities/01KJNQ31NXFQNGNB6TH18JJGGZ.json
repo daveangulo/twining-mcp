@@ -3,8 +3,8 @@
   "id": "01KJNQ31NXFQNGNB6TH18JJGGZ",
   "name": ".twining/config.yml",
   "properties": {
-    "scope": "src/config.ts"
+    "scope": ".twining/config.yml"
   },
   "type": "file",
-  "updated_at": "2026-07-07T01:04:37.762Z"
+  "updated_at": "2026-07-20T17:19:32.572Z"
 }

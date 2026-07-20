@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-20T17:19:32.573Z",
+  "id": "01KY08MGPX31P162QVHQMA2VYD",
+  "properties": {
+    "decision_summary": "Stamped version: 2 by manual config edit instead of re-running twining-mcp migrate"
+  },
+  "source": "01KJNQ31NXFQNGNB6TH18JJGGZ",
+  "target": "01KY08MGPWS86Y37DH3K5ZJMV4",
+  "type": "decided_by"
+}
