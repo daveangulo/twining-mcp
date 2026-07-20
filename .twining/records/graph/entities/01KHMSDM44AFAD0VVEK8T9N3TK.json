@@ -5,8 +5,8 @@
   "properties": {
     "description": "MCP tool handlers: twining_decide, twining_why, twining_trace, twining_commits",
     "layer": "tools",
-    "scope": "src/tools/"
+    "scope": "src/engine/decisions.ts"
   },
   "type": "file",
-  "updated_at": "2026-07-04T20:29:11.623Z"
+  "updated_at": "2026-07-20T22:32:38.526Z"
 }

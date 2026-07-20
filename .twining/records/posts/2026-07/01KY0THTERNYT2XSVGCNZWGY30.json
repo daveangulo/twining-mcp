@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: v2.1 fix per #41 — relevance ranking (specificity > status > recency), two detail tiers under max_tokens budget, exclude superseded by default, ids drill-down param so truncation never strands information.",
+  "entry_type": "need",
+  "id": "01KY0THTERNYT2XSVGCNZWGY30",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "e250f79bbb4ba63cfe528532d23595a6608c0d9e",
+    "recorded_at": "2026-07-20T22:32:38.601Z"
+  },
+  "scope": "src/engine/decisions.ts",
+  "summary": "v2.1 fix per #41 — relevance ranking (specificity > status > recency), two detail tiers under max_tokens budget, exclude superseded by default, ids drill-down param so truncation never strands info…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-20T22:32:38.616Z"
+}

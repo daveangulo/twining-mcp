@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-20T22:32:38.525Z",
+  "id": "01KY0THTBXHGXEE83T15NJW6KN",
+  "properties": {
+    "decision_summary": "Chose to file the twining_why size blowup as a v2.1 issue (#41) with a ranked-tier + token-budget design direction over patching a hard result-size cap"
+  },
+  "source": "01KKNE77ZAW1943XPGMREM997R",
+  "target": "01KY0THTBVY9GQ71ZHMWTYWYP9",
+  "type": "decided_by"
+}
