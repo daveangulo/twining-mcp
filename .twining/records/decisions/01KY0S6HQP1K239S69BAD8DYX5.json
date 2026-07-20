@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "to run twining_archive_stale on the 161 staleness candidates (score ≥0.95)",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Ran post-release housekeeping: archived 185 aged entries, pruned 2 orphaned graph entities; all 5 dangling warnings verified resolved by release-day work. Left 161 staleness candidates untouched — bulk archive would hit live architecture decisions (branch-gone false positives).",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KY0S6HQP1K239S69BAD8DYX5",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "70d76165c28b2a2213e8e1f64c9ca6dd0a19381c",
+    "recorded_at": "2026-07-20T22:09:00.647Z"
+  },
+  "rationale": "sampling showed load-bearing active decisions among them (e.g. 'SQLite is the runtime store and git is the replication transport', whose src/storage/ scope exists), likely flagged because their originating branches were deleted; a curated review pass is required before any bulk action.",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Chose NOT to run twining_archive_stale on the 161 staleness candidates (score ≥0.95)",
+  "timestamp": "2026-07-20T22:09:00.662Z"
+}
