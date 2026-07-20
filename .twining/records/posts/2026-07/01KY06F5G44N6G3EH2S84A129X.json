@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Post-stable follow-ups, in order: (1) plugin server pin bump (plugin/.mcp.json ^1.20.0 → v2) is gated to one release AFTER stable plus a quiet week — earliest ~2026-07-27; (2) this repo's .mcp.json still pins twining-mcp@next (beta.3, code-identical to 2.0.0) — flip to @latest or retag next→2.0.0 at the next natural restart point; (3) this repo's config.yml still carries version: 1 (W3-era migrate) — stamping version: 2 requires a migrate re-run with no live session attached; (4) salesforce beta project should be told stable is out (Gmail is drafts-only, Dave sends); the Lanny enrollment draft was apparently never sent. Publish run: 29760375363.",
+  "entry_type": "status",
+  "id": "01KY06F5G44N6G3EH2S84A129X",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "1b233a2032dfe0811e55d22846ff468e3ad4162d",
+    "recorded_at": "2026-07-20T16:41:40.085Z"
+  },
+  "scope": "project",
+  "summary": "v2.0.0 STABLE published to npm dist-tag latest via CI (run green, latest=2.0.0; next stays beta.3, code-identical). GH release notes lead with Node floor + migrate contract.",
+  "tags": [
+    "release",
+    "v2.0.0"
+  ],
+  "timestamp": "2026-07-20T16:41:40.100Z"
+}
