@@ -85,6 +85,8 @@ The beta enrollment added a project-level `.mcp.json` pinning `twining-mcp@next`
 2. Remove the `twining` entry from the project's `.mcp.json` — including the `sh -lc` wrapper variant; the plugin now does that internally.
 3. Remove the `deniedMcpServers` block from `.claude/settings.json`, or re-enable `plugin:twining:twining` via `/mcp` — whichever you added. After a session restart, `claude mcp list` should show exactly one `twining` server.
 
+One knock-on effect: the plugin-bundled server registers its tools under a different namespace — `mcp__plugin_twining_twining__*` instead of the project server's `mcp__twining__*` — so any `mcp__twining__*` entries in your settings `permissions.allow` list go stale and twining calls will start prompting. Replace them with `mcp__plugin_twining_twining__*`.
+
 ### If you deliberately run a project pin alongside the plugin
 
 A project-level `.mcp.json` `twining` server and the plugin's bundled server register as **two** servers against the same `.twining/` (namespaces `twining` and `plugin:twining:twining`); the model may call either per tool call, both race on the `records/` export tree, and both contend for the dashboard port. Same-version 2.x servers are write-safe (the multiwriter guarantees hold) but wasteful and confusing — keep exactly one. To suppress the plugin's copy while keeping its hooks, skills, and gates, use a checked-in deny in `.claude/settings.json`:
