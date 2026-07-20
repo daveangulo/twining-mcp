@@ -1,0 +1,38 @@
+{
+  "affected_files": [
+    "plugin/.mcp.json",
+    "plugin/hooks/session-start-context.sh",
+    "plugin/.claude-plugin/plugin.json",
+    ".claude-plugin/marketplace.json",
+    ".claude/settings.json",
+    ".mcp.json",
+    ".github/workflows/ci.yml",
+    "scripts/check-mcp-deny-sync.mjs",
+    "docs/UPGRADE-v2.md",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Plugin 1.13.0: bundled server now spawns via sh -lc login shell, fixing minimal-PATH teams/GUI sessions for all POSIX users with zero per-repo config. Repo drops its .mcp.json pin + deny + mcp-deny-sync CI job. SessionStart hook detection updated to mirror the login-shell resolution. Windows fallback documented.",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KY0QQ1F1XVYYR5696B1N03S6",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "573a5e44b48520851a1058278b3540098f559df5",
+    "recorded_at": "2026-07-20T21:43:03.891Z"
+  },
+  "rationale": "the old bare probe would false-positive (warn + suppress gates) in precisely the minimal-PATH sessions the wrapper now fixes.",
+  "reversible": true,
+  "scope": "plugin/",
+  "status": "active",
+  "summary": "Updated the SessionStart hook's availability probe to sh -lc 'command -v npx' to mirror the new spawn method exactly",
+  "supersedes": "01KX2P5Q4YSS460M1CFZJTJJ10",
+  "timestamp": "2026-07-20T21:43:03.905Z"
+}

@@ -31,11 +31,6 @@
       "Bash(git push *)"
     ]
   },
-  "deniedMcpServers": [
-    {
-      "serverCommand": ["npx", "-y", "twining-mcp@^2.0.0", "--project", "."]
-    }
-  ],
   "enabledPlugins": {
     "github@claude-plugins-official": true,
     "feature-dev@claude-plugins-official": true,

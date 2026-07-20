@@ -2,6 +2,13 @@
 
 All notable changes to Twining MCP are documented here.
 
+## Plugin [1.13.0] - 2026-07-20
+
+### Changed
+- **Bundled server spawns through a login shell** (`"command": "sh", "args": ["-lc", "exec npx -y twining-mcp@^2.0.0 --project ."]`). Sessions spawned with a minimal environment — agent-team teammates (cmux split panes), GUI-launched apps — lack the `PATH` entry holding `npx`, so the bare-`npx` server silently failed to spawn there; the login shell rebuilds `PATH` from the user's profile. This removes the last reason for per-project `.mcp.json` + `deniedMcpServers` workarounds on POSIX. Supersedes the 1.11.2-era decision to only warn via the SessionStart hook: that chose Windows safety over POSIX robustness, but the per-repo workaround proved an ongoing field cost while no Windows plugin users have materialized. **Windows regression, documented:** `sh` does not resolve there, so Windows users lose the bundled server and instead add a one-line project `.mcp.json` with the bare `npx` command (hooks, skills, and gates are unaffected; Windows never had the minimal-PATH problem).
+- SessionStart hook's server-availability detection now mirrors the new spawn method (`sh -lc 'command -v npx'`): it warns only when even a login shell cannot find `npx` — previously it would have false-positived in exactly the minimal-PATH sessions the wrapper now fixes.
+- This repo drops its own beta-era workaround pair (`.mcp.json` login-shell pin + exact-command deny + the `mcp-deny-sync` CI job that policed their lockstep, all superseded within hours of introduction) and dogfoods the plugin's bundled server.
+
 ## Plugin [1.12.0] - 2026-07-20
 
 ### Changed

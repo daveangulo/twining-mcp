@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-20T21:43:03.880Z",
+  "id": "01KY0QQ1E8WA3TXA5XKR9ZFB8E",
+  "name": "01KY0QQ1CFDRCVBN0X7GTNT2NY",
+  "properties": {
+    "scope": "plugin/",
+    "summary": "Switched the plugin's bundled server to the sh -lc login-shell wrapper (Dave approved via explicit trade-off question)"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-20T21:43:03.880Z"
+}

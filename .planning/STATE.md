@@ -197,6 +197,11 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Kept this repo's .mcp.json sh -lc wrapper entry (flipped @next → @latest) plus the deny, rather than deleting both and adopting the plugin's bundled server
 - Converted the brittle deny-vs-pin coupling into a CI-enforced invariant: new mcp-deny-sync job fails whenever .claude/settings.json deniedMcpServers drifts from plugin/.mcp.json's exact server command
 - Chose plugin minor bump 1.11.3 → 1.12.0 for the pin change
+- Stamped version: 2 by manual config edit instead of re-running twining-mcp migrate
+- Switched the plugin's bundled server to the sh -lc login-shell wrapper (Dave approved via explicit trade-off question)
+- Updated the SessionStart hook's availability probe to sh -lc 'command -v npx' to mirror the new spawn method exactly
+- Removed this repo's .mcp.json, deniedMcpServers block, and the mcp-deny-sync CI job+script within hours of adding the latter
+- Chose asking Dave the Windows trade-off explicitly (AskUserQuestion) rather than deciding unilaterally
 
 ### Pending Todos
 

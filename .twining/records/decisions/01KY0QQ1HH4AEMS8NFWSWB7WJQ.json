@@ -1,0 +1,45 @@
+{
+  "affected_files": [
+    "plugin/.mcp.json",
+    "plugin/hooks/session-start-context.sh",
+    "plugin/.claude-plugin/plugin.json",
+    ".claude-plugin/marketplace.json",
+    ".claude/settings.json",
+    ".mcp.json",
+    ".github/workflows/ci.yml",
+    "scripts/check-mcp-deny-sync.mjs",
+    "docs/UPGRADE-v2.md",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "silently dropped. This repo now dogfoods the plugin's bundled server path that all plugin users get",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Plugin 1.13.0: bundled server now spawns via sh -lc login shell, fixing minimal-PATH teams/GUI sessions for all POSIX users with zero per-repo config. Repo drops its .mcp.json pin + deny + mcp-deny-sync CI job. SessionStart hook detection updated to mirror the login-shell resolution. Windows fallback documented.",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KY0QQ1HH4AEMS8NFWSWB7WJQ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "573a5e44b48520851a1058278b3540098f559df5",
+    "recorded_at": "2026-07-20T21:43:03.969Z"
+  },
+  "rationale": "the structural fix (plugin-side wrapper) obsoletes the lockstep invariant entirely; recorded rather than silently dropped. This repo now dogfoods the plugin's bundled server path that all plugin users get.",
+  "reversible": true,
+  "scope": "plugin/",
+  "status": "active",
+  "summary": "Removed this repo's .mcp.json, deniedMcpServers block, and the mcp-deny-sync CI job+script within hours of adding the latter",
+  "supersedes": "01KX2P5Q4YSS460M1CFZJTJJ10",
+  "timestamp": "2026-07-20T21:43:03.985Z"
+}

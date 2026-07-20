@@ -75,14 +75,15 @@ The structured handoff API is deprecated as of v2.0. Field analysis across three
 
 ## Release channels
 
-v2.0.0 is stable: the npm dist-tag `latest` resolves to 2.x, so plain `npx -y twining-mcp` gets v2. The `next` dist-tag remains for future prereleases. The Claude Code plugin bundles a `^2.0.0` server as of plugin **1.12.0**.
+v2.0.0 is stable: the npm dist-tag `latest` resolves to 2.x, so plain `npx -y twining-mcp` gets v2. The `next` dist-tag remains for future prereleases. The Claude Code plugin bundles a `^2.0.0` server as of plugin **1.12.0**; since **1.13.0** it spawns through a login shell (`sh -lc`), so minimal-PATH sessions (agent-team teammates, GUI launches) resolve `npx` without any per-project configuration.
 
 ### Leaving the beta (if you enrolled a project during 2.0.0-beta.x)
 
-The beta enrollment added a project-level `.mcp.json` pinning `twining-mcp@next`, plus a workaround that disabled the plugin's then-1.x bundled server (a `/mcp` disable or a `deniedMcpServers` block). With the plugin now bundling a 2.x server, undo both:
+The beta enrollment added a project-level `.mcp.json` pinning `twining-mcp@next` (possibly with a login-shell wrapper), plus a workaround that disabled the plugin's then-1.x bundled server (a `/mcp` disable or a `deniedMcpServers` block). With plugin **1.13.0+** both are obsolete — the bundled server is 2.x and handles minimal-PATH spawns itself:
 
-1. Remove the `twining` entry from the project's `.mcp.json` (or repoint it to `twining-mcp@latest` if you rely on the login-shell wrapper below — see the minimal-PATH caveat).
-2. Remove the `deniedMcpServers` block from `.claude/settings.json`, or re-enable `plugin:twining:twining` via `/mcp` — whichever you added.
+1. Update the Twining plugin to 1.13.0 or later.
+2. Remove the `twining` entry from the project's `.mcp.json` — including the `sh -lc` wrapper variant; the plugin now does that internally.
+3. Remove the `deniedMcpServers` block from `.claude/settings.json`, or re-enable `plugin:twining:twining` via `/mcp` — whichever you added. After a session restart, `claude mcp list` should show exactly one `twining` server.
 
 ### If you deliberately run a project pin alongside the plugin
 
@@ -91,28 +92,28 @@ A project-level `.mcp.json` `twining` server and the plugin's bundled server reg
 ```json
 {
   "deniedMcpServers": [
-    { "serverCommand": ["npx", "-y", "twining-mcp@^2.0.0", "--project", "."] }
+    { "serverCommand": ["sh", "-lc", "exec npx -y twining-mcp@^2.0.0 --project ."] }
   ]
 }
 ```
 
-The deny matches by **exact launch command** (name-based matching can't work — both servers are named `twining`), so it must be kept in lockstep with the plugin's pin: when a plugin update changes the pin, update the deny and re-check with `claude mcp list` (the denied server disappears from the list when the block is working). This repo enforces that lockstep in CI (`scripts/check-mcp-deny-sync.mjs`). The per-user alternative — `/mcp`, select `plugin:twining:twining`, disable — persists in `~/.claude.json`; note `disabledMcpjsonServers` does **not** govern plugin-bundled servers.
+The deny matches by **exact launch command** (name-based matching can't work — both servers are named `twining`), so it must be kept in lockstep with the plugin's spawn command: when a plugin update changes it, update the deny and re-check with `claude mcp list` (the denied server disappears from the list when the block is working). The per-user alternative — `/mcp`, select `plugin:twining:twining`, disable — persists in `~/.claude.json`; note `disabledMcpjsonServers` does **not** govern plugin-bundled servers.
 
-### Agent teams and GUI-spawned sessions: wrap the server command in a login shell
+### Windows: the bundled server needs a project-level fallback
 
-Sessions spawned with a minimal environment — agent-team teammates (e.g. cmux split panes), GUI-launched apps — may lack the `PATH` entry that holds `npx` (Homebrew, nvm). The `.mcp.json` server then fails to spawn in ~10ms and twining is **silently absent** from those sessions: no error appears, the tools just never register, and with the plugin's 1.x server denied there is no fallback. The MCP log (`~/Library/Caches/claude-cli-nodejs/<project>/mcp-logs-twining/`) shows `Executable not found in $PATH: "npx"`.
-
-Enroll with a login-shell wrapper instead of a bare `npx` command (macOS/Linux):
+The plugin's `sh -lc` launcher does not resolve on Windows, so plugin 1.13.0+ users there get no bundled server (the plugin's hooks, skills, and gates still work). Windows sessions inherit the registry `PATH` and never had the minimal-PATH problem — add a one-line project `.mcp.json` with the bare command instead:
 
 ```json
 {
   "mcpServers": {
     "twining": {
-      "command": "sh",
-      "args": ["-lc", "exec npx -y twining-mcp@latest --project ."]
+      "command": "npx",
+      "args": ["-y", "twining-mcp@^2.0.0", "--project", "."]
     }
   }
 }
 ```
 
-The login shell rebuilds `PATH` (`path_helper` on macOS, `/etc/profile` + `~/.profile` on Linux), and `exec` keeps signal delivery pointed at the server process. Windows testers: skip the wrapper — `sh` is not reliably available; Windows sessions inherit the registry `PATH` and don't hit this failure.
+### Standalone (non-plugin) installs in agent teams and GUI-spawned sessions
+
+Sessions spawned with a minimal environment may lack the `PATH` entry that holds `npx` (Homebrew, nvm); a bare-`npx` `.mcp.json` server then fails to spawn in ~10ms and twining is **silently absent** — the MCP log (`~/Library/Caches/claude-cli-nodejs/<project>/mcp-logs-twining/`) shows `Executable not found in $PATH: "npx"`. Wrap the command in a login shell (macOS/Linux): `"command": "sh", "args": ["-lc", "exec npx -y twining-mcp@latest --project ."]`. The login shell rebuilds `PATH` (`path_helper` on macOS, `/etc/profile` + `~/.profile` on Linux), and `exec` keeps signal delivery pointed at the server process. This is exactly what the plugin's bundled server does since 1.13.0.

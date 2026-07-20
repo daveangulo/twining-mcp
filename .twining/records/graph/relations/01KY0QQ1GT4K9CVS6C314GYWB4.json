@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-20T21:43:03.962Z",
+  "id": "01KY0QQ1GT4K9CVS6C314GYWB4",
+  "properties": {
+    "decision_summary": "Updated the SessionStart hook's availability probe to sh -lc 'command -v npx' to mirror the new spawn method exactly"
+  },
+  "source": "01KJGX8KN41B4YP7JVXE9E0K63",
+  "target": "01KY0QQ1GRD6ZP0XFNWPZW96D3",
+  "type": "decided_by"
+}

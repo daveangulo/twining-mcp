@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-20T21:43:04.154Z",
+  "id": "01KY0QQ1PTCWH629G39JEYNR3F",
+  "properties": {
+    "decision_summary": "Chose asking Dave the Windows trade-off explicitly (AskUserQuestion) rather than deciding unilaterally"
+  },
+  "source": "01KY07QJ30NDE4VDWVM4PGVFF2",
+  "target": "01KY0QQ1PHP9ET1TQ2C9D7DGHD",
+  "type": "decided_by"
+}

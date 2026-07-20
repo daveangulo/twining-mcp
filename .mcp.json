@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "twining": {
-      "command": "sh",
-      "args": ["-lc", "exec npx -y twining-mcp@latest --project ."]
-    }
-  }
-}

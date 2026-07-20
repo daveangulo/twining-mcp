@@ -155,7 +155,9 @@ Fix (macOS/Linux): wrap the server command in a login shell so `PATH` is rebuilt
 }
 ```
 
-Windows sessions normally inherit the registry `PATH` and are not affected; if needed, use an absolute path to `npx.cmd` instead (`sh` is not reliably available there). The plugin's bundled server is subject to the same failure mode — its SessionStart hook detects the condition and injects a warning into the session instead of failing silently.
+**The plugin's bundled server does this automatically since plugin 1.13.0** — it spawns through `sh -lc`, so plugin users need no per-project fix. The manual snippet above is only for standalone `.mcp.json` installs. If even a login shell can't find `npx` (Node not installed, broken profile), the plugin's SessionStart hook detects it and injects a warning into the session instead of failing silently.
+
+**Windows:** the bundled server's `sh` launcher does not resolve there. Windows sessions inherit the registry `PATH` and never had the minimal-PATH problem, so the fallback is a one-line project `.mcp.json` with the bare command instead: `"command": "npx", "args": ["-y", "twining-mcp@^2.0.0", "--project", "."]` (the plugin's hooks, skills, and gates are unaffected).
 
 ### Upgrading from Manual Install
 

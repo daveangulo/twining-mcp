@@ -45,7 +45,8 @@
   "rationale": "The hook runs with the same environment Claude Code uses to spawn stdio MCP servers, so `command -v npx` there sees exactly what the server spawn saw — a faithful detector. It converts the silent failure into an actionable in-context warning and stops the gates from demanding tool calls the session cannot make (consistent with the fail-open hook doctrine). Changing the plugin's server command to `sh -lc` would fix POSIX minimal-PATH spawns but risks breaking Windows plugin users: `sh` does not reliably resolve on Windows, static MCP JSON cannot be platform-conditional, and env-var expansion in plugin .mcp.json is broken upstream (anthropics/claude-code#9427). Windows sessions inherit the registry PATH and largely don't hit this failure, so the wrapper's benefit there is nil while its risk is total.",
   "reversible": true,
   "scope": "plugin/",
-  "status": "active",
+  "status": "superseded",
   "summary": "Chose SessionStart-hook detection (warn loudly + suppress gates when npx is unresolvable) over changing plugin/.mcp.json to the sh -lc wrapper",
+  "superseded_by": "01KY0QQ1MG9C65G7NAQHNBZ6H0",
   "timestamp": "2026-07-09T05:38:54.750Z"
 }

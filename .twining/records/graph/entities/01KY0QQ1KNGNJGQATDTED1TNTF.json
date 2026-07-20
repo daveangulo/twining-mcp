@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-20T21:43:04.053Z",
+  "id": "01KY0QQ1KNGNJGQATDTED1TNTF",
+  "name": "01KY0QQ1HH4AEMS8NFWSWB7WJQ",
+  "properties": {
+    "scope": "plugin/",
+    "summary": "Removed this repo's .mcp.json, deniedMcpServers block, and the mcp-deny-sync CI job+script within hours of adding the latter"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-20T21:43:04.053Z"
+}

@@ -24,12 +24,14 @@ while [[ "$DIR" != "/" ]]; do
 done
 [[ -z "$TWINING_DIR" ]] && exit 0
 
-# No npx on PATH (minimal spawn env: agent teammate / GUI launch) means the
-# stdio server couldn't spawn either — this hook sees the same env. Gates
-# would be unsatisfiable; emit a warning instead (fail open, never block).
-if ! command -v npx >/dev/null 2>&1; then
+# Since plugin 1.13.0 the bundled server spawns through a login shell
+# (`sh -lc`), so PATH-minimal session spawns (agent teammate / GUI launch)
+# still resolve npx from the user's shell profile. Mirror that exact
+# resolution here: only when even a login shell can't find npx is the server
+# genuinely absent. Gates would be unsatisfiable; warn instead (fail open).
+if ! sh -lc 'command -v npx' >/dev/null 2>&1; then
   cat <<'JSON'
-{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"## Twining MCP server unavailable\n\n`npx` is not on this session's PATH (minimal spawn environment — agent teammate, GUI launch), so the twining stdio server could not start and twining tools are absent. Fix in .mcp.json (macOS/Linux): `\"command\": \"sh\", \"args\": [\"-lc\", \"exec npx -y twining-mcp --project .\"]`. Twining gates do NOT apply to this session; note key decisions in your final summary for a connected session to record."}}
+{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"## Twining MCP server unavailable\n\n`npx` is not resolvable even from a login shell, so the twining stdio server could not start and twining tools are absent. Install Node.js >= 22.13 (or fix the PATH exported by your shell profile). Twining gates do NOT apply to this session; note key decisions in your final summary for a connected session to record."}}
 JSON
   exit 0
 fi

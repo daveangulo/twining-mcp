@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-20T21:43:03.883Z",
+  "id": "01KY0QQ1EBV2MM6J0SAMEEZDTQ",
+  "properties": {
+    "decision_summary": "Switched the plugin's bundled server to the sh -lc login-shell wrapper (Dave approved via explicit trade-off question)"
+  },
+  "source": "01KJJ8J8TFQN00XTFJH3CR9P5P",
+  "target": "01KY0QQ1E8WA3TXA5XKR9ZFB8E",
+  "type": "decided_by"
+}
