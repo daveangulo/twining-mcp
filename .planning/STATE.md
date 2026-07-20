@@ -202,6 +202,8 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Updated the SessionStart hook's availability probe to sh -lc 'command -v npx' to mirror the new spawn method exactly
 - Removed this repo's .mcp.json, deniedMcpServers block, and the mcp-deny-sync CI job+script within hours of adding the latter
 - Chose asking Dave the Windows trade-off explicitly (AskUserQuestion) rather than deciding unilaterally
+- Replaced mcp__twining__* with mcp__plugin_twining_twining__* in the settings allowlist rather than keeping both
+- Chose NOT to run twining_archive_stale on the 161 staleness candidates (score ≥0.95)
 
 ### Pending Todos
 
