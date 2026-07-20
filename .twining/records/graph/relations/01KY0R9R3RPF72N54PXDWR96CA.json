@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-20T21:53:16.920Z",
+  "id": "01KY0R9R3RPF72N54PXDWR96CA",
+  "properties": {
+    "decision_summary": "Replaced mcp__twining__* with mcp__plugin_twining_twining__* in the settings allowlist rather than keeping both"
+  },
+  "source": "01KX1RFCE4A08FKTXEGGV1W8M2",
+  "target": "01KY0R9R3QHKD6DBEN33Y610M5",
+  "type": "decided_by"
+}

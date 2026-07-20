@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: First session on the plugin 1.13.0 bundled server (2.0.0, sh -lc spawn) — verified read-write against the version-2 config, state intact. Updated settings.json allowlist to the new tool namespace mcp__plugin_twining_twining__*.\nDecisions: Replaced mcp__twining__* with mcp__plugin_twining_twining__* in the settings allowlist rather than keeping both — the project .mcp.json server that owned the old namespace is deleted, and a stale allowlist entry would mask a misconfiguration if that namespace ever reappeared.\nFindings: Restart verification passed: plugin:twining:twining is the sole twining server, spawned via the 1.13.0 sh -lc login shell in cmux, resolving twining-mcp@^2.0.0 to 2.0.0; version-2 config accepted read-write; counts carried over (383/257/499/1148). The predicted namespace shift (mcp__twining__* → mcp__plugin_twining_twining__*) did occur — plugin-bundled MCP tool prefixes include the plugin path.",
+  "entry_type": "status",
+  "id": "01KY0R9QKKMPXBF33X9FZS7QJ4",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "bd2200ba27eb27f20cf9d6d49794fe564ff44e2c",
+    "recorded_at": "2026-07-20T21:53:16.377Z"
+  },
+  "scope": ".claude/settings.json",
+  "summary": "First session on the plugin 1.13.0 bundled server (2.0.0, sh -lc spawn) — verified read-write against the version-2 config, state intact. Updated settings.json allowlist to the new tool namespace m…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-20T21:53:16.404Z"
+}

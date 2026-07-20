@@ -8,7 +8,7 @@
       "Write",
       "Glob",
       "Grep",
-      "mcp__twining__*",
+      "mcp__plugin_twining_twining__*",
       "Bash(git *)",
       "Bash(swift *)",
       "Bash(cat *)",

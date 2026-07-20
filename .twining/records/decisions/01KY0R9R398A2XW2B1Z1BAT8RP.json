@@ -1,0 +1,34 @@
+{
+  "affected_files": [
+    ".claude/settings.json"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "keeping both",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "First session on the plugin 1.13.0 bundled server (2.0.0, sh -lc spawn) — verified read-write against the version-2 config, state intact. Updated settings.json allowlist to the new tool namespace mcp__plugin_twining_twining__*.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KY0R9R398A2XW2B1Z1BAT8RP",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "bd2200ba27eb27f20cf9d6d49794fe564ff44e2c",
+    "recorded_at": "2026-07-20T21:53:16.890Z"
+  },
+  "rationale": "the project .mcp.json server that owned the old namespace is deleted, and a stale allowlist entry would mask a misconfiguration if that namespace ever reappeared.",
+  "reversible": true,
+  "scope": ".claude/settings.json",
+  "status": "active",
+  "summary": "Replaced mcp__twining__* with mcp__plugin_twining_twining__* in the settings allowlist rather than keeping both",
+  "timestamp": "2026-07-20T21:53:16.905Z"
+}
