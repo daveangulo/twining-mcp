@@ -73,38 +73,30 @@ v2's sync model is set-union by construction: records are immutable ULID-named f
 
 The structured handoff API is deprecated as of v2.0. Field analysis across three heavy-use repos found zero calls to either tool, while the same repos accumulated 40+ rich, git-committed markdown handoff documents doing exactly the job the API was designed for — the structured surface is too shallow for how projects actually hand off. Both tools keep working throughout v2.x; the replacement (a redesign around document-shaped payloads, or removal in v3) is tracked in [#33](https://github.com/daveangulo/twining-mcp/issues/33).
 
-## Beta channel
+## Release channels
 
-During the beta, v2 ships under the npm dist-tag `next`:
+v2.0.0 is stable: the npm dist-tag `latest` resolves to 2.x, so plain `npx -y twining-mcp` gets v2. The `next` dist-tag remains for future prereleases. The Claude Code plugin bundles a `^2.0.0` server as of plugin **1.12.0**.
 
-```
-npx -y twining-mcp@next          # opt in to the beta
-npx -y twining-mcp               # stays on latest 1.x until v2.0.0 is stable
-```
+### Leaving the beta (if you enrolled a project during 2.0.0-beta.x)
 
-The Claude Code plugin keeps its `^1.x` server pin until after v2.0.0 stable ships.
+The beta enrollment added a project-level `.mcp.json` pinning `twining-mcp@next`, plus a workaround that disabled the plugin's then-1.x bundled server (a `/mcp` disable or a `deniedMcpServers` block). With the plugin now bundling a 2.x server, undo both:
 
-### If you use the Claude Code plugin
+1. Remove the `twining` entry from the project's `.mcp.json` (or repoint it to `twining-mcp@latest` if you rely on the login-shell wrapper below — see the minimal-PATH caveat).
+2. Remove the `deniedMcpServers` block from `.claude/settings.json`, or re-enable `plugin:twining:twining` via `/mcp` — whichever you added.
 
-The plugin bundles its own `twining` MCP server pinned to `^1.x`. Adding a project-level `.mcp.json` with `twining-mcp@next` therefore registers **two** servers against the same `.twining/` — they land in different tool namespaces (`twining` and `plugin:twining:twining`), so nothing collides at registration, but the model may call either one per tool call. Both open the same database (safe at the SQLite level — the schema versions currently match), yet 1.x writes don't maintain v2 invariants (superseded_by back-links, weight normalization), both servers race on the `records/` export tree, and both contend for the dashboard port. The moment a beta release bumps the schema version, the plugin's 1.x server will refuse to start.
+### If you deliberately run a project pin alongside the plugin
 
-Disable the plugin's copy in each enrolled project — the plugin's hooks, skills, and gates stay active. Two ways:
-
-**Per-user (officially supported):** run `/mcp` in the project, select `plugin:twining:twining`, and disable it. This persists per-user per-project (in `~/.claude.json`); each collaborator does it once. Note: `disabledMcpjsonServers` in settings does **not** work here — that key only governs project `.mcp.json` servers, not plugin-bundled ones.
-
-**Checked-in (one commit covers the whole team):** add to the project's `.claude/settings.json`:
+A project-level `.mcp.json` `twining` server and the plugin's bundled server register as **two** servers against the same `.twining/` (namespaces `twining` and `plugin:twining:twining`); the model may call either per tool call, both race on the `records/` export tree, and both contend for the dashboard port. Same-version 2.x servers are write-safe (the multiwriter guarantees hold) but wasteful and confusing — keep exactly one. To suppress the plugin's copy while keeping its hooks, skills, and gates, use a checked-in deny in `.claude/settings.json`:
 
 ```json
 {
   "deniedMcpServers": [
-    { "serverCommand": ["npx", "-y", "twining-mcp@^1.20.0", "--project", "."] }
+    { "serverCommand": ["npx", "-y", "twining-mcp@^2.0.0", "--project", "."] }
   ]
 }
 ```
 
-The deny matches the plugin server by its exact launch command, so it can't touch your `@next` server (both are named `twining`, which is why name-based matching won't work). Caveats: the deny-from-project-settings behavior is verified on Claude Code 2.1.205 but documented primarily as an enterprise key, and the command array must match the plugin's pin exactly — if a plugin update changes the pin, re-check with `claude mcp list` (the denied server disappears from the list when the block is working).
-
-When leaving the beta, remove whichever you added alongside the `.mcp.json` entry.
+The deny matches by **exact launch command** (name-based matching can't work — both servers are named `twining`), so it must be kept in lockstep with the plugin's pin: when a plugin update changes the pin, update the deny and re-check with `claude mcp list` (the denied server disappears from the list when the block is working). This repo enforces that lockstep in CI (`scripts/check-mcp-deny-sync.mjs`). The per-user alternative — `/mcp`, select `plugin:twining:twining`, disable — persists in `~/.claude.json`; note `disabledMcpjsonServers` does **not** govern plugin-bundled servers.
 
 ### Agent teams and GUI-spawned sessions: wrap the server command in a login shell
 
@@ -117,7 +109,7 @@ Enroll with a login-shell wrapper instead of a bare `npx` command (macOS/Linux):
   "mcpServers": {
     "twining": {
       "command": "sh",
-      "args": ["-lc", "exec npx -y twining-mcp@next --project ."]
+      "args": ["-lc", "exec npx -y twining-mcp@latest --project ."]
     }
   }
 }

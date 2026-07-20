@@ -3,8 +3,8 @@
   "id": "01KJGX8KN41B4YP7JVXE9E0K63",
   "name": "plugin/.claude-plugin/plugin.json",
   "properties": {
-    "scope": "scripts/measure-plugin-tokens.sh"
+    "scope": "plugin/"
   },
   "type": "file",
-  "updated_at": "2026-07-09T05:57:54.451Z"
+  "updated_at": "2026-07-20T17:03:43.953Z"
 }

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-20T17:03:43.863Z",
+  "id": "01KY07QJ7QCM8RP8VS5B7A92YW",
+  "properties": {
+    "decision_summary": "Converted the brittle deny-vs-pin coupling into a CI-enforced invariant: new mcp-deny-sync job fails whenever .claude/settings.json deniedMcpServers drifts from plugin/.mcp.json's exact server command"
+  },
+  "source": "01KJGX8KN41B4YP7JVXE9E0K63",
+  "target": "01KY07QJ7NH10D26TJ530H4DKY",
+  "type": "decided_by"
+}

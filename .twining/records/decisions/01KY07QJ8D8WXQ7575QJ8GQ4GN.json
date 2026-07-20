@@ -1,0 +1,44 @@
+{
+  "affected_files": [
+    "plugin/.mcp.json",
+    "plugin/.claude-plugin/plugin.json",
+    ".claude-plugin/marketplace.json",
+    ".claude/settings.json",
+    ".mcp.json",
+    ".github/workflows/ci.yml",
+    "scripts/check-mcp-deny-sync.mjs",
+    "docs/UPGRADE-v2.md",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "a patch",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Plugin 1.12.0: bundled server pin ^1.20.0 → ^2.0.0, superseding the quiet-week gate on Dave's field evidence of dual-server version skew. Repo .mcp.json flipped @next → @latest, deny updated in lockstep, new CI job mcp-deny-sync enforces the lockstep. UPGRADE-v2/README rewritten for stable.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KY07QJ8D8WXQ7575QJ8GQ4GN",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "9cce7cf9efabe7f8e08dd86168bee7b1307203d6",
+    "recorded_at": "2026-07-20T17:03:43.870Z"
+  },
+  "rationale": "dependency major flip in behavior, not a patch.",
+  "reversible": true,
+  "scope": "plugin/",
+  "status": "active",
+  "summary": "Chose plugin minor bump 1.11.3 → 1.12.0 for the pin change",
+  "supersedes": "01KY05J9DA8H2FYYVEJ5D6R262",
+  "timestamp": "2026-07-20T17:03:43.885Z"
+}

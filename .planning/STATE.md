@@ -193,6 +193,10 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Judged the external-tester gate satisfied only weakly and proceeded anyway on Dave's explicit direction ('soak complete, no errors surfaced, continue with plan')
 - Chose a rollup [2.0.0] changelog section leading with the Node floor and migrate contract, plus a backfilled [2.0.0-beta.3] section (which had never been written), over rewriting the beta sections into one
 - Left this repo's .mcp.json twining-mcp@next pin and the plugin server pin untouched at stable cut
+- Bumped the plugin server pin to ^2.0.0 now (plugin 1.12.0) instead of waiting the planned quiet week after stable — supersedes the stable-cut decision to leave both pins untouched.
+- Kept this repo's .mcp.json sh -lc wrapper entry (flipped @next → @latest) plus the deny, rather than deleting both and adopting the plugin's bundled server
+- Converted the brittle deny-vs-pin coupling into a CI-enforced invariant: new mcp-deny-sync job fails whenever .claude/settings.json deniedMcpServers drifts from plugin/.mcp.json's exact server command
+- Chose plugin minor bump 1.11.3 → 1.12.0 for the pin change
 
 ### Pending Todos
 

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: structural fix for plugin-bundled vs project-pinned dual twining servers — exact-command deny is inherently fragile and per-repo. Candidates: server-side single-instance guard per project (second instance detects dashboard port/lock, skips dashboard, or exits cleanly), or upstream env expansion in plugin .mcp.json (anthropics/claude-code#9427). v2.1 design territory alongside #32/#33.",
+  "entry_type": "need",
+  "id": "01KY07QJB7JHF0QDYPHQX99YDF",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "9cce7cf9efabe7f8e08dd86168bee7b1307203d6",
+    "recorded_at": "2026-07-20T17:03:43.960Z"
+  },
+  "scope": "plugin/",
+  "summary": "structural fix for plugin-bundled vs project-pinned dual twining servers — exact-command deny is inherently fragile and per-repo. Candidates: server-side single-instance guard per project (second i…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-20T17:03:43.975Z"
+}

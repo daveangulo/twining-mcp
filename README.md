@@ -109,7 +109,7 @@ Commit this to your repo's `.claude/settings.json` so every team member gets Twi
 
 When team members trust the repository folder, Claude Code automatically installs the marketplace and plugin.
 
-> **v2 beta:** v2.0.0 (sqlite-by-default, Node >= 22.13) is in beta under the npm dist-tag `next` — opt in with `npx -y twining-mcp@next`. Unpinned installs stay on the latest 1.x until v2.0.0 is stable. See [docs/UPGRADE-v2.md](docs/UPGRADE-v2.md).
+> **v2 is stable:** v2.0.0 (sqlite-by-default, Node >= 22.13) ships on the default npm channel — plain `npx -y twining-mcp` gets it. Existing v1 projects keep working unchanged; the sqlite migration is opt-in via `npx twining-mcp migrate`. See [docs/UPGRADE-v2.md](docs/UPGRADE-v2.md).
 
 ### MCP-Only Install
 

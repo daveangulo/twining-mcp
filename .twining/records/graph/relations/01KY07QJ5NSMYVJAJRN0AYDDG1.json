@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-20T17:03:43.797Z",
+  "id": "01KY07QJ5NSMYVJAJRN0AYDDG1",
+  "properties": {
+    "decision_summary": "Kept this repo's .mcp.json sh -lc wrapper entry (flipped @next → @latest) plus the deny, rather than deleting both and adopting the plugin's bundled server"
+  },
+  "source": "01KWTD0S2FEG661K4CVCQTV3PP",
+  "target": "01KY07QJ5H9QYK9QBE377KGB98",
+  "type": "decided_by"
+}

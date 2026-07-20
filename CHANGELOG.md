@@ -2,6 +2,12 @@
 
 All notable changes to Twining MCP are documented here.
 
+## Plugin [1.12.0] - 2026-07-20
+
+### Changed
+- **Bundled server pin bumped `^1.20.0` → `^2.0.0`** now that v2.0.0 is stable on `latest`. This closes the dual-server version-skew hazard hit during the beta: a project-level `.mcp.json` pinning a 2.x server alongside the plugin's 1.x server registers two servers against the same `.twining/`, avoidable only by a brittle exact-command `deniedMcpServers` entry — and once a project migrates to format `version: 2`, the plugin's 1.x server goes read-only. Supersedes the original plan to hold the pin for a quiet week after stable: 2.0.0 is code-identical to beta.3, which had 11 days of soak, so the wait bought no additional signal against a demonstrated field cost.
+- New CI job `mcp-deny-sync` (`scripts/check-mcp-deny-sync.mjs`) fails when this repo's `deniedMcpServers` workaround drifts from the plugin's bundled server command — the deny matches by exact command array, so every future pin bump must update both or dual servers silently return.
+
 ## [2.0.0] - 2026-07-20
 
 v2 stable — the first release on dist-tag `latest` since 1.24.1. Identical code to 2.0.0-beta.3; this section is the rollup of the beta line (beta.1–beta.3 below). Upgrade guide: [docs/UPGRADE-v2.md](docs/UPGRADE-v2.md).

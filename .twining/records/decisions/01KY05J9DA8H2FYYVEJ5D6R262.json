@@ -24,7 +24,8 @@
   "rationale": "dist-tag next (beta.3) is code-identical to 2.0.0, and the plugin pin bump is gated to one release after stable plus a quiet week.",
   "reversible": true,
   "scope": "project",
-  "status": "active",
+  "status": "superseded",
   "summary": "Left this repo's .mcp.json twining-mcp@next pin and the plugin server pin untouched at stable cut",
+  "superseded_by": "01KY07QJ8D8WXQ7575QJ8GQ4GN",
   "timestamp": "2026-07-20T16:25:53.835Z"
 }

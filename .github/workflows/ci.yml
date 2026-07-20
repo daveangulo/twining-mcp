@@ -57,6 +57,14 @@ jobs:
       - name: Enforce plugin token budget
         run: bash scripts/measure-plugin-tokens.sh --ci
 
+  mcp-deny-sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v5
+      - name: Check twining deny matches plugin server pin
+        run: node scripts/check-mcp-deny-sync.mjs
+
   build-and-test:
     runs-on: ubuntu-latest
     timeout-minutes: 10

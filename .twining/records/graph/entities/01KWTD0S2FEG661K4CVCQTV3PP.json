@@ -3,8 +3,8 @@
   "id": "01KWTD0S2FEG661K4CVCQTV3PP",
   "name": ".mcp.json",
   "properties": {
-    "scope": ".mcp.json"
+    "scope": "plugin/"
   },
   "type": "file",
-  "updated_at": "2026-07-09T05:07:15.408Z"
+  "updated_at": "2026-07-20T17:03:43.955Z"
 }

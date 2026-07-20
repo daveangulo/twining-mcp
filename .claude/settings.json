@@ -33,7 +33,7 @@
   },
   "deniedMcpServers": [
     {
-      "serverCommand": ["npx", "-y", "twining-mcp@^1.20.0", "--project", "."]
+      "serverCommand": ["npx", "-y", "twining-mcp@^2.0.0", "--project", "."]
     }
   ],
   "enabledPlugins": {

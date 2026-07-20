@@ -3,8 +3,8 @@
   "id": "01KJDZA8SS4QE28SEJGH15YGW4",
   "name": ".github/workflows/ci.yml",
   "properties": {
-    "scope": "src/storage/"
+    "scope": "plugin/"
   },
   "type": "file",
-  "updated_at": "2026-07-05T23:17:36.807Z"
+  "updated_at": "2026-07-20T17:03:43.956Z"
 }

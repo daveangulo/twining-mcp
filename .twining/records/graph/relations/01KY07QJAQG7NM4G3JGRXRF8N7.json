@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-20T17:03:43.959Z",
+  "id": "01KY07QJAQG7NM4G3JGRXRF8N7",
+  "properties": {
+    "decision_summary": "Chose plugin minor bump 1.11.3 → 1.12.0 for the pin change"
+  },
+  "source": "01KQV9J8B49121D9ZY3ZNPCK77",
+  "target": "01KY07QJAGHWX74Z1ZATKNJ715",
+  "type": "decided_by"
+}
