@@ -3,8 +3,8 @@
   "id": "01KQV9J8B49121D9ZY3ZNPCK77",
   "name": "CHANGELOG.md",
   "properties": {
-    "scope": "plugin/hooks/"
+    "scope": "src/utils/project-root.ts"
   },
   "type": "file",
-  "updated_at": "2026-07-21T20:32:20.181Z"
+  "updated_at": "2026-07-21T21:19:22.911Z"
 }

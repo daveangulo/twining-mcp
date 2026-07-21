@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-21T21:19:22.845Z",
+  "id": "01KY38RCPXATEF1CP1DA53T3BE",
+  "name": "01KY38RCP89FDCB6M81PK9ZWFM",
+  "properties": {
+    "scope": "src/utils/project-root.ts",
+    "summary": "Chose to pair the server-side TWINING_PROJECT support with removing --project . from the plugin launch command"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-21T21:19:22.845Z"
+}

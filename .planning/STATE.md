@@ -231,6 +231,8 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Chose bash-regex session_id extraction with strict filename sanitization (allowlist + leading-dot strip) mirrored in both hook scripts
 - Chose additive-only gitignore reconcile at startup for #44 (append missing canonical entries, never touch user lines) with git rm --cached documented rather than automated
 - Chose dead-letter files (pending-*.dead.jsonl with raw line + error + timestamp) over in-file retry counters for #45
+- Chose to pair the server-side TWINING_PROJECT support with removing --project . from the plugin launch command
+- Chose to resolve relative TWINING_PROJECT values against the server cwd while passing explicit --project values through verbatim
 
 ### Pending Todos
 

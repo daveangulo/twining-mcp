@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T21:19:22.847Z",
+  "id": "01KY38RCPZWV93CX5NFKJS01ER",
+  "properties": {
+    "decision_summary": "Chose to pair the server-side TWINING_PROJECT support with removing --project . from the plugin launch command"
+  },
+  "source": "01KY38RCPY4EMG6272R21E1Y76",
+  "target": "01KY38RCPXATEF1CP1DA53T3BE",
+  "type": "decided_by"
+}

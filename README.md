@@ -173,6 +173,16 @@ If you previously configured Twining manually, switch to the plugin:
 
 The plugin handles agent instructions automatically via skills. For the MCP-only install path, add Twining instructions to your project's `CLAUDE.md` so agents use it automatically — see **[docs/CLAUDE_TEMPLATE.md](docs/CLAUDE_TEMPLATE.md)** for a ready-to-copy template.
 
+### Shared Store Across Repos
+
+By default the server uses the project it starts in. To point several sibling repos at **one** coordination store (so cross-repo agents see each other's decisions and blackboard), set `TWINING_PROJECT` in each repo's `.claude/settings.json`:
+
+```json
+{ "env": { "TWINING_PROJECT": "/path/to/shared-chassis" } }
+```
+
+Resolution order: `--project <arg>` > `$TWINING_PROJECT` > cwd. Relative values resolve against the server's working directory (the repo root); absolute paths are recommended for multi-machine setups. This replaces the old pattern of a per-repo `.mcp.json` override plus an exact-command `deniedMcpServers` block, which silently broke on every plugin version bump.
+
 ### Dashboard
 
 A web dashboard starts automatically at `http://localhost:24282` — browse decisions, blackboard entries, knowledge graph, and agent state. Configurable via `TWINING_DASHBOARD_PORT`.

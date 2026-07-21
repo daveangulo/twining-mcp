@@ -1,0 +1,44 @@
+{
+  "affected_files": [
+    "src/utils/project-root.ts",
+    "src/index.ts",
+    "plugin/.mcp.json",
+    "test/project-root.test.ts",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "affected_symbols": [
+    "resolveProjectRoot"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "one canonical, testable code path",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "assumptions": [
+    "Claude Code applies a project's .claude/settings.json env block to plugin-spawned MCP server processes — the issue author's own proposal relies on this and their environment demonstrates the settings surface; server-side behavior is verified independently of it."
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Implemented #46: TWINING_PROJECT env var for shared stores — resolution --project arg > env > cwd (relative env values resolve against cwd), plugin 1.17.0 drops its hardcoded --project . which would have shadowed the env var. Verified end-to-end with the built binary.",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01KY38RCP89FDCB6M81PK9ZWFM",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "761fb7a3a349ae3948acab745fce24293200da42",
+    "recorded_at": "2026-07-21T21:19:22.808Z"
+  },
+  "rationale": "the issue's proposed precedence (arg > env > cwd) is correct, but the plugin's hardcoded --project . would have permanently shadowed the env var for exactly the server the issue targets; cwd default is behavior-identical when the var is unset. Rejected shell-expanding ${TWINING_PROJECT:-.} inside the plugin's sh -lc string — works today but buries resolution logic in a shell one-liner instead of one canonical, testable code path.",
+  "reversible": true,
+  "scope": "src/utils/project-root.ts",
+  "status": "active",
+  "summary": "Chose to pair the server-side TWINING_PROJECT support with removing --project . from the plugin launch command",
+  "timestamp": "2026-07-21T21:19:22.824Z"
+}

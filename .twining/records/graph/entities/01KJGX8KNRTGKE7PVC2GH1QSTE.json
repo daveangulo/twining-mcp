@@ -3,8 +3,8 @@
   "id": "01KJGX8KNRTGKE7PVC2GH1QSTE",
   "name": "README.md",
   "properties": {
-    "scope": "plugin/"
+    "scope": "src/utils/project-root.ts"
   },
   "type": "file",
-  "updated_at": "2026-07-20T21:43:04.156Z"
+  "updated_at": "2026-07-21T21:19:22.910Z"
 }

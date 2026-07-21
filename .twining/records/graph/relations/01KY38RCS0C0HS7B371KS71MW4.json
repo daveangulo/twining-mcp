@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T21:19:22.912Z",
+  "id": "01KY38RCS0C0HS7B371KS71MW4",
+  "properties": {
+    "decision_summary": "Chose to resolve relative TWINING_PROJECT values against the server cwd while passing explicit --project values through verbatim"
+  },
+  "source": "01KY38RCQ5YPZP6NYBPNBRAM8H",
+  "target": "01KY38RCRT1H89N5G8C0JBPZDQ",
+  "type": "decided_by"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T21:19:22.853Z",
+  "id": "01KY38RCQ5YPZP6NYBPNBRAM8H",
+  "name": "resolveProjectRoot",
+  "properties": {
+    "scope": "src/utils/project-root.ts"
+  },
+  "type": "function",
+  "updated_at": "2026-07-21T21:19:22.912Z"
+}

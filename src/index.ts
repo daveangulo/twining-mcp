@@ -8,6 +8,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { createServer } from "./server.js";
 import { startDashboard, setupDashboardShutdown } from "./dashboard/http-server.js";
 import { TelemetryClient } from "./analytics/telemetry-client.js";
+import { resolveProjectRoot } from "./utils/project-root.js";
 
 // Handle --version / -v before starting the MCP server
 if (process.argv.includes("--version") || process.argv.includes("-v")) {
@@ -30,12 +31,14 @@ async function main(): Promise<void> {
     process.exit(0);
   }
 
-  // Parse --project argument, default to cwd
-  let projectRoot = process.cwd();
-  const projectArgIndex = process.argv.indexOf("--project");
-  if (projectArgIndex !== -1 && process.argv[projectArgIndex + 1]) {
-    projectRoot = process.argv[projectArgIndex + 1]!;
-  }
+  // Project root: --project arg > TWINING_PROJECT env > cwd (#46). The env
+  // var lets the plugin-contributed server target a shared store without a
+  // per-repo .mcp.json override or a brittle deniedMcpServers block.
+  const projectRoot = resolveProjectRoot(
+    process.argv,
+    process.env,
+    process.cwd(),
+  );
 
   // Opt-in only (TWINING_AUTO_MIGRATE=1 / storage.auto_migrate) — the
   // default path for legacy projects is the createStores nudge.
