@@ -2,7 +2,15 @@
 
 All notable changes to Twining MCP are documented here.
 
+## Plugin [1.14.0] - 2026-07-20
+
+### Added
+- **`twining-semantic-review` skill** (#16). Opt-in, user-invoked LLM-judged staleness review: the session's own model scores entries 0–1 with written reasons for "references a concept the project has moved past" (dead sprints, retired codenames) — the class deterministic `staleness_review` can't see. No server-side model client, no API key: the judging model is the agent running the skill. Human-in-the-loop always — candidates ≥0.7 are presented for confirmation, then archived via `twining_archive_stale` with per-item reasons in the audit trail. Never auto-invoked, never a side effect of other work.
+
 ## [Unreleased]
+
+### Added
+- `twining_archive_stale` accepts an optional `reasons` map (id → rationale); per-item reasons are recorded in the audit-trail finding so a future reviewer can spot and reverse bad archival calls (#16).
 
 ### Changed
 - **Archive passes no longer sweep unresolved needs/warnings** (#40). Age-based archiving (explicit `twining_archive`, auto-archive, and the housekeeping archive pass) now exempts `need`/`warning` entries unless they are resolved — a need/warning counts as resolved when a later entry back-references it via `relates_to`. Open obligations matter more as they age, not less; the 2026-07-20 field run archived a same-day open need that had to be manually reposted. Override with `keep_open_needs_warnings: false` to force a full sweep; results report `kept_open_count`. The auto-archive threshold counts only archivable entries, so exempt needs/warnings can never permanently arm the trigger (same class of bug as the decision-count archive loop).

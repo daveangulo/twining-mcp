@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T05:23:14.780Z",
+  "id": "01KY1J1N6WZFK06PG221BDHKH0",
+  "properties": {
+    "decision_summary": "Chose auto-invocable: false and an explicit never-as-a-side-effect rule in the skill"
+  },
+  "source": "01KQV9J8B49121D9ZY3ZNPCK77",
+  "target": "01KY1J1N6Q2TXADM34MQNKKHFF",
+  "type": "decided_by"
+}

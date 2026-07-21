@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T05:23:14.746Z",
+  "id": "01KY1J1N5T3YD0BVRC2Z27AAAK",
+  "properties": {
+    "decision_summary": "Chose to satisfy the per-item audit-trail criterion by adding an optional reasons map (id → rationale) to twining_archive_stale rather than packing per-item text into the existing single reason string"
+  },
+  "source": "01KJJ8J8TFQN00XTFJH3CR9P5P",
+  "target": "01KY1J1N5PN4TW6SFSQS5CE369",
+  "type": "decided_by"
+}

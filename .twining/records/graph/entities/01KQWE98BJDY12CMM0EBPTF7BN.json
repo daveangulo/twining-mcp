@@ -3,8 +3,8 @@
   "id": "01KQWE98BJDY12CMM0EBPTF7BN",
   "name": "src/tools/housekeeping-tools.ts",
   "properties": {
-    "scope": "src/engine/"
+    "scope": "plugin/skills/"
   },
   "type": "file",
-  "updated_at": "2026-07-21T01:52:15.612Z"
+  "updated_at": "2026-07-21T05:23:14.810Z"
 }

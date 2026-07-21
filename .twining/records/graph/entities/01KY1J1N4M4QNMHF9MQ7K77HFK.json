@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-21T05:23:14.708Z",
+  "id": "01KY1J1N4M4QNMHF9MQ7K77HFK",
+  "name": "01KY1J1N451R0GV97YZ23ZS2Q3",
+  "properties": {
+    "scope": "plugin/skills/",
+    "summary": "Chose the skill-driven path for #16 (option a from the issue: the session's own model judges staleness inside a user-invoked skill) over wiring an Anthropic SDK client into the server (option b)"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-21T05:23:14.708Z"
+}

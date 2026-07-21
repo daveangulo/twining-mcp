@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T05:23:14.710Z",
+  "id": "01KY1J1N4PQCRED0KFCYC1QACF",
+  "name": "test/integration/tools/housekeeping-tools.test.ts",
+  "properties": {
+    "scope": "plugin/skills/"
+  },
+  "type": "file",
+  "updated_at": "2026-07-21T05:23:14.811Z"
+}

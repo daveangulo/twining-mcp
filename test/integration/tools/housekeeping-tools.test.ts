@@ -226,6 +226,48 @@ describe("twining_archive_stale", () => {
     expect(archiveParsed.total_archived).toBe(2);
   });
 
+  it("records per-item reasons in the audit-trail finding (#16)", async () => {
+    gitInit(tmpDir);
+    fs.mkdirSync(path.join(tmpDir, "src", "kept"), { recursive: true });
+    server = createTestServer(tmpDir);
+
+    const recordRes = await callTool(server, "twining_record", {
+      summary: "Some work",
+      findings: ["Wave 3 review action items", "JWT auth flow notes"],
+      scope: "src/kept/",
+    });
+    const recordParsed = parseToolResponse(recordRes) as {
+      findings_created: Array<{ id: string }>;
+    };
+    const [staleId, otherId] = recordParsed.findings_created.map((f) => f.id);
+
+    await callTool(server, "twining_archive_stale", {
+      ids: [staleId!, otherId!],
+      reason: "semantic review pass",
+      reasons: {
+        [staleId!]: "References closed Wave 3 sprint — concept no longer exists",
+        [otherId!]: "Stale per model score 0.9",
+      },
+    });
+
+    // The audit-trail finding carries each item's reason text.
+    const readRes = await callTool(server, "twining_read", {
+      entry_types: ["finding"],
+    });
+    const readParsed = parseToolResponse(readRes) as {
+      entries: Array<{ summary: string; detail: string }>;
+    };
+    const audit = readParsed.entries.find((e) =>
+      e.summary.includes("stale items"),
+    );
+    expect(audit).toBeTruthy();
+    expect(audit!.detail).toContain(staleId!);
+    expect(audit!.detail).toContain(
+      "References closed Wave 3 sprint — concept no longer exists",
+    );
+    expect(audit!.detail).toContain("Stale per model score 0.9");
+  });
+
   it("returns not_found for unknown IDs without throwing", async () => {
     gitInit(tmpDir);
     server = createTestServer(tmpDir);

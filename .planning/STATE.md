@@ -217,6 +217,10 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Chose full-pipeline simulation for housekeeping preview (#39 option a: preview calls Archiver.plan() and filters downstream passes by the planned-archive set) over annotating preview
 - Chose to make the auto-archive threshold count exclude unresolved needs/warnings exactly (building the resolvedIds set per post) rather than excluding all needs/warnings approximately
 - Chose to switch three legacy archiver tests from warning/need fixtures to finding/status rather than passing keep_open_needs_warnings: false
+- Chose the skill-driven path for #16 (option a from the issue: the session's own model judges staleness inside a user-invoked skill) over wiring an Anthropic SDK client into the server (option b)
+- Chose to satisfy the per-item audit-trail criterion by adding an optional reasons map (id → rationale) to twining_archive_stale rather than packing per-item text into the existing single reason string
+- Chose auto-invocable: false and an explicit never-as-a-side-effect rule in the skill
+- Chose to have the skill degrade gracefully in lite tool surface (decisions via twining_why + dangling warnings via housekeeping) since twining_read is full-surface only
 
 ### Pending Todos
 

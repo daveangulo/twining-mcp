@@ -122,6 +122,12 @@ export function registerHousekeepingTools(
           .string()
           .optional()
           .describe("Optional rationale for the archive — recorded as a finding for the audit trail"),
+        reasons: z
+          .record(z.string(), z.string())
+          .optional()
+          .describe(
+            "Optional per-item rationale keyed by ID — recorded per item in the audit-trail finding so a future reviewer can spot bad calls (#16, semantic review)",
+          ),
       },
     },
     async (args) => {
@@ -155,6 +161,11 @@ export function registerHousekeepingTools(
         }
 
         if (archivedDecisions.length + archivedEntries.length > 0) {
+          const perItemReasons = Object.entries(args.reasons ?? {})
+            .filter(([id]) =>
+              archivedDecisions.includes(id) || archivedEntries.includes(id),
+            )
+            .map(([id, why]) => `  ${id}: ${why}`);
           await blackboardEngine.post({
             entry_type: "finding",
             summary: `Archived ${archivedDecisions.length + archivedEntries.length} stale items via housekeeping`,
@@ -162,6 +173,9 @@ export function registerHousekeepingTools(
               args.reason ? `Reason: ${args.reason}` : null,
               archivedDecisions.length > 0 ? `Decisions: ${archivedDecisions.join(", ")}` : null,
               archivedEntries.length > 0 ? `Blackboard entries: ${archivedEntries.join(", ")}` : null,
+              perItemReasons.length > 0
+                ? `Per-item reasons:\n${perItemReasons.join("\n")}`
+                : null,
             ]
               .filter(Boolean)
               .join("\n"),
