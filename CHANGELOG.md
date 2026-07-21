@@ -2,7 +2,7 @@
 
 All notable changes to Twining MCP are documented here.
 
-## [Unreleased]
+## [2.2.0] - 2026-07-21
 
 ### Added
 - **`TWINING_PROJECT` env var for shared stores** (#46). Project-root resolution is now `--project <arg>` > `$TWINING_PROJECT` > cwd; relative env values resolve against the server's cwd. A fleet of sibling repos can share one coordination store with a single version-agnostic `{ "env": { "TWINING_PROJECT": "…" } }` line in `.claude/settings.json` — replacing the per-repo `.mcp.json` override + exact-command `deniedMcpServers` block, which matched the launch command verbatim (version string included) and silently went inert on every plugin bump, leaving two servers split-braining writes across two stores.
