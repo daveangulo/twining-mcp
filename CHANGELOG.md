@@ -2,6 +2,11 @@
 
 All notable changes to Twining MCP are documented here.
 
+## Plugin [1.16.0] - 2026-07-21
+
+### Fixed
+- **Stop-hook recording gate is now marker-based — the recurring false-block loop is fixed** (#43). The 1.10.0–1.15.x gate compared the record sentinel against the newest mtime of dirty working-tree files: a leaky proxy that a field diagnosis proved false-blocks on (1) concurrent agent worktrees bumping untracked-directory mtimes after you record — an unwinnable race, (2) touch/checkout/formatter mtime bumps with no recordable work, (3) hundreds of untracked `.claude/` dirs inflating the dirty set, and (4) the alphabetical `head -200` cap hiding real work while surfacing noise (false ALLOW and false BLOCK from the same state). New design: a PostToolUse hook (`Edit|Write|MultiEdit|NotebookEdit`) writes epoch-seconds to `.twining/.sessions/<session_id>` on every successful file edit; the stop hook blocks only when *this session's* marker is newer than `.last-record`. No git scan, no mtime scan; other sessions' activity can never block yours. Fail-open preserved: no marker (read-only session, Bash-only edits, missing session_id, pre-1.16 session) always allows — Bash-driven edits are still gated at commit by the pre-commit hook. Session-start prunes markers older than 7 days. The marker contract is plugin-internal (the npm server never reads it), so no new hook/server version-skew surface.
+
 ## Plugin [1.15.0] - 2026-07-21
 
 ### Changed
@@ -21,6 +26,10 @@ All notable changes to Twining MCP are documented here.
 
 ### Deprecated
 - `twining_handoff` and `twining_acknowledge` are deprecated, scheduled for removal in v3 (#33) — zero field calls; real handoffs are committed markdown docs. Tool descriptions now steer to the committed-doc + `artifact`-pointer pattern (see plugin 1.15.0 notes).
+
+### Fixed
+- **Existing stores get missing `.twining/.gitignore` entries reconciled at startup** (#44). Entries added in later releases (`.last-record`, `pending-*.jsonl`, `.sessions/`, sqlite files) never reached stores initialized before them — one field store carried 137 commits of `.last-record` churn, and a fresh clone inherited a stale committed sentinel (guaranteed false stop-block under the pre-1.16 mtime gate). Reconcile is additive only: missing canonical entries are appended; user lines are never removed or reordered. Note: gitignore does not untrack an already-tracked file — stores that committed `.last-record` should run `git rm --cached .twining/.last-record` once.
+- **Pending-queue drain dead-letters failures instead of losing them** (#45). A queued post whose `post()` rejected (invalid entry_type from a foreign/older hook, empty summary — anything but the length case special-cased in 1.24.0) or whose line failed to parse was logged "skipping" and then deleted with the swap file — permanently lost. Such lines now land in `pending-posts.dead.jsonl` / `pending-actions.dead.jsonl` next to the queue, carrying the raw line, the error, and a timestamp — inspectable and re-queueable by hand. If the dead-letter write itself fails, the swap file is left in place for a future drain rather than deleted with unprocessed lines inside.
 
 ### Changed
 - **Archive passes no longer sweep unresolved needs/warnings** (#40). Age-based archiving (explicit `twining_archive`, auto-archive, and the housekeeping archive pass) now exempts `need`/`warning` entries unless they are resolved — a need/warning counts as resolved when a later entry back-references it via `relates_to`. Open obligations matter more as they age, not less; the 2026-07-20 field run archived a same-day open need that had to be manually reposted. Override with `keep_open_needs_warnings: false` to force a full sweep; results report `kept_open_count`. The auto-archive threshold counts only archivable entries, so exempt needs/warnings can never permanently arm the trigger (same class of bug as the decision-count archive loop).

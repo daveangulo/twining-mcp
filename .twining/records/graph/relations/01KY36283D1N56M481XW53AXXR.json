@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T20:32:20.077Z",
+  "id": "01KY36283D1N56M481XW53AXXR",
+  "properties": {
+    "decision_summary": "Chose bash-regex session_id extraction with strict filename sanitization (allowlist + leading-dot strip) mirrored in both hook scripts"
+  },
+  "source": "01KJD595NE5JW9DEJ3VGCB4MMD",
+  "target": "01KY362839D2M1HNCS8EY93ZT4",
+  "type": "decided_by"
+}

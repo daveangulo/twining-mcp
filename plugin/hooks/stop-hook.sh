@@ -1,18 +1,27 @@
 #!/bin/bash
-# Twining Stop Hook — blocks session exit when uncommitted code changes lack
-# a Twining recording.
+# Twining Stop Hook — blocks session exit when THIS session made file edits
+# that were never recorded via twining_record.
 #
-# Transcript-free since plugin 1.10.0. The previous implementation grepped
-# the session transcript for tool-call strings — the same technique the
-# pre-commit hook abandoned after issues #11/#13: assistant prose mentioning
-# "twining_record" counted as a call, and any transcript format drift broke
-# detection silently. This version compares the record sentinel
-# (.twining/.last-record, written synchronously by the recording tools)
-# against the newest mtime of dirty files in the working tree.
+# Marker-based since plugin 1.16.0 (#43). The 1.10.0–1.15.x implementation
+# compared the record sentinel against the newest mtime of dirty working-tree
+# files — a leaky proxy that false-blocked recurringly in the field:
+# concurrent agent worktrees bump untracked-directory mtimes after you
+# record (unwinnable race), touch/checkout/formatters bump mtimes without
+# recordable work, and the alphabetical `head -200` cap on large dirty sets
+# hid real work while surfacing noise. mtime had already been rejected once
+# (decision 01KQWCCVTV, 2026-05-05) before being reintroduced.
+#
+# Now: the PostToolUse activity-marker hook writes epoch-seconds to
+# .twining/.sessions/<session_id> on every successful Edit/Write. This hook
+# blocks only when that marker — this session's own last file edit — is
+# newer than .twining/.last-record. No git scan, no mtime scan, and other
+# sessions' activity can never block this one.
 #
 # Fail-open by design: no .twining/, no sentinel ever written (fresh clone /
-# server down), no git, or clean tree — all allow silently. A coordination
-# gate must never be the reason a session cannot end.
+# server down), no session_id, or no marker (read-only session, Bash-only
+# edits, pre-1.16 session) — all allow silently. Bash-driven edits the
+# marker misses are still gated at commit time by the pre-commit hook. A
+# coordination gate must never be the reason a session cannot end.
 set -euo pipefail
 [[ "${TWINING_DISABLED:-}" = "true" ]] && exit 0
 
@@ -40,38 +49,36 @@ done
 SENTINEL="$TWINING_DIR/.last-record"
 [[ ! -f "$SENTINEL" ]] && exit 0
 
+# This session's activity marker. Sanitization MUST mirror
+# activity-marker-hook.sh exactly, or the two scripts derive different
+# filenames for the same session.
+SESSION_ID=""
+if [[ "$HOOK_INPUT" =~ \"session_id\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" ]]; then
+  SESSION_ID="${BASH_REMATCH[1]}"
+fi
+SESSION_ID="${SESSION_ID//[^A-Za-z0-9._-]/}"
+while [[ "$SESSION_ID" == .* ]]; do SESSION_ID="${SESSION_ID#.}"; done
+[[ -z "$SESSION_ID" ]] && exit 0
+
+MARKER="$TWINING_DIR/.sessions/$SESSION_ID"
+[[ ! -f "$MARKER" ]] && exit 0
+
 LAST_RECORD=0
 raw=$(cat "$SENTINEL" 2>/dev/null || true)
 raw="${raw//[^0-9]/}"
 [[ -n "$raw" ]] && LAST_RECORD="$raw"
 
-# Newest mtime among dirty (modified/added/untracked, non-ignored) files.
-# .twining/ itself is excluded — recording writes .twining files, which would
-# otherwise race the sentinel timestamp across a second boundary.
-PROJECT_ROOT="$(dirname "$TWINING_DIR")"
-NEWEST=0
-while IFS= read -r line; do
-  [[ -z "$line" ]] && continue
-  f="${line:3}"
-  [[ "$f" == *" -> "* ]] && f="${f##* -> }"
-  f="${f%\"}"; f="${f#\"}"
-  [[ "$f" == .twining || "$f" == .twining/* ]] && continue
-  p="$PROJECT_ROOT/$f"
-  [[ -e "$p" ]] || continue
-  m=$(stat -c %Y "$p" 2>/dev/null || stat -f %m "$p" 2>/dev/null || echo 0)
-  m="${m//[^0-9]/}"
-  [[ -n "$m" ]] && (( m > NEWEST )) && NEWEST="$m"
-done < <(git -C "$PROJECT_ROOT" status --porcelain 2>/dev/null | head -200)
+LAST_EDIT=0
+raw=$(cat "$MARKER" 2>/dev/null || true)
+raw="${raw//[^0-9]/}"
+[[ -n "$raw" ]] && LAST_EDIT="$raw"
+[[ "$LAST_EDIT" -eq 0 ]] && exit 0
 
-# Clean tree or git unavailable — committed work was already gated by the
-# pre-commit hook; nothing uncommitted to record.
-[[ "$NEWEST" -eq 0 ]] && exit 0
-
-# Recorded at or after the newest change — allow. (>= tolerates same-second
-# record-then-stop batching.)
-if (( LAST_RECORD >= NEWEST )); then
+# Recorded at or after this session's last edit — allow. (>= tolerates
+# same-second record-then-stop batching.)
+if (( LAST_RECORD >= LAST_EDIT )); then
   exit 0
 fi
 
-printf '{"decision":"block","reason":"Uncommitted changes are newer than the last twining_record. Call twining_record before ending — what changed, choices you made, and any findings, warnings, or surprises worth leaving for the next session."}\n'
+printf '{"decision":"block","reason":"This session edited files after the last twining_record. Call twining_record before ending — what changed, choices you made, and any findings, warnings, or surprises worth leaving for the next session."}\n'
 exit 0

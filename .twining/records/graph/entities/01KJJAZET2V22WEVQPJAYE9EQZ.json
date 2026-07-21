@@ -3,8 +3,8 @@
   "id": "01KJJAZET2V22WEVQPJAYE9EQZ",
   "name": "plugin/hooks/stop-hook.sh",
   "properties": {
-    "scope": "plugin/hooks"
+    "scope": "plugin/hooks/"
   },
   "type": "file",
-  "updated_at": "2026-05-05T05:19:32.806Z"
+  "updated_at": "2026-07-21T20:32:20.174Z"
 }

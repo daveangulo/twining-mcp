@@ -200,7 +200,18 @@ export class PendingProcessor {
     return `${filePath}.processing.${process.pid}.${rand}`;
   }
 
-  /** Read, process, and delete a swap file this drain call owns. */
+  /**
+   * Read, process, and delete a swap file this drain call owns.
+   *
+   * A line whose handler throws (invalid entry_type from a foreign/older
+   * hook, empty summary — anything post() rejects) or that fails to parse
+   * is DEAD-LETTERED to `<original>.dead.jsonl` (#45), never silently
+   * dropped: the old skip-then-delete-swap made the loss permanent, which
+   * is exactly the "a real finding that fails to flush can be silently
+   * lost" field failure. Dead-letter entries carry the raw line plus the
+   * error text so they are inspectable and re-queueable by hand (append
+   * the `line` values back to the live pending file after fixing them).
+   */
   private async drainSwappedFile<T>(
     swapPath: string,
     handler: (item: T) => Promise<void>,
@@ -220,13 +231,37 @@ export class PendingProcessor {
     }
     const lines = content.split("\n").filter((l) => l.trim().length > 0);
 
+    // `<file>.processing.<pid>.<rand>` → `<file minus swap suffix>` — the
+    // dead-letter file sits next to the live queue file it derives from.
+    const originalPath = swapPath.replace(/\.processing\.[^/\\]+$/, "");
+    const deadPath = originalPath.replace(/\.jsonl$/, "") + ".dead.jsonl";
+
     for (const line of lines) {
       try {
         const item = JSON.parse(line) as T;
         await handler(item);
         processed++;
       } catch (error) {
-        console.error(`[twining] Failed to process ${label} (skipping):`, error);
+        const message = error instanceof Error ? error.message : String(error);
+        console.error(
+          `[twining] Failed to process ${label} (dead-lettered):`,
+          message,
+        );
+        try {
+          fs.appendFileSync(
+            deadPath,
+            JSON.stringify({
+              line,
+              error: message,
+              dead_lettered_at: new Date().toISOString(),
+            }) + "\n",
+          );
+        } catch {
+          // Dead-letter write failed — leave the swap file in place so the
+          // batch is recovered (and retried) by a future drain instead of
+          // being deleted with unprocessed lines inside.
+          return processed;
+        }
       }
     }
 

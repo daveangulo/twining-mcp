@@ -3,8 +3,8 @@
   "id": "01KJGX8KNG4BA8P7PFEXMTW51R",
   "name": "plugin/hooks/hooks.json",
   "properties": {
-    "scope": "plugin/hooks"
+    "scope": "plugin/hooks/"
   },
   "type": "file",
-  "updated_at": "2026-05-05T05:23:22.120Z"
+  "updated_at": "2026-07-21T20:32:20.176Z"
 }

@@ -32,6 +32,63 @@ describe("initTwiningDir", () => {
     }
   });
 
+  it("fresh init gitignores .sessions/ (stop-hook activity markers, #43)", () => {
+    initTwiningDir(tmpDir);
+    const gitignore = fs.readFileSync(
+      path.join(tmpDir, ".twining", ".gitignore"),
+      "utf-8",
+    );
+    expect(gitignore).toContain(".sessions/");
+  });
+
+  it("reconciles missing canonical gitignore entries on existing stores (#44)", () => {
+    // Simulate a pre-.last-record-era store: .twining exists with a
+    // partial .gitignore missing several canonical entries.
+    const twiningDir = path.join(tmpDir, ".twining");
+    fs.mkdirSync(twiningDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(twiningDir, ".gitignore"),
+      "embeddings/*.index\narchive/\n# user-added comment\ncustom-user-entry\n",
+    );
+
+    ensureInitialized(tmpDir);
+
+    const gitignore = fs.readFileSync(
+      path.join(twiningDir, ".gitignore"),
+      "utf-8",
+    );
+    // Missing canonical entries appended.
+    expect(gitignore).toContain(".last-record");
+    expect(gitignore).toContain("pending-posts.jsonl");
+    expect(gitignore).toContain(".sessions/");
+    // User content untouched.
+    expect(gitignore).toContain("# user-added comment");
+    expect(gitignore).toContain("custom-user-entry");
+    // Existing entries not duplicated.
+    expect(gitignore.match(/^archive\/$/gm)).toHaveLength(1);
+  });
+
+  it("creates a .gitignore on existing stores that never had one (#44)", () => {
+    const twiningDir = path.join(tmpDir, ".twining");
+    fs.mkdirSync(twiningDir, { recursive: true });
+
+    ensureInitialized(tmpDir);
+
+    const gitignore = fs.readFileSync(
+      path.join(twiningDir, ".gitignore"),
+      "utf-8",
+    );
+    expect(gitignore).toContain(".last-record");
+  });
+
+  it("gitignore reconcile is idempotent — second run changes nothing", () => {
+    initTwiningDir(tmpDir);
+    const gitignorePath = path.join(tmpDir, ".twining", ".gitignore");
+    const first = fs.readFileSync(gitignorePath, "utf-8");
+    ensureInitialized(tmpDir);
+    expect(fs.readFileSync(gitignorePath, "utf-8")).toBe(first);
+  });
+
   it("creates .twining/agents/ directory", () => {
     initTwiningDir(tmpDir);
     const agentsDir = path.join(tmpDir, ".twining", "agents");

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T20:32:20.000Z",
+  "id": "01KY3628102GAEBMKGKT595RXB",
+  "properties": {
+    "decision_summary": "Stop gate signal replaced: per-session activity marker (PostToolUse Edit/Write → .twining/.sessions/<session_id>) compared against the record sentinel, replacing the dirty-file-mtime scan"
+  },
+  "source": "01KY36280Z243A6TJGFD15ZRC1",
+  "target": "01KY36280P5PKW1Y12RRCJMJZ0",
+  "type": "decided_by"
+}

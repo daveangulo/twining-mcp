@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "need",
+  "id": "01KY36289QTJSYBS40MGS811BZ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "ae8c7d004b4a3493c8819ffe4a5cdbb0256faf81",
+    "recorded_at": "2026-07-21T20:32:20.265Z"
+  },
+  "scope": "plugin/hooks/",
+  "summary": "dogfooding note — this repo's installed plugin cache still runs 1.15.0 hooks until the plugin updates; the 1.16.0 marker-based stop hook takes effect in new sessions after the plugin cache refreshes.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-21T20:32:20.279Z"
+}

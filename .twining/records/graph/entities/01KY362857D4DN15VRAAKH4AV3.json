@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-21T20:32:20.135Z",
+  "id": "01KY362857D4DN15VRAAKH4AV3",
+  "name": "01KY3628447CAQ1NBDWDDZ6VRJ",
+  "properties": {
+    "scope": "plugin/hooks/",
+    "summary": "Chose additive-only gitignore reconcile at startup for #44 (append missing canonical entries, never touch user lines) with git rm --cached documented rather than automated"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-21T20:32:20.135Z"
+}

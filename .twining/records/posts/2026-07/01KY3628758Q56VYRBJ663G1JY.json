@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Field claim 'pending-posts only drains on startup' is stale: the 60s periodic drain shipped in v1.24.0 and is in 2.0.0. Their stuck entries are explained by drain-loss (invalid entry_type → dropped, now #45-fixed) or by hooks writing to a worktree-local .twining that no server drains — the worktree-orphan hypothesis needs field confirmation (noted on #45).",
+  "entry_type": "finding",
+  "id": "01KY3628758Q56VYRBJ663G1JY",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "ae8c7d004b4a3493c8819ffe4a5cdbb0256faf81",
+    "recorded_at": "2026-07-21T20:32:20.182Z"
+  },
+  "scope": "plugin/hooks/",
+  "summary": "Field claim 'pending-posts only drains on startup' is stale: the 60s periodic drain shipped in v1.24.0 and is in 2.0.0. Their stuck entries are explained by drain-loss (invalid entry_type → dropped…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-21T20:32:20.197Z"
+}

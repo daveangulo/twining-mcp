@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T20:32:20.140Z",
+  "id": "01KY36285C4C90A3KH066DRW30",
+  "properties": {
+    "decision_summary": "Chose additive-only gitignore reconcile at startup for #44 (append missing canonical entries, never touch user lines) with git rm --cached documented rather than automated"
+  },
+  "source": "01KWQFW6CHJ7156C0GM07X5NQ8",
+  "target": "01KY362857D4DN15VRAAKH4AV3",
+  "type": "decided_by"
+}

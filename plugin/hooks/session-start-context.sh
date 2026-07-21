@@ -24,6 +24,13 @@ while [[ "$DIR" != "/" ]]; do
 done
 [[ -z "$TWINING_DIR" ]] && exit 0
 
+# Prune stale session activity markers (#43) — written by the PostToolUse
+# activity-marker hook, read by the stop hook. Old markers are dead sessions;
+# best-effort, never fails the hook.
+if [[ -d "$TWINING_DIR/.sessions" ]]; then
+  find "$TWINING_DIR/.sessions" -type f -mtime +7 -delete 2>/dev/null || true
+fi
+
 # Since plugin 1.13.0 the bundled server spawns through a login shell
 # (`sh -lc`), so PATH-minimal session spawns (agent teammate / GUI launch)
 # still resolve npx from the user's shell profile. Mirror that exact

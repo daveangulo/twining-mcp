@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T20:32:20.175Z",
+  "id": "01KY36286FPW4M84FE7HT24WNE",
+  "properties": {
+    "decision_summary": "Chose dead-letter files (pending-*.dead.jsonl with raw line + error + timestamp) over in-file retry counters for #45"
+  },
+  "source": "01KY36280Q33BJ6Z1AWEC9K51A",
+  "target": "01KY36286ECVASFAJ363HP9YR6",
+  "type": "decided_by"
+}

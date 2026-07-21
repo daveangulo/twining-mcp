@@ -1,0 +1,51 @@
+{
+  "affected_files": [
+    "plugin/hooks/stop-hook.sh",
+    "plugin/hooks/activity-marker-hook.sh",
+    "plugin/hooks/hooks.json",
+    "plugin/hooks/session-start-context.sh",
+    "src/storage/init.ts",
+    "src/engine/pending-processor.ts",
+    "test/hooks/stop-hook.test.ts",
+    "test/hooks/session-start-context.test.ts",
+    "test/init.test.ts",
+    "test/pending-processor.test.ts",
+    "CHANGELOG.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "automated",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "mutate the user's git index",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Fixed field-reported stop-hook loop and two adjacent losses (#43/#44/#45): marker-based stop gate (plugin 1.16.0), gitignore reconcile for existing stores, dead-letter queue for pending drain. 1221 tests green.",
+  "depends_on": [],
+  "domain": "performance",
+  "id": "01KY3628447CAQ1NBDWDDZ6VRJ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "ae8c7d004b4a3493c8819ffe4a5cdbb0256faf81",
+    "recorded_at": "2026-07-21T20:32:20.085Z"
+  },
+  "rationale": "the server must not mutate the user's git index.",
+  "reversible": true,
+  "scope": "plugin/hooks/",
+  "status": "active",
+  "summary": "Chose additive-only gitignore reconcile at startup for #44 (append missing canonical entries, never touch user lines) with git rm --cached documented rather than automated",
+  "supersedes": "01KWK9KV209JRSW70E32MYYDCX",
+  "timestamp": "2026-07-21T20:32:20.100Z"
+}

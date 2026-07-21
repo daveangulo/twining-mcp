@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-21T20:32:20.174Z",
+  "id": "01KY36286ECVASFAJ363HP9YR6",
+  "name": "01KY36285ZTQ30GYN39X69BSBV",
+  "properties": {
+    "scope": "plugin/hooks/",
+    "summary": "Chose dead-letter files (pending-*.dead.jsonl with raw line + error + timestamp) over in-file retry counters for #45"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-21T20:32:20.174Z"
+}

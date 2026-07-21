@@ -11,14 +11,65 @@ import { DEFAULT_CONFIG, SUPPORTED_CONFIG_VERSION } from "../config.js";
 import { sqliteAvailable } from "./sqlite/db.js";
 
 /**
+ * Canonical .twining/.gitignore entries (spec section 2.3 + model cache +
+ * local runtime state). Fresh stores get the full list; existing stores are
+ * reconciled additively on every startup (#44) — entries added in later
+ * releases (.last-record was the field casualty: 137 commits of churn plus
+ * a stale committed sentinel on fresh clones) never reached old stores.
+ */
+const GITIGNORE_ENTRIES = [
+  "embeddings/*.index",
+  "archive/",
+  "models/",
+  "metrics.jsonl",
+  "pending-posts.jsonl",
+  "pending-actions.jsonl",
+  ".last-record",
+  ".last-known-branches.json",
+  ".sessions/",
+  "twining.db",
+  "twining.db-wal",
+  "twining.db-shm",
+];
+
+/**
+ * Additively reconcile .twining/.gitignore with the canonical entry list:
+ * append missing canonical entries, never remove or reorder user lines.
+ * Creates the file if absent. gitignore cannot untrack an already-tracked
+ * file — stores that committed .last-record also need a one-time
+ * `git rm --cached .twining/.last-record` (documented in the CHANGELOG).
+ */
+function reconcileGitignore(twiningDir: string): void {
+  const gitignorePath = path.join(twiningDir, ".gitignore");
+  let existing = "";
+  try {
+    existing = fs.readFileSync(gitignorePath, "utf-8");
+  } catch {
+    // Missing — created below with whatever entries are needed.
+  }
+  const existingLines = new Set(
+    existing.split("\n").map((l) => l.trim()),
+  );
+  const missing = GITIGNORE_ENTRIES.filter((e) => !existingLines.has(e));
+  if (missing.length === 0) return;
+
+  const prefix =
+    existing.length > 0 && !existing.endsWith("\n") ? "\n" : "";
+  fs.appendFileSync(gitignorePath, prefix + missing.join("\n") + "\n");
+}
+
+/**
  * Create the .twining/ directory structure if it doesn't exist.
  * Silent auto-create per user decision — no user interaction.
  */
 export function initTwiningDir(projectRoot: string): void {
   const twiningDir = path.join(projectRoot, ".twining");
 
-  // If already exists, nothing to do
-  if (fs.existsSync(twiningDir)) return;
+  // Already exists — reconcile the gitignore (#44), nothing else to do.
+  if (fs.existsSync(twiningDir)) {
+    reconcileGitignore(twiningDir);
+    return;
+  }
 
   // Create directory structure (spec section 2.2)
   fs.mkdirSync(twiningDir, { recursive: true });
@@ -64,22 +115,10 @@ export function initTwiningDir(projectRoot: string): void {
     JSON.stringify([], null, 2),
   );
 
-  // Gitignore (spec section 2.3 + model cache + local runtime state)
+  // Gitignore — canonical list shared with the existing-store reconcile.
   fs.writeFileSync(
     path.join(twiningDir, ".gitignore"),
-    [
-      "embeddings/*.index",
-      "archive/",
-      "models/",
-      "metrics.jsonl",
-      "pending-posts.jsonl",
-      "pending-actions.jsonl",
-      ".last-record",
-      ".last-known-branches.json",
-      "twining.db",
-      "twining.db-wal",
-      "twining.db-shm",
-    ].join("\n") + "\n",
+    GITIGNORE_ENTRIES.join("\n") + "\n",
   );
 
   // Merge attributes: blackboard.jsonl is append-only, so concurrent

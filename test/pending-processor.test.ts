@@ -87,6 +87,51 @@ describe("PendingProcessor.processOnStartup", () => {
     expect(result.posts_processed).toBe(1);
   });
 
+  it("dead-letters a post whose handler rejects instead of losing it (#45)", async () => {
+    const postsPath = path.join(tmpDir, "pending-posts.jsonl");
+    fs.writeFileSync(
+      postsPath,
+      // "design" is not a valid entry_type — post() throws INVALID_INPUT.
+      JSON.stringify({ entry_type: "design", summary: "From a foreign hook" }) +
+        "\n" +
+        JSON.stringify({ entry_type: "finding", summary: "valid" }) +
+        "\n",
+    );
+
+    const result = await processor.processOnStartup();
+    expect(result.posts_processed).toBe(1);
+
+    const deadPath = path.join(tmpDir, "pending-posts.dead.jsonl");
+    expect(fs.existsSync(deadPath)).toBe(true);
+    const deadLines = fs
+      .readFileSync(deadPath, "utf-8")
+      .split("\n")
+      .filter((l) => l.trim());
+    expect(deadLines).toHaveLength(1);
+    const dead = JSON.parse(deadLines[0]!);
+    expect(dead.line).toContain("From a foreign hook");
+    expect(dead.error).toContain("entry_type");
+  });
+
+  it("dead-letters unparseable lines instead of losing them (#45)", async () => {
+    const postsPath = path.join(tmpDir, "pending-posts.jsonl");
+    fs.writeFileSync(
+      postsPath,
+      "not-json\n" +
+        JSON.stringify({ entry_type: "finding", summary: "valid" }) +
+        "\n",
+    );
+
+    await processor.processOnStartup();
+
+    const deadPath = path.join(tmpDir, "pending-posts.dead.jsonl");
+    expect(fs.existsSync(deadPath)).toBe(true);
+    const dead = JSON.parse(
+      fs.readFileSync(deadPath, "utf-8").trim(),
+    );
+    expect(dead.line).toBe("not-json");
+  });
+
   it("processes pending actions", async () => {
     const actionsPath = path.join(tmpDir, "pending-actions.jsonl");
     // Write an action that doesn't require archiver (since we pass null)

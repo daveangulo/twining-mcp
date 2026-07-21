@@ -89,4 +89,21 @@ describe("session-start-context.sh", () => {
     const payload = JSON.parse(result.stdout);
     expect(payload.hookSpecificOutput.hookEventName).toBe("SessionStart");
   });
+
+  it("prunes session activity markers older than 7 days, keeps recent ones (#43)", () => {
+    const sessionsDir = path.join(dir, ".twining", ".sessions");
+    fs.mkdirSync(sessionsDir, { recursive: true });
+    const oldMarker = path.join(sessionsDir, "ancient-session");
+    const newMarker = path.join(sessionsDir, "recent-session");
+    fs.writeFileSync(oldMarker, "1");
+    fs.writeFileSync(newMarker, String(Math.floor(Date.now() / 1000)));
+    const eightDaysAgo = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000);
+    fs.utimesSync(oldMarker, eightDaysAgo, eightDaysAgo);
+
+    const result = runHook({ script: "session-start-context.sh", cwd: dir });
+
+    expect(result.exitCode).toBe(0);
+    expect(fs.existsSync(oldMarker)).toBe(false);
+    expect(fs.existsSync(newMarker)).toBe(true);
+  });
 });

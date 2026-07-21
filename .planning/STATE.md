@@ -227,6 +227,10 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Chose a pre-bind same-project probe across the full port retry window (config.port..+5) for the #42 single-instance guard, reusing the existing /api/health projectRoot check
 - Chose to ship the #42 guard without the ${TWINING_MCP_CMD} env-expansion escape hatch
 - Retire twining_handoff/twining_acknowledge at v3; v2.1 deprecates them and reorients all plugin guidance to the committed-doc + artifact-pointer handoff pattern
+- Stop gate signal replaced: per-session activity marker (PostToolUse Edit/Write → .twining/.sessions/<session_id>) compared against the record sentinel, replacing the dirty-file-mtime scan
+- Chose bash-regex session_id extraction with strict filename sanitization (allowlist + leading-dot strip) mirrored in both hook scripts
+- Chose additive-only gitignore reconcile at startup for #44 (append missing canonical entries, never touch user lines) with git rm --cached documented rather than automated
+- Chose dead-letter files (pending-*.dead.jsonl with raw line + error + timestamp) over in-file retry counters for #45
 
 ### Pending Todos
 

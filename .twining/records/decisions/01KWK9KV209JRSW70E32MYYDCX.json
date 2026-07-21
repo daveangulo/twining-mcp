@@ -28,7 +28,8 @@
   "rationale": "The Stop hook now compares .twining/.last-record against the newest dirty-file mtime; when no sentinel exists the record tools are unreachable, so blocking would be unsatisfiable — a coordination tool must never be the reason a commit is impossible.",
   "reversible": false,
   "scope": "plugin/hooks/",
-  "status": "active",
+  "status": "superseded",
   "summary": "All hook gates are sentinel-based and fail open when unsatisfiable — no transcript grepping anywhere, and a fresh clone or dead server never blocks commits or session exit",
+  "superseded_by": "01KY36285ZTQ30GYN39X69BSBV",
   "timestamp": "2026-07-03T06:10:49.536Z"
 }

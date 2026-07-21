@@ -3,8 +3,8 @@
   "id": "01KQV9EH92VV4MD0D9FHCB94FB",
   "name": "plugin/hooks/session-start-context.sh",
   "properties": {
-    "scope": "plugin/"
+    "scope": "plugin/hooks/"
   },
   "type": "file",
-  "updated_at": "2026-07-20T21:43:04.147Z"
+  "updated_at": "2026-07-21T20:32:20.176Z"
 }
