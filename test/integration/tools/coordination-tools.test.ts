@@ -72,3 +72,28 @@ describe("twining_handoff + twining_acknowledge", () => {
     expect(parsed2.acknowledged_by).toBe("agent-b");
   });
 });
+
+describe("registry auto-touch on writes (#32)", () => {
+  it("twining_post and twining_record populate the agent registry, visible via twining_agents", async () => {
+    await callTool(server, "twining_post", {
+      entry_type: "finding",
+      summary: "Wave worker discovery",
+      agent_id: "wave-worker-3",
+    });
+    await callTool(server, "twining_record", {
+      summary: "Did some work",
+      scope: "src/",
+    });
+    // Fire-and-forget touches settle.
+    await new Promise((r) => setTimeout(r, 100));
+
+    const res = await callTool(server, "twining_agents", {});
+    const parsed = parseToolResponse(res) as {
+      agents: Array<{ agent_id: string; liveness: string }>;
+      total_registered: number;
+    };
+    const ids = parsed.agents.map((a) => a.agent_id);
+    expect(ids).toContain("wave-worker-3");
+    expect(ids).toContain("main");
+  });
+});

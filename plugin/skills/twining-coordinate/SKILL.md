@@ -62,7 +62,7 @@ After delegation:
 - **Delegation**: "I need someone to do X" — you keep working on other things
 - **Handoff**: "I'm done with my part, here's the state" — you're transferring ownership
 
-Use `twining_delegate` for delegation, `twining_handoff` for handoffs (see the twining-handoff skill).
+Use `twining_delegate` for delegation. For handoffs, follow the twining-handoff skill (committed doc + `artifact` pointer — the structured `twining_handoff` tool is deprecated, #33).
 
 ## Capability Conventions
 

@@ -3,8 +3,8 @@
   "id": "01KQV9J8B49121D9ZY3ZNPCK77",
   "name": "CHANGELOG.md",
   "properties": {
-    "scope": "plugin/skills/"
+    "scope": "src/"
   },
   "type": "file",
-  "updated_at": "2026-07-21T05:23:14.814Z"
+  "updated_at": "2026-07-21T16:55:32.164Z"
 }

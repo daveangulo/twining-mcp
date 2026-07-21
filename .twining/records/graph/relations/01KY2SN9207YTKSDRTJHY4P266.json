@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T16:55:32.160Z",
+  "id": "01KY2SN9207YTKSDRTJHY4P266",
+  "properties": {
+    "decision_summary": "Chose to ship the #42 guard without the ${TWINING_MCP_CMD} env-expansion escape hatch"
+  },
+  "source": "01KKNE77ZAW1943XPGMREM997R",
+  "target": "01KY2SN91YXZ2TFQVR83Y5RBN4",
+  "type": "decided_by"
+}

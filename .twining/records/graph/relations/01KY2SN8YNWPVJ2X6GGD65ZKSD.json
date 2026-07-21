@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T16:55:32.053Z",
+  "id": "01KY2SN8YNWPVJ2X6GGD65ZKSD",
+  "properties": {
+    "decision_summary": "Chose a pre-bind same-project probe across the full port retry window (config.port..+5) for the #42 single-instance guard, reusing the existing /api/health projectRoot check"
+  },
+  "source": "01KJJ348MECV5069M9Q5EWVS3Z",
+  "target": "01KY2SN8YCGK42WZ1GSE5DPB5M",
+  "type": "decided_by"
+}

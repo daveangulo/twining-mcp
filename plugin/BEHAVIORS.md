@@ -17,7 +17,7 @@ This document defines correct usage patterns for all 35 Twining MCP tools. It is
 | GEN-01 | MUST | Prioritize task completion over coordination thoroughness. Complete your assigned work first, then record decisions and post status. A completed task with minimal coordination is better than an incomplete task with perfect coordination records. |
 | GEN-02 | SHOULD | Keep coordination calls concise. Use short summaries and minimal detail fields. Don't spend significant time composing elaborate blackboard entries at the expense of productive work. |
 | GEN-03 | MUST | Always call `twining_assemble` at session start before making decisions. This gathers prior context and prevents repeated mistakes. When working with other agents, also call `twining_register` to make yourself discoverable. |
-| GEN-04 | SHOULD | Call `twining_handoff` before ending a session that made code changes. The next agent benefits from knowing what you did. A `twining_post` with entry_type "status" is the minimum requirement. |
+| GEN-04 | SHOULD | Record your session before ending — `twining_record` with a summary is the minimum. For substantial incomplete work, write and commit a handoff doc and post an `artifact` pointer (see twining-handoff skill). The structured `twining_handoff` tool is deprecated (#33, removal at v3). |
 
 ---
 
@@ -548,7 +548,7 @@ Post a delegation request to the blackboard as a "need" entry with capability re
 <!-- tier: 1 -->
 
 #### Context
-Create a handoff record from one agent to another, capturing work results and auto-assembling a context snapshot. Posts a status entry to the blackboard. Use when transferring ownership of work.
+DEPRECATED (#33) — scheduled for removal in v3. Create a handoff record from one agent to another, capturing work results and auto-assembling a context snapshot. Posts a status entry to the blackboard. Prefer the committed-doc pattern in the twining-handoff skill: write a handoff markdown doc, commit it, post an `artifact` entry pointing at it.
 
 #### Rules
 | ID | Level | Rule |
@@ -711,8 +711,8 @@ Export full Twining state as a single markdown document. Includes blackboard ent
 | Step | Tool | Purpose |
 |------|------|---------|
 | 1 | twining_verify | Verify work quality before handing off |
-| 2 | twining_handoff | Create structured handoff with results and context snapshot |
-| 3 | twining_acknowledge | Receiving agent confirms receipt of the handoff |
+| 2 | twining_export | Gather scope state as raw material; author and commit a handoff markdown doc from it (see twining-handoff skill) |
+| 3 | twining_post | Post an `artifact` entry pointing at the committed doc (+ `need` entries for open obligations) |
 
 ### workflow: coordinate
 | Step | Tool | Purpose |
@@ -734,10 +734,9 @@ Export full Twining state as a single markdown document. Includes blackboard ent
 ### workflow: dispatch
 | Step | Tool | Purpose |
 |------|------|---------|
-| 1 | twining_register | Register the subagent with capabilities and role |
+| 1 | twining_register | Register the subagent (optional — writes auto-register their agent_id, #32) |
 | 2 | twining_delegate | Post delegation with required capabilities and scope |
-| 3 | twining_handoff | Create handoff record after subagent completes work |
-| 4 | twining_acknowledge | Acknowledge receipt of the handoff results |
+| 3 | twining_post | Subagent (or orchestrator) posts a `status` entry with results under the subagent's agent_id |
 
 ### workflow: new-session-lifecycle
 | Step | Tool | Purpose |

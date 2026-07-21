@@ -3,8 +3,8 @@
   "id": "01KJJ348MECV5069M9Q5EWVS3Z",
   "name": "startDashboard",
   "properties": {
-    "scope": "src/dashboard/http-server.ts"
+    "scope": "src/"
   },
   "type": "function",
-  "updated_at": "2026-02-28T20:36:53.534Z"
+  "updated_at": "2026-07-21T16:55:32.167Z"
 }

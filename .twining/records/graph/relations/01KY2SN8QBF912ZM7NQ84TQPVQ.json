@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T16:55:31.819Z",
+  "id": "01KY2SN8QBF912ZM7NQ84TQPVQ",
+  "properties": {
+    "decision_summary": "Chose to skip registry auto-touch for agent_id 'unknown'"
+  },
+  "source": "01KQV9J8B49121D9ZY3ZNPCK77",
+  "target": "01KY2SN8Q4R9X6Y4EHZNR9XJZJ",
+  "type": "decided_by"
+}

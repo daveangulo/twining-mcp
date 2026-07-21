@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-21T16:55:43.881Z",
+  "id": "01KY2SNMG9WDPB8PQV9NCJXGS3",
+  "name": "01KY2SNMDAAQYA6CY17B4G4C1A",
+  "properties": {
+    "scope": "plugin/",
+    "summary": "Retire twining_handoff/twining_acknowledge at v3; v2.1 deprecates them and reorients all plugin guidance to the committed-doc + artifact-pointer handoff pattern"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-21T16:55:43.881Z"
+}

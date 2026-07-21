@@ -413,3 +413,54 @@ describe("port retry", () => {
     expect(dashboardResult!.port).toBeGreaterThanOrEqual(blockerPort + 1);
   });
 });
+
+describe("single-instance guard (#42)", () => {
+  let servers: http.Server[] = [];
+
+  beforeEach(() => {
+    saveEnv();
+    servers = [];
+    process.env["TWINING_DASHBOARD_NO_OPEN"] = "1";
+  });
+
+  afterEach(async () => {
+    restoreEnv();
+    await Promise.all(
+      servers.map(
+        (s) =>
+          new Promise<void>((resolve) => {
+            s.close(() => resolve());
+          }),
+      ),
+    );
+  });
+
+  it("second instance for the SAME project skips its dashboard entirely", async () => {
+    // First instance: bind an OS-assigned port, then point the second
+    // instance's configured port at it.
+    process.env["TWINING_DASHBOARD_PORT"] = "0";
+    const first = await startDashboard("/tmp/same-project");
+    expect(first).not.toBeNull();
+    servers.push(first!.server);
+
+    process.env["TWINING_DASHBOARD_PORT"] = String(first!.port);
+    const second = await startDashboard("/tmp/same-project");
+
+    expect(second).toBeNull();
+  });
+
+  it("a DIFFERENT project's dashboard on the port does not suppress startup", async () => {
+    process.env["TWINING_DASHBOARD_PORT"] = "0";
+    const first = await startDashboard("/tmp/project-a");
+    expect(first).not.toBeNull();
+    servers.push(first!.server);
+
+    process.env["TWINING_DASHBOARD_PORT"] = String(first!.port);
+    const second = await startDashboard("/tmp/project-b");
+
+    // Existing retry behavior: binds the next free port instead.
+    expect(second).not.toBeNull();
+    expect(second!.port).not.toBe(first!.port);
+    servers.push(second!.server);
+  });
+});

@@ -3,8 +3,8 @@
   "id": "01KWX2CCZQJXRZ8RJJ2CKNYBFQ",
   "name": "test/decision-engine.test.ts",
   "properties": {
-    "scope": "src/engine/decisions.ts"
+    "scope": "src/"
   },
   "type": "file",
-  "updated_at": "2026-07-21T00:42:26.498Z"
+  "updated_at": "2026-07-21T16:55:32.162Z"
 }

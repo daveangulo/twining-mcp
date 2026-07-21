@@ -43,51 +43,32 @@ twining_delegate({
 
 ### Post-Dispatch (after Agent tool returns)
 
-**3. Create a handoff record**
+**3. Record the results on the blackboard**
+
+Post a `status` entry under the subagent's identity so the outcome is queryable
+and the registry reflects the participant (writes auto-register their agent_id, #32):
 
 ```
-twining_handoff({
-  source_agent: "descriptive-agent-id",
-  target_agent: "orchestrator",
+twining_post({
+  entry_type: "status",
+  summary: "What the subagent accomplished — completed/partial/blocked",
+  detail: "Files touched, notes, anything the next agent needs",
   scope: "src/affected/area/",
-  summary: "What the subagent accomplished",
-  results: [{
-    description: "Brief result description",
-    status: "completed",                  // or "partial", "blocked", "failed"
-    artifacts: ["file1.ts", "file2.ts"],  // files created/modified
-    notes: "Any additional context"
-  }],
-  auto_snapshot: true
+  agent_id: "descriptive-agent-id"
 })
 ```
 
-**4. Acknowledge the handoff**
+For substantial incomplete work, follow the twining-handoff skill instead
+(committed handoff doc + `artifact` pointer). The structured
+`twining_handoff`/`twining_acknowledge` tools are deprecated (#33, removal at v3).
 
-```
-twining_acknowledge({
-  handoff_id: "<id from step 3>",
-  agent_id: "orchestrator"
-})
-```
+## Minimal Protocol (1 call)
 
-## Minimal Protocol (2 calls)
-
-For rapid dispatches where full traceability isn't needed, use just register + handoff. This still populates the Agents and Handoffs dashboard tabs.
-
-**Before dispatch:**
-```
-twining_register({ agent_id: "agent-name", capabilities: [...] })
-```
-
-**After dispatch:**
-```
-twining_handoff({
-  source_agent: "agent-name",
-  target_agent: "orchestrator",
-  summary: "Result summary",
-  results: [{ description: "...", status: "completed" }]
-})
-```
+For rapid dispatches, skip explicit registration entirely: any `twining_post` /
+`twining_record` the subagent makes under its own `agent_id` auto-registers it
+in the Agents tab (#32). Pass a descriptive `agent_id` into the subagent's
+prompt and have it record its own results. Use `twining_register` only when
+capabilities/role matter for delegation matching.
 
 ## Parallel Dispatches
 

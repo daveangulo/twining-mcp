@@ -18,6 +18,9 @@ import { createQueryHandler } from "./query-routes.js";
  * Returns true only when another instance serves the same projectRoot.
  * Different-project dashboards are not considered duplicates.
  */
+/** Port-increment retries for EADDRINUSE, and the guard's probe window (#42). */
+const DASHBOARD_PORT_RETRIES = 5;
+
 function isExistingDashboard(
   port: number,
   projectRoot: string,
@@ -209,13 +212,33 @@ export async function startDashboard(
     return null;
   }
 
+  // Single-instance guard (#42): if another twining server already serves
+  // THIS project's dashboard, don't start a second one — the second
+  // instance (e.g. plugin-bundled alongside a project-pinned server) stays
+  // MCP-only. Probe the whole retry window, since the first instance may
+  // itself have been bumped off the configured port by a foreign occupant.
+  // A different project's dashboard does NOT suppress startup — the port
+  // retry below finds a free port as before.
+  const resolvedRoot = path.resolve(projectRoot);
+  if (config.port !== 0) {
+    for (let p = config.port; p <= config.port + DASHBOARD_PORT_RETRIES; p++) {
+      if (await isExistingDashboard(p, resolvedRoot)) {
+        console.error(
+          `[twining] Dashboard for this project already running on port ${p} — ` +
+            `skipping dashboard in this instance (single-instance guard, #42)`,
+        );
+        return null;
+      }
+    }
+  }
+
   // Resolve public/ directory relative to this compiled file
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
   const publicDir = path.join(__dirname, "public");
 
   const server = http.createServer(handleRequest(publicDir, projectRoot, deps));
-  const port = await tryListen(server, config.port, 5);
+  const port = await tryListen(server, config.port, DASHBOARD_PORT_RETRIES);
 
   const url = `http://127.0.0.1:${port}`;
   console.error(`[twining] Dashboard: ${url}`);

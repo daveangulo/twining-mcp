@@ -2,6 +2,11 @@
 
 All notable changes to Twining MCP are documented here.
 
+## Plugin [1.15.0] - 2026-07-21
+
+### Changed
+- **Handoff guidance rewritten around the committed-doc pattern** (#33). Field data showed zero calls to the structured `twining_handoff`/`twining_acknowledge` tools across three repos, while the heaviest repo accumulated 40+ rich committed markdown handoff docs doing the job. The `twining-handoff` skill now teaches: write a handoff doc, commit it, post an `artifact` entry pointing at it (plus `need` entries for open obligations — those survive archive sweeps, #40). The `twining-dispatch` skill's post-dispatch handoff/acknowledge steps are replaced with a `status` post under the subagent's agent_id; its minimal protocol drops explicit registration since writes now auto-register (#32). BEHAVIORS.md GEN-04 and the handoff/dispatch workflow tables updated to match.
+
 ## Plugin [1.14.0] - 2026-07-20
 
 ### Added
@@ -11,6 +16,11 @@ All notable changes to Twining MCP are documented here.
 
 ### Added
 - `twining_archive_stale` accepts an optional `reasons` map (id → rationale); per-item reasons are recorded in the audit-trail finding so a future reviewer can spot and reverse bad archival calls (#16).
+- **Registry auto-touch on writes** (#32). Every `twining_post`, `twining_decide`, and `twining_record` now upserts its `agent_id` into the agent registry (best-effort, never fails the write), so `agents/registry.json` reflects who actually worked on the project instead of staying empty. `agent_id: "unknown"` is skipped — a shared record for identity-less callers would be noise (same rule as the subagent-stop hook's silence). Liveness stays derived (active/idle/gone from `last_active`); historical participants are never expunged and `twining_agents` includes gone agents by default, so a parallel wave leaves a queryable record.
+- **Dashboard single-instance guard** (#42). Before binding, the server probes the configured port range for a dashboard already serving the *same* project (via `/api/health`'s `projectRoot`); if found, the second instance skips its dashboard and stays MCP-only — no more dual dashboards from plugin-bundled + project-pinned server pairs. A different project's dashboard on the port still triggers the existing next-port retry.
+
+### Deprecated
+- `twining_handoff` and `twining_acknowledge` are deprecated, scheduled for removal in v3 (#33) — zero field calls; real handoffs are committed markdown docs. Tool descriptions now steer to the committed-doc + `artifact`-pointer pattern (see plugin 1.15.0 notes).
 
 ### Changed
 - **Archive passes no longer sweep unresolved needs/warnings** (#40). Age-based archiving (explicit `twining_archive`, auto-archive, and the housekeeping archive pass) now exempts `need`/`warning` entries unless they are resolved — a need/warning counts as resolved when a later entry back-references it via `relates_to`. Open obligations matter more as they age, not less; the 2026-07-20 field run archived a same-day open need that had to be manually reposted. Override with `keep_open_needs_warnings: false` to force a full sweep; results report `kept_open_count`. The auto-archive threshold counts only archivable entries, so exempt needs/warnings can never permanently arm the trigger (same class of bug as the decision-count archive loop).

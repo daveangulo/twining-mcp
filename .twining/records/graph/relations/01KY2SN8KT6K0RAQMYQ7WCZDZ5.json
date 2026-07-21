@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T16:55:31.706Z",
+  "id": "01KY2SN8KT6K0RAQMYQ7WCZDZ5",
+  "properties": {
+    "decision_summary": "Chose engine-level registry auto-touch via BlackboardEngine.touchAgent (setter-injected IAgentStore, reused by DecisionEngine through its blackboardEngine reference) over per-tool touches"
+  },
+  "source": "01KWX2CCZQJXRZ8RJJ2CKNYBFQ",
+  "target": "01KY2SN8KN66MNDV1A67R1WTBC",
+  "type": "decided_by"
+}

@@ -19,7 +19,8 @@
   "rationale": "Code is already written, tested, and the engine is constructed at startup. Exposing it completes the coordination feature set and eliminates the dead-code smell. Removing would waste existing work.",
   "reversible": true,
   "scope": "src/tools/coordination-tools.ts",
-  "status": "active",
+  "status": "superseded",
   "summary": "Expose delegation and handoff as MCP tools rather than removing dead CoordinationEngine code",
+  "superseded_by": "01KY2SNMDAAQYA6CY17B4G4C1A",
   "timestamp": "2026-02-18T00:09:02.639Z"
 }

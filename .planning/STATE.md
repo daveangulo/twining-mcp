@@ -221,6 +221,12 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Chose to satisfy the per-item audit-trail criterion by adding an optional reasons map (id → rationale) to twining_archive_stale rather than packing per-item text into the existing single reason string
 - Chose auto-invocable: false and an explicit never-as-a-side-effect rule in the skill
 - Chose to have the skill degrade gracefully in lite tool surface (decisions via twining_why + dangling warnings via housekeeping) since twining_read is full-surface only
+- Chose engine-level registry auto-touch via BlackboardEngine.touchAgent (setter-injected IAgentStore, reused by DecisionEngine through its blackboardEngine reference) over per-tool touches
+- Chose to skip registry auto-touch for agent_id 'unknown'
+- Chose to keep TTL-derived liveness purely as display status with no expunge
+- Chose a pre-bind same-project probe across the full port retry window (config.port..+5) for the #42 single-instance guard, reusing the existing /api/health projectRoot check
+- Chose to ship the #42 guard without the ${TWINING_MCP_CMD} env-expansion escape hatch
+- Retire twining_handoff/twining_acknowledge at v3; v2.1 deprecates them and reorients all plugin guidance to the committed-doc + artifact-pointer handoff pattern
 
 ### Pending Todos
 

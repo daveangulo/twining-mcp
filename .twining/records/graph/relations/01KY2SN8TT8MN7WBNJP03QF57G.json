@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T16:55:31.930Z",
+  "id": "01KY2SN8TT8MN7WBNJP03QF57G",
+  "properties": {
+    "decision_summary": "Chose to keep TTL-derived liveness purely as display status with no expunge"
+  },
+  "source": "01KKNE77ZAW1943XPGMREM997R",
+  "target": "01KY2SN8TR500NTNWC3CWCX44N",
+  "type": "decided_by"
+}

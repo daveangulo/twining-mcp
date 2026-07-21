@@ -12,7 +12,7 @@ import { blackboardEmbedText, embedContentHash } from "../embeddings/embed-text.
 import type { SearchEngine, BlackboardSearchResult } from "../embeddings/search.js";
 import type { Archiver } from "./archiver.js";
 import type { GraphAutoPopulator } from "./graph-auto-populator.js";
-import type { IBlackboardStore, IIndexManager } from "../storage/interfaces.js";
+import type { IAgentStore, IBlackboardStore, IIndexManager } from "../storage/interfaces.js";
 
 export class BlackboardEngine {
   private readonly store: IBlackboardStore;
@@ -23,6 +23,7 @@ export class BlackboardEngine {
   private archiver: Archiver | null = null;
   private archiveThreshold: number | null = null;
   private graphPopulator: GraphAutoPopulator | null = null;
+  private agentStore: IAgentStore | null = null;
 
   constructor(
     store: IBlackboardStore,
@@ -47,6 +48,26 @@ export class BlackboardEngine {
   /** Inject graph auto-populator for relation extraction from posts. */
   setGraphPopulator(populator: GraphAutoPopulator): void {
     this.graphPopulator = populator;
+  }
+
+  /** Inject agent store for registry auto-touch on writes (#32). */
+  setAgentStore(agentStore: IAgentStore): void {
+    this.agentStore = agentStore;
+  }
+
+  /**
+   * Best-effort registry touch for a writing agent (#32). Fire-and-forget:
+   * a registry failure must never fail the write. "unknown" is skipped —
+   * a shared record for identity-less callers would aggregate unrelated
+   * agents into noise (same call as the subagent-stop hook's silence).
+   */
+  touchAgent(agentId: string | undefined): void {
+    if (!this.agentStore) return;
+    const id = agentId ?? "main";
+    if (!id || id === "unknown") return;
+    Promise.resolve(this.agentStore.touch(id)).catch(() => {
+      // Non-fatal — registry is observability, not correctness.
+    });
   }
 
   /** Post a new blackboard entry with validation and defaults. */
@@ -101,6 +122,10 @@ export class BlackboardEngine {
       agent_id: input.agent_id ?? "main",
       provenance: captureProvenance(this.projectRoot),
     });
+
+    // Registry auto-touch (#32): every write marks its author as a
+    // participant so the registry reflects who actually worked here.
+    this.touchAgent(input.agent_id);
 
     // Auto-populate graph with scope/relation entities (best-effort)
     if (this.graphPopulator) {

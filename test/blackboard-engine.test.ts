@@ -4,6 +4,7 @@ import path from "node:path";
 import os from "node:os";
 import { BlackboardStore } from "../src/storage/blackboard-store.js";
 import { BlackboardEngine } from "../src/engine/blackboard.js";
+import { AgentStore } from "../src/storage/agent-store.js";
 import { TwiningError } from "../src/utils/errors.js";
 import type { TwiningConfig } from "../src/utils/types.js";
 import { DEFAULT_CONFIG } from "../src/config.js";
@@ -363,5 +364,65 @@ describe("BlackboardEngine auto-archive", () => {
     await new Promise((r) => setTimeout(r, 50));
 
     expect(mockArchiver.archive).toHaveBeenCalledWith({ summarize: true });
+  });
+});
+
+describe("BlackboardEngine registry auto-touch (#32)", () => {
+  let agentStore: AgentStore;
+
+  beforeEach(() => {
+    agentStore = new AgentStore(tmpDir);
+    engine.setAgentStore(agentStore);
+  });
+
+  it("registers the posting agent in the registry on post", async () => {
+    await engine.post({
+      entry_type: "finding",
+      summary: "Found something",
+      agent_id: "worker-7",
+    });
+    await new Promise((r) => setTimeout(r, 50));
+
+    const agent = await agentStore.get("worker-7");
+    expect(agent).toBeTruthy();
+    expect(agent!.last_active).toBeTruthy();
+  });
+
+  it("registers the default agent_id main when the caller passes none", async () => {
+    await engine.post({ entry_type: "finding", summary: "Anonymous finding" });
+    await new Promise((r) => setTimeout(r, 50));
+
+    const agent = await agentStore.get("main");
+    expect(agent).toBeTruthy();
+  });
+
+  it("does not register agent_id 'unknown'", async () => {
+    // Precedent: the subagent-stop hook posts nothing for unknown identity —
+    // an "unknown" registry record would aggregate unrelated agents into noise.
+    await engine.post({
+      entry_type: "finding",
+      summary: "Identity-less finding",
+      agent_id: "unknown",
+    });
+    await new Promise((r) => setTimeout(r, 50));
+
+    expect(await agentStore.get("unknown")).toBeNull();
+    expect(await agentStore.getAll()).toHaveLength(0);
+  });
+
+  it("post succeeds even when the registry write fails", async () => {
+    const failingStore = {
+      touch: async () => {
+        throw new Error("registry unavailable");
+      },
+    };
+    engine.setAgentStore(failingStore as any);
+
+    const result = await engine.post({
+      entry_type: "finding",
+      summary: "Survives registry failure",
+      agent_id: "worker-8",
+    });
+    expect(result.id).toBeTruthy();
   });
 });

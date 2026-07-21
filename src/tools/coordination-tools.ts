@@ -229,7 +229,7 @@ export function registerCoordinationTools(
     "twining_handoff",
     {
       description:
-        "Hand off work to another agent with structured results and context. The next agent will see your handoff in their assemble briefing.",
+        "DEPRECATED — scheduled for removal in v3 (#33): field data shows real handoffs are rich committed markdown docs, which this structured API is too shallow to carry. Prefer writing a handoff doc, committing it, and posting an 'artifact' entry via twining_post with the doc path so the next session's assemble surfaces it. Hand off work to another agent with structured results and context.",
       inputSchema: {
         source_agent: z
           .string()
@@ -316,7 +316,7 @@ export function registerCoordinationTools(
     "twining_acknowledge",
     {
       description:
-        "Acknowledge receipt of a handoff, recording which agent picked it up.",
+        "DEPRECATED — scheduled for removal in v3 alongside twining_handoff (#33). Acknowledge receipt of a handoff, recording which agent picked it up.",
       inputSchema: {
         handoff_id: z
           .string()

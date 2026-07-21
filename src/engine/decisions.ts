@@ -316,6 +316,10 @@ export class DecisionEngine {
       provenance: captureProvenance(this.projectRoot),
     });
 
+    // Registry auto-touch (#32) — the blackboard engine holds the agent
+    // store and the skip-unknown rule; best-effort, never fails the decide.
+    this.blackboardEngine.touchAgent(agentId);
+
     // Retire the superseded decision and write the superseded_by back-link so
     // the retired record points at its replacement (#31). Done after create so
     // the replacement id exists; if create throws, the old decision is

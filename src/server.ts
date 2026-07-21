@@ -139,6 +139,10 @@ export function createServer(projectRoot: string): ServerContext {
   // Wire auto-archive threshold into blackboard engine (spec §6.1.3)
   blackboardEngine.setArchiver(archiver, config);
 
+  // Wire registry auto-touch: every post/decide/record marks its author as
+  // a participant, so the registry reflects who actually worked here (#32)
+  blackboardEngine.setAgentStore(agentStore);
+
   const planningBridge = new PlanningBridge(projectRoot);
 
   const contextAssembler = new ContextAssembler(

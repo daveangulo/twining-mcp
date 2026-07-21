@@ -1,0 +1,45 @@
+{
+  "affected_files": [
+    "src/tools/coordination-tools.ts",
+    "plugin/skills/twining-handoff/SKILL.md",
+    "plugin/skills/twining-dispatch/SKILL.md",
+    "plugin/skills/twining-coordinate/SKILL.md",
+    "plugin/BEHAVIORS.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Redesign handoffs around document-shaped payloads (markdown body or first-class doc references in the handoff record)",
+      "pros": [],
+      "reason_rejected": "Duplicates what git + blackboard artifact entries already do well; adds API surface to a feature with zero organic usage."
+    },
+    {
+      "cons": [],
+      "option": "Remove the tools in v2.1 immediately",
+      "pros": [],
+      "reason_rejected": "Removal is a breaking API change mid-2.x; deprecation now, removal at v3 respects semver."
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Decided #33: retire the structured handoff surface at v3. twining_handoff/twining_acknowledge marked deprecated; plugin skills (twining-handoff, twining-dispatch, twining-coordinate) and BEHAVIORS.md rewritten around the committed-doc + artifact-pointer pattern. Plugin 1.15.0.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KY2SNMDAAQYA6CY17B4G4C1A",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "f66c9a31e36bc87fa417365a16d21a60097c8427",
+    "recorded_at": "2026-07-21T16:55:43.771Z"
+  },
+  "rationale": "Field analysis: zero calls to the structured handoff API across 3 repos while the heaviest repo accumulated 40+ rich committed markdown handoff docs (26-87 KB) doing exactly this job — the structured API is too shallow for how projects actually hand off, and lite mode already hides it. Supersedes the 2026-02-18 decision to expose the CoordinationEngine handoff code as MCP tools rather than remove it: that bet was 'code exists, exposing completes the feature set', and five months of field data measured the result at zero adoption.",
+  "reversible": true,
+  "scope": "plugin/",
+  "status": "active",
+  "summary": "Retire twining_handoff/twining_acknowledge at v3; v2.1 deprecates them and reorients all plugin guidance to the committed-doc + artifact-pointer handoff pattern",
+  "supersedes": "01KHQ18BXCJN5HYHBXJ57HHCWQ",
+  "timestamp": "2026-07-21T16:55:43.786Z"
+}

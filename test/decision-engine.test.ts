@@ -419,6 +419,22 @@ describe("DecisionEngine.why", () => {
   });
 });
 
+describe("DecisionEngine registry auto-touch (#32)", () => {
+  it("registers the deciding agent via the blackboard engine's agent store", async () => {
+    const { AgentStore } = await import("../src/storage/agent-store.js");
+    const agentStore = new AgentStore(tmpDir);
+    blackboardEngine.setAgentStore(agentStore);
+
+    await decisionEngine.decide(
+      validDecisionInput({ agent_id: "architect-2" }),
+    );
+    await new Promise((r) => setTimeout(r, 50));
+
+    const agent = await agentStore.get("architect-2");
+    expect(agent).toBeTruthy();
+  });
+});
+
 describe("DecisionEngine.why bounding (#41)", () => {
   it("excludes superseded decisions by default and reports superseded_count", async () => {
     const first = await decisionEngine.decide(
