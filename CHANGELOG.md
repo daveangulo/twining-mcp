@@ -17,7 +17,9 @@ All notable changes to Twining MCP are documented here.
 ### Added
 - **`twining-semantic-review` skill** (#16). Opt-in, user-invoked LLM-judged staleness review: the session's own model scores entries 0–1 with written reasons for "references a concept the project has moved past" (dead sprints, retired codenames) — the class deterministic `staleness_review` can't see. No server-side model client, no API key: the judging model is the agent running the skill. Human-in-the-loop always — candidates ≥0.7 are presented for confirmation, then archived via `twining_archive_stale` with per-item reasons in the audit trail. Never auto-invoked, never a side effect of other work.
 
-## [Unreleased]
+## [2.1.0] - 2026-07-21
+
+Closes the v2.1 milestone: seven issues from field diagnostics of live projects, all fixed with the field-verified root cause rather than the assumed one. Server changes below; companion plugin releases 1.14.0–1.16.0 (semantic review skill, handoff deprecation, marker-based stop gate).
 
 ### Added
 - `twining_archive_stale` accepts an optional `reasons` map (id → rationale); per-item reasons are recorded in the audit-trail finding so a future reviewer can spot and reverse bad archival calls (#16).
