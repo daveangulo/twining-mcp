@@ -3,8 +3,8 @@
   "id": "01KQV9J8B49121D9ZY3ZNPCK77",
   "name": "CHANGELOG.md",
   "properties": {
-    "scope": "src/engine/decisions.ts"
+    "scope": "src/engine/"
   },
   "type": "file",
-  "updated_at": "2026-07-21T00:42:26.502Z"
+  "updated_at": "2026-07-21T01:52:15.617Z"
 }

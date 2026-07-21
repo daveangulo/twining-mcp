@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T01:52:15.235Z",
+  "id": "01KY15ZAC319X0BA95TMK2GT6T",
+  "name": "Archiver/archive",
+  "properties": {
+    "scope": "src/engine/"
+  },
+  "type": "function",
+  "updated_at": "2026-07-21T01:52:15.618Z"
+}

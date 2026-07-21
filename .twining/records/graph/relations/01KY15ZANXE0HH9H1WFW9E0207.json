@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T01:52:15.549Z",
+  "id": "01KY15ZANXE0HH9H1WFW9E0207",
+  "properties": {
+    "decision_summary": "Chose to make the auto-archive threshold count exclude unresolved needs/warnings exactly (building the resolvedIds set per post) rather than excluding all needs/warnings approximately"
+  },
+  "source": "01KJD8KGK434DH6PX2BNXW4W71",
+  "target": "01KY15ZANVSTGFJ1AW971GSYSE",
+  "type": "decided_by"
+}

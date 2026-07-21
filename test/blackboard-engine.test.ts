@@ -255,6 +255,64 @@ describe("BlackboardEngine auto-archive", () => {
     expect(mockArchiver.archive).not.toHaveBeenCalled();
   });
 
+  it("does not trigger archive when only unresolved needs/warnings exceed threshold (#40)", async () => {
+    // Same class of bug as the decision-count regression above: unresolved
+    // need/warning entries are exempt from archiving (#40), so counting them
+    // toward the trigger would leave it permanently armed, firing a no-op
+    // archive on every post.
+    const mockArchiver = {
+      archive: vi.fn().mockResolvedValue({ archived_count: 0, archive_file: "", kept_open_count: 0 }),
+    };
+    const config: TwiningConfig = {
+      ...DEFAULT_CONFIG,
+      archive: {
+        ...DEFAULT_CONFIG.archive,
+        max_blackboard_entries_before_archive: 5,
+      },
+    };
+
+    engine.setArchiver(mockArchiver as any, config);
+
+    for (let i = 0; i < 6; i++) {
+      await engine.post({ entry_type: "need", summary: `Open need ${i}` });
+    }
+
+    await new Promise((r) => setTimeout(r, 50));
+
+    expect(mockArchiver.archive).not.toHaveBeenCalled();
+  });
+
+  it("counts a resolved need toward the auto-archive threshold (#40)", async () => {
+    const mockArchiver = {
+      archive: vi.fn().mockResolvedValue({ archived_count: 0, archive_file: "", kept_open_count: 0 }),
+    };
+    const config: TwiningConfig = {
+      ...DEFAULT_CONFIG,
+      archive: {
+        ...DEFAULT_CONFIG.archive,
+        max_blackboard_entries_before_archive: 3,
+      },
+    };
+
+    engine.setArchiver(mockArchiver as any, config);
+
+    const { id: needId } = await engine.post({
+      entry_type: "need",
+      summary: "Add rate limiting",
+    });
+    await engine.post({ entry_type: "finding", summary: "Some finding" });
+    // Resolves the need — now all 3 entries are archivable.
+    await engine.post({
+      entry_type: "status",
+      summary: "Rate limiting added",
+      relates_to: [needId],
+    });
+
+    await new Promise((r) => setTimeout(r, 50));
+
+    expect(mockArchiver.archive).toHaveBeenCalled();
+  });
+
   it("does not trigger archive when a post carries _skipAutoArchive, even over threshold", async () => {
     const mockArchiver = {
       archive: vi.fn().mockResolvedValue({ archived_count: 0, archive_file: "" }),

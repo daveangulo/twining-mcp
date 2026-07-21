@@ -3,8 +3,8 @@
   "id": "01KY11ZFF3RCC0390MR7PEKMT2",
   "name": "TWINING-DESIGN-SPEC.md",
   "properties": {
-    "scope": "src/engine/decisions.ts"
+    "scope": "src/engine/"
   },
   "type": "file",
-  "updated_at": "2026-07-21T00:42:26.501Z"
+  "updated_at": "2026-07-21T01:52:15.616Z"
 }

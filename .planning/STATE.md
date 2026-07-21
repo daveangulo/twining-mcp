@@ -212,6 +212,11 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Chose ids-mode drill-down to bypass the budget and return richer detail (context, full alternatives, constraints, depends_on) than scope mode ever carried
 - Chose a hardcoded DEFAULT_WHY_MAX_TOKENS=4000 constant mirroring context_assembly.default_max_tokens rather than threading config into DecisionEngine
 - Chose to commit directly to main rather than a PR branch
+- Chose relates_to back-reference as the resolution signal for need/warning archive exemption (#40) over adding an explicit resolved marker field
+- Chose to implement the exemption inside Archiver via a new pure plan() partition method
+- Chose full-pipeline simulation for housekeeping preview (#39 option a: preview calls Archiver.plan() and filters downstream passes by the planned-archive set) over annotating preview
+- Chose to make the auto-archive threshold count exclude unresolved needs/warnings exactly (building the resolvedIds set per post) rather than excluding all needs/warnings approximately
+- Chose to switch three legacy archiver tests from warning/need fixtures to finding/status rather than passing keep_open_needs_warnings: false
 
 ### Pending Todos
 

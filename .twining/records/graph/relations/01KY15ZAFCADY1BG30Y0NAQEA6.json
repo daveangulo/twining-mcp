@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T01:52:15.340Z",
+  "id": "01KY15ZAFCADY1BG30Y0NAQEA6",
+  "properties": {
+    "decision_summary": "Chose to implement the exemption inside Archiver via a new pure plan() partition method"
+  },
+  "source": "01KY11ZFF3RCC0390MR7PEKMT2",
+  "target": "01KY15ZAF40X7H86AT0T5CGH1V",
+  "type": "decided_by"
+}

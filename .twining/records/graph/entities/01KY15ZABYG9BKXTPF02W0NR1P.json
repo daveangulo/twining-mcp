@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T01:52:15.230Z",
+  "id": "01KY15ZABYG9BKXTPF02W0NR1P",
+  "name": "test/archiver.test.ts",
+  "properties": {
+    "scope": "src/engine/"
+  },
+  "type": "file",
+  "updated_at": "2026-07-21T01:52:15.613Z"
+}

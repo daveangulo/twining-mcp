@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Implemented #39+#40 together: archive passes now exempt unresolved need/warning entries (resolved via relates_to back-reference), and housekeeping preview simulates the full pass pipeline via new Archiver.plan() so preview counts match execute. 1197 tests green.\nDecisions: Chose relates_to back-reference as the resolution signal for need/warning archive exemption (#40) over adding an explicit resolved marker field — the issue proposed it, it requires no schema change, and the failure mode is conservative: a resolver archived in an earlier run makes the entry look unresolved and KEPT, never silently lost.; Chose to implement the exemption inside Archiver via a new pure plan() partition method — one implementation automatically covers all three archive paths (explicit twining_archive tool, auto-archive on post, housekeeping pass 1); per-caller checks were rejected as drift-prone.; Chose full-pipeline simulation for housekeeping preview (#39 option a: preview calls Archiver.plan() and filters downstream passes by the planned-archive set) over annotating preview as approximate (option b, keeps the lie) or reordering passes (option c, dedup-before-archive just moves the mismatch to the archive count).; Chose to make the auto-archive threshold count exclude unresolved needs/warnings exactly (building the resolvedIds set per post) rather than excluding all needs/warnings approximately — the board is small (threshold ~100) so the O(n) set build is cheap, and the exact count avoids both permanent re-arm and late triggering.; Chose to switch three legacy archiver tests from warning/need fixtures to finding/status rather than passing keep_open_needs_warnings: false — they test summarize/append/keep_decisions mechanics and should not depend on the exemption either way.\nFindings: Auto-archive, twining_archive, and housekeeping pass 1 all funnel through Archiver.archive() — any future archival-policy change belongs in Archiver.plan(), nowhere else.; The auto-archive threshold had the same permanent-re-arm bug class as the historical decision-count archive loop: any entry category that is counted toward the trigger but exempt from archiving arms the trigger forever. Now covered by regression tests for decisions, archive-tagged posts, and open needs/warnings.; warning: resolution detection only sees the active board — if a resolver entry was archived in an earlier run, its need/warning stays exempt indefinitely. Conservative direction (keeps rather than loses), but a future dismissed/expiry mechanism or archive-aware resolution check would tighten it.",
+  "entry_type": "status",
+  "id": "01KY15ZA8996NBMFM1GPWTTVEA",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "730b806b7925224d8d3e8253cb2ffa9d298633c2",
+    "recorded_at": "2026-07-21T01:52:15.098Z"
+  },
+  "scope": "src/engine/",
+  "summary": "Implemented #39+#40 together: archive passes now exempt unresolved need/warning entries (resolved via relates_to back-reference), and housekeeping preview simulates the full pass pipeline via new A…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-21T01:52:15.113Z"
+}

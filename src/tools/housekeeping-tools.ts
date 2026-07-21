@@ -20,8 +20,8 @@ export function registerHousekeepingTools(
     "twining_housekeeping",
     {
       description:
-        "Run periodic maintenance on Twining stores. Preview by default (dry run). " +
-        "Archives old entries, removes duplicates, surfaces stale decisions and dangling warnings, " +
+        "Run periodic maintenance on Twining stores. Preview by default (dry run); preview simulates the full pass pipeline, so its counts match what execute will do on the same state (#39). " +
+        "Archives old entries (keeping decisions and unresolved need/warning entries, #40), removes duplicates, surfaces stale decisions and dangling warnings, " +
         "prunes orphaned graph entities, rotates old metrics, and backfills missing superseded_by back-links on superseded decisions. " +
         "Pass staleness_review: true to also flag entries whose scope/files/branch are gone. " +
         "Pass execute: true to apply changes.",

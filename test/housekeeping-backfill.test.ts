@@ -32,7 +32,8 @@ const stubBlackboardStore: IBlackboardStore = {
 };
 
 const stubArchiver = {
-  archive: async () => ({ archived_count: 0, archive_file: "" }),
+  archive: async () => ({ archived_count: 0, archive_file: "", kept_open_count: 0 }),
+  plan: async () => ({ to_archive: [], kept_open_count: 0, cutoff: "" }),
 } as unknown as Archiver;
 
 function decisionInput(

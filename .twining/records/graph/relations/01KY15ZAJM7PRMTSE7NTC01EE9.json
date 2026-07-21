@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T01:52:15.444Z",
+  "id": "01KY15ZAJM7PRMTSE7NTC01EE9",
+  "properties": {
+    "decision_summary": "Chose full-pipeline simulation for housekeeping preview (#39 option a: preview calls Archiver.plan() and filters downstream passes by the planned-archive set) over annotating preview"
+  },
+  "source": "01KQWE98BJDY12CMM0EBPTF7BN",
+  "target": "01KY15ZAJG8VZXWKEAMYNZDH2P",
+  "type": "decided_by"
+}

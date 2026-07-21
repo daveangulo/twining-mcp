@@ -19,7 +19,8 @@ async function postEntry(
   type: string,
   summary: string,
   timestamp: string,
-): Promise<void> {
+  extra: Partial<BlackboardEntry> = {},
+): Promise<string> {
   // Write directly to JSONL to control timestamp
   const entry = {
     id: `test-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
@@ -30,9 +31,11 @@ async function postEntry(
     scope: "project",
     summary,
     detail: "",
+    ...extra,
   };
   const bbPath = path.join(tmpDir, "blackboard.jsonl");
   fs.appendFileSync(bbPath, JSON.stringify(entry) + "\n");
+  return entry.id;
 }
 
 beforeEach(() => {
@@ -94,7 +97,7 @@ describe("Archiver.archive", () => {
 
   it("posts summary finding to blackboard when summarize=true", async () => {
     await postEntry("finding", "Old finding 1", "2024-01-01T00:00:00.000Z");
-    await postEntry("warning", "Old warning", "2024-01-01T00:00:00.000Z");
+    await postEntry("status", "Old status", "2024-01-01T00:00:00.000Z");
 
     const result = await archiver.archive({
       before: "2025-01-01T00:00:00.000Z",
@@ -136,7 +139,7 @@ describe("Archiver.archive", () => {
     expect(result1.archived_count).toBe(1);
 
     // Add another old entry and archive again with same date prefix
-    await postEntry("warning", "Batch 2 warning", "2024-06-01T00:00:00.000Z");
+    await postEntry("status", "Batch 2 status", "2024-06-01T00:00:00.000Z");
 
     const result2 = await archiver.archive({
       before: "2025-01-01T00:00:00.000Z",
@@ -183,8 +186,8 @@ describe("Archiver.archive", () => {
 
   it("archives non-decision entries when keep_decisions is true (default)", async () => {
     await postEntry("decision", "Important decision", "2024-01-01T00:00:00.000Z");
-    await postEntry("warning", "Old warning", "2024-01-01T00:00:00.000Z");
-    await postEntry("need", "Old need", "2024-01-01T00:00:00.000Z");
+    await postEntry("finding", "Old finding", "2024-01-01T00:00:00.000Z");
+    await postEntry("status", "Old status", "2024-01-01T00:00:00.000Z");
 
     const result = await archiver.archive({
       before: "2025-01-01T00:00:00.000Z",
@@ -192,7 +195,7 @@ describe("Archiver.archive", () => {
       summarize: false,
     });
 
-    // Only warning and need should be archived (not decision)
+    // Only finding and status should be archived (not decision)
     expect(result.archived_count).toBe(2);
 
     const { entries } = await blackboardStore.read();
@@ -246,5 +249,88 @@ describe("Archiver.archive", () => {
     await new Promise((r) => setTimeout(r, 50));
 
     expect(archiveSpy).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("Archiver open needs/warnings exemption (#40)", () => {
+  const OLD = "2025-01-01T00:00:00.000Z";
+  const LATER = "2025-01-02T00:00:00.000Z";
+  const CUTOFF = "2025-03-01T00:00:00.000Z";
+
+  it("does not archive an unresolved need older than the cutoff by default", async () => {
+    await postEntry("need", "Open obligation", OLD);
+    await postEntry("finding", "Old finding", OLD);
+
+    const result = await archiver.archive({ before: CUTOFF, summarize: false });
+
+    expect(result.archived_count).toBe(1);
+    const { entries } = await blackboardStore.read();
+    expect(entries).toHaveLength(1);
+    expect(entries[0]!.entry_type).toBe("need");
+  });
+
+  it("does not archive an unresolved warning older than the cutoff by default", async () => {
+    await postEntry("warning", "Fragile spot", OLD);
+
+    const result = await archiver.archive({ before: CUTOFF, summarize: false });
+
+    expect(result.archived_count).toBe(0);
+    const { entries } = await blackboardStore.read();
+    expect(entries).toHaveLength(1);
+  });
+
+  it("archives a need that a later entry resolved via relates_to", async () => {
+    const needId = await postEntry("need", "Add rate limiting", OLD);
+    await postEntry("status", "Rate limiting added", LATER, {
+      relates_to: [needId],
+    });
+
+    const result = await archiver.archive({ before: CUTOFF, summarize: false });
+
+    // Both the resolved need and its resolver are old enough to go.
+    expect(result.archived_count).toBe(2);
+    const { entries } = await blackboardStore.read();
+    expect(entries).toHaveLength(0);
+  });
+
+  it("archives old needs and warnings when keep_open_needs_warnings is false", async () => {
+    await postEntry("need", "Open obligation", OLD);
+    await postEntry("warning", "Fragile spot", OLD);
+
+    const result = await archiver.archive({
+      before: CUTOFF,
+      summarize: false,
+      keep_open_needs_warnings: false,
+    });
+
+    expect(result.archived_count).toBe(2);
+  });
+
+  it("reports how many open needs/warnings were exempted", async () => {
+    await postEntry("need", "Open obligation", OLD);
+    await postEntry("warning", "Fragile spot", OLD);
+    await postEntry("finding", "Old finding", OLD);
+
+    const result = await archiver.archive({ before: CUTOFF, summarize: false });
+
+    expect(result.archived_count).toBe(1);
+    expect(result.kept_open_count).toBe(2);
+  });
+});
+
+describe("Archiver.plan (#39)", () => {
+  it("reports the would-be archive partition without touching the store", async () => {
+    await postEntry("finding", "Old finding", "2025-01-01T00:00:00.000Z");
+    await postEntry("need", "Open obligation", "2025-01-01T00:00:00.000Z");
+    await postEntry("finding", "Recent finding", "2025-06-01T00:00:00.000Z");
+
+    const plan = await archiver.plan({ before: "2025-03-01T00:00:00.000Z" });
+
+    expect(plan.to_archive.map((e) => e.summary)).toEqual(["Old finding"]);
+    expect(plan.kept_open_count).toBe(1);
+    // Pure: nothing moved, nothing written.
+    const { entries } = await blackboardStore.read();
+    expect(entries).toHaveLength(3);
+    expect(fs.existsSync(path.join(tmpDir, "archive"))).toBe(false);
   });
 });

@@ -177,7 +177,7 @@ export function registerLifecycleTools(
     "twining_archive",
     {
       description:
-        "Archive old blackboard entries. Moves entries older than a cutoff timestamp to an archive file, preserving decision entries. Optionally posts a summary finding.",
+        "Archive old blackboard entries. Moves entries older than a cutoff timestamp to an archive file, preserving decision entries and unresolved need/warning entries (#40 — a need/warning counts as resolved when a later entry references it via relates_to). Optionally posts a summary finding.",
       inputSchema: {
         before: z
           .string()
@@ -190,6 +190,12 @@ export function registerLifecycleTools(
           .boolean()
           .optional()
           .describe("Whether to keep decision entries in the blackboard (default: true)"),
+        keep_open_needs_warnings: z
+          .boolean()
+          .optional()
+          .describe(
+            "Whether to exempt unresolved need/warning entries from age-based archiving (default: true). Set false to force a full sweep.",
+          ),
         summarize: z
           .boolean()
           .optional()

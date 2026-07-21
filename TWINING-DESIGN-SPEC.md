@@ -646,12 +646,18 @@ Search entities by name or properties.
 
 #### `twining_archive`
 Archive old blackboard entries. Called automatically on commit/context-switch if configured, or manually.
+Unresolved `need`/`warning` entries are exempt from age-based archiving by default (v2.1, #40):
+an open obligation matters *more* as it ages, not less. A need/warning counts as resolved when any
+other entry back-references it via `relates_to` (or it is explicitly dismissed). The same exemption
+applies to auto-archive and the housekeeping archive pass, and the auto-archive threshold counts
+only archivable entries so exempt ones can never permanently arm the trigger.
 
 **Input:**
 ```typescript
 {
   before?: string;                // Archive entries before this timestamp
   keep_decisions?: boolean;       // Keep decision-type entries (default: true)
+  keep_open_needs_warnings?: boolean; // Keep unresolved need/warning entries (default: true; false forces a full sweep)
   summarize?: boolean;            // Generate summary of archived entries (default: true)
 }
 ```
@@ -661,6 +667,7 @@ Archive old blackboard entries. Called automatically on commit/context-switch if
 {
   archived_count: number;
   archive_file: string;
+  kept_open_count: number;        // Unresolved needs/warnings exempted this pass
   summary?: string;               // If summarize was true
 }
 ```

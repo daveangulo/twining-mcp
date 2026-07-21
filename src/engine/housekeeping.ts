@@ -43,7 +43,7 @@ export interface DanglingWarning {
 }
 
 export interface HousekeepingResult {
-  archived: { count: number; file: string };
+  archived: { count: number; file: string; kept_open: number };
   deduplicated: { removed: number };
   stale_provisionals: { count: number; items: StaleProvisional[] };
   promoted_provisionals: { count: number; ids: string[] };
@@ -109,7 +109,7 @@ export class HousekeepingEngine {
     const compactArchivesOpt = options?.compact_archives ?? false;
 
     const result: HousekeepingResult = {
-      archived: { count: 0, file: "" },
+      archived: { count: 0, file: "", kept_open: 0 },
       deduplicated: { removed: 0 },
       stale_provisionals: { count: 0, items: [] },
       promoted_provisionals: { count: 0, ids: [] },
@@ -123,12 +123,26 @@ export class HousekeepingEngine {
 
     const now = Date.now();
 
-    // 1. Archive old blackboard entries
+    // 1. Archive old blackboard entries. Preview runs the same partition
+    // via archiver.plan() so its count — and every downstream pass — matches
+    // what execute will do (#39); previously preview skipped this pass
+    // entirely and computed dedup/warnings on pre-archive state.
+    let plannedArchiveIds = new Set<string>();
     if (execute) {
       try {
         const archiveResult = await this.archiver.archive({ summarize: false });
         result.archived.count = archiveResult.archived_count;
         result.archived.file = archiveResult.archive_file;
+        result.archived.kept_open = archiveResult.kept_open_count;
+      } catch {
+        // Non-fatal
+      }
+    } else {
+      try {
+        const plan = await this.archiver.plan();
+        result.archived.count = plan.to_archive.length;
+        result.archived.kept_open = plan.kept_open_count;
+        plannedArchiveIds = new Set(plan.to_archive.map((e) => e.id));
       } catch {
         // Non-fatal
       }
@@ -136,7 +150,11 @@ export class HousekeepingEngine {
 
     // 2. Deduplicate blackboard entries (same entry_type + summary + scope → keep newest)
     try {
-      const { entries } = await this.blackboardStore.read();
+      const { entries: boardEntries } = await this.blackboardStore.read();
+      // Execute reads post-archive state; preview simulates it (#39).
+      const entries = execute
+        ? boardEntries
+        : boardEntries.filter((e) => !plannedArchiveIds.has(e.id));
       const seen = new Map<string, BlackboardEntry>();
       const duplicateIds: string[] = [];
 

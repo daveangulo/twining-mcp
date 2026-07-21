@@ -3,8 +3,8 @@
   "id": "01KQWE98BE5GC6Q3Q99F2HXCJX",
   "name": "src/engine/housekeeping.ts",
   "properties": {
-    "scope": "project"
+    "scope": "src/engine/"
   },
   "type": "file",
-  "updated_at": "2026-07-07T03:52:31.880Z"
+  "updated_at": "2026-07-21T01:52:15.610Z"
 }

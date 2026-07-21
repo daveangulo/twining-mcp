@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T01:52:15.235Z",
+  "id": "01KY15ZAC319X0BA95TMK2GT6S",
+  "properties": {
+    "decision_summary": "Chose relates_to back-reference as the resolution signal for need/warning archive exemption (#40) over adding an explicit resolved marker field"
+  },
+  "source": "01KY15ZAC2EH1GGA8MC0JFT90G",
+  "target": "01KY15ZABSX254ZDATTMCYSS5B",
+  "type": "decided_by"
+}

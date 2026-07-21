@@ -30,41 +30,87 @@ export class Archiver {
   }
 
   /**
-   * Archive old blackboard entries.
-   * Decision entries are never archived (LIFE-03).
-   * Archived entries are moved to archive/{YYYY-MM-DD}-blackboard.jsonl.
-   * Optionally posts a summary finding (LIFE-02).
+   * Compute the archive partition without touching the store (#39).
+   * Entries before the cutoff are archivable UNLESS they are decisions
+   * (LIFE-03) or unresolved need/warning entries (#40). A need/warning
+   * counts as resolved when any other entry back-references it via
+   * relates_to — age is the wrong archival signal for open obligations,
+   * which matter MORE as they age, not less.
    */
-  async archive(options?: {
+  async plan(options?: {
     before?: string;
     keep_decisions?: boolean;
-    summarize?: boolean;
+    keep_open_needs_warnings?: boolean;
   }): Promise<{
-    archived_count: number;
-    archive_file: string;
-    summary?: string;
+    to_archive: BlackboardEntry[];
+    kept_open_count: number;
+    cutoff: string;
   }> {
     const cutoff = options?.before ?? new Date().toISOString();
     const keepDecisions = options?.keep_decisions ?? true;
-    const summarize = options?.summarize ?? true;
+    const keepOpen = options?.keep_open_needs_warnings ?? true;
 
     // Read through the store interface — backend-agnostic (W2.2). The old
     // implementation read and rewrote blackboard.jsonl directly, which would
     // silently no-op under the sqlite backend.
     const { entries: allEntries } = await this.blackboardStore.read();
 
-    // Partition: entries before cutoff go to archive, UNLESS they are decisions
-    const toArchive: BlackboardEntry[] = [];
+    // A need/warning referenced by any other entry's relates_to is resolved.
+    // Resolvers archived in earlier runs aren't visible here — that fails
+    // toward keeping the entry, never toward losing an open obligation.
+    const resolvedIds = new Set<string>();
     for (const entry of allEntries) {
-      const isOldEnough = entry.timestamp < cutoff;
-      const isDecision = entry.entry_type === "decision";
-      if (isOldEnough && !(keepDecisions && isDecision)) {
-        toArchive.push(entry);
-      }
+      for (const id of entry.relates_to ?? []) resolvedIds.add(id);
     }
 
+    const toArchive: BlackboardEntry[] = [];
+    let keptOpen = 0;
+    for (const entry of allEntries) {
+      const isOldEnough = entry.timestamp < cutoff;
+      if (!isOldEnough) continue;
+      if (keepDecisions && entry.entry_type === "decision") continue;
+      if (
+        keepOpen &&
+        (entry.entry_type === "need" || entry.entry_type === "warning") &&
+        !resolvedIds.has(entry.id)
+      ) {
+        keptOpen++;
+        continue;
+      }
+      toArchive.push(entry);
+    }
+
+    return { to_archive: toArchive, kept_open_count: keptOpen, cutoff };
+  }
+
+  /**
+   * Archive old blackboard entries.
+   * Decision entries are never archived (LIFE-03); unresolved need/warning
+   * entries are exempt unless keep_open_needs_warnings is false (#40).
+   * Archived entries are moved to archive/{YYYY-MM-DD}-blackboard.jsonl.
+   * Optionally posts a summary finding (LIFE-02).
+   */
+  async archive(options?: {
+    before?: string;
+    keep_decisions?: boolean;
+    keep_open_needs_warnings?: boolean;
+    summarize?: boolean;
+  }): Promise<{
+    archived_count: number;
+    archive_file: string;
+    kept_open_count: number;
+    summary?: string;
+  }> {
+    const summarize = options?.summarize ?? true;
+
+    const {
+      to_archive: toArchive,
+      kept_open_count,
+      cutoff,
+    } = await this.plan(options);
+
     if (toArchive.length === 0) {
-      return { archived_count: 0, archive_file: "" };
+      return { archived_count: 0, archive_file: "", kept_open_count };
     }
 
     // Write archived entries to the archive file BEFORE removing them from
@@ -110,6 +156,7 @@ export class Archiver {
     return {
       archived_count: toArchive.length,
       archive_file: archiveFile,
+      kept_open_count,
       summary: summaryText,
     };
   }

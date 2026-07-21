@@ -129,14 +129,25 @@ export class BlackboardEngine {
     // Auto-archive if threshold exceeded (fire-and-forget, non-fatal) — spec §6.1.3
     // Counts only archivable entries: decision entries (legacy cross-post
     // mirrors — new decisions no longer post to the blackboard, issue #30)
-    // are never archived while keep_decisions defaults true, and entries
-    // tagged "archive" are the archiver's own summary posts — including
-    // either in the count would let the trigger permanently re-arm itself
+    // are never archived while keep_decisions defaults true, entries
+    // tagged "archive" are the archiver's own summary posts, and unresolved
+    // need/warning entries are exempt from archiving (#40) — including any
+    // of these in the count would let the trigger permanently re-arm itself
     // (the archive-loop field bug).
     if (this.archiver && this.archiveThreshold && !input._skipAutoArchive) {
       const { entries } = await this.store.read();
+      const resolvedIds = new Set<string>();
+      for (const e of entries) {
+        for (const id of e.relates_to ?? []) resolvedIds.add(id);
+      }
       const archivableCount = entries.filter(
-        (e) => e.entry_type !== "decision" && !(e.tags ?? []).includes("archive"),
+        (e) =>
+          e.entry_type !== "decision" &&
+          !(e.tags ?? []).includes("archive") &&
+          !(
+            (e.entry_type === "need" || e.entry_type === "warning") &&
+            !resolvedIds.has(e.id)
+          ),
       ).length;
       if (archivableCount >= this.archiveThreshold) {
         this.archiver.archive({ summarize: true }).catch((err) => {

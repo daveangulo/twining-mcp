@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T01:52:15.234Z",
+  "id": "01KY15ZAC2EH1GGA8MC0JFT90G",
+  "name": "Archiver/plan",
+  "properties": {
+    "scope": "src/engine/"
+  },
+  "type": "function",
+  "updated_at": "2026-07-21T01:52:15.617Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T01:52:15.619Z",
+  "id": "01KY15ZAR3RQKSYVHHMBFW7D2D",
+  "properties": {
+    "decision_summary": "Chose to switch three legacy archiver tests from warning/need fixtures to finding/status rather than passing keep_open_needs_warnings: false"
+  },
+  "source": "01KY15ZAC319X0BA95TMK2GT6T",
+  "target": "01KY15ZAQSRFMC4WZWET39APF1",
+  "type": "decided_by"
+}

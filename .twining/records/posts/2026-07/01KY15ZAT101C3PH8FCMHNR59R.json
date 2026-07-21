@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: resolution detection only sees the active board — if a resolver entry was archived in an earlier run, its need/warning stays exempt indefinitely. Conservative direction (keeps rather than loses), but a future dismissed/expiry mechanism or archive-aware resolution check would tighten it.",
+  "entry_type": "warning",
+  "id": "01KY15ZAT101C3PH8FCMHNR59R",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "730b806b7925224d8d3e8253cb2ffa9d298633c2",
+    "recorded_at": "2026-07-21T01:52:15.667Z"
+  },
+  "scope": "src/engine/",
+  "summary": "resolution detection only sees the active board — if a resolver entry was archived in an earlier run, its need/warning stays exempt indefinitely. Conservative direction (keeps rather than loses), b…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-21T01:52:15.681Z"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Chose full-pipeline simulation for housekeeping preview (#39 option a: preview calls Archiver.plan() and filters downstream passes by the planned-archive set) over annotating preview\" relates to:\n- 01KQ0VBWP8703Z0T675AZ1KHYS: \"Prefer explicit Rationale:/Why:/Reason:/Because: markers over heuristic split separators in record-parser\"\n- 01KQ0VBWQPD1ND8SKA7TR2X04X: \"Replaced split(regex, 2) with single-split-on-first-match that preserves the full remainder\"\n- 01KQ0VBWS51Z5B7B0FNFY3RDEN: \"Added a structured union variant to twining_record's decisions field: each item is either a string (NL path) or an object { summary, rationale?, alternatives?, assumptions?, constraints?, confidence?, context?, domain? }. When structured, the parser is bypassed entirely, guaranteeing exact round-trip. Alternative rejected: separate twining_record_structured tool (doubles the tool surface, splits documentation). Alternative rejected: always-parse NL (cannot handle long multi-paragraph rationales reliably).\"\n- 01KQ0VBWWEXR62BG3MYGE79FB7: \"Surfaced per-decision persistence errors in the twining_record response\"\n- 01KQWF4YTD4ZZ0WKVV61V77KV6: \"Used null sentinel from listLocalBranches() to distinguish 'enumeration failed' from 'legitimately empty branch set'\"\n- 01KY11ZFEBD2A5XANFYGGSA476: \"Chose to implement ranking/tiering entirely in DecisionEngine.why() rather than in the storage backends' getByScope\"\n- 01KY11ZFJVGGHZ58JFGE1MVBET: \"Chose to cap the compact tier at 50 entries with omitted_count beyond\"\n- 01KY11ZFMN3PWRPZN1MFN9M3T1: \"Chose ids-mode drill-down to bypass the budget and return richer detail (context, full alternatives, constraints, depends_on) than scope mode ever carried\"\n- 01KY15ZACMRJJCXW7RY8TVTWM7: \"Chose to implement the exemption inside Archiver via a new pure plan() partition method\"",
+  "entry_type": "finding",
+  "id": "01KY15ZAGEYP2TSKX2QY2V4ZN4",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "730b806b7925224d8d3e8253cb2ffa9d298633c2",
+    "recorded_at": "2026-07-21T01:52:15.360Z"
+  },
+  "scope": "src/engine/",
+  "summary": "Related decisions in scope: 9 existing decision(s) overlap",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-07-21T01:52:15.374Z"
+}
