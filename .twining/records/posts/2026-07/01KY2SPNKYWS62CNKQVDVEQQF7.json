@@ -1,0 +1,20 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "status",
+  "id": "01KY2SPNKYWS62CNKQVDVEQQF7",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "505f071756091a36d155a419f507382b02154d37",
+    "recorded_at": "2026-07-21T16:56:17.773Z"
+  },
+  "relates_to": [
+    "01KY1J55TB1VY8FAM9G7D3P7C4"
+  ],
+  "scope": "project",
+  "summary": "v2.1 design pass resolved: Dave approved all three recommendations; #32, #33, #42 implemented and closed in 505f071. Milestone has zero open issues — ready for a v2.1.0 tag when Dave releases.",
+  "tags": [
+    "v2.1"
+  ],
+  "timestamp": "2026-07-21T16:56:17.790Z"
+}
