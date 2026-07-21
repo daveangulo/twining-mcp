@@ -1,0 +1,45 @@
+{
+  "affected_files": [
+    "src/engine/decisions.ts",
+    "src/tools/decision-tools.ts",
+    "test/decision-engine.test.ts",
+    "test/integration/tools/decision-tools.test.ts",
+    "test/coordination/decision-why.test.ts",
+    "test/integration.test.ts",
+    "TWINING-DESIGN-SPEC.md",
+    "CHANGELOG.md"
+  ],
+  "affected_symbols": [
+    "DecisionEngine/why",
+    "whySpecificity",
+    "DecisionEngine/whyByIds"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "signal; total_in_scope conveys scale. Without the cap a 500-decision scope still returned 100KB+ of one-liners",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Implemented #41: twining_why is now bounded — specificity/status/recency ranking, full-detail tier under max_tokens (default 4000), compact tier capped at 50 with omitted_count, superseded excluded by default, ids drill-down. TDD throughout; 1185 tests green.",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KY11ZFJVGGHZ58JFGE1MVBET",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d226f987138349f81d5755b268465bf175e28171",
+    "recorded_at": "2026-07-21T00:42:26.252Z"
+  },
+  "rationale": "one-liners past 50 add bytes not signal; total_in_scope conveys scale. Without the cap a 500-decision scope still returned 100KB+ of one-liners.",
+  "reversible": true,
+  "scope": "src/engine/decisions.ts",
+  "status": "active",
+  "summary": "Chose to cap the compact tier at 50 entries with omitted_count beyond",
+  "timestamp": "2026-07-21T00:42:26.267Z"
+}

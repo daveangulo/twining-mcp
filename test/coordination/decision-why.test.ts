@@ -127,10 +127,11 @@ describe("edge cases", () => {
       confidence: "high",
       supersedes: old.id,
     });
-    const result = await engine.why("src/api/");
+    const result = await engine.why("src/api/", { include_superseded: true });
     // Two total decisions exist, but only the new one is "active"
     expect(result.active_count).toBe(1);
-    // The superseded one should still appear in the list (why() shows all)
+    // The superseded one appears only with include_superseded (#41)
     expect(result.decisions.length).toBe(2);
+    expect(result.superseded_count).toBe(1);
   });
 });

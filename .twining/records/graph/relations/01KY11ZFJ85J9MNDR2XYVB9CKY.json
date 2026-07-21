@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T00:42:26.248Z",
+  "id": "01KY11ZFJ85J9MNDR2XYVB9CKY",
+  "properties": {
+    "decision_summary": "Chose a strict ranked-prefix token budget (once one decision overflows, all lower-ranked ones go compact) over best-fit packing"
+  },
+  "source": "01KY11ZFF3RCC0390MR7PEKMT0",
+  "target": "01KY11ZFJ3BDX90SCDRPMQ46ZW",
+  "type": "decided_by"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T00:42:26.441Z",
+  "id": "01KY11ZFR9JB9QMME94XR2Q60P",
+  "properties": {
+    "decision_summary": "Chose a hardcoded DEFAULT_WHY_MAX_TOKENS=4000 constant mirroring context_assembly.default_max_tokens rather than threading config into DecisionEngine"
+  },
+  "source": "01KWX2CCZVD9MBCT8HFFH34XRB",
+  "target": "01KY11ZFR27F7J3FYKBCTFM9A1",
+  "type": "decided_by"
+}

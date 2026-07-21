@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T00:42:26.309Z",
+  "id": "01KY11ZFM5AGPH5WRXHTY83X1C",
+  "properties": {
+    "decision_summary": "Chose to cap the compact tier at 50 entries with omitted_count beyond"
+  },
+  "source": "01KY11ZFF79QSV0CFNVA2F0SQH",
+  "target": "01KY11ZFKX5BA0J95B34WM98QC",
+  "type": "decided_by"
+}

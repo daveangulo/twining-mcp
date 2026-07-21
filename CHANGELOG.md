@@ -2,6 +2,11 @@
 
 All notable changes to Twining MCP are documented here.
 
+## [Unreleased]
+
+### Changed
+- **`twining_why` output is now bounded** (#41). Previously it returned every scope-matching decision with full rationale — unbounded, superseded included — which reached ~350KB on mature projects and made agents skip reading it, defeating Gate 1. Now: matches are ranked by scope specificity (exact scope/file/symbol > scoped under the query > broad ancestor), then status, then recency; full rationale is returned only for the ranked prefix fitting `max_tokens` (default 4000, matching assemble); the next ≤50 decisions come back as one-liners in `more` with `truncated: true` and `omitted_count` beyond that. Superseded decisions are excluded by default (`include_superseded: true` to opt in; `superseded_count` always reported). New `ids: [...]` drill-down returns full detail — including `context` and full `alternatives`, which the scope path never carried — for exactly the requested decisions, so truncation never strands information. Worst-case response on this repo's 170-decision store: ~48KB → ~27KB hard-bounded, tunable down via `max_tokens`.
+
 ## Plugin [1.13.0] - 2026-07-20
 
 ### Changed

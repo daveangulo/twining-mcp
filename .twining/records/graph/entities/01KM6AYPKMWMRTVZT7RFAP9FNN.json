@@ -3,8 +3,8 @@
   "id": "01KM6AYPKMWMRTVZT7RFAP9FNN",
   "name": "test/coordination/decision-why.test.ts",
   "properties": {
-    "scope": "test/coordination/"
+    "scope": "src/engine/decisions.ts"
   },
   "type": "file",
-  "updated_at": "2026-03-20T19:18:31.796Z"
+  "updated_at": "2026-07-21T00:42:26.500Z"
 }

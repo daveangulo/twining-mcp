@@ -101,7 +101,9 @@ describe("DecisionEngine.decide", () => {
         supersedes: first.id,
       }),
     );
-    const { decisions } = await decisionEngine.why("src/auth/");
+    const { decisions } = await decisionEngine.why("src/auth/", {
+      include_superseded: true,
+    });
     const firstDecision = decisions.find((d) => d.summary === "First decision");
     expect(firstDecision!.status).toBe("superseded");
   });
@@ -393,7 +395,9 @@ describe("DecisionEngine.why", () => {
     const second = await decisionEngine.decide(
       validDecisionInput({ summary: "Second decision", supersedes: first.id }),
     );
-    const { decisions } = await decisionEngine.why("src/auth/");
+    const { decisions } = await decisionEngine.why("src/auth/", {
+      include_superseded: true,
+    });
     const retired = decisions.find((d) => d.id === first.id);
     expect(retired!.superseded_by).toBe(second.id);
     const replacement = decisions.find((d) => d.id === second.id);
@@ -412,6 +416,142 @@ describe("DecisionEngine.why", () => {
     await decisionEngine.decide(validDecisionInput());
     const result = await decisionEngine.why("src/auth/");
     expect(result.decisions[0]!.commit_hashes).toEqual([]);
+  });
+});
+
+describe("DecisionEngine.why bounding (#41)", () => {
+  it("excludes superseded decisions by default and reports superseded_count", async () => {
+    const first = await decisionEngine.decide(
+      validDecisionInput({ summary: "Old choice" }),
+    );
+    await decisionEngine.decide(
+      validDecisionInput({ summary: "New choice", supersedes: first.id }),
+    );
+    const result = await decisionEngine.why("src/auth/");
+    expect(result.decisions.map((d) => d.summary)).toEqual(["New choice"]);
+    expect(result.superseded_count).toBe(1);
+  });
+
+  it("returns superseded decisions when include_superseded is true", async () => {
+    const first = await decisionEngine.decide(
+      validDecisionInput({ summary: "Old choice" }),
+    );
+    await decisionEngine.decide(
+      validDecisionInput({ summary: "New choice", supersedes: first.id }),
+    );
+    const result = await decisionEngine.why("src/auth/", {
+      include_superseded: true,
+    });
+    expect(result.decisions).toHaveLength(2);
+    const retired = result.decisions.find((d) => d.id === first.id);
+    expect(retired!.status).toBe("superseded");
+  });
+
+  it("ranks exact-scope matches above ancestor-scope matches regardless of recency", async () => {
+    // Ancestor-scoped decision recorded LAST (most recent) — must still rank below.
+    await decisionEngine.decide(
+      validDecisionInput({ scope: "src/auth/", summary: "Exact match" }),
+    );
+    await decisionEngine.decide(
+      validDecisionInput({ scope: "src/", summary: "Broad ancestor" }),
+    );
+    const result = await decisionEngine.why("src/auth/");
+    expect(result.decisions[0]!.summary).toBe("Exact match");
+    expect(result.decisions[1]!.summary).toBe("Broad ancestor");
+  });
+
+  it("ranks descendant-scope matches above ancestor-scope matches", async () => {
+    await decisionEngine.decide(
+      validDecisionInput({ scope: "src/", summary: "Broad ancestor" }),
+    );
+    await decisionEngine.decide(
+      validDecisionInput({
+        scope: "src/auth/jwt.ts",
+        summary: "Descendant file",
+      }),
+    );
+    const result = await decisionEngine.why("src/auth/");
+    expect(result.decisions[0]!.summary).toBe("Descendant file");
+  });
+
+  it("does not truncate small result sets at the default budget", async () => {
+    await decisionEngine.decide(validDecisionInput());
+    const result = await decisionEngine.why("src/auth/");
+    expect(result.truncated).toBe(false);
+    expect(result.more).toBeUndefined();
+    expect(result.total_in_scope).toBe(1);
+  });
+
+  it("moves overflow decisions to a compact tier under a small max_tokens budget", async () => {
+    for (let i = 0; i < 10; i++) {
+      await decisionEngine.decide(
+        validDecisionInput({
+          summary: `Decision number ${i}`,
+          rationale: "R".repeat(400),
+        }),
+      );
+    }
+    const result = await decisionEngine.why("src/auth/", { max_tokens: 300 });
+    expect(result.truncated).toBe(true);
+    expect(result.decisions.length).toBeGreaterThan(0);
+    expect(result.decisions.length).toBeLessThan(10);
+    expect(result.more!.length).toBe(10 - result.decisions.length);
+    expect(result.total_in_scope).toBe(10);
+    // Compact tier carries no rationale — that's the point.
+    for (const compact of result.more!) {
+      expect(compact).not.toHaveProperty("rationale");
+      expect(compact.id).toBeTruthy();
+      expect(compact.summary).toBeTruthy();
+      expect(compact.status).toBeTruthy();
+    }
+  });
+
+  it("caps the compact tier at 50 entries and reports the omitted count", async () => {
+    for (let i = 0; i < 60; i++) {
+      await decisionEngine.decide(
+        validDecisionInput({ summary: `Decision number ${i}` }),
+      );
+    }
+    // Budget of 1 token: everything overflows to the compact tier.
+    const result = await decisionEngine.why("src/auth/", { max_tokens: 1 });
+    expect(result.decisions).toHaveLength(0);
+    expect(result.more!).toHaveLength(50);
+    expect(result.omitted_count).toBe(10);
+    expect(result.total_in_scope).toBe(60);
+  });
+
+  it("reports a token_estimate for the full-tier payload", async () => {
+    await decisionEngine.decide(validDecisionInput());
+    const result = await decisionEngine.why("src/auth/");
+    expect(result.token_estimate).toBeGreaterThan(0);
+  });
+
+  it("returns full detail for explicit ids, bypassing the budget", async () => {
+    const created = [];
+    for (let i = 0; i < 3; i++) {
+      created.push(
+        await decisionEngine.decide(
+          validDecisionInput({
+            summary: `Decision ${i}`,
+            rationale: "R".repeat(2000),
+            alternatives: [{ option: "Alt", reason_rejected: "No" }],
+          }),
+        ),
+      );
+    }
+    const result = await decisionEngine.why("src/auth/", {
+      ids: [created[0]!.id, created[2]!.id],
+      max_tokens: 10,
+    });
+    expect(result.decisions).toHaveLength(2);
+    expect(result.truncated).toBe(false);
+    const detail = result.decisions[0]!;
+    expect(detail.rationale).toBe("R".repeat(2000));
+    // Drill-down returns the pieces the tiered response withheld.
+    expect(detail.context).toBe("Need stateless auth");
+    expect(detail.alternatives).toMatchObject([
+      { option: "Alt", reason_rejected: "No" },
+    ]);
   });
 });
 

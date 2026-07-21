@@ -12,6 +12,7 @@ import path from "node:path";
 import { BlackboardEngine } from "./blackboard.js";
 import { TwiningError } from "../utils/errors.js";
 import { captureProvenance } from "../utils/provenance.js";
+import { estimateTokens } from "../utils/tokens.js";
 import type {
   Decision,
   DecisionConfidence,
@@ -30,6 +31,92 @@ export interface TraceEntry {
   depends_on: string[];
   dependents: string[];
   status: string;
+}
+
+/** Options for why() (#41). */
+export interface WhyOptions {
+  /** Token budget for the full-detail tier (default 4000, matching assemble). */
+  max_tokens?: number;
+  /** Include superseded decisions (excluded by default). */
+  include_superseded?: boolean;
+  /** Return full detail for exactly these decision ids; scope and budget are ignored. */
+  ids?: string[];
+}
+
+/** Full-detail decision record returned by why(). */
+export interface WhyDecision {
+  id: string;
+  summary: string;
+  rationale: string;
+  confidence: string;
+  status: string;
+  timestamp: string;
+  alternatives_count: number;
+  commit_hashes: string[];
+  superseded_by?: string;
+  // Present only in ids drill-down mode.
+  context?: string;
+  alternatives?: Decision["alternatives"];
+  scope?: string;
+  domain?: string;
+  constraints?: string[];
+  depends_on?: string[];
+}
+
+/** Compact one-liner for decisions that exceed the why() token budget. */
+export interface WhyCompactDecision {
+  id: string;
+  summary: string;
+  status: string;
+  confidence: string;
+  timestamp: string;
+}
+
+export interface WhyResult {
+  decisions: WhyDecision[];
+  more?: WhyCompactDecision[];
+  truncated: boolean;
+  total_in_scope: number;
+  superseded_count: number;
+  active_count: number;
+  provisional_count: number;
+  token_estimate: number;
+  omitted_count?: number;
+  missing_ids?: string[];
+}
+
+/** Default full-tier budget for why() — mirrors context_assembly.default_max_tokens. */
+const DEFAULT_WHY_MAX_TOKENS = 4000;
+
+/** Compact-tier cap for why() — beyond this, only counts are reported. */
+const WHY_MAX_COMPACT = 50;
+
+const WHY_STATUS_RANK: Record<string, number> = {
+  active: 2,
+  provisional: 1,
+  superseded: 0,
+};
+
+/**
+ * How directly a decision matches the queried scope (#41): exact scope,
+ * affected-file, or symbol match (3) > decision scoped under the query (2) >
+ * broad ancestor-scoped decision that merely covers the query (1).
+ */
+function whySpecificity(d: Decision, scope: string): number {
+  if (
+    d.scope === scope ||
+    d.affected_files.includes(scope) ||
+    d.affected_symbols.includes(scope)
+  ) {
+    return 3;
+  }
+  if (
+    d.scope.startsWith(scope) ||
+    d.affected_files.some((f) => f.startsWith(scope))
+  ) {
+    return 2;
+  }
+  return 1;
 }
 
 export class DecisionEngine {
@@ -323,43 +410,131 @@ export class DecisionEngine {
     return result;
   }
 
-  /** Retrieve decision chain for a scope or file. */
-  async why(scope: string): Promise<{
-    decisions: Array<{
-      id: string;
-      summary: string;
-      rationale: string;
-      confidence: string;
-      status: string;
-      timestamp: string;
-      alternatives_count: number;
-      commit_hashes: string[];
-      superseded_by?: string;
-    }>;
-    active_count: number;
-    provisional_count: number;
-  }> {
-    const decisions = await this.decisionStore.getByScope(scope);
+  /**
+   * Retrieve decision chain for a scope or file (#41: bounded).
+   * Matches are ranked by scope specificity, then status, then recency, and
+   * full rationale is returned only for the decisions that fit max_tokens;
+   * the remainder comes back as compact one-liners in `more`. Superseded
+   * decisions are excluded unless include_superseded is set. Passing ids
+   * returns full detail (rationale, context, alternatives) for exactly those
+   * decisions with no budget applied — the drill-down path for `more` entries.
+   */
+  async why(scope: string, options?: WhyOptions): Promise<WhyResult> {
+    if (options?.ids && options.ids.length > 0) {
+      return this.whyByIds(options.ids);
+    }
 
-    const mapped = decisions.map((d) => ({
-      id: d.id,
-      summary: d.summary,
-      rationale: d.rationale,
-      confidence: d.confidence,
-      status: d.status,
-      timestamp: d.timestamp,
-      alternatives_count: d.alternatives.length,
-      commit_hashes: d.commit_hashes ?? [],
-      // Retired decisions point at their replacement (#31).
-      ...(d.superseded_by ? { superseded_by: d.superseded_by } : {}),
-    }));
+    const budget = options?.max_tokens ?? DEFAULT_WHY_MAX_TOKENS;
+    const all = await this.decisionStore.getByScope(scope);
 
-    const active_count = decisions.filter((d) => d.status === "active").length;
-    const provisional_count = decisions.filter(
+    const superseded_count = all.filter(
+      (d) => d.status === "superseded",
+    ).length;
+    const matches = options?.include_superseded
+      ? all
+      : all.filter((d) => d.status !== "superseded");
+
+    const ranked = [...matches].sort(
+      (a, b) =>
+        whySpecificity(b, scope) - whySpecificity(a, scope) ||
+        (WHY_STATUS_RANK[b.status] ?? 0) - (WHY_STATUS_RANK[a.status] ?? 0) ||
+        b.timestamp.localeCompare(a.timestamp) ||
+        b.id.localeCompare(a.id),
+    );
+
+    const decisions: WhyDecision[] = [];
+    const more: WhyCompactDecision[] = [];
+    let omitted_count = 0;
+    let tokensUsed = 0;
+    for (const d of ranked) {
+      const full: WhyDecision = {
+        id: d.id,
+        summary: d.summary,
+        rationale: d.rationale,
+        confidence: d.confidence,
+        status: d.status,
+        timestamp: d.timestamp,
+        alternatives_count: d.alternatives.length,
+        commit_hashes: d.commit_hashes ?? [],
+        // Retired decisions point at their replacement (#31).
+        ...(d.superseded_by ? { superseded_by: d.superseded_by } : {}),
+      };
+      const cost = estimateTokens(JSON.stringify(full));
+      if (more.length === 0 && omitted_count === 0 && tokensUsed + cost <= budget) {
+        decisions.push(full);
+        tokensUsed += cost;
+      } else if (more.length < WHY_MAX_COMPACT) {
+        more.push({
+          id: d.id,
+          summary: d.summary,
+          status: d.status,
+          confidence: d.confidence,
+          timestamp: d.timestamp,
+        });
+      } else {
+        omitted_count++;
+      }
+    }
+
+    const active_count = matches.filter((d) => d.status === "active").length;
+    const provisional_count = matches.filter(
       (d) => d.status === "provisional",
     ).length;
 
-    return { decisions: mapped, active_count, provisional_count };
+    return {
+      decisions,
+      ...(more.length > 0 ? { more } : {}),
+      ...(omitted_count > 0 ? { omitted_count } : {}),
+      truncated: more.length > 0,
+      total_in_scope: matches.length,
+      superseded_count,
+      active_count,
+      provisional_count,
+      token_estimate: tokensUsed,
+    };
+  }
+
+  /** Full-detail drill-down for explicitly requested decision ids (#41). */
+  private async whyByIds(ids: string[]): Promise<WhyResult> {
+    const decisions: WhyDecision[] = [];
+    const missing_ids: string[] = [];
+    for (const id of ids) {
+      const d = await this.decisionStore.get(id);
+      if (!d) {
+        missing_ids.push(id);
+        continue;
+      }
+      decisions.push({
+        id: d.id,
+        summary: d.summary,
+        rationale: d.rationale,
+        confidence: d.confidence,
+        status: d.status,
+        timestamp: d.timestamp,
+        alternatives_count: d.alternatives.length,
+        commit_hashes: d.commit_hashes ?? [],
+        ...(d.superseded_by ? { superseded_by: d.superseded_by } : {}),
+        // Drill-down carries the detail the tiered response withholds.
+        context: d.context,
+        alternatives: d.alternatives,
+        scope: d.scope,
+        domain: d.domain,
+        constraints: d.constraints,
+        depends_on: d.depends_on,
+      });
+    }
+    return {
+      decisions,
+      truncated: false,
+      total_in_scope: decisions.length,
+      superseded_count: decisions.filter((d) => d.status === "superseded")
+        .length,
+      active_count: decisions.filter((d) => d.status === "active").length,
+      provisional_count: decisions.filter((d) => d.status === "provisional")
+        .length,
+      token_estimate: estimateTokens(JSON.stringify(decisions)),
+      ...(missing_ids.length > 0 ? { missing_ids } : {}),
+    };
   }
 
   /**

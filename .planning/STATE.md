@@ -204,6 +204,14 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Chose asking Dave the Windows trade-off explicitly (AskUserQuestion) rather than deciding unilaterally
 - Replaced mcp__twining__* with mcp__plugin_twining_twining__* in the settings allowlist rather than keeping both
 - Chose NOT to run twining_archive_stale on the 161 staleness candidates (score ≥0.95)
+- Chose to file the twining_why size blowup as a v2.1 issue (#41) with a ranked-tier + token-budget design direction over patching a hard result-size cap
+- Chose to implement ranking/tiering entirely in DecisionEngine.why() rather than in the storage backends' getByScope
+- Chose to exclude superseded decisions from twining_why by default (include_superseded opt-in, superseded_count always reported)
+- Chose a strict ranked-prefix token budget (once one decision overflows, all lower-ranked ones go compact) over best-fit packing
+- Chose to cap the compact tier at 50 entries with omitted_count beyond
+- Chose ids-mode drill-down to bypass the budget and return richer detail (context, full alternatives, constraints, depends_on) than scope mode ever carried
+- Chose a hardcoded DEFAULT_WHY_MAX_TOKENS=4000 constant mirroring context_assembly.default_max_tokens rather than threading config into DecisionEngine
+- Chose to commit directly to main rather than a PR branch
 
 ### Pending Todos
 

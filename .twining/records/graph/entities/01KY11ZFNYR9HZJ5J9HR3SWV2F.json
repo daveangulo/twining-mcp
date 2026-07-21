@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-21T00:42:26.366Z",
+  "id": "01KY11ZFNYR9HZJ5J9HR3SWV2F",
+  "name": "01KY11ZFMN3PWRPZN1MFN9M3T1",
+  "properties": {
+    "scope": "src/engine/decisions.ts",
+    "summary": "Chose ids-mode drill-down to bypass the budget and return richer detail (context, full alternatives, constraints, depends_on) than scope mode ever carried"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-21T00:42:26.366Z"
+}

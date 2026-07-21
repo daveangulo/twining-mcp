@@ -86,6 +86,45 @@ describe("twining_why", () => {
     const parsed = parseToolResponse(res) as { decisions: Array<{ summary: string }> };
     expect(parsed.decisions.length).toBeGreaterThanOrEqual(1);
   });
+
+  it("honors max_tokens and adds a drill-down hint when truncated (#41)", async () => {
+    for (let i = 0; i < 6; i++) {
+      await callTool(server, "twining_decide", {
+        ...validDecision,
+        summary: `Decision number ${i}`,
+        rationale: "R".repeat(400),
+      });
+    }
+    const res = await callTool(server, "twining_why", {
+      scope: "src/auth/",
+      max_tokens: 200,
+    });
+    const parsed = parseToolResponse(res) as {
+      truncated: boolean;
+      more: unknown[];
+      message?: string;
+    };
+    expect(parsed.truncated).toBe(true);
+    expect(parsed.more.length).toBeGreaterThan(0);
+    expect(parsed.message).toContain("ids");
+  });
+
+  it("supports ids drill-down without a scope (#41)", async () => {
+    const res1 = await callTool(server, "twining_decide", validDecision);
+    const { id } = parseToolResponse(res1) as { id: string };
+    const res = await callTool(server, "twining_why", { ids: [id] });
+    const parsed = parseToolResponse(res) as {
+      decisions: Array<{ id: string; context?: string }>;
+    };
+    expect(parsed.decisions).toHaveLength(1);
+    expect(parsed.decisions[0]!.context).toBe("Need stateless auth");
+  });
+
+  it("errors when neither scope nor ids is provided (#41)", async () => {
+    const res = await callTool(server, "twining_why", {});
+    const text = res.content[0]!.text;
+    expect(text).toContain("error");
+  });
 });
 
 describe("twining_trace", () => {

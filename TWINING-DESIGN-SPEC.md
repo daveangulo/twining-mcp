@@ -388,19 +388,29 @@ Record a decision with full rationale.
 - Creates/updates knowledge graph entities for affected files/symbols with "decided_by" relations
 
 #### `twining_why`
-Retrieve decision chain for a scope or file.
+Retrieve decision chain for a scope or file. Bounded (v2.1, #41): matches are
+ranked by scope specificity (exact scope/file/symbol > decision scoped under
+the query > broad ancestor scope), then status (active > provisional >
+superseded), then recency. Full rationale is returned only for the ranked
+prefix that fits `max_tokens`; the next up-to-50 decisions come back as
+compact one-liners in `more`, and anything beyond that is only counted
+(`omitted_count`). Superseded decisions are excluded unless requested.
 
 **Input:**
 ```typescript
 {
-  scope: string;                  // File path, module name, or symbol
+  scope?: string;                 // File path, module name, or symbol (required unless ids set)
+  max_tokens?: number;            // Full-detail tier budget (default 4000, matching assemble)
+  include_superseded?: boolean;   // Default false
+  ids?: string[];                 // Drill-down: full detail (incl. context, alternatives)
+                                  // for exactly these ids; scope and budget ignored
 }
 ```
 
 **Returns:**
 ```typescript
 {
-  decisions: {
+  decisions: {                    // Full-detail tier, ranked, within max_tokens
     id: string;
     summary: string;
     rationale: string;
@@ -408,9 +418,25 @@ Retrieve decision chain for a scope or file.
     status: string;
     timestamp: string;
     alternatives_count: number;
+    commit_hashes: string[];
+    superseded_by?: string;
+    // ids mode only: context, alternatives, scope, domain, constraints, depends_on
   }[];
+  more?: {                        // Compact tier (≤50): budget overflow
+    id: string;
+    summary: string;
+    status: string;
+    confidence: string;
+    timestamp: string;
+  }[];
+  truncated: boolean;
+  total_in_scope: number;
+  omitted_count?: number;         // Matches beyond the compact-tier cap
+  superseded_count: number;       // Excluded by default; opt in via include_superseded
   active_count: number;
   provisional_count: number;
+  token_estimate: number;
+  missing_ids?: string[];         // ids mode: requested ids not found
 }
 ```
 

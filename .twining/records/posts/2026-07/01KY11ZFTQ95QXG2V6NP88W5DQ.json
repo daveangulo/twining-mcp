@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "finding",
+  "id": "01KY11ZFTQ95QXG2V6NP88W5DQ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d226f987138349f81d5755b268465bf175e28171",
+    "recorded_at": "2026-07-21T00:42:26.505Z"
+  },
+  "scope": "src/engine/decisions.ts",
+  "summary": "Legacy why() contract ('shows all, superseded included') was load-bearing in 4 tests across 3 files (decision-engine, coordination/decision-why, integration) — all updated to include_superseded: true.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-21T00:42:26.520Z"
+}

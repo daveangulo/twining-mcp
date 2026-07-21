@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T00:42:26.152Z",
+  "id": "01KY11ZFF84GRRBH20D6WX74KT",
+  "properties": {
+    "decision_summary": "Chose to implement ranking/tiering entirely in DecisionEngine.why() rather than in the storage backends' getByScope"
+  },
+  "source": "01KY11ZFF84GRRBH20D6WX74KS",
+  "target": "01KY11ZFEY6YXBCQMJ8AFWM4ZW",
+  "type": "decided_by"
+}

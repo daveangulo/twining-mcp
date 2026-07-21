@@ -1,0 +1,45 @@
+{
+  "affected_files": [
+    "src/engine/decisions.ts",
+    "src/tools/decision-tools.ts",
+    "test/decision-engine.test.ts",
+    "test/integration/tools/decision-tools.test.ts",
+    "test/coordination/decision-why.test.ts",
+    "test/integration.test.ts",
+    "TWINING-DESIGN-SPEC.md",
+    "CHANGELOG.md"
+  ],
+  "affected_symbols": [
+    "DecisionEngine/why",
+    "whySpecificity",
+    "DecisionEngine/whyByIds"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "threading config into DecisionEngine",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Implemented #41: twining_why is now bounded — specificity/status/recency ranking, full-detail tier under max_tokens (default 4000), compact tier capped at 50 with omitted_count, superseded excluded by default, ids drill-down. TDD throughout; 1185 tests green.",
+  "depends_on": [],
+  "domain": "security",
+  "id": "01KY11ZFPNYARXRTD2CZ0VM76J",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d226f987138349f81d5755b268465bf175e28171",
+    "recorded_at": "2026-07-21T00:42:26.375Z"
+  },
+  "rationale": "the engine has no config access today and the param override covers tuning; wiring config is a follow-up if field feedback wants a project-level default.",
+  "reversible": true,
+  "scope": "src/engine/decisions.ts",
+  "status": "active",
+  "summary": "Chose a hardcoded DEFAULT_WHY_MAX_TOKENS=4000 constant mirroring context_assembly.default_max_tokens rather than threading config into DecisionEngine",
+  "timestamp": "2026-07-21T00:42:26.389Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T00:42:26.504Z",
+  "id": "01KY11ZFT8SJV7G2W1Z53HFRGC",
+  "properties": {
+    "decision_summary": "Chose to commit directly to main rather than a PR branch"
+  },
+  "source": "01KY11ZFF84GRRBH20D6WX74KS",
+  "target": "01KY11ZFSZA0FEKFNZXSD49TEJ",
+  "type": "decided_by"
+}

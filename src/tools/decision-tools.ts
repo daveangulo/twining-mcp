@@ -114,22 +114,55 @@ export function registerDecisionTools(
     },
   );
 
-  // twining_why — Retrieve decision chain for a scope or file
+  // twining_why — Retrieve decision chain for a scope or file (#41: bounded)
   server.registerTool(
     "twining_why",
     {
       description:
-        "Before modifying a file, check what decisions constrain it. Shows rationale and alternatives so you don't contradict prior choices.",
+        "Before modifying a file, check what decisions constrain it. Shows rationale and alternatives so you don't contradict prior choices. Results are ranked by relevance and bounded by a token budget; overflow decisions appear as one-liners in `more` — pass their ids back via `ids` for full detail.",
       inputSchema: {
         scope: z
           .string()
-          .describe("File path, module name, or symbol to query"),
+          .optional()
+          .describe(
+            "File path, module name, or symbol to query (required unless ids is set)",
+          ),
+        max_tokens: z
+          .number()
+          .optional()
+          .describe(
+            "Token budget for the full-detail tier (default 4000)",
+          ),
+        include_superseded: z
+          .boolean()
+          .optional()
+          .describe("Include superseded decisions (excluded by default)"),
+        ids: z
+          .array(z.string())
+          .optional()
+          .describe(
+            "Return full detail (rationale, context, alternatives) for exactly these decision ids",
+          ),
       },
     },
     async (args) => {
       try {
-        const result = await engine.why(args.scope);
-        return toolResult(result);
+        if (!args.scope && (!args.ids || args.ids.length === 0)) {
+          return toolError(
+            "Provide a scope or a list of decision ids",
+            "INVALID_INPUT",
+          );
+        }
+        const result = await engine.why(args.scope ?? "", {
+          max_tokens: args.max_tokens,
+          include_superseded: args.include_superseded,
+          ids: args.ids,
+        });
+        const response: Record<string, unknown> = { ...result };
+        if (result.truncated) {
+          response.message = `${result.more?.length ?? 0} more decision(s) in scope returned as one-liners in 'more' — call twining_why with ids: [...] for full detail on the ones that matter`;
+        }
+        return toolResult(response);
       } catch (e) {
         return toolError(
           e instanceof Error ? e.message : "Unknown error",

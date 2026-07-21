@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-21T00:42:26.182Z",
+  "id": "01KY11ZFG64EKFP4EK8CN89SC4",
+  "name": "01KY11ZFFRWAZPXM6T031BT28A",
+  "properties": {
+    "scope": "src/engine/decisions.ts",
+    "summary": "Chose to exclude superseded decisions from twining_why by default (include_superseded opt-in, superseded_count always reported)"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-21T00:42:26.182Z"
+}

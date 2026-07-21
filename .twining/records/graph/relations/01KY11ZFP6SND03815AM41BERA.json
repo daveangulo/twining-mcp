@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T00:42:26.374Z",
+  "id": "01KY11ZFP6SND03815AM41BERA",
+  "properties": {
+    "decision_summary": "Chose ids-mode drill-down to bypass the budget and return richer detail (context, full alternatives, constraints, depends_on) than scope mode ever carried"
+  },
+  "source": "01KY11ZFF84GRRBH20D6WX74KS",
+  "target": "01KY11ZFNYR9HZJ5J9HR3SWV2F",
+  "type": "decided_by"
+}

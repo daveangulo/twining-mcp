@@ -169,8 +169,10 @@ describe("Integration: End-to-end workflow", () => {
       supersedes: first.id,
     });
 
-    // Verify first is superseded
-    const { decisions } = await dcsnEngine.why("src/auth/");
+    // Verify first is superseded (visible only with include_superseded, #41)
+    const { decisions } = await dcsnEngine.why("src/auth/", {
+      include_superseded: true,
+    });
     const firstDecision = decisions.find((d) => d.id === first.id);
     const secondDecision = decisions.find((d) => d.id === second.id);
     expect(firstDecision!.status).toBe("superseded");

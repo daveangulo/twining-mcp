@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-21T00:42:26.187Z",
+  "id": "01KY11ZFGBE9G67QKFBXKSW8BV",
+  "properties": {
+    "decision_summary": "Chose to exclude superseded decisions from twining_why by default (include_superseded opt-in, superseded_count always reported)"
+  },
+  "source": "01KY11ZFF3RCC0390MR7PEKMT0",
+  "target": "01KY11ZFG64EKFP4EK8CN89SC4",
+  "type": "decided_by"
+}
