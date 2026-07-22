@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-22T05:54:35.932Z",
+  "id": "01KY467S8W9NSADYEYXQWCQTTE",
+  "name": "01KY467S7NXTARAK3TYKBES9Z7",
+  "properties": {
+    "scope": ".planning/",
+    "summary": "Chose to reject corepack/bunx/pnpm-dlx fallback rungs"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-22T05:54:35.932Z"
+}

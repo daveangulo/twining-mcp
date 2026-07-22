@@ -155,9 +155,36 @@ Fix (macOS/Linux): wrap the server command in a login shell so `PATH` is rebuilt
 }
 ```
 
-**The plugin's bundled server does this automatically since plugin 1.13.0** — it spawns through `sh -lc`, so plugin users need no per-project fix. The manual snippet above is only for standalone `.mcp.json` installs. If even a login shell can't find `npx` (Node not installed, broken profile), the plugin's SessionStart hook detects it and injects a warning into the session instead of failing silently.
+**The plugin's bundled server does this automatically since plugin 1.13.0** — it spawns through `sh -lc`, so plugin users need no per-project fix. The manual snippet above is only for standalone `.mcp.json` installs. If even a login shell can't find `npx`, the plugin's SessionStart hook detects it and injects a warning into the session instead of failing silently — and since plugin 1.18.0 the launch itself falls back through a ladder of alternatives first (next subsection).
 
 **Windows:** the bundled server's `sh` launcher does not resolve there. Windows sessions inherit the registry `PATH` and never had the minimal-PATH problem, so the fallback is a one-line project `.mcp.json` with the bare command instead: `"command": "npx", "args": ["-y", "twining-mcp@^2.0.0", "--project", "."]` (the plugin's hooks, skills, and gates are unaffected).
+
+#### Node installed but npm/npx missing
+
+A login shell only fixes *off-PATH* `npx` — some environments have `node` with no npm/npx at all. Common cases: Debian/Ubuntu's `nodejs` apt package (npm is a separate package there), Alpine's `nodejs` apk (same), Amazon Linux 2023 when the `nodejs-npm` subpackage isn't installed, nix's `nodejs-slim` (deliberately npm-free), and version-manager shims (nvm/asdf/volta) left pointing at a removed install.
+
+**What the plugin does automatically (since 1.18.0):** the bundled server launches through `plugin/scripts/launch-server.sh`, which tries three rungs in order instead of assuming `npx`:
+
+1. `npx` from the login-shell `PATH` — the normal case;
+2. npm's `npx-cli.js` resolved relative to the `node` binary itself (`<node bin>/../lib/node_modules/npm/bin/npx-cli.js`) — this self-heals broken version-manager shims and installs where npm exists but isn't on `PATH`;
+3. a globally installed `twining-mcp`, if present.
+
+If all three rungs fail, the script exits 127 with distro-specific guidance on stderr instead of failing silently, and the plugin's SessionStart hook probes the same script (`--probe`) so the session gets an explicit warning that distinguishes "Node present but npm missing" from "no Node at all".
+
+**What still requires action:** a distro Node genuinely without npm has nothing for the ladder to find — install npm alongside it:
+
+- Debian/Ubuntu: `sudo apt install npm`
+- Alpine: `apk add npm`
+- Amazon Linux 2023: `sudo dnf install nodejs-npm` (versioned streams use e.g. `nodejs22-npm`)
+- or reinstall Node from [nodejs.org](https://nodejs.org), which bundles npm
+
+Until npm is installed, the commit gate still applies in initialized checkouts (a `.twining/` directory exists but no server is reachable). Bypass a blocked commit in the interim with:
+
+```bash
+TWINING_DISABLED=true git commit ...
+```
+
+Manual MCP-only installs (the `.mcp.json` snippets above) are unaffected — they point at `npx` directly, as before.
 
 ### Upgrading from Manual Install
 

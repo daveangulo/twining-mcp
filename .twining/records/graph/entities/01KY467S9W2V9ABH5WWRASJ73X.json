@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-22T05:54:35.964Z",
+  "id": "01KY467S9W2V9ABH5WWRASJ73X",
+  "name": "01KY467S9CH3PQ6CGWCVDQR0KD",
+  "properties": {
+    "scope": ".planning/",
+    "summary": "Chose to reject network self-provisioning launcher (node fetches npm tarball to cache)"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-22T05:54:35.964Z"
+}

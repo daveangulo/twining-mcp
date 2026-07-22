@@ -2,6 +2,11 @@
 
 All notable changes to Twining MCP are documented here.
 
+## Plugin [1.18.0] - 2026-07-22
+
+### Changed
+- **Bundled server launches through `scripts/launch-server.sh` instead of bare `npx`**. The script (execed via `sh -lc`) walks a fallback ladder: `npx` from the login-shell `PATH` > npm's `npx-cli.js` resolved relative to the `node` binary (`<node bin>/../lib/node_modules/npm/bin/npx-cli.js`) > a global `twining-mcp` install; if every rung fails it exits 127 with distro-specific guidance on stderr instead of failing silently. Broken version-manager shims and off-PATH-npm installs now self-heal; only a distro Node genuinely without npm (Debian/Ubuntu `nodejs`, Alpine, AL2023 without `nodejs-npm`, nix `nodejs-slim`) still needs a manual npm install. The SessionStart hook probes the same script (`--probe`) and now distinguishes three states — server available / Node present but npm missing / no Node — with the latter two surfacing the `TWINING_DISABLED=true git commit ...` escape hatch, since the commit gate still applies in initialized checkouts.
+
 ## [2.2.0] - 2026-07-21
 
 ### Added

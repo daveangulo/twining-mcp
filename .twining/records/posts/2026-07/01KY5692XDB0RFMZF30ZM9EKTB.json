@@ -1,0 +1,15 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "warning",
+  "id": "01KY5692XDB0RFMZF30ZM9EKTB",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "bdcabbc8e20c76563e946d3cb414eb9f217cbfe2",
+    "recorded_at": "2026-07-22T15:14:32.984Z"
+  },
+  "scope": "src/tools/",
+  "summary": "Tooling gaps hit during coordination: twining_archive(ids=[decisions]) swept 91 blackboard entries instead; no override/dismiss tool exposed via MCP; coordinator agent def lists stale tool names.",
+  "tags": [],
+  "timestamp": "2026-07-22T15:14:33.005Z"
+}

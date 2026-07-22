@@ -2,7 +2,7 @@
   "mcpServers": {
     "twining": {
       "command": "sh",
-      "args": ["-lc", "exec npx -y twining-mcp@^2.0.0"]
+      "args": ["-c", "exec \"${CLAUDE_PLUGIN_ROOT}/scripts/launch-server.sh\""]
     }
   }
 }

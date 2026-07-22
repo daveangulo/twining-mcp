@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-22T05:46:14.206Z",
+  "id": "01KY45RF9YM5FH5K1K9FPW5F1T",
+  "name": "01KY45RF7NM8JBGBMDA1D6MBHX",
+  "properties": {
+    "scope": "plugin/",
+    "summary": "Chose to build the committed bundle WITHOUT the real PostHog key (placeholder only)"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-22T05:46:14.206Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-22T15:47:02.200Z",
+  "id": "01KY584JDRKNDJ3RAKBEJJ413R",
+  "name": "01KY584JAR18CXFA4KE13D66YZ",
+  "properties": {
+    "scope": "project",
+    "summary": "Chose to shape-validate NODE_VERSION (^v[0-9.]+$ via POSIX case) in the launcher"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-22T15:47:02.200Z"
+}

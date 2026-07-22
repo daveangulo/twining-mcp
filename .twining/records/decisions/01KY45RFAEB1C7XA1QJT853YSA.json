@@ -1,0 +1,35 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "adopt the CLAUDE_PLUGIN_DATA npm-install pattern from the plugin docs",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Designed (design-only, no code changed) the plugin-bundled-server workaround for node-without-npm environments: esbuild single-file bundle committed at plugin/server/twining-server.mjs + plugin/server/public/, launched via sh -lc login shell running plugin/server/launch.sh with fallback ladder TWINING_SERVER_JS override > project-local ./node_modules/twining-mcp/dist/index.js > bundled file; npx removed from the plugin launch path entirely. Release: bundle rebuilt at release points by bump-plugin-version.sh, CI freshness-diff + stdio boot smoke test guard the committed artifact.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01KY45RFAEB1C7XA1QJT853YSA",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "bdcabbc8e20c76563e946d3cb414eb9f217cbfe2",
+    "recorded_at": "2026-07-22T05:46:14.207Z"
+  },
+  "rationale": "that pattern requires npm, which is exactly the missing dependency; the embedder fallback is an already-exercised code path, and projects that want embeddings can use the project-local pin which restores full node_modules.",
+  "reversible": true,
+  "scope": "plugin/",
+  "status": "superseded",
+  "summary": "Chose to accept semantic-search degradation (keyword fallback) in bundled mode rather than adopt the CLAUDE_PLUGIN_DATA npm-install pattern from the plugin docs",
+  "timestamp": "2026-07-22T05:46:14.222Z",
+  "superseded_by": "01KY467S6MP164HJ0F269YBSFZ",
+  "overridden_by": "main",
+  "override_reason": "Exploration artifact from design-panel subagent in workflow wf_4353398a-323, not an adopted decision; adopted direction is 01KY467S6MP164HJ0F269YBSFZ (hybrid \u2014 npx stays rung 1). May be re-recorded as real decisions if Phase 2 (bundle) is implemented."
+}

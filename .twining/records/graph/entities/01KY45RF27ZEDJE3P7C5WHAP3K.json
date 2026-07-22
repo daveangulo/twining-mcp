@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-22T05:46:13.958Z",
+  "id": "01KY45RF27ZEDJE3P7C5WHAP3K",
+  "name": "01KY45RF01SVWQZV8QGZDHQ7W0",
+  "properties": {
+    "scope": "plugin/",
+    "summary": "Chose to drop npx entirely from the plugin launch path rather than keep it as a tail fallback behind the bundle"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-22T05:46:13.958Z"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Archive summary: 91 entries archived. finding: 52 entries (Related decisions in scope: 1 existing decision(s) overlap; Related decisions in scope: 1 existing decision(s) overlap; node-without-npm envs can't start plugin server (npx hard dep); SessionStart warning falsely says gates don't apply. Fix designed: rung-ladder launcher now, dep-free bundle as terminal rung later.). status: 38 entries (Investigated coworker-reported failure: environments with node but no npm/npx cannot start the plugin MCP server. Ran ultracode design workflow (wf_4353398a-323): audited all npm/npx assumptions, s…; Subagent completed: workflow-subagent; Subagent completed: workflow-subagent). need: 1 entries (v2.1 design pass awaits Dave: #32 agent identity (rec: auto-upsert registry on writes), #33 handoffs (rec: retire at v3), #42 dual server (rec: single-instance guard). Details in entry.).",
+  "entry_type": "finding",
+  "id": "01KY48KCCMMRE74JNRTFE3APJ2",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "bdcabbc8e20c76563e946d3cb414eb9f217cbfe2",
+    "recorded_at": "2026-07-22T06:35:53.094Z"
+  },
+  "scope": "project",
+  "summary": "Archive: 91 entries archived",
+  "tags": [
+    "archive"
+  ],
+  "timestamp": "2026-07-22T06:35:53.108Z"
+}

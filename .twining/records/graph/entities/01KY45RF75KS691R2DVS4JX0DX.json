@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-22T05:46:14.116Z",
+  "id": "01KY45RF75KS691R2DVS4JX0DX",
+  "name": "01KY45RF56SF6ECM9NKJG9Z489",
+  "properties": {
+    "scope": "plugin/",
+    "summary": "Chose a committed launch.sh script over burying the fallback ladder in the plugin/.mcp.json sh -lc one-liner"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-22T05:46:14.116Z"
+}

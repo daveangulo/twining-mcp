@@ -75,7 +75,7 @@ The structured handoff API is deprecated as of v2.0. Field analysis across three
 
 ## Release channels
 
-v2.0.0 is stable: the npm dist-tag `latest` resolves to 2.x, so plain `npx -y twining-mcp` gets v2. The `next` dist-tag remains for future prereleases. The Claude Code plugin bundles a `^2.0.0` server as of plugin **1.12.0**; since **1.13.0** it spawns through a login shell (`sh -lc`), so minimal-PATH sessions (agent-team teammates, GUI launches) resolve `npx` without any per-project configuration.
+v2.0.0 is stable: the npm dist-tag `latest` resolves to 2.x, so plain `npx -y twining-mcp` gets v2. The `next` dist-tag remains for future prereleases. The Claude Code plugin bundles a `^2.0.0` server as of plugin **1.12.0**; since **1.13.0** it spawns through a login shell (`sh -lc`), so minimal-PATH sessions (agent-team teammates, GUI launches) resolve `npx` without any per-project configuration. Since **1.18.0** the launch goes through `scripts/launch-server.sh` instead of bare `npx`: it falls back from `npx` to npm's `npx-cli.js` (resolved next to the `node` binary) to a global `twining-mcp` install, and fails loudly with guidance if none exist. No user action needed — README "Node installed but npm/npx missing" covers the remaining manual cases.
 
 ### Leaving the beta (if you enrolled a project during 2.0.0-beta.x)
 

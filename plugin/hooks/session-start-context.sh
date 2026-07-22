@@ -31,15 +31,53 @@ if [[ -d "$TWINING_DIR/.sessions" ]]; then
   find "$TWINING_DIR/.sessions" -type f -mtime +7 -delete 2>/dev/null || true
 fi
 
-# Since plugin 1.13.0 the bundled server spawns through a login shell
-# (`sh -lc`), so PATH-minimal session spawns (agent teammate / GUI launch)
-# still resolve npx from the user's shell profile. Mirror that exact
-# resolution here: only when even a login shell can't find npx is the server
-# genuinely absent. Gates would be unsatisfiable; warn instead (fail open).
-if ! sh -lc 'command -v npx' >/dev/null 2>&1; then
-  cat <<'JSON'
-{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"## Twining MCP server unavailable\n\n`npx` is not resolvable even from a login shell, so the twining stdio server could not start and twining tools are absent. Install Node.js >= 22.13 (or fix the PATH exported by your shell profile). Twining gates do NOT apply to this session; note key decisions in your final summary for a connected session to record."}}
+# The bundled server spawns through plugin/scripts/launch-server.sh, which
+# recovers the login-shell PATH itself (rung cascade: npx -> npm-prefix ->
+# global). Probe the SAME
+# launcher here to mirror the server spawn exactly: only when the launcher
+# resolves no runner is the server genuinely absent. Gates would be
+# unsatisfiable then; warn instead (fail open). The warning must carry the
+# TWINING_DISABLED escape hatch — in a previously-initialized checkout the
+# pre-commit gate still blocks `git commit` even with the server down.
+HOOK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" || HOOK_DIR=""
+LAUNCHER="$HOOK_DIR/../scripts/launch-server.sh"
+
+RUNNER="none"
+NODE_V="none"
+if [[ -n "$HOOK_DIR" && -f "$LAUNCHER" ]]; then
+  # Probe-line contract (see launch-server.sh — never change its shape):
+  #   runner=<npx|npm-prefix|global|none> node=<version|none>
+  PROBE="$(sh -lc "\"$LAUNCHER\" --probe" 2>/dev/null || true)"
+  # Login-shell profiles may echo to stdout ahead of the probe output; the
+  # probe line is always the LAST line of the substitution, so keep only it.
+  PROBE="${PROBE##*$'\n'}"
+  if [[ "$PROBE" == runner=*" node="* ]]; then
+    RUNNER="${PROBE#runner=}"
+    RUNNER="${RUNNER%% *}"
+    NODE_V="${PROBE##*node=}"
+    if [[ "$NODE_V" != "none" ]]; then
+      # Versions match ^v[0-9.]+$; strip anything else so the interpolation
+      # into the JSON payload below stays JSON-safe.
+      NODE_V="${NODE_V//[^v0-9.]/}"
+      [[ -n "$NODE_V" ]] || NODE_V="none"
+    fi
+  fi
+elif sh -lc 'command -v npx' >/dev/null 2>&1; then
+  # Partially-updated install (hook present, launcher missing): fall back to
+  # the pre-launcher login-shell npx check so the hook never crashes.
+  RUNNER="npx"
+fi
+
+if [[ "$RUNNER" == "none" ]]; then
+  if [[ "$NODE_V" != "none" ]]; then
+    # npm-less Node distribution (Debian/Ubuntu 'apt install nodejs', Alpine,
+    # Amazon Linux): node runs but nothing can execute npm packages.
+    printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"## Twining MCP server unavailable\\n\\nNode.js %s is installed but no npm/npx was found — this Node.js distribution ships without npm (common with Debian/Ubuntu '\''apt install nodejs'\'', Alpine, Amazon Linux). Fix: install npm via the system package manager or reinstall Node.js from https://nodejs.org, then restart Claude Code or run /mcp to reconnect. Until fixed twining tools are absent, and in a previously-initialized checkout the commit gate WILL still block `git commit` — prefix commits with `TWINING_DISABLED=true git commit ...` — and note key decisions in your final summary for a connected session to record."}}\n' "$NODE_V"
+  else
+    cat <<'JSON'
+{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"## Twining MCP server unavailable\n\n`npx` is not resolvable even from a login shell, so the twining stdio server could not start and twining tools are absent. Install Node.js >= 22.13 (or fix the PATH exported by your shell profile). In a previously-initialized checkout the commit gate WILL still block `git commit` — prefix commits with `TWINING_DISABLED=true git commit ...` — and note key decisions in your final summary for a connected session to record."}}
 JSON
+  fi
   exit 0
 fi
 

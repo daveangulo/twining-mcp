@@ -18,6 +18,41 @@ afterEach(() => {
   fs.rmSync(dir, { recursive: true, force: true });
 });
 
+/**
+ * Shim dir holding symlinks to only the named real binaries — simulates a
+ * PATH-restricted spawn (e.g. a cmux teammate). `node` resolves via
+ * process.execPath: `command -v node` could return a version-manager shim
+ * that breaks under the restricted PATH, while execPath is the real binary
+ * running vitest.
+ */
+function makeShim(utils: string[]): string {
+  const shimDir = path.join(dir, "shim-bin");
+  fs.mkdirSync(shimDir);
+  for (const util of utils) {
+    const real =
+      util === "node"
+        ? process.execPath
+        : spawnSync("bash", ["-c", `command -v ${util}`], { encoding: "utf8" })
+            .stdout.trim();
+    fs.symlinkSync(real, path.join(shimDir, util));
+  }
+  return shimDir;
+}
+
+/**
+ * Fake HOME whose ~/.profile pins PATH to the shim dir. The hook probes the
+ * launcher through a login shell (`sh -lc`, mirroring the server spawn), and
+ * login shells rebuild PATH from /etc/profile (macOS path_helper, CI distro
+ * defaults) — which resurrects the real npx and defeats the shim. ~/.profile
+ * runs after /etc/profile, so it wins on macOS and Linux alike.
+ */
+function makeLoginHome(shimDir: string): string {
+  const home = path.join(dir, "home");
+  fs.mkdirSync(home);
+  fs.writeFileSync(path.join(home, ".profile"), `PATH="${shimDir}"\nexport PATH\n`);
+  return home;
+}
+
 describe("session-start-context.sh", () => {
   it("emits a JSON envelope with hookSpecificOutput.additionalContext in a twining project", () => {
     fs.mkdirSync(path.join(dir, ".twining"));
@@ -52,17 +87,11 @@ describe("session-start-context.sh", () => {
     expect(result.stdout.trim()).toBe("");
   });
 
-  it("emits a PATH warning instead of the gates when npx is not on PATH", () => {
+  it("emits a PATH warning instead of the gates when the probe finds no runtime at all", () => {
     fs.mkdirSync(path.join(dir, ".twining"));
-    // Simulate a PATH-restricted spawn (e.g. a cmux teammate): a shim dir
-    // holding only the utilities the hook needs, with npx absent.
-    const shimDir = path.join(dir, "shim-bin");
-    fs.mkdirSync(shimDir);
-    for (const util of ["bash", "dirname", "cat"]) {
-      const real = spawnSync("bash", ["-c", `command -v ${util}`], { encoding: "utf8" })
-        .stdout.trim();
-      fs.symlinkSync(real, path.join(shimDir, util));
-    }
+    // Shim holds only the utilities the hook itself needs — no sh, no node,
+    // so the launcher probe fails entirely (runner=none node=none).
+    const shimDir = makeShim(["bash", "dirname", "cat"]);
     const result = runHook({
       script: "session-start-context.sh",
       env: { PATH: shimDir },
@@ -73,9 +102,53 @@ describe("session-start-context.sh", () => {
     expect(payload.hookSpecificOutput.hookEventName).toBe("SessionStart");
     expect(payload.hookSpecificOutput.additionalContext).toContain("npx");
     expect(payload.hookSpecificOutput.additionalContext).toContain("MCP server unavailable");
+    // The commit gate still blocks in initialized checkouts — the warning
+    // must carry the escape hatch, not the false "gates do NOT apply" claim.
+    expect(payload.hookSpecificOutput.additionalContext).toContain("TWINING_DISABLED");
+    expect(payload.hookSpecificOutput.additionalContext).not.toContain("gates do NOT apply");
     // The gates must be suppressed — they are unsatisfiable without the server.
     expect(payload.hookSpecificOutput.additionalContext).not.toContain("Gate 1");
     expect(payload.hookSpecificOutput.additionalContext).not.toContain(EXPECTED_CONTEXT_FRAGMENT);
+  });
+
+  it("emits the npm-less-distro warning with the node version when node exists but npm/npx do not", () => {
+    fs.mkdirSync(path.join(dir, ".twining"));
+    // sh + node but no npm tree and no npx: the launcher probe reports
+    // runner=none with a real node version (Debian/Alpine-style distro).
+    const shimDir = makeShim(["bash", "dirname", "cat", "sh", "node"]);
+    const result = runHook({
+      script: "session-start-context.sh",
+      env: { PATH: shimDir, HOME: makeLoginHome(shimDir) },
+      cwd: dir,
+    });
+    expect(result.exitCode).toBe(0);
+    const payload = JSON.parse(result.stdout);
+    const ctx = payload.hookSpecificOutput.additionalContext;
+    expect(ctx).toContain("MCP server unavailable");
+    expect(ctx).toContain(process.version); // interpolated real node version
+    expect(ctx).toContain("npm");
+    expect(ctx).toContain("TWINING_DISABLED");
+    expect(ctx).not.toContain("Gate 1");
+    expect(ctx).not.toContain(EXPECTED_CONTEXT_FRAGMENT);
+  });
+
+  it("emits the gates when the launcher probe resolves a runner (working npx on PATH)", () => {
+    fs.mkdirSync(path.join(dir, ".twining"));
+    const shimDir = makeShim(["bash", "dirname", "cat", "sh", "node"]);
+    // Fake npx that answers --version: the launcher's execution probe
+    // resolves runner=npx, so the full gates context must be emitted.
+    fs.writeFileSync(path.join(shimDir, "npx"), "#!/bin/sh\nexit 0\n", {
+      mode: 0o755,
+    });
+    const result = runHook({
+      script: "session-start-context.sh",
+      env: { PATH: shimDir, HOME: makeLoginHome(shimDir) },
+      cwd: dir,
+    });
+    expect(result.exitCode).toBe(0);
+    const payload = JSON.parse(result.stdout);
+    expect(payload.hookSpecificOutput.additionalContext).toContain(EXPECTED_CONTEXT_FRAGMENT);
+    expect(payload.hookSpecificOutput.additionalContext).toContain("Gate 1");
   });
 
   it("emits the JSON envelope when TWINING_DISABLED is set to a non-true value (e.g. '1')", () => {

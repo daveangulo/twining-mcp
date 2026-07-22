@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-22T15:47:02.088Z",
+  "id": "01KY584JA89GDS89T8S740HF1B",
+  "name": "01KY584J79NY4PEM9NJ9M95YD3",
+  "properties": {
+    "scope": "project",
+    "summary": "Chose to collapse the hook's launcher-missing legacy branch into the corrected no-node warning rather than keep the legacy text"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-22T15:47:02.088Z"
+}

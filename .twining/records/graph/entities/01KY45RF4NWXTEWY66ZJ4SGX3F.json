@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-22T05:46:14.037Z",
+  "id": "01KY45RF4NWXTEWY66ZJ4SGX3F",
+  "name": "01KY45RF2S3TSAB21H44AS346D",
+  "properties": {
+    "scope": "plugin/",
+    "summary": "Chose project-local pin precedence (./node_modules/twining-mcp/dist/index.js beats the bundled server) in launch.sh"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-22T05:46:14.037Z"
+}

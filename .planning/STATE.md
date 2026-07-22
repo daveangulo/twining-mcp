@@ -233,6 +233,20 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Chose dead-letter files (pending-*.dead.jsonl with raw line + error + timestamp) over in-file retry counters for #45
 - Chose to pair the server-side TWINING_PROJECT support with removing --project . from the plugin launch command
 - Chose to resolve relative TWINING_PROJECT values against the server cwd while passing explicit --project values through verbatim
+- Chose to drop npx entirely from the plugin launch path rather than keep it as a tail fallback behind the bundle
+- Chose project-local pin precedence (./node_modules/twining-mcp/dist/index.js beats the bundled server) in launch.sh
+- Chose a committed launch.sh script over burying the fallback ladder in the plugin/.mcp.json sh -lc one-liner
+- Chose to build the committed bundle WITHOUT the real PostHog key (placeholder only)
+- Chose to accept semantic-search degradation (keyword fallback) in bundled mode rather than adopt the CLAUDE_PLUGIN_DATA npm-install pattern from the plugin docs
+- Chose hybrid bundle-as-final-rung over pure bundle-replaces-npx
+- Chose to reject corepack/bunx/pnpm-dlx fallback rungs
+- Chose to reject network self-provisioning launcher (node fetches npm tarball to cache)
+- Chose assessment-only delivery over implementing Phase 1 immediately
+- Chose to drop -l from the plugin .mcp.json spawn and recover the login PATH inside launch-server.sh via a marker-guarded command substitution
+- Chose a TWINING_LAUNCH_NO_LOGIN_PATH env guard for tests over retry-only-on-failure PATH recovery
+- Chose to collapse the hook's launcher-missing legacy branch into the corrected no-node warning rather than keep the legacy text
+- Chose to shape-validate NODE_VERSION (^v[0-9.]+$ via POSIX case) in the launcher
+- Chose NOT to adopt the reviewer's $0-positional quoting hardening for the launcher path (defends against quotes/backticks/$ in the plugin root path)
 
 ### Pending Todos
 

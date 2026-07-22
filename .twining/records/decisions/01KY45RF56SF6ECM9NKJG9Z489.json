@@ -1,0 +1,35 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "burying the fallback ladder in the plugin/.mcp.json sh -lc one-liner",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Designed (design-only, no code changed) the plugin-bundled-server workaround for node-without-npm environments: esbuild single-file bundle committed at plugin/server/twining-server.mjs + plugin/server/public/, launched via sh -lc login shell running plugin/server/launch.sh with fallback ladder TWINING_SERVER_JS override > project-local ./node_modules/twining-mcp/dist/index.js > bundled file; npx removed from the plugin launch path entirely. Release: bundle rebuilt at release points by bump-plugin-version.sh, CI freshness-diff + stdio boot smoke test guard the committed artifact.",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01KY45RF56SF6ECM9NKJG9Z489",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "bdcabbc8e20c76563e946d3cb414eb9f217cbfe2",
+    "recorded_at": "2026-07-22T05:46:14.040Z"
+  },
+  "rationale": "consistent with the prior TWINING_PROJECT decision that rejected shell-one-liner resolution logic in favor of one canonical, testable code path; launch.sh gets unit tests alongside the existing hook script tests.",
+  "reversible": true,
+  "scope": "plugin/",
+  "status": "superseded",
+  "summary": "Chose a committed launch.sh script over burying the fallback ladder in the plugin/.mcp.json sh -lc one-liner",
+  "timestamp": "2026-07-22T05:46:14.054Z",
+  "superseded_by": "01KY467S6MP164HJ0F269YBSFZ",
+  "overridden_by": "main",
+  "override_reason": "Exploration artifact from design-panel subagent in workflow wf_4353398a-323, not an adopted decision; adopted direction is 01KY467S6MP164HJ0F269YBSFZ (hybrid \u2014 npx stays rung 1). May be re-recorded as real decisions if Phase 2 (bundle) is implemented."
+}
