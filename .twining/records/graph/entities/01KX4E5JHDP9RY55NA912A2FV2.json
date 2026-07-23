@@ -3,8 +3,8 @@
   "id": "01KX4E5JHDP9RY55NA912A2FV2",
   "name": "src/dashboard/public/js/main.js",
   "properties": {
-    "scope": "src/"
+    "scope": "src/dashboard/"
   },
   "type": "file",
-  "updated_at": "2026-07-23T10:43:47.818Z"
+  "updated_at": "2026-07-23T16:10:44.943Z"
 }

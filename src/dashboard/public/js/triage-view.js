@@ -12,6 +12,23 @@
  * returns { refresh, destroy }
  */
 import { el, clearElement } from "./util.js";
+import { linkifyInto } from "./linkify.js";
+
+/**
+ * Presentation convention (tag, not mechanism — the API is unchanged): rows
+ * tagged "needs-human" pin into their own band at the top of Open items.
+ */
+export const NEEDS_HUMAN_TAG = "needs-human";
+
+/** Partition items into the pinned needs-human band and the rest, order-stable. */
+export function partitionNeedsHuman(items) {
+  const pinned = [];
+  const rest = [];
+  for (const item of items) {
+    (Array.isArray(item.tags) && item.tags.includes(NEEDS_HUMAN_TAG) ? pinned : rest).push(item);
+  }
+  return { pinned, rest };
+}
 
 /** Compact relative age for row display ("5m", "3h", "12d"). */
 export function formatAge(ageMs) {
@@ -59,6 +76,9 @@ export function itemBadges(item) {
     if (item.reversible === false) badges.push({ label: "irreversible", cls: "urgency-high" });
   } else if (item.kind === "need" && item.urgency) {
     badges.push({ label: `${item.urgency} urgency`, cls: `urgency-${item.urgency}` });
+  }
+  if (Array.isArray(item.tags) && item.tags.includes(NEEDS_HUMAN_TAG)) {
+    badges.push({ label: "needs human", cls: "urgency-high" });
   }
   return badges;
 }
@@ -146,25 +166,42 @@ export function createTriageView(container, opts = {}) {
     header.appendChild(left);
     header.appendChild(el("span", "activity-entry-time", `${formatAge(item.age_ms)} · ${item.agent_id}`));
     row.appendChild(header);
-    row.appendChild(el("div", "activity-entry-summary", item.summary));
+    const summary = el("div", "activity-entry-summary");
+    linkifyInto(summary, item.summary);
+    row.appendChild(summary);
+    if (item.detail_preview) {
+      const preview = el("div", "placeholder");
+      linkifyInto(preview, item.detail_preview);
+      row.appendChild(preview);
+    }
     row.addEventListener("click", () => {
       if (onSelect) onSelect(item);
     });
     return row;
   }
 
-  function renderPanel(listEl, countEl, items, bucketCounts, emptyText) {
+  function renderPanel(listEl, countEl, items, bucketCounts, emptyText, pinTagBand) {
     clearElement(listEl);
     countEl.textContent = truncationLabel(bucketCounts, items.length) || "";
     if (items.length === 0) {
       listEl.appendChild(el("p", "placeholder", emptyText));
       return;
     }
-    for (const item of groupRows(items)) listEl.appendChild(renderRow(item));
+    let rest = items;
+    if (pinTagBand) {
+      const parts = partitionNeedsHuman(items);
+      if (parts.pinned.length > 0) {
+        listEl.appendChild(el("div", "detail-label", "Needs human"));
+        for (const item of groupRows(parts.pinned)) listEl.appendChild(renderRow(item));
+        if (parts.rest.length > 0) listEl.appendChild(el("div", "detail-label", "Other open items"));
+      }
+      rest = parts.rest;
+    }
+    for (const item of groupRows(rest)) listEl.appendChild(renderRow(item));
   }
 
   function render(body) {
-    renderPanel(openList, openCount, body.open || [], body.counts.open, "No open items — nothing is awaiting a lifecycle act.");
+    renderPanel(openList, openCount, body.open || [], body.counts.open, "No open items — nothing is awaiting a lifecycle act.", true);
     renderPanel(recentList, recentCount, body.recent || [], body.counts.recent, "No recent activity in the window.");
   }
 

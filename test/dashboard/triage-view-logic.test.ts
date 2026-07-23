@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 // @ts-expect-error — plain-JS ESM frontend module, no type declarations
-import { formatAge, truncationLabel, deepLinkTab, deepLinkHash, itemBadges, groupRows, stableKey } from "../../src/dashboard/public/js/triage-view.js";
+import { formatAge, truncationLabel, deepLinkTab, deepLinkHash, itemBadges, groupRows, stableKey, partitionNeedsHuman, NEEDS_HUMAN_TAG } from "../../src/dashboard/public/js/triage-view.js";
+// @ts-expect-error — plain-JS ESM frontend module, no type declarations
+import { splitUrls } from "../../src/dashboard/public/js/linkify.js";
 
 /* ------------------------------------------------------------------ */
 /* Helpers                                                             */
@@ -191,5 +193,72 @@ describe("groupRows", () => {
     const ids = rows.map((r) => r.id);
     groupRows(rows);
     expect(rows.map((r) => r.id)).toEqual(ids);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* partitionNeedsHuman — needs-human tag band                          */
+/* ------------------------------------------------------------------ */
+
+describe("partitionNeedsHuman", () => {
+  it("pins tagged items and preserves order in both partitions", () => {
+    const rows = [
+      { ...item("need", "a"), tags: ["docs"] },
+      { ...item("need", "b"), tags: [NEEDS_HUMAN_TAG] },
+      { ...item("warning", "c") },
+      { ...item("need", "d"), tags: ["x", NEEDS_HUMAN_TAG] },
+    ];
+    const { pinned, rest } = partitionNeedsHuman(rows);
+    expect(pinned.map((r: { id: string }) => r.id)).toEqual(["b", "d"]);
+    expect(rest.map((r: { id: string }) => r.id)).toEqual(["a", "c"]);
+  });
+
+  it("handles items with no tags field and empty input", () => {
+    expect(partitionNeedsHuman([])).toEqual({ pinned: [], rest: [] });
+    const rows = [item("decision", "a"), item("question", "b")];
+    const { pinned, rest } = partitionNeedsHuman(rows);
+    expect(pinned).toEqual([]);
+    expect(rest.length).toBe(2);
+  });
+
+  it("itemBadges adds a needs-human badge for tagged items", () => {
+    const badges = itemBadges({ ...item("need", "a"), tags: [NEEDS_HUMAN_TAG] });
+    expect(badges.some((b: { label: string }) => b.label === "needs human")).toBe(true);
+    expect(itemBadges(item("need", "a")).some((b: { label: string }) => b.label === "needs human")).toBe(false);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* splitUrls — URL linkification segments                              */
+/* ------------------------------------------------------------------ */
+
+describe("splitUrls", () => {
+  it("splits text around http(s) URLs", () => {
+    expect(splitUrls("see https://example.com/doc for details")).toEqual([
+      { type: "text", value: "see " },
+      { type: "url", value: "https://example.com/doc" },
+      { type: "text", value: " for details" },
+    ]);
+  });
+
+  it("excludes trailing sentence punctuation from the URL", () => {
+    const segs = splitUrls("read http://a.io/spec.md.");
+    expect(segs[1]).toEqual({ type: "url", value: "http://a.io/spec.md" });
+    expect(segs[2]).toEqual({ type: "text", value: "." });
+  });
+
+  it("handles multiple URLs and URL-only strings", () => {
+    const segs = splitUrls("https://a.io and https://b.io");
+    expect(segs.map((s: { type: string }) => s.type)).toEqual(["url", "text", "url"]);
+    expect(splitUrls("https://only.io")).toEqual([{ type: "url", value: "https://only.io" }]);
+  });
+
+  it("passes through text without URLs, empty, and non-string input", () => {
+    expect(splitUrls("no links here")).toEqual([{ type: "text", value: "no links here" }]);
+    expect(splitUrls("")).toEqual([]);
+    expect(splitUrls(null)).toEqual([]);
+    expect(splitUrls("file:///etc/passwd and /repo/doc.md")).toEqual([
+      { type: "text", value: "file:///etc/passwd and /repo/doc.md" },
+    ]);
   });
 });

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T16:10:44.941Z",
+  "id": "01KY7VWPTD2GZ68HMGFB5DSQZH",
+  "name": "01KY7VWPQWQ69YE6H22KC105AM",
+  "properties": {
+    "scope": "src/dashboard/",
+    "summary": "Chose to linkify only http(s) URLs, DOM-constructed with stopPropagation anchors, and explicitly NOT file paths"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T16:10:44.941Z"
+}

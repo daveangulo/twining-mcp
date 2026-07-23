@@ -768,6 +768,16 @@ handle any tab name generically — router.js has NO tab allowlist to extend.
 - **Empty state:** rendered client-side from the zero-value JSON.
 - **Theme/format:** reuse existing CSS tokens; no new stylesheet. No mutation UI in
   v1 (drain acts go through the tools, §3.3).
+- **Presentation conventions (client-side only; the API is unchanged):** rows
+  tagged `needs-human` pin into a "Needs human" band at the top of Open items
+  and carry a badge — a tag convention, deliberately NOT a mechanism field
+  (§9 litmus test; promote into the mechanism only on field evidence, §11.2
+  reserved-tag precedent). `http(s)` URLs in summaries, previews, and the
+  Blackboard/Decision detail panels render as links opening in a new tab
+  (`rel="noopener noreferrer"`, DOM-constructed — never innerHTML). File
+  paths are NOT linkified in v1: a served page cannot open local files, and a
+  raw-file route is new server surface requiring its own path-traversal
+  design — future work, not a rendering tweak.
 
 ## 9. Scope boundary — what stays OUT of Twining
 

@@ -1,0 +1,38 @@
+{
+  "affected_files": [
+    "src/dashboard/public/js/triage-view.js",
+    "src/dashboard/public/js/linkify.js",
+    "src/dashboard/public/js/main.js",
+    "docs/TRIAGE-SPEC.md",
+    "test/dashboard/triage-view-logic.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "file paths",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Added needs-human tag band and URL linkification to the Triage dashboard (client-side only, API unchanged): pinned band + badge for needs-human tagged rows, detail_preview rendered in rows, http(s) links clickable in rows and detail panels. Spec §8 amended; 7 new tests; 1408 green.",
+  "depends_on": [],
+  "domain": "api-design",
+  "id": "01KY7VWPQWQ69YE6H22KC105AM",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "d072cd7ceaaae8bcb820676dea1c37038103de30",
+    "recorded_at": "2026-07-23T16:10:44.844Z"
+  },
+  "rationale": "a served page cannot open local files; a raw-file route is new server surface needing path-traversal design, deferred as future work in spec §8",
+  "reversible": true,
+  "scope": "src/dashboard/",
+  "status": "active",
+  "summary": "Chose to linkify only http(s) URLs, DOM-constructed with stopPropagation anchors, and explicitly NOT file paths",
+  "timestamp": "2026-07-23T16:10:44.860Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T16:10:44.945Z",
+  "id": "01KY7VWPTHWZWTB3TZ1FSMF761",
+  "properties": {
+    "decision_summary": "Chose to linkify only http(s) URLs, DOM-constructed with stopPropagation anchors, and explicitly NOT file paths"
+  },
+  "source": "01KY7347N5X10SY7Z4B6W9V9ZV",
+  "target": "01KY7VWPTD2GZ68HMGFB5DSQZH",
+  "type": "decided_by"
+}

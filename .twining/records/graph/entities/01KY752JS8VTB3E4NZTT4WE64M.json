@@ -3,8 +3,8 @@
   "id": "01KY752JS8VTB3E4NZTT4WE64M",
   "name": "src/dashboard/public/js/triage-view.js",
   "properties": {
-    "scope": "src/"
+    "scope": "src/dashboard/"
   },
   "type": "file",
-  "updated_at": "2026-07-23T10:43:47.817Z"
+  "updated_at": "2026-07-23T16:10:44.941Z"
 }

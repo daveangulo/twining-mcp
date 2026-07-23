@@ -3,8 +3,8 @@
   "id": "01KY752JSBD3V3BPXTB504DY0C",
   "name": "test/dashboard/triage-view-logic.test.ts",
   "properties": {
-    "scope": "src/dashboard/public/"
+    "scope": "src/dashboard/"
   },
   "type": "file",
-  "updated_at": "2026-07-23T09:32:00.428Z"
+  "updated_at": "2026-07-23T16:10:44.945Z"
 }

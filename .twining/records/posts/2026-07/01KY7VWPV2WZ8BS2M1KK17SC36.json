@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "finding",
+  "id": "01KY7VWPV2WZ8BS2M1KK17SC36",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "d072cd7ceaaae8bcb820676dea1c37038103de30",
+    "recorded_at": "2026-07-23T16:10:44.946Z"
+  },
+  "scope": "src/dashboard/",
+  "summary": "Triage rows now render detail_preview (previously in the payload but unrendered) — doc links in need details are visible and clickable directly in the queue",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T16:10:44.962Z"
+}

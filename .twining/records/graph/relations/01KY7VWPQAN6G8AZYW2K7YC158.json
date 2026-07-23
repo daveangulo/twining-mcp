@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T16:10:44.842Z",
+  "id": "01KY7VWPQAN6G8AZYW2K7YC158",
+  "properties": {
+    "decision_summary": "Chose a needs-human TAG convention with client-side band/badge over a mechanism field or new bucket"
+  },
+  "source": "01KY7347N5X10SY7Z4B6W9V9ZV",
+  "target": "01KY7VWPQ63RCKT0GD772Z95C6",
+  "type": "decided_by"
+}

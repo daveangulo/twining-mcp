@@ -14,6 +14,7 @@ import { createGraphView } from "./graph-view.js";
 import { renderHealthCards } from "./health.js";
 import { createScopeNav } from "./scope-nav.js";
 import { createTriageView, deepLinkTab } from "./triage-view.js";
+import { linkifyInto } from "./linkify.js";
 import { readRoute, writeRoute, onRouteChange, syncCurrent } from "./router.js";
 
 // True while applyRoute() is driving the views — suppresses writeRoute echoes.
@@ -47,9 +48,11 @@ function detailField(panel, label, value, asPre) {
   if (label === "ID" && typeof window.renderIdValue === "function") {
     window.renderIdValue(val, String(value));
   } else if (asPre) {
-    val.appendChild(el("pre", null, String(value)));
+    const pre = el("pre", null);
+    linkifyInto(pre, String(value));
+    val.appendChild(pre);
   } else {
-    val.textContent = String(value);
+    linkifyInto(val, String(value));
   }
   div.appendChild(val);
   panel.appendChild(div);
