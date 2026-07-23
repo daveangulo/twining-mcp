@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T09:24:08.388Z",
+  "id": "01KY74M624GQAYY9EPKX1M25M5",
+  "name": "01KY74M6184S3Z8G700RGGSYH8",
+  "properties": {
+    "scope": "src/tools/",
+    "summary": "Asserted zod rejection in tests via the SDK's stored inputSchema.safeParse on the registered tool instead of driving an InMemoryTransport client"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T09:24:08.388Z"
+}

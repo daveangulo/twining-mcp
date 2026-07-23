@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Used a far-future injected clock (2030) for the §10.12 exact age_ms assertion so a Date.now()-hardcoding implementation fails by years, not milliseconds\" relates to:\n- 01KJQKZHQ24A55CE8HPGPAFXV6: \"Scorers use weighted severity aggregation: MUST fail=0, SHOULD fail=0.5, pass=1 with DEFAULT_THRESHOLD=0.8\"\n- 01KJR25A2NDZY2Q5WTE6QT3TXN: \"Fix LLM judge model ID and increase eval timeouts for LLM scorer runs\"\n- 01KWKD9EJ59DZ2W89EYVQ241JG: \"Widened the behaviors-parser MUST-count band to 8–16 instead of demoting the new tools' MUST rules to SHOULD\"",
+  "entry_type": "finding",
+  "id": "01KY74CHZAWGDQXTW862SFNBTK",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "62aa3cd27ea781a5c07617e9efe977e9cea7a4f2",
+    "recorded_at": "2026-07-23T09:19:58.428Z"
+  },
+  "scope": "test/",
+  "summary": "Related decisions in scope: 3 existing decision(s) overlap",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-23T09:19:58.442Z"
+}

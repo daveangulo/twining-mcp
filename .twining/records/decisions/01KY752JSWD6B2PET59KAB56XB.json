@@ -1,0 +1,37 @@
+{
+  "affected_files": [
+    "src/dashboard/public/js/triage-view.js",
+    "src/dashboard/public/js/main.js",
+    "src/dashboard/public/index.html",
+    "test/dashboard/triage-view-logic.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "triage-stage4-dashboard",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "adding a new 'badge irreversible' CSS rule",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Triage dashboard tab (TRIAGE-SPEC §8, PR-stage 4, no plugin/ changes): new triage-view.js module view fetching /api/triage; tab button + panel in index.html; mounted in main.js with change-gated store.subscribe refetch and tab-activation refresh; pure-logic vitest coverage.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KY752JSWD6B2PET59KAB56XB",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "62aa3cd27ea781a5c07617e9efe977e9cea7a4f2",
+    "recorded_at": "2026-07-23T09:32:00.173Z"
+  },
+  "rationale": "spec §8 forbids new stylesheets; the badge text disambiguates it from delegation urgency badges. Revisit if a real stylesheet change ships later.",
+  "reversible": true,
+  "scope": "src/dashboard/public/",
+  "status": "active",
+  "summary": "Chose to render the irreversible decision badge with the existing 'badge urgency-high' class (error palette) over adding a new 'badge irreversible' CSS rule",
+  "timestamp": "2026-07-23T09:32:00.188Z"
+}

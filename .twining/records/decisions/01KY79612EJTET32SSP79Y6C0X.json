@@ -1,0 +1,36 @@
+{
+  "affected_files": [
+    "src/engine/triage.ts",
+    "src/engine/resolution.ts",
+    "src/utils/scope.ts",
+    "src/utils/types.ts",
+    "src/tools/triage-tools.ts",
+    "src/server.ts",
+    "src/dashboard/api-routes.ts",
+    "src/dashboard/public/js/triage-view.js",
+    "src/dashboard/public/js/main.js",
+    "src/dashboard/public/index.html"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Implemented docs/TRIAGE-SPEC.md on feat/triage via 11-agent workflow + fix pass: resolution.ts/scope.ts extraction, buildTriage engine, fullSurface MCP tool, /api/triage, dashboard Triage tab, full §10 suite both backends. 107 test files / 1401 tests green, build clean.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KY79612EJTET32SSP79Y6C0X",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "62aa3cd27ea781a5c07617e9efe977e9cea7a4f2",
+    "recorded_at": "2026-07-23T10:43:47.391Z"
+  },
+  "rationale": "sqlite is the default backend and leaving parallel copies is the drift the extraction targets; guarded by the sqlite parity suite",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Chose to extend the scopeMatches extraction to the three byte-identical sqlite-stores.ts sites beyond the spec's file-store list",
+  "timestamp": "2026-07-23T10:43:47.406Z"
+}

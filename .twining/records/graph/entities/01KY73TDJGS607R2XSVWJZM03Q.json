@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T09:10:04.112Z",
+  "id": "01KY73TDJGS607R2XSVWJZM03Q",
+  "name": "01KY73TDGKZK5RW05NDVD2RGNB",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Chose to define TriageInput/TriageStores in src/engine/triage.ts rather than types.ts"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T09:10:04.112Z"
+}

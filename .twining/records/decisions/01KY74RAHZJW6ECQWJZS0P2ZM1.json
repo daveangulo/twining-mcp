@@ -1,0 +1,25 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "TRIAGE-SPEC §7 HTTP adapter (PR-stage 3b): added GET /api/triage to src/dashboard/api-routes.ts (parsed-pathname match, §4.1 HTTP param handling, existsSync zero shape with initialized:false, createStores-based store construction built once per closure) plus test/dashboard/triage-api.test.ts covering §10.14 HTTP-side and §10.11 HTTP zero shape. Full npm test (1378 passed, 2 skipped) and npm run build green.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KY74RAHZJW6ECQWJZS0P2ZM1",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "62aa3cd27ea781a5c07617e9efe977e9cea7a4f2",
+    "recorded_at": "2026-07-23T09:26:24.047Z"
+  },
+  "rationale": "the backend-aware createStores path on a fresh .twining would resolve to sqlite and make tests Node-version-dependent; explicit config keeps the adapter tests deterministic while still exercising createStores.",
+  "reversible": true,
+  "scope": "src/dashboard/",
+  "status": "active",
+  "summary": "Chose to pin storage backend to 'files' via config.yml in the HTTP-adapter test fixtures",
+  "timestamp": "2026-07-23T09:26:24.063Z"
+}

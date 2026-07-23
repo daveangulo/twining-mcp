@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T09:03:55.449Z",
+  "id": "01KY73F5HSPWF5JGB05XHKPZNJ",
+  "name": "01KY73F5EVN0Q75V069RCAS9WD",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Preserved handoff-store's optional-scope behavior via scopeMatches(e.scope ?? \"\", filterScope)"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T09:03:55.449Z"
+}

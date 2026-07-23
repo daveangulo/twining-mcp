@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Chose to pin storage backend to 'files' via config.yml in the HTTP-adapter test fixtures\" relates to:\n- 01KX3SE6GQZDF5Q3NYE73472TB: \"Seed fixture writes through the concrete store classes (the one allowed direct-class use, as dev tooling) with deterministic mulberry32 PRNG and post-hoc timestamp spread over 18 months with bursts\"\n- 01KX4CDPNEQ638R6VNR4TATZAN: \"Accepted reviewer-flagged behavior as-is: depth-1 nodes never visited by the depth-2 walk emit no overflow entry\"\n- 01KX4D8F24TSWW2FRPRJY48Z6H: \"Accepted implementer judgment: health-report staleness scores decisions only\"\n- 01KY74RAFG84P9SAP9B4GZXKSZ: \"Chose to build the uninitialized zero shape by running the real buildTriage over module-level empty stub stores (EMPTY_TRIAGE_STORES, Partial-cast) over hand-writing the zero JSON\"",
+  "entry_type": "finding",
+  "id": "01KY74RAJG8TKVGY1VD2HDEW02",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "62aa3cd27ea781a5c07617e9efe977e9cea7a4f2",
+    "recorded_at": "2026-07-23T09:26:24.064Z"
+  },
+  "scope": "src/dashboard/",
+  "summary": "Related decisions in scope: 4 existing decision(s) overlap",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-07-23T09:26:24.080Z"
+}

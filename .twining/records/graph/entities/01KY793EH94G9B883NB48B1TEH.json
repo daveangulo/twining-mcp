@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T10:42:22.889Z",
+  "id": "01KY793EH94G9B883NB48B1TEH",
+  "name": "01KY793EEA2DWBG2Z3TZZD9KBP",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Accepted the §8 dashboard refresh-wiring test gap (mount fetch, change-gated store.subscribe refetch, tab-activation refetch untested) as repo convention"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T10:42:22.889Z"
+}

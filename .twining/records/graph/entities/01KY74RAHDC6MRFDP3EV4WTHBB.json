@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T09:26:24.045Z",
+  "id": "01KY74RAHDC6MRFDP3EV4WTHBB",
+  "name": "01KY74RAFG84P9SAP9B4GZXKSZ",
+  "properties": {
+    "scope": "src/dashboard/",
+    "summary": "Chose to build the uninitialized zero shape by running the real buildTriage over module-level empty stub stores (EMPTY_TRIAGE_STORES, Partial-cast) over hand-writing the zero JSON"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T09:26:24.045Z"
+}

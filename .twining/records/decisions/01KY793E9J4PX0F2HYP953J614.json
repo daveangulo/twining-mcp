@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "silently defaulting it to 7 days",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Applied the 8 code-review findings to the twining_triage implementation (feat/triage). Five were already applied in the working tree (verified): the stdout assertion moved before mockRestore in triage-tools.test.ts, the sqlite-backend HTTP suite in triage-api.test.ts (describe.skipIf(!HAS_SQLITE) seeding twining.db directly), deep-link routing by item.kind via deepLinkTab in main.js, the normalized stableKey DOM-stability gate in triage-view.js, and the /api/triage 500 error-path test. Newly changed this session: window_ms=Infinity now applies as an unbounded window per the §4.1 letter (triage.ts normalize accepts any number > 0; engine + HTTP tests flipped and a NaN-defaults test added). Full npm test: 107 files passed, 1401 passed | 2 skipped. npm run build clean.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KY793E9J4PX0F2HYP953J614",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "62aa3cd27ea781a5c07617e9efe977e9cea7a4f2",
+    "recorded_at": "2026-07-23T10:42:22.627Z"
+  },
+  "rationale": "supersedes the earlier treat-non-finite-as-absent choice: spec §4.1's letter is 'absent or ≤ 0 → default; no upper clamp', and Infinity is > 0. The known wrinkle (Infinity serializes to JSON null in the echoed window_ms through both adapters) is documented in normalize() and pinned by the HTTP test asserting window_ms === null with unbounded results.",
+  "reversible": true,
+  "scope": "src/engine/",
+  "status": "active",
+  "summary": "Chose to apply window_ms=Infinity as an unbounded window (cutoff -Infinity) over silently defaulting it to 7 days",
+  "timestamp": "2026-07-23T10:42:22.642Z"
+}

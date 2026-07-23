@@ -1,0 +1,17 @@
+{
+  "agent_id": "triage-stage4-dashboard",
+  "detail": "Full summary: Triage dashboard tab (TRIAGE-SPEC §8, PR-stage 4, no plugin/ changes): new triage-view.js module view fetching /api/triage; tab button + panel in index.html; mounted in main.js with change-gated store.subscribe refetch and tab-activation refresh; pure-logic vitest coverage.\nDecisions: Chose to route triage row clicks through main.js's existing __twiningNavigateToId bridge over setting location.hash directly in the view — it writes the same #/decisions?sel= / #/blackboard?sel= routes via writeRoute, switches the tab, and renders the detail panel, reusing the battle-tested sel= mechanism instead of relying on hash-assignment popstate side effects.; Chose to render the irreversible decision badge with the existing 'badge urgency-high' class (error palette) over adding a new 'badge irreversible' CSS rule — spec §8 forbids new stylesheets; the badge text disambiguates it from delegation urgency badges. Revisit if a real stylesheet change ships later.; Chose to skip DOM re-render when the /api/triage response body is byte-identical to the last render (lastBody string compare, reset on error so recovery re-renders) — keeps panels scroll-stable across change-gated refetches without any timer.; Chose to test only the pure exports (formatAge, truncationLabel, deepLinkHash, itemBadges, groupRows) in test/dashboard/triage-view-logic.test.ts — the repo's vitest config has no jsdom environment, and the existing dashboard-JS test pattern (store-logic.test.ts, timeline-scale.test.ts) covers DOM-free modules only; the DOM path is verified by construction.; Chose to add the applyRoute triage-refresh line in addition to the tab-button click handler — back/forward and deep-link navigation also reveal the panel via switchTab, and spec §8 requires a refetch whenever switchTab reveals triage.; Placed the Triage tab button between Stats and Blackboard in index.html — triage is the primary v1 lead surface per the spec; position is presentation-only and freely movable.\nFindings: Verified router.js needs no allowlist change for the triage tab: readRoute treats the tab segment generically and FILTER_KEYS allowlists only filter keys; app.js switchTab and refreshData are also tab-name generic (unknown tabs fetch nothing legacy).; Global scope breadcrumb (setGlobalScope in main.js) is intentionally NOT wired to the triage view — spec §8 says the view always fetches the plain window; scoped triage remains an API capability only.",
+  "entry_type": "status",
+  "id": "01KY752JND0JZ1C184B0W1FZKY",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "62aa3cd27ea781a5c07617e9efe977e9cea7a4f2",
+    "recorded_at": "2026-07-23T09:32:00.023Z"
+  },
+  "scope": "src/dashboard/public/",
+  "summary": "Triage dashboard tab (TRIAGE-SPEC §8, PR-stage 4, no plugin/ changes): new triage-view.js module view fetching /api/triage; tab button + panel in index.html; mounted in main.js with change-gated st…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T09:32:00.045Z"
+}

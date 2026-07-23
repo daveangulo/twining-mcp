@@ -1,0 +1,43 @@
+{
+  "affected_files": [
+    "src/engine/triage.ts",
+    "src/engine/resolution.ts",
+    "src/utils/scope.ts",
+    "src/utils/types.ts",
+    "src/tools/triage-tools.ts",
+    "src/server.ts",
+    "src/dashboard/api-routes.ts",
+    "src/dashboard/public/js/triage-view.js",
+    "src/dashboard/public/js/main.js",
+    "src/dashboard/public/index.html"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "a single squash",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Implemented docs/TRIAGE-SPEC.md on feat/triage via 11-agent workflow + fix pass: resolution.ts/scope.ts extraction, buildTriage engine, fullSurface MCP tool, /api/triage, dashboard Triage tab, full §10 suite both backends. 107 test files / 1401 tests green, build clean.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KY7961CJGC3FB049TTNVG09K",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "62aa3cd27ea781a5c07617e9efe977e9cea7a4f2",
+    "recorded_at": "2026-07-23T10:43:47.715Z"
+  },
+  "rationale": "preserves the extraction/core/adapters/dashboard reviewability the spec's sequencing intends",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Chose controller-staged commits in the spec's four PR stages over a single squash",
+  "timestamp": "2026-07-23T10:43:47.730Z"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "triage-stage4-dashboard",
+  "detail": "Full summary: Verified router.js needs no allowlist change for the triage tab: readRoute treats the tab segment generically and FILTER_KEYS allowlists only filter keys; app.js switchTab and refreshData are also tab-name generic (unknown tabs fetch nothing legacy).",
+  "entry_type": "finding",
+  "id": "01KY752K1VTG4QKAJ8V4FW303V",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "62aa3cd27ea781a5c07617e9efe977e9cea7a4f2",
+    "recorded_at": "2026-07-23T09:32:00.429Z"
+  },
+  "scope": "src/dashboard/public/",
+  "summary": "Verified router.js needs no allowlist change for the triage tab: readRoute treats the tab segment generically and FILTER_KEYS allowlists only filter keys; app.js switchTab and refreshData are also …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T09:32:00.443Z"
+}

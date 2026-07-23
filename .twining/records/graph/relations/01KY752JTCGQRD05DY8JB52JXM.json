@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T09:32:00.204Z",
+  "id": "01KY752JTCGQRD05DY8JB52JXM",
+  "properties": {
+    "decision_summary": "Chose to render the irreversible decision badge with the existing 'badge urgency-high' class (error palette) over adding a new 'badge irreversible' CSS rule"
+  },
+  "source": "01KX4E5JHDP9RY55NA912A2FV2",
+  "target": "01KY752JTADVV32TWB5RE70TNG",
+  "type": "decided_by"
+}

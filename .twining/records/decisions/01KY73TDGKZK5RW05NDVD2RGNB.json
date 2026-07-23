@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "types.ts",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Implemented triage engine core (TRIAGE-SPEC.md §3-§5, PR-stage 2 first half): TriageItem/TriageResult types in src/utils/types.ts, buildTriage in src/engine/triage.ts (two-phase read, all input normalization internal, injected stores + clock), and smoke tests in test/triage-engine.test.ts (16 tests). Full suite 1317 passed / 2 skipped, build clean.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KY73TDGKZK5RW05NDVD2RGNB",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "62aa3cd27ea781a5c07617e9efe977e9cea7a4f2",
+    "recorded_at": "2026-07-23T09:10:04.037Z"
+  },
+  "rationale": "the spec mandates only TriageItem/TriageResult in types.ts; the input shape is the engine's contract with its adapters.",
+  "reversible": true,
+  "scope": "src/engine/",
+  "status": "active",
+  "summary": "Chose to define TriageInput/TriageStores in src/engine/triage.ts rather than types.ts",
+  "timestamp": "2026-07-23T09:10:04.051Z"
+}

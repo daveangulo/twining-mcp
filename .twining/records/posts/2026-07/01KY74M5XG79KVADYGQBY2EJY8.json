@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Triage PR-stage 3a (MCP tool adapter): created src/tools/triage-tools.ts with registerTriageTools registering twining_triage (verbatim §6 description, §4.1 zod shape — all optional, numerics unconstrained, single bare toolResult(TriageResult)); wired into src/server.ts behind options.fullSurface mirroring the verify/export call-site gating; added test/integration/tools/triage-tools.test.ts covering §10.14 tool-side expectations (zod rejects non-numeric window_ms/limit, window_ms:-1 defaults to 7 days via shared buildTriage normalization, registered only when full_surface, no stdout pollution, no HTTP-only initialized decoration). 9/9 new tests, full npm test 1364 passed / 2 pre-existing skips, npm run build clean.\nDecisions: Gated twining_triage at the server.ts call site (if (fullSurface) registerTriageTools(...)) rather than an options.fullSurface param inside the register function — mirrors registerVerifyTools/registerExportTools, the existing pattern for modules whose entire surface is fullSurface-gated; decision-tools' per-tool internal gating exists only for mixed-surface modules.; Asserted zod rejection in tests via the SDK's stored inputSchema.safeParse on the registered tool instead of driving an InMemoryTransport client — the SDK's live request path validates with safeParseAsync over the same getZodSchemaObject-wrapped schema, and no existing test in this repo uses a transport client; helpers call handlers directly.; Omitted the TwiningError branch in the twining_triage catch (generic INTERNAL_ERROR only) — buildTriage never throws TwiningError, matching the twining_why handler which also omits the branch.",
+  "entry_type": "status",
+  "id": "01KY74M5XG79KVADYGQBY2EJY8",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "62aa3cd27ea781a5c07617e9efe977e9cea7a4f2",
+    "recorded_at": "2026-07-23T09:24:08.218Z"
+  },
+  "scope": "src/tools/",
+  "summary": "Triage PR-stage 3a (MCP tool adapter): created src/tools/triage-tools.ts with registerTriageTools registering twining_triage (verbatim §6 description, §4.1 zod shape — all optional, numerics uncons…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T09:24:08.240Z"
+}

@@ -260,6 +260,51 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Recorded follow-up, not fixed: src/migrate/cli.ts derives its own project root (own --project parse, no TWINING_PROJECT, not worktree-aware)
 - Chose to keep the migrate CLI's own strict argument loop and only source the DEFAULT root from resolveProjectRoot (called with empty argv) rather than delegating --project parsing to the resolver
 - Chose a plugin patch bump (1.20.1) for the bundle refresh
+- Concluded twining_triage belongs in twining-mcp core as an engine-owned read-model over building it consumer-side
+- Chose to re-run 5 of 8 adversarial review dimensions in a second workflow round after discovering the Workflow args object was stringified by the harness, making args.spec resolve to undefined
+- Chose to scope the §5.3 computeResolvedIds refactor to the two true near-copies (archiver.ts:61-63, blackboard.ts:164-174) plus buildTriage, explicitly excluding verify.ts:226-244
+- Chose the minimal-honest resolution for the reconsider companion-warning residue (documented limitation + twining_dismiss named as drain + §10 test pinning v1 treatment + §11.2 system-tag prerequisite extended to decisions.ts:737) over making promote/override auto-resolve the warning
+- Chose to mandate the unfiltered blackboard read as the resolution corpus (archiver's pattern) over scope/type-narrowed reads
+- Chose input range-normalization inside buildTriage with unconstrained zod numerics at the tool
+- Chose counts contract option (b) for the future artifact migration: recent.by_kind.artifact stays present and zeroed for ≥1 major version
+- Chose to delete the §8 dashboard since-cursor option entirely (plain-window fetch both panels) over requiring client-side accumulation
+- Made truncation selection contractual ((timestamp,id) oldest-open/newest-recent) independent of the advisory §4.2 ordering, and added counts.open.irreversible plus a normative dashboard truncation indicator so provisional irreversible decisions are truncation-proof.
+- Chose a two-bucket taxonomy (open/recent) keyed on exit semantics over the field draft's three buckets
+- Chose to scope the no-see-but-cannot-act claim to the MCP tool surface and document the dashboard/HTTP surfaces as deliberately read-only viewers
+- Chose code-normative openness semantics (any live entry back-reference resolves, self-references included) over the archiver doc-comment's 'any other entry' prose
+- Chose mount + change-gated + tab-activation refetch for the dashboard triage view with documented accepted staleness of time-based exits
+- Chose to also refactor sqlite-stores.ts's three byte-identical scope-match sites onto scopeMatches, beyond the spec §5.1 list of the three file-backend stores
+- Preserved handoff-store's optional-scope behavior via scopeMatches(e.scope ?? "", filterScope)
+- Kept decision-store/sqlite getByScope affected_files matching on scopeMatches too (same bidirectional rule, pure function) while leaving affected_symbols as strict equality
+- Chose a direct code-unit </> comparator for the (timestamp,id) ordering over the repo's localeCompare convention
+- Chose to re-check the recent-window cutoff against the full Decision record in phase 2 (not only at index narrowing)
+- Chose default parameters for buildTriage's now (() => new Date()) and input ({}) following the isDelegationExpired default-clock convention
+- Chose to define TriageInput/TriageStores in src/engine/triage.ts rather than types.ts
+- Applied defensive ?? '' on Decision.rationale and BlackboardEntry.detail before preview construction
+- Chose per-backend fixture objects that write rows/files directly (sqlite INSERT, file appendFileSync) over going through store.append
+- Chose fresh store instances per stores() call on the file backend
+- Interpreted §10.11's uninitialized-vs-initialized HTTP zero-shape
+- Interpreted §10.1's 'verified via the SHARED helper'
+- Used a far-future injected clock (2030) for the §10.12 exact age_ms assertion so a Date.now()-hardcoding implementation fails by years, not milliseconds
+- Gated twining_triage at the server.ts call site (if (fullSurface) registerTriageTools(...)) rather than an options.fullSurface param inside the register function
+- Asserted zod rejection in tests via the SDK's stored inputSchema.safeParse on the registered tool instead of driving an InMemoryTransport client
+- Omitted the TwiningError branch in the twining_triage catch (generic INTERNAL_ERROR only)
+- Chose lazy-once construction of the triage StoreSet (getTriageStores mirroring getSearchEngines) over eager construction at createApiHandler closure time
+- Chose to build the uninitialized zero shape by running the real buildTriage over module-level empty stub stores (EMPTY_TRIAGE_STORES, Partial-cast) over hand-writing the zero JSON
+- Chose to pin storage backend to 'files' via config.yml in the HTTP-adapter test fixtures
+- Chose to route triage row clicks through main.js's existing __twiningNavigateToId bridge over setting location.hash directly in the view
+- Chose to render the irreversible decision badge with the existing 'badge urgency-high' class (error palette) over adding a new 'badge irreversible' CSS rule
+- Chose to skip DOM re-render when the /api/triage response body is byte-identical to the last render (lastBody string compare, reset on error so recovery re-renders)
+- Chose to test only the pure exports (formatAge, truncationLabel, deepLinkHash, itemBadges, groupRows) in test/dashboard/triage-view-logic.test.ts
+- Chose to add the applyRoute triage-refresh line in addition to the tab-button click handler
+- Placed the Triage tab button between Stats and Blackboard in index.html
+- Chose to apply window_ms=Infinity as an unbounded window (cutoff -Infinity) over silently defaulting it to 7 days
+- Kept the lazy-once triage StoreSet in createApiHandler over the spec §7 letter (eager construction in the closure)
+- Accepted the §8 dashboard refresh-wiring test gap (mount fetch, change-gated store.subscribe refetch, tab-activation refetch untested) as repo convention
+- Chose to extend the scopeMatches extraction to the three byte-identical sqlite-stores.ts sites beyond the spec's file-store list
+- Chose lazy-once-then-cached StoreSet construction in the /api/triage closure over the spec letter's eager construction
+- Chose window_ms: Infinity as an unbounded window per spec §4.1's 'no upper clamp'
+- Chose controller-staged commits in the spec's four PR stages over a single squash
 
 ### Pending Todos
 

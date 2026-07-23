@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T09:32:00.266Z",
+  "id": "01KY752JWAE7FK5X0BJKNHFEGP",
+  "name": "01KY752JTXN1V180GQDVG48MSK",
+  "properties": {
+    "scope": "src/dashboard/public/",
+    "summary": "Chose to skip DOM re-render when the /api/triage response body is byte-identical to the last render (lastBody string compare, reset on error so recovery re-renders)"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T09:32:00.266Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T10:43:47.708Z",
+  "id": "01KY7961BW0NCSBC6V8MZA4DC2",
+  "properties": {
+    "decision_summary": "Chose window_ms: Infinity as an unbounded window per spec §4.1's 'no upper clamp'"
+  },
+  "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+  "target": "01KY7961BR7HJB7DC59928CDCP",
+  "type": "decided_by"
+}

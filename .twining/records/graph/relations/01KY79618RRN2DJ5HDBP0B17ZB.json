@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T10:43:47.608Z",
+  "id": "01KY79618RRN2DJ5HDBP0B17ZB",
+  "properties": {
+    "decision_summary": "Chose lazy-once-then-cached StoreSet construction in the /api/triage closure over the spec letter's eager construction"
+  },
+  "source": "01KJC68M4Q2KAAT3ZEC51JGVJV",
+  "target": "01KY79618GAT93188BCGCBEKK9",
+  "type": "decided_by"
+}

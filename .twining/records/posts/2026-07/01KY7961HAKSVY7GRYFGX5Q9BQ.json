@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "need",
+  "id": "01KY7961HAKSVY7GRYFGX5Q9BQ",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "62aa3cd27ea781a5c07617e9efe977e9cea7a4f2",
+    "recorded_at": "2026-07-23T10:43:47.867Z"
+  },
+  "scope": "src/",
+  "summary": "spec §6.1 field-data observation window starts when twining_triage ships in a release — record the release date to anchor the 8-week promotion/removal test",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T10:43:47.882Z"
+}

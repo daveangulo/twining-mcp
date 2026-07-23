@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T09:32:00.426Z",
+  "id": "01KY752K1ATW6DKDGMSW9ERZCD",
+  "name": "01KY752K08GTK2KDSBGNDZZ9V7",
+  "properties": {
+    "scope": "src/dashboard/public/",
+    "summary": "Placed the Triage tab button between Stats and Blackboard in index.html"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T09:32:00.426Z"
+}

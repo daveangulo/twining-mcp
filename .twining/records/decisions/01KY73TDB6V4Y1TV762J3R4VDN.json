@@ -1,0 +1,38 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "the repo's localeCompare convention",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "literally raw; results are identical for store-generated values but the code now matches the contract exactly",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Implemented triage engine core (TRIAGE-SPEC.md §3-§5, PR-stage 2 first half): TriageItem/TriageResult types in src/utils/types.ts, buildTriage in src/engine/triage.ts (two-phase read, all input normalization internal, injected stores + clock), and smoke tests in test/triage-engine.test.ts (16 tests). Full suite 1317 passed / 2 skipped, build clean.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KY73TDB6V4Y1TV762J3R4VDN",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "62aa3cd27ea781a5c07617e9efe977e9cea7a4f2",
+    "recorded_at": "2026-07-23T09:10:03.864Z"
+  },
+  "rationale": "the spec mandates a raw-string comparator and ICU collation treats hyphens as variable-weight, so localeCompare is not literally raw; results are identical for store-generated values but the code now matches the contract exactly.",
+  "reversible": true,
+  "scope": "src/engine/",
+  "status": "active",
+  "summary": "Chose a direct code-unit </> comparator for the (timestamp,id) ordering over the repo's localeCompare convention",
+  "timestamp": "2026-07-23T09:10:03.878Z"
+}

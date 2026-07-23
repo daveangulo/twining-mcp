@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T09:10:03.932Z",
+  "id": "01KY73TDCWXGRGBA25410P7RG9",
+  "name": "01KY73TDB6V4Y1TV762J3R4VDN",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Chose a direct code-unit </> comparator for the (timestamp,id) ordering over the repo's localeCompare convention"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T09:10:03.932Z"
+}

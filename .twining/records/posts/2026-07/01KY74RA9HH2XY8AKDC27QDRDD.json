@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: TRIAGE-SPEC §7 HTTP adapter (PR-stage 3b): added GET /api/triage to src/dashboard/api-routes.ts (parsed-pathname match, §4.1 HTTP param handling, existsSync zero shape with initialized:false, createStores-based store construction built once per closure) plus test/dashboard/triage-api.test.ts covering §10.14 HTTP-side and §10.11 HTTP zero shape. Full npm test (1378 passed, 2 skipped) and npm run build green.\nDecisions: Chose lazy-once construction of the triage StoreSet (getTriageStores mirroring getSearchEngines) over eager construction at createApiHandler closure time — spec §7 says 'the same position as the existing fallback', but eager createStores on an uninitialized project would open/create .twining/twining.db, flipping the existsSync guard and breaking uninitialized semantics; lazy-once still satisfies 'built ONCE, never per request'.; Chose to build the uninitialized zero shape by running the real buildTriage over module-level empty stub stores (EMPTY_TRIAGE_STORES, Partial-cast) over hand-writing the zero JSON — guarantees the field-for-field same-params mirror (§7) without duplicating §4.1 normalization in the adapter, which the spec forbids drifting.; Chose to pin storage backend to 'files' via config.yml in the HTTP-adapter test fixtures — the backend-aware createStores path on a fresh .twining would resolve to sqlite and make tests Node-version-dependent; explicit config keeps the adapter tests deterministic while still exercising createStores.",
+  "entry_type": "status",
+  "id": "01KY74RA9HH2XY8AKDC27QDRDD",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "62aa3cd27ea781a5c07617e9efe977e9cea7a4f2",
+    "recorded_at": "2026-07-23T09:26:23.769Z"
+  },
+  "scope": "src/dashboard/",
+  "summary": "TRIAGE-SPEC §7 HTTP adapter (PR-stage 3b): added GET /api/triage to src/dashboard/api-routes.ts (parsed-pathname match, §4.1 HTTP param handling, existsSync zero shape with initialized:false, creat…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T09:26:23.793Z"
+}

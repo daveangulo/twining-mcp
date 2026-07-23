@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T09:10:03.964Z",
+  "id": "01KY73TDDW82DSEW9RF0BJ6665",
+  "name": "01KY73TDDC0NCZFJGW24CZSC5A",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Chose to re-check the recent-window cutoff against the full Decision record in phase 2 (not only at index narrowing)"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T09:10:03.964Z"
+}

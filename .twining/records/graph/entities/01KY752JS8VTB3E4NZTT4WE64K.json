@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T09:32:00.167Z",
+  "id": "01KY752JS8VTB3E4NZTT4WE64K",
+  "name": "01KY752JQP080H6GDKS3SH7S8T",
+  "properties": {
+    "scope": "src/dashboard/public/",
+    "summary": "Chose to route triage row clicks through main.js's existing __twiningNavigateToId bridge over setting location.hash directly in the view"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T09:32:00.167Z"
+}

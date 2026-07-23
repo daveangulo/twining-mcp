@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T09:03:55.553Z",
+  "id": "01KY73F5N1ARRXM88VEK3FJQSH",
+  "name": "01KY73F5JBZZG8Z6WC5K69KJZK",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Kept decision-store/sqlite getByScope affected_files matching on scopeMatches too (same bidirectional rule, pure function) while leaving affected_symbols as strict equality"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T09:03:55.553Z"
+}

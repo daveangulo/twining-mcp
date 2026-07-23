@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T09:32:00.171Z",
+  "id": "01KY752JSBD3V3BPXTB504DY0C",
+  "name": "test/dashboard/triage-view-logic.test.ts",
+  "properties": {
+    "scope": "src/dashboard/public/"
+  },
+  "type": "file",
+  "updated_at": "2026-07-23T09:32:00.428Z"
+}

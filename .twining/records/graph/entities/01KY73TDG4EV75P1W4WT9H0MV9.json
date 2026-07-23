@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T09:10:04.036Z",
+  "id": "01KY73TDG4EV75P1W4WT9H0MV9",
+  "name": "01KY73TDEBFKPTV819QDVD2YKH",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Chose default parameters for buildTriage's now (() => new Date()) and input ({}) following the isDelegationExpired default-clock convention"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T09:10:04.036Z"
+}

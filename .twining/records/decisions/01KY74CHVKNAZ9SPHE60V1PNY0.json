@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "a reimplemented predicate, alongside behavioral assertions",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Implemented the full TRIAGE-SPEC §10 test suite (items 1-13) in test/triage-engine.test.ts: 27 tests parameterized over both file and sqlite backends (54 runs) via per-backend fixtures with controlled ids/timestamps and injected clocks. No implementation deviations found — src/engine/triage.ts passed every spec-mandated assertion unchanged. Full npm test (1355 passed, 2 pre-existing skips) and npm run build clean.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KY74CHVKNAZ9SPHE60V1PNY0",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "62aa3cd27ea781a5c07617e9efe977e9cea7a4f2",
+    "recorded_at": "2026-07-23T09:19:58.307Z"
+  },
+  "rationale": "computing the test expectation with the imported computeResolvedIds itself rather than a reimplemented predicate, alongside behavioral assertions",
+  "reversible": true,
+  "scope": "test/",
+  "status": "active",
+  "summary": "Interpreted §10.1's 'verified via the SHARED helper'",
+  "timestamp": "2026-07-23T09:19:58.323Z"
+}

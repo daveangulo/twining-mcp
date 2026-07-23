@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T09:32:00.371Z",
+  "id": "01KY752JZK1JARWZ2TXWWB9475",
+  "name": "01KY752JY2YY57EN6HZV5BP0XB",
+  "properties": {
+    "scope": "src/dashboard/public/",
+    "summary": "Chose to add the applyRoute triage-refresh line in addition to the tab-button click handler"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T09:32:00.371Z"
+}

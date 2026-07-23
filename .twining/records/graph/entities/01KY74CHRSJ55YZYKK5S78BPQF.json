@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T09:19:58.233Z",
+  "id": "01KY74CHRSJ55YZYKK5S78BPQF",
+  "name": "01KY74CHPFZ3W3H1AEDKFE6XV3",
+  "properties": {
+    "scope": "test/",
+    "summary": "Chose per-backend fixture objects that write rows/files directly (sqlite INSERT, file appendFileSync) over going through store.append"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T09:19:58.233Z"
+}

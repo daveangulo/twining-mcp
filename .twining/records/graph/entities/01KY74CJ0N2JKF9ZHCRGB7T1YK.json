@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T09:19:58.485Z",
+  "id": "01KY74CJ0N2JKF9ZHCRGB7T1YK",
+  "name": "01KY74CHYWRFW7G6A8H6WEHV3R",
+  "properties": {
+    "scope": "test/",
+    "summary": "Used a far-future injected clock (2030) for the §10.12 exact age_ms assertion so a Date.now()-hardcoding implementation fails by years, not milliseconds"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T09:19:58.485Z"
+}

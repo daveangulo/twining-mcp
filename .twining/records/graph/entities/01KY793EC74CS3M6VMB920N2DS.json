@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T10:42:22.727Z",
+  "id": "01KY793EC74CS3M6VMB920N2DS",
+  "name": "01KY793E9J4PX0F2HYP953J614",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Chose to apply window_ms=Infinity as an unbounded window (cutoff -Infinity) over silently defaulting it to 7 days"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T10:42:22.727Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T10:42:22.779Z",
+  "id": "01KY793EDVW8G82XW5GMTXBWJR",
+  "name": "01KY793ECR4YDRQJF752M13QC4",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Kept the lazy-once triage StoreSet in createApiHandler over the spec §7 letter (eager construction in the closure)"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T10:42:22.779Z"
+}

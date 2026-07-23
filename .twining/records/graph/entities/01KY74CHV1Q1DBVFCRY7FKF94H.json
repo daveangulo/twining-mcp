@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T09:19:58.305Z",
+  "id": "01KY74CHV1Q1DBVFCRY7FKF94H",
+  "name": "01KY74CHTFZ18KNVR509WDPP1F",
+  "properties": {
+    "scope": "test/",
+    "summary": "Interpreted §10.11's uninitialized-vs-initialized HTTP zero-shape"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T09:19:58.305Z"
+}

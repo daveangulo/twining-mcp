@@ -1,0 +1,25 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Implemented the full TRIAGE-SPEC §10 test suite (items 1-13) in test/triage-engine.test.ts: 27 tests parameterized over both file and sqlite backends (54 runs) via per-backend fixtures with controlled ids/timestamps and injected clocks. No implementation deviations found — src/engine/triage.ts passed every spec-mandated assertion unchanged. Full npm test (1355 passed, 2 pre-existing skips) and npm run build clean.",
+  "depends_on": [],
+  "domain": "api-design",
+  "id": "01KY74CHTFZ18KNVR509WDPP1F",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "62aa3cd27ea781a5c07617e9efe977e9cea7a4f2",
+    "recorded_at": "2026-07-23T09:19:58.270Z"
+  },
+  "rationale": "split across stages: the buildTriage-level initialized-empty field-for-field zero shape is tested now (toStrictEqual); the HTTP initialized:false half requires GET /api/triage which lands with the §10.14 adapter stage",
+  "reversible": true,
+  "scope": "test/",
+  "status": "active",
+  "summary": "Interpreted §10.11's uninitialized-vs-initialized HTTP zero-shape",
+  "timestamp": "2026-07-23T09:19:58.287Z"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Implemented the full TRIAGE-SPEC §10 test suite (items 1-13) in test/triage-engine.test.ts: 27 tests parameterized over both file and sqlite backends (54 runs) via per-backend fixtures with controlled ids/timestamps and injected clocks. No implementation deviations found — src/engine/triage.ts passed every spec-mandated assertion unchanged. Full npm test (1355 passed, 2 pre-existing skips) and npm run build clean.\nDecisions: Chose per-backend fixture objects that write rows/files directly (sqlite INSERT, file appendFileSync) over going through store.append — controlled ids and timestamps are load-bearing for (timestamp,id) tie-break and boundary tests, matching the existing smoke-test and parity-suite patterns; Chose fresh store instances per stores() call on the file backend — direct fs appends between two buildTriage calls could serve stale mtime-cached reads within the same millisecond; Interpreted §10.11's uninitialized-vs-initialized HTTP zero-shape as split across stages: the buildTriage-level initialized-empty field-for-field zero shape is tested now (toStrictEqual); the HTTP initialized:false half requires GET /api/triage which lands with the §10.14 adapter stage; Interpreted §10.1's 'verified via the SHARED helper' as computing the test expectation with the imported computeResolvedIds itself rather than a reimplemented predicate, alongside behavioral assertions; Used a far-future injected clock (2030) for the §10.12 exact age_ms assertion so a Date.now()-hardcoding implementation fails by years, not milliseconds",
+  "entry_type": "status",
+  "id": "01KY74CHM5PFCBTZYQNAM0Z2XZ",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "62aa3cd27ea781a5c07617e9efe977e9cea7a4f2",
+    "recorded_at": "2026-07-23T09:19:58.059Z"
+  },
+  "scope": "test/",
+  "summary": "Implemented the full TRIAGE-SPEC §10 test suite (items 1-13) in test/triage-engine.test.ts: 27 tests parameterized over both file and sqlite backends (54 runs) via per-backend fixtures with control…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T09:19:58.086Z"
+}

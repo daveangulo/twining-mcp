@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T09:19:58.268Z",
+  "id": "01KY74CHSW19HXYB243TMFA40M",
+  "name": "01KY74CHSDASBDGJQVKCRVN4TY",
+  "properties": {
+    "scope": "test/",
+    "summary": "Chose fresh store instances per stores() call on the file backend"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T09:19:58.268Z"
+}

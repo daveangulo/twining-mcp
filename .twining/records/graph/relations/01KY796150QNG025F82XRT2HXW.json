@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T10:43:47.488Z",
+  "id": "01KY796150QNG025F82XRT2HXW",
+  "properties": {
+    "decision_summary": "Chose to extend the scopeMatches extraction to the three byte-identical sqlite-stores.ts sites beyond the spec's file-store list"
+  },
+  "source": "01KY79614ZHKTMBNY786112S2B",
+  "target": "01KY79614ZHKTMBNY786112S2A",
+  "type": "decided_by"
+}

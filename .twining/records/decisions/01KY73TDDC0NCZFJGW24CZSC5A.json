@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "only at index narrowing)",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Implemented triage engine core (TRIAGE-SPEC.md §3-§5, PR-stage 2 first half): TriageItem/TriageResult types in src/utils/types.ts, buildTriage in src/engine/triage.ts (two-phase read, all input normalization internal, injected stores + clock), and smoke tests in test/triage-engine.test.ts (16 tests). Full suite 1317 passed / 2 skipped, build clean.",
+  "depends_on": [],
+  "domain": "performance",
+  "id": "01KY73TDDC0NCZFJGW24CZSC5A",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "62aa3cd27ea781a5c07617e9efe977e9cea7a4f2",
+    "recorded_at": "2026-07-23T09:10:03.933Z"
+  },
+  "rationale": "an index/record status race (provisional at index read, active at full read) could otherwise admit an active decision to recent without the cutoff test; conservative, no cost.",
+  "reversible": true,
+  "scope": "src/engine/",
+  "status": "active",
+  "summary": "Chose to re-check the recent-window cutoff against the full Decision record in phase 2 (not only at index narrowing)",
+  "timestamp": "2026-07-23T09:10:03.948Z"
+}

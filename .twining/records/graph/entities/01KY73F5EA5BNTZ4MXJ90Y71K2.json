@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T09:03:55.338Z",
+  "id": "01KY73F5EA5BNTZ4MXJ90Y71K2",
+  "name": "01KY73F5CFN40D1R0TDQKMEEG5",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Chose to also refactor sqlite-stores.ts's three byte-identical scope-match sites onto scopeMatches, beyond the spec §5.1 list of the three file-backend stores"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T09:03:55.338Z"
+}

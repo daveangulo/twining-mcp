@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T09:32:00.305Z",
+  "id": "01KY752JXHQK4F0AJCBAPR2BKF",
+  "properties": {
+    "decision_summary": "Chose to test only the pure exports (formatAge, truncationLabel, deepLinkHash, itemBadges, groupRows) in test/dashboard/triage-view-logic.test.ts"
+  },
+  "source": "01KX4E5JHDP9RY55NA912A2FV2",
+  "target": "01KY752JXF30QD88NBG1BM82BJ",
+  "type": "decided_by"
+}

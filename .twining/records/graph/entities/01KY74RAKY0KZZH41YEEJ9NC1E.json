@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T09:26:24.126Z",
+  "id": "01KY74RAKY0KZZH41YEEJ9NC1E",
+  "name": "01KY74RAHZJW6ECQWJZS0P2ZM1",
+  "properties": {
+    "scope": "src/dashboard/",
+    "summary": "Chose to pin storage backend to 'files' via config.yml in the HTTP-adapter test fixtures"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T09:26:24.126Z"
+}

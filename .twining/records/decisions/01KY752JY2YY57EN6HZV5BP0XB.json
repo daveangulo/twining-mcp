@@ -1,0 +1,30 @@
+{
+  "affected_files": [
+    "src/dashboard/public/js/triage-view.js",
+    "src/dashboard/public/js/main.js",
+    "src/dashboard/public/index.html",
+    "test/dashboard/triage-view-logic.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "triage-stage4-dashboard",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Triage dashboard tab (TRIAGE-SPEC §8, PR-stage 4, no plugin/ changes): new triage-view.js module view fetching /api/triage; tab button + panel in index.html; mounted in main.js with change-gated store.subscribe refetch and tab-activation refresh; pure-logic vitest coverage.",
+  "depends_on": [],
+  "domain": "api-design",
+  "id": "01KY752JY2YY57EN6HZV5BP0XB",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "62aa3cd27ea781a5c07617e9efe977e9cea7a4f2",
+    "recorded_at": "2026-07-23T09:32:00.308Z"
+  },
+  "rationale": "back/forward and deep-link navigation also reveal the panel via switchTab, and spec §8 requires a refetch whenever switchTab reveals triage.",
+  "reversible": true,
+  "scope": "src/dashboard/public/",
+  "status": "active",
+  "summary": "Chose to add the applyRoute triage-refresh line in addition to the tab-button click handler",
+  "timestamp": "2026-07-23T09:32:00.322Z"
+}

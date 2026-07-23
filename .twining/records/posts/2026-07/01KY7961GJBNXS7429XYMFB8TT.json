@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: dashboard Triage tab reaches plugin users only after a release runs bump-plugin-version.sh (bundle rebuild copies src/dashboard/public into plugin/server/public) — plugin/ deliberately untouched on this branch",
+  "entry_type": "warning",
+  "id": "01KY7961GJBNXS7429XYMFB8TT",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "62aa3cd27ea781a5c07617e9efe977e9cea7a4f2",
+    "recorded_at": "2026-07-23T10:43:47.843Z"
+  },
+  "scope": "src/",
+  "summary": "dashboard Triage tab reaches plugin users only after a release runs bump-plugin-version.sh (bundle rebuild copies src/dashboard/public into plugin/server/public) — plugin/ deliberately untouched on…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T10:43:47.858Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T10:43:47.811Z",
+  "id": "01KY7961F3Z7WW7VNNM22J3WZD",
+  "properties": {
+    "decision_summary": "Chose controller-staged commits in the spec's four PR stages over a single squash"
+  },
+  "source": "01KY7961511E93595X3KN2D8VP",
+  "target": "01KY7961F1PMY2AGCK14N0Q26W",
+  "type": "decided_by"
+}

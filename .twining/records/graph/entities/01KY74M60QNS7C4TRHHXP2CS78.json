@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T09:24:08.343Z",
+  "id": "01KY74M60QNS7C4TRHHXP2CS78",
+  "name": "01KY74M5ZS6H6VCGRQ8541YDMM",
+  "properties": {
+    "scope": "src/tools/",
+    "summary": "Gated twining_triage at the server.ts call site (if (fullSurface) registerTriageTools(...)) rather than an options.fullSurface param inside the register function"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T09:24:08.343Z"
+}

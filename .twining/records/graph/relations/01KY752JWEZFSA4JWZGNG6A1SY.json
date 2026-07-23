@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T09:32:00.270Z",
+  "id": "01KY752JWEZFSA4JWZGNG6A1SY",
+  "properties": {
+    "decision_summary": "Chose to skip DOM re-render when the /api/triage response body is byte-identical to the last render (lastBody string compare, reset on error so recovery re-renders)"
+  },
+  "source": "01KY752JSBD3V3BPXTB504DY0C",
+  "target": "01KY752JWAE7FK5X0BJKNHFEGP",
+  "type": "decided_by"
+}

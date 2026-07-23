@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "eager construction at createApiHandler closure time",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "TRIAGE-SPEC §7 HTTP adapter (PR-stage 3b): added GET /api/triage to src/dashboard/api-routes.ts (parsed-pathname match, §4.1 HTTP param handling, existsSync zero shape with initialized:false, createStores-based store construction built once per closure) plus test/dashboard/triage-api.test.ts covering §10.14 HTTP-side and §10.11 HTTP zero shape. Full npm test (1378 passed, 2 skipped) and npm run build green.",
+  "depends_on": [],
+  "domain": "api-design",
+  "id": "01KY74RABXEDF7CR3T2RPT8GN0",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "62aa3cd27ea781a5c07617e9efe977e9cea7a4f2",
+    "recorded_at": "2026-07-23T09:26:23.852Z"
+  },
+  "rationale": "spec §7 says 'the same position as the existing fallback', but eager createStores on an uninitialized project would open/create .twining/twining.db, flipping the existsSync guard and breaking uninitialized semantics; lazy-once still satisfies 'built ONCE, never per request'.",
+  "reversible": true,
+  "scope": "src/dashboard/",
+  "status": "active",
+  "summary": "Chose lazy-once construction of the triage StoreSet (getTriageStores mirroring getSearchEngines) over eager construction at createApiHandler closure time",
+  "timestamp": "2026-07-23T09:26:23.869Z"
+}
