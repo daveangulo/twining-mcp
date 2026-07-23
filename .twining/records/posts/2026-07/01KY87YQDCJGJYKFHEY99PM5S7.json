@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "finding",
+  "id": "01KY87YQDCJGJYKFHEY99PM5S7",
+  "provenance": {
+    "branch": "feat/provisional-at-creation",
+    "commit_sha": "d3b6487d9bd9ec808f4dbd1e3e8aeee650d9dc4b",
+    "recorded_at": "2026-07-23T19:41:33.981Z"
+  },
+  "scope": "src/engine/",
+  "summary": "The reversibility-router charter (analysis/reversibility-router-charter.md, consumer repo) is the waiting consumer for this field — unblocked once 2.5.0 ships",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T19:41:33.996Z"
+}

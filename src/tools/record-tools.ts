@@ -78,6 +78,7 @@ interface DecideInput {
   assumptions?: string[];
   constraints?: string[];
   confidence: "high" | "medium" | "low";
+  status?: "active" | "provisional";
 }
 
 function buildFromNaturalLanguage(
@@ -112,6 +113,7 @@ interface StructuredDecision {
   assumptions?: string[];
   constraints?: string[];
   confidence?: "high" | "medium" | "low";
+  status?: "active" | "provisional";
 }
 
 function buildFromStructured(
@@ -130,6 +132,7 @@ function buildFromStructured(
   };
   if (item.assumptions !== undefined) result.assumptions = item.assumptions;
   if (item.constraints !== undefined) result.constraints = item.constraints;
+  if (item.status !== undefined) result.status = item.status;
   return result;
 }
 
@@ -222,6 +225,12 @@ export function registerRecordTools(
                   .enum(["high", "medium", "low"])
                   .optional()
                   .describe('Confidence level (default: "medium")'),
+                status: z
+                  .enum(["active", "provisional"])
+                  .optional()
+                  .describe(
+                    'Initial lifecycle status for THIS decision (default: "active"). "provisional" records it as awaiting ratification — it sits in the triage open lane until confirmed (twining_promote) or vetoed (twining_override). WARNING: twining_housekeeping with promote_provisionals + execute bulk-promotes provisionals older than 7 days with NO per-item review; leave that flag off if provisional is serving as your ratification queue.',
+                  ),
               }),
             ]),
           )

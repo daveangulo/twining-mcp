@@ -158,7 +158,9 @@ export class SqliteDecisionStore implements IDecisionStore {
   }
 
   async create(
-    input: Omit<Decision, "id" | "timestamp" | "status">,
+    input: Omit<Decision, "id" | "timestamp" | "status"> & {
+      status?: "active" | "provisional";
+    },
   ): Promise<Decision> {
     assertWritable();
     const decision: Decision = {
@@ -166,7 +168,7 @@ export class SqliteDecisionStore implements IDecisionStore {
       commit_hashes: input.commit_hashes ?? [],
       id: generateId(),
       timestamp: new Date().toISOString(),
-      status: "active",
+      status: input.status ?? "active",
     };
     this.db
       .prepare(

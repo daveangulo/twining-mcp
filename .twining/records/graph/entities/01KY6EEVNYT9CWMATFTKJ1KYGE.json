@@ -3,8 +3,8 @@
   "id": "01KY6EEVNYT9CWMATFTKJ1KYGE",
   "name": "src/storage/sqlite/sqlite-stores.ts",
   "properties": {
-    "scope": "src/"
+    "scope": "src/engine/"
   },
   "type": "file",
-  "updated_at": "2026-07-23T02:56:45.349Z"
+  "updated_at": "2026-07-23T19:41:33.951Z"
 }

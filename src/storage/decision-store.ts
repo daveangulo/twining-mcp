@@ -28,14 +28,16 @@ export class DecisionStore implements IDecisionStore {
 
   /** Create a new decision. Writes individual file and updates index atomically. */
   async create(
-    input: Omit<Decision, "id" | "timestamp" | "status">,
+    input: Omit<Decision, "id" | "timestamp" | "status"> & {
+      status?: "active" | "provisional";
+    },
   ): Promise<Decision> {
     const decision: Decision = {
       ...input,
       commit_hashes: input.commit_hashes ?? [],
       id: generateId(),
       timestamp: new Date().toISOString(),
-      status: "active",
+      status: input.status ?? "active",
     };
 
     const filePath = path.join(this.decisionsDir, `${decision.id}.json`);

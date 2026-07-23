@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T19:41:33.858Z",
+  "id": "01KY87YQ92DH310NH0YVT8J7AA",
+  "properties": {
+    "decision_summary": "Chose per-decision status on twining_record's structured objects with NL strings always active"
+  },
+  "source": "01KY6EEVNYT9CWMATFTKJ1KYGE",
+  "target": "01KY87YQ8ZT33EHVC2YJAVT0ZY",
+  "type": "decided_by"
+}

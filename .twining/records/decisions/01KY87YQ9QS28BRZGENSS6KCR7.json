@@ -1,0 +1,40 @@
+{
+  "affected_files": [
+    "src/engine/decisions.ts",
+    "src/storage/decision-store.ts",
+    "src/storage/sqlite/sqlite-stores.ts",
+    "src/storage/interfaces.ts",
+    "src/tools/decision-tools.ts",
+    "src/tools/record-tools.ts",
+    "docs/TRIAGE-SPEC.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "reading decision JSON files",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Implemented creation-time provisional (2.5.0, field-requested per 2026-07-23 consumer handoff): status enum on twining_decide + per-decision status on twining_record structured objects, threaded through DecisionEngine.decide to both store create() paths. 1428 tests green.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KY87YQ9QS28BRZGENSS6KCR7",
+  "provenance": {
+    "branch": "feat/provisional-at-creation",
+    "commit_sha": "d3b6487d9bd9ec808f4dbd1e3e8aeee650d9dc4b",
+    "recorded_at": "2026-07-23T19:41:33.863Z"
+  },
+  "rationale": "the integration harness resolves to the sqlite backend where per-decision files don't exist",
+  "reversible": true,
+  "scope": "src/engine/",
+  "status": "active",
+  "summary": "Chose to verify tool-created decisions via twining_why in integration tests instead of reading decision JSON files",
+  "timestamp": "2026-07-23T19:41:33.879Z"
+}

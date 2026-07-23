@@ -2,6 +2,11 @@
 
 All notable changes to Twining MCP are documented here.
 
+## [2.5.0] - 2026-07-23
+
+### Added
+- **Creation-time provisional decisions** (closes the TRIAGE-SPEC §9 provisional-at-creation gap; field-requested): `twining_decide` accepts `status: "active" | "provisional"` (default `active`) and `twining_record` accepts per-decision `status` on structured decision objects. A decision born `provisional` lands directly in the triage `open` lane awaiting `twining_promote`/`twining_override` — no more decide-then-reconsider two-step, and no stray reconsider companion warning. Only the two live states are creatable; the enum is enforced in the engine (not just the tool schema), so superseded/overridden/archived stay lifecycle outcomes through every caller. Both field descriptions carry the `promote_provisionals` warning inline — that housekeeping flag bulk-promotes >7-day provisionals with no per-item review; leave it off if provisional is your ratification queue.
+
 ## Plugin [1.21.0] - 2026-07-23
 
 ### Added

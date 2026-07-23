@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T19:41:33.950Z",
+  "id": "01KY87YQBYBWTA5DKBBDZEE0RM",
+  "properties": {
+    "decision_summary": "Chose to verify tool-created decisions via twining_why in integration tests instead of reading decision JSON files"
+  },
+  "source": "01KKNE77ZAW1943XPGMREM997R",
+  "target": "01KY87YQBX2W294SAG2KQBZ439",
+  "type": "decided_by"
+}

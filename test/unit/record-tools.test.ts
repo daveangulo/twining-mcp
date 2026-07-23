@@ -476,3 +476,26 @@ describe("twining_record — sentinel for pre-commit hook", () => {
     expect(ts).toBeLessThanOrEqual(Math.floor(Date.now() / 1000) + 1);
   });
 });
+
+describe("twining_record — per-decision creation-time status (2.5.0)", () => {
+  it("persists status: provisional via the structured path; NL strings stay active", async () => {
+    const resp = await callTool("twining_record", {
+      summary: "Session recorded",
+      scope: "src/x/",
+      decisions: [
+        {
+          summary: "Adopt the irreversible storage layout",
+          rationale: "Awaiting lead ratification before build.",
+          status: "provisional",
+        },
+        "Chose Y over Z — simpler and reversible",
+      ],
+    });
+    const body = parseToolResponse(resp) as {
+      decisions_created: Array<{ id: string }>;
+    };
+    expect(body.decisions_created.length).toBe(2);
+    expect(loadDecisionFile(body.decisions_created[0]!.id).status).toBe("provisional");
+    expect(loadDecisionFile(body.decisions_created[1]!.id).status).toBe("active");
+  });
+});

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: both new status field descriptions carry the promote_provisionals warning inline per consumer requirement — keep it when editing those descriptions; a stray promote_provisionals:true+execute silently ratifies a week of un-reviewed irreversible provisionals",
+  "entry_type": "warning",
+  "id": "01KY87YQCKPBC86G188E7GMW1M",
+  "provenance": {
+    "branch": "feat/provisional-at-creation",
+    "commit_sha": "d3b6487d9bd9ec808f4dbd1e3e8aeee650d9dc4b",
+    "recorded_at": "2026-07-23T19:41:33.955Z"
+  },
+  "scope": "src/engine/",
+  "summary": "both new status field descriptions carry the promote_provisionals warning inline per consumer requirement — keep it when editing those descriptions; a stray promote_provisionals:true+execute silent…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T19:41:33.971Z"
+}

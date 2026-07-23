@@ -168,3 +168,35 @@ describe("twining_link_commit + twining_commits", () => {
     expect(parsed.decisions[0]!.id).toBe(id);
   });
 });
+
+describe("twining_decide — creation-time status (2.5.0)", () => {
+  const storedStatus = async (id: string): Promise<string> => {
+    const res = await callTool(server, "twining_why", { ids: [id] });
+    const parsed = parseToolResponse(res) as {
+      decisions: Array<{ id: string; status: string }>;
+    };
+    return parsed.decisions.find((d) => d.id === id)!.status;
+  };
+
+  it("creates a provisional decision when status is given and defaults to active", async () => {
+    const res = await callTool(server, "twining_decide", {
+      ...validDecision,
+      reversible: false,
+      status: "provisional",
+    });
+    const { id } = parseToolResponse(res) as { id: string };
+    expect(await storedStatus(id)).toBe("provisional");
+
+    const res2 = await callTool(server, "twining_decide", validDecision);
+    const { id: id2 } = parseToolResponse(res2) as { id: string };
+    expect(await storedStatus(id2)).toBe("active");
+  });
+
+  it("rejects lifecycle-outcome statuses at creation — engine-enforced, not schema-only", async () => {
+    const res = await callTool(server, "twining_decide", {
+      ...validDecision,
+      status: "superseded",
+    });
+    expect(res.content[0]!.text).toContain("error");
+  });
+});

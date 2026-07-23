@@ -816,14 +816,19 @@ not a drain-cadence opinion.
 *different* Twining user, it's policy — keep it out. `buildTriage` must be correct
 and useful for a solo dev with ten decisions and no charter at all.
 
-**Consumer guidance — provisional-at-creation gap:** `twining_decide` cannot create
-a decision as provisional (no status input; provisional arises only via
-`twining_reconsider` demote or the duplicate-summary auto-demote). A consumer policy
-of "record irreversible decisions as provisional-pending-ratification" therefore
-needs a decide-then-reconsider two-step today — which, per §3.2 limitation 3, also
-posts a companion warning the operator must resolve or dismiss after ratifying.
-An additive `status: "provisional"` input on `twining_decide` is flagged as future
-work — NOT v1.
+**Consumer guidance — provisional-at-creation (CLOSED in 2.5.0):** originally a v1
+gap (provisional arose only via `twining_reconsider` demote or duplicate-summary
+auto-demote, forcing a decide-then-reconsider two-step that also left the §3.2
+limitation-3 companion warning behind). Now: `twining_decide` accepts
+`status: "active" | "provisional"` and `twining_record` accepts per-decision
+`status` on structured decision objects (NL strings stay active — they cannot
+express it). The two-value enum is engine-enforced: lifecycle outcomes
+(superseded/overridden/archived) stay uncreatable through every caller. The input
+is policy-free — "irreversible → provisional" defaulting stays in the consumer
+charter, set at record time like `reversible` itself. The `promote_provisionals`
+warning (§3.2 limitation 2) is carried inline in both field descriptions: routine
+creation-time provisionals make that bulk-promote foot-gun considerably more
+loaded.
 
 **Carve-outs:** no irreversible-list config knob in Twining (the `reversible` flag
 IS the mechanism; the policy that sets it lives at record time). No mutation in v1 —

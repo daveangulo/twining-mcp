@@ -389,6 +389,44 @@ for (const backend of BACKENDS) {
       });
     });
 
+    describe("creation-time provisional status (2.5.0 decide input)", () => {
+      it("a decision born provisional sits in open until promoted; default creation stays active", async () => {
+        const engine = fx.makeDecisionEngine();
+        const prov = await engine.decide({
+          domain: "architecture",
+          scope: "src/",
+          summary: "born provisional — awaiting ratification",
+          context: "c",
+          rationale: "r",
+          reversible: false,
+          status: "provisional",
+        });
+        const act = await engine.decide({
+          domain: "architecture",
+          scope: "src/",
+          summary: "born active by default",
+          context: "c",
+          rationale: "r",
+        });
+
+        const stores = fx.stores();
+        expect((await stores.decisionStore.get(prov.id))!.status).toBe("provisional");
+        expect((await stores.decisionStore.get(act.id))!.status).toBe("active");
+        const idx = await stores.decisionStore.getIndex();
+        expect(idx.find((e) => e.id === prov.id)!.status).toBe("provisional");
+
+        // open is unwindowed, so these assertions are clock-safe despite the
+        // engine's real-time timestamps.
+        const result = await buildTriage(stores, {}, now);
+        expect(ids(result.open)).toContain(prov.id);
+        expect(ids(result.open)).not.toContain(act.id);
+
+        await engine.promote([prov.id]);
+        const after = await buildTriage(fx.stores(), {}, now);
+        expect(ids(after.open)).not.toContain(prov.id);
+      });
+    });
+
     describe("§10.5 reconsider cross-bucket transition + companion warning", () => {
       it("moves a reconsidered decision recent→open, keeps the companion warning open through promote, and drains it via relates_to or dismissal", async () => {
         const decisionId = fx.writeDecision("audit me", {

@@ -71,6 +71,12 @@ export function registerDecisionTools(
           .boolean()
           .optional()
           .describe("Whether this decision is easily reversible (default: true)"),
+        status: z
+          .enum(["active", "provisional"])
+          .optional()
+          .describe(
+            'Initial lifecycle status (default: "active"). "provisional" records the decision as awaiting ratification — it sits in the triage open lane until confirmed (twining_promote) or vetoed (twining_override). WARNING: twining_housekeeping with promote_provisionals + execute bulk-promotes provisionals older than 7 days with NO per-item review; leave that flag off if provisional is serving as your ratification queue.',
+          ),
         affected_files: z
           .array(z.string())
           .optional()

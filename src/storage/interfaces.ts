@@ -49,7 +49,11 @@ export interface IBlackboardStore {
 /** Decision persistence (decisions/<id>.json + index.json today). */
 export interface IDecisionStore {
   create(
-    input: Omit<Decision, "id" | "timestamp" | "status">,
+    input: Omit<Decision, "id" | "timestamp" | "status"> & {
+      // Creation-time status: only the two "live" states are creatable —
+      // superseded/overridden/archived are lifecycle outcomes with back-links.
+      status?: "active" | "provisional";
+    },
   ): Promise<Decision>;
   get(id: string): Promise<Decision | null>;
   getByScope(scope: string): Promise<Decision[]>;

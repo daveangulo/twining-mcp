@@ -226,6 +226,7 @@ export class DecisionEngine {
     supersedes?: string;
     confidence?: "high" | "medium" | "low";
     reversible?: boolean;
+    status?: "active" | "provisional";
     affected_files?: string[];
     affected_symbols?: string[];
     assumptions?: string[];
@@ -240,6 +241,19 @@ export class DecisionEngine {
     // Validate required fields
     if (!input.domain) {
       throw new TwiningError("domain is required", "INVALID_INPUT");
+    }
+    // Enforced here, not only in the tool schema: superseded/overridden/
+    // archived are lifecycle outcomes with back-links and must stay
+    // uncreatable through every caller of decide().
+    if (
+      input.status !== undefined &&
+      input.status !== "active" &&
+      input.status !== "provisional"
+    ) {
+      throw new TwiningError(
+        'status must be "active" or "provisional" at creation',
+        "INVALID_INPUT",
+      );
     }
     if (!input.scope) {
       throw new TwiningError("scope is required", "INVALID_INPUT");
@@ -308,6 +322,7 @@ export class DecisionEngine {
       supersedes: input.supersedes,
       confidence: (input.confidence ?? "medium") as DecisionConfidence,
       reversible: input.reversible ?? true,
+      status: input.status,
       affected_files: input.affected_files ?? [],
       affected_symbols: input.affected_symbols ?? [],
       assumptions: input.assumptions,

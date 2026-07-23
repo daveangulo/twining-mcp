@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T19:41:33.759Z",
+  "id": "01KY87YQ5ZYV430GNAB7K4NWWP",
+  "properties": {
+    "decision_summary": "Chose to enforce the two-value creation-status enum in DecisionEngine.decide (TwiningError INVALID_INPUT) in addition to the zod schemas"
+  },
+  "source": "01KY7347N5X10SY7Z4B6W9V9ZV",
+  "target": "01KY87YQ5PHW3TNCY8R9M1Z5HF",
+  "type": "decided_by"
+}
