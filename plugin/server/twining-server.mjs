@@ -11809,7 +11809,7 @@ var init_decision_store = __esm({
           commit_hashes: input.commit_hashes ?? [],
           id: generateId(),
           timestamp: (/* @__PURE__ */ new Date()).toISOString(),
-          status: "active"
+          status: input.status ?? "active"
         };
         const filePath = path6.join(this.decisionsDir, `${decision.id}.json`);
         const release = await import_proper_lockfile2.default.lock(this.indexPath, LOCK_OPTIONS);
@@ -12508,7 +12508,7 @@ var init_sqlite_stores = __esm({
           commit_hashes: input.commit_hashes ?? [],
           id: generateId(),
           timestamp: (/* @__PURE__ */ new Date()).toISOString(),
-          status: "active"
+          status: input.status ?? "active"
         };
         this.db.prepare(
           "INSERT INTO decisions (id, status, timestamp, data) VALUES (?, ?, ?, ?)"
@@ -29109,6 +29109,18 @@ var DecisionEngine = class {
     if (!input.domain) {
       throw new TwiningError("domain is required", "INVALID_INPUT");
     }
+    if (input.status !== void 0 && input.status !== "active" && input.status !== "provisional") {
+      throw new TwiningError(
+        'status must be "active" or "provisional" at creation',
+        "INVALID_INPUT"
+      );
+    }
+    if (input.status === "provisional" && input.supersedes) {
+      throw new TwiningError(
+        "a provisional decision cannot supersede at creation \u2014 the target would be retired before ratification; create as active, or promote first and then supersede",
+        "INVALID_INPUT"
+      );
+    }
     if (!input.scope) {
       throw new TwiningError("scope is required", "INVALID_INPUT");
     }
@@ -29123,7 +29135,10 @@ var DecisionEngine = class {
     }
     const index = await this.decisionStore.getIndex();
     const conflicts = index.filter(
-      (entry) => entry.domain === input.domain && entry.scope.startsWith(input.scope) && entry.status === "active" && entry.summary !== input.summary && entry.id !== input.supersedes
+      (entry) => entry.domain === input.domain && entry.scope.startsWith(input.scope) && // Both live states conflict: a pending provisional is a live
+      // constraint (assemble/verify/why treat it as such), and skipping it
+      // would let contradictory decisions ratify with no finding posted.
+      (entry.status === "active" || entry.status === "provisional") && entry.summary !== input.summary && entry.id !== input.supersedes
     );
     const knownIds = new Set(index.map((entry) => entry.id));
     const requestedDependsOn = input.depends_on ?? [];
@@ -29152,6 +29167,7 @@ var DecisionEngine = class {
       supersedes: input.supersedes,
       confidence: input.confidence ?? "medium",
       reversible: input.reversible ?? true,
+      status: input.status,
       affected_files: input.affected_files ?? [],
       affected_symbols: input.affected_symbols ?? [],
       assumptions: input.assumptions,
@@ -30611,7 +30627,8 @@ ${nextStep}`);
         }
       }
     }
-    const reconsideredDecisions = filteredIndex.filter((e) => e.status === "provisional").map((e) => ({ id: e.id, summary: e.summary }));
+    const newDecisionIds = new Set(newDecisions.map((d) => d.id));
+    const reconsideredDecisions = filteredIndex.filter((e) => e.status === "provisional" && !newDecisionIds.has(e.id)).map((e) => ({ id: e.id, summary: e.summary }));
     return {
       new_decisions: newDecisions,
       new_entries: newEntries,
@@ -32081,6 +32098,9 @@ function registerDecisionTools(server, engine, twiningDir, options = {}) {
         supersedes: external_exports.string().optional().describe("ID of decision this replaces"),
         confidence: external_exports.enum(["high", "medium", "low"]).optional().describe('Confidence level (default: "medium")'),
         reversible: external_exports.boolean().optional().describe("Whether this decision is easily reversible (default: true)"),
+        status: external_exports.enum(["active", "provisional"]).optional().describe(
+          'Initial lifecycle status (default: "active"). "provisional" records the decision as awaiting ratification \u2014 it sits in the triage open lane until confirmed (twining_promote) or vetoed (twining_override). Cannot be combined with supersedes \u2014 the target would be retired before ratification; create as active, or promote first and then supersede. WARNING: twining_housekeeping with promote_provisionals + execute bulk-promotes provisionals older than 7 days with NO per-item review; leave that flag off if provisional is serving as your ratification queue.'
+        ),
         affected_files: external_exports.array(external_exports.string()).optional().describe("File paths affected by this decision"),
         affected_symbols: external_exports.array(external_exports.string()).optional().describe("Function/class names affected"),
         assumptions: external_exports.array(external_exports.string()).optional().describe("Assumptions this decision depends on \u2014 if any change, decision should be reconsidered"),
@@ -32612,6 +32632,7 @@ function buildFromStructured(item, sessionSummary) {
   };
   if (item.assumptions !== void 0) result.assumptions = item.assumptions;
   if (item.constraints !== void 0) result.constraints = item.constraints;
+  if (item.status !== void 0) result.status = item.status;
   return result;
 }
 function parseFinding(text) {
@@ -32624,7 +32645,8 @@ function parseFinding(text) {
   }
   return { entry_type: "finding", summary: text };
 }
-function registerRecordTools(server, blackboardEngine, decisionEngine, projectRoot, twiningDir) {
+function registerRecordTools(server, blackboardEngine, decisionEngine, projectRoot, twiningDir, options = {}) {
+  const fullSurface = options.fullSurface ?? false;
   server.registerTool(
     "twining_record",
     {
@@ -32661,7 +32683,10 @@ function registerRecordTools(server, blackboardEngine, decisionEngine, projectRo
               constraints: external_exports.array(external_exports.string()).optional().describe(
                 "What limited the options (overrides the session-level constraints for this decision)"
               ),
-              confidence: external_exports.enum(["high", "medium", "low"]).optional().describe('Confidence level (default: "medium")')
+              confidence: external_exports.enum(["high", "medium", "low"]).optional().describe('Confidence level (default: "medium")'),
+              status: external_exports.enum(["active", "provisional"]).optional().describe(
+                'Initial lifecycle status for THIS decision (default: "active"). "provisional" records it as awaiting ratification \u2014 it sits in the triage open lane until confirmed (twining_promote) or vetoed (twining_override). Requires tools.full_surface: true (the drain tools are full-surface). Cannot be combined with supersedes \u2014 the target would be retired before ratification. WARNING: twining_housekeeping with promote_provisionals + execute bulk-promotes provisionals older than 7 days with NO per-item review; leave that flag off if provisional is serving as your ratification queue.'
+              )
             })
           ])
         ).optional().describe(
@@ -32720,6 +32745,12 @@ function registerRecordTools(server, blackboardEngine, decisionEngine, projectRo
         if (args.decisions?.length) {
           for (const item of args.decisions) {
             const input = typeof item === "string" ? buildFromNaturalLanguage(item, args.summary) : buildFromStructured(item, args.summary);
+            if (!fullSurface && input.status !== void 0) {
+              decisionErrors.push(
+                `"${input.summary}": status requires tools.full_surface: true \u2014 the provisional lifecycle tools (twining_promote/twining_override) are full-surface; this decision was NOT recorded`
+              );
+              continue;
+            }
             try {
               const decision = await decisionEngine.decide({
                 ...input,
@@ -35126,7 +35157,9 @@ function createServer(projectRoot) {
   }
   const toolMode = config2.tools?.mode ?? "full";
   const fullSurface = config2.tools?.full_surface ?? false;
-  registerRecordTools(server, blackboardEngine, decisionEngine, projectRoot, twiningDir);
+  registerRecordTools(server, blackboardEngine, decisionEngine, projectRoot, twiningDir, {
+    fullSurface
+  });
   registerHousekeepingTools(server, housekeepingEngine, blackboardEngine, decisionStore);
   registerBlackboardTools(server, blackboardEngine, twiningDir, {
     fullSurface,
