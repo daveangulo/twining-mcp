@@ -32,6 +32,13 @@ import {
 } from "../utils/liveness.js";
 import { AnalyticsEngine } from "../analytics/analytics-engine.js";
 import { MetricsStore } from "../analytics/metrics-store.js";
+import { createStores } from "../storage/backend-factory.js";
+import { loadConfig } from "../config.js";
+import {
+  buildTriage,
+  type TriageInput,
+  type TriageStores,
+} from "../engine/triage.js";
 import type { IAgentStore, IBlackboardStore, IDecisionStore, IGraphStore, IHandoffStore, IMetricsStore } from "../storage/interfaces.js";
 
 /** Send a JSON response with standard headers. */
@@ -47,6 +54,22 @@ function sendJSON(
   });
   res.end(body);
 }
+
+/**
+ * Uninitialized zero shape for /api/triage (TRIAGE-SPEC §7): run the real
+ * buildTriage over empty stores so echoes, defaults, and section semantics
+ * mirror the success shape field-for-field without duplicating the §4.1
+ * normalization here. buildTriage touches only getIndex/get/read.
+ */
+const EMPTY_TRIAGE_STORES: TriageStores = {
+  decisionStore: {
+    getIndex: async () => [],
+    get: async () => null,
+  } as Partial<IDecisionStore> as IDecisionStore,
+  blackboardStore: {
+    read: async () => ({ entries: [], total_count: 0 }),
+  } as Partial<IBlackboardStore> as IBlackboardStore,
+};
 
 /**
  * Create an API request handler for the given project root.
@@ -140,6 +163,30 @@ export function createApiHandler(
       };
     }
     return searchEngines;
+  }
+
+  // Triage reads through the backend-aware store set (TRIAGE-SPEC §7): the
+  // raw file-store fallback above silently serves empty data on sqlite
+  // projects. Built ONCE in this closure, never per request — a per-request
+  // createStores opens a fresh sqlite connection on every dashboard poll.
+  // Lazy like getSearchEngines: createStores opens the database, which must
+  // not happen on uninitialized projects.
+  let triageStores: TriageStores | null = deps
+    ? {
+        decisionStore: deps.decisionStore,
+        blackboardStore: deps.blackboardStore,
+      }
+    : null;
+
+  function getTriageStores(): TriageStores {
+    if (!triageStores) {
+      const stores = createStores(twiningDir, loadConfig(twiningDir));
+      triageStores = {
+        decisionStore: stores.decisionStore,
+        blackboardStore: stores.blackboardStore,
+      };
+    }
+    return triageStores;
   }
 
   return async (
@@ -644,6 +691,54 @@ export function createApiHandler(
         });
       } catch (err: unknown) {
         console.error("[twining] API /api/handoffs error:", err);
+        sendJSON(res, { error: "Internal server error" }, 500);
+      }
+      return true;
+    }
+
+    // GET /api/triage — parsed-pathname match per the /api/search pattern;
+    // an exact-string match would 404 when a query string is present (§7).
+    if (url.startsWith("/api/triage")) {
+      try {
+        const parsed = new URL(url, "http://localhost");
+        if (parsed.pathname !== "/api/triage") return false;
+
+        // Per the §4.1 adapter table: type-invalid values default here,
+        // range normalization happens inside buildTriage. Empty-string
+        // params are treated as absent and not echoed; unparseable since
+        // is ignored in buildTriage; unknown params are ignored.
+        const input: TriageInput = {};
+        const scope = parsed.searchParams.get("scope");
+        if (scope) input.scope = scope;
+        const forAgent = parsed.searchParams.get("for_agent");
+        if (forAgent) input.for_agent = forAgent;
+        const since = parsed.searchParams.get("since");
+        if (since) input.since = since;
+        const section = parsed.searchParams.get("section");
+        if (section === "all" || section === "open" || section === "recent") {
+          input.section = section;
+        }
+        const windowParam = parsed.searchParams.get("window_ms");
+        if (windowParam) {
+          const windowMs = Number(windowParam);
+          if (!Number.isNaN(windowMs)) input.window_ms = windowMs;
+        }
+        const limitParam = parsed.searchParams.get("limit");
+        if (limitParam) {
+          const limit = Number(limitParam);
+          if (!Number.isNaN(limit)) input.limit = limit;
+        }
+
+        if (!fs.existsSync(twiningDir)) {
+          const zero = await buildTriage(EMPTY_TRIAGE_STORES, input);
+          sendJSON(res, { initialized: false, ...zero });
+          return true;
+        }
+
+        const result = await buildTriage(getTriageStores(), input);
+        sendJSON(res, { initialized: true, ...result });
+      } catch (err: unknown) {
+        console.error("[twining] API /api/triage error:", err);
         sendJSON(res, { error: "Internal server error" }, 500);
       }
       return true;

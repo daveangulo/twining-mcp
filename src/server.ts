@@ -34,6 +34,7 @@ import { registerRecordTools } from "./tools/record-tools.js";
 import { registerLifecycleTools } from "./tools/lifecycle-tools.js";
 import { registerGraphTools } from "./tools/graph-tools.js";
 import { registerVerifyTools } from "./tools/verify-tools.js";
+import { registerTriageTools } from "./tools/triage-tools.js";
 import { Exporter } from "./engine/exporter.js";
 import { registerExportTools } from "./tools/export-tools.js";
 import { CoordinationEngine } from "./engine/coordination.js";
@@ -271,6 +272,11 @@ export function createServer(projectRoot: string): ServerContext {
   // Export tools only in full surface mode
   if (fullSurface) {
     registerExportTools(server, exporter);
+  }
+
+  // Triage tool only in full surface mode in v1 (TRIAGE-SPEC §6)
+  if (fullSurface) {
+    registerTriageTools(server, { decisionStore, blackboardStore });
   }
 
   // Extended tools (full mode only)
