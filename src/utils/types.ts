@@ -601,3 +601,60 @@ export interface AnalyticsConfig {
     posthog_host: string;
   };
 }
+
+// Triage read-model types — docs/TRIAGE-SPEC.md §4
+
+/** Single triage item — a decision or blackboard entry awaiting/reporting. */
+export interface TriageItem {
+  // The union is declared OPEN for additive extension: adding kinds is
+  // non-breaking; consumers MUST tolerate unknown kind strings.
+  kind: "decision" | "need" | "question" | "warning" | "artifact";
+  id: string;              // decision id or blackboard entry id — the deep-link key
+  scope: string;
+  summary: string;
+  agent_id: string;
+  timestamp: string;       // ISO: Decision.timestamp / BlackboardEntry.timestamp
+  age_ms: number;          // injectedNow − timestamp; presentation only, NEVER an ordering key
+  tags?: string[];         // blackboard-sourced kinds only; OMITTED (not []) for decisions
+  detail_preview?: string; // collapse-then-truncate at 200 chars; OMITTED when
+                           // source empty; OMITTED for delegation needs (the
+                           // parsed urgency/expires_at fields replace it)
+  detail_truncated?: true; // present only when the COLLAPSED string exceeded 200
+  // decision-only (absent otherwise):
+  reversible?: boolean;
+  confidence?: DecisionConfidence;
+  status?: "provisional" | "active"; // provisional in open, active in recent
+  // delegation-need-only (native DelegationMetadata via parseDelegationMetadata):
+  urgency?: DelegationUrgency;
+  expires_at?: string;     // ISO
+}
+
+/** Result of buildTriage — docs/TRIAGE-SPEC.md §4 */
+export interface TriageResult {
+  generated_at: string;    // injectedNow, sampled BEFORE store reads;
+                           // documented as the next-call `since` cursor
+  window_ms: number;       // applied value after defaulting
+  section: "all" | "open" | "recent"; // echo, always present (applied value)
+  scope?: string;          // echo, present iff provided and non-empty
+  for_agent?: string;      // echo, present iff provided and non-empty
+  since?: string;          // echo, present iff provided AND valid
+  open?: TriageItem[];     // present iff section is "all" or names it; ABSENT
+                           // (undefined) when not requested — distinguishable from
+                           // genuinely-empty []
+  recent?: TriageItem[];
+  counts: {                // ALWAYS computed over BOTH buckets regardless of
+                           // section; PRE-TRUNCATION totals (limit truncates
+                           // arrays only); by_kind keys always fully enumerated
+                           // with zeros
+    open: {
+      total: number;
+      irreversible: number;
+      by_kind: { decision: number; need: number; question: number; warning: number };
+    };
+    recent: {
+      total: number;
+      irreversible: number;
+      by_kind: { decision: number; artifact: number };
+    };
+  };
+}
