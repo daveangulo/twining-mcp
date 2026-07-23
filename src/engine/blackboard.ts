@@ -11,6 +11,7 @@ import type { Embedder } from "../embeddings/embedder.js";
 import { blackboardEmbedText, embedContentHash } from "../embeddings/embed-text.js";
 import type { SearchEngine, BlackboardSearchResult } from "../embeddings/search.js";
 import type { Archiver } from "./archiver.js";
+import { computeResolvedIds } from "./resolution.js";
 import type { GraphAutoPopulator } from "./graph-auto-populator.js";
 import type { IAgentStore, IBlackboardStore, IIndexManager } from "../storage/interfaces.js";
 
@@ -161,10 +162,7 @@ export class BlackboardEngine {
     // (the archive-loop field bug).
     if (this.archiver && this.archiveThreshold && !input._skipAutoArchive) {
       const { entries } = await this.store.read();
-      const resolvedIds = new Set<string>();
-      for (const e of entries) {
-        for (const id of e.relates_to ?? []) resolvedIds.add(id);
-      }
+      const resolvedIds = computeResolvedIds(entries);
       const archivableCount = entries.filter(
         (e) =>
           e.entry_type !== "decision" &&

@@ -7,6 +7,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { ensureDir } from "../storage/file-store.js";
+import { computeResolvedIds } from "./resolution.js";
 import type { BlackboardEngine } from "./blackboard.js";
 import type { BlackboardEntry } from "../utils/types.js";
 import type { IBlackboardStore, IIndexManager } from "../storage/interfaces.js";
@@ -58,10 +59,7 @@ export class Archiver {
     // A need/warning referenced by any other entry's relates_to is resolved.
     // Resolvers archived in earlier runs aren't visible here — that fails
     // toward keeping the entry, never toward losing an open obligation.
-    const resolvedIds = new Set<string>();
-    for (const entry of allEntries) {
-      for (const id of entry.relates_to ?? []) resolvedIds.add(id);
-    }
+    const resolvedIds = computeResolvedIds(allEntries);
 
     const toArchive: BlackboardEntry[] = [];
     let keptOpen = 0;

@@ -7,6 +7,7 @@ import path from "node:path";
 import lockfile from "proper-lockfile";
 import { LOCK_OPTIONS, atomicWriteFileSync, readJSON } from "./file-store.js";
 import { generateId } from "../utils/ids.js";
+import { scopeMatches } from "../utils/scope.js";
 import type {
   Decision,
   DecisionIndexEntry,
@@ -72,11 +73,8 @@ export class DecisionStore implements IDecisionStore {
 
     const matching = index.filter(
       (entry) =>
-        entry.scope.startsWith(scope) ||
-        scope.startsWith(entry.scope) ||
-        entry.affected_files.some(
-          (f) => f.startsWith(scope) || scope.startsWith(f),
-        ) ||
+        scopeMatches(entry.scope, scope) ||
+        entry.affected_files.some((f) => scopeMatches(f, scope)) ||
         entry.affected_symbols.some((s) => s === scope),
     );
 

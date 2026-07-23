@@ -11,6 +11,7 @@
  */
 import { generateId } from "../../utils/ids.js";
 import { normalizeTags } from "../../utils/tags.js";
+import { scopeMatches } from "../../utils/scope.js";
 import { TwiningError } from "../../utils/errors.js";
 import { isReadOnly } from "../file-store.js";
 import type {
@@ -100,10 +101,7 @@ export class SqliteBlackboardStore implements IBlackboardStore {
     }
     if (filters?.scope) {
       const filterScope = filters.scope;
-      entries = entries.filter(
-        (e) =>
-          e.scope.startsWith(filterScope) || filterScope.startsWith(e.scope),
-      );
+      entries = entries.filter((e) => scopeMatches(e.scope, filterScope));
     }
     if (filters?.since) {
       const sinceTime = filters.since;
@@ -186,11 +184,8 @@ export class SqliteDecisionStore implements IDecisionStore {
     const index = await this.getIndex();
     const matching = index.filter(
       (entry) =>
-        entry.scope.startsWith(scope) ||
-        scope.startsWith(entry.scope) ||
-        entry.affected_files.some(
-          (f) => f.startsWith(scope) || scope.startsWith(f),
-        ) ||
+        scopeMatches(entry.scope, scope) ||
+        entry.affected_files.some((f) => scopeMatches(f, scope)) ||
         entry.affected_symbols.some((s) => s === scope),
     );
     const decisions: Decision[] = [];
@@ -562,11 +557,7 @@ export class SqliteHandoffStore implements IHandoffStore {
       }
       if (filters.scope) {
         const filterScope = filters.scope;
-        entries = entries.filter(
-          (e) =>
-            e.scope?.startsWith(filterScope) ||
-            filterScope.startsWith(e.scope ?? ""),
-        );
+        entries = entries.filter((e) => scopeMatches(e.scope ?? "", filterScope));
       }
       if (filters.since) {
         const since = filters.since;

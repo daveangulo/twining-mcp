@@ -8,6 +8,7 @@ import path from "node:path";
 import lockfile from "proper-lockfile";
 import { LOCK_OPTIONS, appendJSONL, atomicWriteFileSync, ensureDir, ensureFileExists, readJSON, readJSONL, writeJSON, writeJSONL } from "./file-store.js";
 import { generateId } from "../utils/ids.js";
+import { scopeMatches } from "../utils/scope.js";
 import type {
   HandoffRecord,
   HandoffResult,
@@ -92,11 +93,7 @@ export class HandoffStore implements IHandoffStore {
       }
       if (filters.scope) {
         const filterScope = filters.scope;
-        entries = entries.filter(
-          (e) =>
-            e.scope?.startsWith(filterScope) ||
-            filterScope.startsWith(e.scope ?? ""),
-        );
+        entries = entries.filter((e) => scopeMatches(e.scope ?? "", filterScope));
       }
       if (filters.since) {
         const since = filters.since;

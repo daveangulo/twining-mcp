@@ -221,6 +221,11 @@ export class VerifyEngine {
     });
 
     // Check which warnings have been acknowledged (have relates_to references from other entries)
+    // NOT the shared computeResolvedIds (src/engine/resolution.ts): this
+    // deliberately discriminates by resolver type (answer/finding →
+    // acknowledged, status → resolved) to feed twining_verify's distinct
+    // warning stats. Collapsing onto the uniform predicate would change
+    // twining_verify output.
     const { entries: allEntries } = await this.blackboardStore.read({ scope });
     const acknowledgedIds = new Set<string>();
     const resolvedIds = new Set<string>();

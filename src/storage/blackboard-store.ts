@@ -7,6 +7,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { appendJSONL, atomicWriteFileSync, LOCK_OPTIONS, readJSONL } from "./file-store.js";
 import { generateId } from "../utils/ids.js";
+import { scopeMatches } from "../utils/scope.js";
 import type { BlackboardEntry } from "../utils/types.js";
 import type { IBlackboardStore } from "./interfaces.js";
 
@@ -82,10 +83,7 @@ export class BlackboardStore implements IBlackboardStore {
 
     if (filters?.scope) {
       const filterScope = filters.scope;
-      entries = entries.filter(
-        (e) =>
-          e.scope.startsWith(filterScope) || filterScope.startsWith(e.scope),
-      );
+      entries = entries.filter((e) => scopeMatches(e.scope, filterScope));
     }
 
     if (filters?.since) {
