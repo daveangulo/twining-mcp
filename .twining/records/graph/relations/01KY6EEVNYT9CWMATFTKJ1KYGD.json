@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T02:56:45.246Z",
+  "id": "01KY6EEVNYT9CWMATFTKJ1KYGD",
+  "properties": {
+    "decision_summary": "Concluded twining_triage belongs in twining-mcp core as an engine-owned read-model over building it consumer-side"
+  },
+  "source": "01KHMSD4ZTFQDF508ANNR1T6MH",
+  "target": "01KY6EEVNTDTYAC7T5MK4SRGRM",
+  "type": "decided_by"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T02:56:45.347Z",
+  "id": "01KY6EEVS3M5AJ85B7EYPR5QDC",
+  "name": "01KY6EEVPMYETW0KDG2Y2N2RPB",
+  "properties": {
+    "scope": "src/",
+    "summary": "Chose to re-run 5 of 8 adversarial review dimensions in a second workflow round after discovering the Workflow args object was stringified by the harness, making args.spec resolve to undefined"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T02:56:45.347Z"
+}

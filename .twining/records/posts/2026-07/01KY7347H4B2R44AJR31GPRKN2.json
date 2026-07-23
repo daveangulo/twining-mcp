@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Authored and committed docs/TRIAGE-SPEC.md — the owned v2 twining_triage spec superseding the 2026-07-22 field draft. Produced by an 11-agent design/author/verify/revise workflow over the 72-agent review evidence; 26 verifier issues applied; 4 residual coherence defects fixed by the controller before commit.\nDecisions: Chose a two-bucket taxonomy (open/recent) keyed on exit semantics over the field draft's three buckets — open holds items with a defined resolution act (provisional decisions, unresolved needs/questions/warnings, #40 predicate) and is unwindowed; recent holds no-lifecycle activity (active decisions, artifacts) drained by window/cursor; every bucket has an exit, fixing the never-drains defect; Chose to scope the no-see-but-cannot-act claim to the MCP tool surface and document the dashboard/HTTP surfaces as deliberately read-only viewers — the final coherence check caught the unscoped claim contradicting the dashboard-primary framing; Chose code-normative openness semantics (any live entry back-reference resolves, self-references included) over the archiver doc-comment's 'any other entry' prose — the extracted shared helper must preserve archiver.ts behavior exactly; Chose mount + change-gated + tab-activation refetch for the dashboard triage view with documented accepted staleness of time-based exits — rejected a bespoke timer as against the module-view pattern\nFindings: docs/TRIAGE-SPEC.md is now the authoritative triage spec; the ~/Downloads field draft and review report are its evidence record; Implementation sequencing per spec handoff notes: (1) shared extraction resolution.ts+scope.ts, (2) buildTriage+types+both-backend tests, (3) tool+HTTP adapters, (4) dashboard tab (needs plugin bundle rebuild via bump-plugin-version.sh); warning: spec §5.1 explicitly excludes src/engine/verify.ts checkWarnings from the shared-predicate refactor — it intentionally discriminates by resolver type; collapsing it would change twining_verify output",
+  "entry_type": "status",
+  "id": "01KY7347H4B2R44AJR31GPRKN2",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "b64542a711558981c0baafd9a764e4a4e1e93a44",
+    "recorded_at": "2026-07-23T08:57:57.008Z"
+  },
+  "scope": "docs/",
+  "summary": "Authored and committed docs/TRIAGE-SPEC.md — the owned v2 twining_triage spec superseding the 2026-07-22 field draft. Produced by an 11-agent design/author/verify/revise workflow over the 72-agent …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T08:57:57.028Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T08:57:57.158Z",
+  "id": "01KY7347N6RNRFECK9FZW57TR3",
+  "properties": {
+    "decision_summary": "Chose a two-bucket taxonomy (open/recent) keyed on exit semantics over the field draft's three buckets"
+  },
+  "source": "01KY7347N5X10SY7Z4B6W9V9ZV",
+  "target": "01KY7347N4BNRBA2PHN13WNPFH",
+  "type": "decided_by"
+}

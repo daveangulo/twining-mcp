@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: 'open need' is undefined in the spec but the repo has a canonical predicate (issue #40: resolved when a later entry back-references via relates_to, archiver.ts:34-63) — any triage implementation must reuse it or triage and archiving will disagree about which needs are live",
+  "entry_type": "warning",
+  "id": "01KY6EEVVKEHRJP53PNB11VMX7",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "b64542a711558981c0baafd9a764e4a4e1e93a44",
+    "recorded_at": "2026-07-23T02:56:45.413Z"
+  },
+  "scope": "src/",
+  "summary": "'open need' is undefined in the spec but the repo has a canonical predicate (issue #40: resolved when a later entry back-references via relates_to, archiver.ts:34-63) — any triage implementation mu…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T02:56:45.427Z"
+}

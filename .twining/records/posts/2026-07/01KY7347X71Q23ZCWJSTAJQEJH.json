@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "finding",
+  "id": "01KY7347X71Q23ZCWJSTAJQEJH",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "b64542a711558981c0baafd9a764e4a4e1e93a44",
+    "recorded_at": "2026-07-23T08:57:57.397Z"
+  },
+  "scope": "docs/",
+  "summary": "docs/TRIAGE-SPEC.md is now the authoritative triage spec; the ~/Downloads field draft and review report are its evidence record",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T08:57:57.415Z"
+}

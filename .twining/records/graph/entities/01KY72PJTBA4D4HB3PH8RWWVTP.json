@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T08:50:29.835Z",
+  "id": "01KY72PJTBA4D4HB3PH8RWWVTP",
+  "name": "01KY72PJQJSY2K3QJPYZZAR241",
+  "properties": {
+    "scope": "src/",
+    "summary": "Chose input range-normalization inside buildTriage with unconstrained zod numerics at the tool"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T08:50:29.835Z"
+}

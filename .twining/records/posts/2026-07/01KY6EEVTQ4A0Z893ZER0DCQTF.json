@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: the spec's ratify queue has no exit condition — DecisionStatus has no ratified state and approving leaves a decision active+irreversible, in queue forever; the repo already ships the ratification state machine (twining_reconsider active→provisional, twining_promote provisional→active) which the spec inverts and omits from its §9 tool list",
+  "entry_type": "warning",
+  "id": "01KY6EEVTQ4A0Z893ZER0DCQTF",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "b64542a711558981c0baafd9a764e4a4e1e93a44",
+    "recorded_at": "2026-07-23T02:56:45.384Z"
+  },
+  "scope": "src/",
+  "summary": "the spec's ratify queue has no exit condition — DecisionStatus has no ratified state and approving leaves a decision active+irreversible, in queue forever; the repo already ships the ratification s…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T02:56:45.399Z"
+}

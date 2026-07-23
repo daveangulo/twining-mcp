@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T08:57:57.395Z",
+  "id": "01KY7347WKSY87RZ8JT6CWMKG6",
+  "name": "01KY7347TX4QCPECVMZG0V0EZQ",
+  "properties": {
+    "scope": "docs/",
+    "summary": "Chose mount + change-gated + tab-activation refetch for the dashboard triage view with documented accepted staleness of time-based exits"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T08:57:57.395Z"
+}

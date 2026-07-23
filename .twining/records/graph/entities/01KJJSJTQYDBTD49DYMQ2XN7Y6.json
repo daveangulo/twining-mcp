@@ -3,8 +3,8 @@
   "id": "01KJJSJTQYDBTD49DYMQ2XN7Y6",
   "name": "src/tools/coordination-tools.ts",
   "properties": {
-    "scope": "plugin/"
+    "scope": "src/"
   },
   "type": "file",
-  "updated_at": "2026-07-21T16:55:43.881Z"
+  "updated_at": "2026-07-23T02:56:45.350Z"
 }

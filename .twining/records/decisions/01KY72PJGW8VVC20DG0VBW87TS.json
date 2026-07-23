@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "making promote/override auto-resolve the warning",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Revised the twining_triage v2 spec (reviser role): applied all 5 checkers' fixes to triage-spec-v2-draft.md and wrote triage-spec-v2-final.md in the session scratchpad. All repo claims re-verified against main@b64542a before writing.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KY72PJGW8VVC20DG0VBW87TS",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "b64542a711558981c0baafd9a764e4a4e1e93a44",
+    "recorded_at": "2026-07-23T08:50:29.516Z"
+  },
+  "rationale": "the auto-resolve path requires warning-id linkage plumbing, a mechanism change outside v1 scope.",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Chose the minimal-honest resolution for the reconsider companion-warning residue (documented limitation + twining_dismiss named as drain + §10 test pinning v1 treatment + §11.2 system-tag prerequisite extended to decisions.ts:737) over making promote/override auto-resolve the warning",
+  "timestamp": "2026-07-23T08:50:29.532Z"
+}

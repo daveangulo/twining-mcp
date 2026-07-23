@@ -1,0 +1,55 @@
+{
+  "affected_files": [
+    "src/engine/decisions.ts",
+    "src/storage/decision-store.ts",
+    "src/storage/sqlite/sqlite-stores.ts",
+    "src/engine/archiver.ts",
+    "src/tools/coordination-tools.ts",
+    "src/dashboard/api-routes.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "building it consumer-side",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "the HTTP API would duplicate and silently drift from; conditions: dashboard-first surfacing, MCP tool gated behind full_surface initially (not default surface as spec §6 mandates), no freestanding heuristic stakes scalar (follow the staleness-score named-signals precedent), and a pre-declared field-data exit test per the twining_handoff deprecation precedent",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "default surface as spec §6 mandates), no freestanding heuristic stakes scalar (follow the staleness-score named-signals precedent), and a pre-declared field-data exit test per the twining_handoff deprecation precedent",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "The reviewed spec draft in ~/Downloads is the authoritative current version from the field session",
+    "The field installation's store scale (~2,180 decisions) is the right sizing target for triage performance analysis"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Ultracode 72-agent adversarial review of the field-authored twining_triage spec (~/Downloads/2026-07-22-twining-triage-spec.md). Verdict: gap is real, fit confirmed (yes-with-conditions), spec NOT buildable as written — 5 load-bearing defects. Full report: ~/Downloads/2026-07-22-twining-triage-spec-REVIEW.md",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01KY6EEVJYQZDXSVKK7CX952KJ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "b64542a711558981c0baafd9a764e4a4e1e93a44",
+    "recorded_at": "2026-07-23T02:56:45.134Z"
+  },
+  "rationale": "the classification depends on engine invariants (the #40 relates_to resolution convention, supersession chains, provisional semantics) that a consumer wrapper over the HTTP API would duplicate and silently drift from; conditions: dashboard-first surfacing, MCP tool gated behind full_surface initially (not default surface as spec §6 mandates), no freestanding heuristic stakes scalar (follow the staleness-score named-signals precedent), and a pre-declared field-data exit test per the twining_handoff deprecation precedent",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Concluded twining_triage belongs in twining-mcp core as an engine-owned read-model over building it consumer-side",
+  "timestamp": "2026-07-23T02:56:45.151Z"
+}

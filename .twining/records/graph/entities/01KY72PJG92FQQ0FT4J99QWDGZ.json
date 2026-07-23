@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T08:50:29.513Z",
+  "id": "01KY72PJG92FQQ0FT4J99QWDGZ",
+  "name": "01KY72PJDHF4GG3YJ6TGG7109Z",
+  "properties": {
+    "scope": "src/",
+    "summary": "Chose to scope the §5.3 computeResolvedIds refactor to the two true near-copies (archiver.ts:61-63, blackboard.ts:164-174) plus buildTriage, explicitly excluding verify.ts:226-244"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T08:50:29.513Z"
+}

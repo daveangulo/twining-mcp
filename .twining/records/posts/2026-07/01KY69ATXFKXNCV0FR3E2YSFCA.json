@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Post-commit wrap-up after b64542a (migrate CLI worktree fix, plugin 1.20.1): the only edits since the record-and-commit were to the out-of-repo auto-memory — project_cmux_worktree_store_divergence.md updated to mark the migrate follow-up CLOSED (b64542a) and the MEMORY.md index line refreshed. No repo files changed since the push; working tree clean.",
+  "entry_type": "status",
+  "id": "01KY69ATXFKXNCV0FR3E2YSFCA",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "b64542a711558981c0baafd9a764e4a4e1e93a44",
+    "recorded_at": "2026-07-23T01:27:10.498Z"
+  },
+  "scope": "project",
+  "summary": "Post-commit wrap-up after b64542a (migrate CLI worktree fix, plugin 1.20.1): the only edits since the record-and-commit were to the out-of-repo auto-memory — project_cmux_worktree_store_divergence.…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T01:27:10.511Z"
+}

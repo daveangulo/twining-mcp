@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Revised the twining_triage v2 spec (reviser role): applied all 5 checkers' fixes to triage-spec-v2-draft.md and wrote triage-spec-v2-final.md in the session scratchpad. All repo claims re-verified against main@b64542a before writing.\nDecisions: Chose to scope the §5.3 computeResolvedIds refactor to the two true near-copies (archiver.ts:61-63, blackboard.ts:164-174) plus buildTriage, explicitly excluding verify.ts:226-244 — verified checkWarnings is intentionally type-discriminating (answer/finding→acknowledged, status→resolved); collapsing it would silently change twining_verify output. Future unification specced as a separate recorded decision, not debt paydown.; Chose the minimal-honest resolution for the reconsider companion-warning residue (documented limitation + twining_dismiss named as drain + §10 test pinning v1 treatment + §11.2 system-tag prerequisite extended to decisions.ts:737) over making promote/override auto-resolve the warning — the auto-resolve path requires warning-id linkage plumbing, a mechanism change outside v1 scope.; Chose to mandate the unfiltered blackboard read as the resolution corpus (archiver's pattern) over scope/type-narrowed reads — verified the repo contains both patterns (archiver unfiltered, verify.ts scope-filtered), so the spec now pins corpus vs membership explicitly with two tests.; Chose input range-normalization inside buildTriage with unconstrained zod numerics at the tool — reconciles the two checker fixes so both adapters share one implementation and only type errors differ.; Chose counts contract option (b) for the future artifact migration: recent.by_kind.artifact stays present and zeroed for ≥1 major version — preserves the fully-enumerated by_kind guarantee over weakening it to open-keyed maps.; Chose to delete the §8 dashboard since-cursor option entirely (plain-window fetch both panels) over requiring client-side accumulation — simplest, and window+clock-free ordering already give poll-stable renders.; Made truncation selection contractual ((timestamp,id) oldest-open/newest-recent) independent of the advisory §4.2 ordering, and added counts.open.irreversible plus a normative dashboard truncation indicator so provisional irreversible decisions are truncation-proof.",
+  "entry_type": "status",
+  "id": "01KY72PJB2GS71FK99NN73GDP6",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "b64542a711558981c0baafd9a764e4a4e1e93a44",
+    "recorded_at": "2026-07-23T08:50:29.328Z"
+  },
+  "scope": "src/",
+  "summary": "Revised the twining_triage v2 spec (reviser role): applied all 5 checkers' fixes to triage-spec-v2-draft.md and wrote triage-spec-v2-final.md in the session scratchpad. All repo claims re-verified …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T08:50:29.346Z"
+}

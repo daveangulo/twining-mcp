@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T08:57:57.236Z",
+  "id": "01KY7347QM0Q67WCM54R7G1J58",
+  "properties": {
+    "decision_summary": "Chose to scope the no-see-but-cannot-act claim to the MCP tool surface and document the dashboard/HTTP surfaces as deliberately read-only viewers"
+  },
+  "source": "01KY7347N5X10SY7Z4B6W9V9ZV",
+  "target": "01KY7347QK06N6V89XS0HH2AB4",
+  "type": "decided_by"
+}

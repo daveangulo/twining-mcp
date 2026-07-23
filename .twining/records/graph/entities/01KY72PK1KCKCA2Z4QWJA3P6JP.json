@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T08:50:30.066Z",
+  "id": "01KY72PK1KCKCA2Z4QWJA3P6JP",
+  "name": "01KY72PJYKD3KHMW7GKARJGN2C",
+  "properties": {
+    "scope": "src/",
+    "summary": "Chose to delete the §8 dashboard since-cursor option entirely (plain-window fetch both panels) over requiring client-side accumulation"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T08:50:30.066Z"
+}

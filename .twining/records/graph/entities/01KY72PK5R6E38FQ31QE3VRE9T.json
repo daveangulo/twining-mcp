@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T08:50:30.200Z",
+  "id": "01KY72PK5R6E38FQ31QE3VRE9T",
+  "name": "01KY72PK2A3F1K556QW73QTXSC",
+  "properties": {
+    "scope": "src/",
+    "summary": "Made truncation selection contractual ((timestamp,id) oldest-open/newest-recent) independent of the advisory §4.2 ordering, and added counts.open.irreversible plus a normative dashboard truncation indicator so provisional irreversible decisions are truncation-proof."
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T08:50:30.200Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T08:57:57.322Z",
+  "id": "01KY7347TA70Q737KK7Z382HWK",
+  "properties": {
+    "decision_summary": "Chose code-normative openness semantics (any live entry back-reference resolves, self-references included) over the archiver doc-comment's 'any other entry' prose"
+  },
+  "source": "01KY7347N5X10SY7Z4B6W9V9ZV",
+  "target": "01KY7347T9RP40D8VZ084D08QS",
+  "type": "decided_by"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: file-backend index backfill claim in spec §5 is false: only DecisionStore.create() writes full index entries (updateStatus/linkCommit patch single fields), so 'populated on next write' never happens for existing decisions; measured full-record read cost is ~3.3ms for 170 decisions (~45ms extrapolated to the 2,180-decision field store) — pure Option C is likely sufficient",
+  "entry_type": "finding",
+  "id": "01KY6EEVYGZC64RKRX7PV12PA9",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "b64542a711558981c0baafd9a764e4a4e1e93a44",
+    "recorded_at": "2026-07-23T02:56:45.506Z"
+  },
+  "scope": "src/",
+  "summary": "file-backend index backfill claim in spec §5 is false: only DecisionStore.create() writes full index entries (updateStatus/linkCommit patch single fields), so 'populated on next write' never happen…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T02:56:45.520Z"
+}

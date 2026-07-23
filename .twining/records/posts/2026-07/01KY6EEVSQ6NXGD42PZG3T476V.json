@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: triage spec §5 (its self-declared most important section) analyzes only the legacy file backend — SQLite is the v2 default, where the decision index is a read-time projection over full records: adding reversible is a one-line projection change in sqlite-stores.ts getIndex(), no migration/backfill/degraded machinery needed; an implementer following §5 literally would patch only the file writer and leave the default backend permanently degraded",
+  "entry_type": "warning",
+  "id": "01KY6EEVSQ6NXGD42PZG3T476V",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "b64542a711558981c0baafd9a764e4a4e1e93a44",
+    "recorded_at": "2026-07-23T02:56:45.352Z"
+  },
+  "scope": "src/",
+  "summary": "triage spec §5 (its self-declared most important section) analyzes only the legacy file backend — SQLite is the v2 default, where the decision index is a read-time projection over full records: add…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T02:56:45.367Z"
+}

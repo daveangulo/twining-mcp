@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "warning",
+  "id": "01KY7347YW02HGPH5V6D6P65FZ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "b64542a711558981c0baafd9a764e4a4e1e93a44",
+    "recorded_at": "2026-07-23T08:57:57.451Z"
+  },
+  "scope": "docs/",
+  "summary": "spec §5.1 explicitly excludes src/engine/verify.ts checkWarnings from the shared-predicate refactor — it intentionally discriminates by resolver type; collapsing it would change twining_verify output",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T08:57:57.468Z"
+}
