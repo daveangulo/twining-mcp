@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T16:23:38.596Z",
+  "id": "01KY7WMAB406NE8Z64TQEJ62NJ",
+  "properties": {
+    "decision_summary": "Chose an undifferentiated 404 for every raw-route deny reason (traversal, dotted segment, symlink escape, missing) and text/plain+nosniff for ALL content"
+  },
+  "source": "01KY7347N5X10SY7Z4B6W9V9ZV",
+  "target": "01KY7WMAAZH6G99V4X3BX0TC4K",
+  "type": "decided_by"
+}

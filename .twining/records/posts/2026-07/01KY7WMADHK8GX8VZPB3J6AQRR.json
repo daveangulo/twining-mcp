@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: /api/raw serves any non-dotted repo file as plain text to anyone who can reach the dashboard port — same trust model as the rest of the localhost dashboard, but worth remembering if the dashboard ever grows remote exposure",
+  "entry_type": "warning",
+  "id": "01KY7WMADHK8GX8VZPB3J6AQRR",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "61018a6c611c1a1fbcbff5551ae14629f72fcc47",
+    "recorded_at": "2026-07-23T16:23:38.658Z"
+  },
+  "scope": "src/dashboard/",
+  "summary": "/api/raw serves any non-dotted repo file as plain text to anyone who can reach the dashboard port — same trust model as the rest of the localhost dashboard, but worth remembering if the dashboard e…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T16:23:38.673Z"
+}

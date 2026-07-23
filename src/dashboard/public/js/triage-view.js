@@ -130,6 +130,14 @@ export function createTriageView(container, opts = {}) {
   openHeader.appendChild(el("h2", "stats-section-title", "Open items"));
   const openCount = el("span", "lv-count");
   openHeader.appendChild(openCount);
+  const humanFilterLabel = document.createElement("label");
+  humanFilterLabel.className = "lv-count";
+  humanFilterLabel.style.cursor = "pointer";
+  const humanFilterBox = document.createElement("input");
+  humanFilterBox.type = "checkbox";
+  humanFilterLabel.appendChild(humanFilterBox);
+  humanFilterLabel.appendChild(document.createTextNode(" needs-human only"));
+  openHeader.appendChild(humanFilterLabel);
   const openList = el("div", "recent-activity");
   openSection.appendChild(openHeader);
   openSection.appendChild(openList);
@@ -201,7 +209,20 @@ export function createTriageView(container, opts = {}) {
   }
 
   function render(body) {
-    renderPanel(openList, openCount, body.open || [], body.counts.open, "No open items — nothing is awaiting a lifecycle act.", true);
+    lastBody = body;
+    const allOpen = body.open || [];
+    if (humanFilterBox.checked) {
+      const { pinned } = partitionNeedsHuman(allOpen);
+      clearElement(openList);
+      openCount.textContent = `showing ${pinned.length} needs-human of ${allOpen.length}`;
+      if (pinned.length === 0) {
+        openList.appendChild(el("p", "placeholder", "No needs-human items — clear the filter to see all open items."));
+      } else {
+        for (const item of groupRows(pinned)) openList.appendChild(renderRow(item));
+      }
+    } else {
+      renderPanel(openList, openCount, allOpen, body.counts.open, "No open items — nothing is awaiting a lifecycle act.", true);
+    }
     renderPanel(recentList, recentCount, body.recent || [], body.counts.recent, "No recent activity in the window.");
   }
 
@@ -217,7 +238,12 @@ export function createTriageView(container, opts = {}) {
   /* ---------- Fetch (mount / store change / tab activation) ---------- */
   let inFlight = false;
   let lastKey = null;
+  let lastBody = null;
   let destroyed = false;
+
+  humanFilterBox.addEventListener("change", () => {
+    if (lastBody) render(lastBody);
+  });
 
   async function refresh() {
     if (inFlight || destroyed) return;

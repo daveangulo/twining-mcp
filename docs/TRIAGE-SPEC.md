@@ -775,9 +775,26 @@ handle any tab name generically — router.js has NO tab allowlist to extend.
   reserved-tag precedent). `http(s)` URLs in summaries, previews, and the
   Blackboard/Decision detail panels render as links opening in a new tab
   (`rel="noopener noreferrer"`, DOM-constructed — never innerHTML). File
-  paths are NOT linkified in v1: a served page cannot open local files, and a
-  raw-file route is new server surface requiring its own path-traversal
-  design — future work, not a rendering tweak.
+  Repo-relative file paths (e.g. `docs/TRIAGE-SPEC.md`) linkify through the
+  read-only raw-file route below; a best-effort remote link ("↗", from
+  `/api/repo-info`) accompanies them when a browsable remote exists —
+  **derived at render time, never rewritten into stored entries**. The
+  approval-time transition to a canonical URL is the resolver post
+  (`relates_to` drain) carrying that URL — records are immutable.
+- **Raw-file route (`GET /api/raw?path=<repo-relative>`):** read-only,
+  root-jailed via `resolveRawPath` (`src/dashboard/raw-path.ts`): no absolute
+  paths, no `..`/empty/dotted segments (blocks `.git`, `.twining`, dotfiles),
+  symlink escapes rejected by realpath containment, files only, 1 MB cap
+  (413). Every deny reason is an undifferentiated 404. Content is ALWAYS
+  served `text/plain; charset=utf-8` with `X-Content-Type-Options: nosniff`
+  — repo content must never execute in the dashboard origin.
+  `GET /api/repo-info` returns `{ web_url, branch }` (60s cache, best-effort
+  git probing; remote links may not exist until the branch is pushed — the
+  local raw link is authoritative).
+- **Needs-human filter:** the Open items panel has a "needs-human only"
+  toggle filtering to tagged rows client-side; the count line shows
+  `showing N needs-human of M` while active. Presentation state only — not
+  routed, not an API param.
 
 ## 9. Scope boundary — what stays OUT of Twining
 

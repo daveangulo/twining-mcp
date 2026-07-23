@@ -1,0 +1,40 @@
+{
+  "affected_files": [
+    "src/dashboard/raw-path.ts",
+    "src/dashboard/repo-info.ts",
+    "src/dashboard/query-routes.ts",
+    "src/dashboard/public/js/linkify.js",
+    "src/dashboard/public/js/triage-view.js",
+    "src/dashboard/public/js/main.js",
+    "docs/TRIAGE-SPEC.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "linkify",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Added read-only raw-file route (/api/raw, root-jailed, text/plain+nosniff), /api/repo-info render-time remote link derivation, repo-path linkification, and a needs-human filter toggle to the Triage dashboard. Spec §8 amended; 22 new tests; 1423 green.",
+  "depends_on": [],
+  "domain": "security",
+  "id": "01KY7WMABN6SDHBYXG581R0Y75",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "61018a6c611c1a1fbcbff5551ae14629f72fcc47",
+    "recorded_at": "2026-07-23T16:23:38.598Z"
+  },
+  "rationale": "mid-token matches must not linkify",
+  "reversible": true,
+  "scope": "src/dashboard/",
+  "status": "active",
+  "summary": "Chose a lookbehind boundary guard in the repo-path regex after a test caught '.twining/config.yml' tail-matching as 'twining/config.yml'",
+  "timestamp": "2026-07-23T16:23:38.613Z"
+}

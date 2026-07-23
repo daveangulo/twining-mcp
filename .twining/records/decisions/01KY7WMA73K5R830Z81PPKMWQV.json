@@ -1,0 +1,40 @@
+{
+  "affected_files": [
+    "src/dashboard/raw-path.ts",
+    "src/dashboard/repo-info.ts",
+    "src/dashboard/query-routes.ts",
+    "src/dashboard/public/js/linkify.js",
+    "src/dashboard/public/js/triage-view.js",
+    "src/dashboard/public/js/main.js",
+    "docs/TRIAGE-SPEC.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "a URL-rewrite operation on stored entries",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Added read-only raw-file route (/api/raw, root-jailed, text/plain+nosniff), /api/repo-info render-time remote link derivation, repo-path linkification, and a needs-human filter toggle to the Triage dashboard. Spec §8 amended; 22 new tests; 1423 green.",
+  "depends_on": [],
+  "domain": "security",
+  "id": "01KY7WMA73K5R830Z81PPKMWQV",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "61018a6c611c1a1fbcbff5551ae14629f72fcc47",
+    "recorded_at": "2026-07-23T16:23:38.452Z"
+  },
+  "rationale": "records are immutable audit trail; the approval-time transition to a canonical URL is the resolver relates_to post, which drains the need and preserves what was true at each moment",
+  "reversible": true,
+  "scope": "src/dashboard/",
+  "status": "active",
+  "summary": "Chose render-time link derivation (local /api/raw link authoritative + best-effort remote blob link from /api/repo-info) over a URL-rewrite operation on stored entries",
+  "timestamp": "2026-07-23T16:23:38.467Z"
+}

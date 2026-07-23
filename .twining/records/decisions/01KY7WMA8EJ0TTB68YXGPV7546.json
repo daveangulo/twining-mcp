@@ -1,0 +1,33 @@
+{
+  "affected_files": [
+    "src/dashboard/raw-path.ts",
+    "src/dashboard/repo-info.ts",
+    "src/dashboard/query-routes.ts",
+    "src/dashboard/public/js/linkify.js",
+    "src/dashboard/public/js/triage-view.js",
+    "src/dashboard/public/js/main.js",
+    "docs/TRIAGE-SPEC.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Added read-only raw-file route (/api/raw, root-jailed, text/plain+nosniff), /api/repo-info render-time remote link derivation, repo-path linkification, and a needs-human filter toggle to the Triage dashboard. Spec §8 amended; 22 new tests; 1423 green.",
+  "depends_on": [],
+  "domain": "api-design",
+  "id": "01KY7WMA8EJ0TTB68YXGPV7546",
+  "provenance": {
+    "branch": "feat/triage",
+    "commit_sha": "61018a6c611c1a1fbcbff5551ae14629f72fcc47",
+    "recorded_at": "2026-07-23T16:23:38.495Z"
+  },
+  "rationale": "no path-probing signal, and repo HTML can never execute in the dashboard origin",
+  "reversible": true,
+  "scope": "src/dashboard/",
+  "status": "active",
+  "summary": "Chose an undifferentiated 404 for every raw-route deny reason (traversal, dotted segment, symlink escape, missing) and text/plain+nosniff for ALL content",
+  "timestamp": "2026-07-23T16:23:38.510Z"
+}

@@ -14,7 +14,14 @@ import { createGraphView } from "./graph-view.js";
 import { renderHealthCards } from "./health.js";
 import { createScopeNav } from "./scope-nav.js";
 import { createTriageView, deepLinkTab } from "./triage-view.js";
-import { linkifyInto } from "./linkify.js";
+import { linkifyInto, setRepoInfo } from "./linkify.js";
+
+// Best-effort remote link derivation (spec §8): fetched once; links stay
+// local-only if this fails or there is no remote.
+fetch("/api/repo-info")
+  .then((r) => (r.ok ? r.json() : null))
+  .then((info) => setRepoInfo(info))
+  .catch(() => {});
 import { readRoute, writeRoute, onRouteChange, syncCurrent } from "./router.js";
 
 // True while applyRoute() is driving the views — suppresses writeRoute echoes.

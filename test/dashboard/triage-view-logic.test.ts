@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 // @ts-expect-error — plain-JS ESM frontend module, no type declarations
 import { formatAge, truncationLabel, deepLinkTab, deepLinkHash, itemBadges, groupRows, stableKey, partitionNeedsHuman, NEEDS_HUMAN_TAG } from "../../src/dashboard/public/js/triage-view.js";
 // @ts-expect-error — plain-JS ESM frontend module, no type declarations
-import { splitUrls } from "../../src/dashboard/public/js/linkify.js";
+import { splitUrls, splitRepoPaths, splitLinkable, remoteBlobUrl } from "../../src/dashboard/public/js/linkify.js";
 
 /* ------------------------------------------------------------------ */
 /* Helpers                                                             */
@@ -260,5 +260,58 @@ describe("splitUrls", () => {
     expect(splitUrls("file:///etc/passwd and /repo/doc.md")).toEqual([
       { type: "text", value: "file:///etc/passwd and /repo/doc.md" },
     ]);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* splitRepoPaths / splitLinkable / remoteBlobUrl                      */
+/* ------------------------------------------------------------------ */
+
+describe("splitRepoPaths", () => {
+  it("matches repo-relative file paths and leaves surrounding text", () => {
+    expect(splitRepoPaths("review docs/TRIAGE-SPEC.md before release")).toEqual([
+      { type: "text", value: "review " },
+      { type: "path", value: "docs/TRIAGE-SPEC.md" },
+      { type: "text", value: " before release" },
+    ]);
+  });
+
+  it("does not match version numbers, bare directories, or dotted segments", () => {
+    expect(splitRepoPaths("superpowers/6.1.1 and src/ alone")).toEqual([
+      { type: "text", value: "superpowers/6.1.1 and src/ alone" },
+    ]);
+    expect(splitRepoPaths(".twining/config.yml")).toEqual([
+      // leading dot segment is not a valid first-segment start, so only the
+      // non-dotted tail could match — config.yml alone has no slash
+      { type: "text", value: ".twining/config.yml" },
+    ]);
+  });
+
+  it("stops at trailing punctuation and line-ref suffixes", () => {
+    const segs = splitRepoPaths("see src/engine/triage.ts:73.");
+    expect(segs[1]).toEqual({ type: "path", value: "src/engine/triage.ts" });
+    expect(segs[2]).toEqual({ type: "text", value: ":73." });
+  });
+});
+
+describe("splitLinkable", () => {
+  it("URLs win over path matching inside them", () => {
+    const segs = splitLinkable("https://github.com/x/y/blob/main/docs/a.md and docs/b.md");
+    expect(segs[0]).toEqual({ type: "url", value: "https://github.com/x/y/blob/main/docs/a.md" });
+    expect(segs[segs.length - 1]).toEqual({ type: "path", value: "docs/b.md" });
+  });
+});
+
+describe("remoteBlobUrl", () => {
+  it("builds a blob URL from web_url + branch + encoded path", () => {
+    expect(remoteBlobUrl({ web_url: "https://github.com/a/b", branch: "feat/triage" }, "docs/TRIAGE-SPEC.md")).toBe(
+      "https://github.com/a/b/blob/feat%2Ftriage/docs/TRIAGE-SPEC.md",
+    );
+  });
+
+  it("returns null without usable info", () => {
+    expect(remoteBlobUrl(null, "docs/a.md")).toBeNull();
+    expect(remoteBlobUrl({ web_url: null, branch: "main" }, "docs/a.md")).toBeNull();
+    expect(remoteBlobUrl({ web_url: "https://x", branch: null }, "docs/a.md")).toBeNull();
   });
 });

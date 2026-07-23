@@ -13,6 +13,8 @@ import { GraphStore } from "../storage/graph-store.js";
 import { HandoffStore } from "../storage/handoff-store.js";
 import { scoreItem, buildProbes } from "../engine/staleness.js";
 import { loadConfig } from "../config.js";
+import { resolveRawPath, RAW_FILE_MAX_BYTES } from "./raw-path.js";
+import { computeRepoInfo, type RepoInfo } from "./repo-info.js";
 import type { DashboardDeps } from "./api-routes.js";
 import type { IBlackboardStore, IDecisionStore, IGraphStore, IHandoffStore } from "../storage/interfaces.js";
 import type { DecisionIndexEntry, Entity, Relation } from "../utils/types.js";
@@ -133,11 +135,53 @@ export function createQueryHandler(
   // reads O(superseded) decision files and staleness scoring walks every
   // decision's scope/affected_files on disk, so this must not run per poll.
   let healthReportCache: { at: number; body: unknown } | null = null;
+  let repoInfoCache: { at: number; body: RepoInfo } | null = null;
 
   return async (req, res) => {
     const url = req.url || "/";
     const parsed = new URL(url, "http://localhost");
     const route = parsed.pathname;
+
+    // Read-only raw-file route (TRIAGE-SPEC §8). Always text/plain + nosniff
+    // so repo content can never execute in the dashboard origin.
+    if (route === "/api/raw") {
+      try {
+        const abs = resolveRawPath(projectRoot, parsed.searchParams.get("path") ?? "");
+        if (!abs) {
+          sendJSON(req, res, { error: "Not found" }, 404);
+          return true;
+        }
+        if (fs.statSync(abs).size > RAW_FILE_MAX_BYTES) {
+          sendJSON(req, res, { error: "File too large" }, 413);
+          return true;
+        }
+        const body = fs.readFileSync(abs);
+        res.writeHead(200, {
+          "Content-Type": "text/plain; charset=utf-8",
+          "X-Content-Type-Options": "nosniff",
+          "Cache-Control": "no-cache",
+          "Content-Length": body.length,
+        });
+        res.end(body);
+      } catch (err) {
+        console.error("[twining] /api/raw error:", err);
+        sendJSON(req, res, { error: "Internal server error" }, 500);
+      }
+      return true;
+    }
+
+    if (route === "/api/repo-info") {
+      try {
+        if (!repoInfoCache || Date.now() - repoInfoCache.at > HEALTH_CACHE_TTL_MS) {
+          repoInfoCache = { at: Date.now(), body: computeRepoInfo(projectRoot) };
+        }
+        sendJSON(req, res, repoInfoCache.body);
+      } catch (err) {
+        console.error("[twining] /api/repo-info error:", err);
+        sendJSON(req, res, { error: "Internal server error" }, 500);
+      }
+      return true;
+    }
 
     if (route.startsWith("/api/blackboard/")) {
       try {

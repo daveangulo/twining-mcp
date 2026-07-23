@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T16:23:38.657Z",
+  "id": "01KY7WMAD1KG6HFA0AW7G6CYJ9",
+  "properties": {
+    "decision_summary": "Chose a lookbehind boundary guard in the repo-path regex after a test caught '.twining/config.yml' tail-matching as 'twining/config.yml'"
+  },
+  "source": "01KX4E5JHDP9RY55NA912A2FV2",
+  "target": "01KY7WMACWAB1TYSSTHAF290H5",
+  "type": "decided_by"
+}
