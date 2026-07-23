@@ -1,0 +1,17 @@
+{
+  "agent_id": "review-subagent",
+  "detail": "Full summary: Test-adequacy review of 04cc90b (creation-time provisional status): full suite passes (108 files, 1428 passed, 2 pre-existing skips); new triage test verified running on both file and sqlite backends; found 4 coverage gaps — record-path invalid-status error contract untested (probe confirmed partial-success with decision_errors), decide rejection test only asserts toContain(\"error\"), post-promote persisted status unasserted, promote_provisionals description warning unpinned.\nFindings: Test callTool helpers reach into _registeredTools and invoke handlers directly, bypassing zod — so the decide 'rejects superseded' test genuinely exercises the engine guard, and the same bypass is the untested surface on the record path; sqlite getIndex() derives index entries by parsing the data blob (same source as get()), so index/record status disagreement is structurally impossible on sqlite; the status COLUMN is written but never read by any query (only idx_decisions_status exists); Invalid status through twining_record returns partial success: bad decision dropped into decision_errors with the engine message, remaining decisions still created — verified by direct probe, not covered by any test",
+  "entry_type": "status",
+  "id": "01KY89300DD0C1J49CYXFA97CJ",
+  "provenance": {
+    "branch": "feat/provisional-at-creation",
+    "commit_sha": "04cc90b6d324a37989efceea79f44754a6b936e4",
+    "recorded_at": "2026-07-23T20:01:22.421Z"
+  },
+  "scope": "test/",
+  "summary": "Test-adequacy review of 04cc90b (creation-time provisional status): full suite passes (108 files, 1428 passed, 2 pre-existing skips); new triage test verified running on both file and sqlite backen…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T20:01:22.445Z"
+}

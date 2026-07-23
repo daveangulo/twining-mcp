@@ -1,0 +1,18 @@
+{
+  "agent_id": "Targeted adversarial review of the creation-time provisional change (small, risk-sized)",
+  "detail": "",
+  "entry_type": "status",
+  "id": "01KY88RSF8MZQ2QRRSNHAWXN7F",
+  "provenance": {
+    "branch": "feat/provisional-at-creation",
+    "commit_sha": "04cc90b6d324a37989efceea79f44754a6b936e4",
+    "recorded_at": "2026-07-23T19:55:48.055Z"
+  },
+  "scope": "project",
+  "summary": "Subagent completed: Targeted adversarial review of the creation-time provisional change (small, risk-sized)",
+  "tags": [
+    "subagent-stop",
+    "hook-generated"
+  ],
+  "timestamp": "2026-07-23T19:55:48.073Z"
+}

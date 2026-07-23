@@ -255,6 +255,16 @@ export class DecisionEngine {
         "INVALID_INPUT",
       );
     }
+    // A provisional decision must not retire its predecessor before it is
+    // ratified — supersession is create-time-committed (the target is updated
+    // immediately below), so the combination would leave a scope with no live
+    // decision if the provisional is later vetoed.
+    if (input.status === "provisional" && input.supersedes) {
+      throw new TwiningError(
+        "a provisional decision cannot supersede at creation — the target would be retired before ratification; create as active, or promote first and then supersede",
+        "INVALID_INPUT",
+      );
+    }
     if (!input.scope) {
       throw new TwiningError("scope is required", "INVALID_INPUT");
     }
@@ -277,7 +287,10 @@ export class DecisionEngine {
       (entry) =>
         entry.domain === input.domain &&
         entry.scope.startsWith(input.scope) &&
-        entry.status === "active" &&
+        // Both live states conflict: a pending provisional is a live
+        // constraint (assemble/verify/why treat it as such), and skipping it
+        // would let contradictory decisions ratify with no finding posted.
+        (entry.status === "active" || entry.status === "provisional") &&
         entry.summary !== input.summary &&
         entry.id !== input.supersedes,
     );
@@ -302,7 +315,7 @@ export class DecisionEngine {
       reason_rejected: alt.reason_rejected,
     }));
 
-    // Create decision with defaults — provisional if conflicts found
+    // Create decision — status comes only from input (default active; guard above)
     // Check if agent assembled context before making this decision
     const agentId = input.agent_id ?? "main";
     const assembledBefore = this.assemblyChecker
@@ -347,7 +360,7 @@ export class DecisionEngine {
 
     // If conflicts exist, post an informational finding (not a warning — warnings get
     // priority-boosted in assemble output and dominate context, causing rework cascades).
-    // Keep the new decision active; only mark provisional if it duplicates an existing summary.
+    // The new decision's status is never demoted here — status comes only from input.
     if (conflicts.length > 0) {
       const conflictDetails = conflicts
         .map((c) => `- ${c.id}: "${c.summary}"`)

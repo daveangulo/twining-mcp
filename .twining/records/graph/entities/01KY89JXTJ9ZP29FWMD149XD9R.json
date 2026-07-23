@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T20:10:04.498Z",
+  "id": "01KY89JXTJ9ZP29FWMD149XD9R",
+  "name": "01KY89JXQRD577QGMWMNXG3XTF",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Chose to reject status:provisional + supersedes at creation (INVALID_INPUT) over deferring supersession to promote()"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T20:10:04.498Z"
+}

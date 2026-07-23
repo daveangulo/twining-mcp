@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T20:10:04.702Z",
+  "id": "01KY89JY0YQ4FDYRGP8YFP2VEN",
+  "name": "01KY89JXYG06GMPF7ADGCWN6DA",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Chose to include provisional entries in decide()'s conflict scan"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T20:10:04.702Z"
+}

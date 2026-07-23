@@ -867,9 +867,13 @@ export class ContextAssembler {
       }
     }
 
-    // Find reconsidered (provisional) decisions since timestamp
+    // Find reconsidered (provisional) decisions since timestamp. A decision
+    // CREATED in the window that is provisional was born that way (2.5.0
+    // creation-time status), not reconsidered — it already appears in
+    // new_decisions and is excluded here.
+    const newDecisionIds = new Set(newDecisions.map((d) => d.id));
     const reconsideredDecisions = filteredIndex
-      .filter((e) => e.status === "provisional")
+      .filter((e) => e.status === "provisional" && !newDecisionIds.has(e.id))
       .map((e) => ({ id: e.id, summary: e.summary }));
 
     return {

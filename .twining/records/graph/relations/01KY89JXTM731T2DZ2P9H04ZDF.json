@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T20:10:04.500Z",
+  "id": "01KY89JXTM731T2DZ2P9H04ZDF",
+  "properties": {
+    "decision_summary": "Chose to reject status:provisional + supersedes at creation (INVALID_INPUT) over deferring supersession to promote()"
+  },
+  "source": "01KHXTXPP31RWYHVGNGXN9REW8",
+  "target": "01KY89JXTJ9ZP29FWMD149XD9R",
+  "type": "decided_by"
+}

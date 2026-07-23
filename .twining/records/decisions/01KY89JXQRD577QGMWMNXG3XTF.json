@@ -1,0 +1,39 @@
+{
+  "affected_files": [
+    "src/engine/decisions.ts",
+    "src/engine/context-assembler.ts",
+    "src/tools/record-tools.ts",
+    "src/tools/decision-tools.ts",
+    "src/server.ts",
+    "docs/TRIAGE-SPEC.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "deferring supersession to promote()",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Applied all 11 surviving findings from the targeted pre-merge review of creation-time provisional (0 refuted): supersedes+provisional rejected, record status gated to full_surface, provisionals join conflict detection, what_changed mislabel fixed, stale comments/spec claim corrected, tests hardened. 1434 green.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KY89JXQRD577QGMWMNXG3XTF",
+  "provenance": {
+    "branch": "feat/provisional-at-creation",
+    "commit_sha": "04cc90b6d324a37989efceea79f44754a6b936e4",
+    "recorded_at": "2026-07-23T20:10:04.394Z"
+  },
+  "rationale": "deferral needs pending_supersedes plumbing across both stores and override(), a mechanism change beyond this release; rejection is the conservative default and the error tells users the two valid paths",
+  "reversible": true,
+  "scope": "src/engine/",
+  "status": "active",
+  "summary": "Chose to reject status:provisional + supersedes at creation (INVALID_INPUT) over deferring supersession to promote()",
+  "timestamp": "2026-07-23T20:10:04.408Z"
+}

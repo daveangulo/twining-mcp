@@ -56,7 +56,9 @@ beforeEach(() => {
   dcsnEngine = new DecisionEngine(dcsnStore, bbEngine);
 
   server = new McpServer({ name: "test-server", version: "1.0.0" });
-  registerRecordTools(server, bbEngine, dcsnEngine, tmpDir, tmpDir);
+  registerRecordTools(server, bbEngine, dcsnEngine, tmpDir, tmpDir, {
+    fullSurface: true,
+  });
 });
 
 afterEach(() => {
@@ -497,5 +499,84 @@ describe("twining_record — per-decision creation-time status (2.5.0)", () => {
     expect(body.decisions_created.length).toBe(2);
     expect(loadDecisionFile(body.decisions_created[0]!.id).status).toBe("provisional");
     expect(loadDecisionFile(body.decisions_created[1]!.id).status).toBe("active");
+  });
+});
+
+describe("twining_record — status error paths (2.5.0 review fixes)", () => {
+  it("reports an invalid status via decision_errors while persisting the valid sibling", async () => {
+    const resp = await callTool("twining_record", {
+      summary: "Session recorded",
+      scope: "src/x/",
+      decisions: [
+        { summary: "bad status decision", rationale: "r", status: "superseded" },
+        "Chose Y over Z — simpler",
+      ],
+    });
+    const body = parseToolResponse(resp) as {
+      decisions_created: Array<{ id: string }>;
+      decision_errors?: string[];
+    };
+    expect(body.decisions_created.length).toBe(1);
+    expect(loadDecisionFile(body.decisions_created[0]!.id).status).toBe("active");
+    expect(body.decision_errors?.length).toBe(1);
+    expect(body.decision_errors![0]).toContain(
+      'status must be "active" or "provisional"',
+    );
+  });
+
+  it("rejects provisional minting on the default surface with a clear per-decision error", async () => {
+    const defaultServer = new McpServer({ name: "t", version: "1.0.0" });
+    registerRecordTools(defaultServer, bbEngine, dcsnEngine, tmpDir, tmpDir);
+    const registered = (
+      defaultServer as unknown as {
+        _registeredTools: Record<
+          string,
+          { handler: (a: Record<string, unknown>, e: unknown) => Promise<unknown> }
+        >;
+      }
+    )._registeredTools;
+    const resp = (await registered["twining_record"]!.handler(
+      {
+        summary: "Session recorded",
+        scope: "src/x/",
+        decisions: [
+          { summary: "wants ratification", rationale: "r", status: "provisional" },
+        ],
+      },
+      {},
+    )) as { content: Array<{ type: string; text: string }> };
+    const body = parseToolResponse(resp) as {
+      decisions_created: Array<{ id: string }>;
+      decision_errors?: string[];
+    };
+    expect(body.decisions_created.length).toBe(0);
+    expect(body.decision_errors![0]).toContain("full_surface");
+  });
+
+  it("rejects provisional + supersedes at creation (engine guard)", async () => {
+    const target = await dcsnEngine.decide({
+      domain: "architecture",
+      scope: "src/x/",
+      summary: "the incumbent",
+      context: "c",
+      rationale: "r",
+    });
+    const resp = await callTool("twining_record", {
+      summary: "Session recorded",
+      scope: "src/x/",
+      supersedes: target.id,
+      decisions: [
+        { summary: "proposed replacement", rationale: "r", status: "provisional" },
+      ],
+    });
+    const body = parseToolResponse(resp) as {
+      decisions_created: Array<{ id: string }>;
+      decision_errors?: string[];
+    };
+    expect(body.decisions_created.length).toBe(0);
+    expect(body.decision_errors![0]).toContain("cannot supersede at creation");
+    // the incumbent must be untouched
+    const incumbent = loadDecisionFile(target.id);
+    expect(incumbent.status).toBe("active");
   });
 });

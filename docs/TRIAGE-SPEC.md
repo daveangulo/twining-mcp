@@ -817,18 +817,32 @@ not a drain-cadence opinion.
 and useful for a solo dev with ten decisions and no charter at all.
 
 **Consumer guidance — provisional-at-creation (CLOSED in 2.5.0):** originally a v1
-gap (provisional arose only via `twining_reconsider` demote or duplicate-summary
-auto-demote, forcing a decide-then-reconsider two-step that also left the §3.2
+gap (provisional arose only via `twining_reconsider` demote — the duplicate-summary
+auto-demote the field draft era referenced was removed in `09b1c92` and no longer
+exists — forcing a decide-then-reconsider two-step that also left the §3.2
 limitation-3 companion warning behind). Now: `twining_decide` accepts
 `status: "active" | "provisional"` and `twining_record` accepts per-decision
 `status` on structured decision objects (NL strings stay active — they cannot
-express it). The two-value enum is engine-enforced: lifecycle outcomes
-(superseded/overridden/archived) stay uncreatable through every caller. The input
-is policy-free — "irreversible → provisional" defaulting stays in the consumer
-charter, set at record time like `reversible` itself. The `promote_provisionals`
-warning (§3.2 limitation 2) is carried inline in both field descriptions: routine
-creation-time provisionals make that bulk-promote foot-gun considerably more
-loaded.
+express it). Semantics pinned by the 2.5.0 review:
+- The two-value enum is **engine-enforced**: lifecycle outcomes
+  (superseded/overridden/archived) stay uncreatable through every caller.
+- **`status: "provisional"` + `supersedes` is rejected** (`INVALID_INPUT`) —
+  supersession is create-time-committed, so the combination would retire the
+  incumbent before ratification and a later veto would leave the scope with no
+  live decision. Create as active, or promote first and then supersede.
+- **Provisional minting is full-surface only**: every per-item drain
+  (`twining_promote`/`twining_override`/`twining_reconsider`) is
+  `fullSurface`-gated, so `twining_record` rejects per-decision `status` on the
+  default surface with a per-decision error rather than minting undrainable
+  provisionals.
+- **Pending provisionals participate in conflict detection** — they are live
+  constraints (assemble/verify/why treat them as such), so a later overlapping
+  decide reports them in `conflicts` and the overlap finding.
+The input is policy-free — "irreversible → provisional" defaulting stays in the
+consumer charter, set at record time like `reversible` itself. The
+`promote_provisionals` warning (§3.2 limitation 2) is carried inline in both field
+descriptions: routine creation-time provisionals make that bulk-promote foot-gun
+considerably more loaded.
 
 **Carve-outs:** no irreversible-list config knob in Twining (the `reversible` flag
 IS the mechanism; the policy that sets it lives at record time). No mutation in v1 —

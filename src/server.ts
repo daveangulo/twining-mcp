@@ -255,7 +255,9 @@ export function createServer(projectRoot: string): ServerContext {
   const fullSurface = config.tools?.full_surface ?? false;
 
   // Core tools (always registered in both full and lite modes)
-  registerRecordTools(server, blackboardEngine, decisionEngine, projectRoot, twiningDir);
+  registerRecordTools(server, blackboardEngine, decisionEngine, projectRoot, twiningDir, {
+    fullSurface,
+  });
   registerHousekeepingTools(server, housekeepingEngine, blackboardEngine, decisionStore);
   registerBlackboardTools(server, blackboardEngine, twiningDir, {
     fullSurface,

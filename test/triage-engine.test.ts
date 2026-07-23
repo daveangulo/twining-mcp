@@ -424,6 +424,11 @@ for (const backend of BACKENDS) {
         await engine.promote([prov.id]);
         const after = await buildTriage(fx.stores(), {}, now);
         expect(ids(after.open)).not.toContain(prov.id);
+        // Persisted status must agree on BOTH read surfaces post-promote —
+        // buildTriage would also drop the item if only one surface flipped.
+        expect((await fx.stores().decisionStore.get(prov.id))!.status).toBe("active");
+        const idxAfter = await fx.stores().decisionStore.getIndex();
+        expect(idxAfter.find((e) => e.id === prov.id)!.status).toBe("active");
       });
     });
 

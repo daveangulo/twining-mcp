@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T20:10:04.705Z",
+  "id": "01KY89JY11ANFGNRJGM95J3MKB",
+  "properties": {
+    "decision_summary": "Chose to include provisional entries in decide()'s conflict scan"
+  },
+  "source": "01KQ0VBWQ83J4NGF3K4XWAMT14",
+  "target": "01KY89JY0YQ4FDYRGP8YFP2VEN",
+  "type": "decided_by"
+}

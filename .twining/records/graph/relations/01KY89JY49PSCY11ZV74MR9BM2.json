@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T20:10:04.809Z",
+  "id": "01KY89JY49PSCY11ZV74MR9BM2",
+  "properties": {
+    "decision_summary": "Chose to exclude ids already in new_decisions from what_changed's reconsidered_decisions"
+  },
+  "source": "01KHXTXPP31RWYHVGNGXN9REW8",
+  "target": "01KY89JY47NK30JQR3EWHEY4V3",
+  "type": "decided_by"
+}

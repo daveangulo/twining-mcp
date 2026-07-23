@@ -157,7 +157,9 @@ export function registerRecordTools(
   decisionEngine: DecisionEngine,
   projectRoot: string,
   twiningDir: string,
+  options: { fullSurface?: boolean } = {},
 ): void {
+  const fullSurface = options.fullSurface ?? false;
   server.registerTool(
     "twining_record",
     {
@@ -229,7 +231,7 @@ export function registerRecordTools(
                   .enum(["active", "provisional"])
                   .optional()
                   .describe(
-                    'Initial lifecycle status for THIS decision (default: "active"). "provisional" records it as awaiting ratification — it sits in the triage open lane until confirmed (twining_promote) or vetoed (twining_override). WARNING: twining_housekeeping with promote_provisionals + execute bulk-promotes provisionals older than 7 days with NO per-item review; leave that flag off if provisional is serving as your ratification queue.',
+                    'Initial lifecycle status for THIS decision (default: "active"). "provisional" records it as awaiting ratification — it sits in the triage open lane until confirmed (twining_promote) or vetoed (twining_override). Requires tools.full_surface: true (the drain tools are full-surface). Cannot be combined with supersedes — the target would be retired before ratification. WARNING: twining_housekeeping with promote_provisionals + execute bulk-promotes provisionals older than 7 days with NO per-item review; leave that flag off if provisional is serving as your ratification queue.',
                   ),
               }),
             ]),
@@ -342,6 +344,17 @@ export function registerRecordTools(
               typeof item === "string"
                 ? buildFromNaturalLanguage(item, args.summary)
                 : buildFromStructured(item, args.summary);
+
+            // Provisional minting is full-surface only: every per-item drain
+            // (twining_promote/twining_override/twining_reconsider) is gated
+            // behind full_surface, so a default-surface provisional would be
+            // unratifiable and unvetoable on the surface that created it.
+            if (!fullSurface && input.status !== undefined) {
+              decisionErrors.push(
+                `"${input.summary}": status requires tools.full_surface: true — the provisional lifecycle tools (twining_promote/twining_override) are full-surface; this decision was NOT recorded`,
+              );
+              continue;
+            }
 
             try {
               const decision = await decisionEngine.decide({

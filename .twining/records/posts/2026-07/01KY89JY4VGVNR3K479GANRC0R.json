@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: The targeted 6-agent review (386K tokens) surfaced 2 real design gaps and 9 hardening items in a change the full suite had already passed green — the assumes-active hunter dimension was the payoff; right-sized reviews of lifecycle-adjacent changes are worth their cost",
+  "entry_type": "finding",
+  "id": "01KY89JY4VGVNR3K479GANRC0R",
+  "provenance": {
+    "branch": "feat/provisional-at-creation",
+    "commit_sha": "04cc90b6d324a37989efceea79f44754a6b936e4",
+    "recorded_at": "2026-07-23T20:10:04.813Z"
+  },
+  "scope": "src/engine/",
+  "summary": "The targeted 6-agent review (386K tokens) surfaced 2 real design gaps and 9 hardening items in a change the full suite had already passed green — the assumes-active hunter dimension was the payoff;…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T20:10:04.827Z"
+}

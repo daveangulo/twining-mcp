@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Applied all 11 surviving findings from the targeted pre-merge review of creation-time provisional (0 refuted): supersedes+provisional rejected, record status gated to full_surface, provisionals join conflict detection, what_changed mislabel fixed, stale comments/spec claim corrected, tests hardened. 1434 green.\nDecisions: Chose to reject status:provisional + supersedes at creation (INVALID_INPUT) over deferring supersession to promote() — deferral needs pending_supersedes plumbing across both stores and override(), a mechanism change beyond this release; rejection is the conservative default and the error tells users the two valid paths; Chose to gate provisional minting via twining_record behind tools.full_surface (per-decision error, decision NOT recorded) over co-registering promote/override on the default surface — co-promotion is exactly what spec §6.1's field-data test defers; the default surface must not create provisionals it cannot drain; Chose to include provisional entries in decide()'s conflict scan — pending provisionals are live constraints (assemble/verify/why already treat them as such); excluding them let contradictory decisions ratify with no overlap finding ever posted; Chose to exclude ids already in new_decisions from what_changed's reconsidered_decisions — a created-in-window provisional is a new provisional, not a reconsideration\nFindings: The targeted 6-agent review (386K tokens) surfaced 2 real design gaps and 9 hardening items in a change the full suite had already passed green — the assumes-active hunter dimension was the payoff; right-sized reviews of lifecycle-adjacent changes are worth their cost; warning: decide()'s duplicate-summary auto-demote no longer exists (removed in 09b1c92) — stale comments claiming it were corrected in this pass; do not reintroduce provisional-on-conflict demotion, status comes only from input",
+  "entry_type": "status",
+  "id": "01KY89JXNPETRR2S20T6CX63BT",
+  "provenance": {
+    "branch": "feat/provisional-at-creation",
+    "commit_sha": "04cc90b6d324a37989efceea79f44754a6b936e4",
+    "recorded_at": "2026-07-23T20:10:04.324Z"
+  },
+  "scope": "src/engine/",
+  "summary": "Applied all 11 surviving findings from the targeted pre-merge review of creation-time provisional (0 refuted): supersedes+provisional rejected, record status gated to full_surface, provisionals joi…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T20:10:04.342Z"
+}

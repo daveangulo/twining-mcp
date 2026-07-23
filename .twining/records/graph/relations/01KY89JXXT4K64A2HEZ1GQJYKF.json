@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-23T20:10:04.602Z",
+  "id": "01KY89JXXT4K64A2HEZ1GQJYKF",
+  "properties": {
+    "decision_summary": "Chose to gate provisional minting via twining_record behind tools.full_surface (per-decision error, decision NOT recorded) over co-registering promote/override on the default surface"
+  },
+  "source": "01KKNE77ZAW1943XPGMREM997R",
+  "target": "01KY89JXXSCAD2HQKYQZEPDH0K",
+  "type": "decided_by"
+}

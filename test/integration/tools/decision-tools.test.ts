@@ -197,6 +197,53 @@ describe("twining_decide — creation-time status (2.5.0)", () => {
       ...validDecision,
       status: "superseded",
     });
-    expect(res.content[0]!.text).toContain("error");
+    const parsed = parseToolResponse(res) as {
+      error: boolean;
+      message: string;
+      code?: string;
+    };
+    expect(parsed.error).toBe(true);
+    expect(parsed.message).toContain('status must be "active" or "provisional"');
+    expect(parsed.code).toBe("INVALID_INPUT");
+  });
+
+  it("rejects provisional + supersedes at creation and leaves the target untouched", async () => {
+    const res1 = await callTool(server, "twining_decide", validDecision);
+    const { id: targetId } = parseToolResponse(res1) as { id: string };
+    const res2 = await callTool(server, "twining_decide", {
+      ...validDecision,
+      summary: "Proposed replacement",
+      supersedes: targetId,
+      status: "provisional",
+    });
+    expect(res2.content[0]!.text).toContain("cannot supersede at creation");
+    expect(await storedStatus(targetId)).toBe("active");
+  });
+
+  it("reports a pending provisional as a conflict to a later overlapping decide", async () => {
+    const res1 = await callTool(server, "twining_decide", {
+      ...validDecision,
+      summary: "Pending proposal in this scope",
+      status: "provisional",
+    });
+    const { id: provId } = parseToolResponse(res1) as { id: string };
+    const res2 = await callTool(server, "twining_decide", {
+      ...validDecision,
+      summary: "A different overlapping decision",
+    });
+    const parsed = parseToolResponse(res2) as {
+      conflicts?: Array<{ id: string }>;
+    };
+    expect(parsed.conflicts?.map((c) => c.id)).toContain(provId);
+  });
+
+  it("carries the promote_provisionals warning in the status field description (documented 2.5.0 contract)", async () => {
+    const registered = (
+      server as unknown as {
+        _registeredTools: Record<string, { inputSchema?: { shape?: Record<string, { description?: string }> } }>;
+      }
+    )._registeredTools;
+    const decideStatus = registered["twining_decide"]!.inputSchema?.shape?.status;
+    expect(decideStatus?.description).toContain("promote_provisionals");
   });
 });

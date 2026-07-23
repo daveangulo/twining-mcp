@@ -5,8 +5,8 @@
   "properties": {
     "description": "MCP server setup — createServer() wires all engines and registers tool handlers",
     "layer": "server",
-    "scope": "src/"
+    "scope": "src/engine/"
   },
   "type": "file",
-  "updated_at": "2026-07-23T10:43:47.814Z"
+  "updated_at": "2026-07-23T20:10:04.811Z"
 }
