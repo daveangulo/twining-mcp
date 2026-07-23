@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T01:16:41.903Z",
+  "id": "01KY68QN1F5AQSG10JDT150N5G",
+  "name": "01KY68QMYKYNJ9BMJ3QZ8NVSQ3",
+  "properties": {
+    "scope": "project",
+    "summary": "Chose hook fail-open (no walk-up fallback) when TWINING_PROJECT points at a store that doesn't exist"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T01:16:41.903Z"
+}

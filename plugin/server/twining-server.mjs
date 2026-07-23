@@ -6807,12 +6807,12 @@ var require_dist = __commonJS({
         throw new Error(`Unknown format "${name}"`);
       return f;
     };
-    function addFormats(ajv, list, fs28, exportName) {
+    function addFormats(ajv, list, fs29, exportName) {
       var _a;
       var _b;
       (_a = (_b = ajv.opts.code).formats) !== null && _a !== void 0 ? _a : _b.formats = (0, codegen_1._)`require("ajv-formats/dist/formats").${exportName}`;
       for (const f of list)
-        ajv.addFormat(f, fs28[f]);
+        ajv.addFormat(f, fs29[f]);
     }
     module.exports = exports = formatsPlugin;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -9807,54 +9807,54 @@ var require_polyfills = __commonJS({
     }
     var chdir;
     module.exports = patch;
-    function patch(fs28) {
+    function patch(fs29) {
       if (constants.hasOwnProperty("O_SYMLINK") && process.version.match(/^v0\.6\.[0-2]|^v0\.5\./)) {
-        patchLchmod(fs28);
+        patchLchmod(fs29);
       }
-      if (!fs28.lutimes) {
-        patchLutimes(fs28);
+      if (!fs29.lutimes) {
+        patchLutimes(fs29);
       }
-      fs28.chown = chownFix(fs28.chown);
-      fs28.fchown = chownFix(fs28.fchown);
-      fs28.lchown = chownFix(fs28.lchown);
-      fs28.chmod = chmodFix(fs28.chmod);
-      fs28.fchmod = chmodFix(fs28.fchmod);
-      fs28.lchmod = chmodFix(fs28.lchmod);
-      fs28.chownSync = chownFixSync(fs28.chownSync);
-      fs28.fchownSync = chownFixSync(fs28.fchownSync);
-      fs28.lchownSync = chownFixSync(fs28.lchownSync);
-      fs28.chmodSync = chmodFixSync(fs28.chmodSync);
-      fs28.fchmodSync = chmodFixSync(fs28.fchmodSync);
-      fs28.lchmodSync = chmodFixSync(fs28.lchmodSync);
-      fs28.stat = statFix(fs28.stat);
-      fs28.fstat = statFix(fs28.fstat);
-      fs28.lstat = statFix(fs28.lstat);
-      fs28.statSync = statFixSync(fs28.statSync);
-      fs28.fstatSync = statFixSync(fs28.fstatSync);
-      fs28.lstatSync = statFixSync(fs28.lstatSync);
-      if (fs28.chmod && !fs28.lchmod) {
-        fs28.lchmod = function(path35, mode, cb) {
+      fs29.chown = chownFix(fs29.chown);
+      fs29.fchown = chownFix(fs29.fchown);
+      fs29.lchown = chownFix(fs29.lchown);
+      fs29.chmod = chmodFix(fs29.chmod);
+      fs29.fchmod = chmodFix(fs29.fchmod);
+      fs29.lchmod = chmodFix(fs29.lchmod);
+      fs29.chownSync = chownFixSync(fs29.chownSync);
+      fs29.fchownSync = chownFixSync(fs29.fchownSync);
+      fs29.lchownSync = chownFixSync(fs29.lchownSync);
+      fs29.chmodSync = chmodFixSync(fs29.chmodSync);
+      fs29.fchmodSync = chmodFixSync(fs29.fchmodSync);
+      fs29.lchmodSync = chmodFixSync(fs29.lchmodSync);
+      fs29.stat = statFix(fs29.stat);
+      fs29.fstat = statFix(fs29.fstat);
+      fs29.lstat = statFix(fs29.lstat);
+      fs29.statSync = statFixSync(fs29.statSync);
+      fs29.fstatSync = statFixSync(fs29.fstatSync);
+      fs29.lstatSync = statFixSync(fs29.lstatSync);
+      if (fs29.chmod && !fs29.lchmod) {
+        fs29.lchmod = function(path35, mode, cb) {
           if (cb) process.nextTick(cb);
         };
-        fs28.lchmodSync = function() {
+        fs29.lchmodSync = function() {
         };
       }
-      if (fs28.chown && !fs28.lchown) {
-        fs28.lchown = function(path35, uid, gid, cb) {
+      if (fs29.chown && !fs29.lchown) {
+        fs29.lchown = function(path35, uid, gid, cb) {
           if (cb) process.nextTick(cb);
         };
-        fs28.lchownSync = function() {
+        fs29.lchownSync = function() {
         };
       }
       if (platform === "win32") {
-        fs28.rename = typeof fs28.rename !== "function" ? fs28.rename : (function(fs$rename) {
+        fs29.rename = typeof fs29.rename !== "function" ? fs29.rename : (function(fs$rename) {
           function rename(from, to, cb) {
             var start = Date.now();
             var backoff = 0;
             fs$rename(from, to, function CB(er) {
               if (er && (er.code === "EACCES" || er.code === "EPERM" || er.code === "EBUSY") && Date.now() - start < 6e4) {
                 setTimeout(function() {
-                  fs28.stat(to, function(stater, st) {
+                  fs29.stat(to, function(stater, st) {
                     if (stater && stater.code === "ENOENT")
                       fs$rename(from, to, CB);
                     else
@@ -9870,9 +9870,9 @@ var require_polyfills = __commonJS({
           }
           if (Object.setPrototypeOf) Object.setPrototypeOf(rename, fs$rename);
           return rename;
-        })(fs28.rename);
+        })(fs29.rename);
       }
-      fs28.read = typeof fs28.read !== "function" ? fs28.read : (function(fs$read) {
+      fs29.read = typeof fs29.read !== "function" ? fs29.read : (function(fs$read) {
         function read(fd, buffer, offset, length, position, callback_) {
           var callback;
           if (callback_ && typeof callback_ === "function") {
@@ -9880,22 +9880,22 @@ var require_polyfills = __commonJS({
             callback = function(er, _, __) {
               if (er && er.code === "EAGAIN" && eagCounter < 10) {
                 eagCounter++;
-                return fs$read.call(fs28, fd, buffer, offset, length, position, callback);
+                return fs$read.call(fs29, fd, buffer, offset, length, position, callback);
               }
               callback_.apply(this, arguments);
             };
           }
-          return fs$read.call(fs28, fd, buffer, offset, length, position, callback);
+          return fs$read.call(fs29, fd, buffer, offset, length, position, callback);
         }
         if (Object.setPrototypeOf) Object.setPrototypeOf(read, fs$read);
         return read;
-      })(fs28.read);
-      fs28.readSync = typeof fs28.readSync !== "function" ? fs28.readSync : /* @__PURE__ */ (function(fs$readSync) {
+      })(fs29.read);
+      fs29.readSync = typeof fs29.readSync !== "function" ? fs29.readSync : /* @__PURE__ */ (function(fs$readSync) {
         return function(fd, buffer, offset, length, position) {
           var eagCounter = 0;
           while (true) {
             try {
-              return fs$readSync.call(fs28, fd, buffer, offset, length, position);
+              return fs$readSync.call(fs29, fd, buffer, offset, length, position);
             } catch (er) {
               if (er.code === "EAGAIN" && eagCounter < 10) {
                 eagCounter++;
@@ -9905,10 +9905,10 @@ var require_polyfills = __commonJS({
             }
           }
         };
-      })(fs28.readSync);
-      function patchLchmod(fs29) {
-        fs29.lchmod = function(path35, mode, callback) {
-          fs29.open(
+      })(fs29.readSync);
+      function patchLchmod(fs30) {
+        fs30.lchmod = function(path35, mode, callback) {
+          fs30.open(
             path35,
             constants.O_WRONLY | constants.O_SYMLINK,
             mode,
@@ -9917,80 +9917,80 @@ var require_polyfills = __commonJS({
                 if (callback) callback(err);
                 return;
               }
-              fs29.fchmod(fd, mode, function(err2) {
-                fs29.close(fd, function(err22) {
+              fs30.fchmod(fd, mode, function(err2) {
+                fs30.close(fd, function(err22) {
                   if (callback) callback(err2 || err22);
                 });
               });
             }
           );
         };
-        fs29.lchmodSync = function(path35, mode) {
-          var fd = fs29.openSync(path35, constants.O_WRONLY | constants.O_SYMLINK, mode);
+        fs30.lchmodSync = function(path35, mode) {
+          var fd = fs30.openSync(path35, constants.O_WRONLY | constants.O_SYMLINK, mode);
           var threw = true;
           var ret;
           try {
-            ret = fs29.fchmodSync(fd, mode);
+            ret = fs30.fchmodSync(fd, mode);
             threw = false;
           } finally {
             if (threw) {
               try {
-                fs29.closeSync(fd);
+                fs30.closeSync(fd);
               } catch (er) {
               }
             } else {
-              fs29.closeSync(fd);
+              fs30.closeSync(fd);
             }
           }
           return ret;
         };
       }
-      function patchLutimes(fs29) {
-        if (constants.hasOwnProperty("O_SYMLINK") && fs29.futimes) {
-          fs29.lutimes = function(path35, at, mt, cb) {
-            fs29.open(path35, constants.O_SYMLINK, function(er, fd) {
+      function patchLutimes(fs30) {
+        if (constants.hasOwnProperty("O_SYMLINK") && fs30.futimes) {
+          fs30.lutimes = function(path35, at, mt, cb) {
+            fs30.open(path35, constants.O_SYMLINK, function(er, fd) {
               if (er) {
                 if (cb) cb(er);
                 return;
               }
-              fs29.futimes(fd, at, mt, function(er2) {
-                fs29.close(fd, function(er22) {
+              fs30.futimes(fd, at, mt, function(er2) {
+                fs30.close(fd, function(er22) {
                   if (cb) cb(er2 || er22);
                 });
               });
             });
           };
-          fs29.lutimesSync = function(path35, at, mt) {
-            var fd = fs29.openSync(path35, constants.O_SYMLINK);
+          fs30.lutimesSync = function(path35, at, mt) {
+            var fd = fs30.openSync(path35, constants.O_SYMLINK);
             var ret;
             var threw = true;
             try {
-              ret = fs29.futimesSync(fd, at, mt);
+              ret = fs30.futimesSync(fd, at, mt);
               threw = false;
             } finally {
               if (threw) {
                 try {
-                  fs29.closeSync(fd);
+                  fs30.closeSync(fd);
                 } catch (er) {
                 }
               } else {
-                fs29.closeSync(fd);
+                fs30.closeSync(fd);
               }
             }
             return ret;
           };
-        } else if (fs29.futimes) {
-          fs29.lutimes = function(_a, _b, _c, cb) {
+        } else if (fs30.futimes) {
+          fs30.lutimes = function(_a, _b, _c, cb) {
             if (cb) process.nextTick(cb);
           };
-          fs29.lutimesSync = function() {
+          fs30.lutimesSync = function() {
           };
         }
       }
       function chmodFix(orig) {
         if (!orig) return orig;
         return function(target, mode, cb) {
-          return orig.call(fs28, target, mode, function(er) {
+          return orig.call(fs29, target, mode, function(er) {
             if (chownErOk(er)) er = null;
             if (cb) cb.apply(this, arguments);
           });
@@ -10000,7 +10000,7 @@ var require_polyfills = __commonJS({
         if (!orig) return orig;
         return function(target, mode) {
           try {
-            return orig.call(fs28, target, mode);
+            return orig.call(fs29, target, mode);
           } catch (er) {
             if (!chownErOk(er)) throw er;
           }
@@ -10009,7 +10009,7 @@ var require_polyfills = __commonJS({
       function chownFix(orig) {
         if (!orig) return orig;
         return function(target, uid, gid, cb) {
-          return orig.call(fs28, target, uid, gid, function(er) {
+          return orig.call(fs29, target, uid, gid, function(er) {
             if (chownErOk(er)) er = null;
             if (cb) cb.apply(this, arguments);
           });
@@ -10019,7 +10019,7 @@ var require_polyfills = __commonJS({
         if (!orig) return orig;
         return function(target, uid, gid) {
           try {
-            return orig.call(fs28, target, uid, gid);
+            return orig.call(fs29, target, uid, gid);
           } catch (er) {
             if (!chownErOk(er)) throw er;
           }
@@ -10039,13 +10039,13 @@ var require_polyfills = __commonJS({
             }
             if (cb) cb.apply(this, arguments);
           }
-          return options ? orig.call(fs28, target, options, callback) : orig.call(fs28, target, callback);
+          return options ? orig.call(fs29, target, options, callback) : orig.call(fs29, target, callback);
         };
       }
       function statFixSync(orig) {
         if (!orig) return orig;
         return function(target, options) {
-          var stats = options ? orig.call(fs28, target, options) : orig.call(fs28, target);
+          var stats = options ? orig.call(fs29, target, options) : orig.call(fs29, target);
           if (stats) {
             if (stats.uid < 0) stats.uid += 4294967296;
             if (stats.gid < 0) stats.gid += 4294967296;
@@ -10074,7 +10074,7 @@ var require_legacy_streams = __commonJS({
   "node_modules/graceful-fs/legacy-streams.js"(exports, module) {
     var Stream = __require("stream").Stream;
     module.exports = legacy;
-    function legacy(fs28) {
+    function legacy(fs29) {
       return {
         ReadStream,
         WriteStream
@@ -10117,7 +10117,7 @@ var require_legacy_streams = __commonJS({
           });
           return;
         }
-        fs28.open(this.path, this.flags, this.mode, function(err, fd) {
+        fs29.open(this.path, this.flags, this.mode, function(err, fd) {
           if (err) {
             self2.emit("error", err);
             self2.readable = false;
@@ -10156,7 +10156,7 @@ var require_legacy_streams = __commonJS({
         this.busy = false;
         this._queue = [];
         if (this.fd === null) {
-          this._open = fs28.open;
+          this._open = fs29.open;
           this._queue.push([this._open, this.path, this.flags, this.mode, void 0]);
           this.flush();
         }
@@ -10191,7 +10191,7 @@ var require_clone = __commonJS({
 // node_modules/graceful-fs/graceful-fs.js
 var require_graceful_fs = __commonJS({
   "node_modules/graceful-fs/graceful-fs.js"(exports, module) {
-    var fs28 = __require("fs");
+    var fs29 = __require("fs");
     var polyfills = require_polyfills();
     var legacy = require_legacy_streams();
     var clone2 = require_clone();
@@ -10223,12 +10223,12 @@ var require_graceful_fs = __commonJS({
         m = "GFS4: " + m.split(/\n/).join("\nGFS4: ");
         console.error(m);
       };
-    if (!fs28[gracefulQueue]) {
+    if (!fs29[gracefulQueue]) {
       queue = global[gracefulQueue] || [];
-      publishQueue(fs28, queue);
-      fs28.close = (function(fs$close) {
+      publishQueue(fs29, queue);
+      fs29.close = (function(fs$close) {
         function close(fd, cb) {
-          return fs$close.call(fs28, fd, function(err) {
+          return fs$close.call(fs29, fd, function(err) {
             if (!err) {
               resetQueue();
             }
@@ -10240,40 +10240,40 @@ var require_graceful_fs = __commonJS({
           value: fs$close
         });
         return close;
-      })(fs28.close);
-      fs28.closeSync = (function(fs$closeSync) {
+      })(fs29.close);
+      fs29.closeSync = (function(fs$closeSync) {
         function closeSync(fd) {
-          fs$closeSync.apply(fs28, arguments);
+          fs$closeSync.apply(fs29, arguments);
           resetQueue();
         }
         Object.defineProperty(closeSync, previousSymbol, {
           value: fs$closeSync
         });
         return closeSync;
-      })(fs28.closeSync);
+      })(fs29.closeSync);
       if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || "")) {
         process.on("exit", function() {
-          debug(fs28[gracefulQueue]);
-          __require("assert").equal(fs28[gracefulQueue].length, 0);
+          debug(fs29[gracefulQueue]);
+          __require("assert").equal(fs29[gracefulQueue].length, 0);
         });
       }
     }
     var queue;
     if (!global[gracefulQueue]) {
-      publishQueue(global, fs28[gracefulQueue]);
+      publishQueue(global, fs29[gracefulQueue]);
     }
-    module.exports = patch(clone2(fs28));
-    if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH && !fs28.__patched) {
-      module.exports = patch(fs28);
-      fs28.__patched = true;
+    module.exports = patch(clone2(fs29));
+    if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH && !fs29.__patched) {
+      module.exports = patch(fs29);
+      fs29.__patched = true;
     }
-    function patch(fs29) {
-      polyfills(fs29);
-      fs29.gracefulify = patch;
-      fs29.createReadStream = createReadStream;
-      fs29.createWriteStream = createWriteStream;
-      var fs$readFile = fs29.readFile;
-      fs29.readFile = readFile;
+    function patch(fs30) {
+      polyfills(fs30);
+      fs30.gracefulify = patch;
+      fs30.createReadStream = createReadStream;
+      fs30.createWriteStream = createWriteStream;
+      var fs$readFile = fs30.readFile;
+      fs30.readFile = readFile;
       function readFile(path35, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
@@ -10289,8 +10289,8 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$writeFile = fs29.writeFile;
-      fs29.writeFile = writeFile;
+      var fs$writeFile = fs30.writeFile;
+      fs30.writeFile = writeFile;
       function writeFile(path35, data, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
@@ -10306,9 +10306,9 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$appendFile = fs29.appendFile;
+      var fs$appendFile = fs30.appendFile;
       if (fs$appendFile)
-        fs29.appendFile = appendFile;
+        fs30.appendFile = appendFile;
       function appendFile(path35, data, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
@@ -10324,9 +10324,9 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$copyFile = fs29.copyFile;
+      var fs$copyFile = fs30.copyFile;
       if (fs$copyFile)
-        fs29.copyFile = copyFile;
+        fs30.copyFile = copyFile;
       function copyFile(src, dest, flags, cb) {
         if (typeof flags === "function") {
           cb = flags;
@@ -10344,8 +10344,8 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$readdir = fs29.readdir;
-      fs29.readdir = readdir;
+      var fs$readdir = fs30.readdir;
+      fs30.readdir = readdir;
       var noReaddirOptionVersions = /^v[0-5]\./;
       function readdir(path35, options, cb) {
         if (typeof options === "function")
@@ -10386,21 +10386,21 @@ var require_graceful_fs = __commonJS({
         }
       }
       if (process.version.substr(0, 4) === "v0.8") {
-        var legStreams = legacy(fs29);
+        var legStreams = legacy(fs30);
         ReadStream = legStreams.ReadStream;
         WriteStream = legStreams.WriteStream;
       }
-      var fs$ReadStream = fs29.ReadStream;
+      var fs$ReadStream = fs30.ReadStream;
       if (fs$ReadStream) {
         ReadStream.prototype = Object.create(fs$ReadStream.prototype);
         ReadStream.prototype.open = ReadStream$open;
       }
-      var fs$WriteStream = fs29.WriteStream;
+      var fs$WriteStream = fs30.WriteStream;
       if (fs$WriteStream) {
         WriteStream.prototype = Object.create(fs$WriteStream.prototype);
         WriteStream.prototype.open = WriteStream$open;
       }
-      Object.defineProperty(fs29, "ReadStream", {
+      Object.defineProperty(fs30, "ReadStream", {
         get: function() {
           return ReadStream;
         },
@@ -10410,7 +10410,7 @@ var require_graceful_fs = __commonJS({
         enumerable: true,
         configurable: true
       });
-      Object.defineProperty(fs29, "WriteStream", {
+      Object.defineProperty(fs30, "WriteStream", {
         get: function() {
           return WriteStream;
         },
@@ -10421,7 +10421,7 @@ var require_graceful_fs = __commonJS({
         configurable: true
       });
       var FileReadStream = ReadStream;
-      Object.defineProperty(fs29, "FileReadStream", {
+      Object.defineProperty(fs30, "FileReadStream", {
         get: function() {
           return FileReadStream;
         },
@@ -10432,7 +10432,7 @@ var require_graceful_fs = __commonJS({
         configurable: true
       });
       var FileWriteStream = WriteStream;
-      Object.defineProperty(fs29, "FileWriteStream", {
+      Object.defineProperty(fs30, "FileWriteStream", {
         get: function() {
           return FileWriteStream;
         },
@@ -10481,13 +10481,13 @@ var require_graceful_fs = __commonJS({
         });
       }
       function createReadStream(path35, options) {
-        return new fs29.ReadStream(path35, options);
+        return new fs30.ReadStream(path35, options);
       }
       function createWriteStream(path35, options) {
-        return new fs29.WriteStream(path35, options);
+        return new fs30.WriteStream(path35, options);
       }
-      var fs$open = fs29.open;
-      fs29.open = open;
+      var fs$open = fs30.open;
+      fs30.open = open;
       function open(path35, flags, mode, cb) {
         if (typeof mode === "function")
           cb = mode, mode = null;
@@ -10503,20 +10503,20 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      return fs29;
+      return fs30;
     }
     function enqueue(elem) {
       debug("ENQUEUE", elem[0].name, elem[1]);
-      fs28[gracefulQueue].push(elem);
+      fs29[gracefulQueue].push(elem);
       retry();
     }
     var retryTimer;
     function resetQueue() {
       var now = Date.now();
-      for (var i2 = 0; i2 < fs28[gracefulQueue].length; ++i2) {
-        if (fs28[gracefulQueue][i2].length > 2) {
-          fs28[gracefulQueue][i2][3] = now;
-          fs28[gracefulQueue][i2][4] = now;
+      for (var i2 = 0; i2 < fs29[gracefulQueue].length; ++i2) {
+        if (fs29[gracefulQueue][i2].length > 2) {
+          fs29[gracefulQueue][i2][3] = now;
+          fs29[gracefulQueue][i2][4] = now;
         }
       }
       retry();
@@ -10524,9 +10524,9 @@ var require_graceful_fs = __commonJS({
     function retry() {
       clearTimeout(retryTimer);
       retryTimer = void 0;
-      if (fs28[gracefulQueue].length === 0)
+      if (fs29[gracefulQueue].length === 0)
         return;
-      var elem = fs28[gracefulQueue].shift();
+      var elem = fs29[gracefulQueue].shift();
       var fn = elem[0];
       var args = elem[1];
       var err = elem[2];
@@ -10548,7 +10548,7 @@ var require_graceful_fs = __commonJS({
           debug("RETRY", fn.name, args);
           fn.apply(null, args.concat([startTime]));
         } else {
-          fs28[gracefulQueue].push(elem);
+          fs29[gracefulQueue].push(elem);
         }
       }
       if (retryTimer === void 0) {
@@ -10983,10 +10983,10 @@ var require_mtime_precision = __commonJS({
   "node_modules/proper-lockfile/lib/mtime-precision.js"(exports, module) {
     "use strict";
     var cacheSymbol = /* @__PURE__ */ Symbol();
-    function probe(file, fs28, callback) {
-      const cachedPrecision = fs28[cacheSymbol];
+    function probe(file, fs29, callback) {
+      const cachedPrecision = fs29[cacheSymbol];
       if (cachedPrecision) {
-        return fs28.stat(file, (err, stat) => {
+        return fs29.stat(file, (err, stat) => {
           if (err) {
             return callback(err);
           }
@@ -10994,16 +10994,16 @@ var require_mtime_precision = __commonJS({
         });
       }
       const mtime = new Date(Math.ceil(Date.now() / 1e3) * 1e3 + 5);
-      fs28.utimes(file, mtime, mtime, (err) => {
+      fs29.utimes(file, mtime, mtime, (err) => {
         if (err) {
           return callback(err);
         }
-        fs28.stat(file, (err2, stat) => {
+        fs29.stat(file, (err2, stat) => {
           if (err2) {
             return callback(err2);
           }
           const precision = stat.mtime.getTime() % 1e3 === 0 ? "s" : "ms";
-          Object.defineProperty(fs28, cacheSymbol, { value: precision });
+          Object.defineProperty(fs29, cacheSymbol, { value: precision });
           callback(null, stat.mtime, precision);
         });
       });
@@ -11025,7 +11025,7 @@ var require_lockfile = __commonJS({
   "node_modules/proper-lockfile/lib/lockfile.js"(exports, module) {
     "use strict";
     var path35 = __require("path");
-    var fs28 = require_graceful_fs();
+    var fs29 = require_graceful_fs();
     var retry = require_retry2();
     var onExit = require_signal_exit();
     var mtimePrecision = require_mtime_precision();
@@ -11156,7 +11156,7 @@ var require_lockfile = __commonJS({
         update: null,
         realpath: true,
         retries: 0,
-        fs: fs28,
+        fs: fs29,
         onCompromised: (err) => {
           throw err;
         },
@@ -11200,7 +11200,7 @@ var require_lockfile = __commonJS({
     }
     function unlock(file, options, callback) {
       options = {
-        fs: fs28,
+        fs: fs29,
         realpath: true,
         ...options
       };
@@ -11222,7 +11222,7 @@ var require_lockfile = __commonJS({
       options = {
         stale: 1e4,
         realpath: true,
-        fs: fs28,
+        fs: fs29,
         ...options
       };
       options.stale = Math.max(options.stale || 0, 2e3);
@@ -11261,16 +11261,16 @@ var require_lockfile = __commonJS({
 var require_adapter = __commonJS({
   "node_modules/proper-lockfile/lib/adapter.js"(exports, module) {
     "use strict";
-    var fs28 = require_graceful_fs();
-    function createSyncFs(fs29) {
+    var fs29 = require_graceful_fs();
+    function createSyncFs(fs30) {
       const methods = ["mkdir", "realpath", "stat", "rmdir", "utimes"];
-      const newFs = { ...fs29 };
+      const newFs = { ...fs30 };
       methods.forEach((method) => {
         newFs[method] = (...args) => {
           const callback = args.pop();
           let ret;
           try {
-            ret = fs29[`${method}Sync`](...args);
+            ret = fs30[`${method}Sync`](...args);
           } catch (err) {
             return callback(err);
           }
@@ -11308,7 +11308,7 @@ var require_adapter = __commonJS({
     }
     function toSyncOptions(options) {
       options = { ...options };
-      options.fs = createSyncFs(options.fs || fs28);
+      options.fs = createSyncFs(options.fs || fs29);
       if (typeof options.retries === "number" && options.retries > 0 || options.retries && typeof options.retries.retries === "number" && options.retries.retries > 0) {
         throw Object.assign(new Error("Cannot use retries with the sync api"), { code: "ESYNC" });
       }
@@ -13245,21 +13245,21 @@ var init_record_ingest = __esm({
 });
 
 // src/migrate/config-edit.ts
-import fs24 from "node:fs";
+import fs25 from "node:fs";
 import path31 from "node:path";
 function setStorageBackend(twiningDir, backend, opts) {
   const configPath = path31.join(twiningDir, "config.yml");
-  if (!fs24.existsSync(configPath)) {
-    fs24.writeFileSync(
+  if (!fs25.existsSync(configPath)) {
+    fs25.writeFileSync(
       configPath,
       jsYaml.dump({ version: opts?.formatVersion ?? 1, storage: { backend } })
     );
     return { backedUpTo: null, hadComments: false };
   }
-  const raw = fs24.readFileSync(configPath, "utf-8");
+  const raw = fs25.readFileSync(configPath, "utf-8");
   const backupPath = configPath + ".pre-migrate.bak";
-  if (!fs24.existsSync(backupPath)) {
-    fs24.copyFileSync(configPath, backupPath);
+  if (!fs25.existsSync(backupPath)) {
+    fs25.copyFileSync(configPath, backupPath);
   }
   const loaded = jsYaml.load(raw);
   if (loaded !== null && loaded !== void 0 && (typeof loaded !== "object" || Array.isArray(loaded))) {
@@ -13357,25 +13357,25 @@ var forward_exports = {};
 __export(forward_exports, {
   migrateForward: () => migrateForward
 });
-import fs25 from "node:fs";
+import fs26 from "node:fs";
 import path32 from "node:path";
 function ensureDbGitignored(twiningDir) {
   const gitignorePath = path32.join(twiningDir, ".gitignore");
   const wanted = ["twining.db", "twining.db-wal", "twining.db-shm"];
-  const exists = fs25.existsSync(gitignorePath);
-  const raw = exists ? fs25.readFileSync(gitignorePath, "utf-8") : "";
+  const exists = fs26.existsSync(gitignorePath);
+  const raw = exists ? fs26.readFileSync(gitignorePath, "utf-8") : "";
   const present = new Set(raw.split("\n").map((l) => l.trim()));
   const toAdd = wanted.filter((line) => !present.has(line));
   if (toAdd.length === 0) return false;
   const base = raw.length > 0 && !raw.endsWith("\n") ? raw + "\n" : raw;
   const next = base + toAdd.join("\n") + "\n";
   if (exists) atomicWriteFileSync(gitignorePath, next);
-  else fs25.writeFileSync(gitignorePath, next);
+  else fs26.writeFileSync(gitignorePath, next);
   return true;
 }
 async function migrateForward(opts) {
   const twiningDir = path32.join(opts.projectRoot, ".twining");
-  if (!fs25.existsSync(twiningDir)) {
+  if (!fs26.existsSync(twiningDir)) {
     throw new Error(`no .twining/ directory at ${twiningDir} \u2014 nothing to migrate`);
   }
   if (!sqliteAvailable()) {
@@ -13422,7 +13422,7 @@ async function migrateForward(opts) {
       orphans_salvaged: 0
     };
   }
-  if (opts.checkOnly && !fs25.existsSync(path32.join(twiningDir, "twining.db"))) {
+  if (opts.checkOnly && !fs26.existsSync(path32.join(twiningDir, "twining.db"))) {
     const counts = {
       posts: (await legacy.blackboardStore.read()).entries.length,
       decisions: (await legacy.decisionStore.getIndex()).length,
@@ -13457,13 +13457,13 @@ async function migrateForward(opts) {
       if (decision) exporter.decision(decision);
     }
     const decisionsDir = path32.join(twiningDir, "decisions");
-    if (fs25.existsSync(decisionsDir)) {
-      for (const file of fs25.readdirSync(decisionsDir)) {
+    if (fs26.existsSync(decisionsDir)) {
+      for (const file of fs26.readdirSync(decisionsDir)) {
         if (file === "index.json" || !file.endsWith(".json")) continue;
         const id = file.slice(0, -".json".length);
         if (indexedDecisionIds.has(id)) continue;
         try {
-          const raw = fs25.readFileSync(path32.join(decisionsDir, file), "utf-8");
+          const raw = fs26.readFileSync(path32.join(decisionsDir, file), "utf-8");
           const orphan = JSON.parse(raw);
           exporter.decision(orphan);
           orphansSalvaged++;
@@ -13550,11 +13550,11 @@ var init_forward = __esm({
 });
 
 // src/migrate/reverse.ts
-import fs26 from "node:fs";
+import fs27 from "node:fs";
 import path33 from "node:path";
 async function migrateReverse(opts) {
   const twiningDir = path33.join(opts.projectRoot, ".twining");
-  if (!fs26.existsSync(twiningDir)) {
+  if (!fs27.existsSync(twiningDir)) {
     throw new Error(`no .twining/ directory at ${twiningDir} \u2014 nothing to migrate`);
   }
   if (!sqliteAvailable()) {
@@ -13562,8 +13562,8 @@ async function migrateReverse(opts) {
       "node:sqlite is unavailable (requires Node >= 22.13) \u2014 cannot read the sqlite state to reverse it"
     );
   }
-  const hasDb = fs26.existsSync(path33.join(twiningDir, "twining.db"));
-  const hasTree = fs26.existsSync(path33.join(twiningDir, "records"));
+  const hasDb = fs27.existsSync(path33.join(twiningDir, "twining.db"));
+  const hasTree = fs27.existsSync(path33.join(twiningDir, "records"));
   if (!hasDb && !hasTree) {
     throw new Error(
       "no sqlite state found (neither twining.db nor records/) \u2014 nothing to reverse"
@@ -13626,8 +13626,8 @@ async function migrateReverse(opts) {
     ensureDir(backupDir);
     for (const rel of ["blackboard.jsonl", "decisions", "graph", "handoffs"]) {
       const src = path33.join(twiningDir, rel);
-      if (fs26.existsSync(src)) {
-        fs26.cpSync(src, path33.join(backupDir, rel), { recursive: true, force: true });
+      if (fs27.existsSync(src)) {
+        fs27.cpSync(src, path33.join(backupDir, rel), { recursive: true, force: true });
       }
     }
     atomicWriteFileSync(
@@ -13829,11 +13829,11 @@ var auto_exports = {};
 __export(auto_exports, {
   maybeAutoMigrate: () => maybeAutoMigrate
 });
-import fs27 from "node:fs";
+import fs28 from "node:fs";
 import path34 from "node:path";
 async function maybeAutoMigrate(projectRoot) {
   const twiningDir = path34.join(projectRoot, ".twining");
-  if (!fs27.existsSync(twiningDir)) return;
+  if (!fs28.existsSync(twiningDir)) return;
   const config2 = loadConfig(twiningDir);
   const optedIn = process.env.TWINING_AUTO_MIGRATE === "1" || config2.storage?.auto_migrate === true;
   if (!optedIn) return;
@@ -36311,7 +36311,28 @@ var TelemetryClient = class {
 };
 
 // src/utils/project-root.ts
+import fs24 from "node:fs";
 import path30 from "node:path";
+function resolveWorktreeMain(dir) {
+  try {
+    const dotGit = path30.join(dir, ".git");
+    if (!fs24.statSync(dotGit).isFile()) return null;
+    const firstLine = fs24.readFileSync(dotGit, "utf8").split("\n")[0] ?? "";
+    if (!firstLine.startsWith("gitdir: ")) return null;
+    const rawGitdir = firstLine.slice("gitdir: ".length).replace(/\r$/, "");
+    if (!rawGitdir) return null;
+    const gitdir = path30.resolve(dir, rawGitdir);
+    const marker = `${path30.sep}.git${path30.sep}worktrees${path30.sep}`;
+    const markerIndex = gitdir.lastIndexOf(marker);
+    if (markerIndex === -1) return null;
+    const mainRoot = gitdir.slice(0, markerIndex);
+    if (!mainRoot) return null;
+    if (!fs24.statSync(mainRoot).isDirectory()) return null;
+    return mainRoot;
+  } catch {
+    return null;
+  }
+}
 function resolveProjectRoot(argv, env, cwd) {
   const argIndex = argv.indexOf("--project");
   if (argIndex !== -1 && argv[argIndex + 1]) {
@@ -36321,7 +36342,10 @@ function resolveProjectRoot(argv, env, cwd) {
   if (fromEnv && fromEnv.trim().length > 0) {
     return path30.resolve(cwd, fromEnv);
   }
-  return cwd;
+  if (env["TWINING_WORKTREE_LOCAL"] === "true") {
+    return cwd;
+  }
+  return resolveWorktreeMain(cwd) ?? cwd;
 }
 
 // src/index.ts

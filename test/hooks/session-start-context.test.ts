@@ -4,7 +4,7 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { runHook } from "./run-hook";
+import { makeWorktreeFixture, runHook } from "./run-hook";
 
 const EXPECTED_CONTEXT_FRAGMENT = "Twining MCP tools are available";
 
@@ -185,6 +185,59 @@ describe("session-start-context.sh", () => {
     expect(result.exitCode).toBe(0);
     const payload = JSON.parse(result.stdout);
     expect(payload.hookSpecificOutput.hookEventName).toBe("SessionStart");
+  });
+
+  it("linked worktree: injects context and prunes markers in the MAIN checkout's store", () => {
+    const fixture = makeWorktreeFixture("twining-ssc-wt-");
+    try {
+      const sessionsDir = path.join(fixture.main, ".twining", ".sessions");
+      fs.mkdirSync(sessionsDir, { recursive: true });
+      const oldMarker = path.join(sessionsDir, "ancient-session");
+      fs.writeFileSync(oldMarker, "1");
+      const eightDaysAgo = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000);
+      fs.utimesSync(oldMarker, eightDaysAgo, eightDaysAgo);
+
+      const result = runHook({ script: "session-start-context.sh", cwd: fixture.wt });
+
+      expect(result.exitCode).toBe(0);
+      // Without the redirect the worktree has no .twining → silent exit.
+      const payload = JSON.parse(result.stdout);
+      expect(payload.hookSpecificOutput.hookEventName).toBe("SessionStart");
+      expect(fs.existsSync(oldMarker)).toBe(false); // pruned in MAIN's store
+    } finally {
+      fixture.cleanup();
+    }
+  });
+
+  it("TWINING_PROJECT: injects context for the targeted store from an unmanaged cwd", () => {
+    const fixture = makeWorktreeFixture("twining-ssc-proj-");
+    try {
+      const result = runHook({
+        script: "session-start-context.sh",
+        env: { TWINING_PROJECT: fixture.main },
+        cwd: fixture.root, // no .twining, no .git here
+      });
+      expect(result.exitCode).toBe(0);
+      const payload = JSON.parse(result.stdout);
+      expect(payload.hookSpecificOutput.hookEventName).toBe("SessionStart");
+    } finally {
+      fixture.cleanup();
+    }
+  });
+
+  it("TWINING_WORKTREE_LOCAL=true: keeps worktree-local (no store → silent exit)", () => {
+    const fixture = makeWorktreeFixture("twining-ssc-wtlocal-");
+    try {
+      const result = runHook({
+        script: "session-start-context.sh",
+        env: { TWINING_WORKTREE_LOCAL: "true" },
+        cwd: fixture.wt, // has no .twining of its own
+      });
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout.trim()).toBe("");
+    } finally {
+      fixture.cleanup();
+    }
   });
 
   it("prunes session activity markers older than 7 days, keeps recent ones (#43)", () => {

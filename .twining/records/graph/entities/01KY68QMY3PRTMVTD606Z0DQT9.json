@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T01:16:41.795Z",
+  "id": "01KY68QMY3PRTMVTD606Z0DQT9",
+  "name": "01KY68QMTY7GDZCD70K3JBK7YG",
+  "properties": {
+    "scope": "project",
+    "summary": "Chose shared-store-by-default for linked worktrees with the gate-semantics rationale settled by evidence"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T01:16:41.795Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T01:16:42.020Z",
+  "id": "01KY68QN54NES7936BWZTP8XF2",
+  "name": "01KY68QN2098HFZXSWRMHN3AFJ",
+  "properties": {
+    "scope": "project",
+    "summary": "Chose to treat a linked-worktree root as a hard walk boundary in hooks"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T01:16:42.020Z"
+}

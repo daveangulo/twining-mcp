@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T01:16:42.288Z",
+  "id": "01KY68QNDG1GVH4297H72KB5RZ",
+  "name": "01KY68QNAFN1GVPGEPNQWKN2QZ",
+  "properties": {
+    "scope": "project",
+    "summary": "Recorded follow-up, not fixed: src/migrate/cli.ts derives its own project root (own --project parse, no TWINING_PROJECT, not worktree-aware)"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T01:16:42.288Z"
+}

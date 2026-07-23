@@ -12,16 +12,56 @@
 set -euo pipefail
 [[ "${TWINING_DISABLED:-}" = "true" ]] && exit 0
 
-# Only inject in twining-managed projects (walk up from cwd).
+# Only inject in twining-managed projects.
+# Resolve the twining store. This block is mirrored VERBATIM across
+# session-start-context.sh, pre-commit-hook.sh, stop-hook.sh,
+# activity-marker-hook.sh, and subagent-stop-hook.sh, and matches the
+# server's resolution (src/utils/project-root.ts): TWINING_PROJECT
+# (explicit targeting; relative paths resolve against cwd) wins and is
+# never worktree-redirected. Otherwise walk up from cwd; when a candidate
+# root is a linked git worktree (.git is a regular FILE whose gitdir points
+# at <main>/.git/worktrees/<name>), share the main checkout's .twining —
+# but only when it already exists (hook-side fail-open guard, stricter than
+# the server's, which may create the store fresh). Submodule gitdirs
+# (".git/modules/...") never redirect. A linked-worktree root is always a
+# walk BOUNDARY: when redirection is off (TWINING_WORKTREE_LOCAL=true) or
+# the main checkout has no .twining, bind the worktree's own .twining if
+# present and stop — never walk past the worktree into an ancestor's
+# store, which the server (resolving from cwd) would never bind.
 TWINING_DIR=""
-DIR="$(pwd)"
-while [[ "$DIR" != "/" ]]; do
-  if [[ -d "$DIR/.twining" ]]; then
-    TWINING_DIR="$DIR/.twining"
-    break
-  fi
-  DIR="$(dirname "$DIR")"
-done
+if [[ -n "${TWINING_PROJECT:-}" ]]; then
+  PROJECT_ROOT="$TWINING_PROJECT"
+  [[ "$PROJECT_ROOT" != /* ]] && PROJECT_ROOT="$(pwd)/$PROJECT_ROOT"
+  [[ -d "$PROJECT_ROOT/.twining" ]] && TWINING_DIR="$PROJECT_ROOT/.twining"
+else
+  DIR="$(pwd)"
+  while [[ "$DIR" != "/" ]]; do
+    if [[ -f "$DIR/.git" ]]; then
+      GITDIR=""
+      IFS= read -r GITDIR < "$DIR/.git" || true
+      if [[ "$GITDIR" == "gitdir: "* ]]; then
+        GITDIR="${GITDIR#gitdir: }"
+        GITDIR="${GITDIR%$'\r'}"
+        [[ "$GITDIR" != /* ]] && GITDIR="$DIR/$GITDIR"
+        if [[ "$GITDIR" == */.git/worktrees/?* ]]; then
+          MAIN_ROOT="${GITDIR%/.git/worktrees/*}"
+          if [[ "${TWINING_WORKTREE_LOCAL:-}" != "true" && -n "$MAIN_ROOT" &&
+                -d "$MAIN_ROOT/.twining" ]]; then
+            TWINING_DIR="$MAIN_ROOT/.twining"
+          elif [[ -d "$DIR/.twining" ]]; then
+            TWINING_DIR="$DIR/.twining"
+          fi
+          break
+        fi
+      fi
+    fi
+    if [[ -d "$DIR/.twining" ]]; then
+      TWINING_DIR="$DIR/.twining"
+      break
+    fi
+    DIR="$(dirname "$DIR")"
+  done
+fi
 [[ -z "$TWINING_DIR" ]] && exit 0
 
 # Prune stale session activity markers (#43) — written by the PostToolUse

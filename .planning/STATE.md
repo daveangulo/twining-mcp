@@ -252,6 +252,12 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Chose the npm version lifecycle hook (build:plugin + git add plugin/server) to prevent the release-flow trap where a package.json version bump strands a stale committed bundle
 - Chose NOT to fix the probe-cwd-skew nit (a profile that cd's can change where the pin rung's ./node_modules resolves during the hook's login-shell probe vs launch)
 - Chose to deliver the cmux worktree store-divergence fix as a recommendation rather than implement it now
+- Chose shared-store-by-default for linked worktrees with the gate-semantics rationale settled by evidence
+- Chose hook fail-open (no walk-up fallback) when TWINING_PROJECT points at a store that doesn't exist
+- Chose to treat a linked-worktree root as a hard walk boundary in hooks
+- Chose last-occurrence marker cut (lastIndexOf / single-% strip) plus non-empty worktree name requirement in both implementations
+- Chose to document TWINING_PROJECT placement as terminal/session env only
+- Recorded follow-up, not fixed: src/migrate/cli.ts derives its own project root (own --project parse, no TWINING_PROJECT, not worktree-aware)
 
 ### Pending Todos
 

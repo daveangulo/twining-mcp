@@ -213,6 +213,19 @@ By default the server uses the project it starts in. To point several sibling re
 
 Resolution order: `--project <arg>` > `$TWINING_PROJECT` > cwd. Relative values resolve against the server's working directory (the repo root); absolute paths are recommended for multi-machine setups. This replaces the old pattern of a per-repo `.mcp.json` override plus an exact-command `deniedMcpServers` block, which silently broke on every plugin version bump.
 
+### Git Worktrees & Agent Teams
+
+When the project root is a **linked git worktree** (its `.git` is a `gitdir:` file pointing into the main checkout's `.git/worktrees/`), Twining resolves to the **main checkout's** `.twining` by default. Agent teammates spawned into worktrees (e.g. `claude-teams --worktree`) previously forked the store — their decisions and records landed in a worktree-local `.twining` the main session never saw. Now all worktrees of a repo share one store, with the same gate semantics as multiple sessions working in one directory.
+
+Two overrides:
+
+- `--project` / `TWINING_PROJECT` always win — an explicit project is never redirected.
+- `TWINING_WORKTREE_LOCAL=true` opts out, keeping a worktree-local store.
+
+The plugin's hooks apply the same resolution (and honor `TWINING_PROJECT`). Submodules are not affected — their `gitdir:` files point at `.git/modules/`, not `.git/worktrees/`.
+
+**Where to set `TWINING_PROJECT`:** in an environment both the hooks *and* the MCP server actually see — an exported terminal/session environment (a launcher wrapper, direnv, the shell you start Claude Code or cmux from). Avoid the two tempting-but-wrong places: `.claude/settings.json` `env` is currently **not delivered to plugin-spawned MCP servers** (hooks would redirect while the server doesn't — the gates then check a store the server never writes), and a machine-wide shell-profile export activates the commit/stop gates in **every** repo on the machine, including ones that never used Twining.
+
 ### Dashboard
 
 A web dashboard starts automatically at `http://localhost:24282` — browse decisions, blackboard entries, knowledge graph, and agent state. Configurable via `TWINING_DASHBOARD_PORT`.

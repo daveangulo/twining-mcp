@@ -43,6 +43,48 @@ function makeRepo(opts: {
   };
 }
 
+/**
+ * Real linked worktree via `git worktree add`: main checkout with an
+ * untracked .twining/ (so the worktree gets none), seed commit dated
+ * 2020-01-01, and a sibling worktree whose .git FILE points at
+ * <main>/.git/worktrees/wt.
+ */
+function makeWorktreeRepo(opts: { sentinelTime?: number }): {
+  main: string;
+  wt: string;
+  cleanup: () => void;
+} {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "twining-pre-commit-wt-"));
+  const main = path.join(root, "main");
+  fs.mkdirSync(main);
+  execFileSync("git", ["init", "-q", "-b", "main"], { cwd: main });
+  execFileSync("git", ["config", "user.email", "test@example.com"], { cwd: main });
+  execFileSync("git", ["config", "user.name", "Test"], { cwd: main });
+  execFileSync("git", ["config", "commit.gpgsign", "false"], { cwd: main });
+  fs.writeFileSync(path.join(main, "seed.txt"), "seed");
+  execFileSync("git", ["add", "seed.txt"], { cwd: main });
+  execFileSync(
+    "git",
+    ["commit", "-q", "-m", "seed"],
+    { cwd: main, env: { ...process.env, GIT_COMMITTER_DATE: "2020-01-01T00:00:00Z", GIT_AUTHOR_DATE: "2020-01-01T00:00:00Z" } },
+  );
+  fs.mkdirSync(path.join(main, ".twining"));
+  if (opts.sentinelTime !== undefined) {
+    fs.writeFileSync(
+      path.join(main, ".twining", ".last-record"),
+      String(opts.sentinelTime),
+    );
+  }
+  execFileSync("git", ["worktree", "add", "-q", "../wt", "-b", "wtb"], {
+    cwd: main,
+  });
+  return {
+    main,
+    wt: path.join(root, "wt"),
+    cleanup: () => fs.rmSync(root, { recursive: true, force: true }),
+  };
+}
+
 function hookInput(command: string, transcriptPath = "/tmp/nonexistent"): string {
   return JSON.stringify({
     tool_name: "Bash",
@@ -255,6 +297,72 @@ describe("pre-commit-hook.sh", () => {
         cwd: repo.dir,
       });
       expect(result.stdout).toContain("deny");
+    });
+
+    it("linked worktree with stale main sentinel: deny (gates against the shared store)", () => {
+      // Without the redirect the worktree has no .twining → silent allow;
+      // the deny proves the hook resolved the MAIN checkout's store.
+      const wtRepo = makeWorktreeRepo({ sentinelTime: 1 }); // older than 2020 HEAD
+      try {
+        const result = runHook({
+          script: "pre-commit-hook.sh",
+          stdin: hookInput("git commit -m 'next'"),
+          cwd: wtRepo.wt,
+        });
+        expect(result.stdout).toContain("deny");
+        expect(result.stdout).toContain("twining_record");
+      } finally {
+        wtRepo.cleanup();
+      }
+    });
+
+    it("linked worktree with fresh main sentinel: allow", () => {
+      const wtRepo = makeWorktreeRepo({ sentinelTime: 9999999999 });
+      try {
+        const result = runHook({
+          script: "pre-commit-hook.sh",
+          stdin: hookInput("git commit -m 'next'"),
+          cwd: wtRepo.wt,
+        });
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).not.toContain("permissionDecision");
+      } finally {
+        wtRepo.cleanup();
+      }
+    });
+
+    it("TWINING_WORKTREE_LOCAL=true in a worktree: silent allow (no shared store, no redirect)", () => {
+      const wtRepo = makeWorktreeRepo({ sentinelTime: 1 });
+      try {
+        const result = runHook({
+          script: "pre-commit-hook.sh",
+          stdin: hookInput("git commit -m 'next'"),
+          env: { TWINING_WORKTREE_LOCAL: "true" },
+          cwd: wtRepo.wt,
+        });
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout.trim()).toBe("");
+      } finally {
+        wtRepo.cleanup();
+      }
+    });
+
+    it("TWINING_PROJECT: gates against the targeted store from a repo without .twining", () => {
+      repo = makeRepo({ initTwining: false, withInitialCommit: true });
+      const target = fs.mkdtempSync(path.join(os.tmpdir(), "twining-pre-commit-target-"));
+      fs.mkdirSync(path.join(target, ".twining"));
+      fs.writeFileSync(path.join(target, ".twining", ".last-record"), "1");
+      try {
+        const result = runHook({
+          script: "pre-commit-hook.sh",
+          stdin: hookInput("git commit -m 'next'"),
+          env: { TWINING_PROJECT: target },
+          cwd: repo.dir,
+        });
+        expect(result.stdout).toContain("deny");
+      } finally {
+        fs.rmSync(target, { recursive: true, force: true });
+      }
     });
 
     it("sentinel exists but no commits yet (fresh repo, recorded): allow", () => {

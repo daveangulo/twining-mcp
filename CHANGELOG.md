@@ -2,6 +2,11 @@
 
 All notable changes to Twining MCP are documented here.
 
+## Plugin [1.20.0] - 2026-07-22
+
+### Changed
+- **All hooks are worktree-aware and honor `TWINING_PROJECT`**. The five hooks that locate `.twining` (session-start, pre-commit, and the other cwd-walking hooks) now share one mirrored resolution block: `TWINING_PROJECT` wins if set (previously server-only), and when the resolved root is a linked git worktree (`.git` is a `gitdir:` file pointing into `.git/worktrees/`) the hooks redirect to the main checkout's `.twining` — matching server 2.3.0, so the commit/stop gates read the same store the server writes. A linked-worktree root is always a walk boundary: with `TWINING_WORKTREE_LOCAL=true` (opt-out), or when the main checkout has no `.twining`, the hooks bind the worktree's own store (or fail open) instead of walking up past the worktree — a nested worktree (`git worktree add ./wts/feat`) never gates against the main checkout's or an ancestor's store the server isn't writing to. The pre-commit hook's record sentinel now resolves against the shared store (`$TWINING_DIR/.last-record` instead of a cwd-relative path), so a record in any worktree satisfies the gate exactly as it does for multiple sessions in one directory. Requires server >= 2.3 for server-side worktree resolution (older servers keep worktree-local stores; hooks and server then disagree only if you commit from a worktree — update both).
+
 ## Plugin [1.19.0] - 2026-07-22
 
 ### Added
@@ -12,6 +17,7 @@ All notable changes to Twining MCP are documented here.
 ### Added
 - **`dist/server.bundle.mjs` ships in the npm tarball** — the dependency-free single-file server bundle built by `scripts/build-plugin-bundle.mjs`, byte-identical to the copy the plugin commits at `plugin/server/twining-server.mjs`. `node node_modules/twining-mcp/dist/server.bundle.mjs` is a supported direct launch when npm/npx availability or startup cost matters. Externalized dependencies degrade gracefully at runtime: semantic search falls back to keyword mode without `@huggingface/transformers`, telemetry no-ops without `posthog-node`, and dashboard auto-open is skipped without `open`.
 - **Server version is baked into the bundle at build time** (`__TWINING_VERSION__` esbuild define), so the relocated single-file server reports the correct version without a `package.json` beside it.
+- **Worktree-aware project-root resolution**. When the cwd-default project root is a linked git worktree — its `.git` is a `gitdir:` file whose target contains a `/.git/worktrees/` segment — the server resolves to the **main checkout's** root, so agent teammates spawned into worktrees (`claude-teams --worktree`) share one coordination store instead of forking it (teammate records were invisible to the main session). Applies only when the root comes from cwd: `--project` and `TWINING_PROJECT` are never redirected. `TWINING_WORKTREE_LOCAL=true` opts out and keeps a worktree-local store. Submodules (`gitdir:` into `.git/modules/`) are unaffected; resolution never throws and falls back to cwd if the main root doesn't exist. Shared-store gate semantics are identical to multiple sessions in one directory (one `.last-record` sentinel). Companion plugin release 1.20.0 mirrors the resolution in all hooks.
 
 ## Plugin [1.18.0] - 2026-07-22
 

@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { runHook } from "./run-hook";
+import { makeWorktreeFixture, runHook } from "./run-hook";
 
 let dir: string;
 
@@ -128,6 +128,60 @@ describe("subagent-stop-hook.sh", () => {
     expect(
       fs.existsSync(path.join(dir, ".twining", "pending-posts.jsonl")),
     ).toBe(false);
+  });
+
+  it("linked worktree: queues the pending post in the MAIN checkout's .twining", () => {
+    const fixture = makeWorktreeFixture("twining-sash-wt-");
+    try {
+      const result = runHook({
+        script: "subagent-stop-hook.sh",
+        stdin: JSON.stringify({ agent_type: "worker" }),
+        cwd: fixture.wt,
+      });
+      expect(result.exitCode).toBe(0);
+      expect(
+        fs.existsSync(path.join(fixture.main, ".twining", "pending-posts.jsonl")),
+      ).toBe(true);
+      expect(fs.existsSync(path.join(fixture.wt, ".twining"))).toBe(false);
+    } finally {
+      fixture.cleanup();
+    }
+  });
+
+  it("TWINING_PROJECT: queues the pending post in the targeted store", () => {
+    const fixture = makeWorktreeFixture("twining-sash-proj-");
+    try {
+      const result = runHook({
+        script: "subagent-stop-hook.sh",
+        stdin: JSON.stringify({ agent_type: "worker" }),
+        env: { TWINING_PROJECT: fixture.main },
+        cwd: fixture.root, // no .twining, no .git here
+      });
+      expect(result.exitCode).toBe(0);
+      expect(
+        fs.existsSync(path.join(fixture.main, ".twining", "pending-posts.jsonl")),
+      ).toBe(true);
+    } finally {
+      fixture.cleanup();
+    }
+  });
+
+  it("TWINING_WORKTREE_LOCAL=true: keeps worktree-local (no store → nothing queued)", () => {
+    const fixture = makeWorktreeFixture("twining-sash-wtlocal-");
+    try {
+      const result = runHook({
+        script: "subagent-stop-hook.sh",
+        stdin: JSON.stringify({ agent_type: "worker" }),
+        env: { TWINING_WORKTREE_LOCAL: "true" },
+        cwd: fixture.wt, // has no .twining of its own
+      });
+      expect(result.exitCode).toBe(0);
+      expect(
+        fs.existsSync(path.join(fixture.main, ".twining", "pending-posts.jsonl")),
+      ).toBe(false);
+    } finally {
+      fixture.cleanup();
+    }
   });
 
   it("appends when pending-posts.jsonl already has queued entries", () => {

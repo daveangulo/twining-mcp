@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Implemented worktree-aware .twining root resolution (server 2.3.0-pending + plugin 1.20.0): resolveWorktreeMain in src/utils/project-root.ts redirects the cwd-default root to the main checkout when .git is a gitdir: worktree pointer (submodules excluded, TWINING_WORKTREE_LOCAL=true opt-out, --project/TWINING_PROJECT never redirected); byte-identical mirrored block in all five plugin hooks, which now also honor TWINING_PROJECT; pre-commit hook gained walk-up detection and its hard-coded sentinel path was fixed to $TWINING_DIR. E2E verified in a real clone+worktree: teammate server now writes the MAIN store (inverse of the pre-fix observation), opt-out and hook sentinel reads confirmed. 1286 tests passing, 33 new. Fixes the cmux claude-teams --worktree store-divergence finding 01KY66434W.\nDecisions: Chose shared-store-by-default for linked worktrees with the gate-semantics rationale settled by evidence — .last-record is a global timestamp sentinel, so same-directory multi-session teams already share gate state; worktree sharing adopts those identical pre-existing semantics rather than inventing new ones.; Chose hook fail-open (no walk-up fallback) when TWINING_PROJECT points at a store that doesn't exist — falling back would gate against a store the user explicitly redirected away from, causing the exact false-block bug this work fixes (subagent decision, ratified).; Chose to treat a linked-worktree root as a hard walk boundary in hooks — with the opt-out or a missing main store, hooks bind the worktree-local store and stop, never walking past into an ancestor store the server would not use; empirically confirmed divergence before the fix (adversarial reviewer, nested-worktree layout).; Chose last-occurrence marker cut (lastIndexOf / single-% strip) plus non-empty worktree name requirement in both implementations — keeps server and hooks byte-for-byte in behavior on pathological paths containing /.git/worktrees/ and on degenerate trailing-slash gitdir pointers.; Chose to document TWINING_PROJECT placement as terminal/session env only — .claude/settings.json env is not delivered to plugin MCP servers (hooks would redirect while the server doesn't), and shell-profile exports activate gates machine-wide; README now warns on both.; Recorded follow-up, not fixed: src/migrate/cli.ts derives its own project root (own --project parse, no TWINING_PROJECT, not worktree-aware) — a migrate run inside a worktree targets the worktree-local path while the server targets main; left for a dedicated pass since migrate touches store data.",
+  "entry_type": "status",
+  "id": "01KY68QMRQBH0N8GEE5WSYT3MR",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "1632ba28b41fc58dcc60ffc2f68c16b0196f5e0d",
+    "recorded_at": "2026-07-23T01:16:41.609Z"
+  },
+  "scope": "project",
+  "summary": "Implemented worktree-aware .twining root resolution (server 2.3.0-pending + plugin 1.20.0): resolveWorktreeMain in src/utils/project-root.ts redirects the cwd-default root to the main checkout when…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T01:16:41.623Z"
+}

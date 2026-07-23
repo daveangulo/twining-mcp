@@ -3,7 +3,7 @@ import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { runHook } from "./run-hook";
+import { makeWorktreeFixture, runHook } from "./run-hook";
 
 /**
  * Build a tmp repo with optional .twining/ + sentinel + session marker.
@@ -218,6 +218,108 @@ describe("stop-hook.sh", () => {
   });
 });
 
+describe("stop-hook.sh worktree/TWINING_PROJECT store resolution", () => {
+  let fixture: ReturnType<typeof makeWorktreeFixture>;
+  afterEach(() => fixture?.cleanup());
+
+  function seedMainStore(fx: ReturnType<typeof makeWorktreeFixture>) {
+    // Block-worthy state in the MAIN store: stale sentinel + fresh marker.
+    fs.writeFileSync(
+      path.join(fx.main, ".twining", ".last-record"),
+      String(NOW() - 3600),
+    );
+    const sessionsDir = path.join(fx.main, ".twining", ".sessions");
+    fs.mkdirSync(sessionsDir, { recursive: true });
+    fs.writeFileSync(path.join(sessionsDir, "sess-1"), String(NOW()));
+  }
+
+  it("linked worktree: gates against the main checkout's .twining (block)", () => {
+    fixture = makeWorktreeFixture("twining-stop-wt-");
+    seedMainStore(fixture);
+    const result = runHook({
+      script: "stop-hook.sh",
+      stdin: JSON.stringify({ session_id: "sess-1" }),
+      cwd: fixture.wt,
+    });
+    expect(result.exitCode).toBe(0);
+    // Without the redirect the worktree has no .twining → silent allow.
+    expect(result.stdout).toContain('"decision":"block"');
+  });
+
+  it("TWINING_PROJECT: gates against the targeted store from an unmanaged cwd", () => {
+    fixture = makeWorktreeFixture("twining-stop-proj-");
+    seedMainStore(fixture);
+    const result = runHook({
+      script: "stop-hook.sh",
+      stdin: JSON.stringify({ session_id: "sess-1" }),
+      env: { TWINING_PROJECT: fixture.main },
+      cwd: fixture.root, // no .twining, no .git here
+    });
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain('"decision":"block"');
+  });
+
+  it("TWINING_WORKTREE_LOCAL=true: keeps worktree-local (no redirect, silent allow)", () => {
+    fixture = makeWorktreeFixture("twining-stop-wtlocal-");
+    seedMainStore(fixture);
+    const result = runHook({
+      script: "stop-hook.sh",
+      stdin: JSON.stringify({ session_id: "sess-1" }),
+      env: { TWINING_WORKTREE_LOCAL: "true" },
+      cwd: fixture.wt, // has no .twining of its own → not twining-managed
+    });
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout.trim()).toBe("");
+  });
+
+  it("nested worktree + TWINING_WORKTREE_LOCAL=true: never binds the main store", () => {
+    // `git worktree add ./wts/feat` layout: the worktree lives INSIDE the
+    // main checkout, so a walk-up that ignores the worktree boundary would
+    // reach main and gate against ITS store — while the server (which
+    // resolves cwd-local under the opt-out) writes .last-record into the
+    // worktree store, making the block unsatisfiable from the worktree.
+    fixture = makeWorktreeFixture("twining-stop-wtnested-", { nested: true });
+    seedMainStore(fixture); // block-worthy state in MAIN — must not be read
+    const result = runHook({
+      script: "stop-hook.sh",
+      stdin: JSON.stringify({ session_id: "sess-1" }),
+      env: { TWINING_WORKTREE_LOCAL: "true" },
+      cwd: fixture.wt, // no .twining of its own → fail-open, silent allow
+    });
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout.trim()).toBe("");
+  });
+
+  it("nested worktree whose main lacks .twining: never binds an ancestor store", () => {
+    // Milder variant, no opt-out: main has no .twining, but an UNRELATED
+    // ancestor above it does. The worktree root is a walk boundary — the
+    // hook must fail open, not gate against the ancestor's store.
+    fixture = makeWorktreeFixture("twining-stop-wtanc-", {
+      nested: true,
+      mainTwining: false,
+    });
+    // Block-worthy state in the ancestor (fixture.root) store.
+    fs.mkdirSync(path.join(fixture.root, ".twining", ".sessions"), {
+      recursive: true,
+    });
+    fs.writeFileSync(
+      path.join(fixture.root, ".twining", ".last-record"),
+      String(NOW() - 3600),
+    );
+    fs.writeFileSync(
+      path.join(fixture.root, ".twining", ".sessions", "sess-1"),
+      String(NOW()),
+    );
+    const result = runHook({
+      script: "stop-hook.sh",
+      stdin: JSON.stringify({ session_id: "sess-1" }),
+      cwd: fixture.wt,
+    });
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout.trim()).toBe("");
+  });
+});
+
 describe("activity-marker-hook.sh (#43)", () => {
   let repo: { dir: string; cleanup: () => void };
   afterEach(() => repo?.cleanup());
@@ -299,5 +401,115 @@ describe("activity-marker-hook.sh (#43)", () => {
     expect(result.exitCode).toBe(0);
     expect(fs.existsSync(path.join(repo.dir, "evil"))).toBe(false);
     expect(fs.existsSync(path.join(repo.dir, ".twining", "evil"))).toBe(false);
+  });
+});
+
+describe("activity-marker-hook.sh worktree/TWINING_PROJECT store resolution", () => {
+  let fixture: ReturnType<typeof makeWorktreeFixture>;
+  afterEach(() => fixture?.cleanup());
+
+  const marker = (root: string, id = "sess-w") =>
+    path.join(root, ".twining", ".sessions", id);
+
+  it("linked worktree: writes the marker into the main checkout's .twining", () => {
+    fixture = makeWorktreeFixture("twining-am-wt-");
+    const result = runHook({
+      script: "activity-marker-hook.sh",
+      stdin: JSON.stringify({ session_id: "sess-w", tool_name: "Edit" }),
+      cwd: fixture.wt,
+    });
+    expect(result.exitCode).toBe(0);
+    expect(fs.existsSync(marker(fixture.main))).toBe(true);
+    expect(fs.existsSync(path.join(fixture.wt, ".twining"))).toBe(false);
+  });
+
+  it("linked worktree with a local .twining still shares the main store by default", () => {
+    fixture = makeWorktreeFixture("twining-am-wtboth-");
+    fs.mkdirSync(path.join(fixture.wt, ".twining"));
+    const result = runHook({
+      script: "activity-marker-hook.sh",
+      stdin: JSON.stringify({ session_id: "sess-w", tool_name: "Edit" }),
+      cwd: fixture.wt,
+    });
+    expect(result.exitCode).toBe(0);
+    expect(fs.existsSync(marker(fixture.main))).toBe(true);
+    expect(fs.existsSync(marker(fixture.wt))).toBe(false);
+  });
+
+  it("TWINING_PROJECT wins over the walk-up result (absolute path)", () => {
+    fixture = makeWorktreeFixture("twining-am-proj-");
+    // cwd has its OWN .twining — explicit targeting must still win.
+    fs.mkdirSync(path.join(fixture.wt, ".twining"));
+    const result = runHook({
+      script: "activity-marker-hook.sh",
+      stdin: JSON.stringify({ session_id: "sess-w", tool_name: "Edit" }),
+      env: { TWINING_PROJECT: fixture.main },
+      cwd: fixture.wt,
+    });
+    expect(result.exitCode).toBe(0);
+    expect(fs.existsSync(marker(fixture.main))).toBe(true);
+    expect(fs.existsSync(marker(fixture.wt))).toBe(false);
+  });
+
+  it("relative TWINING_PROJECT resolves against cwd (server semantics)", () => {
+    fixture = makeWorktreeFixture("twining-am-rel-");
+    const result = runHook({
+      script: "activity-marker-hook.sh",
+      stdin: JSON.stringify({ session_id: "sess-w", tool_name: "Edit" }),
+      env: { TWINING_PROJECT: "main" },
+      cwd: fixture.root, // root/main/.twining exists
+    });
+    expect(result.exitCode).toBe(0);
+    expect(fs.existsSync(marker(fixture.main))).toBe(true);
+  });
+
+  it("TWINING_WORKTREE_LOCAL=true keeps the worktree-local store", () => {
+    fixture = makeWorktreeFixture("twining-am-wtlocal-");
+    fs.mkdirSync(path.join(fixture.wt, ".twining"));
+    const result = runHook({
+      script: "activity-marker-hook.sh",
+      stdin: JSON.stringify({ session_id: "sess-w", tool_name: "Edit" }),
+      env: { TWINING_WORKTREE_LOCAL: "true" },
+      cwd: fixture.wt,
+    });
+    expect(result.exitCode).toBe(0);
+    expect(fs.existsSync(marker(fixture.wt))).toBe(true);
+    expect(fs.existsSync(marker(fixture.main))).toBe(false);
+  });
+
+  it("nested worktree + TWINING_WORKTREE_LOCAL=true never touches the main store", () => {
+    // `git worktree add ./wts/feat` layout: the worktree is INSIDE the main
+    // checkout. The boundary must stop the walk at the worktree root — the
+    // marker must not land in main's .sessions/ (the store the server, which
+    // resolves cwd-local under the opt-out, never reads).
+    fixture = makeWorktreeFixture("twining-am-wtnested-", { nested: true });
+    const result = runHook({
+      script: "activity-marker-hook.sh",
+      stdin: JSON.stringify({ session_id: "sess-w", tool_name: "Edit" }),
+      env: { TWINING_WORKTREE_LOCAL: "true" },
+      cwd: fixture.wt,
+    });
+    expect(result.exitCode).toBe(0);
+    expect(fs.existsSync(marker(fixture.main))).toBe(false);
+    expect(fs.existsSync(path.join(fixture.wt, ".twining"))).toBe(false);
+  });
+
+  it("submodule gitdir (.git/modules/...) never redirects", () => {
+    fixture = makeWorktreeFixture("twining-am-submod-");
+    // parent/sub is a submodule checkout with its own .twining: .git is a
+    // FILE, but its gitdir points at .git/modules/ — must stay local.
+    const sub = path.join(fixture.root, "sub");
+    fs.mkdirSync(path.join(sub, ".twining"), { recursive: true });
+    fs.mkdirSync(path.join(fixture.root, ".git", "modules", "sub"), {
+      recursive: true,
+    });
+    fs.writeFileSync(path.join(sub, ".git"), "gitdir: ../.git/modules/sub\n");
+    const result = runHook({
+      script: "activity-marker-hook.sh",
+      stdin: JSON.stringify({ session_id: "sess-w", tool_name: "Edit" }),
+      cwd: sub,
+    });
+    expect(result.exitCode).toBe(0);
+    expect(fs.existsSync(marker(sub))).toBe(true);
   });
 });
