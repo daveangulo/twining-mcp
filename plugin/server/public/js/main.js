@@ -13,6 +13,15 @@ import { createDensityTimeline } from "./density-timeline.js";
 import { createGraphView } from "./graph-view.js";
 import { renderHealthCards } from "./health.js";
 import { createScopeNav } from "./scope-nav.js";
+import { createTriageView, deepLinkTab } from "./triage-view.js";
+import { linkifyInto, setRepoInfo } from "./linkify.js";
+
+// Best-effort remote link derivation (spec §8): fetched once; links stay
+// local-only if this fails or there is no remote.
+fetch("/api/repo-info")
+  .then((r) => (r.ok ? r.json() : null))
+  .then((info) => setRepoInfo(info))
+  .catch(() => {});
 import { readRoute, writeRoute, onRouteChange, syncCurrent } from "./router.js";
 
 // True while applyRoute() is driving the views — suppresses writeRoute echoes.
@@ -46,9 +55,11 @@ function detailField(panel, label, value, asPre) {
   if (label === "ID" && typeof window.renderIdValue === "function") {
     window.renderIdValue(val, String(value));
   } else if (asPre) {
-    val.appendChild(el("pre", null, String(value)));
+    const pre = el("pre", null);
+    linkifyInto(pre, String(value));
+    val.appendChild(pre);
   } else {
-    val.textContent = String(value);
+    linkifyInto(val, String(value));
   }
   div.appendChild(val);
   panel.appendChild(div);
@@ -162,6 +173,33 @@ function mountDecisions() {
     },
     onFilterChange: (f) => {
       if (activeTab() === "decisions") route({ filter: f });
+    },
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* Triage tab                                                          */
+/* ------------------------------------------------------------------ */
+
+let triageView = null;
+
+function mountTriage() {
+  const host = document.getElementById("triage-view");
+  if (!host || triageView) return;
+  triageView = createTriageView(host, {
+    store,
+    // Deep links reuse the sel= hash mechanism (§8): id + kind are
+    // sufficient — the tab comes from item.kind via deepLinkTab, never from
+    // a client-index lookup, so a triage click routes correctly even before
+    // the first /api/index poll lands. The detail renderers fetch by id.
+    onSelect: (item) => {
+      const tab = deepLinkTab(item.kind);
+      route({ tab, sel: item.id, anchor: undefined, view: undefined }, { push: true });
+      if (typeof window.switchTab === "function") window.switchTab(tab);
+      requestAnimationFrame(() => {
+        if (tab === "blackboard") showBlackboardDetail(item);
+        else showDecisionDetail(item);
+      });
     },
   });
 }
@@ -400,6 +438,7 @@ function applyRoute(r) {
     const routeFilter = { ...(r.filter || {}), scope: r.scope || undefined };
     if (r.tab === "blackboard" && blackboardList) blackboardList.setFilter(routeFilter, { replace: true });
     if (r.tab === "decisions" && decisionsList) decisionsList.setFilter(routeFilter, { replace: true });
+    if (r.tab === "triage" && triageView) triageView.refresh();
     if (r.range && timeline) timeline.setRange(r.range.fromMs, r.range.toMs);
     if (r.anchor) {
       requestAnimationFrame(() => {
@@ -426,6 +465,7 @@ async function boot() {
   }
   mountBlackboard();
   mountDecisions();
+  mountTriage();
   mountScopeNav();
 
   // Stats-tab activity renders now read the compact index (C1): re-render
@@ -446,6 +486,7 @@ async function boot() {
       route({ tab, sel: undefined, filter: undefined, anchor: undefined, view: undefined }, { push: true });
       if (tab === "blackboard" && blackboardList) blackboardList.refresh();
       if (tab === "decisions" && decisionsList) decisionsList.refresh();
+      if (tab === "triage" && triageView) triageView.refresh();
       if (tab === "graph") {
         renderGraphTablePage();
         const visual = document.getElementById("graph-visual-view");

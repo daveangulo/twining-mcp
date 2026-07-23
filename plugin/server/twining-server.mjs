@@ -2253,8 +2253,8 @@ var require_resolve = __commonJS({
       }
       return count;
     }
-    function getFullPath(resolver, id = "", normalize) {
-      if (normalize !== false)
+    function getFullPath(resolver, id = "", normalize2) {
+      if (normalize2 !== false)
         id = normalizeId(id);
       const p = resolver.parse(id);
       return _getFullPath(resolver, p);
@@ -3244,8 +3244,8 @@ var require_utils = __commonJS({
       }
       return ind;
     }
-    function removeDotSegments(path35) {
-      let input = path35;
+    function removeDotSegments(path36) {
+      let input = path36;
       const output = [];
       let nextSlash = -1;
       let len = 0;
@@ -3444,8 +3444,8 @@ var require_schemes = __commonJS({
         wsComponent.secure = void 0;
       }
       if (wsComponent.resourceName) {
-        const [path35, query] = wsComponent.resourceName.split("?");
-        wsComponent.path = path35 && path35 !== "/" ? path35 : void 0;
+        const [path36, query] = wsComponent.resourceName.split("?");
+        wsComponent.path = path36 && path36 !== "/" ? path36 : void 0;
         wsComponent.query = query;
         wsComponent.resourceName = void 0;
       }
@@ -3594,7 +3594,7 @@ var require_fast_uri = __commonJS({
     "use strict";
     var { normalizeIPv6, removeDotSegments, recomposeAuthority, normalizeComponentEncoding, isIPv4, nonSimpleDomain } = require_utils();
     var { SCHEMES, getSchemeHandler } = require_schemes();
-    function normalize(uri, options) {
+    function normalize2(uri, options) {
       if (typeof uri === "string") {
         uri = /** @type {T} */
         serialize(parse3(uri, options), options);
@@ -3830,7 +3830,7 @@ var require_fast_uri = __commonJS({
     }
     var fastUri = {
       SCHEMES,
-      normalize,
+      normalize: normalize2,
       resolve,
       resolveComponent,
       equal,
@@ -6807,12 +6807,12 @@ var require_dist = __commonJS({
         throw new Error(`Unknown format "${name}"`);
       return f;
     };
-    function addFormats(ajv, list, fs29, exportName) {
+    function addFormats(ajv, list, fs30, exportName) {
       var _a;
       var _b;
       (_a = (_b = ajv.opts.code).formats) !== null && _a !== void 0 ? _a : _b.formats = (0, codegen_1._)`require("ajv-formats/dist/formats").${exportName}`;
       for (const f of list)
-        ajv.addFormat(f, fs29[f]);
+        ajv.addFormat(f, fs30[f]);
     }
     module.exports = exports = formatsPlugin;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -9807,54 +9807,54 @@ var require_polyfills = __commonJS({
     }
     var chdir;
     module.exports = patch;
-    function patch(fs29) {
+    function patch(fs30) {
       if (constants.hasOwnProperty("O_SYMLINK") && process.version.match(/^v0\.6\.[0-2]|^v0\.5\./)) {
-        patchLchmod(fs29);
+        patchLchmod(fs30);
       }
-      if (!fs29.lutimes) {
-        patchLutimes(fs29);
+      if (!fs30.lutimes) {
+        patchLutimes(fs30);
       }
-      fs29.chown = chownFix(fs29.chown);
-      fs29.fchown = chownFix(fs29.fchown);
-      fs29.lchown = chownFix(fs29.lchown);
-      fs29.chmod = chmodFix(fs29.chmod);
-      fs29.fchmod = chmodFix(fs29.fchmod);
-      fs29.lchmod = chmodFix(fs29.lchmod);
-      fs29.chownSync = chownFixSync(fs29.chownSync);
-      fs29.fchownSync = chownFixSync(fs29.fchownSync);
-      fs29.lchownSync = chownFixSync(fs29.lchownSync);
-      fs29.chmodSync = chmodFixSync(fs29.chmodSync);
-      fs29.fchmodSync = chmodFixSync(fs29.fchmodSync);
-      fs29.lchmodSync = chmodFixSync(fs29.lchmodSync);
-      fs29.stat = statFix(fs29.stat);
-      fs29.fstat = statFix(fs29.fstat);
-      fs29.lstat = statFix(fs29.lstat);
-      fs29.statSync = statFixSync(fs29.statSync);
-      fs29.fstatSync = statFixSync(fs29.fstatSync);
-      fs29.lstatSync = statFixSync(fs29.lstatSync);
-      if (fs29.chmod && !fs29.lchmod) {
-        fs29.lchmod = function(path35, mode, cb) {
+      fs30.chown = chownFix(fs30.chown);
+      fs30.fchown = chownFix(fs30.fchown);
+      fs30.lchown = chownFix(fs30.lchown);
+      fs30.chmod = chmodFix(fs30.chmod);
+      fs30.fchmod = chmodFix(fs30.fchmod);
+      fs30.lchmod = chmodFix(fs30.lchmod);
+      fs30.chownSync = chownFixSync(fs30.chownSync);
+      fs30.fchownSync = chownFixSync(fs30.fchownSync);
+      fs30.lchownSync = chownFixSync(fs30.lchownSync);
+      fs30.chmodSync = chmodFixSync(fs30.chmodSync);
+      fs30.fchmodSync = chmodFixSync(fs30.fchmodSync);
+      fs30.lchmodSync = chmodFixSync(fs30.lchmodSync);
+      fs30.stat = statFix(fs30.stat);
+      fs30.fstat = statFix(fs30.fstat);
+      fs30.lstat = statFix(fs30.lstat);
+      fs30.statSync = statFixSync(fs30.statSync);
+      fs30.fstatSync = statFixSync(fs30.fstatSync);
+      fs30.lstatSync = statFixSync(fs30.lstatSync);
+      if (fs30.chmod && !fs30.lchmod) {
+        fs30.lchmod = function(path36, mode, cb) {
           if (cb) process.nextTick(cb);
         };
-        fs29.lchmodSync = function() {
+        fs30.lchmodSync = function() {
         };
       }
-      if (fs29.chown && !fs29.lchown) {
-        fs29.lchown = function(path35, uid, gid, cb) {
+      if (fs30.chown && !fs30.lchown) {
+        fs30.lchown = function(path36, uid, gid, cb) {
           if (cb) process.nextTick(cb);
         };
-        fs29.lchownSync = function() {
+        fs30.lchownSync = function() {
         };
       }
       if (platform === "win32") {
-        fs29.rename = typeof fs29.rename !== "function" ? fs29.rename : (function(fs$rename) {
+        fs30.rename = typeof fs30.rename !== "function" ? fs30.rename : (function(fs$rename) {
           function rename(from, to, cb) {
             var start = Date.now();
             var backoff = 0;
             fs$rename(from, to, function CB(er) {
               if (er && (er.code === "EACCES" || er.code === "EPERM" || er.code === "EBUSY") && Date.now() - start < 6e4) {
                 setTimeout(function() {
-                  fs29.stat(to, function(stater, st) {
+                  fs30.stat(to, function(stater, st) {
                     if (stater && stater.code === "ENOENT")
                       fs$rename(from, to, CB);
                     else
@@ -9870,9 +9870,9 @@ var require_polyfills = __commonJS({
           }
           if (Object.setPrototypeOf) Object.setPrototypeOf(rename, fs$rename);
           return rename;
-        })(fs29.rename);
+        })(fs30.rename);
       }
-      fs29.read = typeof fs29.read !== "function" ? fs29.read : (function(fs$read) {
+      fs30.read = typeof fs30.read !== "function" ? fs30.read : (function(fs$read) {
         function read(fd, buffer, offset, length, position, callback_) {
           var callback;
           if (callback_ && typeof callback_ === "function") {
@@ -9880,22 +9880,22 @@ var require_polyfills = __commonJS({
             callback = function(er, _, __) {
               if (er && er.code === "EAGAIN" && eagCounter < 10) {
                 eagCounter++;
-                return fs$read.call(fs29, fd, buffer, offset, length, position, callback);
+                return fs$read.call(fs30, fd, buffer, offset, length, position, callback);
               }
               callback_.apply(this, arguments);
             };
           }
-          return fs$read.call(fs29, fd, buffer, offset, length, position, callback);
+          return fs$read.call(fs30, fd, buffer, offset, length, position, callback);
         }
         if (Object.setPrototypeOf) Object.setPrototypeOf(read, fs$read);
         return read;
-      })(fs29.read);
-      fs29.readSync = typeof fs29.readSync !== "function" ? fs29.readSync : /* @__PURE__ */ (function(fs$readSync) {
+      })(fs30.read);
+      fs30.readSync = typeof fs30.readSync !== "function" ? fs30.readSync : /* @__PURE__ */ (function(fs$readSync) {
         return function(fd, buffer, offset, length, position) {
           var eagCounter = 0;
           while (true) {
             try {
-              return fs$readSync.call(fs29, fd, buffer, offset, length, position);
+              return fs$readSync.call(fs30, fd, buffer, offset, length, position);
             } catch (er) {
               if (er.code === "EAGAIN" && eagCounter < 10) {
                 eagCounter++;
@@ -9905,11 +9905,11 @@ var require_polyfills = __commonJS({
             }
           }
         };
-      })(fs29.readSync);
-      function patchLchmod(fs30) {
-        fs30.lchmod = function(path35, mode, callback) {
-          fs30.open(
-            path35,
+      })(fs30.readSync);
+      function patchLchmod(fs31) {
+        fs31.lchmod = function(path36, mode, callback) {
+          fs31.open(
+            path36,
             constants.O_WRONLY | constants.O_SYMLINK,
             mode,
             function(err, fd) {
@@ -9917,80 +9917,80 @@ var require_polyfills = __commonJS({
                 if (callback) callback(err);
                 return;
               }
-              fs30.fchmod(fd, mode, function(err2) {
-                fs30.close(fd, function(err22) {
+              fs31.fchmod(fd, mode, function(err2) {
+                fs31.close(fd, function(err22) {
                   if (callback) callback(err2 || err22);
                 });
               });
             }
           );
         };
-        fs30.lchmodSync = function(path35, mode) {
-          var fd = fs30.openSync(path35, constants.O_WRONLY | constants.O_SYMLINK, mode);
+        fs31.lchmodSync = function(path36, mode) {
+          var fd = fs31.openSync(path36, constants.O_WRONLY | constants.O_SYMLINK, mode);
           var threw = true;
           var ret;
           try {
-            ret = fs30.fchmodSync(fd, mode);
+            ret = fs31.fchmodSync(fd, mode);
             threw = false;
           } finally {
             if (threw) {
               try {
-                fs30.closeSync(fd);
+                fs31.closeSync(fd);
               } catch (er) {
               }
             } else {
-              fs30.closeSync(fd);
+              fs31.closeSync(fd);
             }
           }
           return ret;
         };
       }
-      function patchLutimes(fs30) {
-        if (constants.hasOwnProperty("O_SYMLINK") && fs30.futimes) {
-          fs30.lutimes = function(path35, at, mt, cb) {
-            fs30.open(path35, constants.O_SYMLINK, function(er, fd) {
+      function patchLutimes(fs31) {
+        if (constants.hasOwnProperty("O_SYMLINK") && fs31.futimes) {
+          fs31.lutimes = function(path36, at, mt, cb) {
+            fs31.open(path36, constants.O_SYMLINK, function(er, fd) {
               if (er) {
                 if (cb) cb(er);
                 return;
               }
-              fs30.futimes(fd, at, mt, function(er2) {
-                fs30.close(fd, function(er22) {
+              fs31.futimes(fd, at, mt, function(er2) {
+                fs31.close(fd, function(er22) {
                   if (cb) cb(er2 || er22);
                 });
               });
             });
           };
-          fs30.lutimesSync = function(path35, at, mt) {
-            var fd = fs30.openSync(path35, constants.O_SYMLINK);
+          fs31.lutimesSync = function(path36, at, mt) {
+            var fd = fs31.openSync(path36, constants.O_SYMLINK);
             var ret;
             var threw = true;
             try {
-              ret = fs30.futimesSync(fd, at, mt);
+              ret = fs31.futimesSync(fd, at, mt);
               threw = false;
             } finally {
               if (threw) {
                 try {
-                  fs30.closeSync(fd);
+                  fs31.closeSync(fd);
                 } catch (er) {
                 }
               } else {
-                fs30.closeSync(fd);
+                fs31.closeSync(fd);
               }
             }
             return ret;
           };
-        } else if (fs30.futimes) {
-          fs30.lutimes = function(_a, _b, _c, cb) {
+        } else if (fs31.futimes) {
+          fs31.lutimes = function(_a, _b, _c, cb) {
             if (cb) process.nextTick(cb);
           };
-          fs30.lutimesSync = function() {
+          fs31.lutimesSync = function() {
           };
         }
       }
       function chmodFix(orig) {
         if (!orig) return orig;
         return function(target, mode, cb) {
-          return orig.call(fs29, target, mode, function(er) {
+          return orig.call(fs30, target, mode, function(er) {
             if (chownErOk(er)) er = null;
             if (cb) cb.apply(this, arguments);
           });
@@ -10000,7 +10000,7 @@ var require_polyfills = __commonJS({
         if (!orig) return orig;
         return function(target, mode) {
           try {
-            return orig.call(fs29, target, mode);
+            return orig.call(fs30, target, mode);
           } catch (er) {
             if (!chownErOk(er)) throw er;
           }
@@ -10009,7 +10009,7 @@ var require_polyfills = __commonJS({
       function chownFix(orig) {
         if (!orig) return orig;
         return function(target, uid, gid, cb) {
-          return orig.call(fs29, target, uid, gid, function(er) {
+          return orig.call(fs30, target, uid, gid, function(er) {
             if (chownErOk(er)) er = null;
             if (cb) cb.apply(this, arguments);
           });
@@ -10019,7 +10019,7 @@ var require_polyfills = __commonJS({
         if (!orig) return orig;
         return function(target, uid, gid) {
           try {
-            return orig.call(fs29, target, uid, gid);
+            return orig.call(fs30, target, uid, gid);
           } catch (er) {
             if (!chownErOk(er)) throw er;
           }
@@ -10039,13 +10039,13 @@ var require_polyfills = __commonJS({
             }
             if (cb) cb.apply(this, arguments);
           }
-          return options ? orig.call(fs29, target, options, callback) : orig.call(fs29, target, callback);
+          return options ? orig.call(fs30, target, options, callback) : orig.call(fs30, target, callback);
         };
       }
       function statFixSync(orig) {
         if (!orig) return orig;
         return function(target, options) {
-          var stats = options ? orig.call(fs29, target, options) : orig.call(fs29, target);
+          var stats = options ? orig.call(fs30, target, options) : orig.call(fs30, target);
           if (stats) {
             if (stats.uid < 0) stats.uid += 4294967296;
             if (stats.gid < 0) stats.gid += 4294967296;
@@ -10074,16 +10074,16 @@ var require_legacy_streams = __commonJS({
   "node_modules/graceful-fs/legacy-streams.js"(exports, module) {
     var Stream = __require("stream").Stream;
     module.exports = legacy;
-    function legacy(fs29) {
+    function legacy(fs30) {
       return {
         ReadStream,
         WriteStream
       };
-      function ReadStream(path35, options) {
-        if (!(this instanceof ReadStream)) return new ReadStream(path35, options);
+      function ReadStream(path36, options) {
+        if (!(this instanceof ReadStream)) return new ReadStream(path36, options);
         Stream.call(this);
         var self2 = this;
-        this.path = path35;
+        this.path = path36;
         this.fd = null;
         this.readable = true;
         this.paused = false;
@@ -10117,7 +10117,7 @@ var require_legacy_streams = __commonJS({
           });
           return;
         }
-        fs29.open(this.path, this.flags, this.mode, function(err, fd) {
+        fs30.open(this.path, this.flags, this.mode, function(err, fd) {
           if (err) {
             self2.emit("error", err);
             self2.readable = false;
@@ -10128,10 +10128,10 @@ var require_legacy_streams = __commonJS({
           self2._read();
         });
       }
-      function WriteStream(path35, options) {
-        if (!(this instanceof WriteStream)) return new WriteStream(path35, options);
+      function WriteStream(path36, options) {
+        if (!(this instanceof WriteStream)) return new WriteStream(path36, options);
         Stream.call(this);
-        this.path = path35;
+        this.path = path36;
         this.fd = null;
         this.writable = true;
         this.flags = "w";
@@ -10156,7 +10156,7 @@ var require_legacy_streams = __commonJS({
         this.busy = false;
         this._queue = [];
         if (this.fd === null) {
-          this._open = fs29.open;
+          this._open = fs30.open;
           this._queue.push([this._open, this.path, this.flags, this.mode, void 0]);
           this.flush();
         }
@@ -10191,7 +10191,7 @@ var require_clone = __commonJS({
 // node_modules/graceful-fs/graceful-fs.js
 var require_graceful_fs = __commonJS({
   "node_modules/graceful-fs/graceful-fs.js"(exports, module) {
-    var fs29 = __require("fs");
+    var fs30 = __require("fs");
     var polyfills = require_polyfills();
     var legacy = require_legacy_streams();
     var clone2 = require_clone();
@@ -10223,12 +10223,12 @@ var require_graceful_fs = __commonJS({
         m = "GFS4: " + m.split(/\n/).join("\nGFS4: ");
         console.error(m);
       };
-    if (!fs29[gracefulQueue]) {
+    if (!fs30[gracefulQueue]) {
       queue = global[gracefulQueue] || [];
-      publishQueue(fs29, queue);
-      fs29.close = (function(fs$close) {
+      publishQueue(fs30, queue);
+      fs30.close = (function(fs$close) {
         function close(fd, cb) {
-          return fs$close.call(fs29, fd, function(err) {
+          return fs$close.call(fs30, fd, function(err) {
             if (!err) {
               resetQueue();
             }
@@ -10240,48 +10240,48 @@ var require_graceful_fs = __commonJS({
           value: fs$close
         });
         return close;
-      })(fs29.close);
-      fs29.closeSync = (function(fs$closeSync) {
+      })(fs30.close);
+      fs30.closeSync = (function(fs$closeSync) {
         function closeSync(fd) {
-          fs$closeSync.apply(fs29, arguments);
+          fs$closeSync.apply(fs30, arguments);
           resetQueue();
         }
         Object.defineProperty(closeSync, previousSymbol, {
           value: fs$closeSync
         });
         return closeSync;
-      })(fs29.closeSync);
+      })(fs30.closeSync);
       if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || "")) {
         process.on("exit", function() {
-          debug(fs29[gracefulQueue]);
-          __require("assert").equal(fs29[gracefulQueue].length, 0);
+          debug(fs30[gracefulQueue]);
+          __require("assert").equal(fs30[gracefulQueue].length, 0);
         });
       }
     }
     var queue;
     if (!global[gracefulQueue]) {
-      publishQueue(global, fs29[gracefulQueue]);
+      publishQueue(global, fs30[gracefulQueue]);
     }
-    module.exports = patch(clone2(fs29));
-    if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH && !fs29.__patched) {
-      module.exports = patch(fs29);
-      fs29.__patched = true;
+    module.exports = patch(clone2(fs30));
+    if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH && !fs30.__patched) {
+      module.exports = patch(fs30);
+      fs30.__patched = true;
     }
-    function patch(fs30) {
-      polyfills(fs30);
-      fs30.gracefulify = patch;
-      fs30.createReadStream = createReadStream;
-      fs30.createWriteStream = createWriteStream;
-      var fs$readFile = fs30.readFile;
-      fs30.readFile = readFile;
-      function readFile(path35, options, cb) {
+    function patch(fs31) {
+      polyfills(fs31);
+      fs31.gracefulify = patch;
+      fs31.createReadStream = createReadStream;
+      fs31.createWriteStream = createWriteStream;
+      var fs$readFile = fs31.readFile;
+      fs31.readFile = readFile;
+      function readFile(path36, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$readFile(path35, options, cb);
-        function go$readFile(path36, options2, cb2, startTime) {
-          return fs$readFile(path36, options2, function(err) {
+        return go$readFile(path36, options, cb);
+        function go$readFile(path37, options2, cb2, startTime) {
+          return fs$readFile(path37, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$readFile, [path36, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$readFile, [path37, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -10289,16 +10289,16 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$writeFile = fs30.writeFile;
-      fs30.writeFile = writeFile;
-      function writeFile(path35, data, options, cb) {
+      var fs$writeFile = fs31.writeFile;
+      fs31.writeFile = writeFile;
+      function writeFile(path36, data, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$writeFile(path35, data, options, cb);
-        function go$writeFile(path36, data2, options2, cb2, startTime) {
-          return fs$writeFile(path36, data2, options2, function(err) {
+        return go$writeFile(path36, data, options, cb);
+        function go$writeFile(path37, data2, options2, cb2, startTime) {
+          return fs$writeFile(path37, data2, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$writeFile, [path36, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$writeFile, [path37, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -10306,17 +10306,17 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$appendFile = fs30.appendFile;
+      var fs$appendFile = fs31.appendFile;
       if (fs$appendFile)
-        fs30.appendFile = appendFile;
-      function appendFile(path35, data, options, cb) {
+        fs31.appendFile = appendFile;
+      function appendFile(path36, data, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$appendFile(path35, data, options, cb);
-        function go$appendFile(path36, data2, options2, cb2, startTime) {
-          return fs$appendFile(path36, data2, options2, function(err) {
+        return go$appendFile(path36, data, options, cb);
+        function go$appendFile(path37, data2, options2, cb2, startTime) {
+          return fs$appendFile(path37, data2, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$appendFile, [path36, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$appendFile, [path37, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -10324,9 +10324,9 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$copyFile = fs30.copyFile;
+      var fs$copyFile = fs31.copyFile;
       if (fs$copyFile)
-        fs30.copyFile = copyFile;
+        fs31.copyFile = copyFile;
       function copyFile(src, dest, flags, cb) {
         if (typeof flags === "function") {
           cb = flags;
@@ -10344,34 +10344,34 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$readdir = fs30.readdir;
-      fs30.readdir = readdir;
+      var fs$readdir = fs31.readdir;
+      fs31.readdir = readdir;
       var noReaddirOptionVersions = /^v[0-5]\./;
-      function readdir(path35, options, cb) {
+      function readdir(path36, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        var go$readdir = noReaddirOptionVersions.test(process.version) ? function go$readdir2(path36, options2, cb2, startTime) {
-          return fs$readdir(path36, fs$readdirCallback(
-            path36,
+        var go$readdir = noReaddirOptionVersions.test(process.version) ? function go$readdir2(path37, options2, cb2, startTime) {
+          return fs$readdir(path37, fs$readdirCallback(
+            path37,
             options2,
             cb2,
             startTime
           ));
-        } : function go$readdir2(path36, options2, cb2, startTime) {
-          return fs$readdir(path36, options2, fs$readdirCallback(
-            path36,
+        } : function go$readdir2(path37, options2, cb2, startTime) {
+          return fs$readdir(path37, options2, fs$readdirCallback(
+            path37,
             options2,
             cb2,
             startTime
           ));
         };
-        return go$readdir(path35, options, cb);
-        function fs$readdirCallback(path36, options2, cb2, startTime) {
+        return go$readdir(path36, options, cb);
+        function fs$readdirCallback(path37, options2, cb2, startTime) {
           return function(err, files) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
               enqueue([
                 go$readdir,
-                [path36, options2, cb2],
+                [path37, options2, cb2],
                 err,
                 startTime || Date.now(),
                 Date.now()
@@ -10386,21 +10386,21 @@ var require_graceful_fs = __commonJS({
         }
       }
       if (process.version.substr(0, 4) === "v0.8") {
-        var legStreams = legacy(fs30);
+        var legStreams = legacy(fs31);
         ReadStream = legStreams.ReadStream;
         WriteStream = legStreams.WriteStream;
       }
-      var fs$ReadStream = fs30.ReadStream;
+      var fs$ReadStream = fs31.ReadStream;
       if (fs$ReadStream) {
         ReadStream.prototype = Object.create(fs$ReadStream.prototype);
         ReadStream.prototype.open = ReadStream$open;
       }
-      var fs$WriteStream = fs30.WriteStream;
+      var fs$WriteStream = fs31.WriteStream;
       if (fs$WriteStream) {
         WriteStream.prototype = Object.create(fs$WriteStream.prototype);
         WriteStream.prototype.open = WriteStream$open;
       }
-      Object.defineProperty(fs30, "ReadStream", {
+      Object.defineProperty(fs31, "ReadStream", {
         get: function() {
           return ReadStream;
         },
@@ -10410,7 +10410,7 @@ var require_graceful_fs = __commonJS({
         enumerable: true,
         configurable: true
       });
-      Object.defineProperty(fs30, "WriteStream", {
+      Object.defineProperty(fs31, "WriteStream", {
         get: function() {
           return WriteStream;
         },
@@ -10421,7 +10421,7 @@ var require_graceful_fs = __commonJS({
         configurable: true
       });
       var FileReadStream = ReadStream;
-      Object.defineProperty(fs30, "FileReadStream", {
+      Object.defineProperty(fs31, "FileReadStream", {
         get: function() {
           return FileReadStream;
         },
@@ -10432,7 +10432,7 @@ var require_graceful_fs = __commonJS({
         configurable: true
       });
       var FileWriteStream = WriteStream;
-      Object.defineProperty(fs30, "FileWriteStream", {
+      Object.defineProperty(fs31, "FileWriteStream", {
         get: function() {
           return FileWriteStream;
         },
@@ -10442,7 +10442,7 @@ var require_graceful_fs = __commonJS({
         enumerable: true,
         configurable: true
       });
-      function ReadStream(path35, options) {
+      function ReadStream(path36, options) {
         if (this instanceof ReadStream)
           return fs$ReadStream.apply(this, arguments), this;
         else
@@ -10462,7 +10462,7 @@ var require_graceful_fs = __commonJS({
           }
         });
       }
-      function WriteStream(path35, options) {
+      function WriteStream(path36, options) {
         if (this instanceof WriteStream)
           return fs$WriteStream.apply(this, arguments), this;
         else
@@ -10480,22 +10480,22 @@ var require_graceful_fs = __commonJS({
           }
         });
       }
-      function createReadStream(path35, options) {
-        return new fs30.ReadStream(path35, options);
+      function createReadStream(path36, options) {
+        return new fs31.ReadStream(path36, options);
       }
-      function createWriteStream(path35, options) {
-        return new fs30.WriteStream(path35, options);
+      function createWriteStream(path36, options) {
+        return new fs31.WriteStream(path36, options);
       }
-      var fs$open = fs30.open;
-      fs30.open = open;
-      function open(path35, flags, mode, cb) {
+      var fs$open = fs31.open;
+      fs31.open = open;
+      function open(path36, flags, mode, cb) {
         if (typeof mode === "function")
           cb = mode, mode = null;
-        return go$open(path35, flags, mode, cb);
-        function go$open(path36, flags2, mode2, cb2, startTime) {
-          return fs$open(path36, flags2, mode2, function(err, fd) {
+        return go$open(path36, flags, mode, cb);
+        function go$open(path37, flags2, mode2, cb2, startTime) {
+          return fs$open(path37, flags2, mode2, function(err, fd) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$open, [path36, flags2, mode2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$open, [path37, flags2, mode2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -10503,20 +10503,20 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      return fs30;
+      return fs31;
     }
     function enqueue(elem) {
       debug("ENQUEUE", elem[0].name, elem[1]);
-      fs29[gracefulQueue].push(elem);
+      fs30[gracefulQueue].push(elem);
       retry();
     }
     var retryTimer;
     function resetQueue() {
       var now = Date.now();
-      for (var i2 = 0; i2 < fs29[gracefulQueue].length; ++i2) {
-        if (fs29[gracefulQueue][i2].length > 2) {
-          fs29[gracefulQueue][i2][3] = now;
-          fs29[gracefulQueue][i2][4] = now;
+      for (var i2 = 0; i2 < fs30[gracefulQueue].length; ++i2) {
+        if (fs30[gracefulQueue][i2].length > 2) {
+          fs30[gracefulQueue][i2][3] = now;
+          fs30[gracefulQueue][i2][4] = now;
         }
       }
       retry();
@@ -10524,9 +10524,9 @@ var require_graceful_fs = __commonJS({
     function retry() {
       clearTimeout(retryTimer);
       retryTimer = void 0;
-      if (fs29[gracefulQueue].length === 0)
+      if (fs30[gracefulQueue].length === 0)
         return;
-      var elem = fs29[gracefulQueue].shift();
+      var elem = fs30[gracefulQueue].shift();
       var fn = elem[0];
       var args = elem[1];
       var err = elem[2];
@@ -10548,7 +10548,7 @@ var require_graceful_fs = __commonJS({
           debug("RETRY", fn.name, args);
           fn.apply(null, args.concat([startTime]));
         } else {
-          fs29[gracefulQueue].push(elem);
+          fs30[gracefulQueue].push(elem);
         }
       }
       if (retryTimer === void 0) {
@@ -10983,10 +10983,10 @@ var require_mtime_precision = __commonJS({
   "node_modules/proper-lockfile/lib/mtime-precision.js"(exports, module) {
     "use strict";
     var cacheSymbol = /* @__PURE__ */ Symbol();
-    function probe(file, fs29, callback) {
-      const cachedPrecision = fs29[cacheSymbol];
+    function probe(file, fs30, callback) {
+      const cachedPrecision = fs30[cacheSymbol];
       if (cachedPrecision) {
-        return fs29.stat(file, (err, stat) => {
+        return fs30.stat(file, (err, stat) => {
           if (err) {
             return callback(err);
           }
@@ -10994,16 +10994,16 @@ var require_mtime_precision = __commonJS({
         });
       }
       const mtime = new Date(Math.ceil(Date.now() / 1e3) * 1e3 + 5);
-      fs29.utimes(file, mtime, mtime, (err) => {
+      fs30.utimes(file, mtime, mtime, (err) => {
         if (err) {
           return callback(err);
         }
-        fs29.stat(file, (err2, stat) => {
+        fs30.stat(file, (err2, stat) => {
           if (err2) {
             return callback(err2);
           }
           const precision = stat.mtime.getTime() % 1e3 === 0 ? "s" : "ms";
-          Object.defineProperty(fs29, cacheSymbol, { value: precision });
+          Object.defineProperty(fs30, cacheSymbol, { value: precision });
           callback(null, stat.mtime, precision);
         });
       });
@@ -11024,8 +11024,8 @@ var require_mtime_precision = __commonJS({
 var require_lockfile = __commonJS({
   "node_modules/proper-lockfile/lib/lockfile.js"(exports, module) {
     "use strict";
-    var path35 = __require("path");
-    var fs29 = require_graceful_fs();
+    var path36 = __require("path");
+    var fs30 = require_graceful_fs();
     var retry = require_retry2();
     var onExit = require_signal_exit();
     var mtimePrecision = require_mtime_precision();
@@ -11035,7 +11035,7 @@ var require_lockfile = __commonJS({
     }
     function resolveCanonicalPath(file, options, callback) {
       if (!options.realpath) {
-        return callback(null, path35.resolve(file));
+        return callback(null, path36.resolve(file));
       }
       options.fs.realpath(file, callback);
     }
@@ -11156,7 +11156,7 @@ var require_lockfile = __commonJS({
         update: null,
         realpath: true,
         retries: 0,
-        fs: fs29,
+        fs: fs30,
         onCompromised: (err) => {
           throw err;
         },
@@ -11200,7 +11200,7 @@ var require_lockfile = __commonJS({
     }
     function unlock(file, options, callback) {
       options = {
-        fs: fs29,
+        fs: fs30,
         realpath: true,
         ...options
       };
@@ -11222,7 +11222,7 @@ var require_lockfile = __commonJS({
       options = {
         stale: 1e4,
         realpath: true,
-        fs: fs29,
+        fs: fs30,
         ...options
       };
       options.stale = Math.max(options.stale || 0, 2e3);
@@ -11261,16 +11261,16 @@ var require_lockfile = __commonJS({
 var require_adapter = __commonJS({
   "node_modules/proper-lockfile/lib/adapter.js"(exports, module) {
     "use strict";
-    var fs29 = require_graceful_fs();
-    function createSyncFs(fs30) {
+    var fs30 = require_graceful_fs();
+    function createSyncFs(fs31) {
       const methods = ["mkdir", "realpath", "stat", "rmdir", "utimes"];
-      const newFs = { ...fs30 };
+      const newFs = { ...fs31 };
       methods.forEach((method) => {
         newFs[method] = (...args) => {
           const callback = args.pop();
           let ret;
           try {
-            ret = fs30[`${method}Sync`](...args);
+            ret = fs31[`${method}Sync`](...args);
           } catch (err) {
             return callback(err);
           }
@@ -11308,7 +11308,7 @@ var require_adapter = __commonJS({
     }
     function toSyncOptions(options) {
       options = { ...options };
-      options.fs = createSyncFs(options.fs || fs29);
+      options.fs = createSyncFs(options.fs || fs30);
       if (typeof options.retries === "number" && options.retries > 0 || options.retries && typeof options.retries.retries === "number" && options.retries.retries > 0) {
         throw Object.assign(new Error("Cannot use retries with the sync api"), { code: "ESYNC" });
       }
@@ -11645,6 +11645,16 @@ var init_ids = __esm({
   }
 });
 
+// src/utils/scope.ts
+function scopeMatches(a, b) {
+  return a.startsWith(b) || b.startsWith(a);
+}
+var init_scope = __esm({
+  "src/utils/scope.ts"() {
+    "use strict";
+  }
+});
+
 // src/storage/blackboard-store.ts
 import fs4 from "node:fs";
 import path5 from "node:path";
@@ -11654,6 +11664,7 @@ var init_blackboard_store = __esm({
     "use strict";
     init_file_store();
     init_ids();
+    init_scope();
     BlackboardStore = class {
       blackboardPath;
       cachedEntries = null;
@@ -11709,9 +11720,7 @@ var init_blackboard_store = __esm({
         }
         if (filters?.scope) {
           const filterScope = filters.scope;
-          entries = entries.filter(
-            (e) => e.scope.startsWith(filterScope) || filterScope.startsWith(e.scope)
-          );
+          entries = entries.filter((e) => scopeMatches(e.scope, filterScope));
         }
         if (filters?.since) {
           const sinceTime = filters.since;
@@ -11783,6 +11792,7 @@ var init_decision_store = __esm({
     import_proper_lockfile2 = __toESM(require_proper_lockfile(), 1);
     init_file_store();
     init_ids();
+    init_scope();
     DecisionStore = class {
       decisionsDir;
       indexPath;
@@ -11826,9 +11836,7 @@ var init_decision_store = __esm({
       async getByScope(scope) {
         const index = await this.getIndex();
         const matching = index.filter(
-          (entry) => entry.scope.startsWith(scope) || scope.startsWith(entry.scope) || entry.affected_files.some(
-            (f) => f.startsWith(scope) || scope.startsWith(f)
-          ) || entry.affected_symbols.some((s) => s === scope)
+          (entry) => scopeMatches(entry.scope, scope) || entry.affected_files.some((f) => scopeMatches(f, scope)) || entry.affected_symbols.some((s) => s === scope)
         );
         const decisions = [];
         for (const entry of matching) {
@@ -12184,6 +12192,7 @@ var init_handoff_store = __esm({
     import_proper_lockfile4 = __toESM(require_proper_lockfile(), 1);
     init_file_store();
     init_ids();
+    init_scope();
     HandoffStore = class {
       handoffsDir;
       indexPath;
@@ -12239,9 +12248,7 @@ var init_handoff_store = __esm({
           }
           if (filters.scope) {
             const filterScope = filters.scope;
-            entries = entries.filter(
-              (e) => e.scope?.startsWith(filterScope) || filterScope.startsWith(e.scope ?? "")
-            );
+            entries = entries.filter((e) => scopeMatches(e.scope ?? "", filterScope));
           }
           if (filters.since) {
             const since = filters.since;
@@ -12410,6 +12417,7 @@ var init_sqlite_stores = __esm({
     "use strict";
     init_ids();
     init_tags();
+    init_scope();
     init_errors();
     init_file_store();
     init_db();
@@ -12447,9 +12455,7 @@ var init_sqlite_stores = __esm({
         }
         if (filters?.scope) {
           const filterScope = filters.scope;
-          entries = entries.filter(
-            (e) => e.scope.startsWith(filterScope) || filterScope.startsWith(e.scope)
-          );
+          entries = entries.filter((e) => scopeMatches(e.scope, filterScope));
         }
         if (filters?.since) {
           const sinceTime = filters.since;
@@ -12515,9 +12521,7 @@ var init_sqlite_stores = __esm({
       async getByScope(scope) {
         const index = await this.getIndex();
         const matching = index.filter(
-          (entry) => entry.scope.startsWith(scope) || scope.startsWith(entry.scope) || entry.affected_files.some(
-            (f) => f.startsWith(scope) || scope.startsWith(f)
-          ) || entry.affected_symbols.some((s) => s === scope)
+          (entry) => scopeMatches(entry.scope, scope) || entry.affected_files.some((f) => scopeMatches(f, scope)) || entry.affected_symbols.some((s) => s === scope)
         );
         const decisions = [];
         for (const entry of matching) {
@@ -12799,9 +12803,7 @@ var init_sqlite_stores = __esm({
           }
           if (filters.scope) {
             const filterScope = filters.scope;
-            entries = entries.filter(
-              (e) => e.scope?.startsWith(filterScope) || filterScope.startsWith(e.scope ?? "")
-            );
+            entries = entries.filter((e) => scopeMatches(e.scope ?? "", filterScope));
           }
           if (filters.since) {
             const since = filters.since;
@@ -13245,23 +13247,23 @@ var init_record_ingest = __esm({
 });
 
 // src/utils/project-root.ts
-import fs24 from "node:fs";
-import path30 from "node:path";
+import fs25 from "node:fs";
+import path31 from "node:path";
 function resolveWorktreeMain(dir) {
   try {
-    const dotGit = path30.join(dir, ".git");
-    if (!fs24.statSync(dotGit).isFile()) return null;
-    const firstLine = fs24.readFileSync(dotGit, "utf8").split("\n")[0] ?? "";
+    const dotGit = path31.join(dir, ".git");
+    if (!fs25.statSync(dotGit).isFile()) return null;
+    const firstLine = fs25.readFileSync(dotGit, "utf8").split("\n")[0] ?? "";
     if (!firstLine.startsWith("gitdir: ")) return null;
     const rawGitdir = firstLine.slice("gitdir: ".length).replace(/\r$/, "");
     if (!rawGitdir) return null;
-    const gitdir = path30.resolve(dir, rawGitdir);
-    const marker = `${path30.sep}.git${path30.sep}worktrees${path30.sep}`;
+    const gitdir = path31.resolve(dir, rawGitdir);
+    const marker = `${path31.sep}.git${path31.sep}worktrees${path31.sep}`;
     const markerIndex = gitdir.lastIndexOf(marker);
     if (markerIndex === -1) return null;
     const mainRoot = gitdir.slice(0, markerIndex);
     if (!mainRoot) return null;
-    if (!fs24.statSync(mainRoot).isDirectory()) return null;
+    if (!fs25.statSync(mainRoot).isDirectory()) return null;
     return mainRoot;
   } catch {
     return null;
@@ -13274,7 +13276,7 @@ function resolveProjectRoot(argv, env, cwd) {
   }
   const fromEnv = env["TWINING_PROJECT"];
   if (fromEnv && fromEnv.trim().length > 0) {
-    return path30.resolve(cwd, fromEnv);
+    return path31.resolve(cwd, fromEnv);
   }
   if (env["TWINING_WORKTREE_LOCAL"] === "true") {
     return cwd;
@@ -13288,21 +13290,21 @@ var init_project_root = __esm({
 });
 
 // src/migrate/config-edit.ts
-import fs25 from "node:fs";
-import path31 from "node:path";
+import fs26 from "node:fs";
+import path32 from "node:path";
 function setStorageBackend(twiningDir, backend, opts) {
-  const configPath = path31.join(twiningDir, "config.yml");
-  if (!fs25.existsSync(configPath)) {
-    fs25.writeFileSync(
+  const configPath = path32.join(twiningDir, "config.yml");
+  if (!fs26.existsSync(configPath)) {
+    fs26.writeFileSync(
       configPath,
       jsYaml.dump({ version: opts?.formatVersion ?? 1, storage: { backend } })
     );
     return { backedUpTo: null, hadComments: false };
   }
-  const raw = fs25.readFileSync(configPath, "utf-8");
+  const raw = fs26.readFileSync(configPath, "utf-8");
   const backupPath = configPath + ".pre-migrate.bak";
-  if (!fs25.existsSync(backupPath)) {
-    fs25.copyFileSync(configPath, backupPath);
+  if (!fs26.existsSync(backupPath)) {
+    fs26.copyFileSync(configPath, backupPath);
   }
   const loaded = jsYaml.load(raw);
   if (loaded !== null && loaded !== void 0 && (typeof loaded !== "object" || Array.isArray(loaded))) {
@@ -13400,25 +13402,25 @@ var forward_exports = {};
 __export(forward_exports, {
   migrateForward: () => migrateForward
 });
-import fs26 from "node:fs";
-import path32 from "node:path";
+import fs27 from "node:fs";
+import path33 from "node:path";
 function ensureDbGitignored(twiningDir) {
-  const gitignorePath = path32.join(twiningDir, ".gitignore");
+  const gitignorePath = path33.join(twiningDir, ".gitignore");
   const wanted = ["twining.db", "twining.db-wal", "twining.db-shm"];
-  const exists = fs26.existsSync(gitignorePath);
-  const raw = exists ? fs26.readFileSync(gitignorePath, "utf-8") : "";
+  const exists = fs27.existsSync(gitignorePath);
+  const raw = exists ? fs27.readFileSync(gitignorePath, "utf-8") : "";
   const present = new Set(raw.split("\n").map((l) => l.trim()));
   const toAdd = wanted.filter((line) => !present.has(line));
   if (toAdd.length === 0) return false;
   const base = raw.length > 0 && !raw.endsWith("\n") ? raw + "\n" : raw;
   const next = base + toAdd.join("\n") + "\n";
   if (exists) atomicWriteFileSync(gitignorePath, next);
-  else fs26.writeFileSync(gitignorePath, next);
+  else fs27.writeFileSync(gitignorePath, next);
   return true;
 }
 async function migrateForward(opts) {
-  const twiningDir = path32.join(opts.projectRoot, ".twining");
-  if (!fs26.existsSync(twiningDir)) {
+  const twiningDir = path33.join(opts.projectRoot, ".twining");
+  if (!fs27.existsSync(twiningDir)) {
     throw new Error(`no .twining/ directory at ${twiningDir} \u2014 nothing to migrate`);
   }
   if (!sqliteAvailable()) {
@@ -13465,7 +13467,7 @@ async function migrateForward(opts) {
       orphans_salvaged: 0
     };
   }
-  if (opts.checkOnly && !fs26.existsSync(path32.join(twiningDir, "twining.db"))) {
+  if (opts.checkOnly && !fs27.existsSync(path33.join(twiningDir, "twining.db"))) {
     const counts = {
       posts: (await legacy.blackboardStore.read()).entries.length,
       decisions: (await legacy.decisionStore.getIndex()).length,
@@ -13499,14 +13501,14 @@ async function migrateForward(opts) {
       const decision = await legacy.decisionStore.get(ix.id);
       if (decision) exporter.decision(decision);
     }
-    const decisionsDir = path32.join(twiningDir, "decisions");
-    if (fs26.existsSync(decisionsDir)) {
-      for (const file of fs26.readdirSync(decisionsDir)) {
+    const decisionsDir = path33.join(twiningDir, "decisions");
+    if (fs27.existsSync(decisionsDir)) {
+      for (const file of fs27.readdirSync(decisionsDir)) {
         if (file === "index.json" || !file.endsWith(".json")) continue;
         const id = file.slice(0, -".json".length);
         if (indexedDecisionIds.has(id)) continue;
         try {
-          const raw = fs26.readFileSync(path32.join(decisionsDir, file), "utf-8");
+          const raw = fs27.readFileSync(path33.join(decisionsDir, file), "utf-8");
           const orphan = JSON.parse(raw);
           exporter.decision(orphan);
           orphansSalvaged++;
@@ -13593,11 +13595,11 @@ var init_forward = __esm({
 });
 
 // src/migrate/reverse.ts
-import fs27 from "node:fs";
-import path33 from "node:path";
+import fs28 from "node:fs";
+import path34 from "node:path";
 async function migrateReverse(opts) {
-  const twiningDir = path33.join(opts.projectRoot, ".twining");
-  if (!fs27.existsSync(twiningDir)) {
+  const twiningDir = path34.join(opts.projectRoot, ".twining");
+  if (!fs28.existsSync(twiningDir)) {
     throw new Error(`no .twining/ directory at ${twiningDir} \u2014 nothing to migrate`);
   }
   if (!sqliteAvailable()) {
@@ -13605,8 +13607,8 @@ async function migrateReverse(opts) {
       "node:sqlite is unavailable (requires Node >= 22.13) \u2014 cannot read the sqlite state to reverse it"
     );
   }
-  const hasDb = fs27.existsSync(path33.join(twiningDir, "twining.db"));
-  const hasTree = fs27.existsSync(path33.join(twiningDir, "records"));
+  const hasDb = fs28.existsSync(path34.join(twiningDir, "twining.db"));
+  const hasTree = fs28.existsSync(path34.join(twiningDir, "records"));
   if (!hasDb && !hasTree) {
     throw new Error(
       "no sqlite state found (neither twining.db nor records/) \u2014 nothing to reverse"
@@ -13665,54 +13667,54 @@ async function migrateReverse(opts) {
         orphans_salvaged: 0
       };
     }
-    const backupDir = path33.join(twiningDir, "pre-reverse-backup");
+    const backupDir = path34.join(twiningDir, "pre-reverse-backup");
     ensureDir(backupDir);
     for (const rel of ["blackboard.jsonl", "decisions", "graph", "handoffs"]) {
-      const src = path33.join(twiningDir, rel);
-      if (fs27.existsSync(src)) {
-        fs27.cpSync(src, path33.join(backupDir, rel), { recursive: true, force: true });
+      const src = path34.join(twiningDir, rel);
+      if (fs28.existsSync(src)) {
+        fs28.cpSync(src, path34.join(backupDir, rel), { recursive: true, force: true });
       }
     }
     atomicWriteFileSync(
-      path33.join(twiningDir, "blackboard.jsonl"),
+      path34.join(twiningDir, "blackboard.jsonl"),
       entries.map((e) => JSON.stringify(e)).join("\n") + (entries.length ? "\n" : "")
     );
-    ensureDir(path33.join(twiningDir, "decisions"));
+    ensureDir(path34.join(twiningDir, "decisions"));
     for (const ix of decisionIndex) {
       const decision = await sqlite.decisionStore.get(ix.id);
       if (decision) {
         atomicWriteFileSync(
-          path33.join(twiningDir, "decisions", `${decision.id}.json`),
+          path34.join(twiningDir, "decisions", `${decision.id}.json`),
           JSON.stringify(decision, null, 2)
         );
       }
     }
     atomicWriteFileSync(
-      path33.join(twiningDir, "decisions", "index.json"),
+      path34.join(twiningDir, "decisions", "index.json"),
       JSON.stringify(decisionIndex, null, 2)
     );
-    ensureDir(path33.join(twiningDir, "graph"));
+    ensureDir(path34.join(twiningDir, "graph"));
     atomicWriteFileSync(
-      path33.join(twiningDir, "graph", "entities.json"),
+      path34.join(twiningDir, "graph", "entities.json"),
       JSON.stringify(entities, null, 2)
     );
     atomicWriteFileSync(
-      path33.join(twiningDir, "graph", "relations.json"),
+      path34.join(twiningDir, "graph", "relations.json"),
       JSON.stringify(relations, null, 2)
     );
-    ensureDir(path33.join(twiningDir, "handoffs"));
+    ensureDir(path34.join(twiningDir, "handoffs"));
     for (const ix of handoffIndex) {
       const record2 = await sqlite.handoffStore.get(ix.id);
       if (record2) {
         atomicWriteFileSync(
-          path33.join(twiningDir, "handoffs", `${record2.id}.json`),
+          path34.join(twiningDir, "handoffs", `${record2.id}.json`),
           JSON.stringify(record2, null, 2)
         );
       }
     }
     const indexRows = db.prepare("SELECT index_data FROM handoffs ORDER BY seq").all().map((r) => r.index_data);
     atomicWriteFileSync(
-      path33.join(twiningDir, "handoffs", "index.jsonl"),
+      path34.join(twiningDir, "handoffs", "index.jsonl"),
       indexRows.join("\n") + (indexRows.length ? "\n" : "")
     );
     const files = {
@@ -13873,11 +13875,11 @@ var auto_exports = {};
 __export(auto_exports, {
   maybeAutoMigrate: () => maybeAutoMigrate
 });
-import fs28 from "node:fs";
-import path34 from "node:path";
+import fs29 from "node:fs";
+import path35 from "node:path";
 async function maybeAutoMigrate(projectRoot) {
-  const twiningDir = path34.join(projectRoot, ".twining");
-  if (!fs28.existsSync(twiningDir)) return;
+  const twiningDir = path35.join(projectRoot, ".twining");
+  if (!fs29.existsSync(twiningDir)) return;
   const config2 = loadConfig(twiningDir);
   const optedIn = process.env.TWINING_AUTO_MIGRATE === "1" || config2.storage?.auto_migrate === true;
   if (!optedIn) return;
@@ -14114,10 +14116,10 @@ function assignProp(target, prop, value) {
     configurable: true
   });
 }
-function getElementAtPath(obj, path35) {
-  if (!path35)
+function getElementAtPath(obj, path36) {
+  if (!path36)
     return obj;
-  return path35.reduce((acc, key) => acc?.[key], obj);
+  return path36.reduce((acc, key) => acc?.[key], obj);
 }
 function promiseAllObject(promisesObj) {
   const keys = Object.keys(promisesObj);
@@ -14437,11 +14439,11 @@ function aborted(x, startIndex = 0) {
   }
   return false;
 }
-function prefixIssues(path35, issues) {
+function prefixIssues(path36, issues) {
   return issues.map((iss) => {
     var _a;
     (_a = iss).path ?? (_a.path = []);
-    iss.path.unshift(path35);
+    iss.path.unshift(path36);
     return iss;
   });
 }
@@ -20502,8 +20504,8 @@ function getErrorMap() {
 
 // node_modules/zod/v3/helpers/parseUtil.js
 var makeIssue = (params) => {
-  const { data, path: path35, errorMaps, issueData } = params;
-  const fullPath = [...path35, ...issueData.path || []];
+  const { data, path: path36, errorMaps, issueData } = params;
+  const fullPath = [...path36, ...issueData.path || []];
   const fullIssue = {
     ...issueData,
     path: fullPath
@@ -20619,11 +20621,11 @@ var errorUtil;
 
 // node_modules/zod/v3/types.js
 var ParseInputLazyPath = class {
-  constructor(parent, value, path35, key) {
+  constructor(parent, value, path36, key) {
     this._cachedPath = [];
     this.parent = parent;
     this.data = value;
-    this._path = path35;
+    this._path = path36;
     this._key = key;
   }
   get path() {
@@ -28593,6 +28595,15 @@ function safeGit(cwd, args) {
   }
 }
 
+// src/engine/resolution.ts
+function computeResolvedIds(entries) {
+  const resolvedIds = /* @__PURE__ */ new Set();
+  for (const entry of entries) {
+    for (const id of entry.relates_to ?? []) resolvedIds.add(id);
+  }
+  return resolvedIds;
+}
+
 // src/engine/blackboard.ts
 var BlackboardEngine = class {
   store;
@@ -28692,10 +28703,7 @@ var BlackboardEngine = class {
     }
     if (this.archiver && this.archiveThreshold && !input._skipAutoArchive) {
       const { entries } = await this.store.read();
-      const resolvedIds = /* @__PURE__ */ new Set();
-      for (const e of entries) {
-        for (const id of e.relates_to ?? []) resolvedIds.add(id);
-      }
+      const resolvedIds = computeResolvedIds(entries);
       const archivableCount = entries.filter(
         (e) => e.entry_type !== "decision" && !(e.tags ?? []).includes("archive") && !((e.entry_type === "need" || e.entry_type === "warning") && !resolvedIds.has(e.id))
       ).length;
@@ -29880,10 +29888,7 @@ var Archiver = class {
     const keepDecisions = options?.keep_decisions ?? true;
     const keepOpen = options?.keep_open_needs_warnings ?? true;
     const { entries: allEntries } = await this.blackboardStore.read();
-    const resolvedIds = /* @__PURE__ */ new Set();
-    for (const entry of allEntries) {
-      for (const id of entry.relates_to ?? []) resolvedIds.add(id);
-    }
+    const resolvedIds = computeResolvedIds(allEntries);
     const toArchive = [];
     let keptOpen = 0;
     for (const entry of allEntries) {
@@ -30169,9 +30174,9 @@ var ContextAssembler = class _ContextAssembler {
           rejected_alternatives: d.alternatives?.length > 0 ? d.alternatives.map((a) => `${a.option}: ${a.reason_rejected}`) : void 0,
           assumptions: d.assumptions
         };
-        const path35 = reachabilityPaths.get(d.id);
-        if (path35) {
-          decisionEntry.relevance_path = path35;
+        const path36 = reachabilityPaths.get(d.id);
+        if (path36) {
+          decisionEntry.relevance_path = path36;
         }
         activeDecisionResults.push(decisionEntry);
       } else {
@@ -33174,6 +33179,429 @@ function registerVerifyTools(server, verifyEngine) {
   );
 }
 
+// src/engine/coordination.ts
+init_tags();
+function livenessToScore(liveness) {
+  switch (liveness) {
+    case "active":
+      return 1;
+    case "idle":
+      return 0.5;
+    case "gone":
+      return 0.1;
+  }
+}
+function scoreAgent(agent, requiredCapabilities, livenessThresholds, now = /* @__PURE__ */ new Date()) {
+  const normalizedRequired = normalizeTags(requiredCapabilities);
+  const matched = agent.capabilities.filter(
+    (cap) => normalizedRequired.includes(cap)
+  );
+  const capability_overlap = normalizedRequired.length > 0 ? matched.length / normalizedRequired.length : 0;
+  const liveness = computeLiveness(agent.last_active, now, livenessThresholds);
+  const liveness_score = livenessToScore(liveness);
+  const total_score = capability_overlap * 0.7 + liveness_score * 0.3;
+  return {
+    agent_id: agent.agent_id,
+    capabilities: agent.capabilities,
+    role: agent.role,
+    description: agent.description,
+    liveness,
+    capability_overlap,
+    liveness_score,
+    total_score,
+    matched_capabilities: matched
+  };
+}
+var DELEGATION_TIMEOUTS = {
+  high: 3e5,
+  // 5 minutes
+  normal: 18e5,
+  // 30 minutes
+  low: 144e5
+  // 4 hours
+};
+function parseDelegationMetadata(entry) {
+  if (!entry.detail) return null;
+  try {
+    const parsed = JSON.parse(entry.detail);
+    if (parsed && parsed.type === "delegation") {
+      return parsed;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+function isDelegationExpired(metadata, now = /* @__PURE__ */ new Date()) {
+  return now.getTime() >= new Date(metadata.expires_at).getTime();
+}
+var CoordinationEngine = class {
+  agentStore;
+  handoffStore;
+  blackboardEngine;
+  decisionStore;
+  blackboardStore;
+  config;
+  constructor(agentStore, handoffStore, blackboardEngine, decisionStore, blackboardStore, config2) {
+    this.agentStore = agentStore;
+    this.handoffStore = handoffStore;
+    this.blackboardEngine = blackboardEngine;
+    this.decisionStore = decisionStore;
+    this.blackboardStore = blackboardStore;
+    this.config = config2;
+  }
+  /** Discover and rank agents by capability match and liveness. */
+  async discover(input) {
+    const agents = await this.agentStore.getAll();
+    const thresholds = this.config.agents?.liveness ?? DEFAULT_LIVENESS_THRESHOLDS;
+    const now = /* @__PURE__ */ new Date();
+    let scores = agents.map(
+      (agent) => scoreAgent(agent, input.required_capabilities, thresholds, now)
+    );
+    if (input.include_gone === false) {
+      scores = scores.filter((s) => s.liveness !== "gone");
+    }
+    if (input.min_score !== void 0) {
+      scores = scores.filter((s) => s.total_score >= input.min_score);
+    }
+    scores.sort((a, b) => b.total_score - a.total_score);
+    return {
+      agents: scores,
+      total_registered: agents.length
+    };
+  }
+  /** Post a delegation request to the blackboard. */
+  async postDelegation(input) {
+    const now = /* @__PURE__ */ new Date();
+    const urgency = input.urgency ?? "normal";
+    const urgencyKey = `${urgency}_ms`;
+    const configTimeout = this.config.delegations?.timeouts?.[urgencyKey];
+    const timeoutMs = input.timeout_ms ?? configTimeout ?? DELEGATION_TIMEOUTS[urgency];
+    const expiresAt = new Date(now.getTime() + timeoutMs).toISOString();
+    const normalizedCapabilities = normalizeTags(input.required_capabilities);
+    const metadata = {
+      type: "delegation",
+      required_capabilities: normalizedCapabilities,
+      urgency,
+      expires_at: expiresAt,
+      timeout_ms: timeoutMs
+    };
+    const tags = [...input.tags ?? [], "delegation", urgency];
+    const { id, timestamp: timestamp2 } = await this.blackboardEngine.post({
+      entry_type: "need",
+      summary: input.summary,
+      detail: JSON.stringify(metadata),
+      tags,
+      scope: input.scope ?? "project",
+      agent_id: input.agent_id ?? "main"
+    });
+    const discovery = await this.discover({
+      required_capabilities: input.required_capabilities,
+      include_gone: false
+    });
+    return {
+      entry_id: id,
+      timestamp: timestamp2,
+      expires_at: expiresAt,
+      suggested_agents: discovery.agents
+    };
+  }
+  /**
+   * Assemble a context snapshot from active decisions and blackboard
+   * warnings/findings. Used by createHandoff when auto_snapshot is true.
+   */
+  async assembleContextSnapshot(scope) {
+    const decisionIndex = await this.decisionStore.getIndex();
+    let activeDecisions = decisionIndex.filter((d) => d.status === "active");
+    if (scope) {
+      activeDecisions = activeDecisions.filter(
+        (d) => d.scope.startsWith(scope) || scope.startsWith(d.scope)
+      );
+    }
+    const { entries: bbEntries } = await this.blackboardStore.read({
+      entry_types: ["warning", "finding"],
+      scope
+    });
+    const warnings = bbEntries.filter((e) => e.entry_type === "warning");
+    const findings = bbEntries.filter((e) => e.entry_type === "finding");
+    const decision_ids = activeDecisions.map((d) => d.id);
+    const warning_ids = warnings.map((e) => e.id);
+    const finding_ids = findings.map((e) => e.id);
+    const summaries = [];
+    for (const d of activeDecisions.slice(0, 5)) {
+      summaries.push(`Decision: ${d.summary}`);
+    }
+    for (const w of warnings.slice(0, 3)) {
+      summaries.push(`Warning: ${w.summary}`);
+    }
+    for (const f of findings.slice(0, 3)) {
+      summaries.push(`Finding: ${f.summary}`);
+    }
+    return { decision_ids, warning_ids, finding_ids, summaries };
+  }
+  /** Create a handoff record between agents. */
+  async createHandoff(input) {
+    let context_snapshot;
+    if (input.context_snapshot) {
+      context_snapshot = input.context_snapshot;
+    } else if (input.auto_snapshot !== false) {
+      context_snapshot = await this.assembleContextSnapshot(input.scope);
+    } else {
+      context_snapshot = {
+        decision_ids: [],
+        warning_ids: [],
+        finding_ids: [],
+        summaries: []
+      };
+    }
+    const record2 = await this.handoffStore.create({
+      source_agent: input.source_agent,
+      target_agent: input.target_agent,
+      scope: input.scope,
+      summary: input.summary,
+      results: input.results,
+      context_snapshot
+    });
+    const statusSummary = `Handoff created: ${input.summary}`.slice(0, 200);
+    const statusDetail = `From ${input.source_agent} to ${input.target_agent ?? "any agent"}. ${input.results.length} result(s).`;
+    await this.blackboardEngine.post({
+      entry_type: "status",
+      summary: statusSummary,
+      detail: statusDetail,
+      tags: ["handoff"],
+      scope: input.scope ?? "project",
+      agent_id: input.source_agent
+    });
+    return record2;
+  }
+  /** Acknowledge receipt of a handoff. */
+  async acknowledgeHandoff(handoffId, agentId) {
+    return this.handoffStore.acknowledge(handoffId, agentId);
+  }
+};
+
+// src/engine/triage.ts
+init_scope();
+var DEFAULT_WINDOW_MS = 6048e5;
+var DEFAULT_LIMIT = 25;
+var LIMIT_MIN = 1;
+var LIMIT_MAX = 200;
+var PREVIEW_CHARS = 200;
+function normalize(input) {
+  const normalized = {
+    // Empty-string scope/for_agent are treated as absent — "" passed to
+    // scopeMatches would silently match everything while looking like a filter.
+    // §4.1 letter: "absent or ≤ 0 → default; no upper clamp" — positive
+    // Infinity (reachable only via the HTTP adapter's Number() parse) is > 0,
+    // so it is applied as an unbounded window (cutoff -Infinity), not
+    // silently defaulted. NaN (> 0 is false) defaults. Known wrinkle: the
+    // echoed window_ms serializes to JSON null through the adapters —
+    // Infinity has no JSON representation.
+    windowMs: typeof input.window_ms === "number" && input.window_ms > 0 ? input.window_ms : DEFAULT_WINDOW_MS,
+    section: input.section === "open" || input.section === "recent" ? input.section : "all",
+    limit: Math.min(
+      LIMIT_MAX,
+      Math.max(
+        LIMIT_MIN,
+        typeof input.limit === "number" && Number.isFinite(input.limit) ? input.limit : DEFAULT_LIMIT
+      )
+    )
+  };
+  if (input.scope) normalized.scope = input.scope;
+  if (input.for_agent) normalized.forAgent = input.for_agent;
+  if (input.since) {
+    const parsed = new Date(input.since).getTime();
+    if (!Number.isNaN(parsed)) {
+      normalized.since = input.since;
+      normalized.sinceMs = parsed;
+    }
+  }
+  return normalized;
+}
+function preview(source) {
+  const collapsed = source.replace(/\s+/g, " ").trim();
+  if (!collapsed) return {};
+  if (collapsed.length > PREVIEW_CHARS) {
+    return {
+      detail_preview: collapsed.slice(0, PREVIEW_CHARS),
+      detail_truncated: true
+    };
+  }
+  return { detail_preview: collapsed };
+}
+function byTimestampIdAsc(a, b) {
+  if (a.timestamp !== b.timestamp) return a.timestamp < b.timestamp ? -1 : 1;
+  if (a.id !== b.id) return a.id < b.id ? -1 : 1;
+  return 0;
+}
+function decisionItem(decision, status, nowMs) {
+  return {
+    kind: "decision",
+    id: decision.id,
+    scope: decision.scope,
+    summary: decision.summary,
+    agent_id: decision.agent_id,
+    timestamp: decision.timestamp,
+    age_ms: nowMs - Date.parse(decision.timestamp),
+    ...preview(decision.rationale ?? ""),
+    reversible: decision.reversible,
+    confidence: decision.confidence,
+    status
+  };
+}
+function blackboardItem(entry, kind, nowMs, delegation) {
+  const item = {
+    kind,
+    id: entry.id,
+    scope: entry.scope,
+    summary: entry.summary,
+    agent_id: entry.agent_id,
+    timestamp: entry.timestamp,
+    age_ms: nowMs - Date.parse(entry.timestamp),
+    tags: entry.tags
+  };
+  if (delegation) {
+    item.urgency = delegation.urgency;
+    item.expires_at = delegation.expires_at;
+  } else {
+    Object.assign(item, preview(entry.detail ?? ""));
+  }
+  return item;
+}
+function countKind(items, kind) {
+  return items.filter((i2) => i2.kind === kind).length;
+}
+function countIrreversible(items) {
+  return items.filter(
+    (i2) => i2.kind === "decision" && i2.reversible === false
+  ).length;
+}
+async function buildTriage(stores, input = {}, now = () => /* @__PURE__ */ new Date()) {
+  const opts = normalize(input);
+  const generatedAt = now();
+  const nowMs = generatedAt.getTime();
+  const cutoffMs = Math.max(nowMs - opts.windowMs, opts.sinceMs ?? -Infinity);
+  const index = await stores.decisionStore.getIndex();
+  const { entries: board } = await stores.blackboardStore.read();
+  const resolvedIds = computeResolvedIds(board);
+  const candidates = index.filter((entry) => {
+    if (opts.scope !== void 0 && !scopeMatches(entry.scope, opts.scope)) {
+      return false;
+    }
+    if (entry.status === "provisional") return true;
+    if (entry.status === "active") return Date.parse(entry.timestamp) > cutoffMs;
+    return false;
+  });
+  const openItems = [];
+  const recentItems = [];
+  for (const candidate of candidates) {
+    const decision = await stores.decisionStore.get(candidate.id);
+    if (!decision) continue;
+    if (decision.status === "provisional") {
+      openItems.push(decisionItem(decision, "provisional", nowMs));
+    } else if (decision.status === "active" && Date.parse(decision.timestamp) > cutoffMs) {
+      recentItems.push(decisionItem(decision, "active", nowMs));
+    }
+  }
+  for (const entry of board) {
+    if (opts.scope !== void 0 && !scopeMatches(entry.scope, opts.scope)) {
+      continue;
+    }
+    if (opts.forAgent !== void 0 && entry.agent_id === opts.forAgent) {
+      continue;
+    }
+    if (entry.entry_type === "need" || entry.entry_type === "question" || entry.entry_type === "warning") {
+      if (resolvedIds.has(entry.id)) continue;
+      if (entry.entry_type === "need") {
+        const delegation = parseDelegationMetadata(entry);
+        if (delegation) {
+          if (isDelegationExpired(delegation, generatedAt)) continue;
+          openItems.push(blackboardItem(entry, "need", nowMs, delegation));
+          continue;
+        }
+      }
+      openItems.push(blackboardItem(entry, entry.entry_type, nowMs));
+    } else if (entry.entry_type === "artifact") {
+      if (Date.parse(entry.timestamp) > cutoffMs) {
+        recentItems.push(blackboardItem(entry, "artifact", nowMs));
+      }
+    }
+  }
+  openItems.sort(byTimestampIdAsc);
+  recentItems.sort((a, b) => byTimestampIdAsc(b, a));
+  const result = {
+    generated_at: generatedAt.toISOString(),
+    window_ms: opts.windowMs,
+    section: opts.section,
+    counts: {
+      open: {
+        total: openItems.length,
+        irreversible: countIrreversible(openItems),
+        by_kind: {
+          decision: countKind(openItems, "decision"),
+          need: countKind(openItems, "need"),
+          question: countKind(openItems, "question"),
+          warning: countKind(openItems, "warning")
+        }
+      },
+      recent: {
+        total: recentItems.length,
+        irreversible: countIrreversible(recentItems),
+        by_kind: {
+          decision: countKind(recentItems, "decision"),
+          artifact: countKind(recentItems, "artifact")
+        }
+      }
+    }
+  };
+  if (opts.scope !== void 0) result.scope = opts.scope;
+  if (opts.forAgent !== void 0) result.for_agent = opts.forAgent;
+  if (opts.since !== void 0) result.since = opts.since;
+  if (opts.section !== "recent") result.open = openItems.slice(0, opts.limit);
+  if (opts.section !== "open") result.recent = recentItems.slice(0, opts.limit);
+  return result;
+}
+
+// src/tools/triage-tools.ts
+init_errors();
+function registerTriageTools(server, stores) {
+  server.registerTool(
+    "twining_triage",
+    {
+      description: "Project-wide triage read-model: open items awaiting a lifecycle act (provisional decisions; unresolved needs, questions, warnings) and recent activity (newly active decisions, artifact posts) within a time window. Optionally pass for_agent (an agent_id as self-reported to twining_post) to exclude that agent's own outbound posts. Read-only \u2014 act via twining_promote / twining_override / twining_reconsider / twining_post.",
+      inputSchema: {
+        // Numerics are UNCONSTRAINED by design (§4.1): range constraints here
+        // would make the tool reject values HTTP silently defaults.
+        scope: external_exports.string().optional().describe(
+          "Filter items by declared scope (bidirectional prefix match)"
+        ),
+        window_ms: external_exports.number().optional().describe(
+          "Time window for recent activity in milliseconds (default: 7 days)"
+        ),
+        section: external_exports.enum(["all", "open", "recent"]).optional().describe('Which bucket(s) to return (default: "all")'),
+        limit: external_exports.number().optional().describe("Maximum items per bucket (default: 25, max: 200)"),
+        since: external_exports.string().optional().describe(
+          "ISO timestamp cursor \u2014 only recent items strictly after this instant; pass the previous result's generated_at"
+        ),
+        for_agent: external_exports.string().optional().describe(
+          "Exclude this agent's own outbound blackboard posts (matches self-reported agent_id)"
+        )
+      }
+    },
+    async (args) => {
+      try {
+        const result = await buildTriage(stores, args);
+        return toolResult(result);
+      } catch (e) {
+        return toolError(
+          e instanceof Error ? e.message : "Unknown error",
+          "INTERNAL_ERROR"
+        );
+      }
+    }
+  );
+}
+
 // src/engine/exporter.ts
 var Exporter = class {
   constructor(blackboardStore, decisionStore, graphStore) {
@@ -33386,207 +33814,6 @@ function registerExportTools(server, exporter) {
     }
   );
 }
-
-// src/engine/coordination.ts
-init_tags();
-function livenessToScore(liveness) {
-  switch (liveness) {
-    case "active":
-      return 1;
-    case "idle":
-      return 0.5;
-    case "gone":
-      return 0.1;
-  }
-}
-function scoreAgent(agent, requiredCapabilities, livenessThresholds, now = /* @__PURE__ */ new Date()) {
-  const normalizedRequired = normalizeTags(requiredCapabilities);
-  const matched = agent.capabilities.filter(
-    (cap) => normalizedRequired.includes(cap)
-  );
-  const capability_overlap = normalizedRequired.length > 0 ? matched.length / normalizedRequired.length : 0;
-  const liveness = computeLiveness(agent.last_active, now, livenessThresholds);
-  const liveness_score = livenessToScore(liveness);
-  const total_score = capability_overlap * 0.7 + liveness_score * 0.3;
-  return {
-    agent_id: agent.agent_id,
-    capabilities: agent.capabilities,
-    role: agent.role,
-    description: agent.description,
-    liveness,
-    capability_overlap,
-    liveness_score,
-    total_score,
-    matched_capabilities: matched
-  };
-}
-var DELEGATION_TIMEOUTS = {
-  high: 3e5,
-  // 5 minutes
-  normal: 18e5,
-  // 30 minutes
-  low: 144e5
-  // 4 hours
-};
-function parseDelegationMetadata(entry) {
-  if (!entry.detail) return null;
-  try {
-    const parsed = JSON.parse(entry.detail);
-    if (parsed && parsed.type === "delegation") {
-      return parsed;
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
-function isDelegationExpired(metadata, now = /* @__PURE__ */ new Date()) {
-  return now.getTime() >= new Date(metadata.expires_at).getTime();
-}
-var CoordinationEngine = class {
-  agentStore;
-  handoffStore;
-  blackboardEngine;
-  decisionStore;
-  blackboardStore;
-  config;
-  constructor(agentStore, handoffStore, blackboardEngine, decisionStore, blackboardStore, config2) {
-    this.agentStore = agentStore;
-    this.handoffStore = handoffStore;
-    this.blackboardEngine = blackboardEngine;
-    this.decisionStore = decisionStore;
-    this.blackboardStore = blackboardStore;
-    this.config = config2;
-  }
-  /** Discover and rank agents by capability match and liveness. */
-  async discover(input) {
-    const agents = await this.agentStore.getAll();
-    const thresholds = this.config.agents?.liveness ?? DEFAULT_LIVENESS_THRESHOLDS;
-    const now = /* @__PURE__ */ new Date();
-    let scores = agents.map(
-      (agent) => scoreAgent(agent, input.required_capabilities, thresholds, now)
-    );
-    if (input.include_gone === false) {
-      scores = scores.filter((s) => s.liveness !== "gone");
-    }
-    if (input.min_score !== void 0) {
-      scores = scores.filter((s) => s.total_score >= input.min_score);
-    }
-    scores.sort((a, b) => b.total_score - a.total_score);
-    return {
-      agents: scores,
-      total_registered: agents.length
-    };
-  }
-  /** Post a delegation request to the blackboard. */
-  async postDelegation(input) {
-    const now = /* @__PURE__ */ new Date();
-    const urgency = input.urgency ?? "normal";
-    const urgencyKey = `${urgency}_ms`;
-    const configTimeout = this.config.delegations?.timeouts?.[urgencyKey];
-    const timeoutMs = input.timeout_ms ?? configTimeout ?? DELEGATION_TIMEOUTS[urgency];
-    const expiresAt = new Date(now.getTime() + timeoutMs).toISOString();
-    const normalizedCapabilities = normalizeTags(input.required_capabilities);
-    const metadata = {
-      type: "delegation",
-      required_capabilities: normalizedCapabilities,
-      urgency,
-      expires_at: expiresAt,
-      timeout_ms: timeoutMs
-    };
-    const tags = [...input.tags ?? [], "delegation", urgency];
-    const { id, timestamp: timestamp2 } = await this.blackboardEngine.post({
-      entry_type: "need",
-      summary: input.summary,
-      detail: JSON.stringify(metadata),
-      tags,
-      scope: input.scope ?? "project",
-      agent_id: input.agent_id ?? "main"
-    });
-    const discovery = await this.discover({
-      required_capabilities: input.required_capabilities,
-      include_gone: false
-    });
-    return {
-      entry_id: id,
-      timestamp: timestamp2,
-      expires_at: expiresAt,
-      suggested_agents: discovery.agents
-    };
-  }
-  /**
-   * Assemble a context snapshot from active decisions and blackboard
-   * warnings/findings. Used by createHandoff when auto_snapshot is true.
-   */
-  async assembleContextSnapshot(scope) {
-    const decisionIndex = await this.decisionStore.getIndex();
-    let activeDecisions = decisionIndex.filter((d) => d.status === "active");
-    if (scope) {
-      activeDecisions = activeDecisions.filter(
-        (d) => d.scope.startsWith(scope) || scope.startsWith(d.scope)
-      );
-    }
-    const { entries: bbEntries } = await this.blackboardStore.read({
-      entry_types: ["warning", "finding"],
-      scope
-    });
-    const warnings = bbEntries.filter((e) => e.entry_type === "warning");
-    const findings = bbEntries.filter((e) => e.entry_type === "finding");
-    const decision_ids = activeDecisions.map((d) => d.id);
-    const warning_ids = warnings.map((e) => e.id);
-    const finding_ids = findings.map((e) => e.id);
-    const summaries = [];
-    for (const d of activeDecisions.slice(0, 5)) {
-      summaries.push(`Decision: ${d.summary}`);
-    }
-    for (const w of warnings.slice(0, 3)) {
-      summaries.push(`Warning: ${w.summary}`);
-    }
-    for (const f of findings.slice(0, 3)) {
-      summaries.push(`Finding: ${f.summary}`);
-    }
-    return { decision_ids, warning_ids, finding_ids, summaries };
-  }
-  /** Create a handoff record between agents. */
-  async createHandoff(input) {
-    let context_snapshot;
-    if (input.context_snapshot) {
-      context_snapshot = input.context_snapshot;
-    } else if (input.auto_snapshot !== false) {
-      context_snapshot = await this.assembleContextSnapshot(input.scope);
-    } else {
-      context_snapshot = {
-        decision_ids: [],
-        warning_ids: [],
-        finding_ids: [],
-        summaries: []
-      };
-    }
-    const record2 = await this.handoffStore.create({
-      source_agent: input.source_agent,
-      target_agent: input.target_agent,
-      scope: input.scope,
-      summary: input.summary,
-      results: input.results,
-      context_snapshot
-    });
-    const statusSummary = `Handoff created: ${input.summary}`.slice(0, 200);
-    const statusDetail = `From ${input.source_agent} to ${input.target_agent ?? "any agent"}. ${input.results.length} result(s).`;
-    await this.blackboardEngine.post({
-      entry_type: "status",
-      summary: statusSummary,
-      detail: statusDetail,
-      tags: ["handoff"],
-      scope: input.scope ?? "project",
-      agent_id: input.source_agent
-    });
-    return record2;
-  }
-  /** Acknowledge receipt of a handoff. */
-  async acknowledgeHandoff(handoffId, agentId) {
-    return this.handoffStore.acknowledge(handoffId, agentId);
-  }
-};
 
 // src/tools/coordination-tools.ts
 init_errors();
@@ -34915,6 +35142,9 @@ function createServer(projectRoot) {
   if (fullSurface) {
     registerExportTools(server, exporter);
   }
+  if (fullSurface) {
+    registerTriageTools(server, { decisionStore, blackboardStore });
+  }
   if (toolMode === "full") {
     registerLifecycleTools(
       server,
@@ -34944,8 +35174,8 @@ function createServer(projectRoot) {
 
 // src/dashboard/http-server.ts
 import http from "node:http";
-import fs23 from "node:fs/promises";
-import path29 from "node:path";
+import fs24 from "node:fs/promises";
+import path30 from "node:path";
 import { fileURLToPath } from "node:url";
 
 // src/dashboard/dashboard-config.ts
@@ -35085,6 +35315,7 @@ var AnalyticsEngine = class {
 };
 
 // src/dashboard/api-routes.ts
+init_config();
 function sendJSON(res, data, statusCode = 200) {
   const body = JSON.stringify(data);
   res.writeHead(statusCode, {
@@ -35093,6 +35324,15 @@ function sendJSON(res, data, statusCode = 200) {
   });
   res.end(body);
 }
+var EMPTY_TRIAGE_STORES = {
+  decisionStore: {
+    getIndex: async () => [],
+    get: async () => null
+  },
+  blackboardStore: {
+    read: async () => ({ entries: [], total_count: 0 })
+  }
+};
 function createApiHandler(projectRoot, deps) {
   const twiningDir = path27.join(projectRoot, ".twining");
   const blackboardStore = deps?.blackboardStore ?? new BlackboardStore(twiningDir);
@@ -35139,6 +35379,20 @@ function createApiHandler(projectRoot, deps) {
       };
     }
     return searchEngines;
+  }
+  let triageStores = deps ? {
+    decisionStore: deps.decisionStore,
+    blackboardStore: deps.blackboardStore
+  } : null;
+  function getTriageStores() {
+    if (!triageStores) {
+      const stores = createStores(twiningDir, loadConfig(twiningDir));
+      triageStores = {
+        decisionStore: stores.decisionStore,
+        blackboardStore: stores.blackboardStore
+      };
+    }
+    return triageStores;
   }
   return async (req, res) => {
     const url = req.url || "/";
@@ -35521,6 +35775,44 @@ function createApiHandler(projectRoot, deps) {
       }
       return true;
     }
+    if (url.startsWith("/api/triage")) {
+      try {
+        const parsed = new URL(url, "http://localhost");
+        if (parsed.pathname !== "/api/triage") return false;
+        const input = {};
+        const scope = parsed.searchParams.get("scope");
+        if (scope) input.scope = scope;
+        const forAgent = parsed.searchParams.get("for_agent");
+        if (forAgent) input.for_agent = forAgent;
+        const since = parsed.searchParams.get("since");
+        if (since) input.since = since;
+        const section = parsed.searchParams.get("section");
+        if (section === "all" || section === "open" || section === "recent") {
+          input.section = section;
+        }
+        const windowParam = parsed.searchParams.get("window_ms");
+        if (windowParam) {
+          const windowMs = Number(windowParam);
+          if (!Number.isNaN(windowMs)) input.window_ms = windowMs;
+        }
+        const limitParam = parsed.searchParams.get("limit");
+        if (limitParam) {
+          const limit = Number(limitParam);
+          if (!Number.isNaN(limit)) input.limit = limit;
+        }
+        if (!fs21.existsSync(twiningDir)) {
+          const zero = await buildTriage(EMPTY_TRIAGE_STORES, input);
+          sendJSON(res, { initialized: false, ...zero });
+          return true;
+        }
+        const result = await buildTriage(getTriageStores(), input);
+        sendJSON(res, { initialized: true, ...result });
+      } catch (err) {
+        console.error("[twining] API /api/triage error:", err);
+        sendJSON(res, { error: "Internal server error" }, 500);
+      }
+      return true;
+    }
     if (url === "/api/graph") {
       try {
         if (!fs21.existsSync(twiningDir)) {
@@ -35614,10 +35906,68 @@ init_blackboard_store();
 init_decision_store();
 init_graph_store();
 init_handoff_store();
-import fs22 from "node:fs";
-import path28 from "node:path";
+import fs23 from "node:fs";
+import path29 from "node:path";
 import zlib from "node:zlib";
 init_config();
+
+// src/dashboard/raw-path.ts
+import fs22 from "node:fs";
+import path28 from "node:path";
+var RAW_FILE_MAX_BYTES = 1e6;
+function resolveRawPath(projectRoot, rel) {
+  if (typeof rel !== "string" || rel.length === 0 || rel.length > 1024) return null;
+  if (path28.isAbsolute(rel) || rel.includes("\\") || rel.includes("\0")) return null;
+  const segments = rel.split("/");
+  if (segments.some((s) => s === "" || s.startsWith("."))) return null;
+  let rootReal;
+  let real;
+  try {
+    rootReal = fs22.realpathSync(projectRoot);
+    real = fs22.realpathSync(path28.resolve(rootReal, rel));
+  } catch {
+    return null;
+  }
+  if (!real.startsWith(rootReal + path28.sep)) return null;
+  try {
+    if (!fs22.statSync(real).isFile()) return null;
+  } catch {
+    return null;
+  }
+  return real;
+}
+
+// src/dashboard/repo-info.ts
+import { execFileSync as execFileSync6 } from "node:child_process";
+function remoteToWebUrl(remote) {
+  if (!remote) return null;
+  const ssh = remote.match(/^git@([^:]+):(.+?)(?:\.git)?$/);
+  if (ssh) return `https://${ssh[1]}/${ssh[2]}`;
+  const https = remote.match(/^https?:\/\/(.+?)(?:\.git)?$/);
+  if (https) return `https://${https[1]}`;
+  return null;
+}
+function computeRepoInfo(projectRoot) {
+  const run = (args) => {
+    try {
+      const out = execFileSync6("git", args, {
+        cwd: projectRoot,
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "ignore"],
+        timeout: 2e3
+      }).trim();
+      return out || null;
+    } catch {
+      return null;
+    }
+  };
+  return {
+    web_url: remoteToWebUrl(run(["remote", "get-url", "origin"])),
+    branch: run(["rev-parse", "--abbrev-ref", "HEAD"])
+  };
+}
+
+// src/dashboard/query-routes.ts
 var SUMMARY_MAX = 120;
 var HUB_LIMIT = 20;
 var DEFAULT_ENTITIES_LIMIT = 50;
@@ -35692,16 +36042,54 @@ function sendJSON2(req, res, data, status = 200) {
   }
 }
 function createQueryHandler(projectRoot, deps) {
-  const twiningDir = path28.join(projectRoot, ".twining");
+  const twiningDir = path29.join(projectRoot, ".twining");
   const blackboardStore = deps?.blackboardStore ?? new BlackboardStore(twiningDir);
   const decisionStore = deps?.decisionStore ?? new DecisionStore(twiningDir);
   const graphStore = deps?.graphStore ?? new GraphStore(twiningDir);
   const handoffStore = deps?.handoffStore ?? new HandoffStore(twiningDir);
   let healthReportCache = null;
+  let repoInfoCache = null;
   return async (req, res) => {
     const url = req.url || "/";
     const parsed = new URL(url, "http://localhost");
     const route = parsed.pathname;
+    if (route === "/api/raw") {
+      try {
+        const abs = resolveRawPath(projectRoot, parsed.searchParams.get("path") ?? "");
+        if (!abs) {
+          sendJSON2(req, res, { error: "Not found" }, 404);
+          return true;
+        }
+        if (fs23.statSync(abs).size > RAW_FILE_MAX_BYTES) {
+          sendJSON2(req, res, { error: "File too large" }, 413);
+          return true;
+        }
+        const body = fs23.readFileSync(abs);
+        res.writeHead(200, {
+          "Content-Type": "text/plain; charset=utf-8",
+          "X-Content-Type-Options": "nosniff",
+          "Cache-Control": "no-cache",
+          "Content-Length": body.length
+        });
+        res.end(body);
+      } catch (err) {
+        console.error("[twining] /api/raw error:", err);
+        sendJSON2(req, res, { error: "Internal server error" }, 500);
+      }
+      return true;
+    }
+    if (route === "/api/repo-info") {
+      try {
+        if (!repoInfoCache || Date.now() - repoInfoCache.at > HEALTH_CACHE_TTL_MS) {
+          repoInfoCache = { at: Date.now(), body: computeRepoInfo(projectRoot) };
+        }
+        sendJSON2(req, res, repoInfoCache.body);
+      } catch (err) {
+        console.error("[twining] /api/repo-info error:", err);
+        sendJSON2(req, res, { error: "Internal server error" }, 500);
+      }
+      return true;
+    }
     if (route.startsWith("/api/blackboard/")) {
       try {
         const id = route.slice("/api/blackboard/".length);
@@ -35709,7 +36097,7 @@ function createQueryHandler(projectRoot, deps) {
           sendJSON2(req, res, { error: "Blackboard entry ID required" }, 400);
           return true;
         }
-        if (!fs22.existsSync(twiningDir)) {
+        if (!fs23.existsSync(twiningDir)) {
           sendJSON2(req, res, { error: "Blackboard entry not found" }, 404);
           return true;
         }
@@ -35728,7 +36116,7 @@ function createQueryHandler(projectRoot, deps) {
     }
     if (route === "/api/index") {
       try {
-        if (!fs22.existsSync(twiningDir)) {
+        if (!fs23.existsSync(twiningDir)) {
           sendJSON2(req, res, { initialized: false, rows: [], total_counts: { blackboard: 0, decisions: { active: 0, provisional: 0, superseded: 0, overridden: 0 } }, generated_at: (/* @__PURE__ */ new Date()).toISOString() });
           return true;
         }
@@ -35774,7 +36162,7 @@ function createQueryHandler(projectRoot, deps) {
     }
     if (route === "/api/graph/summary") {
       try {
-        if (!fs22.existsSync(twiningDir)) {
+        if (!fs23.existsSync(twiningDir)) {
           sendJSON2(req, res, {
             initialized: false,
             groups: [],
@@ -35831,7 +36219,7 @@ function createQueryHandler(projectRoot, deps) {
     }
     if (route === "/api/graph/entities") {
       try {
-        if (!fs22.existsSync(twiningDir)) {
+        if (!fs23.existsSync(twiningDir)) {
           sendJSON2(req, res, { entities: [], total: 0, offset: 0 });
           return true;
         }
@@ -35884,7 +36272,7 @@ function createQueryHandler(projectRoot, deps) {
           sendJSON2(req, res, { error: "id query parameter required" }, 400);
           return true;
         }
-        if (!fs22.existsSync(twiningDir)) {
+        if (!fs23.existsSync(twiningDir)) {
           sendJSON2(req, res, { error: "Entity not found" }, 404);
           return true;
         }
@@ -36019,7 +36407,7 @@ function createQueryHandler(projectRoot, deps) {
     }
     if (route === "/api/health-report") {
       try {
-        if (!fs22.existsSync(twiningDir)) {
+        if (!fs23.existsSync(twiningDir)) {
           sendJSON2(req, res, {
             stale_decisions: [],
             unresolved_warnings: [],
@@ -36124,16 +36512,16 @@ function serveStatic(publicDir) {
     const rawPath = qIndex >= 0 ? rawUrl.slice(0, qIndex) : rawUrl;
     const decodedPath = decodeURIComponent(rawPath);
     const pathname = decodedPath === "/" ? "/index.html" : decodedPath;
-    const filePath = path29.join(publicDir, pathname);
-    const resolved = path29.resolve(filePath);
-    if (!resolved.startsWith(path29.resolve(publicDir))) {
+    const filePath = path30.join(publicDir, pathname);
+    const resolved = path30.resolve(filePath);
+    if (!resolved.startsWith(path30.resolve(publicDir))) {
       res.writeHead(403);
       res.end("Forbidden");
       return;
     }
     try {
-      const data = await fs23.readFile(resolved);
-      const ext = path29.extname(resolved);
+      const data = await fs24.readFile(resolved);
+      const ext = path30.extname(resolved);
       res.writeHead(200, {
         "Content-Type": MIME_TYPES[ext] || "application/octet-stream"
       });
@@ -36175,7 +36563,7 @@ function handleRequest(publicDir, projectRoot, deps) {
   const staticHandler = serveStatic(publicDir);
   const queryHandler = createQueryHandler(projectRoot, deps);
   const apiHandler = createApiHandler(projectRoot, deps);
-  const resolvedProjectRoot = path29.resolve(projectRoot);
+  const resolvedProjectRoot = path30.resolve(projectRoot);
   return (req, res) => {
     queryHandler(req, res).then((queryHandled) => queryHandled ? true : apiHandler(req, res)).then((handled) => {
       if (handled) return;
@@ -36207,7 +36595,7 @@ async function startDashboard(projectRoot, deps) {
   if (!config2.enabled) {
     return null;
   }
-  const resolvedRoot = path29.resolve(projectRoot);
+  const resolvedRoot = path30.resolve(projectRoot);
   if (config2.port !== 0) {
     for (let p = config2.port; p <= config2.port + DASHBOARD_PORT_RETRIES; p++) {
       if (await isExistingDashboard(p, resolvedRoot)) {
@@ -36219,14 +36607,14 @@ async function startDashboard(projectRoot, deps) {
     }
   }
   const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path29.dirname(__filename);
-  const publicDir = path29.join(__dirname, "public");
+  const __dirname = path30.dirname(__filename);
+  const publicDir = path30.join(__dirname, "public");
   const server = http.createServer(handleRequest(publicDir, projectRoot, deps));
   const port = await tryListen(server, config2.port, DASHBOARD_PORT_RETRIES);
   const url = `http://127.0.0.1:${port}`;
   console.error(`[twining] Dashboard: ${url}`);
   if (config2.autoOpen) {
-    const resolvedRoot2 = path29.resolve(projectRoot);
+    const resolvedRoot2 = path30.resolve(projectRoot);
     const skipOpen = port !== config2.port && await isExistingDashboard(config2.port, resolvedRoot2);
     if (skipOpen) {
       console.error(

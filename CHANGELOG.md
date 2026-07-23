@@ -2,7 +2,17 @@
 
 All notable changes to Twining MCP are documented here.
 
-## Plugin [1.20.1] - 2026-07-22
+## Plugin [1.21.0] - 2026-07-23
+
+### Added
+- **Dashboard Triage tab ships to plugin installs**: bundled server rebuilt with the new Triage view (see 2.4.0), the raw-file route, and repo-info remote link derivation. No hook or launcher changes.
+
+## [2.4.0] - 2026-07-23
+
+### Added
+- **`twining_triage` — a project-wide triage read-model** (spec: `docs/TRIAGE-SPEC.md`). One engine core (`buildTriage`, `src/engine/triage.ts`) behind three surfaces: a `full_surface`-gated MCP tool, `GET /api/triage`, and a dashboard **Triage** tab (the primary surface). Two buckets keyed on exit semantics: `open` (unwindowed — provisional decisions awaiting `twining_promote`/`twining_override`, plus needs/questions/warnings unresolved per the #40 `relates_to` convention, delegation expiry honored) and `recent` (windowed, `since`-cursorable — newly active decisions incl. the disagree-and-commit audit material, and `artifact` posts). Optional `for_agent` excludes an agent's own outbound posts; `counts` are pre-truncation with per-kind breakdowns and truncation-proof `irreversible` tallies. The tool surface carries a pre-declared 8-week field-data promotion/removal test (spec §6.1).
+- **Shared engine helpers extracted**: `computeResolvedIds` (`src/engine/resolution.ts`) is now the single #40 resolution predicate consumed by the archiver, auto-archive, and triage; `scopeMatches` (`src/utils/scope.ts`) unifies the six store scope filters across both backends. Behavior-preserving.
+- **Dashboard: read-only raw-file route** (`GET /api/raw?path=` — root-jailed, dotted segments denied, symlink containment, always `text/plain` + `nosniff`) and `GET /api/repo-info` for render-time remote doc links; repo-relative paths and `http(s)` URLs linkify in triage rows and detail panels; `needs-human` tag band and filter toggle in Open items.
 
 ### Changed
 - **Bundled server refresh**: `plugin/server/twining-server.mjs` rebuilt to include the migrate CLI's canonical root resolution (see 2.3.0) — `twining-mcp migrate` run through the bundled server honors `TWINING_PROJECT` and the linked-worktree redirect. No hook or launcher changes.

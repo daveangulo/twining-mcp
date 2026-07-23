@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T17:43:05.488Z",
+  "id": "01KY815SGG4XR9HD50T9NVEW4C",
+  "name": "01KY815SDSTKADSQ9P2P5XYEQE",
+  "properties": {
+    "scope": "project",
+    "summary": "Chose to release triage as 2.4.0 with its own CHANGELOG section rather than folding it into the written-but-untagged 2.3.0 worktree section"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T17:43:05.488Z"
+}

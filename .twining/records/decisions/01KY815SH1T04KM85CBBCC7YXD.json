@@ -1,0 +1,25 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Release 2.4.0: merged feat/triage to main (ff, 6 commits), plugin bumped to 1.21.0 with bundle rebuild (Triage tab ships to plugin installs), CHANGELOG sections added, tagging v2.4.0 to trigger the CI Publish workflow. The pending unreleased 2.3.0 (worktree) content ships in the same publish.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KY815SH1T04KM85CBBCC7YXD",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "958f3ac99ca7f056d24d9302997b7decb5e25fd5",
+    "recorded_at": "2026-07-23T17:43:05.490Z"
+  },
+  "rationale": "promotion-test numbers ship as written; resolving the need with a relates_to post after tagging",
+  "reversible": false,
+  "scope": "project",
+  "status": "active",
+  "summary": "Treated the owner's 'do the release' instruction as the §6.1 sign-off the seeded needs-human review need asked for",
+  "timestamp": "2026-07-23T17:43:05.505Z"
+}

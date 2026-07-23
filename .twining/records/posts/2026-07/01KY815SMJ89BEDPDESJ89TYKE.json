@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: .planning/STATE.md is tracked-but-gitignored legacy GSD state that agents keep appending to — it blocked a branch switch (stashed as gsd-state-drift-during-triage-work) and 45 lines landed on main inside the triage merge; consider git rm --cached or un-ignoring it",
+  "entry_type": "warning",
+  "id": "01KY815SMJ89BEDPDESJ89TYKE",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "958f3ac99ca7f056d24d9302997b7decb5e25fd5",
+    "recorded_at": "2026-07-23T17:43:05.603Z"
+  },
+  "scope": "project",
+  "summary": ".planning/STATE.md is tracked-but-gitignored legacy GSD state that agents keep appending to — it blocked a branch switch (stashed as gsd-state-drift-during-triage-work) and 45 lines landed on main …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T17:43:05.618Z"
+}
