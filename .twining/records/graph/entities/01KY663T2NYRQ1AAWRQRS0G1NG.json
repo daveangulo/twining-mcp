@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T00:30:54.549Z",
+  "id": "01KY663T2NYRQ1AAWRQRS0G1NG",
+  "name": "01KY663SZDK9S01JP6F3Q5PQXM",
+  "properties": {
+    "scope": "project",
+    "summary": "Chose a major.minor node gate (>= 22.13) for the bundled rung over the reviewer-flagged major-only >= 22"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T00:30:54.549Z"
+}

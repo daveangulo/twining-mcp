@@ -56,6 +56,18 @@ if [[ "$CURRENT" == "$NEW_VERSION" ]]; then
   exit 0
 fi
 
+# Rebuild the committed plugin bundle so bundle refresh and version bump
+# travel in the same commit. Keyless by construction — build-plugin-bundle.mjs
+# always bakes the empty-string PostHog key placeholder into plugin/server/,
+# regardless of working-tree state. (Also rewrites gitignored dist/ output;
+# harmless.) Runs before the version edits so a build failure aborts the bump.
+if ! command -v node >/dev/null 2>&1 || [[ ! -d "$REPO_ROOT/node_modules/esbuild" ]]; then
+  echo "Error: the bundle rebuild needs node and node_modules/esbuild — run 'npm ci' first."
+  exit 1
+fi
+echo "Rebuilding plugin bundle (keyless)..."
+(cd "$REPO_ROOT" && npm run build:plugin)
+
 # Update both files using sed (works on both macOS and Linux)
 sed -i.bak "s/\"version\": *\"$CURRENT\"/\"version\": \"$NEW_VERSION\"/" "$MARKETPLACE_JSON"
 sed -i.bak "s/\"version\": *\"$CURRENT\"/\"version\": \"$NEW_VERSION\"/" "$PLUGIN_JSON"
@@ -68,3 +80,4 @@ echo ""
 echo "Updated files:"
 echo "  .claude-plugin/marketplace.json"
 echo "  plugin/.claude-plugin/plugin.json"
+echo "  plugin/server/ (bundle rebuilt — commit alongside the version bump)"

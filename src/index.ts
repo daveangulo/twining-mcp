@@ -10,10 +10,14 @@ import { startDashboard, setupDashboardShutdown } from "./dashboard/http-server.
 import { TelemetryClient } from "./analytics/telemetry-client.js";
 import { resolveProjectRoot } from "./utils/project-root.js";
 
-// Handle --version / -v before starting the MCP server
+// Handle --version / -v before starting the MCP server.
+// __TWINING_VERSION__ is baked in by the bundle build (relocation-safe);
+// the tsc build falls back to the package.json lookup relative to dist/.
 if (process.argv.includes("--version") || process.argv.includes("-v")) {
-  const require = createRequire(import.meta.url);
-  const { version } = require("../package.json") as { version: string };
+  const version =
+    typeof __TWINING_VERSION__ !== "undefined"
+      ? __TWINING_VERSION__
+      : (createRequire(import.meta.url)("../package.json") as { version: string }).version;
   console.log(`twining-mcp ${version}`);
   process.exit(0);
 }

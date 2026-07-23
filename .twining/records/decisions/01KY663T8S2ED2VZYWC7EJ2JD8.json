@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "to fix the probe-cwd-skew nit (a profile that cd's can change where the pin rung's ./node_modules resolves during the hook's login-shell probe vs launch)",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Phase 2 shipped (plugin 1.19.0 + npm-side prep for 2.3.0): esbuild dep-free single-file server bundle (scripts/build-plugin-bundle.mjs; keyless/deterministic; 1.27MB; committed at plugin/server/twining-server.mjs + published as dist/server.bundle.mjs), __TWINING_VERSION__ baking with runtime fallback, launcher ladder now override → pin → npx → npm-prefix → global → bundled(node>=22.13) → diagnostic, CI plugin-bundle-freshness job (keyless) + publish dist-only keyed bundle step + bump-script integration, docs. Full suite 1256 passed. Also verified cmux --worktree empirically: connection fixed, store divergence remains (separate finding posted).",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KY663T8S2ED2VZYWC7EJ2JD8",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "132e39dd10429960d76f8720fe58774bb088450a",
+    "recorded_at": "2026-07-23T00:30:54.730Z"
+  },
+  "rationale": "anchoring probe cwd via CLAUDE_PROJECT_DIR is plausible but touches the hook's probe invocation after tests went green, for an edge case requiring a cd in a profile plus a project pin; recorded as decision-not-taken.",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Chose NOT to fix the probe-cwd-skew nit (a profile that cd's can change where the pin rung's ./node_modules resolves during the hook's login-shell probe vs launch)",
+  "timestamp": "2026-07-23T00:30:54.745Z"
+}

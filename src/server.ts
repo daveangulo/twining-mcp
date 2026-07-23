@@ -7,8 +7,12 @@ import { createRequire } from "node:module";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { ensureInitialized } from "./storage/init.js";
 
-const require = createRequire(import.meta.url);
-const { version: PKG_VERSION } = require("../package.json") as { version: string };
+// __TWINING_VERSION__ is baked in by the bundle build (relocation-safe);
+// the tsc build falls back to the package.json lookup relative to dist/.
+const PKG_VERSION =
+  typeof __TWINING_VERSION__ !== "undefined"
+    ? __TWINING_VERSION__
+    : (createRequire(import.meta.url)("../package.json") as { version: string }).version;
 import { formatVersionRefusal, loadConfig } from "./config.js";
 import { enterReadOnlyMode } from "./storage/file-store.js";
 import { createStores } from "./storage/backend-factory.js";

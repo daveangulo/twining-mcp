@@ -57,6 +57,36 @@ jobs:
       - name: Enforce plugin token budget
         run: bash scripts/measure-plugin-tokens.sh --ci
 
+  plugin-bundle-freshness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Keyless by construction: build-plugin-bundle.mjs swaps the generated
+      # PostHog key module for the empty-string placeholder, so this rebuild
+      # reproduces the committed bundle byte-for-byte. Do NOT pass the
+      # POSTHOG_API_KEY secret here — a keyed rebuild would always diff.
+      - name: Rebuild plugin bundle (keyless)
+        run: npm run build:plugin
+
+      - name: Verify committed bundle is fresh
+        run: |
+          if [[ -n "$(git status --porcelain -- plugin/server/)" ]]; then
+            echo "::error::plugin/server/ is stale — run 'npm run build:plugin' and commit the result."
+            git status --porcelain -- plugin/server/
+            git diff --stat -- plugin/server/
+            exit 1
+          fi
+          echo "Committed plugin bundle is up to date."
+
   build-and-test:
     runs-on: ubuntu-latest
     timeout-minutes: 10

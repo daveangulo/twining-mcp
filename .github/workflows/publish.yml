@@ -44,6 +44,19 @@ jobs:
         env:
           POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
 
+      # dist/server.bundle.mjs ships in the npm tarball (package.json
+      # "files" includes dist). --dist-only mirrors dist/index.js key
+      # handling: the injected key is bundled in. The committed
+      # plugin/server/ bundle stays keyless — this mode never writes it,
+      # and the git diff tripwire fails the job if that ever changes.
+      - name: Build server bundle (dist only, keyed)
+        run: |
+          node scripts/inject-posthog-key.mjs
+          node scripts/build-plugin-bundle.mjs --dist-only
+          git diff --exit-code -- plugin/server/
+        env:
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+
       - run: npm test
 
       - name: Verify package contents

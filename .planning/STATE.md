@@ -247,6 +247,11 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Chose to collapse the hook's launcher-missing legacy branch into the corrected no-node warning rather than keep the legacy text
 - Chose to shape-validate NODE_VERSION (^v[0-9.]+$ via POSIX case) in the launcher
 - Chose NOT to adopt the reviewer's $0-positional quoting hardening for the launcher path (defends against quotes/backticks/$ in the plugin root path)
+- Chose a major.minor node gate (>= 22.13) for the bundled rung over the reviewer-flagged major-only >= 22
+- Chose file-existence cascade for a dangling TWINING_SERVER_JS override over fail-loud exec
+- Chose the npm version lifecycle hook (build:plugin + git add plugin/server) to prevent the release-flow trap where a package.json version bump strands a stale committed bundle
+- Chose NOT to fix the probe-cwd-skew nit (a profile that cd's can change where the pin rung's ./node_modules resolves during the hook's login-shell probe vs launch)
+- Chose to deliver the cmux worktree store-divergence fix as a recommendation rather than implement it now
 
 ### Pending Todos
 

@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200" width="800" height="200">
+  <defs>
+    <linearGradient id="thread1" x1="0%" y1="30%" x2="100%" y2="70%">
+      <stop offset="0%" stop-color="#E8913A"/>
+      <stop offset="100%" stop-color="#F0A54E"/>
+    </linearGradient>
+    <linearGradient id="thread2" x1="0%" y1="30%" x2="100%" y2="70%">
+      <stop offset="0%" stop-color="#2B8C8C"/>
+      <stop offset="100%" stop-color="#3AADA5"/>
+    </linearGradient>
+    <linearGradient id="thread3" x1="0%" y1="30%" x2="100%" y2="70%">
+      <stop offset="0%" stop-color="#4A6FA5"/>
+      <stop offset="100%" stop-color="#5E85BD"/>
+    </linearGradient>
+  </defs>
+
+  <!-- The Mark: Three intertwined threads -->
+  <g>
+    <!-- Thread 1 - Blue (back) -->
+    <path d="M 5,100 C 25,56 40,56 60,100 C 80,144 95,144 115,100 C 135,56 150,56 170,100"
+          fill="none" stroke="url(#thread3)" stroke-width="14" stroke-linecap="round" opacity="0.7"/>
+
+    <!-- Thread 2 - Amber (middle) -->
+    <path d="M 10,110 C 30,66 45,66 65,110 C 85,154 100,154 120,110 C 140,66 155,66 175,110"
+          fill="none" stroke="url(#thread1)" stroke-width="14" stroke-linecap="round"/>
+
+    <!-- Thread 3 - Teal (front, weaving segments) -->
+    <path d="M 0,90 C 20,134 35,134 55,90"
+          fill="none" stroke="url(#thread2)" stroke-width="14" stroke-linecap="round"/>
+    <path d="M 55,90 C 75,46 90,46 110,90"
+          fill="none" stroke="url(#thread2)" stroke-width="14" stroke-linecap="round" opacity="0.55"/>
+    <path d="M 110,90 C 130,134 145,134 165,90"
+          fill="none" stroke="url(#thread2)" stroke-width="14" stroke-linecap="round"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="200" y="125" font-family="'Avenir Next', 'Nunito Sans', 'Segoe UI', sans-serif" font-size="72" font-weight="600" letter-spacing="4" fill="#1A2332">
+    twining
+  </text>
+
+  <!-- Tagline -->
+  <text x="203" y="160" font-family="'Avenir Next', 'Nunito Sans', 'Segoe UI', sans-serif" font-size="15" font-weight="400" letter-spacing="5" fill="#6B7D93">
+    SEPARATE THREADS, STRONGER TOGETHER
+  </text>
+</svg>

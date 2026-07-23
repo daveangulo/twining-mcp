@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Twining Dashboard</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/icon-512.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="vendor/cytoscape.min.js" defer></script>
+  <script src="app.js" defer></script>
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <!-- Session ended overlay (shown when server disconnects) -->
+  <div id="session-overlay" class="session-overlay" style="display:none">
+    <div class="session-overlay-content">
+      <div class="session-overlay-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="15" y1="9" x2="9" y2="15"/>
+          <line x1="9" y1="9" x2="15" y2="15"/>
+        </svg>
+      </div>
+      <h2>Session Ended</h2>
+      <p>The Twining MCP server has disconnected.</p>
+      <p class="session-overlay-hint">You can close this tab.</p>
+    </div>
+  </div>
+
+  <header class="app-header">
+    <div class="header-left">
+      <div class="header-brand">
+        <img src="assets/favicon.svg" alt="Twining" width="24" height="24" class="header-logo">
+        <h1 id="dashboard-title">Twining Dashboard</h1>
+      </div>
+      <div class="header-status">
+        <div class="connection-status">
+          <span class="status-dot" id="connection-dot"></span>
+          <span id="connection-text">Connecting...</span>
+        </div>
+        <div class="poll-status">
+          <span class="status-dot" id="poll-dot"></span>
+          <span id="poll-text">Starting...</span>
+        </div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="global-scope-filter">
+        <label>Scope</label>
+        <div id="scope-breadcrumb" class="sn-breadcrumb"></div>
+      </div>
+      <button id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
+        <span id="theme-icon">&#9789;</span>
+      </button>
+      <a href="https://github.com/daveangulo/twining-mcp" target="_blank" rel="noopener noreferrer" class="github-link" title="View on GitHub">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      </a>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="stats">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Stats
+    </button>
+    <button class="tab-btn" data-tab="blackboard">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Blackboard
+    </button>
+    <button class="tab-btn" data-tab="decisions">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Decisions
+    </button>
+    <button class="tab-btn" data-tab="graph">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><line x1="8.5" y1="7.5" x2="15.5" y2="16.5"/><line x1="15.5" y1="7.5" x2="8.5" y2="16.5"/></svg>
+      Graph
+    </button>
+    <button class="tab-btn" data-tab="search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Search
+    </button>
+    <button class="tab-btn" data-tab="agents">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Agents
+    </button>
+    <button class="tab-btn" data-tab="insights">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Insights
+    </button>
+  </nav>
+
+  <div class="search-bar">
+    <div class="search-input-group">
+      <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search-input" placeholder="Search across all data..." />
+      <button id="search-clear-btn" class="search-clear-icon" title="Clear search" aria-label="Clear search" style="display:none">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="search-filters">
+      <div class="search-type-chips" id="search-type-chips">
+        <button class="search-chip active" data-type="blackboard">Blackboard</button>
+        <button class="search-chip active" data-type="decisions">Decisions</button>
+        <button class="search-chip active" data-type="entities">Entities</button>
+      </div>
+      <span class="search-filters-divider"></span>
+      <select id="filter-status" title="Filter by status">
+        <option value="">Any status</option>
+        <option value="active">Active</option>
+        <option value="provisional">Provisional</option>
+        <option value="superseded">Superseded</option>
+        <option value="overridden">Overridden</option>
+      </select>
+      <div class="search-date-group">
+        <label class="search-date-label">From</label>
+        <input type="date" id="filter-since" title="From date" />
+      </div>
+      <div class="search-date-group">
+        <label class="search-date-label">To</label>
+        <input type="date" id="filter-until" title="Until date" />
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <!-- Stats Tab -->
+    <div class="tab-content" id="tab-stats" style="display:block">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-blue">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-label">Blackboard Entries</div>
+            <div class="stat-value" id="stat-bb-entries">--</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-green">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-label">Active Decisions</div>
+            <div class="stat-value" id="stat-active-decisions">--</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-amber">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-label">Provisional</div>
+            <div class="stat-value" id="stat-provisional-decisions">--</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-cyan">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><line x1="8.5" y1="7.5" x2="15.5" y2="16.5"/></svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-label">Graph Entities</div>
+            <div class="stat-value" id="stat-graph-entities">--</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-purple">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-label">Graph Relations</div>
+            <div class="stat-value" id="stat-graph-relations">--</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-muted">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-label">Last Activity</div>
+            <div class="stat-value stat-value-sm" id="stat-last-activity">--</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-teal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-label">Registered Agents</div>
+            <div class="stat-value" id="stat-registered-agents">--</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-green">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-label">Active Agents</div>
+            <div class="stat-value" id="stat-active-agents">--</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-amber">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-label">Pending Delegations</div>
+            <div class="stat-value" id="stat-pending-delegations">--</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-purple">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-label">Total Handoffs</div>
+            <div class="stat-value" id="stat-total-handoffs">--</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-section">
+        <h2 class="stats-section-title">Activity Breakdown</h2>
+        <div id="activity-breakdown" class="activity-breakdown"></div>
+      </div>
+
+      <div class="stats-section">
+        <h2 class="stats-section-title">Recent Activity</h2>
+        <div id="recent-activity" class="recent-activity"></div>
+      </div>
+
+      <div id="uninitialized-msg" style="display:none">No data yet. Twining will populate as agents use MCP tools.</div>
+    </div>
+
+    <!-- Blackboard Tab -->
+    <div class="tab-content" id="tab-blackboard" style="display:none">
+      <div class="view-toggle" id="blackboard-view-toggle">
+        <button class="view-btn active" data-view="table" data-tab="blackboard">Table</button>
+        <button class="view-btn" data-view="stream" data-tab="blackboard">Stream</button>
+      </div>
+      <div class="view-table" id="blackboard-table-view">
+        <div class="content-area">
+          <div class="list-panel">
+            <div id="blackboard-listview"></div>
+          </div>
+          <div class="detail-panel" id="blackboard-detail">
+            <p class="placeholder">Select an entry to view details</p>
+          </div>
+        </div>
+      </div>
+      <div class="view-visual" id="blackboard-stream-view" style="display:none">
+        <div class="stream-toolbar">
+          <div class="stream-type-filters" id="stream-type-filters"></div>
+        </div>
+        <div class="content-area">
+          <div class="list-panel">
+            <div class="stream-container" id="stream-container"></div>
+          </div>
+          <div class="detail-panel" id="blackboard-stream-detail">
+            <p class="placeholder">Select a card to view details</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decisions Tab -->
+    <div class="tab-content" id="tab-decisions" style="display:none">
+      <div class="view-toggle" id="decisions-view-toggle">
+        <button class="view-btn active" data-view="table" data-tab="decisions">Table</button>
+        <button class="view-btn" data-view="timeline" data-tab="decisions">Timeline</button>
+      </div>
+      <div class="view-table" id="decisions-table-view">
+        <div class="content-area">
+          <div class="list-panel">
+            <div id="decisions-listview"></div>
+          </div>
+          <div class="detail-panel" id="decisions-detail">
+            <p class="placeholder">Select a decision to view details</p>
+          </div>
+        </div>
+      </div>
+      <div class="view-visual" id="decisions-timeline-view" style="display:none">
+        <div class="timeline-toolbar">
+          <div class="timeline-domain-filters" id="timeline-domain-filters"></div>
+          <div class="timeline-controls">
+            <button id="timeline-zoom-in" title="Zoom in" aria-label="Zoom in">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            </button>
+            <button id="timeline-zoom-out" title="Zoom out" aria-label="Zoom out">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            </button>
+            <span class="timeline-controls-divider"></span>
+            <button id="timeline-fit" title="Fit all items" aria-label="Fit all items">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
+            </button>
+            <button id="timeline-today" title="Jump to now" aria-label="Jump to now">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="content-area">
+          <div class="list-panel">
+            <div id="timeline-container"></div>
+            <div id="timeline-legend" class="timeline-legend"></div>
+            <div id="timeline-synced-list"></div>
+          </div>
+          <div class="detail-panel" id="decisions-timeline-detail">
+            <p class="placeholder">Select a timeline item to view details</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Graph Tab -->
+    <div class="tab-content" id="tab-graph" style="display:none">
+      <div class="view-toggle" id="graph-view-toggle">
+        <button class="view-btn active" data-view="table" data-tab="graph">Table</button>
+        <button class="view-btn" data-view="visual" data-tab="graph">Visual</button>
+      </div>
+      <div class="view-table" id="graph-table-view">
+        <div class="content-area">
+          <div class="list-panel">
+            <table class="data-table" id="graph-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Degree</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <div class="pagination" id="graph-pagination"></div>
+            <p id="graph-relations-info"></p>
+          </div>
+          <div class="detail-panel" id="graph-detail">
+            <p class="placeholder">Select an entity to view details</p>
+          </div>
+        </div>
+      </div>
+      <div class="view-visual" id="graph-visual-view" style="display:none">
+        <div class="graph-toolbar">
+          <div class="graph-type-filters" id="graph-type-filters"></div>
+          <div class="graph-toolbar-controls">
+            <button id="graph-zoom-in" title="Zoom in" aria-label="Zoom in">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            </button>
+            <button id="graph-zoom-out" title="Zoom out" aria-label="Zoom out">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            </button>
+            <span class="graph-toolbar-divider"></span>
+            <button id="graph-fit" title="Fit to screen" aria-label="Fit to screen">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
+            </button>
+            <button id="graph-reset" title="Reset layout" aria-label="Reset layout">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="content-area">
+          <div class="list-panel">
+            <div id="graph-canvas"></div>
+            <div class="graph-legend" id="graph-legend"></div>
+          </div>
+          <div class="detail-panel" id="graph-visual-detail">
+            <p class="placeholder">Click a node to view details</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Tab -->
+    <div class="tab-content" id="tab-search" style="display:none">
+      <div id="search-status-bar"></div>
+      <div class="content-area">
+        <div class="list-panel">
+          <table class="data-table" id="search-table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Summary / Name</th>
+                <th>Scope</th>
+                <th>Relevance</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div class="pagination" id="search-pagination"></div>
+        </div>
+        <div class="detail-panel" id="search-detail">
+          <p class="placeholder">Click a search result to view details</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agents Tab -->
+    <div class="tab-content" id="tab-agents" style="display:none">
+      <div class="view-toggle" id="agents-view-toggle">
+        <button class="view-btn active" data-view="agents-list" data-tab="agents">Agents</button>
+        <button class="view-btn" data-view="delegations" data-tab="agents">Delegations</button>
+        <button class="view-btn" data-view="handoffs" data-tab="agents">Handoffs</button>
+      </div>
+
+      <div class="view-table" id="agents-list-view">
+        <div class="content-area">
+          <div class="list-panel">
+            <table class="data-table" id="agents-table">
+              <thead>
+                <tr>
+                  <th class="sortable-header" data-sort-key="agent_id">Agent ID</th>
+                  <th class="sortable-header" data-sort-key="liveness">Status</th>
+                  <th class="sortable-header" data-sort-key="role">Role</th>
+                  <th>Capabilities</th>
+                  <th class="sortable-header" data-sort-key="last_active">Last Active</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <div class="pagination" id="agents-pagination"></div>
+          </div>
+          <div class="detail-panel" id="agents-detail">
+            <p class="placeholder">Select an agent to view details</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="view-visual" id="delegations-view" style="display:none">
+        <div class="content-area">
+          <div class="list-panel">
+            <table class="data-table" id="delegations-table">
+              <thead>
+                <tr>
+                  <th class="sortable-header" data-sort-key="timestamp">Timestamp</th>
+                  <th class="sortable-header" data-sort-key="urgency">Urgency</th>
+                  <th class="sortable-header" data-sort-key="summary">Summary</th>
+                  <th>Required Capabilities</th>
+                  <th class="sortable-header" data-sort-key="expired">Status</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <div class="pagination" id="delegations-pagination"></div>
+          </div>
+          <div class="detail-panel" id="delegations-detail">
+            <p class="placeholder">Select a delegation to view details</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="view-visual" id="handoffs-view" style="display:none">
+        <div class="content-area">
+          <div class="list-panel">
+            <table class="data-table" id="handoffs-table">
+              <thead>
+                <tr>
+                  <th class="sortable-header" data-sort-key="created_at">Created</th>
+                  <th class="sortable-header" data-sort-key="source_agent">Source</th>
+                  <th class="sortable-header" data-sort-key="target_agent">Target</th>
+                  <th class="sortable-header" data-sort-key="summary">Summary</th>
+                  <th class="sortable-header" data-sort-key="result_status">Result</th>
+                  <th class="sortable-header" data-sort-key="acknowledged">Ack</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <div class="pagination" id="handoffs-pagination"></div>
+          </div>
+          <div class="detail-panel" id="handoffs-detail">
+            <p class="placeholder">Select a handoff to view details</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Insights Tab -->
+    <div class="tab-content" id="tab-insights" style="display:none">
+      <h3 class="insights-heading">Health</h3>
+      <div id="health-cards" class="insights-grid"></div>
+      <h3 class="insights-heading">Value Metrics</h3>
+      <div class="insights-grid">
+        <div class="insight-card">
+          <div class="insight-icon insight-icon-shield">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="insight-label">Blind Decisions Prevented</div>
+          <div class="insight-value" id="insight-prevention-rate">--</div>
+          <div class="insight-detail" id="insight-prevention-detail"></div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-icon insight-icon-warning">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div class="insight-label">Warnings Surfaced</div>
+          <div class="insight-value" id="insight-warnings-total">--</div>
+          <div class="insight-detail" id="insight-warnings-detail"></div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-icon insight-icon-check">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div class="insight-label">Test Coverage</div>
+          <div class="insight-value" id="insight-test-coverage">--</div>
+          <div class="insight-detail" id="insight-test-detail"></div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-icon insight-icon-link">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </div>
+          <div class="insight-label">Commit Traceability</div>
+          <div class="insight-value" id="insight-traceability">--</div>
+          <div class="insight-detail" id="insight-traceability-detail"></div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-icon insight-icon-chart">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <div class="insight-label">Decision Lifecycle</div>
+          <div class="insight-value" id="insight-lifecycle">--</div>
+          <div class="insight-detail" id="insight-lifecycle-detail"></div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-icon insight-icon-graph">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><line x1="8.5" y1="7.5" x2="15.5" y2="16.5"/></svg>
+          </div>
+          <div class="insight-label">Knowledge Graph</div>
+          <div class="insight-value" id="insight-graph">--</div>
+          <div class="insight-detail" id="insight-graph-detail"></div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-icon insight-icon-handshake">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          </div>
+          <div class="insight-label">Agent Coordination</div>
+          <div class="insight-value" id="insight-coordination">--</div>
+          <div class="insight-detail" id="insight-coordination-detail"></div>
+        </div>
+      </div>
+
+      <h3 class="insights-heading">Tool Usage</h3>
+      <div id="insights-tool-usage">
+        <table class="data-table" id="tool-usage-table">
+          <thead>
+            <tr>
+              <th>Tool</th>
+              <th>Calls</th>
+              <th>Errors</th>
+              <th>Avg (ms)</th>
+              <th>P95 (ms)</th>
+              <th>Last Called</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <h3 class="insights-heading">Error Breakdown</h3>
+      <div id="insights-errors">
+        <table class="data-table" id="error-breakdown-table">
+          <thead>
+            <tr>
+              <th>Tool</th>
+              <th>Error Code</th>
+              <th>Count</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <p class="placeholder" id="no-errors-msg" style="display:none">No errors recorded</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Twining MCP Server</p>
+  </footer>
+</body>
+</html>

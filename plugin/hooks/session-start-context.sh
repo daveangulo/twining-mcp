@@ -32,8 +32,8 @@ if [[ -d "$TWINING_DIR/.sessions" ]]; then
 fi
 
 # The bundled server spawns through plugin/scripts/launch-server.sh, which
-# recovers the login-shell PATH itself (rung cascade: npx -> npm-prefix ->
-# global). Probe the SAME
+# recovers the login-shell PATH itself (rung cascade: override -> pin ->
+# npx -> npm-prefix -> global -> bundled). Probe the SAME
 # launcher here to mirror the server spawn exactly: only when the launcher
 # resolves no runner is the server genuinely absent. Gates would be
 # unsatisfiable then; warn instead (fail open). The warning must carry the
@@ -46,7 +46,7 @@ RUNNER="none"
 NODE_V="none"
 if [[ -n "$HOOK_DIR" && -f "$LAUNCHER" ]]; then
   # Probe-line contract (see launch-server.sh — never change its shape):
-  #   runner=<npx|npm-prefix|global|none> node=<version|none>
+  #   runner=<override|pin|npx|npm-prefix|global|bundled|none> node=<version|none>
   PROBE="$(sh -lc "\"$LAUNCHER\" --probe" 2>/dev/null || true)"
   # Login-shell profiles may echo to stdout ahead of the probe output; the
   # probe line is always the LAST line of the substitution, so keep only it.

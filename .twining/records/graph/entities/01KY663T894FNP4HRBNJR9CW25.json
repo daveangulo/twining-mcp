@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T00:30:54.729Z",
+  "id": "01KY663T894FNP4HRBNJR9CW25",
+  "name": "01KY663T6060R8NAPCVAHVD1JB",
+  "properties": {
+    "scope": "project",
+    "summary": "Chose the npm version lifecycle hook (build:plugin + git add plugin/server) to prevent the release-flow trap where a package.json version bump strands a stale committed bundle"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T00:30:54.729Z"
+}

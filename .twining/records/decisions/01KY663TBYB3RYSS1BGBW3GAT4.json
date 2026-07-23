@@ -1,0 +1,38 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "implement it now",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "decided unilaterally",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Phase 2 shipped (plugin 1.19.0 + npm-side prep for 2.3.0): esbuild dep-free single-file server bundle (scripts/build-plugin-bundle.mjs; keyless/deterministic; 1.27MB; committed at plugin/server/twining-server.mjs + published as dist/server.bundle.mjs), __TWINING_VERSION__ baking with runtime fallback, launcher ladder now override → pin → npx → npm-prefix → global → bundled(node>=22.13) → diagnostic, CI plugin-bundle-freshness job (keyless) + publish dist-only keyed bundle step + bump-script integration, docs. Full suite 1256 passed. Also verified cmux --worktree empirically: connection fixed, store divergence remains (separate finding posted).",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KY663TBYB3RYSS1BGBW3GAT4",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "132e39dd10429960d76f8720fe58774bb088450a",
+    "recorded_at": "2026-07-23T00:30:54.831Z"
+  },
+  "rationale": "worktree-aware resolveProjectRoot changes store-resolution semantics and raises an unsettled design question (shared record sentinel across teammates could let one teammate's record satisfy another's commit gate); flagged for Dave with effort estimate rather than decided unilaterally.",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Chose to deliver the cmux worktree store-divergence fix as a recommendation rather than implement it now",
+  "timestamp": "2026-07-23T00:30:54.846Z"
+}

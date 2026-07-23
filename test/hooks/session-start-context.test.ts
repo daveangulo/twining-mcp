@@ -111,10 +111,10 @@ describe("session-start-context.sh", () => {
     expect(payload.hookSpecificOutput.additionalContext).not.toContain(EXPECTED_CONTEXT_FRAGMENT);
   });
 
-  it("emits the npm-less-distro warning with the node version when node exists but npm/npx do not", () => {
+  it("emits the gates when node exists but npm/npx do not (bundled rung rescues the npm-less distro)", () => {
     fs.mkdirSync(path.join(dir, ".twining"));
-    // sh + node but no npm tree and no npx: the launcher probe reports
-    // runner=none with a real node version (Debian/Alpine-style distro).
+    // sh + node but no npm tree and no npx: the launcher probe now reports
+    // runner=bundled (the plugin ships a server bundle), so the gates apply.
     const shimDir = makeShim(["bash", "dirname", "cat", "sh", "node"]);
     const result = runHook({
       script: "session-start-context.sh",
@@ -124,9 +124,33 @@ describe("session-start-context.sh", () => {
     expect(result.exitCode).toBe(0);
     const payload = JSON.parse(result.stdout);
     const ctx = payload.hookSpecificOutput.additionalContext;
+    expect(ctx).toContain(EXPECTED_CONTEXT_FRAGMENT);
+    expect(ctx).toContain("Gate 1");
+    expect(ctx).not.toContain("MCP server unavailable");
+  });
+
+  it("emits the node-found warning with the probed version when node is too old for the bundle", () => {
+    fs.mkdirSync(path.join(dir, ".twining"));
+    // Fake node answering --version with v18.19.0: too old for the bundled
+    // rung, and no npm/npx/global — the probe reports runner=none with a
+    // node version, so the hook must warn (with the version interpolated)
+    // and suppress the gates.
+    const shimDir = makeShim(["bash", "dirname", "cat", "sh"]);
+    fs.writeFileSync(
+      path.join(shimDir, "node"),
+      '#!/bin/sh\nif [ "$1" = "--version" ]; then echo "v18.19.0"; exit 0; fi\nexit 1\n',
+      { mode: 0o755 },
+    );
+    const result = runHook({
+      script: "session-start-context.sh",
+      env: { PATH: shimDir, HOME: makeLoginHome(shimDir) },
+      cwd: dir,
+    });
+    expect(result.exitCode).toBe(0);
+    const payload = JSON.parse(result.stdout);
+    const ctx = payload.hookSpecificOutput.additionalContext;
     expect(ctx).toContain("MCP server unavailable");
-    expect(ctx).toContain(process.version); // interpolated real node version
-    expect(ctx).toContain("npm");
+    expect(ctx).toContain("v18.19.0"); // interpolated probed node version
     expect(ctx).toContain("TWINING_DISABLED");
     expect(ctx).not.toContain("Gate 1");
     expect(ctx).not.toContain(EXPECTED_CONTEXT_FRAGMENT);

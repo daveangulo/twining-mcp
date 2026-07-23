@@ -25,12 +25,21 @@ interface ScriptResult {
   stderr: string;
 }
 
+interface RunOptions {
+  /** Working directory for the spawn (the pin rung resolves against cwd). */
+  cwd?: string;
+  /** Alternate launcher path (for copies exercising $0-relative lookup). */
+  script?: string;
+}
+
 function runScript(
   args: string[],
   envPath: string,
   extraEnv: Record<string, string> = {},
+  opts: RunOptions = {},
 ): ScriptResult {
-  const result = spawnSync("sh", [SCRIPT, ...args], {
+  const result = spawnSync("sh", [opts.script ?? SCRIPT, ...args], {
+    cwd: opts.cwd,
     env: {
       PATH: envPath,
       HOME: process.env.HOME ?? "",
@@ -77,6 +86,51 @@ function makeShim(utils: string[]): string {
   return shim;
 }
 
+/**
+ * Copy of the launcher in a temp dir mimicking the plugin layout
+ * (scripts/ + optional server/twining-server.mjs), so the $0-relative
+ * bundle lookup resolves against a controllable sibling — and so the
+ * bundle can be a stub or absent entirely.
+ */
+function makePluginLayout(bundleContent?: string): string {
+  const layout = path.join(dir, "plugin-copy");
+  fs.mkdirSync(path.join(layout, "scripts"), { recursive: true });
+  const script = path.join(layout, "scripts", "launch-server.sh");
+  fs.copyFileSync(SCRIPT, script);
+  if (bundleContent !== undefined) {
+    fs.mkdirSync(path.join(layout, "server"), { recursive: true });
+    fs.writeFileSync(
+      path.join(layout, "server", "twining-server.mjs"),
+      bundleContent,
+    );
+  }
+  return script;
+}
+
+/** Temp cwd containing a project-pinned node_modules/twining-mcp install. */
+function makePinCwd(): string {
+  const cwd = path.join(dir, "pin-project");
+  const dist = path.join(cwd, "node_modules", "twining-mcp", "dist");
+  fs.mkdirSync(dist, { recursive: true });
+  fs.writeFileSync(
+    path.join(dist, "index.js"),
+    'process.stdout.write("PIN-OK\\n");\n',
+  );
+  return cwd;
+}
+
+/**
+ * Fake node executable that only answers --version with the given string —
+ * lets tests simulate a node too old for the bundled server.
+ */
+function fakeNodeInShim(shim: string, version: string): void {
+  fs.writeFileSync(
+    path.join(shim, "node"),
+    `#!/bin/sh\nif [ "$1" = "--version" ]; then echo "${version}"; exit 0; fi\nexit 1\n`,
+    { mode: 0o755 },
+  );
+}
+
 describe("launch-server.sh --probe", () => {
   it("resolves runner=npx on a full inherited PATH", () => {
     const result = runScript(["--probe"], process.env.PATH ?? "");
@@ -84,13 +138,92 @@ describe("launch-server.sh --probe", () => {
     expect(result.stdout).toMatch(/^runner=npx node=v/);
   });
 
-  it("resolves runner=none with real node version when only sh+node exist", () => {
-    // Shim dir has no ../lib/node_modules tree, so the npm-prefix rung
-    // must not fire; npx and twining-mcp are absent.
+  it("resolves runner=override when TWINING_SERVER_JS is set and node works", () => {
+    const stub = path.join(dir, "custom-server.js");
+    fs.writeFileSync(stub, 'process.stdout.write("OVERRIDE-OK\\n");\n');
+    const shim = makeShim(["sh", "node"]);
+    const result = runScript(["--probe"], shim, { TWINING_SERVER_JS: stub });
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toMatch(/^runner=override node=v/);
+  });
+
+  it("resolves runner=pin from a project-local node_modules install", () => {
+    const shim = makeShim(["sh", "node"]);
+    const result = runScript(["--probe"], shim, {}, { cwd: makePinCwd() });
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toMatch(/^runner=pin node=v/);
+  });
+
+  it("ranks pin above a working npx in the same shim", () => {
+    const shim = makeShim(["sh", "node"]);
+    fs.writeFileSync(
+      path.join(shim, "npx"),
+      "#!/bin/sh\necho 10.0.0\nexit 0\n",
+      { mode: 0o755 },
+    );
+    const result = runScript(["--probe"], shim, {}, { cwd: makePinCwd() });
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toMatch(/^runner=pin node=v/);
+  });
+
+  it("resolves runner=bundled when only sh+node exist (real bundle ships with the plugin)", () => {
+    // Shim dir has no npx / npm tree / twining-mcp, so rungs 1-3 cannot
+    // fire; the real launcher finds the real bundle via $0.
     const shim = makeShim(["sh", "node"]);
     const result = runScript(["--probe"], shim);
     expect(result.exitCode).toBe(0);
+    expect(result.stdout).toMatch(/^runner=bundled node=v\d+\.\d+\.\d+\n$/);
+  });
+
+  it("resolves runner=bundled through the $0-relative lookup in a copied plugin layout", () => {
+    const script = makePluginLayout('process.stdout.write("BUNDLED-OK\\n");\n');
+    const shim = makeShim(["sh", "node"]);
+    const result = runScript(["--probe"], shim, {}, { script });
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toMatch(/^runner=bundled node=v/);
+  });
+
+  it("resolves runner=none with real node version when the bundle is absent (copied layout without server/)", () => {
+    const script = makePluginLayout(); // no server/ sibling
+    const shim = makeShim(["sh", "node"]);
+    const result = runScript(["--probe"], shim, {}, { script });
+    expect(result.exitCode).toBe(0);
     expect(result.stdout).toMatch(/^runner=none node=v\d+\.\d+\.\d+\n$/);
+  });
+
+  it("ranks global above bundled — bundled is only reached when rungs 1-3 are absent", () => {
+    const script = makePluginLayout('process.stdout.write("BUNDLED-OK\\n");\n');
+    const shim = makeShim(["sh", "node"]);
+    fs.writeFileSync(
+      path.join(shim, "twining-mcp"),
+      "#!/bin/sh\nexit 0\n",
+      { mode: 0o755 },
+    );
+    const result = runScript(["--probe"], shim, {}, { script });
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toMatch(/^runner=global node=v/);
+  });
+
+  it("ranks npx above bundled", () => {
+    const script = makePluginLayout('process.stdout.write("BUNDLED-OK\\n");\n');
+    const shim = makeShim(["sh", "node"]);
+    fs.writeFileSync(
+      path.join(shim, "npx"),
+      "#!/bin/sh\necho 10.0.0\nexit 0\n",
+      { mode: 0o755 },
+    );
+    const result = runScript(["--probe"], shim, {}, { script });
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toMatch(/^runner=npx node=v/);
+  });
+
+  it("skips the bundled rung when node is older than 22 (runner=none)", () => {
+    const script = makePluginLayout('process.stdout.write("BUNDLED-OK\\n");\n');
+    const shim = makeShim(["sh"]);
+    fakeNodeInShim(shim, "v18.19.0");
+    const result = runScript(["--probe"], shim, {}, { script });
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toBe("runner=none node=v18.19.0\n");
   });
 
   it("resolves runner=npm-prefix from a <prefix>/bin + <prefix>/lib/node_modules layout", () => {
@@ -142,7 +275,7 @@ describe("launch-server.sh --probe", () => {
     expect(result.exitCode).toBe(0);
     expect(result.stdout).not.toContain("welcome");
     expect(result.stdout).toMatch(
-      /^runner=(npx|npm-prefix|global|none) node=\S+\n$/,
+      /^runner=(override|pin|npx|npm-prefix|global|bundled|none) node=\S+\n$/,
     );
   });
 });
@@ -157,14 +290,55 @@ describe("launch-server.sh launch mode", () => {
     expect(result.stderr).toContain("restart Claude Code");
   });
 
-  it("exits 127 with the npm-less-distro hint when node exists but nothing else", () => {
+  it("exits 127 with the npm-less-distro hint when node exists but nothing else and the bundle is absent", () => {
+    // Copied layout without server/ — with the real launcher the bundled
+    // rung would fire here instead.
+    const script = makePluginLayout();
     const shim = makeShim(["sh", "node"]);
-    const result = runScript([], shim);
+    const result = runScript([], shim, {}, { script });
     expect(result.exitCode).toBe(127);
     expect(result.stdout).toBe(""); // stdout purity
     expect(result.stderr).toContain("npm");
     expect(result.stderr).toContain("apt install nodejs");
     expect(result.stderr).toContain("restart Claude Code");
+  });
+
+  it("exits 127 naming the found version and the >= 22.13 requirement when node is too old for the bundle", () => {
+    const script = makePluginLayout('process.stdout.write("BUNDLED-OK\\n");\n');
+    const shim = makeShim(["sh"]);
+    fakeNodeInShim(shim, "v18.19.0");
+    const result = runScript([], shim, {}, { script });
+    expect(result.exitCode).toBe(127);
+    expect(result.stdout).toBe(""); // stdout purity
+    expect(result.stderr).toContain("v18.19.0");
+    expect(result.stderr).toContain(">= 22.13");
+  });
+
+  it("execs the bundled server with pure stdout and a one-line stderr notice", () => {
+    const script = makePluginLayout('process.stdout.write("BUNDLED-OK\\n");\n');
+    const shim = makeShim(["sh", "node"]);
+    const result = runScript([], shim, {}, { script });
+    expect(result.exitCode).toBe(0);
+    // Exactly the stub bundle's output — the launcher wrote nothing to stdout.
+    expect(result.stdout).toBe("BUNDLED-OK\n");
+    expect(result.stderr).toContain("plugin-bundled server");
+    expect(result.stderr).toContain("keyword-fallback");
+  });
+
+  it("execs the TWINING_SERVER_JS override, passing its stdout through untouched", () => {
+    const stub = path.join(dir, "custom-server.js");
+    fs.writeFileSync(stub, 'process.stdout.write("OVERRIDE-OK\\n");\n');
+    const shim = makeShim(["sh", "node"]);
+    const result = runScript([], shim, { TWINING_SERVER_JS: stub });
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toBe("OVERRIDE-OK\n");
+  });
+
+  it("execs a project-pinned server, passing its stdout through untouched", () => {
+    const shim = makeShim(["sh", "node"]);
+    const result = runScript([], shim, {}, { cwd: makePinCwd() });
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toBe("PIN-OK\n");
   });
 
   it("execs a global twining-mcp, passing its stdout through untouched", () => {

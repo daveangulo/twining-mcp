@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "fail-loud exec",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Phase 2 shipped (plugin 1.19.0 + npm-side prep for 2.3.0): esbuild dep-free single-file server bundle (scripts/build-plugin-bundle.mjs; keyless/deterministic; 1.27MB; committed at plugin/server/twining-server.mjs + published as dist/server.bundle.mjs), __TWINING_VERSION__ baking with runtime fallback, launcher ladder now override → pin → npx → npm-prefix → global → bundled(node>=22.13) → diagnostic, CI plugin-bundle-freshness job (keyless) + publish dist-only keyed bundle step + bump-script integration, docs. Full suite 1256 passed. Also verified cmux --worktree empirically: connection fixed, store divergence remains (separate finding posted).",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01KY663T373K86PWGJWAZNXYH4",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "132e39dd10429960d76f8720fe58774bb088450a",
+    "recorded_at": "2026-07-23T00:30:54.551Z"
+  },
+  "rationale": "keeps --probe and launch in agreement (the probe-says-healthy-but-launch-dies pattern is the exact bug class this work eliminates); a dev debugging an override can still see the cascade in --probe output.",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Chose file-existence cascade for a dangling TWINING_SERVER_JS override over fail-loud exec",
+  "timestamp": "2026-07-23T00:30:54.567Z"
+}

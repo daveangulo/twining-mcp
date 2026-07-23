@@ -163,26 +163,29 @@ Fix (macOS/Linux): wrap the server command in a login shell so `PATH` is rebuilt
 
 A login shell only fixes *off-PATH* `npx` — some environments have `node` with no npm/npx at all. Common cases: Debian/Ubuntu's `nodejs` apt package (npm is a separate package there), Alpine's `nodejs` apk (same), Amazon Linux 2023 when the `nodejs-npm` subpackage isn't installed, nix's `nodejs-slim` (deliberately npm-free), and version-manager shims (nvm/asdf/volta) left pointing at a removed install.
 
-**What the plugin does automatically (since 1.18.0):** the bundled server launches through `plugin/scripts/launch-server.sh`, which tries three rungs in order instead of assuming `npx`:
+**Since plugin 1.19.0, node-only environments work fully — offline included.** The bundled server launches through `plugin/scripts/launch-server.sh`, which walks a resolution ladder and execs the first rung that works:
 
-1. `npx` from the login-shell `PATH` — the normal case;
-2. npm's `npx-cli.js` resolved relative to the `node` binary itself (`<node bin>/../lib/node_modules/npm/bin/npx-cli.js`) — this self-heals broken version-manager shims and installs where npm exists but isn't on `PATH`;
-3. a globally installed `twining-mcp`, if present.
+1. **`TWINING_SERVER_JS` override** — set it to any server entry point and the script runs `node "$TWINING_SERVER_JS"` directly. Beats every other rung; intended for development builds and unusual layouts.
+2. **Project pin** — `./node_modules/twining-mcp/dist/index.js` (relative to the project root), if the project has `twining-mcp` installed locally (`npm i -D twining-mcp`). A project pin outranks the npm rungs *and* the plugin's bundled copy, so a project can hold its server version independent of plugin updates.
+3. `npx` from the login-shell `PATH` — the normal case;
+4. npm's `npx-cli.js` resolved relative to the `node` binary itself (`<node bin>/../lib/node_modules/npm/bin/npx-cli.js`) — this self-heals broken version-manager shims and installs where npm exists but isn't on `PATH`;
+5. a globally installed `twining-mcp`, if present;
+6. **the plugin-bundled server** — a dependency-free single-file bundle shipped with the plugin, run directly with `node` (requires Node >= 22). No npm, no npx, no network: a bare distro Node is enough for a fully working server, offline included. On this rung semantic search degrades to keyword mode, announced with a one-line stderr notice.
 
-If all three rungs fail, the script exits 127 with distro-specific guidance on stderr instead of failing silently, and the plugin's SessionStart hook probes the same script (`--probe`) so the session gets an explicit warning that distinguishes "Node present but npm missing" from "no Node at all".
+Only when every rung fails — no Node at all, or Node too old for the bundle — does the script exit 127 with guidance on stderr, and the plugin's SessionStart hook (which probes the same script via `--probe`) injects an explicit warning into the session. In that state the commit gate still applies in initialized checkouts (a `.twining/` directory exists but no server is reachable); bypass a blocked commit in the interim with:
 
-**What still requires action:** a distro Node genuinely without npm has nothing for the ladder to find — install npm alongside it:
+```bash
+TWINING_DISABLED=true git commit ...
+```
+
+**Full semantic search still needs the real npm package** (the bundle ships without the embedding dependency). On a distro Node without npm, install npm alongside it:
 
 - Debian/Ubuntu: `sudo apt install npm`
 - Alpine: `apk add npm`
 - Amazon Linux 2023: `sudo dnf install nodejs-npm` (versioned streams use e.g. `nodejs22-npm`)
 - or reinstall Node from [nodejs.org](https://nodejs.org), which bundles npm
 
-Until npm is installed, the commit gate still applies in initialized checkouts (a `.twining/` directory exists but no server is reachable). Bypass a blocked commit in the interim with:
-
-```bash
-TWINING_DISABLED=true git commit ...
-```
+Once npm is present the ladder resolves the full package via `npx` automatically; running `npm i -D twining-mcp` in the project additionally pins it (rung 2) so the server version is under project control.
 
 Manual MCP-only installs (the `.mcp.json` snippets above) are unaffected — they point at `npx` directly, as before.
 

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T00:30:54.830Z",
+  "id": "01KY663TBEN9HCD9BRD7YJK5FM",
+  "name": "01KY663T8S2ED2VZYWC7EJ2JD8",
+  "properties": {
+    "scope": "project",
+    "summary": "Chose NOT to fix the probe-cwd-skew nit (a profile that cd's can change where the pin rung's ./node_modules resolves during the hook's login-shell probe vs launch)"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T00:30:54.830Z"
+}

@@ -17,6 +17,8 @@
     "prebuild": "node scripts/inject-posthog-key.mjs",
     "pretest": "node scripts/inject-posthog-key.mjs",
     "build": "tsc",
+    "build:plugin": "node scripts/build-plugin-bundle.mjs",
+    "version": "npm run build:plugin && git add plugin/server",
     "postbuild": "rm -rf dist/dashboard/public && cp -r src/dashboard/public dist/dashboard/public",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -75,6 +77,7 @@
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^25.2.3",
     "@types/proper-lockfile": "^4.1.4",
+    "esbuild": "0.28.1",
     "vitest": "^4.0.18"
   }
 }

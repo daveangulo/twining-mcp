@@ -3,19 +3,33 @@
 #
 # Resolution rungs, probed by EXECUTION (not just `command -v`, so broken
 # version-manager shims — asdf/volta/fnm — are cascaded past):
-#   1. npx        — `npx --version` succeeds
-#                     -> exec npx -y $PKG_SPEC
-#   2. npm-prefix — node on PATH and npm's bundled npx CLI exists at
-#                   <node bin dir>/../lib/node_modules/npm/bin/npx-cli.js
-#                   (Homebrew/nvm layouts; covers npm installed but npx
-#                   not linked)
-#                     -> exec node <npx-cli.js> -y $PKG_SPEC
-#   3. global     — `twining-mcp` on PATH (prior `npm install -g`)
-#                     -> exec twining-mcp
-#   4. none       — diagnostics to stderr, exit 127
+#   0a. override   — TWINING_SERVER_JS (non-empty) names a server entry
+#                    point and node works
+#                      -> exec node "$TWINING_SERVER_JS"
+#   0b. pin        — the project pins the server:
+#                    ./node_modules/twining-mcp/dist/index.js exists
+#                    (relative to cwd) and node works. A project pin always
+#                    outranks the plugin's bundled copy AND the npm rungs.
+#                      -> exec node <pin>
+#   1. npx         — `npx --version` succeeds
+#                      -> exec npx -y $PKG_SPEC
+#   2. npm-prefix  — node on PATH and npm's bundled npx CLI exists at
+#                    <node bin dir>/../lib/node_modules/npm/bin/npx-cli.js
+#                    (Homebrew/nvm layouts; covers npm installed but npx
+#                    not linked)
+#                      -> exec node <npx-cli.js> -y $PKG_SPEC
+#   3. global      — `twining-mcp` on PATH (prior `npm install -g`)
+#                      -> exec twining-mcp
+#   4. bundled     — the plugin ships a single-file server bundle at
+#                    <script dir>/../server/twining-server.mjs; used when
+#                    node works and is >= 22 but no npm/npx/global install
+#                    exists. One stderr notice line, then exec.
+#                      -> exec node <bundle>
+#   5. none        — diagnostics to stderr, exit 127 (only reachable with
+#                    no node at all, or node too old for the bundle)
 #
 # "--probe" (first arg) prints EXACTLY one line to stdout:
-#     runner=<npx|npm-prefix|global|none> node=<version|none>
+#     runner=<override|pin|npx|npm-prefix|global|bundled|none> node=<version|none>
 # and always exits 0. This line is a parsing contract consumed by
 # plugin/hooks/session-start-context.sh — never change its shape.
 #
@@ -57,9 +71,56 @@ if command -v node >/dev/null 2>&1; then
   esac
 fi
 
+# Major/minor version, parsed with parameter expansion only (NODE_VERSION may
+# be "none"); 0 when unparseable so numeric comparisons stay safe.
+NODE_MAJOR="${NODE_VERSION#v}"
+NODE_MAJOR="${NODE_MAJOR%%.*}"
+case "$NODE_MAJOR" in
+  ""|*[!0-9]*) NODE_MAJOR=0 ;;
+esac
+NODE_MINOR="${NODE_VERSION#v}"
+NODE_MINOR="${NODE_MINOR#*.}"
+NODE_MINOR="${NODE_MINOR%%.*}"
+case "$NODE_MINOR" in
+  ""|*[!0-9]*) NODE_MINOR=0 ;;
+esac
+
+# The bundled server needs node >= 22.13 (node:sqlite backend; matches the
+# package engines floor) — a major-only gate would let 22.0-22.12 silently
+# fall back to the files backend.
+BUNDLE_NODE_OK=0
+if [ "$NODE_MAJOR" -gt 22 ] || { [ "$NODE_MAJOR" -eq 22 ] && [ "$NODE_MINOR" -ge 13 ]; }; then
+  BUNDLE_NODE_OK=1
+fi
+
+# Plugin-bundled server, located relative to this script ($0 always carries
+# a slash here — .mcp.json and the probe callers use a path — but fall back
+# to "." for a bare-name invocation).
+case "$0" in
+  */*) SCRIPT_DIR="${0%/*}" ;;
+  *)   SCRIPT_DIR="." ;;
+esac
+BUNDLE="$SCRIPT_DIR/../server/twining-server.mjs"
+
+# Project-pinned server install, relative to cwd (the project root when
+# Claude Code spawns MCP servers).
+PIN="./node_modules/twining-mcp/dist/index.js"
+
 RUNNER=none
 NPX_CLI=""
 resolve_runner() {
+  # Rung 0a: explicit override. The file check keeps probe and launch in
+  # agreement — a dangling override path cascades instead of probing healthy
+  # and then dying at launch.
+  if [ -n "${TWINING_SERVER_JS:-}" ] && [ -f "$TWINING_SERVER_JS" ] && [ "$NODE_VERSION" != none ]; then
+    RUNNER=override
+    return
+  fi
+  # Rung 0b: project-pinned install wins over everything else.
+  if [ -f "$PIN" ] && [ "$NODE_VERSION" != none ]; then
+    RUNNER=pin
+    return
+  fi
   # Rung 1: working npx on PATH.
   if command -v npx >/dev/null 2>&1 && npx --version >/dev/null 2>&1; then
     RUNNER=npx
@@ -80,6 +141,12 @@ resolve_runner() {
     RUNNER=global
     return
   fi
+  # Rung 4: the plugin-bundled server (needs node >= 22.13; older node falls
+  # through to the rung-5 diagnostic).
+  if [ -f "$BUNDLE" ] && [ "$BUNDLE_NODE_OK" -eq 1 ]; then
+    RUNNER=bundled
+    return
+  fi
   RUNNER=none
 }
 
@@ -91,27 +158,48 @@ if [ "$MODE" = probe ]; then
 fi
 
 case "$RUNNER" in
+  override)   exec node "$TWINING_SERVER_JS" ;;
+  pin)        exec node "$PIN" ;;
   npx)        exec npx -y "$PKG_SPEC" ;;
   npm-prefix) exec node "$NPX_CLI" -y "$PKG_SPEC" ;;
   global)     exec twining-mcp ;;
+  bundled)
+    echo "twining-mcp: using the plugin-bundled server (npm/npx not found). Semantic search runs in keyword-fallback mode; install npm, then 'npm i -D twining-mcp' in the project to restore full mode." >&2
+    exec node "$BUNDLE"
+    ;;
 esac
 
-# Rung 4: nothing usable — explain to stderr and exit 127.
+# Rung 5: nothing usable — explain to stderr and exit 127. Reachable with no
+# node at all, node too old for the bundled server, or the plugin's bundled
+# server file missing (broken plugin install).
 {
   echo "twining-mcp: cannot launch the MCP server."
   echo ""
   if [ "$NODE_VERSION" != none ]; then
     echo "Node.js $NODE_VERSION was found at: $(command -v node)"
-    echo "but there is no way to run npm packages: npx is not on PATH, npm is"
-    echo "not installed alongside node, and no global twining-mcp install was"
-    echo "found."
-    echo ""
-    echo "Your Node.js distribution ships without npm (common with Debian/Ubuntu"
-    echo "'apt install nodejs', Alpine, and Amazon Linux). Fix with one of:"
-    echo "  sudo apt install npm"
-    echo "  sudo apk add npm"
-    echo "  sudo dnf install nodejs-npm"
-    echo "or reinstall Node.js from https://nodejs.org"
+    if [ "$BUNDLE_NODE_OK" -eq 0 ]; then
+      echo "but it is too old: Node.js >= 22.13 is required to run the"
+      echo "plugin-bundled server, and no npx/npm/global twining-mcp install"
+      echo "was found either."
+      echo ""
+      echo "Upgrade Node.js from https://nodejs.org (or via your version"
+      echo "manager: nvm install 22 / volta install node@22)."
+    else
+      echo "but there is no way to run npm packages: npx is not on PATH, npm is"
+      echo "not installed alongside node, and no global twining-mcp install was"
+      echo "found."
+      echo ""
+      echo "Your Node.js distribution ships without npm (common with Debian/Ubuntu"
+      echo "'apt install nodejs', Alpine, and Amazon Linux). Fix with one of:"
+      echo "  sudo apt install npm"
+      echo "  sudo apk add npm"
+      echo "  sudo dnf install nodejs-npm"
+      echo "or reinstall Node.js from https://nodejs.org"
+      echo ""
+      echo "Note: the plugin's bundled fallback server is also missing at:"
+      echo "  $BUNDLE"
+      echo "Reinstalling the twining plugin restores it."
+    fi
   else
     echo "Node.js was not found on PATH."
     echo "Install Node.js >= 22.13 from https://nodejs.org (or fix the PATH"

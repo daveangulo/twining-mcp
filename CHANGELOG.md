@@ -2,6 +2,17 @@
 
 All notable changes to Twining MCP are documented here.
 
+## Plugin [1.19.0] - 2026-07-22
+
+### Added
+- **Launcher ladder gains a project-pin rung and a plugin-bundled fallback server**. `launch-server.sh` now resolves, in order: `TWINING_SERVER_JS` override (names any server entry point, exec'd directly with `node`) > project pin (`./node_modules/twining-mcp/dist/index.js`, relative to the project root — `npm i -D twining-mcp` lets a project hold its server version independent of plugin updates; outranks every npm rung and the plugin's own copy) > `npx` > npm-prefix `npx-cli.js` > global `twining-mcp` > **plugin-bundled dependency-free server** (a committed single-file esbuild bundle at `plugin/server/twining-server.mjs`, run directly with `node`; requires Node >= 22). The bundled rung means node-only environments — Debian/Ubuntu `nodejs`, Alpine, AL2023 without `nodejs-npm`, nix `nodejs-slim` — now get a fully working server with no npm, no npx, and no network. Semantic search degrades to keyword mode on that rung, announced with a one-line stderr notice; `npm i -D twining-mcp` in the project restores full mode (and moves resolution to the pin rung). The exit-127 diagnostic is now reachable only with no Node at all or Node too old for the bundle, and the SessionStart `--probe` contract extends to `runner=<override|pin|npx|npm-prefix|global|bundled|none>`.
+
+## [2.3.0] - 2026-07-22
+
+### Added
+- **`dist/server.bundle.mjs` ships in the npm tarball** — the dependency-free single-file server bundle built by `scripts/build-plugin-bundle.mjs`, byte-identical to the copy the plugin commits at `plugin/server/twining-server.mjs`. `node node_modules/twining-mcp/dist/server.bundle.mjs` is a supported direct launch when npm/npx availability or startup cost matters. Externalized dependencies degrade gracefully at runtime: semantic search falls back to keyword mode without `@huggingface/transformers`, telemetry no-ops without `posthog-node`, and dashboard auto-open is skipped without `open`.
+- **Server version is baked into the bundle at build time** (`__TWINING_VERSION__` esbuild define), so the relocated single-file server reports the correct version without a `package.json` beside it.
+
 ## Plugin [1.18.0] - 2026-07-22
 
 ### Changed

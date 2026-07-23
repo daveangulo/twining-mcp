@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="t1" x1="0%" y1="30%" x2="100%" y2="70%">
+      <stop offset="0%" stop-color="#E8913A"/>
+      <stop offset="100%" stop-color="#F0A54E"/>
+    </linearGradient>
+    <linearGradient id="t2" x1="0%" y1="30%" x2="100%" y2="70%">
+      <stop offset="0%" stop-color="#2B8C8C"/>
+      <stop offset="100%" stop-color="#3AADA5"/>
+    </linearGradient>
+    <linearGradient id="t3" x1="0%" y1="30%" x2="100%" y2="70%">
+      <stop offset="0%" stop-color="#4A6FA5"/>
+      <stop offset="100%" stop-color="#5E85BD"/>
+    </linearGradient>
+    <clipPath id="clip">
+      <rect width="128" height="128" rx="24" ry="24"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="128" height="128" rx="24" ry="24" fill="#0F1923"/>
+
+  <!-- Three twined threads - properly centered and scaled to fill -->
+  <g clip-path="url(#clip)">
+    <!-- Thread 1 - Blue (back layer) -->
+    <path d="M -10,64 C 10,20 25,20 45,64 C 65,108 80,108 100,64 C 120,20 135,20 155,64"
+          fill="none" stroke="url(#t3)" stroke-width="16" stroke-linecap="round" opacity="0.7"/>
+
+    <!-- Thread 2 - Amber (middle layer) -->
+    <path d="M -5,74 C 15,30 30,30 50,74 C 70,118 85,118 105,74 C 125,30 140,30 160,74"
+          fill="none" stroke="url(#t1)" stroke-width="16" stroke-linecap="round"/>
+
+    <!-- Thread 3 - Teal (front, segmented for weaving over/under) -->
+    <!-- Over segment 1 -->
+    <path d="M -15,54 C 5,98 20,98 40,54"
+          fill="none" stroke="url(#t2)" stroke-width="16" stroke-linecap="round"/>
+    <!-- Under segment (behind others - lower opacity) -->
+    <path d="M 40,54 C 60,10 75,10 95,54"
+          fill="none" stroke="url(#t2)" stroke-width="16" stroke-linecap="round" opacity="0.55"/>
+    <!-- Over segment 2 -->
+    <path d="M 95,54 C 115,98 130,98 150,54"
+          fill="none" stroke="url(#t2)" stroke-width="16" stroke-linecap="round"/>
+  </g>
+</svg>
