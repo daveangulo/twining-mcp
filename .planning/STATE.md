@@ -258,6 +258,8 @@ All v1.4 decisions archived in PROJECT.md Key Decisions table with outcomes.
 - Chose last-occurrence marker cut (lastIndexOf / single-% strip) plus non-empty worktree name requirement in both implementations
 - Chose to document TWINING_PROJECT placement as terminal/session env only
 - Recorded follow-up, not fixed: src/migrate/cli.ts derives its own project root (own --project parse, no TWINING_PROJECT, not worktree-aware)
+- Chose to keep the migrate CLI's own strict argument loop and only source the DEFAULT root from resolveProjectRoot (called with empty argv) rather than delegating --project parsing to the resolver
+- Chose a plugin patch bump (1.20.1) for the bundle refresh
 
 ### Pending Todos
 

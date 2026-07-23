@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Post-commit wrap-up after 8cc23e8 (worktree-aware root resolution, plugin 1.20.0): only edits since the record-and-commit were to the out-of-repo auto-memory — project_cmux_worktree_store_divergence.md rewritten from open-design-question to RESOLVED (fixed in 8cc23e8; settings.json env route still broken upstream; migrate CLI worktree-awareness still open) and the MEMORY.md index line updated to match. No repo files changed since the push.",
+  "entry_type": "status",
+  "id": "01KY68SR3747ANHP83MT1RAEQH",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8cc23e841ad98665f77eba4d6db363f2e07776c4",
+    "recorded_at": "2026-07-23T01:17:50.555Z"
+  },
+  "scope": "project",
+  "summary": "Post-commit wrap-up after 8cc23e8 (worktree-aware root resolution, plugin 1.20.0): only edits since the record-and-commit were to the out-of-repo auto-memory — project_cmux_worktree_store_divergenc…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-23T01:17:50.567Z"
+}

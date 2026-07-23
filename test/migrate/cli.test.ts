@@ -1,6 +1,7 @@
 // test/migrate/cli.test.ts
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createRequire } from "node:module";
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -200,5 +201,90 @@ describe.skipIf(HAS_SQLITE)("runMigrateCli without node:sqlite (Node 18/20 CI le
     const code = await runMigrateCli(["--project", projectRoot]);
     expect(code).toBe(2);
     expect(errors.join("\n")).toMatch(/node:sqlite is unavailable/);
+  });
+});
+
+// Root resolution (#worktrees): the CLI defaults through resolveProjectRoot,
+// so TWINING_PROJECT and the linked-worktree redirect behave exactly as they
+// do for the server. Explicit --project stays verbatim (covered above).
+describe.skipIf(!HAS_SQLITE)("runMigrateCli root resolution", () => {
+  const cleanups: string[] = [];
+  let savedCwd: string;
+  let savedProject: string | undefined;
+  let savedLocal: string | undefined;
+
+  beforeEach(() => {
+    savedCwd = process.cwd();
+    savedProject = process.env.TWINING_PROJECT;
+    savedLocal = process.env.TWINING_WORKTREE_LOCAL;
+  });
+  afterEach(() => {
+    process.chdir(savedCwd);
+    if (savedProject === undefined) delete process.env.TWINING_PROJECT;
+    else process.env.TWINING_PROJECT = savedProject;
+    if (savedLocal === undefined) delete process.env.TWINING_WORKTREE_LOCAL;
+    else process.env.TWINING_WORKTREE_LOCAL = savedLocal;
+    for (const dir of cleanups.splice(0)) fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  function git(cwd: string, ...args: string[]) {
+    const r = spawnSync(
+      "git",
+      ["-c", "user.email=t@t", "-c", "user.name=t", ...args],
+      { cwd, encoding: "utf8" },
+    );
+    if (r.status !== 0) throw new Error(`git ${args.join(" ")}: ${r.stderr}`);
+  }
+
+  function seedTwiningFixture(root: string) {
+    const twiningDir = path.join(root, ".twining");
+    fs.mkdirSync(path.join(twiningDir, "decisions"), { recursive: true });
+    fs.writeFileSync(path.join(twiningDir, "decisions", "index.json"), "[]");
+    fs.writeFileSync(path.join(twiningDir, "config.yml"), yaml.dump({ version: 1 }));
+  }
+
+  /** main checkout with a committed .twining fixture + a linked worktree. */
+  function makeWorktree(): { main: string; wt: string } {
+    const base = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "twining-cli-wt-")));
+    cleanups.push(base);
+    const main = path.join(base, "main");
+    fs.mkdirSync(main);
+    seedTwiningFixture(main);
+    git(main, "init");
+    git(main, "add", "-A");
+    git(main, "commit", "-m", "fixture");
+    const wt = path.join(base, "wt");
+    git(main, "worktree", "add", wt, "HEAD");
+    return { main, wt };
+  }
+
+  it("honors TWINING_PROJECT when no --project is given", async () => {
+    process.env.TWINING_PROJECT = projectRoot;
+    await seedOnePost();
+    const elsewhere = fs.mkdtempSync(path.join(os.tmpdir(), "twining-cli-else-"));
+    cleanups.push(elsewhere);
+    process.chdir(elsewhere);
+    const code = await runMigrateCli([]);
+    expect(code).toBe(0);
+    expect(fs.existsSync(path.join(projectRoot, ".twining", "twining.db"))).toBe(true);
+  });
+
+  it("redirects a linked-worktree cwd to the main checkout's store", async () => {
+    const { main, wt } = makeWorktree();
+    process.chdir(wt);
+    const code = await runMigrateCli([]);
+    expect(code).toBe(0);
+    expect(fs.existsSync(path.join(main, ".twining", "twining.db"))).toBe(true);
+    expect(fs.existsSync(path.join(wt, ".twining", "twining.db"))).toBe(false);
+  });
+
+  it("keeps the worktree-local store under TWINING_WORKTREE_LOCAL=true", async () => {
+    const { main, wt } = makeWorktree();
+    process.env.TWINING_WORKTREE_LOCAL = "true";
+    process.chdir(wt);
+    const code = await runMigrateCli([]);
+    expect(code).toBe(0);
+    expect(fs.existsSync(path.join(wt, ".twining", "twining.db"))).toBe(true);
+    expect(fs.existsSync(path.join(main, ".twining", "twining.db"))).toBe(false);
   });
 });

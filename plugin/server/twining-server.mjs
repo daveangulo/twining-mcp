@@ -13244,6 +13244,49 @@ var init_record_ingest = __esm({
   }
 });
 
+// src/utils/project-root.ts
+import fs24 from "node:fs";
+import path30 from "node:path";
+function resolveWorktreeMain(dir) {
+  try {
+    const dotGit = path30.join(dir, ".git");
+    if (!fs24.statSync(dotGit).isFile()) return null;
+    const firstLine = fs24.readFileSync(dotGit, "utf8").split("\n")[0] ?? "";
+    if (!firstLine.startsWith("gitdir: ")) return null;
+    const rawGitdir = firstLine.slice("gitdir: ".length).replace(/\r$/, "");
+    if (!rawGitdir) return null;
+    const gitdir = path30.resolve(dir, rawGitdir);
+    const marker = `${path30.sep}.git${path30.sep}worktrees${path30.sep}`;
+    const markerIndex = gitdir.lastIndexOf(marker);
+    if (markerIndex === -1) return null;
+    const mainRoot = gitdir.slice(0, markerIndex);
+    if (!mainRoot) return null;
+    if (!fs24.statSync(mainRoot).isDirectory()) return null;
+    return mainRoot;
+  } catch {
+    return null;
+  }
+}
+function resolveProjectRoot(argv, env, cwd) {
+  const argIndex = argv.indexOf("--project");
+  if (argIndex !== -1 && argv[argIndex + 1]) {
+    return argv[argIndex + 1];
+  }
+  const fromEnv = env["TWINING_PROJECT"];
+  if (fromEnv && fromEnv.trim().length > 0) {
+    return path30.resolve(cwd, fromEnv);
+  }
+  if (env["TWINING_WORKTREE_LOCAL"] === "true") {
+    return cwd;
+  }
+  return resolveWorktreeMain(cwd) ?? cwd;
+}
+var init_project_root = __esm({
+  "src/utils/project-root.ts"() {
+    "use strict";
+  }
+});
+
 // src/migrate/config-edit.ts
 import fs25 from "node:fs";
 import path31 from "node:path";
@@ -13729,7 +13772,7 @@ __export(cli_exports, {
   runMigrateCli: () => runMigrateCli
 });
 async function runMigrateCli(argv) {
-  let projectRoot = process.cwd();
+  let projectRoot = resolveProjectRoot([], process.env, process.cwd());
   let dryRun = false;
   let check2 = false;
   let reverse = false;
@@ -13820,6 +13863,7 @@ var init_cli = __esm({
     "use strict";
     init_forward();
     init_reverse();
+    init_project_root();
     USAGE = "usage: twining-mcp migrate [--project <dir>] [--dry-run] [--check] [--reverse]";
   }
 });
@@ -36310,45 +36354,8 @@ var TelemetryClient = class {
   }
 };
 
-// src/utils/project-root.ts
-import fs24 from "node:fs";
-import path30 from "node:path";
-function resolveWorktreeMain(dir) {
-  try {
-    const dotGit = path30.join(dir, ".git");
-    if (!fs24.statSync(dotGit).isFile()) return null;
-    const firstLine = fs24.readFileSync(dotGit, "utf8").split("\n")[0] ?? "";
-    if (!firstLine.startsWith("gitdir: ")) return null;
-    const rawGitdir = firstLine.slice("gitdir: ".length).replace(/\r$/, "");
-    if (!rawGitdir) return null;
-    const gitdir = path30.resolve(dir, rawGitdir);
-    const marker = `${path30.sep}.git${path30.sep}worktrees${path30.sep}`;
-    const markerIndex = gitdir.lastIndexOf(marker);
-    if (markerIndex === -1) return null;
-    const mainRoot = gitdir.slice(0, markerIndex);
-    if (!mainRoot) return null;
-    if (!fs24.statSync(mainRoot).isDirectory()) return null;
-    return mainRoot;
-  } catch {
-    return null;
-  }
-}
-function resolveProjectRoot(argv, env, cwd) {
-  const argIndex = argv.indexOf("--project");
-  if (argIndex !== -1 && argv[argIndex + 1]) {
-    return argv[argIndex + 1];
-  }
-  const fromEnv = env["TWINING_PROJECT"];
-  if (fromEnv && fromEnv.trim().length > 0) {
-    return path30.resolve(cwd, fromEnv);
-  }
-  if (env["TWINING_WORKTREE_LOCAL"] === "true") {
-    return cwd;
-  }
-  return resolveWorktreeMain(cwd) ?? cwd;
-}
-
 // src/index.ts
+init_project_root();
 if (process.argv.includes("--version") || process.argv.includes("-v")) {
   const version2 = true ? "2.2.0" : createRequire(import.meta.url)("../package.json").version;
   console.log(`twining-mcp ${version2}`);

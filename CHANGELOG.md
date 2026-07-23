@@ -2,6 +2,11 @@
 
 All notable changes to Twining MCP are documented here.
 
+## Plugin [1.20.1] - 2026-07-22
+
+### Changed
+- **Bundled server refresh**: `plugin/server/twining-server.mjs` rebuilt to include the migrate CLI's canonical root resolution (see 2.3.0) — `twining-mcp migrate` run through the bundled server honors `TWINING_PROJECT` and the linked-worktree redirect. No hook or launcher changes.
+
 ## Plugin [1.20.0] - 2026-07-22
 
 ### Changed
@@ -17,6 +22,7 @@ All notable changes to Twining MCP are documented here.
 ### Added
 - **`dist/server.bundle.mjs` ships in the npm tarball** — the dependency-free single-file server bundle built by `scripts/build-plugin-bundle.mjs`, byte-identical to the copy the plugin commits at `plugin/server/twining-server.mjs`. `node node_modules/twining-mcp/dist/server.bundle.mjs` is a supported direct launch when npm/npx availability or startup cost matters. Externalized dependencies degrade gracefully at runtime: semantic search falls back to keyword mode without `@huggingface/transformers`, telemetry no-ops without `posthog-node`, and dashboard auto-open is skipped without `open`.
 - **Server version is baked into the bundle at build time** (`__TWINING_VERSION__` esbuild define), so the relocated single-file server reports the correct version without a `package.json` beside it.
+- **`twining-mcp migrate` uses the canonical root resolution**. The migrate CLI previously derived its own project root (cwd + its own `--project` parse); it now defaults through the same resolver as the server, so `TWINING_PROJECT` and the linked-worktree redirect apply to migrations too — a migrate run inside a worktree targets the store the server actually uses. Explicit `--project` still wins verbatim.
 - **Worktree-aware project-root resolution**. When the cwd-default project root is a linked git worktree — its `.git` is a `gitdir:` file whose target contains a `/.git/worktrees/` segment — the server resolves to the **main checkout's** root, so agent teammates spawned into worktrees (`claude-teams --worktree`) share one coordination store instead of forking it (teammate records were invisible to the main session). Applies only when the root comes from cwd: `--project` and `TWINING_PROJECT` are never redirected. `TWINING_WORKTREE_LOCAL=true` opts out and keeps a worktree-local store. Submodules (`gitdir:` into `.git/modules/`) are unaffected; resolution never throws and falls back to cwd if the main root doesn't exist. Shared-store gate semantics are identical to multiple sessions in one directory (one `.last-record` sentinel). Companion plugin release 1.20.0 mirrors the resolution in all hooks.
 
 ## Plugin [1.18.0] - 2026-07-22

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-23T01:26:30.104Z",
+  "id": "01KY699KER23DP7EZSZZM73PPS",
+  "name": "01KY699KD46HB8V1H3BH8MZKCA",
+  "properties": {
+    "scope": "project",
+    "summary": "Chose to keep the migrate CLI's own strict argument loop and only source the DEFAULT root from resolveProjectRoot (called with empty argv) rather than delegating --project parsing to the resolver"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-23T01:26:30.104Z"
+}

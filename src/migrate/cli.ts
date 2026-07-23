@@ -11,12 +11,17 @@
  */
 import { migrateForward, type MigrateReport } from "./forward.js";
 import { migrateReverse } from "./reverse.js";
+import { resolveProjectRoot } from "../utils/project-root.js";
 
 const USAGE =
   "usage: twining-mcp migrate [--project <dir>] [--dry-run] [--check] [--reverse]";
 
 export async function runMigrateCli(argv: string[]): Promise<number> {
-  let projectRoot = process.cwd();
+  // Default root via the canonical resolver — TWINING_PROJECT and the
+  // linked-worktree redirect apply here exactly as they do for the server,
+  // so a migrate run inside a worktree targets the same store the server
+  // uses. An explicit --project below still wins verbatim.
+  let projectRoot = resolveProjectRoot([], process.env, process.cwd());
   let dryRun = false;
   let check = false;
   let reverse = false;
