@@ -1,0 +1,48 @@
+{
+  "affected_files": [
+    "plugin/agents/twining-aware-worker.md",
+    "plugin/agents/twining-coordinator.md",
+    "plugin/skills/twining-decide/SKILL.md",
+    "plugin/skills/twining-coordinate/SKILL.md",
+    "plugin/skills/twining-dispatch/SKILL.md",
+    "plugin/skills/twining-handoff/SKILL.md",
+    "plugin/skills/twining-map/SKILL.md",
+    "plugin/skills/twining-orient/SKILL.md",
+    "plugin/skills/twining-review/SKILL.md",
+    "plugin/commands/twining-export.md",
+    "test/plugin-tool-references.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "merely annotating twining_decide as full-surface-only",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [
+    "MCP tool name prefix varies by install mode, so no hardcoded prefix works everywhere",
+    "CI plugin-version-check requires a version bump for any change under plugin/",
+    "Committed server bundle must be rebuilt on version bump (handled by bump-plugin-version.sh)"
+  ],
+  "context": "Fixed the confirmed field bug: plugin agents/skills referenced tool names no install registers; added CI guard test",
+  "depends_on": [],
+  "domain": "api-design",
+  "id": "01KYB2J3VAS17AKNWF239GJRZ8",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "476beca695becd040a1f32ea4ec4271c5af1ba07",
+    "recorded_at": "2026-07-24T22:05:01.147Z"
+  },
+  "rationale": "every numbered step of that skill (decide, override/reconsider, the REQUIRED link_commit, promote) used a full-surface-only tool, so the core decision-recording workflow failed end-to-end on every default install; twining_record is default-surface and routes to the same decision store, and its commit_hash/supersedes/depends_on fields cover link_commit and supersession",
+  "reversible": true,
+  "scope": "plugin/",
+  "status": "active",
+  "summary": "Chose to rewrite the auto-invocable twining-decide skill around twining_record instead of merely annotating twining_decide as full-surface-only",
+  "timestamp": "2026-07-24T22:05:01.162Z"
+}

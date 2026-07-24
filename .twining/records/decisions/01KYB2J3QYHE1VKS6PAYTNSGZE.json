@@ -1,0 +1,48 @@
+{
+  "affected_files": [
+    "plugin/agents/twining-aware-worker.md",
+    "plugin/agents/twining-coordinator.md",
+    "plugin/skills/twining-decide/SKILL.md",
+    "plugin/skills/twining-coordinate/SKILL.md",
+    "plugin/skills/twining-dispatch/SKILL.md",
+    "plugin/skills/twining-handoff/SKILL.md",
+    "plugin/skills/twining-map/SKILL.md",
+    "plugin/skills/twining-orient/SKILL.md",
+    "plugin/skills/twining-review/SKILL.md",
+    "plugin/commands/twining-export.md",
+    "test/plugin-tool-references.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "substitute the correct mcp__* prefixed names",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [
+    "MCP tool name prefix varies by install mode, so no hardcoded prefix works everywhere",
+    "CI plugin-version-check requires a version bump for any change under plugin/",
+    "Committed server bundle must be rebuilt on version bump (handled by bump-plugin-version.sh)"
+  ],
+  "context": "Fixed the confirmed field bug: plugin agents/skills referenced tool names no install registers; added CI guard test",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KYB2J3QYHE1VKS6PAYTNSGZE",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "476beca695becd040a1f32ea4ec4271c5af1ba07",
+    "recorded_at": "2026-07-24T22:05:01.037Z"
+  },
+  "rationale": "the MCP server prefix is install-mode dependent (mcp__plugin_twining_twining__* for a plugin install vs mcp__twining__* for a standalone .mcp.json entry), so any hardcoded prefix breaks one install mode; omitting tools: inherits everything and is prefix-agnostic",
+  "reversible": true,
+  "scope": "plugin/",
+  "status": "active",
+  "summary": "Chose to delete the tools: allowlist from both plugin agent definitions rather than substitute the correct mcp__* prefixed names",
+  "timestamp": "2026-07-24T22:05:01.054Z"
+}

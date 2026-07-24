@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Chose a doc-level full_surface caveat for the coordination skills (coordinate, dispatch, handoff, review, map, orient, export) rather than promoting those tools to the default surface\" relates to:\n- 01KQWCCVW5Y2403MVP42NTRAP1: \"Wired sentinel into the three explicit recording tool handlers, not into engine methods\"\n- 01KY07QJ6AMTM40E0MPM82WEG4: \"Converted the brittle deny-vs-pin coupling into a CI-enforced invariant: new mcp-deny-sync job fails whenever .claude/settings.json deniedMcpServers drifts from plugin/.mcp.json's exact server command\"\n- 01KY0QQ1CFDRCVBN0X7GTNT2NY: \"Switched the plugin's bundled server to the sh -lc login-shell wrapper (Dave approved via explicit trade-off question)\"\n- 01KY0QQ1F1XVYYR5696B1N03S6: \"Updated the SessionStart hook's availability probe to sh -lc 'command -v npx' to mirror the new spawn method exactly\"\n- 01KY0QQ1HH4AEMS8NFWSWB7WJQ: \"Removed this repo's .mcp.json, deniedMcpServers block, and the mcp-deny-sync CI job+script within hours of adding the latter\"\n- 01KY0QQ1MG9C65G7NAQHNBZ6H0: \"Chose asking Dave the Windows trade-off explicitly (AskUserQuestion) rather than deciding unilaterally\"",
+  "entry_type": "finding",
+  "id": "01KYB2J3X05DNYPCWHV7P47BPM",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "476beca695becd040a1f32ea4ec4271c5af1ba07",
+    "recorded_at": "2026-07-24T22:05:01.203Z"
+  },
+  "scope": "plugin/",
+  "summary": "Related decisions in scope: 6 existing decision(s) overlap",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-07-24T22:05:01.216Z"
+}

@@ -19,8 +19,8 @@ Before working, assemble shared context so you don't contradict prior decisions 
 ## Optional Steps
 
 - Call `twining_why` on specific files you plan to modify to see their decision history
-- Call `twining_register` if working alongside other agents (makes you discoverable)
-- Use `twining_search_decisions` for keyword search across all scopes
+- Call `twining_register` if working alongside other agents (makes you discoverable) — requires `tools.full_surface: true`
+- Use `twining_search_decisions` for keyword search across all scopes — requires `tools.full_surface: true`; otherwise widen the `scope` you pass to `twining_assemble`
 
 ## Scope Conventions
 

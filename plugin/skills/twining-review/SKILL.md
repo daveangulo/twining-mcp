@@ -8,6 +8,8 @@ disable-model-invocation: true
 
 Review the current session's work to ensure all significant architectural and implementation decisions have been properly recorded in Twining.
 
+> **Requires the full tool surface.** `twining_what_changed`, `twining_trace`, `twining_search_decisions`, `twining_commits`, `twining_link_commit`, and `twining_decide` exist only when the project sets `tools.full_surface: true` in `.twining/config.yml`. On a default install, run the equivalent review with `twining_assemble` (what the next agent will see for this scope) and `twining_status` (counts, warnings, open needs), then close any gap with `twining_record` — passing `commit_hash` for traceability.
+
 ## Workflow
 
 ### 1. Review What Changed

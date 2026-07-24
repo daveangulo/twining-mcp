@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "finding",
+  "id": "01KYB2J47E7F4F6Q31G6RC5W2E",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "476beca695becd040a1f32ea4ec4271c5af1ba07",
+    "recorded_at": "2026-07-24T22:05:01.536Z"
+  },
+  "scope": "plugin/",
+  "summary": "The new test/plugin-tool-references.test.ts caught 8 additional drifted files beyond the 2 agent definitions: 7 skills plus the export command teach full-surface-only tools as if always available.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-24T22:05:01.550Z"
+}

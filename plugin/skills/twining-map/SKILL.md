@@ -7,6 +7,8 @@ auto-invocable: true
 # Twining Map — Knowledge Graph Building (Optional)
 
 > **This is an advanced, opt-in workflow.** Benchmark data shows graph building has no measurable correlation with coordination quality (r=-0.01). Use only when you specifically need structural analysis. Requires `graph.auto_populate: true` in config for auto-population, or manual entity/relation creation.
+>
+> **Tool availability.** The graph tools below (`twining_add_entity`, `twining_add_relation`, `twining_neighbors`, `twining_graph_query`, `twining_prune_graph`) are on the default surface. `twining_decide` and `twining_verify`, referenced below, require `tools.full_surface: true` — on a default install use `twining_record`'s `decisions` array instead, which populates the same `affected_files` / `affected_symbols` entities.
 
 Build the knowledge graph to capture architectural relationships when you need to reason about code structure across multiple modules.
 

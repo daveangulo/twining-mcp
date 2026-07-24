@@ -8,6 +8,8 @@ auto-invocable: true
 
 You've made (or are about to make) a significant technical choice. Record it so future sessions and agents can understand what was decided, why, and what alternatives were rejected.
 
+> **Which tool to call.** `twining_record` is on the default tool surface and routes decisions to the same decision store as `twining_decide`. `twining_decide` and the decision-lifecycle verbs (`twining_link_commit`, `twining_override`, `twining_reconsider`, `twining_promote`) exist **only** when the project sets `tools.full_surface: true` in `.twining/config.yml`. Use `twining_record` unless you have confirmed the full surface is available — it works everywhere.
+
 ## When to Invoke
 
 - After choosing between architectural alternatives (e.g., REST vs gRPC, PostgreSQL vs MongoDB)
@@ -27,50 +29,42 @@ Use the narrowest path that covers the affected area:
 
 ### 2. Record the Decision
 
-Call `twining_decide` with:
+Call `twining_record` with a `summary` of what you did and a `decisions` array. Each entry is either a natural sentence — `"Chose JWT over server-side sessions — stateless auth survives horizontal scaling"` — or a structured object when the content is too long or too structured to split cleanly:
 
-- **`domain`**: One of `architecture`, `implementation`, `testing`, `deployment`, `security`, `performance`, `api-design`, `data-model`
-- **`scope`**: Narrowest path covering affected code
 - **`summary`**: One-line statement of the choice (e.g., "Use JWT for stateless authentication")
+- **`rationale`**: **Why this option was chosen.** Give the actual reasoning. If your rationale merely restates the summary, the record captures the WHAT and loses the WHY — which is the entire reason this system exists.
+- **`alternatives`**: At least one rejected option with `option` and `reason_rejected`, optionally `pros`/`cons`
 - **`context`**: What situation prompted this decision
-- **`rationale`**: Why this option was chosen
-- **`confidence`**: `high` (well-researched, proven), `medium` (reasonable, some uncertainty), or `low` (best guess, needs validation)
-- **`alternatives`**: At least one rejected option with `option`, `reason_rejected`, and optionally `pros`/`cons`
-- **`affected_files`**: File paths this decision impacts
-- **`affected_symbols`**: Function/class names affected (optional)
-- **`constraints`**: What limited the options (optional)
+- **`confidence`**: `high` (well-researched, proven), `medium` (reasonable, some uncertainty), `low` (best guess, needs validation)
+- **`domain`**: e.g. `architecture`, `implementation`, `testing`, `deployment`, `security`, `performance`, `api-design`, `data-model` — inferred from content when omitted
+- **`constraints`** / **`assumptions`**: What limited the options, and what you're treating as true
+
+Set these at the top level of the same call: **`scope`** (narrowest path; auto-inferred from the git diff when omitted), **`affected_files`**, **`affected_symbols`**, and **`commit_hash`** if the implementing commit already exists.
 
 ### 3. Post Related Findings and Warnings
 
-As side effects of decisions, you often discover things worth sharing:
+As side effects of decisions, you often discover things worth sharing. Pass them in `twining_record`'s `findings` array, or post them mid-session with `twining_post`:
 
-- **Findings**: Use `twining_post` with `entry_type: "finding"` for noteworthy discoveries
+- **Findings**: `entry_type: "finding"` for noteworthy discoveries
   - Example: "The payment module uses a deprecated API version"
-- **Warnings**: Use `twining_post` with `entry_type: "warning"` for gotchas
+- **Warnings**: `entry_type: "warning"` for gotchas
   - Example: "Don't use connection pooling with this driver — it leaks under load"
-- **Needs**: Use `twining_post` with `entry_type: "need"` for follow-up work
+- **Needs**: `entry_type: "need"` for follow-up work
   - Example: "Migration script needed for schema change"
 
-### 4. Handle Conflicts
+`twining_post` **rejects** a `summary` over 200 characters — keep it short and put the substance in `detail`. (`twining_record` truncates instead of rejecting.)
 
-If `twining_decide` detects a conflict with an existing decision:
-1. A warning is auto-posted to the blackboard
-2. Both decisions remain active
-3. You MUST resolve the conflict explicitly:
-   - `twining_override` — replace the old decision (records who and why)
-   - `twining_reconsider` — flag the old decision for review (sets it to provisional)
+### 4. Link the Decision to Its Commit
 
-### 5. Link to Commits (REQUIRED)
+Traceability matters: a decision nobody can tie to code is hard to act on later. Pass `commit_hash` to `twining_record`. If you record before committing, record again after the commit with the hash, or pass it on your next `twining_record` call.
 
-After committing code that implements a decision, you MUST call `twining_link_commit` with:
-- `decision_id`: The decision ID returned by `twining_decide`
-- `commit_hash`: The git commit hash
+*(Full surface only: `twining_link_commit` attaches a commit to an existing decision id.)*
 
-This is NOT optional — unlinking decisions from commits breaks traceability and is flagged as the "fire-and-forget-decisions" anti-pattern.
+### 5. Supersede Rather Than Contradict
 
-### 6. Promote Provisional Decisions
+If your decision replaces an earlier one, pass its id in `twining_record`'s `supersedes` field so the chain is preserved instead of leaving two contradictory active decisions. Use `depends_on` for decisions yours builds on. Get ids from `twining_assemble` or `twining_why`.
 
-If you made a `low` or `medium` confidence decision that's now validated (tests pass, design confirmed), use `twining_promote` to upgrade it to `active` with `high` confidence.
+*(Full surface only: `twining_override` replaces a decision and records who and why; `twining_reconsider` flags one for review; `twining_promote` ratifies a provisional decision.)*
 
 ## Pre-requisite
 
@@ -79,8 +73,8 @@ Before recording a decision, you MUST have called `twining_assemble` earlier in 
 ## Anti-patterns
 
 - NEVER decide without first calling `twining_assemble` ("blind-decisions" anti-pattern)
-- NEVER skip `twining_link_commit` after committing ("fire-and-forget-decisions" anti-pattern)
-- NEVER use `twining_post` with `entry_type: "decision"` — always use `twining_decide`
+- NEVER record a rationale that just restates the summary — that stores the WHAT as if it were the WHY
+- NEVER use `twining_post` with `entry_type: "decision"` — it is rejected; use `twining_record`
 - NEVER skip alternatives — even "do nothing" is a valid rejected alternative
 - NEVER use `"project"` scope for a decision that only affects one module
-- NEVER ignore conflict warnings — resolve them explicitly
+- NEVER leave a contradiction unresolved — supersede the old decision or say why both stand

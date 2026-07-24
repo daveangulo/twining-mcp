@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-24T22:05:01.184Z",
+  "id": "01KYB2J3W0VS32P15Q2G03HWTW",
+  "properties": {
+    "decision_summary": "Chose to rewrite the auto-invocable twining-decide skill around twining_record instead of merely annotating twining_decide as full-surface-only"
+  },
+  "source": "01KKBXHM1Q9RFE1BC2Q3W77M9H",
+  "target": "01KYB2J3VRSZ4BDKS40DVXERXV",
+  "type": "decided_by"
+}

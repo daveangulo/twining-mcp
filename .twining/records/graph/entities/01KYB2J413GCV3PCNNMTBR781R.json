@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-24T22:05:01.347Z",
+  "id": "01KYB2J413GCV3PCNNMTBR781R",
+  "name": "01KYB2J3ZB431MMJ67RZDK9CWB",
+  "properties": {
+    "scope": "plugin/",
+    "summary": "Chose a static registration-introspection test (recording stub server with null engines) over spawning the server and listing tools over JSON-RPC"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-24T22:05:01.347Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-24T22:05:01.454Z",
+  "id": "01KYB2J44E1SYV5NQJ1WBEQA6S",
+  "properties": {
+    "decision_summary": "Bumped the plugin minor to 1.23.0 rather than patch"
+  },
+  "source": "01KYB2J3TRQHFXNJYKHNAZSVEH",
+  "target": "01KYB2J446V788GKC6HS972Y3K",
+  "type": "decided_by"
+}

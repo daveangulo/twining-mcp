@@ -8,6 +8,8 @@ auto-invocable: true
 
 You need work done by a specialized agent, or you want to understand what agents are available for a task.
 
+> **Requires the full tool surface.** Every tool in this skill — `twining_register`, `twining_agents`, `twining_discover`, `twining_delegate`, `twining_read`, `twining_recent`, and the deprecated `twining_handoff` / `twining_acknowledge` — exists only when the project sets `tools.full_surface: true` in `.twining/config.yml`. On a default install none of them are callable. Coordinate through the blackboard instead: `twining_post` a `need` entry describing the work, and have each agent `twining_assemble` on its scope before starting. Do not claim a delegation was registered when the tool was unavailable.
+
 ## When to Invoke
 
 - When a task requires capabilities beyond your own

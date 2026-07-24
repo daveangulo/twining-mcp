@@ -8,6 +8,10 @@ auto-invocable: true
 
 When you dispatch subagents via the Agent tool, use this protocol to make every dispatch visible in the Twining coordination dashboard (Agents, Delegations, and Handoffs tabs).
 
+> **Requires the full tool surface.** `twining_register`, `twining_delegate`, `twining_query`, `twining_decide`, and the deprecated `twining_handoff` / `twining_acknowledge` exist only when the project sets `tools.full_surface: true` in `.twining/config.yml`. On a default install, dispatch is still worth recording — use `twining_post` with a `need` or `status` entry naming the subagent and its scope, and `twining_record` for decisions — but the Agents and Delegations dashboard tabs will stay empty, which is expected rather than a bug.
+>
+> **Subagents may not inherit Twining tools.** A spawned subagent only has Twining tools if its agent definition declares no restrictive `tools:` allowlist and the MCP server reached that process. Tell each subagent to locate the tools with `ToolSearch` (query `twining`) and to report plainly if they are absent, rather than assuming its posts landed.
+
 ## When to Invoke
 
 - Before dispatching any subagent via the Agent tool

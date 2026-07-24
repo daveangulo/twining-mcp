@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Chose to delete the tools: allowlist from both plugin agent definitions rather than substitute the correct mcp__* prefixed names\" relates to:\n- 01KJJ3KQG24Y0365NBFWXX129W: \"Fix Stop hook to return required JSON decision format for Claude Code validation\"\n- 01KJJAZEHG6HTT11SY8GSPM6VX: \"Stop hook uses line-number comparison for per-commit Twining coverage instead of session-wide counts\"\n- 01KKBXHKFZHNT41AF3RQHF47GN: \"Enforce mandatory agent registration and handoff in plugin v1.1.5\"\n- 01KMT252V9HT9PQZRENV368S0Q: \"Add SessionStart command hook to inject Twining Lifecycle Gates into project CLAUDE.md\"\n- 01KQV9EHAWVCAENCYJKYYG8YZ9: \"Placed the new session-start-context.sh\"\n- 01KQWCCVX48E3NFJ5NVCJXZKGS: \"Used node -e for JSON parsing in the hook\"\n- 01KY07QJ8D8WXQ7575QJ8GQ4GN: \"Chose plugin minor bump 1.11.3 → 1.12.0 for the pin change\"\n- 01KY1J1N5974PR5Q55SHGTJNQ2: \"Chose to satisfy the per-item audit-trail criterion by adding an optional reasons map (id → rationale) to twining_archive_stale rather than packing per-item text into the existing single reason string\"\n- 01KY2SNMDAAQYA6CY17B4G4C1A: \"Retire twining_handoff/twining_acknowledge at v3; v2.1 deprecates them and reorients all plugin guidance to the committed-doc + artifact-pointer handoff pattern\"\n- 01KY3627YGRF4H7ZQS1HG9T31K: \"Stop gate signal replaced: per-session activity marker (PostToolUse Edit/Write → .twining/.sessions/<session_id>) compared against the record sentinel, replacing the dirty-file-mtime scan\"\n- 01KY36281JDJZ96BK8Q5Z8WH2Q: \"Chose bash-regex session_id extraction with strict filename sanitization (allowlist + leading-dot strip) mirrored in both hook scripts\"",
+  "entry_type": "finding",
+  "id": "01KYB2J3RCZMA4X4TEXBD1BNFM",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "476beca695becd040a1f32ea4ec4271c5af1ba07",
+    "recorded_at": "2026-07-24T22:05:01.054Z"
+  },
+  "scope": "plugin/",
+  "summary": "Related decisions in scope: 11 existing decision(s) overlap",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-24T22:05:01.068Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-24T22:05:01.142Z",
+  "id": "01KYB2J3TPT5Y44RGD1XB6TVRJ",
+  "properties": {
+    "decision_summary": "Chose to delete the tools: allowlist from both plugin agent definitions rather than substitute the correct mcp__* prefixed names"
+  },
+  "source": "01KM2B5Y8GZ53K75D8ZMX2AXGN",
+  "target": "01KYB2J3TGS5GFGGHZEEVYS4PF",
+  "type": "decided_by"
+}

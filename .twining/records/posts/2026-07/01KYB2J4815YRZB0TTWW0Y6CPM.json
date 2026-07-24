@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Product decision required on whether the coordination surface (register/agents/discover/delegate, plus deprecated handoff/acknowledge) is in scope — it is default-off, partly deprecated, and still taught by plugin skills, so the marketed surface and the reachable surface are disjoint.",
+  "entry_type": "need",
+  "id": "01KYB2J4815YRZB0TTWW0Y6CPM",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "476beca695becd040a1f32ea4ec4271c5af1ba07",
+    "recorded_at": "2026-07-24T22:05:01.556Z"
+  },
+  "scope": "plugin/",
+  "summary": "Product decision required on whether the coordination surface (register/agents/discover/delegate, plus deprecated handoff/acknowledge) is in scope — it is default-off, partly deprecated, and still …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-24T22:05:01.569Z"
+}

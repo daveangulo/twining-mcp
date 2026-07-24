@@ -31,7 +31,7 @@ Create a markdown file under the project's docs or planning area (follow the pro
 - **Gotchas** — anything that will waste the next agent's first hour
 - **Verification** — how to check the current state actually works (test commands, expected output)
 
-`twining_export` (scope-limited) and `twining_summarize` are useful raw material for the doc — export gives full entries and decisions, summarize gives the compact overview.
+`twining_export` (scope-limited) and `twining_summarize` are useful raw material for the doc — export gives full entries and decisions, summarize gives the compact overview. Both require `tools.full_surface: true`; on a default install, `twining_assemble` on the handoff scope gives you the same briefing the next agent will receive, which is the right thing to write the doc against anyway.
 
 ### 2. Commit the document
 

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-24T22:05:01.272Z",
+  "id": "01KYB2J3YRCCX9ET8SWZ400Q8T",
+  "properties": {
+    "decision_summary": "Chose a doc-level full_surface caveat for the coordination skills (coordinate, dispatch, handoff, review, map, orient, export) rather than promoting those tools to the default surface"
+  },
+  "source": "01KKBXHM1MRJ60VFD848BGT3R0",
+  "target": "01KYB2J3YJ32R8K7KQ8VKMX863",
+  "type": "decided_by"
+}

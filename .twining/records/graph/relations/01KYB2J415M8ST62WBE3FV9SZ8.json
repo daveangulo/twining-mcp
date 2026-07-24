@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-24T22:05:01.349Z",
+  "id": "01KYB2J415M8ST62WBE3FV9SZ8",
+  "properties": {
+    "decision_summary": "Chose a static registration-introspection test (recording stub server with null engines) over spawning the server and listing tools over JSON-RPC"
+  },
+  "source": "01KJGX8KNHD07T6HE5K3GHZBAK",
+  "target": "01KYB2J413GCV3PCNNMTBR781R",
+  "type": "decided_by"
+}

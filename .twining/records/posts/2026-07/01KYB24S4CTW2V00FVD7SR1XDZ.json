@@ -1,0 +1,21 @@
+{
+  "agent_id": "main",
+  "detail": "Archiver.plan defaults cutoff to the current instant (src/engine/archiver.ts:50). Auto-archive trigger (src/engine/blackboard.ts:163-180, threshold 500 via config.ts:49 max_blackboard_entries_before_archive) and housekeeping execute (src/engine/housekeeping.ts:131-139) both call archive() with no `before` argument. Only decisions and UNRESOLVED need/warning entries are exempt (archiver.ts:69-77) — findings, statuses, answers, and open QUESTIONS are wiped regardless of age, compressed into one <=2000-char summary finding (archiver.ts:186-191). Nothing reads .twining/archive/ except the loop-junk compactor: assemble/query/search/exporter all operate on live stores only; twining_export reads live stores. At field-repo traffic the 500-entry horizon is DAYS, so finding-level tribal context has a hard retention window of days and is invisible to every retrieval surface thereafter. Proposed: (1) default archive cutoff age-based (before = now - 14d) so \"archive\" means \"old\" not \"everything\"; extend open-obligation exemption to questions. (2) Make archive a queryable cold tier (separate embedding index, assemble opt-in via deep flag or auto when live results thin) or replace wholesale wipe with distillation writing per-scope digest findings.",
+  "entry_type": "warning",
+  "id": "01KYB24S4CTW2V00FVD7SR1XDZ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "476beca695becd040a1f32ea4ec4271c5af1ba07",
+    "recorded_at": "2026-07-24T21:57:44.186Z"
+  },
+  "scope": "src/engine/",
+  "summary": "Archive tier defaults cutoff=now — auto-archive at 500 entries and housekeeping wipe ALL findings/questions/statuses regardless of age; archive/ is read by nothing, so it is a retrieval black hole",
+  "tags": [
+    "architecture",
+    "long-horizon",
+    "data-loss",
+    "retrieval",
+    "deep-review"
+  ],
+  "timestamp": "2026-07-24T21:57:44.204Z"
+}

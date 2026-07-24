@@ -1,0 +1,54 @@
+{
+  "affected_files": [
+    "plugin/agents/twining-aware-worker.md",
+    "plugin/agents/twining-coordinator.md",
+    "plugin/skills/twining-decide/SKILL.md",
+    "plugin/skills/twining-coordinate/SKILL.md",
+    "plugin/skills/twining-dispatch/SKILL.md",
+    "plugin/skills/twining-handoff/SKILL.md",
+    "plugin/skills/twining-map/SKILL.md",
+    "plugin/skills/twining-orient/SKILL.md",
+    "plugin/skills/twining-review/SKILL.md",
+    "plugin/commands/twining-export.md",
+    "test/plugin-tool-references.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "promoting those tools to the default surface",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "a review fix",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [
+    "MCP tool name prefix varies by install mode, so no hardcoded prefix works everywhere",
+    "CI plugin-version-check requires a version bump for any change under plugin/",
+    "Committed server bundle must be rebuilt on version bump (handled by bump-plugin-version.sh)"
+  ],
+  "context": "Fixed the confirmed field bug: plugin agents/skills referenced tool names no install registers; added CI guard test",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KYB2J3WKXWQ0W5M425GC3TNM",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "476beca695becd040a1f32ea4ec4271c5af1ba07",
+    "recorded_at": "2026-07-24T22:05:01.189Z"
+  },
+  "rationale": "promoting them is a product decision about whether the coordination surface is in scope for v2, which is the owner's call, not a review fix",
+  "reversible": true,
+  "scope": "plugin/",
+  "status": "active",
+  "summary": "Chose a doc-level full_surface caveat for the coordination skills (coordinate, dispatch, handoff, review, map, orient, export) rather than promoting those tools to the default surface",
+  "timestamp": "2026-07-24T22:05:01.203Z"
+}
