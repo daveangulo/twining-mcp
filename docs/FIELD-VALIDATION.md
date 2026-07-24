@@ -16,12 +16,26 @@ Two parts:
 
 Run Part A first. It is cheap and several conclusions stand or fall on it alone.
 
-> **Probe v2 (2026-07-24).** The first field run surfaced that archive counts are
-> contaminated by the pre-1.24.0 auto-archive feedback loop (#35), whose
-> "Archive: N entries archived" findings are machine exhaust rather than captured
-> knowledge. The probe now excludes them from H2/H2b and reports them separately
-> as **H2c**, alongside a new **H2d** measuring what the live board actually
-> still contains. Re-run if you ran v1.
+> **Probe v3 (2026-07-24) — re-run required if you ran v1 or v2.**
+>
+> Two corrections came out of the first field run:
+>
+> 1. Archive counts were contaminated by the pre-1.24.0 auto-archive feedback
+>    loop (#35), whose "Archive: N entries archived" findings are machine exhaust
+>    rather than captured knowledge. They are now excluded from H2/H2b and
+>    reported separately as **H2c**.
+> 2. **The live board was read from the wrong place.** On a sqlite backend
+>    `.twining/blackboard.jsonl` is a pre-migration leftover that stops tracking
+>    the database, and the probe preferred it — so every board-derived metric
+>    (H2b, H2d, H3, H3b, H6) described a board that had not existed for months.
+>    On the dogfood repo the stale file claimed 3 warnings and 162 statuses while
+>    the database held 15 warnings and no statuses at all. The probe now reads
+>    `twining.db` directly (read-only), then `records/posts`, and only falls back
+>    to the JSONL for a genuine file backend. The active source is printed in the
+>    header as `live board from:`.
+>
+> Decision-derived metrics (H1, H1b, H4, H5, H7, H7b, H8) were unaffected — they
+> always came from `records/decisions`, which matches the database exactly.
 
 ---
 
@@ -77,7 +91,7 @@ Send back the console output and `field-probe.json`.
 | **H7b** | Agent identity collapses to `main` | ≥70% of decisions attributed to `main` |
 | **H8** | Commit traceability is largely absent | <20% of commits since the first decision are linked |
 
-### Baseline: this repo (dogfood store, 396 decisions, 384 live entries, 1070 archived)
+### Baseline: this repo (dogfood store, 400 decisions, 226 live entries, 1570 archived, probe v3)
 
 Recorded so the field numbers have something to sit against. **The dogfood repo
 is the best case** — it is where the gates are most carefully followed — so a
@@ -86,19 +100,19 @@ row is itself an interesting result.
 
 | ID | Verdict here | Measured |
 |----|--------------|----------|
-| H1 | **REFUTES** | 4% (16/396) |
+| H1 | **REFUTES** | 4% (16/400) |
 | H1b | **SUPPORTS** | 65.9% — 164 placeholder, 34 fragment, of 258 |
 | H2 | **SUPPORTS** | 71.4% (5/7 sweeps hit same-day entries) |
-| H2b | **SUPPORTS** | 356 findings archived vs 53 live |
+| H2b | **SUPPORTS** | 469 findings archived vs 4 live |
 | H2c | **SUPPORTS** | 1 junk finding (essentially clean) |
-| H2d | **REFUTES** | 14.6% tacit — board composition `{decision:166, status:162, finding:53, warning:3}` |
-| H3 | LOW N | 0 of 3 obligations |
-| H3b | LOW N | 0 of 3 warnings |
-| H4 | **REFUTES** | 13.1% (52/396) |
+| H2d | **REFUTES** | 11.1% tacit (25/226) — `{decision:201, warning:15, need:6, finding:4}` |
+| H3 | **REFUTES** | 0 resolved-but-live of 21 obligations |
+| H3b | LOW N | 0 of 15 warnings older than 30d (needs 20) |
+| H4 | **REFUTES** | 13% (52/400) |
 | H5 | **SUPPORTS** | `project` holds 52, ~42 fit |
-| H6 | **SUPPORTS** | 100% (120/120) contentless |
-| H7 | **REFUTES** | 18.7% (74/396) |
-| H7b | **SUPPORTS** | 90.7% `main`, 8 distinct ids |
+| H6 | LOW N | no subagent entries on the live board (they archive as findings) |
+| H7 | **REFUTES** | 18.5% (74/400) |
+| H7b | **SUPPORTS** | 90.5% `main`, 8 distinct ids |
 | H8 | **SUPPORTS** | 8.8% of 329 commits linked |
 
 **What the baseline already tells us.** The review's *capture-quality* claim

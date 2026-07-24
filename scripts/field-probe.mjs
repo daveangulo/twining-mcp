@@ -103,9 +103,49 @@ if (posts.length === 0) {
     source = source ? source + " + blackboard.jsonl" : "blackboard.jsonl";
   }
 }
-// The live board is authoritative for "what an agent sees now".
-const liveBoard = readJSONL(path.join(TW, "blackboard.jsonl"));
-const boardForLive = liveBoard.length ? liveBoard : posts;
+// The live board — what an agent actually sees now.
+//
+// Precedence matters and was wrong in v1/v2: on a sqlite backend,
+// .twining/blackboard.jsonl is a PRE-MIGRATION LEFTOVER and does not track the
+// database. Preferring it reported a live board that had not existed for
+// months (verified on the dogfood repo: stale file said 3 warnings / 162
+// statuses, the database said 15 warnings / 0 statuses). Read the database
+// first, then the records/ mirror, and fall back to the JSONL only for a
+// genuine file backend.
+let boardForLive = [];
+let liveSource = "";
+const dbPath = path.join(TW, "twining.db");
+if (fs.existsSync(dbPath)) {
+  try {
+    const { DatabaseSync } = await import("node:sqlite");
+    const db = new DatabaseSync(dbPath, { readOnly: true });
+    boardForLive = db
+      .prepare("SELECT data FROM blackboard")
+      .all()
+      .map((r) => {
+        try {
+          return JSON.parse(r.data);
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean);
+    db.close();
+    liveSource = "twining.db";
+  } catch {
+    /* node:sqlite unavailable (Node < 22.13) or db locked — fall through */
+  }
+}
+if (!boardForLive.length && posts.length) {
+  // records/posts mirrors live rows one-file-per-entry; archived rows are
+  // unlinked, so this tracks the database on any export_records:true repo.
+  boardForLive = posts;
+  liveSource = "records/posts";
+}
+if (!boardForLive.length) {
+  boardForLive = readJSONL(path.join(TW, "blackboard.jsonl"));
+  liveSource = "blackboard.jsonl";
+}
 
 // archive sweeps
 const archDir = path.join(TW, "archive");
@@ -503,6 +543,7 @@ const summary = {
   generated_at: new Date().toISOString(),
   project: PROJECT,
   source,
+  live_source: liveSource,
   totals: {
     decisions: decisions.length,
     live_board_entries: boardForLive.length,
@@ -522,7 +563,7 @@ if (!QUIET) {
   const tally = results.reduce((m, r) => ((m[r.verdict] = (m[r.verdict] || 0) + 1), m), {});
   console.log(`\n# Twining field probe\n`);
   console.log(`Project:  ${PROJECT}`);
-  console.log(`Source:   ${source || "(none found)"}`);
+  console.log(`Source:   ${source || "(none found)"} | live board from: ${liveSource || "(none)"}`);
   console.log(
     `Corpus:   ${decisions.length} decisions, ${boardForLive.length} live entries, ${archivedTotal.toLocaleString()} archived across ${sweeps.length} sweeps` +
       (junkTotal ? `\n          (excluded ${junkTotal.toLocaleString()} archiver-loop junk findings — see H2c)` : "") +
