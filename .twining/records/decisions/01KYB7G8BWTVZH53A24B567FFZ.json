@@ -1,0 +1,41 @@
+{
+  "affected_files": [
+    "scripts/field-probe.mjs",
+    "docs/FIELD-VALIDATION.md"
+  ],
+  "affected_symbols": [
+    "isLoopJunk",
+    "boardForLive"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "existed for months; verified on the dogfood store where the stale file claimed 3 warnings and 162 statuses while the database held 15 warnings, 6 needs and zero statuses",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [
+    "Pre-registered thresholds must not move after seeing results",
+    "Probe must remain read-only — re-verified by mtime+size hash after adding the sqlite open"
+  ],
+  "context": "Probe v2/v3: excluded archive-loop junk, then fixed live-board source after Dave caught the instrument reporting zero warnings a dashboard was showing",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01KYB7G8BWTVZH53A24B567FFZ",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "4bbaba0daf50679a14addfd244a47822925ab449",
+    "recorded_at": "2026-07-24T23:31:23.117Z"
+  },
+  "rationale": "on a sqlite backend the JSONL is a pre-migration leftover that stops tracking the database, so the probe was measuring a board that had not existed for months; verified on the dogfood store where the stale file claimed 3 warnings and 162 statuses while the database held 15 warnings, 6 needs and zero statuses",
+  "reversible": true,
+  "scope": "scripts/",
+  "status": "active",
+  "summary": "Chose to read the live board from twining.db directly (read-only open) with fallback order db -> records/posts -> blackboard.jsonl, replacing the v1/v2 order that preferred blackboard.jsonl whenever it was non-empty",
+  "timestamp": "2026-07-24T23:31:23.132Z"
+}

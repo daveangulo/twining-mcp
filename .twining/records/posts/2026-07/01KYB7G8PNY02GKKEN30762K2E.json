@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: The field repo carries unrepaired #35 damage: 9,141,126 archive entries, one 2026-07-08 sweep alone holding 328,657. Remedy is twining_housekeeping({compact_archives: true}) — preview then execute; likely reclaims GBs.",
+  "entry_type": "finding",
+  "id": "01KYB7G8PNY02GKKEN30762K2E",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "4bbaba0daf50679a14addfd244a47822925ab449",
+    "recorded_at": "2026-07-24T23:31:23.462Z"
+  },
+  "scope": "scripts/",
+  "summary": "The field repo carries unrepaired #35 damage: 9,141,126 archive entries, one 2026-07-08 sweep alone holding 328,657. Remedy is twining_housekeeping({compact_archives: true}) — preview then execute;…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-24T23:31:23.477Z"
+}

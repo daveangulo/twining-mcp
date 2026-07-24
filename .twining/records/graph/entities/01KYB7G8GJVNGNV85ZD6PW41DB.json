@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-24T23:31:23.282Z",
+  "id": "01KYB7G8GJVNGNV85ZD6PW41DB",
+  "name": "01KYB7G8F4TEZYPZ4D53NEMNG7",
+  "properties": {
+    "scope": "scripts/",
+    "summary": "Chose to filter archiver-loop junk out of H2/H2b using the same conservative six-field signature as src/engine/archive-compactor.ts, and surface the count separately as H2c, rather than dropping the archive hypotheses"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-24T23:31:23.282Z"
+}

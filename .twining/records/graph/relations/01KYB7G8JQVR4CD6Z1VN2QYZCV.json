@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-24T23:31:23.351Z",
+  "id": "01KYB7G8JQVR4CD6Z1VN2QYZCV",
+  "properties": {
+    "decision_summary": "Chose to keep every pre-registered threshold untouched while fixing the instrument twice"
+  },
+  "source": "01KYB7G8CFRFWPNYAH0PAJ2N8W",
+  "target": "01KYB7G8JK09QKEG25P02V4RTQ",
+  "type": "decided_by"
+}

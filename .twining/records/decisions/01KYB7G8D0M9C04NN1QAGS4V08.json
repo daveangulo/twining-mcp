@@ -1,0 +1,41 @@
+{
+  "affected_files": [
+    "scripts/field-probe.mjs",
+    "docs/FIELD-VALIDATION.md"
+  ],
+  "affected_symbols": [
+    "isLoopJunk",
+    "boardForLive"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "only recording it in the JSON",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [
+    "Pre-registered thresholds must not move after seeing results",
+    "Probe must remain read-only — re-verified by mtime+size hash after adding the sqlite open"
+  ],
+  "context": "Probe v2/v3: excluded archive-loop junk, then fixed live-board source after Dave caught the instrument reporting zero warnings a dashboard was showing",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KYB7G8D0M9C04NN1QAGS4V08",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "4bbaba0daf50679a14addfd244a47822925ab449",
+    "recorded_at": "2026-07-24T23:31:23.154Z"
+  },
+  "rationale": "the failure mode was silent for two versions and a visible source line makes a wrong-source reading self-evident in the console output someone pastes back",
+  "reversible": true,
+  "scope": "scripts/",
+  "status": "active",
+  "summary": "Chose to print the resolved live-board source in the probe header ('live board from: twining.db') rather than only recording it in the JSON",
+  "timestamp": "2026-07-24T23:31:23.168Z"
+}

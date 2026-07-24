@@ -1,0 +1,20 @@
+{
+  "agent_id": "main",
+  "detail": "Field probe v1 on agentic-platform-design reported 9,141,126 archived findings, including a single 2026-07-08 sweep of 328,657 entries (328,577 findings) spanning 0.8 days. Investigation: this is the KNOWN pre-1.24.0 auto-archive feedback loop (#35) — the archiver's own \"Archive: N entries archived\" summary finding re-armed the trigger. Fixed at source in server 1.24.0 (2026-07-04); repair pass shipped as twining_housekeeping({compact_archives: true}); that repo has not run it. CORRECTION TO THE REVIEW: I recommended replacing the archiver's cutoff=now default with an age-based cutoff. Against a store generating ~400k findings/day that would have exploded the live board and collapsed assemble — aggressive archiving was the immune response, not the disease. The recommendation survives only in the count-based form the adversarial verifier already specified (retain newest K, not before=now-Nd), because an age cutoff cannot bound a same-hour burst. Post-fix sweeps (07-11, 07-16, 07-23) are ~500 entries of genuine content and still show freshest_age 0.1-0.2 days, so H2 itself holds on clean data. Probe v2 now excludes loop junk from H2/H2b using the archive-compactor signature and reports it separately as H2c.",
+  "entry_type": "warning",
+  "id": "01KYB6XSAJYX4ZAYSAP1F7XSPM",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "5c774c27ce5201fb3b0f4628b438036a9c2b2c91",
+    "recorded_at": "2026-07-24T23:21:17.892Z"
+  },
+  "scope": "src/engine/",
+  "summary": "Field data invalidates the review's archive recommendation: aggressive archiving was load-bearing against the #35 loop, and 9.1M \"findings destroyed\" is that loop's own exhaust, not lost knowledge",
+  "tags": [
+    "field-validation",
+    "correction",
+    "archiver",
+    "issue-35"
+  ],
+  "timestamp": "2026-07-24T23:21:17.907Z"
+}

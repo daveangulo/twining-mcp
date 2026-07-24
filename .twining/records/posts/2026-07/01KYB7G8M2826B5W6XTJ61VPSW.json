@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Field results that survived both instrument corrections because they are decision-derived (records/decisions matches the decisions table exactly, 400/400): H1b at 92.1% (1100 placeholder + 365 fragment of 1226 decisions with alternatives) and H5 at 14.1% surfaced in the busiest scope (analysis/ holds 262 decisions, ~37 fit a 4000-token budget; 5 scopes over budget). Both are bug-shaped, not architecture-shaped.",
+  "entry_type": "finding",
+  "id": "01KYB7G8M2826B5W6XTJ61VPSW",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "4bbaba0daf50679a14addfd244a47822925ab449",
+    "recorded_at": "2026-07-24T23:31:23.379Z"
+  },
+  "scope": "scripts/",
+  "summary": "Field results that survived both instrument corrections because they are decision-derived (records/decisions matches the decisions table exactly, 400/400): H1b at 92.1% (1100 placeholder + 365 frag…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-24T23:31:23.394Z"
+}

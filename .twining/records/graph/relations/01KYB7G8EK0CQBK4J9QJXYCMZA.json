@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-24T23:31:23.219Z",
+  "id": "01KYB7G8EK0CQBK4J9QJXYCMZA",
+  "properties": {
+    "decision_summary": "Chose to print the resolved live-board source in the probe header ('live board from: twining.db') rather than only recording it in the JSON"
+  },
+  "source": "01KYB7G8CFRFWPNYAH0PAJ2N8W",
+  "target": "01KYB7G8EG7YVFDKKV5QAA5TGS",
+  "type": "decided_by"
+}

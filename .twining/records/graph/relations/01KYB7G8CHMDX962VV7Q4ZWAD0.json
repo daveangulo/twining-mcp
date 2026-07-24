@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-24T23:31:23.153Z",
+  "id": "01KYB7G8CHMDX962VV7Q4ZWAD0",
+  "properties": {
+    "decision_summary": "Chose to read the live board from twining.db directly (read-only open) with fallback order db -> records/posts -> blackboard.jsonl, replacing the v1/v2 order that preferred blackboard.jsonl whenever it was non-empty"
+  },
+  "source": "01KYB7G8CGVYP6DCX3SMW8TP44",
+  "target": "01KYB7G8CC2CJH0PNVWV7KWQBF",
+  "type": "decided_by"
+}

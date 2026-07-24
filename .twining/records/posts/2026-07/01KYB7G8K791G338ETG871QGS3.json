@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: WITHDRAWN: I raised a suspected broken archive-exemption for unresolved warnings/needs, inferred from a field live board showing zero of both. That reading came entirely from the stale blackboard.jsonl. Corrected on the dogfood store: 15 warnings and 6 needs sit live, the exemption works, and H3 evaluates to REFUTES with 0 resolved-but-live of 21 obligations. Do not chase this.",
+  "entry_type": "finding",
+  "id": "01KYB7G8K791G338ETG871QGS3",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "4bbaba0daf50679a14addfd244a47822925ab449",
+    "recorded_at": "2026-07-24T23:31:23.352Z"
+  },
+  "scope": "scripts/",
+  "summary": "WITHDRAWN: I raised a suspected broken archive-exemption for unresolved warnings/needs, inferred from a field live board showing zero of both. That reading came entirely from the stale blackboard.j…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-24T23:31:23.367Z"
+}

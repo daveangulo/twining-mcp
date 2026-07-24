@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Instrument lesson: two of the five board-derived hypotheses were wrong for two versions and nothing in the output revealed it. A probe that reports a derived measurement should also report which source it derived it from, or a silent wrong-source read looks identical to a real result.",
+  "entry_type": "finding",
+  "id": "01KYB7G8QED07NYZC7ZPKDJCNQ",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "4bbaba0daf50679a14addfd244a47822925ab449",
+    "recorded_at": "2026-07-24T23:31:23.488Z"
+  },
+  "scope": "scripts/",
+  "summary": "Instrument lesson: two of the five board-derived hypotheses were wrong for two versions and nothing in the output revealed it. A probe that reports a derived measurement should also report which so…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-24T23:31:23.502Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-24T23:31:23.216Z",
+  "id": "01KYB7G8EG7YVFDKKV5QAA5TGS",
+  "name": "01KYB7G8D0M9C04NN1QAGS4V08",
+  "properties": {
+    "scope": "scripts/",
+    "summary": "Chose to print the resolved live-board source in the probe header ('live board from: twining.db') rather than only recording it in the JSON"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-24T23:31:23.216Z"
+}

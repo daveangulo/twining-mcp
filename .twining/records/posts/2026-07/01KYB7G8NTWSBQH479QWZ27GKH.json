@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: The review's archive recommendation was wrong as written. I proposed replacing the archiver's cutoff=now default with an age-based cutoff; against the #35 loop generating ~400k findings/day that would have exploded the live board. Aggressive archiving was the immune response. Only the count-based form (retain newest K) is safe, which is what the adversarial verifier originally specified.",
+  "entry_type": "warning",
+  "id": "01KYB7G8NTWSBQH479QWZ27GKH",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "4bbaba0daf50679a14addfd244a47822925ab449",
+    "recorded_at": "2026-07-24T23:31:23.436Z"
+  },
+  "scope": "scripts/",
+  "summary": "The review's archive recommendation was wrong as written. I proposed replacing the archiver's cutoff=now default with an age-based cutoff; against the #35 loop generating ~400k findings/day that wo…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-24T23:31:23.450Z"
+}
