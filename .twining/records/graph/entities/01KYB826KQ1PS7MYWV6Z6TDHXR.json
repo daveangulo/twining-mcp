@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-24T23:41:11.159Z",
+  "id": "01KYB826KQ1PS7MYWV6Z6TDHXR",
+  "name": "01KYB826J2HSEVSEH3K47Y6VCD",
+  "properties": {
+    "scope": "project",
+    "summary": "Reordered the structural priority list from the field data rather than from the code review: NL parser fix, retrieval-under-budget, subagent capture, identity derivation, count-based archive retention, commit linkage"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-24T23:41:11.159Z"
+}

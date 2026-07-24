@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "rewriting the original verdict",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Field validation complete: 9 supported, 5 refuted — the review over-indexed on capture and enforcement, under-indexed on retrieval",
+  "depends_on": [],
+  "domain": "api-design",
+  "id": "01KYB826M9DMCTBM78NKNEAM7P",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "1baa4ba8c48b91f176cfa622bb6e5b15c7c921b2",
+    "recorded_at": "2026-07-24T23:41:11.161Z"
+  },
+  "rationale": "the superseded reasoning is the audit trail, and silently restating the conclusion would hide that measurement changed it",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Chose to amend the review artifact in place with a Field validation section that supersedes the capture-first framing, rather than rewriting the original verdict",
+  "timestamp": "2026-07-24T23:41:11.177Z"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Decisions: Reordered the structural priority list from the field data rather than from the code review: NL parser fix, retrieval-under-budget, subagent capture, identity derivation, count-based archive retention, commit linkage — replacing the review's capture-first ordering, because H1 (13.6%) and H7 (9.3%) refuted the capture and Gate-1 premises while H1b (92.1%), H5 (14.1% surfaced) and H6 (97.7%) held; Chose to amend the review artifact in place with a Field validation section that supersedes the capture-first framing, rather than rewriting the original verdict — the superseded reasoning is the audit trail, and silently restating the conclusion would hide that measurement changed it\nFindings: Field run v3 (2323 decisions, 1945 live, 5001 real archived after excluding 9,136,125 junk): SUPPORTS H1b 92.1%, H2 100% of 38 sweeps, H2b 2757 findings + 11 questions archived vs 209 live, H2c 3.58GB junk, H3 2 resolved-but-live of 34, H5 14.1% surfaced, H6 97.7% (43/44) contentless, H7b 91.3% main, H8 12% of 408 commits. REFUTES H1 13.6%, H2d 12.5% tacit, H3b 0/31 warnings over 30d, H4 3.7%, H7 9.3%.; DROP from the structural plan — refuted by field data: the capture-model redesign (H1), Gate 1 enforcement hardening (H7 shows 90.7% voluntary compliance), the warning-drain/ratchet fix (H3b: zero of 31 warnings older than 30 days), scope-degradation handling (H4 3.7%), and the catastrophic framing of archiving (H2d: 209 findings and 31 warnings still live).; The 'monotone warning accumulation' structural issue is dead: 0 of 31 live warnings exceed 30 days in a repo with 2323 decisions. Warnings are being cleared or swept. Do not build the lifecycle-verb resolution-posting change on this rationale.; H2b at honest magnitude still supports the archive concern: 2757 findings archived against 209 live is ~13x, and 100% of 38 sweeps hit same-day entries. Aggressive but not annihilating — the fix is count-based retention (retain newest K), never an age cutoff.; H6 now confirmed in BOTH repos (dogfood 100% of 120, field 97.7% of 44) — subagent transcript capture is the highest-value new capability and the transcript parser already exists in test/eval/transcript-analyzer.ts.",
+  "entry_type": "status",
+  "id": "01KYB826FW10630BKWHP54AXKP",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "1baa4ba8c48b91f176cfa622bb6e5b15c7c921b2",
+    "recorded_at": "2026-07-24T23:41:11.021Z"
+  },
+  "scope": "project",
+  "summary": "Field validation complete: 9 supported, 5 refuted — the review over-indexed on capture and enforcement, under-indexed on retrieval",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-24T23:41:11.036Z"
+}
