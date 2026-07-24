@@ -195,9 +195,44 @@ hypothesis(
 
 // ---------------------------------------------------------------- H2 archive freshness
 
+/**
+ * The pre-1.24.0 auto-archive feedback loop (#35) posted an "Archive: N entries
+ * archived" finding after every pass, which re-armed the trigger — field repos
+ * accumulated millions. Those are machine exhaust, not captured knowledge, so
+ * counting them as "findings destroyed by archiving" would wildly overstate
+ * H2b. Signature matched conservatively against src/engine/archive-compactor.ts.
+ */
+const JUNK_SUMMARY_RE = /^Archive: \d+ entries archived$/;
+function isLoopJunk(e) {
+  return (
+    e &&
+    e.entry_type === "finding" &&
+    typeof e.summary === "string" &&
+    JUNK_SUMMARY_RE.test(e.summary) &&
+    e.scope === "project" &&
+    e.agent_id === "main" &&
+    Array.isArray(e.tags) &&
+    e.tags.includes("archive")
+  );
+}
+
 let sweeps = [];
+let junkTotal = 0;
+let archiveBytes = 0;
 for (const f of archiveFiles) {
-  const entries = readJSONL(path.join(archDir, f));
+  try {
+    archiveBytes += fs.statSync(path.join(archDir, f)).size;
+  } catch {
+    /* ignore */
+  }
+  const all = readJSONL(path.join(archDir, f));
+  const entries = all.filter((e) => {
+    if (isLoopJunk(e)) {
+      junkTotal++;
+      return false;
+    }
+    return true;
+  });
   if (!entries.length) continue;
   const ts = entries.map((e) => e.timestamp).filter(Boolean).sort();
   const sweepDate = f.slice(0, 10); // YYYY-MM-DD prefix
@@ -243,6 +278,42 @@ hypothesis(
     return archivedFindings + archivedQuestions > live ? "SUPPORTS" : "REFUTES";
   },
   null,
+);
+
+// H2c: archive-loop damage (a known, already-fixed bug — measured so the
+// repair pass can be prioritised, and so H2b is not read off contaminated data)
+const gb = (n) => Math.round((n / 1024 ** 3) * 100) / 100;
+hypothesis(
+  "H2c",
+  "Repo carries damage from the pre-1.24.0 auto-archive feedback loop (#35) and has not had the repair pass run.",
+  "0 archiver-loop junk findings present (a non-zero count means the repair pass is owed)",
+  junkTotal
+    ? `${junkTotal.toLocaleString()} junk findings in archive/ (${gb(archiveBytes)} GB of archive files total)`
+    : `none (${gb(archiveBytes)} GB of archive files)`,
+  () => (junkTotal > 0 ? "SUPPORTS" : "REFUTES"),
+  junkTotal
+    ? { remedy: "twining_housekeeping({ compact_archives: true }) — preview first, then execute: true" }
+    : null,
+);
+
+// Live board composition — what an agent actually has available right now.
+const liveTypes = boardForLive.reduce(
+  (m, e) => ((m[e.entry_type] = (m[e.entry_type] || 0) + 1), m),
+  {},
+);
+const tacitLive = (liveTypes.finding || 0) + (liveTypes.warning || 0) + (liveTypes.need || 0) + (liveTypes.question || 0);
+hypothesis(
+  "H2d",
+  "After sweeping, the live board retains bookkeeping (statuses/decisions) while the tacit layer — findings, warnings, needs, questions — is gone.",
+  "<10% of live entries are findings/warnings/needs/questions",
+  `${pct(tacitLive, boardForLive.length)}% tacit (${tacitLive}/${boardForLive.length}); composition: ${JSON.stringify(liveTypes)}`,
+  () => {
+    const p = pct(tacitLive, boardForLive.length);
+    return p === null ? "NO DATA" : p < 10 ? "SUPPORTS" : "REFUTES";
+  },
+  liveTypes,
+  boardForLive.length,
+  30,
 );
 
 // ---------------------------------------------------------------- H3 resolution / warning ratchet
@@ -437,6 +508,8 @@ const summary = {
     live_board_entries: boardForLive.length,
     archived_entries: archivedTotal,
     archive_sweeps: sweeps.length,
+    archive_loop_junk: junkTotal,
+    archive_bytes: archiveBytes,
   },
   results,
 };
@@ -451,7 +524,9 @@ if (!QUIET) {
   console.log(`Project:  ${PROJECT}`);
   console.log(`Source:   ${source || "(none found)"}`);
   console.log(
-    `Corpus:   ${decisions.length} decisions, ${boardForLive.length} live entries, ${archivedTotal} archived across ${sweeps.length} sweeps\n`,
+    `Corpus:   ${decisions.length} decisions, ${boardForLive.length} live entries, ${archivedTotal.toLocaleString()} archived across ${sweeps.length} sweeps` +
+      (junkTotal ? `\n          (excluded ${junkTotal.toLocaleString()} archiver-loop junk findings — see H2c)` : "") +
+      "\n",
   );
   for (const r of results) {
     const mark = r.verdict.padEnd(8);

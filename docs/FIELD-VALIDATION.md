@@ -16,6 +16,13 @@ Two parts:
 
 Run Part A first. It is cheap and several conclusions stand or fall on it alone.
 
+> **Probe v2 (2026-07-24).** The first field run surfaced that archive counts are
+> contaminated by the pre-1.24.0 auto-archive feedback loop (#35), whose
+> "Archive: N entries archived" findings are machine exhaust rather than captured
+> knowledge. The probe now excludes them from H2/H2b and reports them separately
+> as **H2c**, alongside a new **H2d** measuring what the live board actually
+> still contains. Re-run if you ran v1.
+
 ---
 
 ## Ground rules
@@ -59,6 +66,8 @@ Send back the console output and `field-probe.json`.
 | **H1b** | The NL parser manufactures bogus rejected alternatives | ≥20% of decisions with alternatives contain a `"Not chosen"` placeholder or a sentence-fragment option |
 | **H2** | Archiving uses `cutoff=now`, sweeping fresh entries | ≥50% of archive sweeps swept an entry ≤1 day old |
 | **H2b** | Findings and open questions are destroyed wholesale | archived findings + questions exceed currently-live findings |
+| **H2c** | Repo carries damage from the pre-1.24.0 archive feedback loop (#35) | any archiver-loop junk findings remain in `archive/` |
+| **H2d** | Sweeping leaves bookkeeping and removes the tacit layer | <10% of live entries are findings/warnings/needs/questions |
 | **H3** | Resolved obligations keep resurfacing | ≥1 live warning/need is already resolved by another entry |
 | **H3b** | Warnings accumulate with no drain | ≥25% of live warnings are older than 30 days |
 | **H4** | Scope silently degrades to `project` | ≥20% of decisions are scoped `project` |
@@ -81,6 +90,8 @@ row is itself an interesting result.
 | H1b | **SUPPORTS** | 65.9% — 164 placeholder, 34 fragment, of 258 |
 | H2 | **SUPPORTS** | 71.4% (5/7 sweeps hit same-day entries) |
 | H2b | **SUPPORTS** | 356 findings archived vs 53 live |
+| H2c | **SUPPORTS** | 1 junk finding (essentially clean) |
+| H2d | **REFUTES** | 14.6% tacit — board composition `{decision:166, status:162, finding:53, warning:3}` |
 | H3 | LOW N | 0 of 3 obligations |
 | H3b | LOW N | 0 of 3 warnings |
 | H4 | **REFUTES** | 13.1% (52/396) |
