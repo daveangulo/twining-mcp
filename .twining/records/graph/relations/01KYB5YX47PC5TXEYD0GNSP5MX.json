@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-24T23:04:25.991Z",
+  "id": "01KYB5YX47PC5TXEYD0GNSP5MX",
+  "properties": {
+    "decision_summary": "Chose to add LOW N sample-size guards as a validity mechanism while leaving every pre-registered threshold untouched"
+  },
+  "source": "01KYB5YX2DQX9HP72A8SF19W6B",
+  "target": "01KYB5YX46NC4BRMFCXMHVKYYY",
+  "type": "decided_by"
+}

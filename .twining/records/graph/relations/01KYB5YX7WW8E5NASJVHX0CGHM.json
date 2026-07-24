@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-24T23:04:26.108Z",
+  "id": "01KYB5YX7WW8E5NASJVHX0CGHM",
+  "properties": {
+    "decision_summary": "Chose to publish the dogfood baseline alongside the field instructions rather than only the thresholds"
+  },
+  "source": "01KYB5YX2DQX9HP72A8SF19W6B",
+  "target": "01KYB5YX7WW8E5NASJVHX0CGHK",
+  "type": "decided_by"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-24T23:04:26.055Z",
+  "id": "01KYB5YX67PQFVDQP4B4G5EY9T",
+  "properties": {
+    "decision_summary": "Chose a zero-dependency Node script reading the on-disk JSON/JSONL directly over importing the twining engines"
+  },
+  "source": "01KYB5YX2DQX9HP72A8SF19W6B",
+  "target": "01KYB5YX66VZP7EDS4M4TZ8CD6",
+  "type": "decided_by"
+}

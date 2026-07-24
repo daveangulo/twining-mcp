@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Archive summary: 501 entries archived. finding: 114 entries (Baseline also refutes H4 (13.1% project-scoped vs >=20% predicted) and H7 (18.7% assembled_before:false vs >=30% predicted) — scope degradation and blind-decision rate are both milder than the revi…; MAJOR: the dogfood baseline REFUTES H1, the review's strongest capture claim. Only 4% (16/396) of decisions have rationale identical to or contained in the summary — agents are NOT writing WHAT-as-…; Related decisions in scope: 2 existing decision(s) overlap). status: 382 entries (Built read-only field probe + pre-registered validation doc; dogfood baseline already refutes the review's strongest capture claim; Fixed 6 confirmed high-severity defects: assemble ordering, resolved-obligation leak, silent warning drop, why() retired statuses, ingest data loss, reverse-migrate wipe; Subagent completed: workflow-subagent). warning: 3 entries ('open need' is undefined in the spec but the repo has a canonical predicate (issue #40: resolved when a later entry back-references via relates_to, archiver.ts:34-63) — any triage implementation mu…; the spec's ratify queue has no exit condition — DecisionStatus has no ratified state and approving leaves a decision active+irreversible, in queue forever; the repo already ships the ratification s…; triage spec §5 (its self-declared most important section) analyzes only the legacy file backend — SQLite is the v2 default, where the decision index is a read-time projection over full records: add…). need: 2 entries (Human review: docs/TRIAGE-SPEC.md §6.1 promotion-test numbers (8-week window, ≥2 repos) ship as written absent a stated reason — owner sign-off or retune before release.; spec §6.1 field-data observation window starts when twining_triage ships in a release — record the release date to anchor the 8-week promotion/removal test).",
+  "entry_type": "finding",
+  "id": "01KYB5YXF1VB2S77HDF5C9481Q",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "c1c46f792d10484f75c047f1b9b850591145c084",
+    "recorded_at": "2026-07-24T23:04:26.318Z"
+  },
+  "scope": "project",
+  "summary": "Archive: 501 entries archived",
+  "tags": [
+    "archive"
+  ],
+  "timestamp": "2026-07-24T23:04:26.337Z"
+}

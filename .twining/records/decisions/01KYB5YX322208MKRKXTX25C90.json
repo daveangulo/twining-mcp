@@ -1,0 +1,32 @@
+{
+  "affected_files": [
+    "scripts/field-probe.mjs",
+    "docs/FIELD-VALIDATION.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [
+    "Probe must run on a different machine with no install and no network",
+    "Probe must never write to a field .twining/ store",
+    "Thresholds must be fixed before first field run to keep the result falsifiable"
+  ],
+  "context": "Built read-only field probe + pre-registered validation doc; dogfood baseline already refutes the review's strongest capture claim",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KYB5YX322208MKRKXTX25C90",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "c1c46f792d10484f75c047f1b9b850591145c084",
+    "recorded_at": "2026-07-24T23:04:25.937Z"
+  },
+  "rationale": "'0 of 3 warnings' was being reported as REFUTES, which is a false negative, but changing a threshold after seeing a result would convert the instrument into decoration",
+  "reversible": true,
+  "scope": "scripts/",
+  "status": "active",
+  "summary": "Chose to add LOW N sample-size guards as a validity mechanism while leaving every pre-registered threshold untouched",
+  "timestamp": "2026-07-24T23:04:25.954Z"
+}

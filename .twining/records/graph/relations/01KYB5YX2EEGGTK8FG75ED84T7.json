@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-24T23:04:25.934Z",
+  "id": "01KYB5YX2EEGGTK8FG75ED84T7",
+  "properties": {
+    "decision_summary": "Chose pre-registered hypotheses with explicit falsification thresholds recorded before the script was ever run against a store, rather than an open-ended metrics dump"
+  },
+  "source": "01KYB5YX2DQX9HP72A8SF19W6B",
+  "target": "01KYB5YX2DQX9HP72A8SF19W6A",
+  "type": "decided_by"
+}
