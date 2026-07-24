@@ -2,7 +2,7 @@
   "mcpServers": {
     "twining": {
       "command": "sh",
-      "args": ["-c", "exec \"${CLAUDE_PLUGIN_ROOT}/scripts/launch-server.sh\""]
+      "args": ["-c", "if [ -z \"${CLAUDE_PLUGIN_ROOT:-}\" ]; then echo '[twining] CLAUDE_PLUGIN_ROOT is unset, so the launcher path cannot be resolved and twining tools will be absent from this session. This usually means the server was started outside a plugin context.' >&2; exit 78; fi; exec \"${CLAUDE_PLUGIN_ROOT}/scripts/launch-server.sh\""]
     }
   }
 }

@@ -155,7 +155,7 @@ Fix (macOS/Linux): wrap the server command in a login shell so `PATH` is rebuilt
 }
 ```
 
-**The plugin's bundled server does this automatically since plugin 1.13.0** — it spawns through `sh -lc`, so plugin users need no per-project fix. The manual snippet above is only for standalone `.mcp.json` installs. If even a login shell can't find `npx`, the plugin's SessionStart hook detects it and injects a warning into the session instead of failing silently — and since plugin 1.18.0 the launch itself falls back through a ladder of alternatives first (next subsection).
+**The plugin's bundled server does this automatically since plugin 1.13.0** — it spawns through `sh -c` and recovers a usable `PATH` inside `scripts/launch-server.sh`, so plugin users need no per-project fix. The manual snippet above is only for standalone `.mcp.json` installs. If even a login shell can't find `npx`, the plugin's SessionStart hook detects it and injects a warning into the session instead of failing silently — and since plugin 1.18.0 the launch itself falls back through a ladder of alternatives first (next subsection).
 
 **Windows:** the bundled server's `sh` launcher does not resolve there. Windows sessions inherit the registry `PATH` and never had the minimal-PATH problem, so the fallback is a one-line project `.mcp.json` with the bare command instead: `"command": "npx", "args": ["-y", "twining-mcp@^2.0.0", "--project", "."]` (the plugin's hooks, skills, and gates are unaffected).
 
