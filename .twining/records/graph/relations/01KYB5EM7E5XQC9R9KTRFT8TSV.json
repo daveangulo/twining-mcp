@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-24T22:55:32.590Z",
+  "id": "01KYB5EM7E5XQC9R9KTRFT8TSV",
+  "properties": {
+    "decision_summary": "Chose degrade-to-summary-only for warnings that exceed the token budget, rather than only counting the drops"
+  },
+  "source": "01KYB5EM4C14Z0131D12PWT487",
+  "target": "01KYB5EM7576Y4FZ28V1XPEKQS",
+  "type": "decided_by"
+}

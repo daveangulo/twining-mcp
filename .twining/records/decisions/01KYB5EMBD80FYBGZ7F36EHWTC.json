@@ -1,0 +1,54 @@
+{
+  "affected_files": [
+    "src/engine/context-assembler.ts",
+    "src/engine/decisions.ts",
+    "src/storage/backend-factory.ts",
+    "src/migrate/reverse.ts",
+    "src/utils/types.ts",
+    "test/deep-review-regressions.test.ts"
+  ],
+  "affected_symbols": [
+    "ContextAssembler.assemble",
+    "ContextAssembler.formatForLLM",
+    "DecisionEngine.why",
+    "createStores",
+    "migrateReverse"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "threading a flag into it",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "constructing it removes the destructive HEAD-move re-ingest path with no new branching",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [
+    "Fix only defects confirmed by 2/2 adversarial verifiers with low fix risk",
+    "No breaking changes to tool response shapes"
+  ],
+  "context": "Fixed 6 confirmed high-severity defects: assemble ordering, resolved-obligation leak, silent warning drop, why() retired statuses, ingest data loss, reverse-migrate wipe",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KYB5EMBD80FYBGZ7F36EHWTC",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "1acb0d4568929ff5fee2960b6573addeaf96389d",
+    "recorded_at": "2026-07-24T22:55:32.702Z"
+  },
+  "rationale": "recordSync is already optional in StoreSet and every consumer guards on it, so not constructing it removes the destructive HEAD-move re-ingest path with no new branching",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Chose to omit RecordSyncManager entirely when export_records is false rather than threading a flag into it",
+  "timestamp": "2026-07-24T22:55:32.717Z"
+}

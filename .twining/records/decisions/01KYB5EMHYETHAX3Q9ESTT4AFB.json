@@ -1,0 +1,48 @@
+{
+  "affected_files": [
+    "src/engine/context-assembler.ts",
+    "src/engine/decisions.ts",
+    "src/storage/backend-factory.ts",
+    "src/migrate/reverse.ts",
+    "src/utils/types.ts",
+    "test/deep-review-regressions.test.ts"
+  ],
+  "affected_symbols": [
+    "ContextAssembler.assemble",
+    "ContextAssembler.formatForLLM",
+    "DecisionEngine.why",
+    "createStores",
+    "migrateReverse"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "adding a separate retired_count",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [
+    "Fix only defects confirmed by 2/2 adversarial verifiers with low fix risk",
+    "No breaking changes to tool response shapes"
+  ],
+  "context": "Fixed 6 confirmed high-severity defects: assemble ordering, resolved-obligation leak, silent warning drop, why() retired statuses, ingest data loss, reverse-migrate wipe",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KYB5EMHYETHAX3Q9ESTT4AFB",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "1acb0d4568929ff5fee2960b6573addeaf96389d",
+    "recorded_at": "2026-07-24T22:55:32.911Z"
+  },
+  "rationale": "avoids a breaking change to the why() response shape for a count that is only ever displayed as 'N more retired decisions'",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Chose to keep the existing superseded_count field name while widening what it counts, rather than adding a separate retired_count",
+  "timestamp": "2026-07-24T22:55:32.926Z"
+}

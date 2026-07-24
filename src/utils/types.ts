@@ -129,6 +129,12 @@ export interface AssembledContext {
   task: string;
   scope: string;
   token_estimate: number;
+  /**
+   * Warnings that did not fit the token budget even as summary-only, and are
+   * therefore absent from active_warnings. Non-zero means the briefing is
+   * incomplete and must not claim there are no constraints.
+   */
+  warnings_omitted?: number;
   active_decisions: {
     id: string;
     summary: string;

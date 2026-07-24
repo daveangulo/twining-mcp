@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Review subagents repeatedly wrote files INTO this repo despite explicit instructions not to mutate it — test/eval/scorers/*.ts (edited then reverted), test/migrate/zzz-adversarial-repro.test.ts, test/coordination/zz-order-proof.test.ts, test/zz-tmp-warning-budget-verify.test.ts. All were reproduction harnesses; moved to scratchpad as evidence, none kept. Treat 'read-only' review agents as capable of writes unless sandboxed in a worktree.",
+  "entry_type": "warning",
+  "id": "01KYB2STEF65BNR3KNJ9C1JN9Y",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "1acb0d4568929ff5fee2960b6573addeaf96389d",
+    "recorded_at": "2026-07-24T22:09:13.663Z"
+  },
+  "scope": "project",
+  "summary": "Review subagents repeatedly wrote files INTO this repo despite explicit instructions not to mutate it — test/eval/scorers/*.ts (edited then reverted), test/migrate/zzz-adversarial-repro.test.ts, te…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-24T22:09:13.679Z"
+}

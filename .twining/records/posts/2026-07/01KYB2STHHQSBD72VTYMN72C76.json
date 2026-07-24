@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Workflow design lesson (not a twining bug): agent() returns null both when a verifier refutes-by-dying and when it genuinely refutes, so a quota exhaustion silently converted unverified findings into 'refuted'. Score null distinctly from false, or a dead fleet reads as a clean bill of health.",
+  "entry_type": "finding",
+  "id": "01KYB2STHHQSBD72VTYMN72C76",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "1acb0d4568929ff5fee2960b6573addeaf96389d",
+    "recorded_at": "2026-07-24T22:09:13.761Z"
+  },
+  "scope": "project",
+  "summary": "Workflow design lesson (not a twining bug): agent() returns null both when a verifier refutes-by-dying and when it genuinely refutes, so a quota exhaustion silently converted unverified findings in…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-24T22:09:13.777Z"
+}

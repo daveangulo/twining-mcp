@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-24T22:55:32.904Z",
+  "id": "01KYB5EMH8AD2384DWBMQW804A",
+  "properties": {
+    "decision_summary": "Chose to widen why()'s exclusion to a WHY_RETIRED_STATUSES set covering superseded, overridden and archived rather than adding 'overridden' alone"
+  },
+  "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+  "target": "01KYB5EMH45M31DR4KRNV5JSD8",
+  "type": "decided_by"
+}

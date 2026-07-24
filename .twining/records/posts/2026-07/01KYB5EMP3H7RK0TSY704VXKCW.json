@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: The full suite was green for the entire time all 6 of these defects were live (1452 tests). Test count is not evidence of retrieval correctness — nothing asserted presentation order, resolution filtering, or budget-drop behavior before this.",
+  "entry_type": "warning",
+  "id": "01KYB5EMP3H7RK0TSY704VXKCW",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "1acb0d4568929ff5fee2960b6573addeaf96389d",
+    "recorded_at": "2026-07-24T22:55:33.044Z"
+  },
+  "scope": "src/",
+  "summary": "The full suite was green for the entire time all 6 of these defects were live (1452 tests). Test count is not evidence of retrieval correctness — nothing asserted presentation order, resolution fil…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-24T22:55:33.059Z"
+}

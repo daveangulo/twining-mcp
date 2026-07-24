@@ -95,7 +95,20 @@ const WHY_STATUS_RANK: Record<string, number> = {
   active: 2,
   provisional: 1,
   superseded: 0,
+  overridden: 0,
+  archived: 0,
 };
+
+/**
+ * Statuses that no longer carry authority. why() hides these by default: an
+ * overridden decision was explicitly rejected, and surfacing it in the
+ * full-detail tier presents a reversed choice as a live constraint.
+ */
+const WHY_RETIRED_STATUSES: ReadonlySet<string> = new Set([
+  "superseded",
+  "overridden",
+  "archived",
+]);
 
 /**
  * How directly a decision matches the queried scope (#41): exact scope,
@@ -459,12 +472,15 @@ export class DecisionEngine {
     const budget = options?.max_tokens ?? DEFAULT_WHY_MAX_TOKENS;
     const all = await this.decisionStore.getByScope(scope);
 
-    const superseded_count = all.filter(
-      (d) => d.status === "superseded",
+    // Counts every retired status, not just "superseded" — an overridden or
+    // archived decision is equally non-authoritative, and previously both fell
+    // through the filter into the full-detail tier.
+    const superseded_count = all.filter((d) =>
+      WHY_RETIRED_STATUSES.has(d.status),
     ).length;
     const matches = options?.include_superseded
       ? all
-      : all.filter((d) => d.status !== "superseded");
+      : all.filter((d) => !WHY_RETIRED_STATUSES.has(d.status));
 
     const ranked = [...matches].sort(
       (a, b) =>

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-24T22:55:33.004Z",
+  "id": "01KYB5EMMCEG0F25ZGPK7HQJAB",
+  "name": "01KYB5EMHYETHAX3Q9ESTT4AFB",
+  "properties": {
+    "scope": "src/",
+    "summary": "Chose to keep the existing superseded_count field name while widening what it counts, rather than adding a separate retired_count"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-24T22:55:33.004Z"
+}

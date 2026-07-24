@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Chose to widen why()'s exclusion to a WHY_RETIRED_STATUSES set covering superseded, overridden and archived rather than adding 'overridden' alone\" relates to:\n- 01KJDWTR95TCGQR2S0X2G86TT7: \"Remove hardcoded PostHog API key, read from POSTHOG_API_KEY env var or config instead\"\n- 01KQWE989N68PA3ARWEMRGQ5C4: \"Added archived to DecisionStatus union rather than moving decision JSON files\"\n- 01KY0THTBBYC3APWRVREZ3ZSA3: \"Chose to file the twining_why size blowup as a v2.1 issue (#41) with a ranked-tier + token-budget design direction over patching a hard result-size cap\"\n- 01KY11ZFGYPBBRJ4DC8GGXH8S8: \"Chose a strict ranked-prefix token budget (once one decision overflows, all lower-ranked ones go compact) over best-fit packing\"\n- 01KY11ZFPNYARXRTD2CZ0VM76J: \"Chose a hardcoded DEFAULT_WHY_MAX_TOKENS=4000 constant mirroring context_assembly.default_max_tokens rather than threading config into DecisionEngine\"\n- 01KY7WMA73K5R830Z81PPKMWQV: \"Chose render-time link derivation (local /api/raw link authoritative + best-effort remote blob link from /api/repo-info) over a URL-rewrite operation on stored entries\"\n- 01KY7WMABN6SDHBYXG581R0Y75: \"Chose a lookbehind boundary guard in the repo-path regex after a test caught '.twining/config.yml' tail-matching as 'twining/config.yml'\"\n- 01KYB5EM4YC7NFTPACQFSJT3B8: \"Chose degrade-to-summary-only for warnings that exceed the token budget, rather than only counting the drops\"",
+  "entry_type": "finding",
+  "id": "01KYB5EMF6PY76C29KRPS2GZ9A",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "1acb0d4568929ff5fee2960b6573addeaf96389d",
+    "recorded_at": "2026-07-24T22:55:32.825Z"
+  },
+  "scope": "src/",
+  "summary": "Related decisions in scope: 8 existing decision(s) overlap",
+  "tags": [
+    "security"
+  ],
+  "timestamp": "2026-07-24T22:55:32.838Z"
+}

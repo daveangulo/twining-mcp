@@ -3,8 +3,8 @@
   "id": "01KWX2BS9QH1GTZRASQJNS52MN",
   "name": "ContextAssembler.assemble",
   "properties": {
-    "scope": "src/engine/"
+    "scope": "src/"
   },
   "type": "function",
-  "updated_at": "2026-07-07T01:16:30.263Z"
+  "updated_at": "2026-07-24T22:55:33.010Z"
 }

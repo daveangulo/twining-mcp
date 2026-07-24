@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-24T22:55:32.697Z",
+  "id": "01KYB5EMASBPZC3V1C32HXQGTB",
+  "properties": {
+    "decision_summary": "Chose to compute resolved ids from the full live board rather than the scope slice, and to delete resolved obligations before scoring rather than hiding them at render"
+  },
+  "source": "01KWX2BS9QH1GTZRASQJNS52MN",
+  "target": "01KYB5EMAK34XNZJEJGWWCYJBS",
+  "type": "decided_by"
+}

@@ -16,6 +16,7 @@ import type {
 } from "../utils/types.js";
 import { DEFAULT_LIVENESS_THRESHOLDS } from "../utils/liveness.js";
 import { computeLiveness } from "../utils/liveness.js";
+import { computeResolvedIds } from "./resolution.js";
 import { normalizeTags } from "../utils/tags.js";
 import { estimateTokens } from "../utils/tokens.js";
 import type { IAgentStore, IBlackboardStore, IDecisionStore, IHandoffStore } from "../storage/interfaces.js";
@@ -172,6 +173,25 @@ export class ContextAssembler {
       }
     }
 
+    // Drop obligations that another entry has already resolved, before they are
+    // scored — otherwise resolved needs and warnings resurface forever as
+    // "REMAINING WORK" and "STOP" directives, and consume budget doing it.
+    // Resolved ids come from the FULL live board, not the scope slice: the
+    // resolving entry is frequently posted against a different scope. This
+    // mirrors triage.ts:207 so assemble, triage, and the archiver agree on
+    // what "open" means.
+    const resolvedIds = computeResolvedIds(allEntries);
+    for (const [id, entry] of mergedEntryMap) {
+      if (
+        (entry.entry_type === "need" ||
+          entry.entry_type === "warning" ||
+          entry.entry_type === "question") &&
+        resolvedIds.has(id)
+      ) {
+        mergedEntryMap.delete(id);
+      }
+    }
+
     // 5. Compute graph reachability scores for decisions
     const { scores: reachabilityScores, paths: reachabilityPaths } =
       await this.computeGraphReachability(scope, mergedDecisionMap);
@@ -249,11 +269,25 @@ export class ContextAssembler {
     const selected = new Set<string>();
     let tokensUsed = 0;
 
-    // First: fill warnings from the full budget (priority access)
+    // First: fill warnings from the full budget (priority access).
+    // A warning that does not fit in full degrades to summary-only rather than
+    // disappearing: dropping it silently produced a briefing that affirmatively
+    // said "No prior context constraints — proceed" while real warnings existed.
+    const summaryOnlyWarnings = new Set<string>();
+    let warningsOmitted = 0;
     for (const item of warnings) {
       if (tokensUsed + item.tokenCost <= budget) {
         selected.add(item.id);
         tokensUsed += item.tokenCost;
+        continue;
+      }
+      const summaryCost = estimateTokens((item.data as BlackboardEntry).summary);
+      if (tokensUsed + summaryCost <= budget) {
+        selected.add(item.id);
+        summaryOnlyWarnings.add(item.id);
+        tokensUsed += summaryCost;
+      } else {
+        warningsOmitted += 1;
       }
     }
 
@@ -289,7 +323,14 @@ export class ContextAssembler {
     const activeWarnings: AssembledContext["active_warnings"] = [];
     const recentQuestions: AssembledContext["recent_questions"] = [];
 
-    for (const item of scoredItems) {
+    // Present in score order, not store order. Selection above already ranked
+    // warnings and non-warnings separately to fill the budget; iterating the
+    // unsorted scoredItems here threw that ranking away, so formatForLLM's
+    // "CRITICAL" tier rendered the three OLDEST scope-matched decisions and
+    // collapsed the highest-scoring ones into "+N more".
+    const presentationOrder = [...scoredItems].sort((a, b) => b.score - a.score);
+
+    for (const item of presentationOrder) {
       if (!selected.has(item.id)) continue;
 
       if (item.type === "decision") {
@@ -326,7 +367,7 @@ export class ContextAssembler {
             activeWarnings.push({
               id: e.id,
               summary: e.summary,
-              detail: e.detail,
+              detail: summaryOnlyWarnings.has(e.id) ? "" : e.detail,
               scope: e.scope,
               timestamp: e.timestamp,
             });
@@ -434,6 +475,7 @@ export class ContextAssembler {
       task,
       scope,
       token_estimate: tokensUsed,
+      ...(warningsOmitted > 0 ? { warnings_omitted: warningsOmitted } : {}),
       active_decisions: activeDecisionResults,
       open_needs: openNeeds,
       recent_findings: recentFindings,
@@ -565,9 +607,22 @@ export class ContextAssembler {
       ctx.open_needs.length > 0 ||
       ctx.recent_questions.length > 0 ||
       (ctx.recent_handoffs && ctx.recent_handoffs.length > 0) ||
-      ctx.planning_state != null;
+      ctx.planning_state != null ||
+      // Warnings dropped for budget are still context. Reporting "no prior
+      // context" here would state the opposite of the truth.
+      (ctx.warnings_omitted ?? 0) > 0;
     if (!hasContent) {
       return `No prior context for scope: ${ctx.scope}`;
+    }
+    if (
+      ctx.active_warnings.length === 0 &&
+      ctx.active_decisions.length === 0 &&
+      ctx.recent_findings.length === 0 &&
+      ctx.open_needs.length === 0 &&
+      ctx.recent_questions.length === 0 &&
+      (ctx.warnings_omitted ?? 0) > 0
+    ) {
+      return `Context for scope ${ctx.scope} exceeded the token budget: ${ctx.warnings_omitted} warning(s) could not be shown. Call twining_read with entry_types:["warning"] before proceeding.`;
     }
 
     const sections: string[] = [];
@@ -723,14 +778,17 @@ export class ContextAssembler {
     }
 
     // YOUR NEXT STEP — explicit first action directive to reduce orientation time
+    const omitted = ctx.warnings_omitted ?? 0;
     const nextStep =
       ctx.active_warnings.length > 0
         ? "Address the warnings above before proceeding."
-        : ctx.recent_handoffs && ctx.recent_handoffs.length > 0
-          ? "Continue from the handoff above — start with the unchecked items."
-          : ctx.open_needs.length > 0
-            ? "Pick up the first remaining work item."
-            : "No prior context constraints — proceed with your task.";
+        : omitted > 0
+          ? `${omitted} warning(s) did not fit the token budget — call twining_read with entry_types:["warning"] before proceeding.`
+          : ctx.recent_handoffs && ctx.recent_handoffs.length > 0
+            ? "Continue from the handoff above — start with the unchecked items."
+            : ctx.open_needs.length > 0
+              ? "Pick up the first remaining work item."
+              : "No prior context constraints — proceed with your task.";
     sections.push(`\n### YOUR NEXT STEP\n${nextStep}`);
 
     return sections.join("\n");

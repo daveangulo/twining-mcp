@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-24T22:55:32.488Z",
+  "id": "01KYB5EM48MBAWRCPPMCSQ52NS",
+  "name": "test/deep-review-regressions.test.ts",
+  "properties": {
+    "scope": "src/"
+  },
+  "type": "file",
+  "updated_at": "2026-07-24T22:55:33.009Z"
+}

@@ -1,0 +1,54 @@
+{
+  "affected_files": [
+    "src/engine/context-assembler.ts",
+    "src/engine/decisions.ts",
+    "src/storage/backend-factory.ts",
+    "src/migrate/reverse.ts",
+    "src/utils/types.ts",
+    "test/deep-review-regressions.test.ts"
+  ],
+  "affected_symbols": [
+    "ContextAssembler.assemble",
+    "ContextAssembler.formatForLLM",
+    "DecisionEngine.why",
+    "createStores",
+    "migrateReverse"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "only the decisions tier",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "re-merging the already-sorted warnings and nonWarnings arrays",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [
+    "Fix only defects confirmed by 2/2 adversarial verifiers with low fix risk",
+    "No breaking changes to tool response shapes"
+  ],
+  "context": "Fixed 6 confirmed high-severity defects: assemble ordering, resolved-obligation leak, silent warning drop, why() retired statuses, ingest data loss, reverse-migrate wipe",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KYB5EM1FS9E1J8K1MHPCMHG8",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "1acb0d4568929ff5fee2960b6573addeaf96389d",
+    "recorded_at": "2026-07-24T22:55:32.384Z"
+  },
+  "rationale": "the loop also populates open_needs, recent_findings, active_warnings and recent_questions, so one sorted iteration fixes every section's order consistently instead of only the decisions tier",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Chose to sort a copy of scoredItems by score before the presentation loop rather than re-merging the already-sorted warnings and nonWarnings arrays",
+  "timestamp": "2026-07-24T22:55:32.399Z"
+}

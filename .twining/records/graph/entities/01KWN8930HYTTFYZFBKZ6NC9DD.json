@@ -3,8 +3,8 @@
   "id": "01KWN8930HYTTFYZFBKZ6NC9DD",
   "name": "src/migrate/reverse.ts",
   "properties": {
-    "scope": "src/storage/"
+    "scope": "src/"
   },
   "type": "file",
-  "updated_at": "2026-07-05T23:17:36.805Z"
+  "updated_at": "2026-07-24T22:55:33.007Z"
 }

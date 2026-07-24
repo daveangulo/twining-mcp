@@ -84,6 +84,17 @@ export async function migrateReverse(
     );
   }
   const exportOff = config.storage?.export_records === false;
+  if (exportOff && !hasDb) {
+    // openDatabase would CREATE an empty twining.db here, and with the tree
+    // deliberately ignored the reverse would then export nothing over the file
+    // backend — wiping it to empty and exiting 0.
+    throw new Error(
+      "storage.export_records is disabled and .twining/twining.db is absent — " +
+        "records/ is not a complete mirror in this configuration, so there is nothing " +
+        "to reverse from. Obtain the database, or set export_records back to true and " +
+        "run `twining-mcp migrate` first so the tree is repopulated.",
+    );
+  }
   if (exportOff) {
     notes.push(
       "export_records is disabled — records/ tree ignored; exporting from the database alone",

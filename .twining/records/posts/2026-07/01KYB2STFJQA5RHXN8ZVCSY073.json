@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: The Stop hook fired demanding a record when THIS session had edited nothing since its last twining_record — the edits were made by background subagents writing test files into the repo. The hook's edit marker cannot distinguish subagent writes from the controlling session's, so background agent activity produces false gate demands on the controller. Related to the existing subagent-controller-commits guidance.",
+  "entry_type": "warning",
+  "id": "01KYB2STFJQA5RHXN8ZVCSY073",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "1acb0d4568929ff5fee2960b6573addeaf96389d",
+    "recorded_at": "2026-07-24T22:09:13.699Z"
+  },
+  "scope": "project",
+  "summary": "The Stop hook fired demanding a record when THIS session had edited nothing since its last twining_record — the edits were made by background subagents writing test files into the repo. The hook's …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-24T22:09:13.714Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-24T22:55:32.805Z",
+  "id": "01KYB5EME5XNCX2B7HHKPBGA10",
+  "properties": {
+    "decision_summary": "Chose to omit RecordSyncManager entirely when export_records is false rather than threading a flag into it"
+  },
+  "source": "01KWX2BS9QH1GTZRASQJNS52MN",
+  "target": "01KYB5EMDZ0BZNYR3APHS19GRG",
+  "type": "decided_by"
+}

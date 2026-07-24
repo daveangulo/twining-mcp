@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: archiver.ts:50 cutoff=now and pre-commit-hook.sh:38 compound-command bypass are both confirmed high severity but carry medium fix risk and were NOT fixed — the archiver fix needs a count-based retention policy (an age cutoff alone still fully sweeps a same-hour burst of 500 entries) plus a new config field, and the hook fix needs clause-splitting on &&/||/;/|/newlines.",
+  "entry_type": "need",
+  "id": "01KYB5EMQMDV0PAV00W5QB0QQT",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "1acb0d4568929ff5fee2960b6573addeaf96389d",
+    "recorded_at": "2026-07-24T22:55:33.093Z"
+  },
+  "scope": "src/",
+  "summary": "archiver.ts:50 cutoff=now and pre-commit-hook.sh:38 compound-command bypass are both confirmed high severity but carry medium fix risk and were NOT fixed — the archiver fix needs a count-based rete…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-24T22:55:33.108Z"
+}

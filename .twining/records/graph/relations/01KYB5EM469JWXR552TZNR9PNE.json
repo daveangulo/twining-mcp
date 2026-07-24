@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-24T22:55:32.486Z",
+  "id": "01KYB5EM469JWXR552TZNR9PNE",
+  "properties": {
+    "decision_summary": "Chose to sort a copy of scoredItems by score before the presentation loop rather than re-merging the already-sorted warnings and nonWarnings arrays"
+  },
+  "source": "01KWMS1EJY7VZ185A0WNT7D11E",
+  "target": "01KYB5EM41WH8FRFNZF5STPR40",
+  "type": "decided_by"
+}

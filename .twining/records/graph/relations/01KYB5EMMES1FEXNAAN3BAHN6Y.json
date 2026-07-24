@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-24T22:55:33.006Z",
+  "id": "01KYB5EMMES1FEXNAAN3BAHN6Y",
+  "properties": {
+    "decision_summary": "Chose to keep the existing superseded_count field name while widening what it counts, rather than adding a separate retired_count"
+  },
+  "source": "01KKNE77ZAW1943XPGMREM997R",
+  "target": "01KYB5EMMCEG0F25ZGPK7HQJAB",
+  "type": "decided_by"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: The two 'critical' findings were downgraded to high by adversarial verifiers on the grounds that archived entries remain recoverable from .twining/archive/*.jsonl and git history — the loss is silent removal from every live retrieval surface, not permanent destruction.",
+  "entry_type": "finding",
+  "id": "01KYB5EMPT2K5NEC2MEVF4X4YK",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "1acb0d4568929ff5fee2960b6573addeaf96389d",
+    "recorded_at": "2026-07-24T22:55:33.068Z"
+  },
+  "scope": "src/",
+  "summary": "The two 'critical' findings were downgraded to high by adversarial verifiers on the grounds that archived entries remain recoverable from .twining/archive/*.jsonl and git history — the loss is sile…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-24T22:55:33.082Z"
+}

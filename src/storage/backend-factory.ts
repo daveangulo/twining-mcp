@@ -43,6 +43,7 @@ import {
 import { withRecordExport } from "./sync/record-export.js";
 import { ingestRecords } from "./sync/record-ingest.js";
 import { RecordSyncManager } from "./sync/sync-manager.js";
+import fs from "node:fs";
 import path from "node:path";
 
 export interface StoreSet {
@@ -90,18 +91,34 @@ export function createStores(
       // W2.3: converge the database to the committed export tree first —
       // this is where another user's / branch's records arrive after a
       // git pull. Non-fatal: a broken tree must not stop the server.
-      try {
-        const stats = ingestRecords(db, twiningDir);
-        if (stats.inserted || stats.updated || stats.deleted) {
+      //
+      // Only when export_records is on. With it off, writes are never mirrored
+      // into .twining/records/, so the tree is a stale partial snapshot and the
+      // database is the only complete state — ingesting would delete every row
+      // whose file is absent (record-ingest deletion propagation), silently
+      // wiping post-flip work at each server start. Both migrate paths already
+      // treat export_records:false this way (forward.ts, reverse.ts).
+      const exportRecords = config.storage?.export_records !== false;
+      if (exportRecords) {
+        try {
+          const stats = ingestRecords(db, twiningDir);
+          if (stats.inserted || stats.updated || stats.deleted) {
+            console.error(
+              `[twining] Ingested records: +${stats.inserted} ~${stats.updated} -${stats.deleted}` +
+                (stats.skipped ? ` (${stats.skipped} unparseable skipped)` : ""),
+            );
+          }
+        } catch (err) {
           console.error(
-            `[twining] Ingested records: +${stats.inserted} ~${stats.updated} -${stats.deleted}` +
-              (stats.skipped ? ` (${stats.skipped} unparseable skipped)` : ""),
+            "[twining] Record ingest failed (non-fatal):",
+            err instanceof Error ? err.message : String(err),
           );
         }
-      } catch (err) {
+      } else if (fs.existsSync(path.join(twiningDir, "records"))) {
         console.error(
-          "[twining] Record ingest failed (non-fatal):",
-          err instanceof Error ? err.message : String(err),
+          "[twining] storage.export_records is false but .twining/records/ exists — " +
+            "the tree is stale and is NOT being ingested. Re-enabling export_records " +
+            "would overwrite database rows from it.",
         );
       }
 
@@ -114,12 +131,18 @@ export function createStores(
         handoffStore: new SqliteHandoffStore(db),
         indexManager: new SqliteIndexManager(db),
         // Constructed immediately after the startup ingest so its HEAD
-        // snapshot means "HEAD as of the last ingest".
-        recordSync: new RecordSyncManager(
-          db,
-          twiningDir,
-          path.dirname(twiningDir),
-        ),
+        // snapshot means "HEAD as of the last ingest". Omitted entirely when
+        // export_records is off: its maybeResync re-ingests on HEAD moves, and
+        // ingesting against a stale tree deletes database-only rows mid-session.
+        ...(exportRecords
+          ? {
+              recordSync: new RecordSyncManager(
+                db,
+                twiningDir,
+                path.dirname(twiningDir),
+              ),
+            }
+          : {}),
       };
       // Mirror every write into .twining/records/ — the committable truth
       // (twining.db itself is a gitignored local cache).

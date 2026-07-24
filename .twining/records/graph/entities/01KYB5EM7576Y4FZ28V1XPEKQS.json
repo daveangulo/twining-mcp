@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-24T22:55:32.581Z",
+  "id": "01KYB5EM7576Y4FZ28V1XPEKQS",
+  "name": "01KYB5EM4YC7NFTPACQFSJT3B8",
+  "properties": {
+    "scope": "src/",
+    "summary": "Chose degrade-to-summary-only for warnings that exceed the token budget, rather than only counting the drops"
+  },
+  "type": "concept",
+  "updated_at": "2026-07-24T22:55:32.581Z"
+}
