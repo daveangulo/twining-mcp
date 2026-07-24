@@ -99,6 +99,14 @@ export class HousekeepingEngine {
     staleness_review?: boolean;
     merge_sweep?: boolean;
     compact_archives?: boolean;
+    /**
+     * Set false to skip the blackboard archive pass (step 1) while still
+     * running the other passes. Step 1 archives with no cutoff, so on
+     * `execute: true` it sweeps the whole live board — which made the
+     * `compact_archives` repair path unusable, since compaction also needs
+     * `execute: true` to do real work. Defaults true to preserve behavior.
+     */
+    archive?: boolean;
   }): Promise<HousekeepingResult> {
     const staleDays = options?.stale_days ?? STALE_PROVISIONAL_DAYS;
     const metricsRetentionDays = options?.metrics_retention_days ?? METRICS_RETENTION_DAYS;
@@ -107,6 +115,7 @@ export class HousekeepingEngine {
     const stalenessReview = options?.staleness_review ?? false;
     const mergeSweep = options?.merge_sweep ?? false;
     const compactArchivesOpt = options?.compact_archives ?? false;
+    const archiveEnabled = options?.archive ?? true;
 
     const result: HousekeepingResult = {
       archived: { count: 0, file: "", kept_open: 0 },
@@ -128,7 +137,10 @@ export class HousekeepingEngine {
     // what execute will do (#39); previously preview skipped this pass
     // entirely and computed dedup/warnings on pre-archive state.
     let plannedArchiveIds = new Set<string>();
-    if (execute) {
+    if (!archiveEnabled) {
+      // Explicitly skipped — leave counts at zero so the report does not imply
+      // a sweep happened.
+    } else if (execute) {
       try {
         const archiveResult = await this.archiver.archive({ summarize: false });
         result.archived.count = archiveResult.archived_count;

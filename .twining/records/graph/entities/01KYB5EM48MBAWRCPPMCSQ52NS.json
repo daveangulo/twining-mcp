@@ -3,8 +3,8 @@
   "id": "01KYB5EM48MBAWRCPPMCSQ52NS",
   "name": "test/deep-review-regressions.test.ts",
   "properties": {
-    "scope": "src/"
+    "scope": "src/engine/"
   },
   "type": "file",
-  "updated_at": "2026-07-24T22:55:33.009Z"
+  "updated_at": "2026-07-24T23:46:50.452Z"
 }

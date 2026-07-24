@@ -15,8 +15,12 @@ import { DecisionStore } from "../src/storage/decision-store.js";
 import { BlackboardEngine } from "../src/engine/blackboard.js";
 import { DecisionEngine } from "../src/engine/decisions.js";
 import { migrateReverse } from "../src/migrate/reverse.js";
+import { Archiver } from "../src/engine/archiver.js";
+import { HousekeepingEngine } from "../src/engine/housekeeping.js";
 import { DEFAULT_CONFIG } from "../src/config.js";
 import type { TwiningConfig } from "../src/utils/types.js";
+
+const OLD_TS = "2025-01-01T00:00:00.000Z";
 
 let twiningDir: string;
 let blackboardStore: BlackboardStore;
@@ -242,5 +246,75 @@ describe("reverse migrate refuses to wipe the file backend", () => {
     await expect(migrateReverse({ projectRoot, dryRun: false })).rejects.toThrow(
       /export_records is disabled/,
     );
+  });
+});
+
+describe("housekeeping archive opt-out unblocks the #35 repair path", () => {
+  it("compacts archive junk with execute:true without sweeping the live board", async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "twining-hk-optout-"));
+    fs.mkdirSync(path.join(dir, "decisions"), { recursive: true });
+    fs.mkdirSync(path.join(dir, "archive"), { recursive: true });
+    fs.writeFileSync(path.join(dir, "blackboard.jsonl"), "");
+    fs.writeFileSync(path.join(dir, "decisions", "index.json"), JSON.stringify([]));
+
+    const bstore = new BlackboardStore(dir);
+    const dstore = new DecisionStore(dir);
+    const bengine = new BlackboardEngine(bstore);
+    const archiver = new Archiver(dir, bstore, bengine, null);
+    const hk = new HousekeepingEngine(dir, bstore, dstore, archiver, null);
+
+    // Live board an agent still depends on.
+    for (const t of ["finding", "warning", "need"]) {
+      await bengine.post({
+        entry_type: t,
+        summary: `live ${t}`,
+        detail: "d",
+        scope: "src/",
+        agent_id: "a1",
+        tags: [],
+      });
+    }
+    // Archive file carrying the #35 loop's own junk plus one real entry.
+    const junk = JSON.stringify({
+      id: "j1",
+      timestamp: OLD_TS,
+      agent_id: "main",
+      entry_type: "finding",
+      tags: ["archive"],
+      scope: "project",
+      summary: "Archive: 500 entries archived",
+      detail: "Archive summary: 500 entries archived.",
+    });
+    const real = JSON.stringify({
+      id: "r1",
+      timestamp: OLD_TS,
+      agent_id: "a1",
+      entry_type: "finding",
+      tags: [],
+      scope: "src/",
+      summary: "a real archived finding",
+      detail: "d",
+    });
+    fs.writeFileSync(path.join(dir, "archive", "2026-01-01-blackboard.jsonl"), junk + "\n" + real + "\n");
+
+    const before = (await bstore.read()).entries.length;
+    expect(before).toBe(3);
+
+    const res = await hk.run({ compact_archives: true, execute: true, archive: false });
+
+    // Junk dropped, real archived entry preserved.
+    expect(res.archive_compaction?.total_junk).toBe(1);
+    const after = fs
+      .readFileSync(path.join(dir, "archive", "2026-01-01-blackboard.jsonl"), "utf8")
+      .trim()
+      .split("\n");
+    expect(after).toHaveLength(1);
+    expect(after[0]).toContain("a real archived finding");
+
+    // The live board is untouched — this is the whole point of the opt-out.
+    expect(res.archived.count).toBe(0);
+    expect((await bstore.read()).entries).toHaveLength(3);
+
+    fs.rmSync(dir, { recursive: true, force: true });
   });
 });

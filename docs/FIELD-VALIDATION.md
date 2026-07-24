@@ -151,6 +151,31 @@ the plugin to confirm the diagnosis, then after to confirm the fix.
   `runner=<something> node=v22+`; `runner=none` is the smoking gun), plus the
   newest file in `~/Library/Caches/claude-cli-nodejs/<project>/mcp-logs-twining/`.
 
+### Ordering: run Part B **before** any housekeeping
+
+Archive compaction does **not** affect Part B — nothing outside `archiver.ts`
+and `archive-compactor.ts` reads `.twining/archive/`, so compaction cannot
+change what `assemble` or `why` return. No special flags are needed for B2.
+
+But `twining_housekeeping({execute: true})` **does** affect it, badly: step 1
+archives with no cutoff, so any `execute: true` sweeps the entire live board —
+the board B2 measures. So:
+
+1. Run **B1–B5 first**, on the store as it stands.
+2. Then reclaim the archive junk with the opt-out that skips the sweep:
+
+   ```
+   twining_housekeeping({ compact_archives: true })                      # preview
+   twining_housekeeping({ compact_archives: true, execute: true, archive: false })
+   ```
+
+   `archive: false` is required. Without it, `execute: true` archives your whole
+   live board before compacting — 1,945 entries in the field repo, including
+   every live finding, warning, and need. The flag was added on
+   `fix/deep-review-2026-07`; on an older build there is no safe way to invoke
+   the repair pass through the tool, and the archive files can be compacted by
+   hand instead (nothing reads them).
+
 ### B2 — Does assemble surface the decision that constrains the file?
 
 This is the review's single most consequential retrieval claim, and the one

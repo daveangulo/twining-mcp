@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-24T23:46:50.457Z",
+  "id": "01KYB8CHYSQ8BTAZRBRQR5NRSJ",
+  "properties": {
+    "decision_summary": "Chose to add an archive:boolean option defaulting true, letting callers skip housekeeping's step-1 archive pass, rather than changing the archiver's cutoff=now default"
+  },
+  "source": "01KWX4BGS172CJFFVSGD15N4K7",
+  "target": "01KYB8CHYHGQZEQQTKGFXKB78V",
+  "type": "decided_by"
+}

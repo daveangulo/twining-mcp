@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Decisions: Chose to add an archive:boolean option defaulting true, letting callers skip housekeeping's step-1 archive pass, rather than changing the archiver's cutoff=now default — the cutoff fix is confirmed but medium-risk and needs a count-based retention policy plus a new config field, whereas the opt-out is additive, backward-compatible, and immediately unblocks the compact_archives repair path that is otherwise unusable\nFindings: warning: twining_housekeeping's documented #35 repair path was booby-trapped. compact_archives only does real work under execute:true (housekeeping.ts step 10), but step 1 unconditionally runs archiver.archive() with NO cutoff on any execute:true (housekeeping.ts:143). So the sanctioned way to reclaim 3.58GB of archive-loop junk would first archive the caller's ENTIRE live board. Fixed via archive:false; safe invocation is twining_housekeeping({compact_archives:true, execute:true, archive:false}).; This coupling is a distinct defect from the archiver cutoff=now finding and was NOT in the 59 confirmed — the finders examined archiver.ts and housekeeping.ts separately, and the hazard only appears when the two are composed. Cross-file composition is a blind spot of per-subsystem review.; B2 (assemble-vs-why retrieval precision) is unaffected by archive compaction — nothing outside archiver.ts and archive-compactor.ts reads .twining/archive/, so compaction cannot change what assemble or why return. B2 must however run BEFORE any execute:true housekeeping, which would sweep the board it measures.",
+  "entry_type": "status",
+  "id": "01KYB8CHT6EWFP2ABD0A0NY694",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "c930f22a5bb2909d73640f183ee7b870dbc86217",
+    "recorded_at": "2026-07-24T23:46:50.295Z"
+  },
+  "scope": "src/engine/",
+  "summary": "Added housekeeping archive:false opt-out — the documented #35 repair path required execute:true, which swept the entire live board",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-24T23:46:50.310Z"
+}
