@@ -1,0 +1,38 @@
+{
+  "affected_files": [
+    "src/embeddings/search.ts",
+    "src/tools/blackboard-tools.ts",
+    "src/storage/sync/record-export.ts",
+    "src/config.ts",
+    "src/server.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "a single-context read",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Ran a 10-agent ultracode comparison of zilliztech/memsearch vs Twining (6 readers, 1 synthesis, 3 adversarial verifiers; ~976k tokens). Verdict: complementary tools — memsearch wins retrieval/capture, Twining wins decisions/coordination. Several verified findings are actionable for Twining.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KYWX78BGB4DMJX7SQAJRR5VT",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "63dc3990b13839235e40740afd01dc976fe4fd69",
+    "recorded_at": "2026-07-31T20:18:02.208Z"
+  },
+  "rationale": "the verify pass caught 8 wrong/overstated claims in the synthesis, including two that would have flattered Twining (inert-graph premise, 'guarantees capture' framing)",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Chose to run the memsearch comparison as a workflow with adversarial verification (memsearch-accuracy, twining-accuracy, fairness lenses) over a single-context read",
+  "timestamp": "2026-07-31T20:18:02.224Z"
+}

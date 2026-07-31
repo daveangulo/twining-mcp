@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "finding",
+  "id": "01KYWX78JWGA7TXHMNQ93XWGKN",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "63dc3990b13839235e40740afd01dc976fe4fd69",
+    "recorded_at": "2026-07-31T20:18:02.444Z"
+  },
+  "scope": "project",
+  "summary": "Doc drift: src/config.ts:90 comment says full_surface:false hides '16 rarely-used tools' but 23 of 36 are actually hidden (13 exposed).",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-31T20:18:02.460Z"
+}

@@ -1,0 +1,35 @@
+{
+  "affected_files": [
+    "scripts/compact-archives-standalone.mjs",
+    "scripts/field-probe.mjs"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "have the field repo take a server release",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Added standalone archive compaction script so the #35 repair can run without a server release; aligned probe matcher to the compactor's seven-field signature",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KYX9FWCC3WVZDKN2FPN822AX",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "63dc3990b13839235e40740afd01dc976fe4fd69",
+    "recorded_at": "2026-07-31T23:52:27.773Z"
+  },
+  "rationale": "the field project cannot absorb a release right now, and the sanctioned path (twining_housekeeping compact_archives + execute) sweeps the entire live board without the archive:false opt-out that only exists on the unreleased branch; duplication is the lesser evil because the signature is frozen by definition (it matches what the archiver stamped historically, which cannot change retroactively)",
+  "reversible": true,
+  "scope": "scripts/",
+  "status": "active",
+  "summary": "Chose to duplicate the compactor's junk signature in a standalone zero-dependency script rather than have the field repo take a server release",
+  "timestamp": "2026-07-31T23:52:27.788Z"
+}

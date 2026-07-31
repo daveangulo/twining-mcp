@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Verified the standalone compactor against a fixture with four near-miss entries differing from the signature in exactly one field each (detail text, agent_id, entry_type, scope): all four preserved, along with an unparseable line and a genuine finding. Only true junk dropped, all-junk file deleted, junk-free file left byte-identical (not rewritten), no temp files leaked, preview verified byte-identical, and a second execute is idempotent.",
+  "entry_type": "finding",
+  "id": "01KYX9FWKAG616V5E0BV9V3SX1",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "63dc3990b13839235e40740afd01dc976fe4fd69",
+    "recorded_at": "2026-07-31T23:52:27.995Z"
+  },
+  "scope": "scripts/",
+  "summary": "Verified the standalone compactor against a fixture with four near-miss entries differing from the signature in exactly one field each (detail text, agent_id, entry_type, scope): all four preserved…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-31T23:52:28.010Z"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Gate 2 commit gate is satisfiable by ANY twining_post — the .last-record sentinel is written by twining_post (blackboard-tools.ts:68) and twining_decide (decision-tools.ts:105) as well as twining_record (record-tools.ts:470). A single unstructured post passes the gate with no decision recorded; weakens the 'gated structured capture' guarantee.",
+  "entry_type": "warning",
+  "id": "01KYWX78G3QWX4ZY658X8HFX3R",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "63dc3990b13839235e40740afd01dc976fe4fd69",
+    "recorded_at": "2026-07-31T20:18:02.355Z"
+  },
+  "scope": "project",
+  "summary": "Gate 2 commit gate is satisfiable by ANY twining_post — the .last-record sentinel is written by twining_post (blackboard-tools.ts:68) and twining_decide (decision-tools.ts:105) as well as twining_r…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-31T20:18:02.371Z"
+}

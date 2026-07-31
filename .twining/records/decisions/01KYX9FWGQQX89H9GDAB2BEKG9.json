@@ -1,0 +1,28 @@
+{
+  "affected_files": [
+    "scripts/compact-archives-standalone.mjs",
+    "scripts/field-probe.mjs"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Added standalone archive compaction script so the #35 repair can run without a server release; aligned probe matcher to the compactor's seven-field signature",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KYX9FWGQQX89H9GDAB2BEKG9",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "63dc3990b13839235e40740afd01dc976fe4fd69",
+    "recorded_at": "2026-07-31T23:52:27.912Z"
+  },
+  "rationale": "the probe previously checked six fields and would report a junk count slightly higher than the compactor would actually drop, which would read as the repair having silently failed",
+  "reversible": true,
+  "scope": "scripts/",
+  "status": "active",
+  "summary": "Tightened the field probe's isLoopJunk to require the detail prefix too, matching the compactor's full seven-field signature",
+  "timestamp": "2026-07-31T23:52:27.927Z"
+}

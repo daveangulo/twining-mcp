@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-31T23:52:27.910Z",
+  "id": "01KYX9FWG6YSQWKXFMXEG1ZBJ9",
+  "properties": {
+    "decision_summary": "Chose to preserve blank lines as no-ops and keep every unparseable line verbatim, matching the engine, rather than normalizing files during compaction"
+  },
+  "source": "01KYB5YX2DQX9HP72A8SF19W6B",
+  "target": "01KYX9FWG4X6SCBCGFAB3TJ79D",
+  "type": "decided_by"
+}

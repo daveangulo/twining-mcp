@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: memsearch design ideas worth evaluating for Twining: (1) L1→L2→L3 progressive recall (chunk search → section expand → verbatim transcript) run in a forked subagent so intermediate results never pollute main context; (2) transcript anchors for verbatim provenance — Twining has no episodic/session-narrative layer at all; (3) embedding choice backed by a published benchmark.",
+  "entry_type": "finding",
+  "id": "01KYWX78KH3RC5WD7S8GRM3431",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "63dc3990b13839235e40740afd01dc976fe4fd69",
+    "recorded_at": "2026-07-31T20:18:02.466Z"
+  },
+  "scope": "project",
+  "summary": "memsearch design ideas worth evaluating for Twining: (1) L1→L2→L3 progressive recall (chunk search → section expand → verbatim transcript) run in a forked subagent so intermediate results never pol…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-31T20:18:02.481Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-31T23:52:27.851Z",
+  "id": "01KYX9FWEBXYZXFQ17SDG2WRGC",
+  "properties": {
+    "decision_summary": "Chose to duplicate the compactor's junk signature in a standalone zero-dependency script rather than have the field repo take a server release"
+  },
+  "source": "01KYB5YX2DQX9HP72A8SF19W6B",
+  "target": "01KYX9FWE6WQ4YB01DVREMHMZK",
+  "type": "decided_by"
+}

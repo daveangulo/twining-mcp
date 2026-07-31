@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Chose to preserve blank lines as no-ops and keep every unparseable line verbatim, matching the engine, rather than normalizing files during compaction\" relates to:\n- 01KYB7G8BWTVZH53A24B567FFZ: \"Chose to read the live board from twining.db directly (read-only open) with fallback order db -> records/posts -> blackboard.jsonl, replacing the v1/v2 order that preferred blackboard.jsonl whenever it was non-empty\"",
+  "entry_type": "finding",
+  "id": "01KYX9FWFBT135DJ5X2EE5RPK7",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "63dc3990b13839235e40740afd01dc976fe4fd69",
+    "recorded_at": "2026-07-31T23:52:27.869Z"
+  },
+  "scope": "scripts/",
+  "summary": "Related decisions in scope: 1 existing decision(s) overlap",
+  "tags": [
+    "data-model"
+  ],
+  "timestamp": "2026-07-31T23:52:27.883Z"
+}

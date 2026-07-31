@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-31T23:52:27.994Z",
+  "id": "01KYX9FWJT2SQF3SM3TE6QSXHD",
+  "properties": {
+    "decision_summary": "Tightened the field probe's isLoopJunk to require the detail prefix too, matching the compactor's full seven-field signature"
+  },
+  "source": "01KYB5YX2DQX9HP72A8SF19W6B",
+  "target": "01KYX9FWJPJPKE6WSTESZEWJEV",
+  "type": "decided_by"
+}

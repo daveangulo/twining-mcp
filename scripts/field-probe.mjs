@@ -243,7 +243,12 @@ hypothesis(
  * H2b. Signature matched conservatively against src/engine/archive-compactor.ts.
  */
 const JUNK_SUMMARY_RE = /^Archive: \d+ entries archived$/;
+const JUNK_DETAIL_RE = /^Archive summary: \d+ entries archived\./;
 function isLoopJunk(e) {
+  // All seven fields, matching src/engine/archive-compactor.ts and
+  // scripts/compact-archives-standalone.mjs exactly — an earlier version
+  // omitted the detail check and so counted slightly more as junk than the
+  // compactor would actually drop.
   return (
     e &&
     e.entry_type === "finding" &&
@@ -252,7 +257,9 @@ function isLoopJunk(e) {
     e.scope === "project" &&
     e.agent_id === "main" &&
     Array.isArray(e.tags) &&
-    e.tags.includes("archive")
+    e.tags.includes("archive") &&
+    typeof e.detail === "string" &&
+    JUNK_DETAIL_RE.test(e.detail)
   );
 }
 

@@ -1,0 +1,20 @@
+{
+  "agent_id": "main",
+  "detail": "Found by a field teammate reading the store directly, then reproduced locally against the real GraphStore. graph-auto-populator.ts:53,68 stamps file/directory entities with properties:{scope: input.scope}. GraphStore.addEntity (graph-store.ts:59-65) upserts by merging {...existing.properties, ...input.properties}, so the incoming scope OVERWRITES the stored one. Reproduction: addEntity('docs/project-map.md', file, {scope:'analysis/'}) then addEntity(same name/type, {scope:'specs/cui-marking/'}) -> same entity id, properties {\"scope\":\"specs/cui-marking/\"}, original scope unrecoverable. Field evidence matches exactly: analysis/project-map.md moved analysis/ -> specs/cui-marking/; CLAUDE.md .claude/ -> analysis/cmmc/; specs/POC-READINESS-RUBRIC.md specs/hitl-plane/ -> analysis/cmmc/; two templates analysis/ -> analysis/cmmc/. Two consequences: (1) any scope-filtered graph query returns wrong membership for files touched from multiple scopes — precisely the shared/cross-cutting files most worth graphing; (2) every re-scope rewrites the entity JSON, producing recurring git churn in .twining/records/graph/entities/ that reads as meaningful change but is not. NOT FIXED — the right semantics are a design call (accumulate a scope set, first-writer-wins, or drop scope from file entities entirely) and belong to the owner, not a review pass. This class was missed by the 59 because it only appears when graph-auto-populator and graph-store are composed.",
+  "entry_type": "warning",
+  "id": "01KYB9BP3GP9GSF1SP2XAFVXQW",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "63dc3990b13839235e40740afd01dc976fe4fd69",
+    "recorded_at": "2026-07-25T00:03:50.490Z"
+  },
+  "scope": "src/storage/",
+  "summary": "NEW confirmed bug (not in the 59): graph entity scope is last-writer-wins — a file touched by decisions in two scopes loses its original scope irrecoverably",
+  "tags": [
+    "bug",
+    "graph",
+    "field-finding",
+    "data-loss"
+  ],
+  "timestamp": "2026-07-25T00:03:50.512Z"
+}

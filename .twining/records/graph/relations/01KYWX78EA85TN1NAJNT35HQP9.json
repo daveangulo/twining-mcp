@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-07-31T20:18:02.314Z",
+  "id": "01KYWX78EA85TN1NAJNT35HQP9",
+  "properties": {
+    "decision_summary": "Chose to run the memsearch comparison as a workflow with adversarial verification (memsearch-accuracy, twining-accuracy, fairness lenses) over a single-context read"
+  },
+  "source": "01KJD595ND5YACA06PBGYTRRXA",
+  "target": "01KYWX78E3SGE6HHRHX7HFT5RM",
+  "type": "decided_by"
+}

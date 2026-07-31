@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Positioning fact the docs never state crisply: memsearch's own docs tell users to gitignore .memsearch/ (personal developer logs; team decisions belong in CLAUDE.md) — memsearch is per-developer memory, Twining is committed team coordination state. This is Twining's clearest structural differentiator alongside structured decisions.",
+  "entry_type": "finding",
+  "id": "01KYWX78MEXM3VMYN38V1HJ2AK",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "63dc3990b13839235e40740afd01dc976fe4fd69",
+    "recorded_at": "2026-07-31T20:18:02.495Z"
+  },
+  "scope": "project",
+  "summary": "Positioning fact the docs never state crisply: memsearch's own docs tell users to gitignore .memsearch/ (personal developer logs; team decisions belong in CLAUDE.md) — memsearch is per-developer me…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-07-31T20:18:02.510Z"
+}

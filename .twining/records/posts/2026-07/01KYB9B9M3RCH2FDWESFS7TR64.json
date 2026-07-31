@@ -1,0 +1,20 @@
+{
+  "agent_id": "main",
+  "detail": "B1 run in the field repo. GENERIC teammate: has ToolSearch, tool list [Agent, AskUserQuestion, Bash, Edit, Read, ReportFindings, Skill, ToolSearch, Workflow, Write], ToolSearch('twining') returns \"No matching deferred tools found\" — so no twining tools exist in the session AT ALL. TWINING agent type: tool list is exactly [Read, Write, Edit, Bash], no ToolSearch — confirms H1 (bare-name allowlist strips everything including ToolSearch). The teammate quoted its SessionStart hook context: \"npx is not resolvable even from a login shell, so the twining stdio server could not start and twining tools are absent\" — that text matches plugin/hooks/session-start-context.sh:118 verbatim, i.e. launch-server.sh resolved RUNNER=none through all five rungs. CONSEQUENCE: the committed plugin fix (removing the tools: allowlist) is necessary but NOT sufficient in the field — with the server down, even a generic teammate gets nothing. Fixing frontmatter changes nothing until the server starts. Note rung 4 is the plugin-bundled server needing node>=22.13 and NO npx, so runner=none means node itself is unresolvable or below 22.13 in the MCP spawn environment. Diagnostic: bash \"$CLAUDE_PLUGIN_ROOT/scripts/launch-server.sh\" --probe prints runner=X node=Y. No-release workaround: project .mcp.json pointing at an absolute node binary plus the plugin bundle, bypassing PATH entirely. Also check the field .claude/settings.json line the teammate reported (twining-mcp in deniedMcpServers).",
+  "entry_type": "warning",
+  "id": "01KYB9B9M3RCH2FDWESFS7TR64",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "63dc3990b13839235e40740afd01dc976fe4fd69",
+    "recorded_at": "2026-07-25T00:03:37.717Z"
+  },
+  "scope": "plugin/",
+  "summary": "B1 confirms BOTH failure modes independently: field blocker is the stdio server never starting (runner=none), which the plugin frontmatter fix does NOT address",
+  "tags": [
+    "field-issue",
+    "B1",
+    "launch-server",
+    "mcp"
+  ],
+  "timestamp": "2026-07-25T00:03:37.731Z"
+}

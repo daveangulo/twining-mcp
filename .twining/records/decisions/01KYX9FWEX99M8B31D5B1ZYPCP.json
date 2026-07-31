@@ -1,0 +1,35 @@
+{
+  "affected_files": [
+    "scripts/compact-archives-standalone.mjs",
+    "scripts/field-probe.mjs"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "normalizing files during compaction",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Added standalone archive compaction script so the #35 repair can run without a server release; aligned probe matcher to the compactor's seven-field signature",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01KYX9FWEX99M8B31D5B1ZYPCP",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "63dc3990b13839235e40740afd01dc976fe4fd69",
+    "recorded_at": "2026-07-31T23:52:27.854Z"
+  },
+  "rationale": "the script's only job is removing provably-generated junk, and any other rewrite would make it a data migration that deserves its own review",
+  "reversible": true,
+  "scope": "scripts/",
+  "status": "active",
+  "summary": "Chose to preserve blank lines as no-ops and keep every unparseable line verbatim, matching the engine, rather than normalizing files during compaction",
+  "timestamp": "2026-07-31T23:52:27.869Z"
+}

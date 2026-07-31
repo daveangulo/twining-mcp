@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Tightened the field probe's isLoopJunk to require the detail prefix too, matching the compactor's full seven-field signature\" relates to:\n- 01KX2Q8G3S5GSFEGF5QV4TXCS0: \"Rescoped the plugin token budget to count only context-loaded files (skills + agents), baseline 30514 = skills+agents at the original v1.4 tuning commit cd0497b, same +20% cap — approved by Dave over rebase-to-today, comment-trimming, and reverting the hook warning\"\n- 01KYB5YX322208MKRKXTX25C90: \"Chose to add LOW N sample-size guards as a validity mechanism while leaving every pre-registered threshold untouched\"\n- 01KYB5YX4QYW6ZNB7YPP36T4MS: \"Chose a zero-dependency Node script reading the on-disk JSON/JSONL directly over importing the twining engines\"\n- 01KYB7G8D0M9C04NN1QAGS4V08: \"Chose to print the resolved live-board source in the probe header ('live board from: twining.db') rather than only recording it in the JSON\"\n- 01KYX9FWCC3WVZDKN2FPN822AX: \"Chose to duplicate the compactor's junk signature in a standalone zero-dependency script rather than have the field repo take a server release\"",
+  "entry_type": "finding",
+  "id": "01KYX9FWH63JWXKNCA4EJY0ZPX",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "63dc3990b13839235e40740afd01dc976fe4fd69",
+    "recorded_at": "2026-07-31T23:52:27.928Z"
+  },
+  "scope": "scripts/",
+  "summary": "Related decisions in scope: 5 existing decision(s) overlap",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-07-31T23:52:27.942Z"
+}
