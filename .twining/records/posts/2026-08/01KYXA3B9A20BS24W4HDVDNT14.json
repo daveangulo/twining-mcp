@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Confirmed the high-severity doc-inversion finding against the real registration: docs/TWINING-REFERENCE.md listed 7 full-surface-only tools (dismiss, decide, search_decisions, reconsider, link_commit, verify, handoff) in its 'always registered' table and omitted all 7 default graph/status/archive tools from it, while its Extended section listed 9 tools that are actually default. README's Core table listed 6 of the 13 default tools and put 7 default tools under 'requires full_surface'.",
+  "entry_type": "finding",
+  "id": "01KYXA3B9A20BS24W4HDVDNT14",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "986d3f716dbd731184782185e8378409ff77662c",
+    "recorded_at": "2026-08-01T00:03:05.627Z"
+  },
+  "scope": "docs/",
+  "summary": "Confirmed the high-severity doc-inversion finding against the real registration: docs/TWINING-REFERENCE.md listed 7 full-surface-only tools (dismiss, decide, search_decisions, reconsider, link_comm…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-01T00:03:05.642Z"
+}

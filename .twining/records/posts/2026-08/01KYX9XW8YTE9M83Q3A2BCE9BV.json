@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: claude-context (zilliztech, 12.2k stars) is effectively maintenance-mode: created 2025-06-06, ~24 consecutive zero-commit weeks starting ~3.5 months after launch, brief revival Mar-Jun 2026 (0.1.5-0.1.15), last push 2026-07-14, zero GitHub Releases, tags stopped at v0.1.11 while npm shipped untagged to 0.1.15, issue #231 'Project Status?' unanswered since Oct 2025, ~6.3k npm downloads/month. Same lead maintainer (zc277584121, ~60%) now dominant on memsearch, which shipped 5 releases in July 2026 alone — memsearch is Zilliz's active bet.",
+  "entry_type": "finding",
+  "id": "01KYX9XW8YTE9M83Q3A2BCE9BV",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "986d3f716dbd731184782185e8378409ff77662c",
+    "recorded_at": "2026-08-01T00:00:06.414Z"
+  },
+  "scope": "project",
+  "summary": "claude-context (zilliztech, 12.2k stars) is effectively maintenance-mode: created 2025-06-06, ~24 consecutive zero-commit weeks starting ~3.5 months after launch, brief revival Mar-Jun 2026 (0.1.5-…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-01T00:00:06.430Z"
+}

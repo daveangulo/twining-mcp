@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: claude-context's own evaluation undercuts semantic-code-search hype: on 30 SWE-bench Verified instances (GPT-4o-mini), retrieval F1 was IDENTICAL to a bare read/grep/edit baseline (0.40 vs 0.40); the only measured win was token efficiency (73,373→44,449, -39.4%) and fewer tool calls. Relevant if anyone proposes adding semantic code search to Twining's scope — the quality claim doesn't survive its own benchmark; the win is cost, and only at large-unfamiliar-codebase scale.",
+  "entry_type": "finding",
+  "id": "01KYX9XWB6JCS05AP3HW82CR0S",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "986d3f716dbd731184782185e8378409ff77662c",
+    "recorded_at": "2026-08-01T00:00:06.487Z"
+  },
+  "scope": "project",
+  "summary": "claude-context's own evaluation undercuts semantic-code-search hype: on 30 SWE-bench Verified instances (GPT-4o-mini), retrieval F1 was IDENTICAL to a bare read/grep/edit baseline (0.40 vs 0.40); t…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-01T00:00:06.502Z"
+}

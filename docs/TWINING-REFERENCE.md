@@ -14,32 +14,41 @@ Full reference for all Twining MCP tools. See `CLAUDE.md` for mandatory workflow
 | `twining_why` | Gate 1 | Check what decisions constrain a file before modifying it |
 | `twining_housekeeping` | Maintenance | Archive, deduplicate, surface stale state (dry-run by default). Add `staleness_review: true` for orphan detection (missing scope/files/branch) or `merge_sweep: true` to flag entries from branches deleted since the last run |
 | `twining_archive_stale` | Maintenance | Archive caller-confirmed IDs from `staleness_review` or `merge_sweep`. Decisions move to `archived` status; blackboard entries are dismissed. Provenance preserved |
-| `twining_dismiss` | During work | Remove resolved or false-positive entries |
-| `twining_decide` | During work | Record a structured decision directly (also called internally by `twining_record`) |
-| `twining_search_decisions` | During work | Search decisions by keyword or semantic similarity |
-| `twining_reconsider` | During work | Flag a decision for reconsideration |
-| `twining_link_commit` | After commit | Link a git commit to a decision |
-| `twining_verify` | Optional | Check decision hygiene on complex tasks |
-| `twining_handoff` | Session end | Hand off work with structured results |
+| `twining_status` | Anytime | Health check — entry counts, decision counts, actionable warnings |
+| `twining_archive` | Maintenance | Move blackboard entries to the archive tier. Takes no cutoff by default — an argument-free call archives everything archivable, so pass `before` unless a full sweep is intended |
+| `twining_add_entity` | Optional | Record a code entity in the knowledge graph |
+| `twining_add_relation` | Optional | Record a relationship in the knowledge graph |
+| `twining_neighbors` | Optional | Explore entity connections up to depth 3 |
+| `twining_graph_query` | Optional | Search graph entities by name or property |
+| `twining_prune_graph` | Maintenance | Remove stale graph nodes |
 
-## Extended Tools (with `full_surface: true`)
+That is the complete default surface — 13 tools. **If a tool is not in this table, it does not exist unless the project sets `tools.full_surface: true`.** Notably `twining_decide`, `twining_link_commit`, `twining_verify`, `twining_dismiss`, and `twining_handoff` are *not* available by default: use `twining_record` instead, whose `decisions` array writes to the same store and which also accepts `commit_hash`, `supersedes`, and `depends_on`.
+
+## Extended Tools (require `full_surface: true`)
+
+These are **not** callable on a default install. Enable them in `.twining/config.yml`:
+
+```yaml
+tools:
+  full_surface: true
+```
 
 ### Blackboard (shared communication)
 | Tool | Purpose |
 |------|---------|
-| `twining_post` | Share findings, warnings, needs, questions, answers, status, offers, artifacts, constraints |
 | `twining_read` | Read entries with filters (type, scope, tags, since, limit) |
 | `twining_query` | Semantic search across entries (embeddings with keyword fallback) |
 | `twining_recent` | Latest N entries, most recent first |
+| `twining_dismiss` | Remove resolved or false-positive entries |
 
 ### Decisions (structured rationale)
 | Tool | Purpose |
 |------|---------|
 | `twining_decide` | Record a choice with rationale, alternatives, affected files/symbols, confidence |
-| `twining_why` | Show decision chain for a file/module/scope |
 | `twining_trace` | Trace decision dependencies upstream and downstream |
 | `twining_reconsider` | Flag a decision for review with new context |
 | `twining_override` | Replace a decision, recording who and why |
+| `twining_promote` | Ratify a provisional decision |
 | `twining_search_decisions` | Search decisions by keyword, domain, status, confidence |
 | `twining_link_commit` | Link a git commit to a decision |
 | `twining_commits` | Find decisions associated with a commit |
@@ -47,17 +56,13 @@ Full reference for all Twining MCP tools. See `CLAUDE.md` for mandatory workflow
 ### Context Assembly
 | Tool | Purpose |
 |------|---------|
-| `twining_assemble` | Build tailored context for a task within a token budget |
 | `twining_summarize` | Quick project overview with counts and activity narrative |
 | `twining_what_changed` | Changes since a timestamp (decisions, entries, overrides) |
 
-### Knowledge Graph
+### Triage
 | Tool | Purpose |
 |------|---------|
-| `twining_add_entity` | Record a code entity (module, function, class, file, concept, pattern, dependency, api_endpoint) |
-| `twining_add_relation` | Record a relationship (depends_on, implements, decided_by, affects, tested_by, calls, imports, related_to) |
-| `twining_neighbors` | Explore entity connections up to depth 3 |
-| `twining_graph_query` | Search entities by name or property |
+| `twining_triage` | Review queue for provisional decisions and open obligations |
 
 Note: `twining_decide` auto-creates `file`/`function` entities with `decided_by` relations for `affected_files` and `affected_symbols`. Manual graph calls are for richer structure (imports, calls, implements).
 
@@ -80,9 +85,9 @@ Note: `twining_decide` auto-creates `file`/`function` entities with `decided_by`
 ### Lifecycle
 | Tool | Purpose |
 |------|---------|
-| `twining_status` | Health check — entry counts, decision counts, graph stats, warnings |
-| `twining_archive` | Archive old entries to reduce working set (preserves decisions) |
 | `twining_export` | Export full state as markdown for context window handoff or docs |
+
+(`twining_status` and `twining_archive` are on the **default** surface — see the Core Tools table above.)
 
 ---
 

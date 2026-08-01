@@ -1,0 +1,42 @@
+{
+  "affected_files": [
+    "README.md",
+    "docs/TWINING-REFERENCE.md",
+    "test/plugin-tool-references.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "keep the simpler 'hooks enforce both automatically'",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "make",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Fixed the inverted tool-surface tables in README and TWINING-REFERENCE (confirmed high-severity finding) and added field-derived usage guidance",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KYXA3B5A7YYQDQEBVC70NVNP",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "986d3f716dbd731184782185e8378409ff77662c",
+    "recorded_at": "2026-08-01T00:03:05.499Z"
+  },
+  "rationale": "that claim was false for Gate 1 (instruction-only), and the field measurement of 90.7% voluntary compliance is a more useful and more honest thing to tell a prospective user than an enforcement promise the code does not make",
+  "reversible": true,
+  "scope": "docs/",
+  "status": "active",
+  "summary": "Chose to state the Gate 1 / Gate 2 enforcement asymmetry explicitly in the README rather than keep the simpler 'hooks enforce both automatically'",
+  "timestamp": "2026-08-01T00:03:05.514Z"
+}

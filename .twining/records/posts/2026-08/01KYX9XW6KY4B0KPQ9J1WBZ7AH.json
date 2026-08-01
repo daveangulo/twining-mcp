@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Extended the memsearch comparison with zilliztech/claude-context via a 5-agent verified workflow. Verdict: claude-context is a fourth, orthogonal layer (semantic code index) in maintenance mode; competes with Serena, not Twining; recommendation unchanged — steal retrieval patterns, don't adopt.\nFindings: claude-context (zilliztech, 12.2k stars) is effectively maintenance-mode: created 2025-06-06, ~24 consecutive zero-commit weeks starting ~3.5 months after launch, brief revival Mar-Jun 2026 (0.1.5-0.1.15), last push 2026-07-14, zero GitHub Releases, tags stopped at v0.1.11 while npm shipped untagged to 0.1.15, issue #231 'Project Status?' unanswered since Oct 2025, ~6.3k npm downloads/month. Same lead maintainer (zc277584121, ~60%) now dominant on memsearch, which shipped 5 releases in July 2026 alone — memsearch is Zilliz's active bet.; Hybrid dense+BM25+RRF is now confirmed as the retrieval pattern in BOTH Zilliz tools (claude-context: BM25 computed inside Milvus via FunctionType.BM25, server-side RRF k=100; memsearch: local Milvus Lite RRF k=60). Strengthens the case for porting BM25+rank-fusion into Twining's retrieval; memsearch proves it runs fully embedded with no server/API.; claude-context's own evaluation undercuts semantic-code-search hype: on 30 SWE-bench Verified instances (GPT-4o-mini), retrieval F1 was IDENTICAL to a bare read/grep/edit baseline (0.40 vs 0.40); the only measured win was token efficiency (73,373→44,449, -39.4%) and fewer tool calls. Relevant if anyone proposes adding semantic code search to Twining's scope — the quality claim doesn't survive its own benchmark; the win is cost, and only at large-unfamiliar-codebase scale.; Twining's worktree-aware shared store is a genuine differentiator against BOTH Zilliz tools: claude-context keys Milvus collections on MD5(absolute path) — every linked worktree/clone/rename gets a separate full index and embedding spend, and the collection-name override deliberately re-appends the path hash so team/cross-machine sharing is structurally impossible (open issues #271/#190/#133, PRs #411/#410 unmerged); memsearch has the analogous store-fork problem (#631).; claude-context default posture ships proprietary code off-machine twice: to the embedding API (OpenAI text-embedding-3-small default) and verbatim into the Milvus/Zilliz Cloud 'content' VarChar field; repo contains zero security/privacy documentation. Fully-local config (Ollama + Docker Milvus) exists but replaces the npx one-liner with running your own vector DB. The community fork context-please adds a zero-config local FAISS backend claude-context declined to build (#128).",
+  "entry_type": "status",
+  "id": "01KYX9XW6KY4B0KPQ9J1WBZ7AH",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "986d3f716dbd731184782185e8378409ff77662c",
+    "recorded_at": "2026-08-01T00:00:06.341Z"
+  },
+  "scope": "project",
+  "summary": "Extended the memsearch comparison with zilliztech/claude-context via a 5-agent verified workflow. Verdict: claude-context is a fourth, orthogonal layer (semantic code index) in maintenance mode; co…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-01T00:00:06.355Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-01T00:03:05.566Z",
+  "id": "01KYXA3B6YTW3MM0307495R22W",
+  "properties": {
+    "decision_summary": "Chose to state the Gate 1 / Gate 2 enforcement asymmetry explicitly in the README rather than keep the simpler 'hooks enforce both automatically'"
+  },
+  "source": "01KYB2J3TS2QAR60E2C6H70J8Z",
+  "target": "01KYXA3B6WX80PYD6CZ0E3E1S4",
+  "type": "decided_by"
+}

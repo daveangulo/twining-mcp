@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-01T00:03:05.494Z",
+  "id": "01KYXA3B4PFKKESA4K8TB2YCWA",
+  "properties": {
+    "decision_summary": "Chose to extend the existing plugin-tool-references test to assert surface classification in README.md and docs/TWINING-REFERENCE.md, parsing only table rows so prose mentioning a tool does not trip it, rather than fixing the tables by hand alone"
+  },
+  "source": "01KJGX8KNRTGKE7PVC2GH1QSTE",
+  "target": "01KYXA3B4M6A015HHK021V5M12",
+  "type": "decided_by"
+}

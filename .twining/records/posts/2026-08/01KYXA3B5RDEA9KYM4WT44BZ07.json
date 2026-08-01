@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Chose to state the Gate 1 / Gate 2 enforcement asymmetry explicitly in the README rather than keep the simpler 'hooks enforce both automatically'\" relates to:\n- 01KQTRRN0CFQCAT0N3KSXRNXW8: \"Chose two specs over one combined spec\"\n- 01KQV88TKHG29D06K6B40WV2CV: \"Chose Vitest with child_process.spawnSync for hook tests over bats/shell-only\"\n- 01KQV88TMGHE6ENP9EP7W0Z1HY: \"Chose to phase the work as: verifications first → test helper → server gate → simple hook guards → ensure-claude-md-gates (compound changes) → SessionStart command hook → versions → manual smoke test → release. Foundation-first ordering means each phase's tests can rely on infrastructure from prior phases.\"\n- 01KQVA2PWT7HWDEVH04MNXDM8S: \"Reconsidered SEARCH_PATHS marker-search order in ensure-claude-md-gates.sh. Original spec said global-first (cheapest,\"",
+  "entry_type": "finding",
+  "id": "01KYXA3B5RDEA9KYM4WT44BZ07",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "986d3f716dbd731184782185e8378409ff77662c",
+    "recorded_at": "2026-08-01T00:03:05.515Z"
+  },
+  "scope": "docs/",
+  "summary": "Related decisions in scope: 4 existing decision(s) overlap",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-08-01T00:03:05.528Z"
+}

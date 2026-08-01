@@ -1,0 +1,36 @@
+{
+  "affected_files": [
+    "README.md",
+    "docs/TWINING-REFERENCE.md",
+    "test/plugin-tool-references.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "recommend enabling full_surface",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Fixed the inverted tool-surface tables in README and TWINING-REFERENCE (confirmed high-severity finding) and added field-derived usage guidance",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KYXA3B7GFWVWEC2NRY9YANFV",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "986d3f716dbd731184782185e8378409ff77662c",
+    "recorded_at": "2026-08-01T00:03:05.569Z"
+  },
+  "rationale": "full_surface exists to keep the tool list small, and steering users to flip it to reach a tool they already effectively have would defeat that",
+  "reversible": true,
+  "scope": "docs/",
+  "status": "active",
+  "summary": "Chose to document twining_record as the default-surface substitute for twining_decide/link_commit/override rather than recommend enabling full_surface",
+  "timestamp": "2026-08-01T00:03:05.584Z"
+}

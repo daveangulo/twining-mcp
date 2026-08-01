@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-01T00:03:05.626Z",
+  "id": "01KYXA3B8TMQHQT65ND2EW6E82",
+  "properties": {
+    "decision_summary": "Chose to document twining_record as the default-surface substitute for twining_decide/link_commit/override rather than recommend enabling full_surface"
+  },
+  "source": "01KWX0NM7WTBT16746BTH2RP1D",
+  "target": "01KYXA3B8R7KTPSDY4DB0HH8B9",
+  "type": "decided_by"
+}

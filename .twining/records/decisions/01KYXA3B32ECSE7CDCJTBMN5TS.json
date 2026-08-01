@@ -1,0 +1,42 @@
+{
+  "affected_files": [
+    "README.md",
+    "docs/TWINING-REFERENCE.md",
+    "test/plugin-tool-references.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "fixing the tables by hand alone",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "trip it, rather than fixing the tables by hand alone",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Fixed the inverted tool-surface tables in README and TWINING-REFERENCE (confirmed high-severity finding) and added field-derived usage guidance",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01KYXA3B32ECSE7CDCJTBMN5TS",
+  "provenance": {
+    "branch": "fix/deep-review-2026-07",
+    "commit_sha": "986d3f716dbd731184782185e8378409ff77662c",
+    "recorded_at": "2026-08-01T00:03:05.427Z"
+  },
+  "rationale": "the inversion had persisted through many releases precisely because nothing checked it, and it immediately caught two entries (twining_status, twining_archive) I had missed in a Lifecycle subsection",
+  "reversible": true,
+  "scope": "docs/",
+  "status": "active",
+  "summary": "Chose to extend the existing plugin-tool-references test to assert surface classification in README.md and docs/TWINING-REFERENCE.md, parsing only table rows so prose mentioning a tool does not trip it, rather than fixing the tables by hand alone",
+  "timestamp": "2026-08-01T00:03:05.442Z"
+}

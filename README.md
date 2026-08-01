@@ -62,7 +62,9 @@ Returns the full decision chain for any file: what was decided, when, why, what 
 
 CLAUDE.md is static. You write it once and update it manually. It doesn't capture decisions *as they happen*, doesn't track rationale or alternatives, doesn't detect conflicts between agents, and can't selectively assemble context within a token budget.
 
-Twining is dynamic. Every `twining_decide` call records a structured decision. Every `twining_post` shares a finding or warning. Every `twining_assemble` scores relevance and delivers precisely what the current task needs. The `.twining/` directory is your project's living institutional memory.
+Twining is dynamic. Every `twining_record` call captures decisions with their rationale and rejected alternatives. Every `twining_post` shares a finding or warning. Every `twining_assemble` scores relevance and delivers precisely what the current task needs. The `.twining/` directory is your project's living institutional memory.
+
+The two are complementary, not rivals: CLAUDE.md is the right home for standing instructions ("always run the linter"), Twining for the accumulating record of what was decided and why.
 
 ## Why Not an Orchestrator?
 
@@ -85,7 +87,9 @@ Agents self-select into work by reading the blackboard. No central bottleneck. N
 /plugin install twining@twining-marketplace
 ```
 
-Includes the MCP server, skills, lifecycle hooks, and pre-commit enforcement. Two gates: `twining_assemble` before working, `twining_record` before committing — hooks enforce both automatically.
+Includes the MCP server, skills, lifecycle hooks, and pre-commit enforcement. Two gates: `twining_assemble` before working, `twining_record` before committing.
+
+To be precise about what "enforced" means, since it differs per gate: **Gate 2 is hook-enforced** — a pre-commit hook blocks `git commit` until this session has recorded, and a Stop hook asks for a record before the session ends. **Gate 1 is instruction-only** — it is injected into the session by the SessionStart hook and the MCP server's instructions, and nothing blocks an agent that skips it. In practice compliance is high (a field project measured 90.7% of decisions recorded after an assemble), but it is a convention the agent follows, not a wall.
 
 ### Team Auto-Install
 
@@ -133,6 +137,22 @@ Or add to `.mcp.json`:
 ```
 
 MCP server instructions are included automatically in the initialize response.
+
+### Troubleshooting: the twining tools aren't there
+
+Twining fails quiet — when the server can't start, no error surfaces in the session and the tools simply never appear. Work through this in order:
+
+1. **Ask an agent what it can actually see.** Have it run `ToolSearch` for `twining` and report the raw result, or run `/mcp`. Do not infer from behavior; agents will substitute plausible-looking alternatives rather than report a missing tool.
+2. **If `ToolSearch` finds nothing, the server isn't running.** Probe the launcher directly:
+   ```bash
+   bash "$CLAUDE_PLUGIN_ROOT/scripts/launch-server.sh" --probe   # → runner=<rung> node=<version>
+   ```
+   `runner=none` means every resolution rung failed — see the next section. Any other value means the launcher is fine and the problem is elsewhere.
+3. **Check the MCP log** for the real error: `~/Library/Caches/claude-cli-nodejs/<project>/mcp-logs-twining/` on macOS.
+4. **Check that the plugin is enabled in *this* configuration.** `/plugin` shows what the current session loaded. A different `CLAUDE_CONFIG_DIR`, or a worktree without the project-scope settings, can load no plugin at all — no MCP, no hooks, no skills.
+5. **If tools exist in your main session but not in a spawned agent**, see [Agent teams and subagents](#agent-teams-and-subagents) below.
+
+While the server is down, the commit gate still applies in an initialized checkout. Bypass with `TWINING_DISABLED=true git commit ...` and note key decisions in your summary so a connected session can record them.
 
 ### PATH-restricted environments (agent teams, GUI launches)
 
@@ -224,6 +244,18 @@ Two overrides:
 
 The plugin's hooks apply the same resolution (and honor `TWINING_PROJECT`). Submodules are not affected — their `gitdir:` files point at `.git/modules/`, not `.git/worktrees/`.
 
+### Agent teams and subagents
+
+Spawned agents do not automatically inherit Twining's tools, and when they don't, they fail quietly — an agent with no `twining_*` tools will often improvise (reading `.twining/` with `sqlite3` or `jq`) rather than report the gap. Two independent things have to hold.
+
+**1. The server has to be running for that session.** Teammates launched in separate panes or processes get their own MCP connection. If the launcher can't resolve a runtime there, *no* agent in that session gets Twining tools, generic or otherwise. Diagnose with the [troubleshooting steps](#troubleshooting-the-twining-tools-arent-there) above — this is the more common cause by far.
+
+**2. The agent definition must not restrict its tools.** MCP tool names are namespaced at runtime by the server they came from: `mcp__plugin_twining_twining__twining_assemble` under a plugin install, `mcp__twining__twining_assemble` under a standalone `.mcp.json`. A custom agent whose frontmatter declares a `tools:` allowlist gets **only** what it lists, and entries that match nothing are dropped silently — so a bare `twining_assemble` in an allowlist yields no tool and no warning. Because the correct prefix depends on how Twining was installed, hardcoding one breaks the other install mode.
+
+The reliable pattern is to **omit `tools:` entirely** so the agent inherits whatever the session exposes, and to have the agent locate the tools with `ToolSearch` rather than assuming a name. If you must restrict tools, include `ToolSearch` so the agent can still discover what it has.
+
+When you dispatch agents, tell them explicitly: *report it if the Twining tools are absent, rather than working around it.* A silent substitution produces work that looks coordinated and isn't.
+
 **Where to set `TWINING_PROJECT`:** in an environment both the hooks *and* the MCP server actually see — an exported terminal/session environment (a launcher wrapper, direnv, the shell you start Claude Code or cmux from). Avoid the two tempting-but-wrong places: `.claude/settings.json` `env` is currently **not delivered to plugin-spawned MCP servers** (hooks would redirect while the server doesn't — the gates then check a store the server never writes), and a machine-wide shell-profile export activates the commit/stop gates in **every** repo on the machine, including ones that never used Twining.
 
 ### Dashboard
@@ -246,16 +278,23 @@ Built to stay usable at scale: lists are virtualized with live facet counts, the
 
 ### Core Tools (always available)
 
-These are the tools agents use in every session:
+The full default surface is these 13 tools. Everything else needs `full_surface: true` — if a tool is not on this list, assume you cannot call it until you have opted in.
 
 | Tool | What It Does |
 |------|-------------|
 | `twining_assemble` | **Gate 1:** Build tailored context for a task — decisions, warnings, handoffs, within a token budget |
 | `twining_record` | **Gate 2:** Record what you did and any choices made — natural language in, structured decisions out |
-| `twining_post` | Share findings, warnings, needs, or status during work |
+| `twining_post` | Share findings, warnings, needs, or status during work. `summary` is capped at 200 characters and longer summaries are **rejected** — put the substance in `detail` |
 | `twining_why` | Check what decisions constrain a file before modifying it |
-| `twining_housekeeping` | Periodic maintenance — archive, deduplicate, surface stale decisions (dry-run by default). Optional `staleness_review` and `merge_sweep` flags surface orphans and post-merge cleanup candidates |
+| `twining_status` | Health check — entry counts, decision counts, actionable warnings |
+| `twining_housekeeping` | Periodic maintenance — archive, deduplicate, surface stale decisions (dry-run by default). Optional `staleness_review`, `merge_sweep`, and `compact_archives` flags |
+| `twining_archive` | Move blackboard entries to the archive tier. **Takes no cutoff by default — an argument-free call archives everything archivable**, so pass `before` unless you intend a full sweep |
 | `twining_archive_stale` | Archive caller-confirmed candidate IDs from staleness or merge-sweep review. Decisions move to `archived` status; entries are dismissed. Provenance preserved |
+| `twining_add_entity` | Add a knowledge-graph entity |
+| `twining_add_relation` | Add a knowledge-graph relation |
+| `twining_neighbors` | Traverse the graph from an entity |
+| `twining_graph_query` | Query graph entities and relations |
+| `twining_prune_graph` | Remove stale graph nodes |
 
 `twining_record` accepts natural language decisions like `"Chose Redis over Memcached — need persistence"` and automatically parses them into structured records with rationale, rejected alternatives, and inferred domain. It also accepts assumptions, constraints, affected files, and dependency chains — everything the decision store needs for high-fidelity context assembly.
 
@@ -268,17 +307,33 @@ For advanced workflows — deep decision management, graph exploration, multi-ag
 | **Decisions** | `twining_decide`, `twining_search_decisions`, `twining_reconsider`, `twining_link_commit`, `twining_trace`, `twining_override`, `twining_promote`, `twining_commits` |
 | **Blackboard** | `twining_read`, `twining_query`, `twining_recent`, `twining_dismiss` |
 | **Context** | `twining_summarize`, `twining_what_changed` |
-| **Graph** | `twining_add_entity`, `twining_add_relation`, `twining_neighbors`, `twining_graph_query`, `twining_prune_graph` |
+| **Triage** | `twining_triage` |
 | **Coordination** | `twining_register`, `twining_agents`, `twining_discover`, `twining_delegate`, `twining_handoff`†, `twining_acknowledge`† |
-| **Lifecycle** | `twining_verify`, `twining_status`, `twining_archive`, `twining_export` |
+| **Lifecycle** | `twining_verify`, `twining_export` |
 
 † Deprecated in v2.0 — real handoffs happen as git-committed markdown docs; redesign or v3 removal tracked in [#33](https://github.com/daveangulo/twining-mcp/issues/33).
+
+**You do not need `twining_decide`.** It is the most commonly reached-for extended tool, but `twining_record`'s `decisions` array writes to the same decision store and is available by default. `twining_record` also accepts `commit_hash`, `supersedes`, and `depends_on`, covering what `twining_link_commit` and `twining_override` do for the common cases. Reach for the extended surface when you need decision *archaeology* (`trace`, `search_decisions`) or the provisional ratification lifecycle — not for ordinary recording.
 
 Enable with `.twining/config.yml`:
 ```yaml
 tools:
   full_surface: true
 ```
+
+### Using It Well
+
+Guidance from measuring real projects, including one with 2,300+ decisions. These are the things that most affect how much value you get back.
+
+**Decisions are permanent; the blackboard is working memory.** Decisions are never archived by age and are always retrievable. Findings, statuses, and answers live on the blackboard, which archives on a rolling horizon once it grows past a threshold — in a busy project that horizon is days, not months. If a piece of knowledge should still matter next month, it belongs in a `twining_record` decision, not a `twining_post` finding. Post findings freely for in-flight signal; do not use them as long-term storage.
+
+**Pass `commit_hash` when you record.** Without it, nothing connects a decision to the code that implements it, and `twining_why` cannot tell you which commit acted on a decision. Measured commit-to-decision linkage in the field: 12%. Recording after you commit, with the hash, is the cheapest fix.
+
+**Pass `agent_id` if you run more than one agent.** It defaults to `main`, and in a field project 91% of decisions collapsed to that default even though 39 distinct agent names were in use. Per-agent attribution, liveness, and coordination views are only as good as this field.
+
+**Use the narrowest scope that fits.** `src/auth/` retrieves far better than `project`. Scope drives both what an agent sees on assemble and how `twining_why` ranks results.
+
+**Write the actual reason.** A rationale that restates the summary records the WHAT and loses the WHY, which is the whole point. `twining_record` will accept it either way — the store cannot tell the difference, so this one is on you.
 
 ## How It Works
 
@@ -384,7 +439,7 @@ That's it — the PostHog project key is built into the source code. If you run 
 ```bash
 npm install       # Install dependencies
 npm run build     # Build
-npm test          # Run tests (800+ tests)
+npm test          # Run tests (1450+ tests)
 npm run test:watch
 ```
 
