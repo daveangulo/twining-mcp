@@ -5,8 +5,8 @@
   "properties": {
     "description": "Core type definitions: BlackboardEntry, Decision, Entity, Relation, AssembledContext, etc.",
     "layer": "utils",
-    "scope": "src/"
+    "scope": "src/engine/"
   },
   "type": "file",
-  "updated_at": "2026-07-24T22:55:33.008Z"
+  "updated_at": "2026-08-03T23:14:43.557Z"
 }

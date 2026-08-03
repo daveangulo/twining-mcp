@@ -69,11 +69,12 @@ interface DecideInput {
   summary: string;
   context: string;
   rationale: string;
+  rationale_source?: "authored" | "derived";
   alternatives: Array<{
     option: string;
     pros?: string[];
     cons?: string[];
-    reason_rejected: string;
+    reason_rejected?: string;
   }>;
   assumptions?: string[];
   constraints?: string[];
@@ -91,10 +92,16 @@ function buildFromNaturalLanguage(
     summary: parsed.summary,
     context: sessionSummary,
     rationale: parsed.rationale,
-    alternatives: parsed.rejected_alternatives.map((alt) => ({
-      option: alt,
-      reason_rejected: "Not chosen",
-    })),
+    rationale_source: parsed.rationale_source,
+    // A rejected option whose reason the prose never stated is recorded with
+    // no reason at all. The old placeholder ("Not chosen") filled the why-not
+    // field with a tautology on every NL-derived alternative — 217 of 217 in
+    // this project's own store — which is worse than an honest absence.
+    alternatives: parsed.rejected_alternatives.map((alt) =>
+      alt.reason_rejected
+        ? { option: alt.option, reason_rejected: alt.reason_rejected }
+        : { option: alt.option },
+    ),
     confidence: "medium",
   };
 }
@@ -108,7 +115,7 @@ interface StructuredDecision {
     option: string;
     pros?: string[];
     cons?: string[];
-    reason_rejected: string;
+    reason_rejected?: string;
   }>;
   assumptions?: string[];
   constraints?: string[];
@@ -127,6 +134,10 @@ function buildFromStructured(
     summary: item.summary,
     context: item.context ?? sessionSummary,
     rationale: item.rationale ?? item.summary,
+    // The structured builder owns most laundering in practice: a caller that
+    // supplies no rationale gets the summary echoed back, which reads as a
+    // stated WHY unless it is marked.
+    rationale_source: item.rationale ? "authored" : "derived",
     alternatives: item.alternatives ?? [],
     confidence: item.confidence ?? "medium",
   };

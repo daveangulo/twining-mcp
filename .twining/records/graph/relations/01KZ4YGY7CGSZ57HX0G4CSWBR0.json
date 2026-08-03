@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-03T23:14:43.564Z",
+  "id": "01KZ4YGY7CGSZ57HX0G4CSWBR0",
+  "properties": {
+    "decision_summary": "Chose to stamp rationale_source at BOTH record-parser.ts and record-tools.ts buildFromStructured rather than the parser alone"
+  },
+  "source": "01KZ4YGXNRAQY84ZFHFYR3E517",
+  "target": "01KZ4YGY72MYMBA6DJR76Z4RJ8",
+  "type": "decided_by"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-03T23:14:43.083Z",
+  "id": "01KZ4YGXRB0DT00D748PCK0HQB",
+  "properties": {
+    "decision_summary": "Chose to keep the structured zod schema's reason_rejected REQUIRED while making the stored type optional"
+  },
+  "source": "01KKNE77ZAW1943XPGMREM997R",
+  "target": "01KZ4YGXR8ESNP9F579Y5A77SC",
+  "type": "decided_by"
+}

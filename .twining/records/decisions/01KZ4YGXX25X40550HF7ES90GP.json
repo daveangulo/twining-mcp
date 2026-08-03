@@ -1,0 +1,54 @@
+{
+  "affected_files": [
+    "src/engine/record-parser.ts",
+    "src/tools/record-tools.ts",
+    "src/engine/decisions.ts",
+    "src/utils/types.ts",
+    "src/engine/context-assembler.ts",
+    "src/engine/exporter.ts",
+    "test/unit/record-parser.test.ts"
+  ],
+  "affected_symbols": [
+    "parseDecision",
+    "extractRejectedAlternatives",
+    "splitSummaryAndRationale",
+    "buildFromNL",
+    "buildFromStructured",
+    "DecisionAlternative",
+    "RationaleSource"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "replace it with the narrower appositive form",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "variant and found it WORSE on real data (13 of 15 added options were rhetorical prose contrast), so the honest move is deletion plus a test pinning the accepted miss",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Fixed the NL decision parser: no more fabricated reasons, two unsalvageable patterns deleted, provenance stamped at both laundering sites",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01KZ4YGXX25X40550HF7ES90GP",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "e06e72efff3997e129c50c89929d0de718a14842",
+    "recorded_at": "2026-08-03T23:14:43.215Z"
+  },
+  "rationale": "a candidate built and measured the ,\\s+not variant and found it WORSE on real data (13 of 15 added options were rhetorical prose contrast), so the honest move is deletion plus a test pinning the accepted miss",
+  "reversible": true,
+  "scope": "src/engine/",
+  "status": "active",
+  "summary": "Chose to delete the bare /not/ rejection pattern outright rather than replace it with the narrower appositive form",
+  "timestamp": "2026-08-03T23:14:43.234Z"
+}

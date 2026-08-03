@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-03T23:14:43.002Z",
+  "id": "01KZ4YGXNT801C2C6CG2PES6HW",
+  "name": "DecisionAlternative",
+  "properties": {
+    "scope": "src/engine/"
+  },
+  "type": "function",
+  "updated_at": "2026-08-03T23:14:43.565Z"
+}

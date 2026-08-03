@@ -3,8 +3,8 @@
   "id": "01KHXTXPP31RWYHVGNGXN9REW8",
   "name": "src/engine/context-assembler.ts",
   "properties": {
-    "scope": "src/"
+    "scope": "src/engine/"
   },
   "type": "file",
-  "updated_at": "2026-07-24T22:55:33.005Z"
+  "updated_at": "2026-08-03T23:14:43.558Z"
 }

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: the one-shot data migration over the 181 legacy records (strip 'Not chosen', stamp provenance) is NOT done and was deliberately deferred by both judges — it writes to a live decision store and belongs in its own change. Until it runs, legacy records keep rendering the tautology in assembled context.",
+  "entry_type": "need",
+  "id": "01KZ4YGYC2BZB1WTEYJEHQ8A2W",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "e06e72efff3997e129c50c89929d0de718a14842",
+    "recorded_at": "2026-08-03T23:14:43.694Z"
+  },
+  "scope": "src/engine/",
+  "summary": "the one-shot data migration over the 181 legacy records (strip 'Not chosen', stamp provenance) is NOT done and was deliberately deferred by both judges — it writes to a live decision store and belo…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-03T23:14:43.714Z"
+}

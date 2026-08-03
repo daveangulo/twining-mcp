@@ -3,8 +3,8 @@
   "id": "01KQ0VBWQNGNC4X1A0DX73D3XD",
   "name": "buildFromStructured",
   "properties": {
-    "scope": "src/engine/record-parser.ts"
+    "scope": "src/engine/"
   },
   "type": "function",
-  "updated_at": "2026-04-24T22:57:00.370Z"
+  "updated_at": "2026-08-03T23:14:43.564Z"
 }

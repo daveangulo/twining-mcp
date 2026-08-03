@@ -182,7 +182,11 @@ export class Exporter {
         if (d.alternatives && d.alternatives.length > 0) {
           lines.push("**Alternatives considered:**");
           for (const alt of d.alternatives) {
-            lines.push(`- ${alt.option}: ${alt.reason_rejected}`);
+            lines.push(
+              alt.reason_rejected
+                ? `- ${alt.option}: ${alt.reason_rejected}`
+                : `- ${alt.option}`,
+            );
           }
           lines.push("");
         }

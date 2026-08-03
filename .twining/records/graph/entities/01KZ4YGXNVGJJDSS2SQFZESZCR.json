@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-03T23:14:43.003Z",
+  "id": "01KZ4YGXNVGJJDSS2SQFZESZCR",
+  "name": "RationaleSource",
+  "properties": {
+    "scope": "src/engine/"
+  },
+  "type": "function",
+  "updated_at": "2026-08-03T23:14:43.566Z"
+}

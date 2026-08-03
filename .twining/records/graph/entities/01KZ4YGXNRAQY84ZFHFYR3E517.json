@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-03T23:14:43.000Z",
+  "id": "01KZ4YGXNRAQY84ZFHFYR3E517",
+  "name": "buildFromNL",
+  "properties": {
+    "scope": "src/engine/"
+  },
+  "type": "function",
+  "updated_at": "2026-08-03T23:14:43.564Z"
+}

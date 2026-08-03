@@ -15,8 +15,10 @@ import { captureProvenance } from "../utils/provenance.js";
 import { estimateTokens } from "../utils/tokens.js";
 import type {
   Decision,
+  DecisionAlternative,
   DecisionConfidence,
   DecisionStatus,
+  RationaleSource,
 } from "../utils/types.js";
 import type { Embedder } from "../embeddings/embedder.js";
 import { decisionEmbedText, embedContentHash } from "../embeddings/embed-text.js";
@@ -229,11 +231,12 @@ export class DecisionEngine {
     context: string;
     rationale: string;
     constraints?: string[];
+    rationale_source?: RationaleSource;
     alternatives?: Array<{
       option: string;
       pros?: string[];
       cons?: string[];
-      reason_rejected: string;
+      reason_rejected?: string;
     }>;
     depends_on?: string[];
     supersedes?: string;
@@ -321,12 +324,18 @@ export class DecisionEngine {
     );
 
     // Normalize alternatives: ensure pros/cons arrays exist
-    const alternatives = (input.alternatives ?? []).map((alt) => ({
-      option: alt.option,
-      pros: alt.pros ?? [],
-      cons: alt.cons ?? [],
-      reason_rejected: alt.reason_rejected,
-    }));
+    // reason_rejected is omitted entirely when absent rather than stored as ""
+    // or a placeholder — JSON.stringify drops the undefined key, so a record
+    // never asserts a why-not it does not have.
+    const alternatives = (input.alternatives ?? []).map((alt) => {
+      const normalized: DecisionAlternative = {
+        option: alt.option,
+        pros: alt.pros ?? [],
+        cons: alt.cons ?? [],
+      };
+      if (alt.reason_rejected) normalized.reason_rejected = alt.reason_rejected;
+      return normalized;
+    });
 
     // Create decision — status comes only from input (default active; guard above)
     // Check if agent assembled context before making this decision
@@ -342,6 +351,9 @@ export class DecisionEngine {
       summary: input.summary,
       context: input.context,
       rationale: input.rationale,
+      ...(input.rationale_source
+        ? { rationale_source: input.rationale_source }
+        : {}),
       constraints: input.constraints ?? [],
       alternatives,
       depends_on: validDependsOn,

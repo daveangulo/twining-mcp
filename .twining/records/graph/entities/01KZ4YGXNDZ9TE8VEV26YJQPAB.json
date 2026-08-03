@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-03T23:14:42.989Z",
+  "id": "01KZ4YGXNDZ9TE8VEV26YJQPAB",
+  "name": "01KZ4YGXJJP1A2K3REC8A5C9AE",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Chose to make reason_rejected optional and omit it entirely rather than keep a placeholder"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-03T23:14:42.989Z"
+}

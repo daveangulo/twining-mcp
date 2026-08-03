@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-03T23:14:43.316Z",
+  "id": "01KZ4YGXZMPDAY7RY7YT2B8ZSE",
+  "name": "01KZ4YGXX25X40550HF7ES90GP",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Chose to delete the bare /not/ rejection pattern outright rather than replace it with the narrower appositive form"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-03T23:14:43.316Z"
+}

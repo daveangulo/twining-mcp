@@ -7,10 +7,23 @@
  *   "Reverted the workaround — root cause was fixed upstream"
  */
 
+/** A rejected option, with its reason only when the prose actually stated one. */
+export interface ParsedAlternative {
+  option: string;
+  reason_rejected?: string;
+}
+
 export interface ParsedDecision {
   summary: string;
   rationale: string;
-  rejected_alternatives: string[];
+  /**
+   * "authored" when a separator or explicit marker split a real rationale out
+   * of the text; "derived" when no separator matched and the rationale is an
+   * echo of the summary. Consumers must treat an absent marker as unknown,
+   * never as authored.
+   */
+  rationale_source: "authored" | "derived";
+  rejected_alternatives: ParsedAlternative[];
   domain: string;
 }
 
@@ -28,7 +41,6 @@ const FALLBACK_SEPARATORS = [
   /\s+—\s+/,
   /\s+--\s+/,
   /\s+(?:because|since|due to|so that)\s+/i,
-  /\s+as\s+/i,
 ];
 
 /** Patterns that indicate a rejected alternative (unordered-NL style). */
@@ -36,7 +48,6 @@ const REJECTION_PATTERNS: RegExp[] = [
   /\bover\s+(.+?)(?:\s+(?:—|--|because|since|due to)|$)/gi,
   /\binstead of\s+(.+?)(?:\s+(?:—|--|because|since|due to)|$)/gi,
   /\brather than\s+(.+?)(?:\s+(?:—|--|because|since|due to)|$)/gi,
-  /\bnot\s+(.+?)(?:\s+(?:—|--|because|since|due to)|$)/gi,
 ];
 
 /** Labelled-list patterns for explicit rejections. */
@@ -70,13 +81,17 @@ const DOMAIN_HINTS: Record<string, string[]> = {
  * available kind. Explicit markers win; em-dash is next; word separators last.
  * The rationale preserves the entire remainder (no second-split truncation).
  */
-function splitSummaryAndRationale(text: string): { summary: string; rationale: string } {
+function splitSummaryAndRationale(text: string): {
+  summary: string;
+  rationale: string;
+  rationale_source: "authored" | "derived";
+} {
   const explicit = text.match(EXPLICIT_RATIONALE_MARKERS);
   if (explicit && explicit.index !== undefined) {
     const summary = text.slice(0, explicit.index).trim();
     const rationale = text.slice(explicit.index + explicit[0].length).trim();
     if (summary.length > 0 && rationale.length > 0) {
-      return { summary, rationale };
+      return { summary, rationale, rationale_source: "authored" };
     }
   }
 
@@ -86,50 +101,83 @@ function splitSummaryAndRationale(text: string): { summary: string; rationale: s
       const summary = text.slice(0, match.index).trim();
       const rationale = text.slice(match.index + match[0].length).trim();
       if (summary.length > 0 && rationale.length > 0) {
-        return { summary, rationale };
+        return { summary, rationale, rationale_source: "authored" };
       }
     }
   }
 
-  // No separator — rationale falls back to summary.
+  // No separator — the rationale is an echo of the summary, not a stated WHY.
+  // Kept non-empty because decide() requires it and it feeds embedding text;
+  // the marker is what tells consumers not to trust it as reasoning.
   const trimmed = text.trim();
-  return { summary: trimmed, rationale: trimmed };
+  return { summary: trimmed, rationale: trimmed, rationale_source: "derived" };
 }
 
-/** Extract rejected alternatives from the full text. */
-function extractRejectedAlternatives(text: string): string[] {
-  const seen = new Set<string>();
-  const out: string[] = [];
+/**
+ * A choice framed in the negative — "Chose NOT to X over Y" — inverts what the
+ * contrast keyword means: Y is the option that was KEPT. The old bare-`not`
+ * pattern turned these inside out, filing the kept option as rejected. Unordered
+ * extraction is suppressed inside such a clause; labelled and numbered forms are
+ * unaffected because they name their rejections explicitly.
+ */
+const NEGATED_CHOICE =
+  /\b(?:chose|decided|opted|elected)\s+(?:explicitly\s+)?not\s+to\b/i;
 
-  const push = (raw: string): void => {
-    const cleaned = raw.trim().replace(/[.,;]+$/, "").trim();
-    if (cleaned.length === 0) return;
-    const key = cleaned.toLowerCase();
+/**
+ * Splits a labelled rejection clause into its option and its reason. This is
+ * the only construction in prose that states a real why-not, so it is the only
+ * one allowed to populate reason_rejected.
+ */
+const LABELLED_REASON_SPLIT = /\s+—\s+|\s+--\s+|\s+because\s+|\s+due to\s+/;
+
+/** Extract rejected alternatives from the full text. */
+function extractRejectedAlternatives(text: string): ParsedAlternative[] {
+  const seen = new Set<string>();
+  const out: ParsedAlternative[] = [];
+
+  const push = (raw: string, allowReason: boolean): void => {
+    let option = raw.trim().replace(/[.,;]+$/, "").trim();
+    let reason: string | undefined;
+
+    if (allowReason) {
+      const split = option.split(LABELLED_REASON_SPLIT);
+      const head = split[0]?.trim() ?? "";
+      const tail = split.slice(1).join(" ").trim();
+      if (split.length > 1 && head && tail) {
+        option = head.replace(/[.,;]+$/, "").trim();
+        reason = tail.replace(/[.,;]+$/, "").trim();
+      }
+    }
+
+    if (option.length === 0) return;
+    const key = option.toLowerCase();
     if (seen.has(key)) return;
     seen.add(key);
-    out.push(cleaned);
+    out.push(reason ? { option, reason_rejected: reason } : { option });
   };
 
-  // Labelled rejections take priority — they're the clearest signal.
+  // Labelled rejections take priority — they're the clearest signal, and the
+  // only ones that can carry a stated reason.
   for (const pattern of LABELLED_REJECTION_PATTERNS) {
     for (const match of text.matchAll(pattern)) {
-      if (match[1]) push(match[1]);
+      if (match[1]) push(match[1], true);
     }
   }
 
   // Numbered lists inside a "rejected" / "alternatives" context.
   if (/\b(?:rejected|alternatives?)\b/i.test(text)) {
     for (const match of text.matchAll(NUMBERED_LIST_PATTERN)) {
-      if (match[2]) push(match[2]);
+      if (match[2]) push(match[2], false);
     }
   }
 
   // Unordered NL patterns last — skip if we already collected labelled items,
-  // since those would otherwise double-count sub-phrases.
-  if (out.length === 0) {
+  // since those would otherwise double-count sub-phrases. Never inside a
+  // negated choice, where the contrast keyword names the option that was kept.
+  if (out.length === 0 && !NEGATED_CHOICE.test(text)) {
     for (const pattern of REJECTION_PATTERNS) {
       for (const match of text.matchAll(pattern)) {
-        if (match[1]) push(match[1]);
+        if (match[1]) push(match[1], false);
       }
     }
   }
@@ -138,7 +186,7 @@ function extractRejectedAlternatives(text: string): string[] {
 }
 
 export function parseDecision(text: string): ParsedDecision {
-  const { summary, rationale } = splitSummaryAndRationale(text);
+  const { summary, rationale, rationale_source } = splitSummaryAndRationale(text);
   const rejected = extractRejectedAlternatives(text);
 
   // Infer domain from keywords
@@ -151,5 +199,11 @@ export function parseDecision(text: string): ParsedDecision {
     }
   }
 
-  return { summary, rationale, rejected_alternatives: rejected, domain };
+  return {
+    summary,
+    rationale,
+    rationale_source,
+    rejected_alternatives: rejected,
+    domain,
+  };
 }

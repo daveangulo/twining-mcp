@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-03T23:14:42.991Z",
+  "id": "01KZ4YGXNF5C911CD1RNXD4JBC",
+  "properties": {
+    "decision_summary": "Chose to make reason_rejected optional and omit it entirely rather than keep a placeholder"
+  },
+  "source": "01KQ0VBWQ83J4NGF3K4XWAMT14",
+  "target": "01KZ4YGXNDZ9TE8VEV26YJQPAB",
+  "type": "decided_by"
+}

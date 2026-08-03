@@ -343,7 +343,9 @@ export class ContextAssembler {
           affected_files: d.affected_files,
           constraints: d.constraints?.length > 0 ? d.constraints : undefined,
           rejected_alternatives: d.alternatives?.length > 0
-            ? d.alternatives.map((a) => `${a.option}: ${a.reason_rejected}`)
+            ? d.alternatives.map((a) =>
+                a.reason_rejected ? `${a.option}: ${a.reason_rejected}` : a.option,
+              )
             : undefined,
           assumptions: d.assumptions,
         };

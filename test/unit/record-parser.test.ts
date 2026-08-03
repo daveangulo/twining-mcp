@@ -14,14 +14,14 @@ describe("parseDecision — existing behavior (regression)", () => {
     const parsed = parseDecision(
       "Chose Redis over Memcached — need persistence across restarts",
     );
-    expect(parsed.rejected_alternatives).toContain("Memcached");
+    expect(parsed.rejected_alternatives.map((a) => a.option)).toContain("Memcached");
   });
 
   it("detects 'instead of X' rejected alternative", () => {
     const parsed = parseDecision(
       "Used event-driven pattern instead of callbacks because cleaner",
     );
-    expect(parsed.rejected_alternatives).toContain("callbacks");
+    expect(parsed.rejected_alternatives.map((a) => a.option)).toContain("callbacks");
   });
 
   it("falls back to summary as rationale when no separator", () => {
@@ -91,11 +91,12 @@ describe("parseDecision — numbered-list and labelled alternatives (bug fix)", 
       "(3) Minimal coordination budget / lite-matches-full as headline, " +
       "(4) Agent Teams as primary condition.";
     const parsed = parseDecision(text);
-    expect(parsed.rejected_alternatives.length).toBe(4);
-    expect(parsed.rejected_alternatives[0]).toContain("Exploration-efficiency ROI");
-    expect(parsed.rejected_alternatives[1]).toContain("Shared-markdown-hurts-in-conflict");
-    expect(parsed.rejected_alternatives[2]).toContain("Minimal coordination budget");
-    expect(parsed.rejected_alternatives[3]).toContain("Agent Teams as primary condition");
+    const options = parsed.rejected_alternatives.map((a) => a.option);
+    expect(options.length).toBe(4);
+    expect(options[0]).toContain("Exploration-efficiency ROI");
+    expect(options[1]).toContain("Shared-markdown-hurts-in-conflict");
+    expect(options[2]).toContain("Minimal coordination budget");
+    expect(options[3]).toContain("Agent Teams as primary condition");
   });
 
   it("detects all items with 'Alternative rejected:' prefix phrasings", () => {
@@ -107,14 +108,111 @@ describe("parseDecision — numbered-list and labelled alternatives (bug fix)", 
       "Alternative rejected: option D — expensive.";
     const parsed = parseDecision(text);
     expect(parsed.rejected_alternatives.length).toBe(4);
-    expect(parsed.rejected_alternatives[0]).toContain("option A");
-    expect(parsed.rejected_alternatives[3]).toContain("option D");
+    // The labelled form is the one construction in prose that states a real
+    // why-not, so it is the only one allowed to populate reason_rejected.
+    expect(parsed.rejected_alternatives[0]).toEqual({
+      option: "option A",
+      reason_rejected: "too slow",
+    });
+    expect(parsed.rejected_alternatives[3]).toEqual({
+      option: "option D",
+      reason_rejected: "expensive",
+    });
   });
 
   it("does not duplicate alternatives when multiple patterns would match the same item", () => {
     // "Chose X over Y" — only one alternative, not repeated across 'over' + 'instead of'.
     const parsed = parseDecision("Chose X over Y because Z");
     expect(parsed.rejected_alternatives.length).toBe(1);
-    expect(parsed.rejected_alternatives[0]).toContain("Y");
+    // Unordered patterns name the option but never invent a reason.
+    expect(parsed.rejected_alternatives[0]).toEqual({ option: "Y" });
+  });
+});
+
+describe("parseDecision — never fabricates a reason (deep review, 2026-07)", () => {
+  it("omits reason_rejected when the prose did not state one", () => {
+    const parsed = parseDecision("Chose Redis over Memcached — need persistence");
+    for (const alt of parsed.rejected_alternatives) {
+      expect(alt).not.toHaveProperty("reason_rejected");
+    }
+  });
+
+  it("never emits the old 'Not chosen' placeholder", () => {
+    for (const text of [
+      "Chose Redis over Memcached",
+      "Used events instead of callbacks",
+      "Picked A rather than B",
+      "Rejected alternatives: (1) X, (2) Y.",
+    ]) {
+      const parsed = parseDecision(text);
+      for (const alt of parsed.rejected_alternatives) {
+        expect(alt.reason_rejected).not.toBe("Not chosen");
+      }
+    }
+  });
+});
+
+describe("parseDecision — patterns removed as unsalvageable", () => {
+  it("does not mint an alternative from an ordinary negation", () => {
+    // The bare /\bnot\b/ pattern turned prose like this into an alternative
+    // named "scale". Measured at 87% noise on the real corpus.
+    const parsed = parseDecision("Chose the queue — this does not scale otherwise");
+    expect(parsed.rejected_alternatives.map((a) => a.option)).not.toContain("scale");
+  });
+
+  it("accepts the known cost: a genuine appositive contrast is missed", () => {
+    // "X, not Y" is real contrast, but the narrower pattern that catches it
+    // scored worse on real data than deletion. Pinned so it is not "fixed" back
+    // without re-measuring.
+    const parsed = parseDecision("Set the TTL to 30 seconds, not 5 minutes");
+    expect(parsed.rejected_alternatives).toHaveLength(0);
+  });
+
+  it("does not split a summary on ' as '", () => {
+    // " as " cut "Adopted the bundled server as the default" into a summary of
+    // "Adopted the bundled server" with rationale "the default".
+    const parsed = parseDecision("Adopted the bundled server as the default");
+    expect(parsed.summary).toBe("Adopted the bundled server as the default");
+    expect(parsed.rationale_source).toBe("derived");
+  });
+});
+
+describe("parseDecision — negated choice does not invert the contrast", () => {
+  it("does not file the KEPT option as rejected", () => {
+    // Real record from this project. "over npx" names what was KEPT; the old
+    // parser stored "npx" as the rejected option — a semantic inversion.
+    const parsed = parseDecision(
+      "Chose NOT to reorder the ladder to prefer the bundled server over npx",
+    );
+    expect(parsed.rejected_alternatives.map((a) => a.option)).not.toContain("npx");
+  });
+
+  it("still extracts explicitly labelled rejections inside a negated choice", () => {
+    const parsed = parseDecision(
+      "Chose not to rewrite the parser. Alternative rejected: full rewrite — too risky.",
+    );
+    expect(parsed.rejected_alternatives[0]).toEqual({
+      option: "full rewrite",
+      reason_rejected: "too risky",
+    });
+  });
+});
+
+describe("parseDecision — rationale provenance", () => {
+  it("marks a separator-split rationale as authored", () => {
+    expect(parseDecision("Chose X — because Y is faster").rationale_source).toBe(
+      "authored",
+    );
+    expect(parseDecision("Chose X. Rationale: Y is faster").rationale_source).toBe(
+      "authored",
+    );
+  });
+
+  it("marks an echoed summary as derived, and still stores it", () => {
+    const parsed = parseDecision("Reverted the workaround");
+    expect(parsed.rationale_source).toBe("derived");
+    // Non-empty is required downstream (decide() validation, embedding text) —
+    // the marker is what tells consumers not to read it as reasoning.
+    expect(parsed.rationale).toBe("Reverted the workaround");
   });
 });

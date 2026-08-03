@@ -3,8 +3,8 @@
   "id": "01KQ0VBWQAKWPFTYMPNE3X364C",
   "name": "test/unit/record-parser.test.ts",
   "properties": {
-    "scope": "src/engine/record-parser.ts"
+    "scope": "src/engine/"
   },
   "type": "file",
-  "updated_at": "2026-04-24T22:57:00.358Z"
+  "updated_at": "2026-08-03T23:14:43.560Z"
 }

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: plugin/BEHAVIORS.md DECIDE-02 still asserts every alternative must carry a reason_rejected. After this change that is only enforceable on the structured path, so the doc and the code now disagree — needs updating before the next plugin release.",
+  "entry_type": "warning",
+  "id": "01KZ4YGYD0FH2MHSGDHJY4FBCK",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "e06e72efff3997e129c50c89929d0de718a14842",
+    "recorded_at": "2026-08-03T23:14:43.725Z"
+  },
+  "scope": "src/engine/",
+  "summary": "plugin/BEHAVIORS.md DECIDE-02 still asserts every alternative must carry a reason_rejected. After this change that is only enforceable on the structured path, so the doc and the code now disagree —…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-03T23:14:43.744Z"
+}

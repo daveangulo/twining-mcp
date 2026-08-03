@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-03T23:14:43.554Z",
+  "id": "01KZ4YGY72MYMBA6DJR76Z4RJ8",
+  "name": "01KZ4YGY4FWSSECH1M2VB8ZQ8N",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Chose to stamp rationale_source at BOTH record-parser.ts and record-tools.ts buildFromStructured rather than the parser alone"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-03T23:14:43.554Z"
+}

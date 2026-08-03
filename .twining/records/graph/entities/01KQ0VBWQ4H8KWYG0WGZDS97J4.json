@@ -3,8 +3,8 @@
   "id": "01KQ0VBWQ4H8KWYG0WGZDS97J4",
   "name": "src/engine/record-parser.ts",
   "properties": {
-    "scope": "src/engine/record-parser.ts"
+    "scope": "src/engine/"
   },
   "type": "file",
-  "updated_at": "2026-04-24T22:57:00.354Z"
+  "updated_at": "2026-08-03T23:14:43.555Z"
 }

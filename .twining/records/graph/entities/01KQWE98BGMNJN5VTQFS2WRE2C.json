@@ -3,8 +3,8 @@
   "id": "01KQWE98BGMNJN5VTQFS2WRE2C",
   "name": "src/engine/exporter.ts",
   "properties": {
-    "scope": "src/"
+    "scope": "src/engine/"
   },
   "type": "file",
-  "updated_at": "2026-05-05T16:07:06.550Z"
+  "updated_at": "2026-08-03T23:14:43.559Z"
 }

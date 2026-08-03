@@ -41,8 +41,23 @@ export interface DecisionAlternative {
   option: string;
   pros: string[];
   cons: string[];
-  reason_rejected: string;
+  /**
+   * Why this option was rejected. Optional because the natural-language path
+   * often identifies WHICH option was rejected without stating WHY, and a
+   * fabricated reason is worse than an absent one — the placeholder it used to
+   * write ("Not chosen") filled the why-not field with a tautology on 217 of
+   * 217 NL-derived alternatives. Absent means "not stated", never "no reason".
+   */
+  reason_rejected?: string;
 }
+
+/**
+ * Where a decision's rationale came from. "authored" — the caller stated it.
+ * "derived" — it is an echo of the summary because none was supplied, so it
+ * records the WHAT, not the WHY. An ABSENT marker means unknown (records
+ * written before this field existed); never read absence as "authored".
+ */
+export type RationaleSource = "authored" | "derived";
 
 export type DecisionConfidence = "high" | "medium" | "low";
 export type DecisionStatus =
@@ -62,6 +77,8 @@ export interface Decision {
   summary: string;
   context: string;
   rationale: string;
+  /** Provenance of `rationale`. Absent on records written before this field. */
+  rationale_source?: RationaleSource;
   constraints: string[];
   alternatives: DecisionAlternative[];
   depends_on: string[];
