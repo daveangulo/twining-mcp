@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: the cap drops scopes in sort order, so an entity touched from more than 12 scopes will silently lose the alphabetically-later ones. Stable and convergent by design, but it means a very hot file's scope set is a subset, not the truth. If that matters, the alternative is raising the cap or moving scope off file entities entirely (Option B).",
+  "entry_type": "warning",
+  "id": "01KZ4X599TX3H9Z09CNBC375KY",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "26fe45b26df303864729edafdd863b6d02e9723a",
+    "recorded_at": "2026-08-03T22:50:53.095Z"
+  },
+  "scope": "src/",
+  "summary": "the cap drops scopes in sort order, so an entity touched from more than 12 scopes will silently lose the alphabetically-later ones. Stable and convergent by design, but it means a very hot file's s…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-03T22:50:53.114Z"
+}

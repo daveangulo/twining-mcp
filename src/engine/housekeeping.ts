@@ -18,6 +18,10 @@ import {
   type ArchiveCompactionReport,
 } from "./archive-compactor.js";
 import type { IBlackboardStore, IDecisionStore } from "../storage/interfaces.js";
+import {
+  repairEntityScopes,
+  type EntityScopeRepairReport,
+} from "./entity-scope-repair.js";
 
 /** Default: flag provisionals older than 7 days. */
 const STALE_PROVISIONAL_DAYS = 7;
@@ -76,6 +80,7 @@ export interface HousekeepingResult {
     }>;
   };
   archive_compaction?: ArchiveCompactionReport;
+  entity_scope_repair?: EntityScopeRepairReport;
   dry_run: boolean;
   summary: string;
 }
@@ -100,6 +105,11 @@ export class HousekeepingEngine {
     merge_sweep?: boolean;
     compact_archives?: boolean;
     /**
+     * Recompute graph entity scopes from their decided_by relations, undoing
+     * the pre-fix last-writer-wins overwrite. Dry-run unless execute is set.
+     */
+    repair_entity_scopes?: boolean;
+    /**
      * Set false to skip the blackboard archive pass (step 1) while still
      * running the other passes. Step 1 archives with no cutoff, so on
      * `execute: true` it sweeps the whole live board — which made the
@@ -115,6 +125,7 @@ export class HousekeepingEngine {
     const stalenessReview = options?.staleness_review ?? false;
     const mergeSweep = options?.merge_sweep ?? false;
     const compactArchivesOpt = options?.compact_archives ?? false;
+    const repairEntityScopesOpt = options?.repair_entity_scopes ?? false;
     const archiveEnabled = options?.archive ?? true;
 
     const result: HousekeepingResult = {
@@ -418,6 +429,19 @@ export class HousekeepingEngine {
         });
       } catch {
         // Non-fatal — compaction is opt-in and shouldn't break housekeeping
+      }
+    }
+
+    // 11. Entity scope repair — opt-in backfill for graph entities whose
+    // scope was overwritten before the union fix (utils/entity-properties.ts).
+    if (repairEntityScopesOpt && this.graphEngine) {
+      try {
+        result.entity_scope_repair = await repairEntityScopes(
+          this.graphEngine.graphStore,
+          { execute },
+        );
+      } catch {
+        // Non-fatal — repair is opt-in and must not break housekeeping.
       }
     }
 

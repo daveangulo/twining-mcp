@@ -3,8 +3,8 @@
   "id": "01KWX4BGS172CJFFVSGD15N4K5",
   "name": "HousekeepingEngine.run",
   "properties": {
-    "scope": "src/engine/"
+    "scope": "src/"
   },
   "type": "function",
-  "updated_at": "2026-07-24T23:46:50.453Z"
+  "updated_at": "2026-08-03T22:50:53.026Z"
 }

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-03T22:50:52.783Z",
+  "id": "01KZ4X58ZFVV97A4RGXSV0FWRG",
+  "properties": {
+    "decision_summary": "Chose to cap the set at 12 entries / 480 chars, dropping in sort order"
+  },
+  "source": "01KZ4X58M6MF0VM7STGZ3JNF8X",
+  "target": "01KZ4X58ZDEVHZVJ9JESX6KNEE",
+  "type": "decided_by"
+}

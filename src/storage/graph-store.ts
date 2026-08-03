@@ -8,6 +8,7 @@ import path from "node:path";
 import lockfile from "proper-lockfile";
 import { LOCK_OPTIONS, atomicWriteFileSync, ensureFileExists } from "./file-store.js";
 import { generateId } from "../utils/ids.js";
+import { mergeEntityProperties } from "../utils/entity-properties.js";
 import type { Entity, Relation } from "../utils/types.js";
 
 import { TwiningError } from "../utils/errors.js";
@@ -57,11 +58,12 @@ export class GraphStore implements IGraphStore {
       );
 
       if (existing) {
-        // Upsert: merge properties and update timestamp
-        existing.properties = {
-          ...existing.properties,
-          ...(input.properties ?? {}),
-        };
+        // Upsert: merge properties and update timestamp. `scope` unions rather
+        // than overwriting — see utils/entity-properties.ts.
+        existing.properties = mergeEntityProperties(
+          existing.properties,
+          input.properties,
+        );
         existing.updated_at = now;
         atomicWriteFileSync(
           this.entitiesPath,

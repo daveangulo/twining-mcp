@@ -1,0 +1,42 @@
+{
+  "affected_files": [
+    "src/utils/entity-properties.ts",
+    "src/engine/entity-scope-repair.ts",
+    "src/storage/graph-store.ts",
+    "src/storage/sqlite/sqlite-stores.ts",
+    "src/engine/housekeeping.ts",
+    "src/engine/graph.ts",
+    "src/tools/housekeeping-tools.ts",
+    "test/entity-scope.test.ts"
+  ],
+  "affected_symbols": [
+    "mergeEntityProperties",
+    "joinSetProperty",
+    "splitSetProperty",
+    "repairEntityScopes",
+    "GraphStore.addEntity",
+    "SqliteGraphStore.addEntity",
+    "HousekeepingEngine.run"
+  ],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Implemented Option A: graph entity scope now accumulates as a sorted set, with an opt-in repair pass for the 101 already-overwritten entities",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01KZ4X58WT24W5M5HWXRBX4ZFG",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "26fe45b26df303864729edafdd863b6d02e9723a",
+    "recorded_at": "2026-08-03T22:50:52.679Z"
+  },
+  "rationale": "tool schema caps property values at 1000 chars and a central file in a 2,300-decision project can be touched from many scopes; dropping in sort order is arbitrary but stable, whereas dropping oldest would reintroduce the churn the fix exists to remove",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Chose to cap the set at 12 entries / 480 chars, dropping in sort order",
+  "timestamp": "2026-08-03T22:50:52.698Z"
+}

@@ -4,8 +4,9 @@
   "name": "src/storage/graph-store.ts",
   "properties": {
     "description": "Entities and relations JSON persistence",
-    "layer": "storage"
+    "layer": "storage",
+    "scope": "src/"
   },
   "type": "file",
-  "updated_at": "2026-02-17T03:13:22.839Z"
+  "updated_at": "2026-08-03T22:50:53.016Z"
 }

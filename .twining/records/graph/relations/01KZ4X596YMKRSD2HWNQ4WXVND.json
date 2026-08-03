@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-03T22:50:53.022Z",
+  "id": "01KZ4X596YMKRSD2HWNQ4WXVND",
+  "properties": {
+    "decision_summary": "Chose to widen GraphEngine.graphStore from private to readonly-public rather than add delegate methods for getEntities/getRelations"
+  },
+  "source": "01KZ4X58MEF0CDHJ9CBH5M57K7",
+  "target": "01KZ4X596PARMEBWQHD2YVX3W9",
+  "type": "decided_by"
+}

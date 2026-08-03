@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-03T22:50:52.426Z",
+  "id": "01KZ4X58MAV1S0P69C1ZH6YHC3",
+  "properties": {
+    "decision_summary": "Chose Dave's Option A"
+  },
+  "source": "01KY6EEVNYT9CWMATFTKJ1KYGE",
+  "target": "01KZ4X58M4FAERHACB4GE7MB0S",
+  "type": "decided_by"
+}

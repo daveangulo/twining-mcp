@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-03T22:50:52.668Z",
+  "id": "01KZ4X58VWQ60N9MDFKHYYP8ZQ",
+  "properties": {
+    "decision_summary": "Chose to sort the accumulated set rather than preserve insertion order"
+  },
+  "source": "01KY6EEVNYT9CWMATFTKJ1KYGE",
+  "target": "01KZ4X58VRH2PZZCP998D30CCD",
+  "type": "decided_by"
+}

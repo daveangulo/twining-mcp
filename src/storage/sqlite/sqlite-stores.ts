@@ -10,6 +10,7 @@
  * backend's write path.
  */
 import { generateId } from "../../utils/ids.js";
+import { mergeEntityProperties } from "../../utils/entity-properties.js";
 import { normalizeTags } from "../../utils/tags.js";
 import { scopeMatches } from "../../utils/scope.js";
 import { TwiningError } from "../../utils/errors.js";
@@ -295,10 +296,11 @@ export class SqliteGraphStore implements IGraphStore {
 
       if (existingRow) {
         const existing = JSON.parse(existingRow.data as string) as Entity;
-        existing.properties = {
-          ...existing.properties,
-          ...(input.properties ?? {}),
-        };
+        // `scope` unions rather than overwriting — see utils/entity-properties.ts.
+        existing.properties = mergeEntityProperties(
+          existing.properties,
+          input.properties,
+        );
         existing.updated_at = now;
         this.db
           .prepare("UPDATE entities SET data = ? WHERE id = ?")

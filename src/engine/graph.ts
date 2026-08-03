@@ -29,7 +29,12 @@ export interface QueryResult {
 }
 
 export class GraphEngine {
-  private readonly graphStore: IGraphStore;
+  /**
+   * Readable so maintenance passes (engine/entity-scope-repair.ts) can walk
+   * entities and relations directly without the engine growing a delegate
+   * method per query shape.
+   */
+  readonly graphStore: IGraphStore;
 
   constructor(graphStore: IGraphStore) {
     this.graphStore = graphStore;

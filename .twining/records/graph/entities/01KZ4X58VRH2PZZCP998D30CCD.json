@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-03T22:50:52.664Z",
+  "id": "01KZ4X58VRH2PZZCP998D30CCD",
+  "name": "01KZ4X58S542193JA7AG73GT1J",
+  "properties": {
+    "scope": "src/",
+    "summary": "Chose to sort the accumulated set rather than preserve insertion order"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-03T22:50:52.664Z"
+}

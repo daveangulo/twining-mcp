@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-03T22:50:52.554Z",
+  "id": "01KZ4X58RA7AVZYKX9Q5ZNNVMM",
+  "properties": {
+    "decision_summary": "Chose to put the merge rule in a shared utils/entity-properties.ts consumed by BOTH graph backends rather than editing each addEntity separately"
+  },
+  "source": "01KZ4X58MEF0CDHJ9CBH5M57K9",
+  "target": "01KZ4X58QZPC49036C0N8SFX47",
+  "type": "decided_by"
+}

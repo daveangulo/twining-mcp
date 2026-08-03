@@ -1,0 +1,49 @@
+{
+  "affected_files": [
+    "src/utils/entity-properties.ts",
+    "src/engine/entity-scope-repair.ts",
+    "src/storage/graph-store.ts",
+    "src/storage/sqlite/sqlite-stores.ts",
+    "src/engine/housekeeping.ts",
+    "src/engine/graph.ts",
+    "src/tools/housekeeping-tools.ts",
+    "test/entity-scope.test.ts"
+  ],
+  "affected_symbols": [
+    "mergeEntityProperties",
+    "joinSetProperty",
+    "splitSetProperty",
+    "repairEntityScopes",
+    "GraphStore.addEntity",
+    "SqliteGraphStore.addEntity",
+    "HousekeepingEngine.run"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "first-writer-wins or dropping the property; it is the only option that loses no information, it converges so the entity file stops being rewritten, and it is backward compatible",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Implemented Option A: graph entity scope now accumulates as a sorted set, with an opt-in repair pass for the 101 already-overwritten entities",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01KZ4X58HGV7B72JVPB7ZS1HMZ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "26fe45b26df303864729edafdd863b6d02e9723a",
+    "recorded_at": "2026-08-03T22:50:52.315Z"
+  },
+  "rationale": "scope accumulates as a sorted comma-joined set — over first-writer-wins or dropping the property; it is the only option that loses no information, it converges so the entity file stops being rewritten, and it is backward compatible because an existing singular value is a valid one-element set and both consumers do substring matching",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Chose Dave's Option A",
+  "timestamp": "2026-08-03T22:50:52.336Z"
+}

@@ -1,0 +1,49 @@
+{
+  "affected_files": [
+    "src/utils/entity-properties.ts",
+    "src/engine/entity-scope-repair.ts",
+    "src/storage/graph-store.ts",
+    "src/storage/sqlite/sqlite-stores.ts",
+    "src/engine/housekeeping.ts",
+    "src/engine/graph.ts",
+    "src/tools/housekeeping-tools.ts",
+    "test/entity-scope.test.ts"
+  ],
+  "affected_symbols": [
+    "mergeEntityProperties",
+    "joinSetProperty",
+    "splitSetProperty",
+    "repairEntityScopes",
+    "GraphStore.addEntity",
+    "SqliteGraphStore.addEntity",
+    "HousekeepingEngine.run"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "add delegate methods for getEntities/getRelations",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Implemented Option A: graph entity scope now accumulates as a sorted set, with an opt-in repair pass for the 101 already-overwritten entities",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01KZ4X5945R6ZCZGASYDE8144D",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "26fe45b26df303864729edafdd863b6d02e9723a",
+    "recorded_at": "2026-08-03T22:50:52.913Z"
+  },
+  "rationale": "the repair pass needs to walk the whole graph once, and growing the engine a method per query shape to preserve nominal encapsulation is worse than exposing the store it already wraps",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Chose to widen GraphEngine.graphStore from private to readonly-public rather than add delegate methods for getEntities/getRelations",
+  "timestamp": "2026-08-03T22:50:52.933Z"
+}

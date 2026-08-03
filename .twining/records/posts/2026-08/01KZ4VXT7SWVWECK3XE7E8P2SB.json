@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Blast radius of wrong entity scope is bounded to relevance, not correctness. Only two consumers, both in context-assembler: getRelatedEntities (:1080) runs query(scope, limit 5) which substring-matches name OR properties with NO name filter, so a wrong scope property puts wrong files into related_entities in every assemble briefing; computeGraphReachability (:960) queries 20 candidates then filters by NAME, so a wrong scope cannot produce a wrong result there but can crowd a correct entity out of the 20 slots. Nothing does exact scope-equality filtering.",
+  "entry_type": "finding",
+  "id": "01KZ4VXT7SWVWECK3XE7E8P2SB",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "26fe45b26df303864729edafdd863b6d02e9723a",
+    "recorded_at": "2026-08-03T22:29:19.716Z"
+  },
+  "scope": "src/engine/",
+  "summary": "Blast radius of wrong entity scope is bounded to relevance, not correctness. Only two consumers, both in context-assembler: getRelatedEntities (:1080) runs query(scope, limit 5) which substring-mat…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-03T22:29:19.737Z"
+}

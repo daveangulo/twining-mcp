@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-03T22:50:52.431Z",
+  "id": "01KZ4X58MF52WYFXMVXGT7EQF8",
+  "name": "splitSetProperty",
+  "properties": {
+    "scope": "src/"
+  },
+  "type": "function",
+  "updated_at": "2026-08-03T22:50:53.023Z"
+}
