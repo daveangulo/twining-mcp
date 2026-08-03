@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-03T22:19:52.224Z",
+  "id": "01KZ4VCG10JNN4Y15ND716DAEA",
+  "name": "01KZ4VCG0NTT38F000RDR9HVXA",
+  "properties": {
+    "scope": "plugin/scripts/",
+    "summary": "Chose a 20-second default grace, overridable via TWINING_LAUNCH_RUNG_GRACE"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-03T22:19:52.224Z"
+}

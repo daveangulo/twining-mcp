@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-03T22:19:52.189Z",
+  "id": "01KZ4VCFZXED48NC6ZY3VNXZ9J",
+  "properties": {
+    "decision_summary": "Chose to run the network-dependent rungs (npx, npm-prefix, global) as child processes with an elapsed-time guard instead of exec, falling through to the bundled server only when they die inside a grace window"
+  },
+  "source": "01KZ4VCFZW79EN1JY0T4FWMV8P",
+  "target": "01KZ4VCFZW79EN1JY0T4FWMV8N",
+  "type": "decided_by"
+}

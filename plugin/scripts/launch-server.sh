@@ -157,12 +157,58 @@ if [ "$MODE" = probe ]; then
   exit 0
 fi
 
+# Rungs 1-3 need the registry: they resolve and download the package at launch.
+# `npx --version` succeeding only proves npx runs — it does NOT prove `npx -y
+# twining-mcp` can install. A registry policy (npm's minimumReleaseAge / a
+# min-package-age rule), an auth failure, a proxy, or being offline all let the
+# probe report healthy and then kill the launch. Because these rungs used to
+# `exec`, the shell was replaced and the dependency-free bundled server sitting
+# one rung below was never reached — a field project lost Twining entirely this
+# way, with the probe reporting runner=npx.
+#
+# So: run them as a child, and if one dies WITHOUT having served, fall through
+# to the bundle. "Without having served" is approximated by elapsed time — a
+# resolution failure dies in seconds, whereas a server that actually spoke MCP
+# must never be silently restarted (its client handshake is already spent).
+NETWORK_RUNG_GRACE="${TWINING_LAUNCH_RUNG_GRACE:-20}"
+
+fallback_to_bundle_or_exit() {
+  # $1 = exit code, $2 = elapsed seconds, $3 = what was tried
+  if [ "$1" -ne 0 ] &&
+     [ "$2" -lt "$NETWORK_RUNG_GRACE" ] &&
+     [ -f "$BUNDLE" ] &&
+     [ "$BUNDLE_NODE_OK" -eq 1 ]; then
+    echo "twining-mcp: $3 exited $1 after ${2}s without serving — the package could not be" >&2
+    echo "  resolved (registry policy, auth, proxy, or offline). Falling back to the" >&2
+    echo "  plugin-bundled server. Semantic search runs in keyword-fallback mode." >&2
+    exec node "$BUNDLE"
+  fi
+  exit "$1"
+}
+
+now_secs() { date +%s 2>/dev/null || echo 0; }
+
 case "$RUNNER" in
   override)   exec node "$TWINING_SERVER_JS" ;;
   pin)        exec node "$PIN" ;;
-  npx)        exec npx -y "$PKG_SPEC" ;;
-  npm-prefix) exec node "$NPX_CLI" -y "$PKG_SPEC" ;;
-  global)     exec twining-mcp ;;
+  npx)
+    START="$(now_secs)"
+    npx -y "$PKG_SPEC"
+    CODE=$?
+    fallback_to_bundle_or_exit "$CODE" "$(( $(now_secs) - START ))" "npx -y $PKG_SPEC"
+    ;;
+  npm-prefix)
+    START="$(now_secs)"
+    node "$NPX_CLI" -y "$PKG_SPEC"
+    CODE=$?
+    fallback_to_bundle_or_exit "$CODE" "$(( $(now_secs) - START ))" "npx-cli $PKG_SPEC"
+    ;;
+  global)
+    START="$(now_secs)"
+    twining-mcp
+    CODE=$?
+    fallback_to_bundle_or_exit "$CODE" "$(( $(now_secs) - START ))" "global twining-mcp"
+    ;;
   bundled)
     echo "twining-mcp: using the plugin-bundled server (npm/npx not found). Semantic search runs in keyword-fallback mode; install npm, then 'npm i -D twining-mcp' in the project to restore full mode." >&2
     exec node "$BUNDLE"

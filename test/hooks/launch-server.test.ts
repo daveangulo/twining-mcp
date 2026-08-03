@@ -354,3 +354,66 @@ describe("launch-server.sh launch mode", () => {
     expect(result.stdout).toBe("LAUNCHED\n");
   });
 });
+
+/**
+ * Regression: a registry that refuses the package (npm's minimumReleaseAge, a
+ * proxy, auth, or being offline) lets `npx --version` succeed — so the launcher
+ * commits to the npx rung — and then kills the launch. These rungs used to
+ * `exec`, replacing the shell, so the dependency-free bundled server one rung
+ * below was never reached. A field project lost Twining entirely this way while
+ * `--probe` reported runner=npx.
+ */
+describe("launch-server.sh network-rung fallback", () => {
+  /** npx that answers --version but fails any real install, like a blocked registry. */
+  function brokenFetchNpx(shim: string): void {
+    fs.writeFileSync(
+      path.join(shim, "npx"),
+      '#!/bin/sh\nif [ "$1" = "--version" ]; then echo 10.9.0; exit 0; fi\n' +
+        'echo "npm error code E403" >&2\nexit 1\n',
+      { mode: 0o755 },
+    );
+  }
+
+  it("still reports runner=npx from --probe — the probe cannot see a fetch failure", () => {
+    const shim = makeShim(["sh", "node"]);
+    brokenFetchNpx(shim);
+    const result = runScript(["--probe"], shim);
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toMatch(/^runner=npx /);
+  });
+
+  it("falls back to the bundled server when npx cannot fetch the package", () => {
+    const shim = makeShim(["sh", "node"]);
+    brokenFetchNpx(shim);
+    const script = makePluginLayout('process.stdout.write("BUNDLE-OK\\n");\n');
+    const result = runScript([], shim, {}, { script });
+
+    expect(result.stdout).toBe("BUNDLE-OK\n"); // stdout purity preserved
+    expect(result.exitCode).toBe(0);
+    expect(result.stderr).toContain("without serving");
+    expect(result.stderr).toContain("Falling back");
+  });
+
+  it("does NOT restart a server that ran and then failed — its handshake is spent", () => {
+    const shim = makeShim(["sh", "node"]);
+    brokenFetchNpx(shim);
+    const script = makePluginLayout('process.stdout.write("BUNDLE-OK\\n");\n');
+    // Grace 0 makes every failure look like it happened after serving, which is
+    // the case that must NOT silently hand a fresh server a used stdin.
+    const result = runScript([], shim, { TWINING_LAUNCH_RUNG_GRACE: "0" }, { script });
+
+    expect(result.exitCode).toBe(1); // npx's own code, surfaced
+    expect(result.stdout).toBe(""); // the bundle never ran
+  });
+
+  it("surfaces the failure when npx fails and no bundle exists", () => {
+    const shim = makeShim(["sh", "node"]);
+    brokenFetchNpx(shim);
+    const script = makePluginLayout(); // no bundle
+    const result = runScript([], shim, {}, { script });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toContain("npm error");
+  });
+});

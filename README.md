@@ -147,7 +147,9 @@ Twining fails quiet — when the server can't start, no error surfaces in the se
    ```bash
    bash "$CLAUDE_PLUGIN_ROOT/scripts/launch-server.sh" --probe   # → runner=<rung> node=<version>
    ```
-   `runner=none` means every resolution rung failed — see the next section. Any other value means the launcher is fine and the problem is elsewhere.
+   `runner=none` means every resolution rung failed — see the next section.
+
+   **A healthy `runner=` does not mean the server can start.** The probe checks that `npx` *runs*, not that it can *fetch* the package. A registry policy (npm's `minimumReleaseAge`, common in corporate setups), an auth or proxy failure, or simply being offline all produce `runner=npx` and then a dead launch. Since plugin 1.24.0 the launcher detects that and falls back to the bundled server automatically; on older plugins it exits with npx's error, which appears in the MCP log below.
 3. **Check the MCP log** for the real error: `~/Library/Caches/claude-cli-nodejs/<project>/mcp-logs-twining/` on macOS.
 4. **Check that the plugin is enabled in *this* configuration.** `/plugin` shows what the current session loaded. A different `CLAUDE_CONFIG_DIR`, or a worktree without the project-scope settings, can load no plugin at all — no MCP, no hooks, no skills.
 5. **If tools exist in your main session but not in a spawned agent**, see [Agent teams and subagents](#agent-teams-and-subagents) below.

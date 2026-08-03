@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-03T22:19:52.188Z",
+  "id": "01KZ4VCFZW79EN1JY0T4FWMV8N",
+  "name": "01KZ4VCFZCAW3NQNP0371EVEMQ",
+  "properties": {
+    "scope": "plugin/scripts/",
+    "summary": "Chose to run the network-dependent rungs (npx, npm-prefix, global) as child processes with an elapsed-time guard instead of exec, falling through to the bundled server only when they die inside a grace window"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-03T22:19:52.188Z"
+}

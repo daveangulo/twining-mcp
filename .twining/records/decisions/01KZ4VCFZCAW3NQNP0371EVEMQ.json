@@ -1,0 +1,35 @@
+{
+  "affected_files": [
+    "plugin/scripts/launch-server.sh",
+    "test/hooks/launch-server.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "exec, falling through to the bundled server only when they die inside a grace window",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Merged deep-review branch to main; fixed launcher exec-away-the-fallback bug that caused the field outage",
+  "depends_on": [],
+  "domain": "api-design",
+  "id": "01KZ4VCFZCAW3NQNP0371EVEMQ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "1ba74df8bc04df2a383ae6056ad830658715ab03",
+    "recorded_at": "2026-08-03T22:19:52.151Z"
+  },
+  "rationale": "exec replaced the shell so a registry-policy failure killed the launch outright, but a server that actually served and then exited must never be silently restarted because its client handshake is already spent; elapsed time is the only signal available without a pipe, which would break stdio passthrough",
+  "reversible": true,
+  "scope": "plugin/scripts/",
+  "status": "active",
+  "summary": "Chose to run the network-dependent rungs (npx, npm-prefix, global) as child processes with an elapsed-time guard instead of exec, falling through to the bundled server only when they die inside a grace window",
+  "timestamp": "2026-08-03T22:19:52.172Z"
+}

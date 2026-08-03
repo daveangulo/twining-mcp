@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-03T22:19:52.255Z",
+  "id": "01KZ4VCG1Z9Q39VXRD696430PS",
+  "name": "01KZ4VCG1QRV85N11HB1Y664KH",
+  "properties": {
+    "scope": "plugin/scripts/",
+    "summary": "Chose NOT to reorder the ladder to prefer the bundled server over npx"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-03T22:19:52.255Z"
+}

@@ -1,0 +1,41 @@
+{
+  "affected_files": [
+    "plugin/scripts/launch-server.sh",
+    "test/hooks/launch-server.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "npx",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "to reorder the ladder to prefer the bundled server over npx",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Merged deep-review branch to main; fixed launcher exec-away-the-fallback bug that caused the field outage",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KZ4VCG1QRV85N11HB1Y664KH",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "1ba74df8bc04df2a383ae6056ad830658715ab03",
+    "recorded_at": "2026-08-03T22:19:52.228Z"
+  },
+  "rationale": "that would silently downgrade every plugin user to keyword-only search to fix a minority failure; falling back on demand preserves semantic search for everyone whose registry works",
+  "reversible": true,
+  "scope": "plugin/scripts/",
+  "status": "active",
+  "summary": "Chose NOT to reorder the ladder to prefer the bundled server over npx",
+  "timestamp": "2026-08-03T22:19:52.247Z"
+}

@@ -1,0 +1,28 @@
+{
+  "affected_files": [
+    "plugin/scripts/launch-server.sh",
+    "test/hooks/launch-server.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Merged deep-review branch to main; fixed launcher exec-away-the-fallback bug that caused the field outage",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01KZ4VCG0NTT38F000RDR9HVXA",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "1ba74df8bc04df2a383ae6056ad830658715ab03",
+    "recorded_at": "2026-08-03T22:19:52.193Z"
+  },
+  "rationale": "package-resolution failures die in under a second while real sessions last minutes, so the window is wide enough to be unambiguous and the env var makes the after-serving branch testable without a 20-second test",
+  "reversible": true,
+  "scope": "plugin/scripts/",
+  "status": "active",
+  "summary": "Chose a 20-second default grace, overridable via TWINING_LAUNCH_RUNG_GRACE",
+  "timestamp": "2026-08-03T22:19:52.213Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-03T22:19:52.256Z",
+  "id": "01KZ4VCG20XTADM4JWPBEJVJQ3",
+  "properties": {
+    "decision_summary": "Chose NOT to reorder the ladder to prefer the bundled server over npx"
+  },
+  "source": "01KZ4VCFZW79EN1JY0T4FWMV8P",
+  "target": "01KZ4VCG1Z9Q39VXRD696430PS",
+  "type": "decided_by"
+}
