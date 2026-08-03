@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Decisions: Corrected the README troubleshooting guidance to say that a healthy runner= value does not imply the server can launch — the probe verifies npx runs, not that it can fetch the package, and the field outage had a healthy-looking probe throughout; leaving the old 'runner=none is the smoking gun' framing would send the next person down the wrong path\nFindings: State for the next session: fix/deep-review-2026-07 is merged to main (fast-forward), main is 13 commits ahead of origin and NOT pushed. Full suite 110 files / 1466 passed / 2 skipped. Plugin is 1.24.0 (carries both the agent-frontmatter fix and the launcher fallback). package.json is still 2.5.0, so the six server-side high-severity fixes and the housekeeping archive:false opt-out remain unreleased to npm.; IN FLIGHT: a Workflow (run wf_b584090d-c82) is designing the NL parser fix empirically — three candidate approaches each measured against the real 400-decision corpus plus adversarial NL strings, then judged on correctness and shipping pragmatism. Results not yet returned. Journal at .claude/projects/.../subagents/workflows/wf_b584090d-c82/journal.jsonl.; need: after the parser fix, the next queued items are the graph entity scope last-writer-wins data loss (needs a semantics decision: accumulate a set, first-writer-wins, or drop scope from file entities) and the archive cold-tier design (measured horizon is 2-3 days at ~250 archivable entries/day, so threshold tuning is a palliative and a queryable cold tier is the durable fix).",
+  "entry_type": "status",
+  "id": "01KZ4VF03R8FP5XHK1T490Z5D4",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "5d7a371dc169630308983d4ecaedc18ee1a65eda",
+    "recorded_at": "2026-08-03T22:21:14.213Z"
+  },
+  "scope": "project",
+  "summary": "Session state: main merged and 13 commits ahead of origin, plugin 1.24.0 cut, parser-fix design workflow still running",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-03T22:21:14.232Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-03T22:21:14.388Z",
+  "id": "01KZ4VF08MEF2N9S0VX9FVFS0N",
+  "properties": {
+    "decision_summary": "Corrected the README troubleshooting guidance to say that a healthy runner= value does not imply the server can launch"
+  },
+  "source": "01KJGX8KNRTGKE7PVC2GH1QSTE",
+  "target": "01KZ4VF08K9VXYTP4TBH9448ZQ",
+  "type": "decided_by"
+}

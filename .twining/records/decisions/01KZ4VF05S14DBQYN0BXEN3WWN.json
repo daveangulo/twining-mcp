@@ -1,0 +1,40 @@
+{
+  "affected_files": [
+    "README.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "imply the server can launch",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "that it can fetch the package, and the field outage had a healthy-looking probe throughout; leaving the old 'runner=none is the smoking gun' framing would send the next person down the wrong path",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Session state: main merged and 13 commits ahead of origin, plugin 1.24.0 cut, parser-fix design workflow still running",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KZ4VF05S14DBQYN0BXEN3WWN",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "5d7a371dc169630308983d4ecaedc18ee1a65eda",
+    "recorded_at": "2026-08-03T22:21:14.277Z"
+  },
+  "rationale": "the probe verifies npx runs, not that it can fetch the package, and the field outage had a healthy-looking probe throughout; leaving the old 'runner=none is the smoking gun' framing would send the next person down the wrong path",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Corrected the README troubleshooting guidance to say that a healthy runner= value does not imply the server can launch",
+  "timestamp": "2026-08-03T22:21:14.297Z"
+}
