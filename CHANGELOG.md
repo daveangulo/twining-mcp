@@ -2,6 +2,43 @@
 
 All notable changes to Twining MCP are documented here.
 
+## [2.6.0] - 2026-08-03
+
+Deep-review release. A multi-agent structural and defect review of the whole
+product, validated against a 2,323-decision field project, then fixed. Details:
+`docs/FIELD-VALIDATION.md`.
+
+### Fixed
+- **Assemble presented decisions in store order, not score order.** The weighted ranking (recency, relevance, confidence, graph reachability) decided only *which* items fit the token budget; the loop that built the briefing then iterated the **unsorted** array. So the `CRITICAL` tier rendered the three *oldest* scope-matched decisions and collapsed the highest-scoring ones into `+N more`. In a field project's busiest scope only ~14% of relevant decisions fit the budget at all, which made *which* 14% surfaced close to everything.
+- **Resolved needs and warnings resurfaced forever** as `REMAINING WORK` and `STOP` directives. Assemble ignored the `relates_to` resolution predicate that the archiver and triage already shared. Resolved obligations are now dropped before scoring, so they also stop consuming budget. Resolution is computed from the full live board, since the resolving entry is usually posted against a different scope.
+- **Warnings that exceeded the token budget vanished, and the briefing then said "No prior context constraints — proceed".** Warnings now degrade to summary-only rather than disappearing; anything that cannot fit even so increments `warnings_omitted`, which suppresses both false all-clear paths.
+- **`twining_why` surfaced overridden and archived decisions** in the full-detail tier, presenting an explicitly reversed choice as a live constraint. Only `superseded` was excluded before.
+- **Record ingest deleted unmirrored rows when `export_records` was off.** With mirroring disabled the `records/` tree is a stale partial snapshot and the database is the only complete state, but ingest ran unconditionally at every server start and on every HEAD move — deletion-propagating every row whose file was absent. Both call sites are now gated, and a stale tree is reported at startup.
+- **`migrate --reverse` wiped the file backend** when `export_records` was off and no `twining.db` existed: it created an empty database and exported that over the live store, exiting 0.
+- **The NL decision parser fabricated rejected-alternative reasons.** Every alternative extracted from a natural-language decision string was stored with `reason_rejected: "Not chosen"` — a tautology in the field that should hold the why-not, on 217 of 217 NL-derived alternatives in this project's own store. `reason_rejected` is now optional and omitted when the prose never stated one. Two patterns were deleted as unsalvageable after measurement: bare `not` in the rejection set (87% noise; the narrower appositive replacement measured *worse* on real data) and `" as "` as a rationale separator (it cut "Adopted the bundled server as the default" into a rationale of "the default"). A negated-choice veto fixes the worst class — "Chose NOT to prefer the bundled server **over npx**" used to store `npx`, the option that was *kept*, as rejected. The labelled form (`Alternative rejected: X — reason`) now yields a real option and a real reason; it is the only construction in prose that states a why-not.
+- **Graph entity scope was last-writer-wins.** The auto-populator stamps file and symbol entities with the scope of the decision that touched them, and upsert overwrote — so a file touched from two scopes kept only the most recent, and the committed entity record was rewritten on every flip. Measured here: of 242 file entities carrying a scope, only 132 had a name starting with it. `scope` now accumulates as a sorted, capped set; sorting makes the bytes deterministic so ordering alone stops churning the store.
+
+### Added
+- **`twining_housekeeping({ archive: false })`** skips the blackboard archive pass while other passes run. The documented `compact_archives` repair path needed `execute: true`, but step 1 archives with *no cutoff* — so the sanctioned way to reclaim archive junk first swept the caller's entire live board.
+- **`twining_housekeeping({ repair_entity_scopes: true })`** recomputes graph entity scopes from their `decided_by` relations, recovering scopes the overwrite destroyed. Dry-run by default; unions rather than replaces, so a hand-written scope with no relation backing it is never dropped.
+- **`rationale_source`** on stored decisions marks whether a rationale was authored or echoed from the summary. Stamped at both sites — the structured builder owns most laundering in practice, so a parser-only marker would have missed three quarters of it. An absent marker means *unknown*, never *authored*.
+- **`warnings_omitted`** on assembled context, so a truncated briefing can never claim there are no constraints.
+- **`scripts/field-probe.mjs`** — read-only measurement of a real `.twining/` store against 14 pre-registered hypotheses with falsification thresholds fixed before first run. Zero dependencies.
+- **`scripts/compact-archives-standalone.mjs`** — reclaims pre-1.24.0 archive-loop junk without a server, an MCP tool, or a release, for repos that cannot take one. Reclaimed 3.57 GB in a field project.
+
+### Changed
+- **Documentation corrected against actual tool registration.** The surface tables in `README.md` and `docs/TWINING-REFERENCE.md` were inverted: the reference listed seven full-surface-only tools as "always registered" — so an agent following it called tools that do not exist — and omitted seven real default tools. A test now asserts the classification so it cannot silently invert again. The README also claimed hooks enforce both gates; Gate 2 is hook-enforced, Gate 1 is instruction-only.
+
+## Plugin [1.24.0] - 2026-08-03
+
+### Fixed
+- **Plugin agent definitions launched with no Twining tools at all.** `twining-aware-worker` and `twining-coordinator` declared `tools:` allowlists of bare names (`twining_assemble`, …), but MCP tools are namespaced at runtime (`mcp__plugin_twining_twining__twining_assemble` under a plugin install, `mcp__twining__*` standalone). Every entry matched nothing and was dropped silently — taking `ToolSearch` with it, so the agents could not even discover the tools. Reproduced live: the spawned agent's entire toolset was `Read, Write, Edit, Bash`. Both allowlists are removed; because the correct prefix depends on install mode, hardcoding one would break the other.
+- **The launcher exec'd away its own fallback.** `resolve_runner` commits to the npx rung on `npx --version` alone, then `exec npx -y twining-mcp` — replacing the shell. When the registry refuses the package (a `minimumReleaseAge` policy, auth, proxy, offline), the launch died and the dependency-free bundled server one rung below was never reached. A field project lost Twining entirely this way while `--probe` reported `runner=npx`. The three network rungs now run as children and fall through to the bundle when they die inside a grace window; a server that actually served and then exited is never restarted, since its client handshake is spent.
+- **An unset `CLAUDE_PLUGIN_ROOT`** produced `exec /scripts/launch-server.sh: not found`, indistinguishable from a broken install. It now names the cause and exits 78.
+
+### Changed
+- **The auto-invocable `twining-decide` skill was broken end-to-end on every default install** — `decide`, `override`/`reconsider`, the "REQUIRED" `link_commit`, and `promote` are all full-surface-only, so the core decision-recording workflow silently failed. Rewritten around `twining_record`, which is default-surface and reaches the same store. Seven more skills and the export command now state the `full_surface` requirement and give a working fallback.
+
 ## [2.5.0] - 2026-07-23
 
 ### Added

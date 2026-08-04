@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: the same scorer's coordination-file fallback pattern /\\.twining\\/decisions\\// misses v2's sqlite layout .twining/records/decisions/. Since v2 defaults new projects to sqlite, this already affects current runs, not just future ones.",
+  "entry_type": "warning",
+  "id": "01KZ5C7ZE1ENX15KCEGGTYJC67",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "ab48f81a7800e927e8568254950560f411152aa4",
+    "recorded_at": "2026-08-04T03:14:29.933Z"
+  },
+  "scope": "project",
+  "summary": "the same scorer's coordination-file fallback pattern /\\.twining\\/decisions\\// misses v2's sqlite layout .twining/records/decisions/. Since v2 defaults new projects to sqlite, this already affects c…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-04T03:14:29.953Z"
+}

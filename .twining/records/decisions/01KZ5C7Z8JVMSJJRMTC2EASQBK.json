@@ -1,0 +1,27 @@
+{
+  "affected_files": [
+    "CHANGELOG.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Preparing the 2.6.0 deep-review release: CHANGELOG written covering 8 fixes, 6 additions, and plugin 1.24.0",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KZ5C7Z8JVMSJJRMTC2EASQBK",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "ab48f81a7800e927e8568254950560f411152aa4",
+    "recorded_at": "2026-08-04T03:14:29.757Z"
+  },
+  "rationale": "the harness installs twining via unpinned `npx -y twining-mcp`, so it resolves to npm latest and literally cannot observe unreleased fixes; releasing unblocks both the field project and any pre/post benchmark comparison",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Chose to release before starting benchmark-harness work",
+  "timestamp": "2026-08-04T03:14:29.778Z"
+}

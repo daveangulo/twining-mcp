@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-04T03:14:29.754Z",
+  "id": "01KZ5C7Z7TV5PKA9T36E5EK8KK",
+  "name": "01KZ5C7Z5VXDDVFZZ4KHBXZDME",
+  "properties": {
+    "scope": "project",
+    "summary": "Chose a MINOR bump (2.6.0) rather than patch or major"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-04T03:14:29.754Z"
+}

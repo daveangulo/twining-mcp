@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: the benchmark's decision-documentation scorer (conflict-resolution.ts:415) credits only tool names matching /twining.*decide|twining.*decision/ — twining_record does NOT match despite being the most-called tool (334 calls across the pooled run). twining_decide is full-surface-only and was called ZERO times. So the dimension is structurally a full-surface detector, and its +64 lift for twining-full over baseline is substantially a measurement artifact.",
+  "entry_type": "warning",
+  "id": "01KZ5C7ZCXG7BDD60H20DSKCPP",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "ab48f81a7800e927e8568254950560f411152aa4",
+    "recorded_at": "2026-08-04T03:14:29.897Z"
+  },
+  "scope": "project",
+  "summary": "the benchmark's decision-documentation scorer (conflict-resolution.ts:415) credits only tool names matching /twining.*decide|twining.*decision/ — twining_record does NOT match despite being the mos…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-04T03:14:29.917Z"
+}
