@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-04T17:12:01.523Z",
+  "id": "01KZ6W5H7KRT7Q0QE7QDCHAK00",
+  "properties": {
+    "decision_summary": "Chose plugin patch bump 1.24.1 (pending) over minor"
+  },
+  "source": "01KZ4VCFZW79EN1JY0T4FWMV8P",
+  "target": "01KZ6W5H7HBTWYC0ART4TQV4MH",
+  "type": "decided_by"
+}

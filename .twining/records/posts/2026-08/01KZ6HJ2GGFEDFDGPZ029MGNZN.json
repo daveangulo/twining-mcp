@@ -1,0 +1,15 @@
+{
+  "agent_id": "main",
+  "detail": "Three coupled facts found while designing the content scorer in twining-benchmark-harness. (1) src/conditions/twining-default.ts:78 and twining-full explicitly remove workingDir/.twining in doTeardown(), and orchestrator.ts:568 then deletes the whole working dir. The store exists only between session execution and teardown. scenario.score() runs at orchestrator.ts:547, BEFORE teardown, so a live-store read is possible only from inside doScore(). (2) src/runner/data-collector.ts lines 15 and 198: INFRASTRUCTURE_PATH_PREFIXES is ['.twining/','node_modules/'] and transcript.fileChanges is overwritten with the FILTERED set, so .twining/ record content never reaches transcripts. Verified: across 120 recorded transcripts in benchmark-results/4640f3a3, infrastructureFileChanges is empty in every one and zero git-diff.patch files mention .twining. (3) Consequence for the just-shipped fix in src/scenarios/conflict-resolution.ts scoreDecisionDocumentation: the added path pattern for .twining decisions is tested against transcriptC.fileChanges, which by construction never contains a .twining path, so that branch is dead code. The tool-call branch matching twining_record is the part that actually works, so no score is wrong, but the file-path half pins nothing. The only durable capture of store content is sessions coordination-artifacts.json, which snapshots the literal text of the paths each condition returns from getCoordinationFilePaths().</detail>\n<parameter name=\"tags\">[\"benchmark\",\"measurement\",\"content-scorer\"]",
+  "entry_type": "warning",
+  "id": "01KZ6HJ2GGFEDFDGPZ029MGNZN",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "516b0bb4f937d33e86661aa603d574ddcd11bc66",
+    "recorded_at": "2026-08-04T14:06:38.069Z"
+  },
+  "scope": "src/runner/data-collector.ts",
+  "summary": "benchmark harness: the .twining/ store a run produces is DELETED at teardown, and .twining/ paths are filtered out of transcript.fileChanges — no post-hoc content scoring is possible on recorded runs",
+  "tags": [],
+  "timestamp": "2026-08-04T14:06:38.097Z"
+}

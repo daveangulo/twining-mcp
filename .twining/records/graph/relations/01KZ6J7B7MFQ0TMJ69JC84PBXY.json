@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-04T14:18:15.156Z",
+  "id": "01KZ6J7B7MFQ0TMJ69JC84PBXY",
+  "properties": {
+    "decision_summary": "Chose a MEAN of per-decision quality with de-duplication on normalised summary as the volume defence, rather than any coverage or count term"
+  },
+  "source": "01KZ6J7B4D2KQ7549HA3GMAFKC",
+  "target": "01KZ6J7B7DF0099K6WYHNMG0HD",
+  "type": "decided_by"
+}

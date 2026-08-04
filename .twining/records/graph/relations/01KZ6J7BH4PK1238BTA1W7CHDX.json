@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-04T14:18:15.460Z",
+  "id": "01KZ6J7BH4PK1238BTA1W7CHDX",
+  "properties": {
+    "decision_summary": "Chose to add a durable store snapshot step (DataCollector.saveTwiningStoreSnapshot) called from the orchestrator before teardown, rather than leaving the analyzer unrunnable —"
+  },
+  "source": "01KZ6J7B4G0XS4CV8AGE17YNJM",
+  "target": "01KZ6J7BGVN4G1NMS95GYVE23A",
+  "type": "decided_by"
+}

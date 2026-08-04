@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-04T17:18:42.267Z",
+  "id": "01KZ6WHRJV2EA7F3J3SY7FKXJ3",
+  "properties": {
+    "decision_summary": "Restored the login-first merge after two review-workflow verify agents mutated launch-server.sh in the live tree"
+  },
+  "source": "01KZ4VCFZW79EN1JY0T4FWMV8P",
+  "target": "01KZ6WHRJTCXQAPD7XSEQY6RKE",
+  "type": "decided_by"
+}

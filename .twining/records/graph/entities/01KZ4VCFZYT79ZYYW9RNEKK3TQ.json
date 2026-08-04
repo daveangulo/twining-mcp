@@ -3,8 +3,8 @@
   "id": "01KZ4VCFZYT79ZYYW9RNEKK3TQ",
   "name": "test/hooks/launch-server.test.ts",
   "properties": {
-    "scope": "plugin/scripts/"
+    "scope": "plugin/"
   },
   "type": "file",
-  "updated_at": "2026-08-03T22:19:52.256Z"
+  "updated_at": "2026-08-04T17:18:42.268Z"
 }

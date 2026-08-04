@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-04T17:18:42.023Z",
+  "id": "01KZ6WHRB7T9HW6Y9CR5A2PFAK",
+  "properties": {
+    "decision_summary": "Wrapped the recovery-dir loop in set -f / set +f"
+  },
+  "source": "01KJJ8J8TFQN00XTFJH3CR9P5P",
+  "target": "01KZ6WHRAZZC47Q05SXAPA327Z",
+  "type": "decided_by"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-04T14:18:15.227Z",
+  "id": "01KZ6J7B9VHC05RMYSSRA6GY0G",
+  "properties": {
+    "decision_summary": "Chose to EXCLUDE commit linkage from the rubric despite it being a proposed signal —"
+  },
+  "source": "01KZ6J7B4CT4PRHZ3GCY5692DX",
+  "target": "01KZ6J7B9NYY07X77EB8X78J6V",
+  "type": "decided_by"
+}

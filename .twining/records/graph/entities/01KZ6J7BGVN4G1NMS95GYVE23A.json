@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-04T14:18:15.451Z",
+  "id": "01KZ6J7BGVN4G1NMS95GYVE23A",
+  "name": "01KZ6J7BGBSFRNF16JY96D5CNY",
+  "properties": {
+    "scope": "src/analyzer/record-content.ts",
+    "summary": "Chose to add a durable store snapshot step (DataCollector.saveTwiningStoreSnapshot) called from the orchestrator before teardown, rather than leaving the analyzer unrunnable —"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-04T14:18:15.451Z"
+}

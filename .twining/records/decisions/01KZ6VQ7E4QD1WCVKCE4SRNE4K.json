@@ -1,0 +1,38 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "to flag the undocumented TWINING_LAUNCH_RECOVERY_DIRS env var",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "required for this change",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Reviewed uncommitted fixes for the two 1.24.0 field bugs (bare ${CLAUDE_PLUGIN_ROOT} guard form in plugin/.mcp.json; login-PATH merge + well-known-dir fallback in plugin/scripts/launch-server.sh; new regression tests). Local run of test/hooks/launch-server.test.ts: 31/31 pass. Findings: (1) blocker — plugin version files still 1.24.0 while CHANGELOG declares Plugin [1.24.1]; must run scripts/bump-plugin-version.sh 1.24.1 so both version files update and the committed server bundle rebuilds, else CI plugin-version-check fails. (2) important — session-start-context.sh:90 probes the launcher through `sh -lc`, which reimposes the replace-PATH semantics the launcher fix just removed: a ~/.profile that clobbers PATH makes the probe lose the inherited PATH the real `sh -c` spawn keeps, so the hook can inject a false 'server unavailable' warning while the server actually starts; probe should drop the login wrapper now that the launcher merges the login PATH internally. (3) minor — hook comment (lines 74-76) and runner=none warning text (line 118, 'not resolvable even from a login shell') understate the new recovery (well-known dirs also probed). (4) minor — README rung-3 wording ('npx from the login-shell PATH') and absence of merge/well-known-dir fallback in the ladder docs. (5) minor — docs/UPGRADE-v2.md:123 parity claim ('exactly what the plugin's bundled server does') now false.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KZ6VQ7E4QD1WCVKCE4SRNE4K",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "516b0bb4f937d33e86661aa603d574ddcd11bc66",
+    "recorded_at": "2026-08-04T17:04:12.720Z"
+  },
+  "rationale": "it is a test seam consistent with the pre-existing undocumented TWINING_LAUNCH_NO_LOGIN_PATH seam, so documenting it is not required for this change.",
+  "reversible": true,
+  "scope": "plugin/",
+  "status": "active",
+  "summary": "Chose NOT to flag the undocumented TWINING_LAUNCH_RECOVERY_DIRS env var",
+  "timestamp": "2026-08-04T17:04:12.740Z"
+}

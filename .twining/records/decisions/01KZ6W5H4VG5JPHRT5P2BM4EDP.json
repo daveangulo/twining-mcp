@@ -1,0 +1,36 @@
+{
+  "affected_files": [
+    "plugin/.mcp.json",
+    "plugin/scripts/launch-server.sh",
+    "test/hooks/launch-server.test.ts",
+    "CHANGELOG.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "assumptions": [
+    "Claude Code substitutes bare ${CLAUDE_PLUGIN_ROOT} directly in plugin .mcp.json across versions (doc-confirmed at code.claude.com/docs/en/mcp.md; field-confirmed on the 1.24.0 install)",
+    "The field machine's node shims in ~/.local/bin are representative of the interactive-rc-only PATH class the well-known-dir list must cover"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Fixed both 1.24.0 field bugs test-first: .mcp.json guard now uses bare ${CLAUDE_PLUGIN_ROOT} (the :- form expanded to empty via documented default-value expansion, exit 78 every session); launcher login-PATH recovery merges instead of replacing and probes well-known install dirs. 8 new tests. Adversarial review workflow still running; version bump + commit pending its result.",
+  "depends_on": [
+    "01KYB2PYXW6AY4BRG3ZNVBP8XX"
+  ],
+  "domain": "implementation",
+  "id": "01KZ6W5H4VG5JPHRT5P2BM4EDP",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "516b0bb4f937d33e86661aa603d574ddcd11bc66",
+    "recorded_at": "2026-08-04T17:12:01.415Z"
+  },
+  "rationale": "Two bug fixes restoring intended behavior, no new surface beyond the TWINING_LAUNCH_RECOVERY_DIRS test seam.",
+  "reversible": true,
+  "scope": "plugin/",
+  "status": "active",
+  "summary": "Chose plugin patch bump 1.24.1 (pending) over minor",
+  "timestamp": "2026-08-04T17:12:01.436Z"
+}

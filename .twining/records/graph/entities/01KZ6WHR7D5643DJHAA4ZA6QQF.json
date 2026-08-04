@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-04T17:18:41.901Z",
+  "id": "01KZ6WHR7D5643DJHAA4ZA6QQF",
+  "name": "plugin/server/twining-server.mjs",
+  "properties": {
+    "scope": "plugin/"
+  },
+  "type": "file",
+  "updated_at": "2026-08-04T17:18:42.274Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-04T17:04:12.848Z",
+  "id": "01KZ6VQ7HGSSAM97ZT5YTCKEEW",
+  "name": "01KZ6VQ7E4QD1WCVKCE4SRNE4K",
+  "properties": {
+    "scope": "plugin/",
+    "summary": "Chose NOT to flag the undocumented TWINING_LAUNCH_RECOVERY_DIRS env var"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-04T17:04:12.848Z"
+}

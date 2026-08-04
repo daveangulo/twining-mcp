@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Chose to exclude contradiction detection and score only supersession USAGE as a reported diagnostic —\" relates to:\n- 01KZ6J7B572239RH483HR5KZ3Y: \"Chose to score conditions with no .twining/ store as N/A (applicable false, value null) rather than zero\"",
+  "entry_type": "finding",
+  "id": "01KZ6J7BB8NVZ745CC5B6GFGHJ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "516b0bb4f937d33e86661aa603d574ddcd11bc66",
+    "recorded_at": "2026-08-04T14:18:15.253Z"
+  },
+  "scope": "src/analyzer/record-content.ts",
+  "summary": "Related decisions in scope: 1 existing decision(s) overlap",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-08-04T14:18:15.272Z"
+}

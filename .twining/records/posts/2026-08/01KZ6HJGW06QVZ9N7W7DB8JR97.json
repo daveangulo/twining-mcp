@@ -1,0 +1,15 @@
+{
+  "agent_id": "main",
+  "detail": "src/conditions/twining-default.ts lines 86-92 and twining-full.ts lines 81-90 list .twining/blackboard.jsonl and .twining/decisions/index.json as the coordination files to snapshot. twining-mcp resolveAutoBackend in src/storage/backend-resolve.ts returns sqlite for a fresh .twining/ with no legacy content, which is exactly what every benchmark working dir is. Under sqlite the committed truth mirrors to .twining/records/decisions/*.json and .twining/records/posts/YYYY-MM/*.json; the v1 files are never created. So with DEFAULT_TWINING_MCP_SPEC set to twining-mcp@2.6.0, every future run's coordination-artifacts.json will capture nothing for Twining. Historical runs on 1.17.0 did capture them and are readable. Second limitation on the historical data: .twining/decisions/index.json is a SUMMARY projection carrying id, timestamp, domain, scope, summary, confidence, status, affected_files, affected_symbols, commit_hashes. It has no rationale and no alternatives, so rationale_source and alternative-reason quality are not retroactively measurable from the recorded runs at all; only scope specificity and affected-file population are. Also observed in real recorded data: commit_hashes is empty on every decision because agents in the benchmark do not commit, the harness auto-commits between sessions with its own message. Any rubric term keyed on commit linkage would be constant-zero across all conditions and would measure nothing.</detail>\n</invoke>\n",
+  "entry_type": "warning",
+  "id": "01KZ6HJGW06QVZ9N7W7DB8JR97",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "516b0bb4f937d33e86661aa603d574ddcd11bc66",
+    "recorded_at": "2026-08-04T14:06:52.769Z"
+  },
+  "scope": "src/conditions/",
+  "summary": "benchmark conditions snapshot v1-only store paths; under the 2.6.0 pin a fresh working dir resolves to sqlite, so those files are never written and Twining coordination artifacts will be empty",
+  "tags": [],
+  "timestamp": "2026-08-04T14:06:52.800Z"
+}

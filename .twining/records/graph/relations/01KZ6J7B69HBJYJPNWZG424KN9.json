@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-04T14:18:15.114Z",
+  "id": "01KZ6J7B69HBJYJPNWZG424KN9",
+  "properties": {
+    "decision_summary": "Chose to score conditions with no .twining/ store as N/A (applicable false, value null) rather than zero"
+  },
+  "source": "01KZ6J7B4G0XS4CV8AGE17YNJP",
+  "target": "01KZ6J7B5WM1WB041FK1WX2D45",
+  "type": "decided_by"
+}

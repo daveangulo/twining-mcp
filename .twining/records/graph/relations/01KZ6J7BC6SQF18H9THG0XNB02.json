@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-04T14:18:15.302Z",
+  "id": "01KZ6J7BC6SQF18H9THG0XNB02",
+  "properties": {
+    "decision_summary": "Chose to exclude contradiction detection and score only supersession USAGE as a reported diagnostic —"
+  },
+  "source": "01KZ6J7B4G0XS4CV8AGE17YNJP",
+  "target": "01KZ6J7BBWR8D4NSJXWNJXKAT9",
+  "type": "decided_by"
+}

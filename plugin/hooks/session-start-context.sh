@@ -87,9 +87,14 @@ NODE_V="none"
 if [[ -n "$HOOK_DIR" && -f "$LAUNCHER" ]]; then
   # Probe-line contract (see launch-server.sh — never change its shape):
   #   runner=<override|pin|npx|npm-prefix|global|bundled|none> node=<version|none>
-  PROBE="$(sh -lc "\"$LAUNCHER\" --probe" 2>/dev/null || true)"
-  # Login-shell profiles may echo to stdout ahead of the probe output; the
-  # probe line is always the LAST line of the substitution, so keep only it.
+  # Spawn the launcher exactly as plugin/.mcp.json does (`sh`, no login
+  # shell) — its internal PATH recovery is the same one the real spawn
+  # gets. An outer `sh -lc` would re-impose replace-PATH semantics (a
+  # non-passthrough ~/.profile destroys the inherited PATH before the
+  # launcher runs), making the probe report runner=none for a spawn that
+  # would succeed.
+  PROBE="$(sh "$LAUNCHER" --probe 2>/dev/null || true)"
+  # Keep only the last line defensively — the probe contract is one line.
   PROBE="${PROBE##*$'\n'}"
   if [[ "$PROBE" == runner=*" node="* ]]; then
     RUNNER="${PROBE#runner=}"

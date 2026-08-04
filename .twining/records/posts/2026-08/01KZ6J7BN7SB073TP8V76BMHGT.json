@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: the .twining/ path pattern recently added to scoreDecisionDocumentation in src/scenarios/conflict-resolution.ts is dead code — it is tested against transcriptC.fileChanges, which by construction never contains a .twining/ path because data-collector filters them into infrastructureFileChanges. The twining_record tool-call branch of that same fix does work, so no score is wrong, but the file-path half pins nothing. NOT fixed here — the task forbade modifying existing scorers.",
+  "entry_type": "warning",
+  "id": "01KZ6J7BN7SB073TP8V76BMHGT",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "516b0bb4f937d33e86661aa603d574ddcd11bc66",
+    "recorded_at": "2026-08-04T14:18:15.572Z"
+  },
+  "scope": "src/analyzer/record-content.ts",
+  "summary": "the .twining/ path pattern recently added to scoreDecisionDocumentation in src/scenarios/conflict-resolution.ts is dead code — it is tested against transcriptC.fileChanges, which by construction ne…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-04T14:18:15.591Z"
+}

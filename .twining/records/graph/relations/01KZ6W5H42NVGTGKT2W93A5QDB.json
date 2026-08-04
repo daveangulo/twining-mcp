@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-04T17:12:01.410Z",
+  "id": "01KZ6W5H42NVGTGKT2W93A5QDB",
+  "properties": {
+    "decision_summary": "Login PATH merges login-first ahead of the inherited PATH (never replaces), with a well-known-dir append gated on node being unresolvable"
+  },
+  "source": "01KJGX8KN7VXM02PM7RCAR6JE4",
+  "target": "01KZ6W5H41WQ38PS4ZF7VVC2AE",
+  "type": "decided_by"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-04T14:18:15.046Z",
+  "id": "01KZ6J7B46RB6DHGPVEY5XJK1F",
+  "name": "01KZ6J7B3JTCPVDZ8KBCPCC7PB",
+  "properties": {
+    "scope": "src/analyzer/record-content.ts",
+    "summary": "Chose to ship the content scorer as a standalone cross-cutting analyzer rather than a scenario dimension folded into the CES composite"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-04T14:18:15.046Z"
+}

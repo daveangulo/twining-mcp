@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-04T17:18:41.898Z",
+  "id": "01KZ6WHR7A9VDZV31Y8ZJ6WXH8",
+  "properties": {
+    "decision_summary": "SessionStart hook now spawns the launcher directly (sh, no login shell) for its availability probe"
+  },
+  "source": "01KWT95C1YAK43W4C438E8YNYV",
+  "target": "01KZ6WHR73PEXQPHHNDTGNFP2H",
+  "type": "decided_by"
+}

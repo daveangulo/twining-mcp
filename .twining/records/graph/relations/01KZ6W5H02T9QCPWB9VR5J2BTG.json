@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-04T17:12:01.282Z",
+  "id": "01KZ6W5H02T9QCPWB9VR5J2BTG",
+  "properties": {
+    "decision_summary": "Repaired the unset-root guard's syntax to bare ${CLAUDE_PLUGIN_ROOT} rather than removing the guard"
+  },
+  "source": "01KZ4VCFZYT79ZYYW9RNEKK3TQ",
+  "target": "01KZ6W5GZZGNAE1R74XBNHJ8SX",
+  "type": "decided_by"
+}

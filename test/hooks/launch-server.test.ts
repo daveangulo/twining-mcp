@@ -38,14 +38,21 @@ function runScript(
   extraEnv: Record<string, string> = {},
   opts: RunOptions = {},
 ): ScriptResult {
+  // Default cwd to the per-test tempdir: the launcher's pin rung checks
+  // ./node_modules/twining-mcp relative to cwd, so a repo-root cwd would let
+  // a developer's local twining-mcp install (npm link, `npm i -D file:.`)
+  // hijack every non-pin assertion in this file.
   const result = spawnSync("sh", [opts.script ?? SCRIPT, ...args], {
-    cwd: opts.cwd,
+    cwd: opts.cwd ?? dir,
     env: {
       PATH: envPath,
       HOME: process.env.HOME ?? "",
-      // The launcher recovers the login-shell PATH by default, which would
-      // escape the shim-PATH sandbox (macOS /etc/profile restores the real
-      // PATH). Suppress it; the login-PATH test below re-enables it.
+      // The launcher recovers PATH by default — login-shell merge AND
+      // well-known install-dir probing — either of which would escape the
+      // shim-PATH sandbox (macOS /etc/profile restores the real PATH;
+      // /opt/homebrew/bin exists on Homebrew hosts). Suppress ALL recovery;
+      // the PATH-recovery tests below re-enable it with controlled HOME and
+      // TWINING_LAUNCH_RECOVERY_DIRS.
       TWINING_LAUNCH_NO_LOGIN_PATH: "1",
       ...extraEnv,
     },
@@ -415,5 +422,216 @@ describe("launch-server.sh network-rung fallback", () => {
     expect(result.exitCode).toBe(1);
     expect(result.stdout).toBe("");
     expect(result.stderr).toContain("npm error");
+  });
+});
+
+/**
+ * Regression: login-PATH recovery used to REPLACE the inherited PATH with the
+ * login-shell PATH. Two field failure modes follow: a ~/.profile that assigns
+ * PATH without a `$PATH` passthrough clobbers a workable inherited PATH, and a
+ * node that only enters PATH via the interactive rc (~/.zshrc adding
+ * ~/.local/bin) is invisible to `sh -lc`, so recovery yields a PATH with no
+ * node at all and the launcher dies at rung 5 ("Node.js was not found on
+ * PATH") even though node was resolvable the whole time.
+ */
+describe("launch-server.sh PATH recovery", () => {
+  /** Temp HOME whose .profile assigns PATH with no $PATH passthrough. */
+  function makeHome(profilePath: string): string {
+    const home = path.join(dir, "home");
+    fs.mkdirSync(home, { recursive: true });
+    fs.writeFileSync(path.join(home, ".profile"), `PATH=${profilePath}\n`);
+    return home;
+  }
+
+  it("merges the login PATH with the inherited PATH instead of replacing it", () => {
+    // Inherited PATH has node; the login shell's .profile clobbers PATH with
+    // a node-less value and no $PATH passthrough. Recovery must not lose the
+    // inherited node. Recovery dirs point at a nonexistent dir so only the
+    // merge can save it.
+    const shim = makeShim(["sh", "node"]);
+    const home = makeHome("/nowhere-login");
+    const result = runScript(["--probe"], shim, {
+      TWINING_LAUNCH_NO_LOGIN_PATH: "",
+      TWINING_LAUNCH_RECOVERY_DIRS: path.join(dir, "absent"),
+      HOME: home,
+    });
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).not.toContain("node=none");
+    expect(result.stdout).toMatch(/^runner=bundled node=v\d+/);
+  });
+
+  it("uses login-PATH entries the inherited PATH lacks — the login PATH must actually contribute", () => {
+    // Inherited PATH has no node; ~/.profile points at a custom dir (NOT in
+    // the well-known recovery list) that holds node. Merging must surface
+    // it. Catches a regression where LOGIN_PATH is computed but never
+    // merged into PATH.
+    const shim = makeShim(["sh"]);
+    const customBin = path.join(dir, "custom-bin");
+    fs.mkdirSync(customBin);
+    fs.symlinkSync(realPathOf("node"), path.join(customBin, "node"));
+    const home = makeHome(customBin);
+    const result = runScript(["--probe"], shim, {
+      TWINING_LAUNCH_NO_LOGIN_PATH: "",
+      TWINING_LAUNCH_RECOVERY_DIRS: path.join(dir, "absent"),
+      HOME: home,
+    });
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toMatch(/^runner=bundled node=v\d+/);
+  });
+
+  it("resolves through the login PATH ahead of the inherited PATH (continuity with the replace-era ordering)", () => {
+    // Both PATHs hold a node; the login one must win, so that every setup
+    // that worked under the old replace semantics picks the same node.
+    const shim = makeShim(["sh"]);
+    fakeNodeInShim(shim, "v22.90.0");
+    const loginBin = path.join(dir, "login-bin");
+    fs.mkdirSync(loginBin);
+    fakeNodeInShim(loginBin, "v22.91.0");
+    const home = makeHome(loginBin);
+    const result = runScript(["--probe"], shim, {
+      TWINING_LAUNCH_NO_LOGIN_PATH: "",
+      TWINING_LAUNCH_RECOVERY_DIRS: path.join(dir, "absent"),
+      HOME: home,
+    });
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toBe("runner=bundled node=v22.91.0\n");
+  });
+
+  it("recovers node from a well-known install dir the login shell never adds", () => {
+    // The field case: node lives only in ~/.local/bin (added by ~/.zshrc,
+    // which sh -lc never reads), Claude Code spawns with a minimal PATH, and
+    // .profile has no passthrough. Recovery must probe well-known dirs.
+    const shim = makeShim(["sh"]); // no node inherited
+    const home = makeHome("/nowhere-login");
+    const localBin = path.join(home, ".local", "bin");
+    fs.mkdirSync(localBin, { recursive: true });
+    fs.symlinkSync(realPathOf("node"), path.join(localBin, "node"));
+    const script = makePluginLayout('process.stdout.write("BUNDLED-OK\\n");\n');
+    const result = runScript(
+      ["--probe"],
+      shim,
+      {
+        TWINING_LAUNCH_NO_LOGIN_PATH: "",
+        TWINING_LAUNCH_RECOVERY_DIRS: localBin,
+        HOME: home,
+      },
+      { script },
+    );
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toMatch(/^runner=bundled node=v\d+/);
+  });
+
+  it("launches the bundled server instead of exiting 127 when node is only in a well-known dir", () => {
+    // Launch-mode replay of the 2026-08-04 13:50 field log: before the fix
+    // this exited 127 with "Node.js was not found on PATH".
+    const shim = makeShim(["sh"]);
+    const home = makeHome("/nowhere-login");
+    const localBin = path.join(home, ".local", "bin");
+    fs.mkdirSync(localBin, { recursive: true });
+    fs.symlinkSync(realPathOf("node"), path.join(localBin, "node"));
+    const script = makePluginLayout('process.stdout.write("BUNDLED-OK\\n");\n');
+    const result = runScript(
+      [],
+      shim,
+      {
+        TWINING_LAUNCH_NO_LOGIN_PATH: "",
+        TWINING_LAUNCH_RECOVERY_DIRS: localBin,
+        HOME: home,
+      },
+      { script },
+    );
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toBe("BUNDLED-OK\n");
+    expect(result.stderr).not.toContain("Node.js was not found");
+  });
+});
+
+/**
+ * Regression: Claude Code expands plugin config strings BEFORE sh sees them,
+ * through two documented mechanisms that compose badly
+ * (https://code.claude.com/docs/en/mcp.md): plugin configs substitute bare
+ * ${CLAUDE_PLUGIN_ROOT} DIRECTLY — it is not an environment variable at
+ * expansion time — while ${VAR:-default} forms go through general env
+ * expansion, where the absent CLAUDE_PLUGIN_ROOT correctly yields the
+ * default. So on plugin 1.24.0 (field, 2026-08-04) the guard's `[ -z
+ * "${CLAUDE_PLUGIN_ROOT:-}" ]` became `[ -z "" ]` and exited 78 on every
+ * session, in the same string where the exec's bare form substituted to the
+ * full path. Only the bare form is safe in plugin .mcp.json.
+ */
+describe("plugin/.mcp.json launch command", () => {
+  const MCP_JSON = path.resolve(__dirname, "..", "..", "plugin", ".mcp.json");
+
+  function launchCommand(): { command: string; shellArg: string } {
+    const config = JSON.parse(fs.readFileSync(MCP_JSON, "utf8"));
+    const server = config.mcpServers.twining;
+    expect(server.command).toBe("sh");
+    expect(server.args[0]).toBe("-c");
+    return { command: server.command, shellArg: server.args[1] };
+  }
+
+  /**
+   * Model of Claude Code's plugin-config expansion, per docs + field
+   * observation: bare ${CLAUDE_PLUGIN_ROOT} is substituted directly;
+   * ${VAR:-default} yields the default (CLAUDE_PLUGIN_ROOT is not an env
+   * var at expansion time); other bare ${VAR} forms are left literal.
+   */
+  function interpolateLikeClaudeCode(cmd: string, pluginRoot: string): string {
+    return cmd.replace(
+      /\$\{([A-Za-z_][A-Za-z0-9_]*)(:-([^}]*))?\}/g,
+      (match, name, defaultPart, defaultText) => {
+        if (name === "CLAUDE_PLUGIN_ROOT" && defaultPart === undefined) {
+          return pluginRoot;
+        }
+        return defaultPart === undefined ? match : (defaultText ?? "");
+      },
+    );
+  }
+
+  it("uses only the bare ${CLAUDE_PLUGIN_ROOT} form the interpolator understands", () => {
+    const raw = fs.readFileSync(MCP_JSON, "utf8");
+    const expansions = raw.match(/\$\{[^}]*\}/g) ?? [];
+    expect(expansions.length).toBeGreaterThan(0);
+    for (const expansion of expansions) {
+      expect(expansion).toBe("${CLAUDE_PLUGIN_ROOT}");
+    }
+  });
+
+  it("reaches the launcher when Claude Code interpolates the command", () => {
+    const script = makePluginLayout('process.stdout.write("BUNDLED-OK\\n");\n');
+    const pluginRoot = path.dirname(path.dirname(script));
+    const { shellArg } = launchCommand();
+    const shim = makeShim(["sh", "node"]);
+    const result = spawnSync(
+      "sh",
+      ["-c", interpolateLikeClaudeCode(shellArg, pluginRoot)],
+      {
+        cwd: dir, // pin-rung isolation, same as runScript's default
+        env: {
+          PATH: shim,
+          HOME: process.env.HOME ?? "",
+          TWINING_LAUNCH_NO_LOGIN_PATH: "1",
+        },
+        encoding: "utf8",
+      },
+    );
+    expect(result.stderr).not.toContain("CLAUDE_PLUGIN_ROOT is unset");
+    expect(result.status).toBe(0);
+    expect(result.stdout).toBe("BUNDLED-OK\n");
+  });
+
+  it("still exits 78 with the named diagnostic outside a plugin context", () => {
+    // Uninterpolated command (Claude Code never saw it — e.g. copied into a
+    // project .mcp.json) with no CLAUDE_PLUGIN_ROOT in the environment: sh
+    // expands the unset variable to empty and the guard must name the cause.
+    const { shellArg } = launchCommand();
+    const shim = makeShim(["sh"]);
+    const result = spawnSync("sh", ["-c", shellArg], {
+      cwd: dir, // pin-rung isolation, same as runScript's default
+      env: { PATH: shim, HOME: process.env.HOME ?? "" },
+      encoding: "utf8",
+    });
+    expect(result.status).toBe(78);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toContain("CLAUDE_PLUGIN_ROOT is unset");
   });
 });

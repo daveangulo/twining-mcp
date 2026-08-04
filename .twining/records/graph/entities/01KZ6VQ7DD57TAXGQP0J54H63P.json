@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-04T17:04:12.717Z",
+  "id": "01KZ6VQ7DD57TAXGQP0J54H63P",
+  "name": "01KZ6VQ79GTKGTD8T0KZVZ5TQY",
+  "properties": {
+    "scope": "plugin/",
+    "summary": "Chose to flag the session-start-context.sh sh -lc probe wrapper as an important divergence rather than a nit"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-04T17:04:12.717Z"
+}

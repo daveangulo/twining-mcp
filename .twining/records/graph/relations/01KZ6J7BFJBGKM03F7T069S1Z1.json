@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-04T14:18:15.410Z",
+  "id": "01KZ6J7BFJBGKM03F7T069S1Z1",
+  "properties": {
+    "decision_summary": "Chose to add an explicit measuredWeight field to the score result —"
+  },
+  "source": "01KZ6J7B4CT4PRHZ3GCY5692DX",
+  "target": "01KZ6J7BFDV4PCVWA8YPNTVJJH",
+  "type": "decided_by"
+}

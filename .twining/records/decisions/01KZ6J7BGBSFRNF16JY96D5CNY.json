@@ -1,0 +1,55 @@
+{
+  "affected_files": [
+    "src/analyzer/record-content.ts",
+    "tests/unit/analyzer/record-content.test.ts",
+    "docs/CONTENT-SCORER.md",
+    "src/runner/data-collector.ts",
+    "src/runner/orchestrator.ts"
+  ],
+  "affected_symbols": [
+    "scoreTwiningStore",
+    "readTwiningStore",
+    "scoreDecision",
+    "scoreRationaleTerm",
+    "scoreAlternativesTerm",
+    "saveTwiningStoreSnapshot"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "leaving the analyzer unrunnable",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "The orchestrator calls scenario.score() before condition.teardown(), so a snapshot taken just before scoring still sees a live store",
+    "A fresh benchmark working directory has no legacy .twining content, so resolveAutoBackend returns sqlite for every future run",
+    "Benchmark agents do not create git commits themselves, so commit_hashes stays empty"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [
+    "Must not modify any existing scorer in src/scenarios/ — two were just corrected and a simultaneous change would make deltas unattributable",
+    "Must not run benchmarks — runs cost real money and are the owner's call",
+    "Twining stores must be read strictly read-only",
+    "TypeScript strict; npx tsc --noEmit and npx vitest run must both pass"
+  ],
+  "context": "Built a record-content analyzer for the benchmark harness: scores .twining/ store record QUALITY (rationale authored vs derived, alternatives with real reasons, scope, affected files) instead of tool-call names",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KZ6J7BGBSFRNF16JY96D5CNY",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "516b0bb4f937d33e86661aa603d574ddcd11bc66",
+    "recorded_at": "2026-08-04T14:18:15.416Z"
+  },
+  "rationale": "the Twining conditions delete workingDir/.twining in doTeardown and the target then deletes the working dir, and .twining paths are filtered out of transcript.fileChanges, so nothing survives a run for a post-hoc analyzer to read. The step is read-only with respect to the store, writes only a new file, and is wrapped so it can never throw and cost a paid run.",
+  "reversible": true,
+  "scope": "src/analyzer/record-content.ts",
+  "status": "active",
+  "summary": "Chose to add a durable store snapshot step (DataCollector.saveTwiningStoreSnapshot) called from the orchestrator before teardown, rather than leaving the analyzer unrunnable —",
+  "timestamp": "2026-08-04T14:18:15.435Z"
+}

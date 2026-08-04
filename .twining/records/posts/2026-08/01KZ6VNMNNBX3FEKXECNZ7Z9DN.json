@@ -1,0 +1,23 @@
+{
+  "agent_id": "main",
+  "detail": "Refines warning 01KZ6VGPTY2APARVY53RFF5E3S. Per https://code.claude.com/docs/en/mcp.md: plugin-provided MCP configs \"substitute ${CLAUDE_PLUGIN_ROOT} directly\" (line ~110); ${VAR:-default} is documented general syntax (line ~450); unrecognized bare ${VAR} is left literal with a missing-variable warning in `claude mcp list` (line ~477). So the field blanking was two documented mechanisms composing badly, not an interpolator bug: CLAUDE_PLUGIN_ROOT is not in the environment at expansion time, so ${CLAUDE_PLUGIN_ROOT:-} legitimately expanded to its (empty) default. Practical rule unchanged: ONLY the bare ${CLAUDE_PLUGIN_ROOT} form in plugin/.mcp.json (and other plugin JSON). The test emulator in test/hooks/launch-server.test.ts implements this doc-consistent model.",
+  "entry_type": "finding",
+  "id": "01KZ6VNMNNBX3FEKXECNZ7Z9DN",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "516b0bb4f937d33e86661aa603d574ddcd11bc66",
+    "recorded_at": "2026-08-04T17:03:20.734Z"
+  },
+  "relates_to": [
+    "01KZ6VGPTY2APARVY53RFF5E3S"
+  ],
+  "scope": "plugin/.mcp.json",
+  "summary": "Doc-backed mechanism for ${CLAUDE_PLUGIN_ROOT:-} blanking: plugin configs substitute the bare form directly (not an env var); :-forms hit general default expansion where the absent var yields \"\"",
+  "tags": [
+    "plugin",
+    "claude-code",
+    "interpolation",
+    "docs"
+  ],
+  "timestamp": "2026-08-04T17:03:20.757Z"
+}

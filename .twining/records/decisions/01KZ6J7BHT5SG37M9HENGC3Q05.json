@@ -1,0 +1,55 @@
+{
+  "affected_files": [
+    "src/analyzer/record-content.ts",
+    "tests/unit/analyzer/record-content.test.ts",
+    "docs/CONTENT-SCORER.md",
+    "src/runner/data-collector.ts",
+    "src/runner/orchestrator.ts"
+  ],
+  "affected_symbols": [
+    "scoreTwiningStore",
+    "readTwiningStore",
+    "scoreDecision",
+    "scoreRationaleTerm",
+    "scoreAlternativesTerm",
+    "saveTwiningStoreSnapshot"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "the project's standard git stash push src/ check",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "The orchestrator calls scenario.score() before condition.teardown(), so a snapshot taken just before scoring still sees a live store",
+    "A fresh benchmark working directory has no legacy .twining content, so resolveAutoBackend returns sqlite for every future run",
+    "Benchmark agents do not create git commits themselves, so commit_hashes stays empty"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [
+    "Must not modify any existing scorer in src/scenarios/ — two were just corrected and a simultaneous change would make deltas unattributable",
+    "Must not run benchmarks — runs cost real money and are the owner's call",
+    "Twining stores must be read strictly read-only",
+    "TypeScript strict; npx tsc --noEmit and npx vitest run must both pass"
+  ],
+  "context": "Built a record-content analyzer for the benchmark harness: scores .twining/ store record QUALITY (rationale authored vs derived, alternatives with real reasons, scope, affected files) instead of tool-call names",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01KZ6J7BHT5SG37M9HENGC3Q05",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "516b0bb4f937d33e86661aa603d574ddcd11bc66",
+    "recorded_at": "2026-08-04T14:18:15.463Z"
+  },
+  "rationale": "stashing a NEW module removes the file entirely so every test dies on an import error, which makes a test that pins nothing look identical to one that pins everything. Fifteen targeted mutations were applied one at a time and all fifteen were caught by the intended test.",
+  "reversible": true,
+  "scope": "src/analyzer/record-content.ts",
+  "status": "active",
+  "summary": "Chose to verify test discrimination by systematic mutation rather than the project's standard git stash push src/ check —",
+  "timestamp": "2026-08-04T14:18:15.482Z"
+}

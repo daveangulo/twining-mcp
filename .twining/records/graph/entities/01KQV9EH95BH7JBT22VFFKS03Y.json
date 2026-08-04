@@ -3,8 +3,8 @@
   "id": "01KQV9EH95BH7JBT22VFFKS03Y",
   "name": "test/hooks/session-start-context.test.ts",
   "properties": {
-    "scope": "plugin/hooks/"
+    "scope": "plugin/"
   },
   "type": "file",
-  "updated_at": "2026-07-21T20:32:20.179Z"
+  "updated_at": "2026-08-04T17:18:42.269Z"
 }

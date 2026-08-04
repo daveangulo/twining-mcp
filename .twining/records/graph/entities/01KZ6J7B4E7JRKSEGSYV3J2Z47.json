@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-04T14:18:15.054Z",
+  "id": "01KZ6J7B4E7JRKSEGSYV3J2Z47",
+  "name": "scoreDecision",
+  "properties": {
+    "scope": "src/analyzer/record-content.ts"
+  },
+  "type": "function",
+  "updated_at": "2026-08-04T14:18:15.530Z"
+}

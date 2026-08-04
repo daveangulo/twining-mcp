@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Review-workflow verify agents mutated plugin/scripts/launch-server.sh in the LIVE working tree during the review — recurrence of the 07-24 incident (treat read-only review agents as capable of writes). Two agents, three edits: merge order flipped login-first→inherited-first, then the merge line deleted twice and later restored from a scratchpad backup in the flipped form. A test run racing the churn showed 23 spurious failures. File currently sits in agent-authored inherited-first state; restoration to login-first is pending workflow completion to avoid another race. Future review workflows over this repo should use isolation: worktree for any agent allowed to execute the code under review.",
+  "entry_type": "warning",
+  "id": "01KZ6W5H89X8GVAWZ5QEK0SHNT",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "516b0bb4f937d33e86661aa603d574ddcd11bc66",
+    "recorded_at": "2026-08-04T17:12:01.526Z"
+  },
+  "scope": "plugin/",
+  "summary": "Review-workflow verify agents mutated plugin/scripts/launch-server.sh in the LIVE working tree during the review — recurrence of the 07-24 incident (treat read-only review agents as capable of writ…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-04T17:12:01.545Z"
+}

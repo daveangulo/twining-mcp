@@ -189,7 +189,7 @@ A login shell only fixes *off-PATH* `npx` — some environments have `node` with
 
 1. **`TWINING_SERVER_JS` override** — set it to any server entry point and the script runs `node "$TWINING_SERVER_JS"` directly. Beats every other rung; intended for development builds and unusual layouts.
 2. **Project pin** — `./node_modules/twining-mcp/dist/index.js` (relative to the project root), if the project has `twining-mcp` installed locally (`npm i -D twining-mcp`). A project pin outranks the npm rungs *and* the plugin's bundled copy, so a project can hold its server version independent of plugin updates.
-3. `npx` from the login-shell `PATH` — the normal case;
+3. `npx` from the recovered `PATH` — the normal case. Since 1.24.1 recovery *merges* the login-shell `PATH` ahead of the inherited one (a `~/.profile` that assigns `PATH` without a `$PATH` passthrough can no longer clobber a workable inherited `PATH`), and if `node` is still unresolvable it appends well-known install dirs that exist (`~/.local/bin`, `/opt/homebrew/bin`, `/usr/local/bin`, volta/asdf/mise shims) — covering dirs that only interactive rc files add;
 4. npm's `npx-cli.js` resolved relative to the `node` binary itself (`<node bin>/../lib/node_modules/npm/bin/npx-cli.js`) — this self-heals broken version-manager shims and installs where npm exists but isn't on `PATH`;
 5. a globally installed `twining-mcp`, if present;
 6. **the plugin-bundled server** — a dependency-free single-file bundle shipped with the plugin, run directly with `node` (requires Node >= 22). No npm, no npx, no network: a bare distro Node is enough for a fully working server, offline included. On this rung semantic search degrades to keyword mode, announced with a one-line stderr notice.

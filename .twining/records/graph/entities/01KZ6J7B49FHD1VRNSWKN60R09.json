@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-04T14:18:15.049Z",
+  "id": "01KZ6J7B49FHD1VRNSWKN60R09",
+  "name": "docs/CONTENT-SCORER.md",
+  "properties": {
+    "scope": "src/analyzer/record-content.ts"
+  },
+  "type": "file",
+  "updated_at": "2026-08-04T14:18:15.526Z"
+}

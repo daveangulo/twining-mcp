@@ -3,8 +3,8 @@
   "id": "01KZ4VCFZW79EN1JY0T4FWMV8P",
   "name": "plugin/scripts/launch-server.sh",
   "properties": {
-    "scope": "plugin/scripts/"
+    "scope": "plugin/"
   },
   "type": "file",
-  "updated_at": "2026-08-03T22:19:52.255Z"
+  "updated_at": "2026-08-04T17:18:42.266Z"
 }

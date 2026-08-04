@@ -1,0 +1,61 @@
+{
+  "affected_files": [
+    "src/analyzer/record-content.ts",
+    "tests/unit/analyzer/record-content.test.ts",
+    "docs/CONTENT-SCORER.md",
+    "src/runner/data-collector.ts",
+    "src/runner/orchestrator.ts"
+  ],
+  "affected_symbols": [
+    "scoreTwiningStore",
+    "readTwiningStore",
+    "scoreDecision",
+    "scoreRationaleTerm",
+    "scoreAlternativesTerm",
+    "saveTwiningStoreSnapshot"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "a scenario dimension folded into the CES composite",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "by evidence, destroying the ability to test the hypothesis. Secondary reasons: adding a fifth weighted dimension shifts every historical number and breaks comparability with the n=16 pooled result, and the hard constraint forbids changing the instrument and adding to it in the same change",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "The orchestrator calls scenario.score() before condition.teardown(), so a snapshot taken just before scoring still sees a live store",
+    "A fresh benchmark working directory has no legacy .twining content, so resolveAutoBackend returns sqlite for every future run",
+    "Benchmark agents do not create git commits themselves, so commit_hashes stays empty"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [
+    "Must not modify any existing scorer in src/scenarios/ — two were just corrected and a simultaneous change would make deltas unattributable",
+    "Must not run benchmarks — runs cost real money and are the owner's call",
+    "Twining stores must be read strictly read-only",
+    "TypeScript strict; npx tsc --noEmit and npx vitest run must both pass"
+  ],
+  "context": "Built a record-content analyzer for the benchmark harness: scores .twining/ store record QUALITY (rationale authored vs derived, alternatives with real reasons, scope, affected files) instead of tool-call names",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01KZ6J7B3JTCPVDZ8KBCPCC7PB",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "516b0bb4f937d33e86661aa603d574ddcd11bc66",
+    "recorded_at": "2026-08-04T14:18:15.006Z"
+  },
+  "rationale": "the product's open question is whether record richness PREDICTS better outcomes, which is a correlation between capture quality and work quality; making capture quality a component of the composite would make 'richer records produce higher composite' true by arithmetic rather than by evidence, destroying the ability to test the hypothesis. Secondary reasons: adding a fifth weighted dimension shifts every historical number and breaks comparability with the n=16 pooled result, and the hard constraint forbids changing the instrument and adding to it in the same change.",
+  "reversible": true,
+  "scope": "src/analyzer/record-content.ts",
+  "status": "active",
+  "summary": "Chose to ship the content scorer as a standalone cross-cutting analyzer rather than a scenario dimension folded into the CES composite",
+  "timestamp": "2026-08-04T14:18:15.026Z"
+}

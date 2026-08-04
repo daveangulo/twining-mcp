@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Future review/verify workflows over this repo MUST use isolation: worktree for any agent that executes or experiments with the code under review — second confirmed incident of verify agents mutating the live tree (07-24, 08-04).",
+  "entry_type": "warning",
+  "id": "01KZ6WHRNVM4WQRABJ1JQFVC59",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "516b0bb4f937d33e86661aa603d574ddcd11bc66",
+    "recorded_at": "2026-08-04T17:18:42.344Z"
+  },
+  "scope": "plugin/",
+  "summary": "Future review/verify workflows over this repo MUST use isolation: worktree for any agent that executes or experiments with the code under review — second confirmed incident of verify agents mutatin…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-04T17:18:42.363Z"
+}

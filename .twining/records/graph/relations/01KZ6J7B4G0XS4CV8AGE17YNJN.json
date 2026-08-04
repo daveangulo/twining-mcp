@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-04T14:18:15.056Z",
+  "id": "01KZ6J7B4G0XS4CV8AGE17YNJN",
+  "properties": {
+    "decision_summary": "Chose to ship the content scorer as a standalone cross-cutting analyzer rather than a scenario dimension folded into the CES composite"
+  },
+  "source": "01KZ6J7B4G0XS4CV8AGE17YNJM",
+  "target": "01KZ6J7B46RB6DHGPVEY5XJK1F",
+  "type": "decided_by"
+}

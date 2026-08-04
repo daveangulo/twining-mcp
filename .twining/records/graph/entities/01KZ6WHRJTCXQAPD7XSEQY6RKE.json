@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-04T17:18:42.266Z",
+  "id": "01KZ6WHRJTCXQAPD7XSEQY6RKE",
+  "name": "01KZ6WHRFV5YAKHV4E4MXRMC64",
+  "properties": {
+    "scope": "plugin/",
+    "summary": "Restored the login-first merge after two review-workflow verify agents mutated launch-server.sh in the live tree"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-04T17:18:42.266Z"
+}

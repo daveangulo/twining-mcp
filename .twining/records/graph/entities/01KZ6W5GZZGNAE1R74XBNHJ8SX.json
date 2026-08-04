@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-04T17:12:01.279Z",
+  "id": "01KZ6W5GZZGNAE1R74XBNHJ8SX",
+  "name": "01KZ6W5GWS464DTC9PFB50H8H4",
+  "properties": {
+    "scope": "plugin/",
+    "summary": "Repaired the unset-root guard's syntax to bare ${CLAUDE_PLUGIN_ROOT} rather than removing the guard"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-04T17:12:01.279Z"
+}

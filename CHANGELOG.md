@@ -2,6 +2,13 @@
 
 All notable changes to Twining MCP are documented here.
 
+## Plugin [1.24.1] - 2026-08-04
+
+### Fixed
+- **The 1.24.0 unset-root guard broke every plugin session.** Claude Code interpolates plugin config strings before `sh` sees them, and its interpolator only understands the bare `${CLAUDE_PLUGIN_ROOT}` form — the guard's `${CLAUDE_PLUGIN_ROOT:-}` was unrecognized and replaced with the **empty string**, so `[ -z "" ]` exited 78 before the launcher ever ran, in the same command string where the exec's bare reference substituted correctly. Deterministic: every session, every project, every user of 1.24.0. The guard now uses the bare form everywhere; a test bans any other `${...}` expression in `plugin/.mcp.json` and replays the interpolation end-to-end. The guard's purpose survives — outside a plugin context it still exits 78 naming the cause.
+- **Login-PATH recovery could lose node.** The launcher *replaced* PATH with the `sh -lc` login PATH; a node whose dir is added only by the interactive rc (`~/.zshrc` adding `~/.local/bin`) is invisible to a login `sh`, so when Claude Code spawned with a minimal environment, recovery produced a node-less PATH and exit 127 ("Node.js was not found on PATH") even though node was resolvable the whole time. The login PATH now merges ahead of the inherited PATH instead of replacing it (login-first, so resolution is unchanged wherever it previously worked), and if node is still unresolvable the launcher appends well-known install dirs that exist (`~/.local/bin`, `/opt/homebrew/bin`, `/usr/local/bin`, volta/asdf/mise shims — probed with globbing disabled, so metacharacters in `$HOME` cannot match sibling directories).
+- **The SessionStart hook's availability probe ran the launcher through `sh -lc`**, re-imposing exactly the replace-PATH semantics the launcher fix removes — a non-passthrough `~/.profile` could make the probe report the server absent (false warning) while the real `sh -c` spawn succeeds. The hook now spawns the launcher directly, restoring probe/spawn parity.
+
 ## [2.6.0] - 2026-08-03
 
 Deep-review release. A multi-agent structural and defect review of the whole

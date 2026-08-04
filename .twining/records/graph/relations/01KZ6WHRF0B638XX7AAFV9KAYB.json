@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-04T17:18:42.144Z",
+  "id": "01KZ6WHRF0B638XX7AAFV9KAYB",
+  "properties": {
+    "decision_summary": "runScript in launch-server tests defaults cwd to the per-test tempdir instead of inheriting vitest's repo root"
+  },
+  "source": "01KJGX8KNRTGKE7PVC2GH1QSTE",
+  "target": "01KZ6WHREWH3QGW3VR9VSDY6AN",
+  "type": "decided_by"
+}

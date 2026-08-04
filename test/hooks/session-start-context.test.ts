@@ -40,11 +40,12 @@ function makeShim(utils: string[]): string {
 }
 
 /**
- * Fake HOME whose ~/.profile pins PATH to the shim dir. The hook probes the
- * launcher through a login shell (`sh -lc`, mirroring the server spawn), and
- * login shells rebuild PATH from /etc/profile (macOS path_helper, CI distro
- * defaults) — which resurrects the real npx and defeats the shim. ~/.profile
- * runs after /etc/profile, so it wins on macOS and Linux alike.
+ * Fake HOME whose ~/.profile pins PATH to the shim dir. The hook spawns the
+ * launcher directly (mirroring the plugin/.mcp.json spawn), and the launcher
+ * itself recovers the login-shell PATH internally — login shells rebuild
+ * PATH from /etc/profile (macOS path_helper, CI distro defaults), which
+ * would resurrect the real npx and defeat the shim. ~/.profile runs after
+ * /etc/profile, so it wins on macOS and Linux alike.
  */
 function makeLoginHome(shimDir: string): string {
   const home = path.join(dir, "home");

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: the rubric weights (0.35/0.25/0.20/0.20), the 0.5 unknown-provenance credit, the 0.4 alternative-naming floor and the 8-character reason threshold are judgement, not calibration. Nothing yet establishes that a store scoring 80 helps a later agent more than one scoring 60. The honest next step is to capture snapshots on the next paid run and correlate fully-measured content scores against the existing composite before defending the weights.",
+  "entry_type": "need",
+  "id": "01KZ6J7BSM78HVMQQ4CGAWD4ZF",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "516b0bb4f937d33e86661aa603d574ddcd11bc66",
+    "recorded_at": "2026-08-04T14:18:15.713Z"
+  },
+  "scope": "src/analyzer/record-content.ts",
+  "summary": "the rubric weights (0.35/0.25/0.20/0.20), the 0.5 unknown-provenance credit, the 0.4 alternative-naming floor and the 8-character reason threshold are judgement, not calibration. Nothing yet establ…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-04T14:18:15.732Z"
+}

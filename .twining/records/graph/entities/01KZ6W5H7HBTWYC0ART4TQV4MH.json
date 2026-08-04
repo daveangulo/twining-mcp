@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-04T17:12:01.521Z",
+  "id": "01KZ6W5H7HBTWYC0ART4TQV4MH",
+  "name": "01KZ6W5H4VG5JPHRT5P2BM4EDP",
+  "properties": {
+    "scope": "plugin/",
+    "summary": "Chose plugin patch bump 1.24.1 (pending) over minor"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-04T17:12:01.521Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-04T14:18:15.337Z",
+  "id": "01KZ6J7BD935E25NMZYXB5Q09F",
+  "properties": {
+    "decision_summary": "Chose to treat records read from a v1 decisions/index.json as sourceKind index-projection whose rationale and alternatives terms return null (unmeasurable) rather than zero, renormalising the remaining weights —"
+  },
+  "source": "01KZ6J7B48NBMM96PJWFQHZYFB",
+  "target": "01KZ6J7BD8THEGASV5BZKFWK47",
+  "type": "decided_by"
+}

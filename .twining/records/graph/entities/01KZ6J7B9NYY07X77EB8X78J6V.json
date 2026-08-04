@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-04T14:18:15.221Z",
+  "id": "01KZ6J7B9NYY07X77EB8X78J6V",
+  "name": "01KZ6J7B8D6M9ZTKZV0PST8Y52",
+  "properties": {
+    "scope": "src/analyzer/record-content.ts",
+    "summary": "Chose to EXCLUDE commit linkage from the rubric despite it being a proposed signal —"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-04T14:18:15.221Z"
+}

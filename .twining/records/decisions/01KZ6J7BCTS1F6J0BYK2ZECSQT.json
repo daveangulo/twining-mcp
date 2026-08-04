@@ -1,0 +1,61 @@
+{
+  "affected_files": [
+    "src/analyzer/record-content.ts",
+    "tests/unit/analyzer/record-content.test.ts",
+    "docs/CONTENT-SCORER.md",
+    "src/runner/data-collector.ts",
+    "src/runner/orchestrator.ts"
+  ],
+  "affected_symbols": [
+    "scoreTwiningStore",
+    "readTwiningStore",
+    "scoreDecision",
+    "scoreRationaleTerm",
+    "scoreAlternativesTerm",
+    "saveTwiningStoreSnapshot"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "zero, renormalising the remaining weights",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    },
+    {
+      "cons": [],
+      "option": "evidence the agent wrote nothing. Gated on source SHAPE not on field absence, so a full record that omits its rationale still scores zero",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "The orchestrator calls scenario.score() before condition.teardown(), so a snapshot taken just before scoring still sees a live store",
+    "A fresh benchmark working directory has no legacy .twining content, so resolveAutoBackend returns sqlite for every future run",
+    "Benchmark agents do not create git commits themselves, so commit_hashes stays empty"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [
+    "Must not modify any existing scorer in src/scenarios/ — two were just corrected and a simultaneous change would make deltas unattributable",
+    "Must not run benchmarks — runs cost real money and are the owner's call",
+    "Twining stores must be read strictly read-only",
+    "TypeScript strict; npx tsc --noEmit and npx vitest run must both pass"
+  ],
+  "context": "Built a record-content analyzer for the benchmark harness: scores .twining/ store record QUALITY (rationale authored vs derived, alternatives with real reasons, scope, affected files) instead of tool-call names",
+  "depends_on": [],
+  "domain": "performance",
+  "id": "01KZ6J7BCTS1F6J0BYK2ZECSQT",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "516b0bb4f937d33e86661aa603d574ddcd11bc66",
+    "recorded_at": "2026-08-04T14:18:15.304Z"
+  },
+  "rationale": "the projection shape structurally has no rationale or alternatives field, so an empty value there is an artifact of the capture, not evidence the agent wrote nothing. Gated on source SHAPE not on field absence, so a full record that omits its rationale still scores zero.",
+  "reversible": true,
+  "scope": "src/analyzer/record-content.ts",
+  "status": "active",
+  "summary": "Chose to treat records read from a v1 decisions/index.json as sourceKind index-projection whose rationale and alternatives terms return null (unmeasurable) rather than zero, renormalising the remaining weights —",
+  "timestamp": "2026-08-04T14:18:15.322Z"
+}

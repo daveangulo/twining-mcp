@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-04T17:18:42.015Z",
+  "id": "01KZ6WHRAZZC47Q05SXAPA327Z",
+  "name": "01KZ6WHR83HQ9CS5KH5YK2VZWF",
+  "properties": {
+    "scope": "plugin/",
+    "summary": "Wrapped the recovery-dir loop in set -f / set +f"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-04T17:18:42.015Z"
+}

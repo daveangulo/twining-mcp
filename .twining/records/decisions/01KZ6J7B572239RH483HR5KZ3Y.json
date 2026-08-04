@@ -1,0 +1,55 @@
+{
+  "affected_files": [
+    "src/analyzer/record-content.ts",
+    "tests/unit/analyzer/record-content.test.ts",
+    "docs/CONTENT-SCORER.md",
+    "src/runner/data-collector.ts",
+    "src/runner/orchestrator.ts"
+  ],
+  "affected_symbols": [
+    "scoreTwiningStore",
+    "readTwiningStore",
+    "scoreDecision",
+    "scoreRationaleTerm",
+    "scoreAlternativesTerm",
+    "saveTwiningStoreSnapshot"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "score shared-markdown's COORDINATION",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "The orchestrator calls scenario.score() before condition.teardown(), so a snapshot taken just before scoring still sees a live store",
+    "A fresh benchmark working directory has no legacy .twining content, so resolveAutoBackend returns sqlite for every future run",
+    "Benchmark agents do not create git commits themselves, so commit_hashes stays empty"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [
+    "Must not modify any existing scorer in src/scenarios/ — two were just corrected and a simultaneous change would make deltas unattributable",
+    "Must not run benchmarks — runs cost real money and are the owner's call",
+    "Twining stores must be read strictly read-only",
+    "TypeScript strict; npx tsc --noEmit and npx vitest run must both pass"
+  ],
+  "context": "Built a record-content analyzer for the benchmark harness: scores .twining/ store record QUALITY (rationale authored vs derived, alternatives with real reasons, scope, affected files) instead of tool-call names",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KZ6J7B572239RH483HR5KZ3Y",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "516b0bb4f937d33e86661aa603d574ddcd11bc66",
+    "recorded_at": "2026-08-04T14:18:15.059Z"
+  },
+  "rationale": "scoring baseline and shared-markdown zero would conflate 'no coordination substrate' with 'bad records' and would make the dimension a twining-detector, which is exactly the defect the decision-documentation scorer had. Rejected alternative: score shared-markdown's COORDINATION.md through an equivalent markdown extractor — reason_rejected: an NL parser that recovers 60 percent of rationale from markdown and 100 percent from a JSON field manufactures a 40-point advantage for Twining out of pure instrument asymmetry, the same class of artifact in new clothes; it needs human-labelled validation first.",
+  "reversible": true,
+  "scope": "src/analyzer/record-content.ts",
+  "status": "active",
+  "summary": "Chose to score conditions with no .twining/ store as N/A (applicable false, value null) rather than zero",
+  "timestamp": "2026-08-04T14:18:15.079Z"
+}

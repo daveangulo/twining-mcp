@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: the benchmark's .twining/ store does not survive a run — twining-default.ts:78 and twining-full delete workingDir/.twining in doTeardown, orchestrator.ts:568 deletes the working dir, and data-collector.ts:198 filters .twining/ out of transcript.fileChanges. Verified empty infrastructureFileChanges across all 120 recorded transcripts in run 4640f3a3 and zero git-diff.patch files mentioning .twining. Closed by adding saveTwiningStoreSnapshot before teardown.",
+  "entry_type": "warning",
+  "id": "01KZ6J7BM277ETZ4QAQ5H7E1KG",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "516b0bb4f937d33e86661aa603d574ddcd11bc66",
+    "recorded_at": "2026-08-04T14:18:15.534Z"
+  },
+  "scope": "src/analyzer/record-content.ts",
+  "summary": "the benchmark's .twining/ store does not survive a run — twining-default.ts:78 and twining-full delete workingDir/.twining in doTeardown, orchestrator.ts:568 deletes the working dir, and data-colle…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-04T14:18:15.554Z"
+}

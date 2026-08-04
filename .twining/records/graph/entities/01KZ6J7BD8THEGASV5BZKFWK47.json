@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-04T14:18:15.336Z",
+  "id": "01KZ6J7BD8THEGASV5BZKFWK47",
+  "name": "01KZ6J7BCTS1F6J0BYK2ZECSQT",
+  "properties": {
+    "scope": "src/analyzer/record-content.ts",
+    "summary": "Chose to treat records read from a v1 decisions/index.json as sourceKind index-projection whose rationale and alternatives terms return null (unmeasurable) rather than zero, renormalising the remaining weights —"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-04T14:18:15.336Z"
+}

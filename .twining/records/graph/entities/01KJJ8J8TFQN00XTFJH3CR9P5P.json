@@ -3,8 +3,8 @@
   "id": "01KJJ8J8TFQN00XTFJH3CR9P5P",
   "name": ".claude-plugin/marketplace.json",
   "properties": {
-    "scope": "plugin/skills/"
+    "scope": "plugin/"
   },
   "type": "file",
-  "updated_at": "2026-07-21T05:23:14.813Z"
+  "updated_at": "2026-08-04T17:18:42.273Z"
 }

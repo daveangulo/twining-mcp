@@ -45,16 +45,45 @@ PKG_SPEC="twining-mcp@^2.0.0"
 # `sh -lc`: a login shell sources /etc/profile and ~/.profile with stdout
 # attached to the MCP protocol channel, so any profile echo/motd would
 # corrupt the JSON-RPC stream. Here profile stdout lands INSIDE the command
-# substitution, ahead of the @P@ marker, and is stripped off. Falls back to
-# the inherited PATH when the login shell fails or yields nothing.
-# TWINING_LAUNCH_NO_LOGIN_PATH (non-empty) skips recovery — the test suite
-# sets it so shim-PATH sandboxes are not escaped by the real login PATH.
+# substitution, ahead of the @P@ marker, and is stripped off.
+#
+# The login PATH is MERGED ahead of the inherited PATH, never substituted
+# for it: a ~/.profile that assigns PATH without a `$PATH` passthrough must
+# not clobber a workable inherited PATH.
+#
+# The login shell can also come back node-less when node's dir is added
+# only by the interactive rc (~/.zshrc putting ~/.local/bin on PATH), which
+# `sh -lc` never reads. If node is still unresolvable after the merge,
+# append well-known install dirs that exist — appended last, they can never
+# shadow a PATH-resolved node. nvm/fnm are omitted: they keep node in
+# per-version dirs with no stable bin path, and only their rc hook knows
+# which version is current.
+#
+# TWINING_LAUNCH_NO_LOGIN_PATH (non-empty) skips ALL recovery — the test
+# suite sets it so shim-PATH sandboxes are not escaped by the real login
+# PATH or real install dirs. TWINING_LAUNCH_RECOVERY_DIRS (colon-separated)
+# overrides the well-known dir list, for the same sandboxing reason.
 if [ -z "${TWINING_LAUNCH_NO_LOGIN_PATH:-}" ]; then
   P="$(sh -lc 'printf "\n@P@%s" "$PATH"' 2>/dev/null)" || P=""
   case "$P" in
     *@P@*) LOGIN_PATH="${P##*@P@}"
-           [ -n "$LOGIN_PATH" ] && PATH="$LOGIN_PATH" && export PATH ;;
+           [ -n "$LOGIN_PATH" ] && PATH="$LOGIN_PATH:$PATH" && export PATH ;;
   esac
+  if ! command -v node >/dev/null 2>&1; then
+    RECOVERY_DIRS="${TWINING_LAUNCH_RECOVERY_DIRS:-$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:$HOME/.volta/bin:$HOME/.asdf/shims:$HOME/.local/share/mise/shims}"
+    # set -f: the unquoted expansion below undergoes pathname expansion per
+    # field — a HOME containing glob metacharacters ([, ], ?, *) would match
+    # SIBLING directories instead of the literal path.
+    OLD_IFS="$IFS"
+    IFS=:
+    set -f
+    for D in $RECOVERY_DIRS; do
+      [ -d "$D" ] && PATH="$PATH:$D"
+    done
+    set +f
+    IFS="$OLD_IFS"
+    export PATH
+  fi
 fi
 
 MODE=launch
