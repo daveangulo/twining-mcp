@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Decisions: Chose to make TWINING_MCP_SPEC an env-overridable pin with an explicit default rather than reading the version from package.json or a lockfile — the pre/post comparison requires two arms of the same run to launch different server versions, which only a per-run override supports; a default pin keeps ordinary runs reproducible; Chose to have the orchestrator resolve the recorded version by running the SAME spec the conditions launch (npx -y <spec> --version) rather than the global twining-mcp on PATH — those can be different binaries, and metadata that names a server other than the one that ran is worse than empty metadata; Chose to widen the scorer regexes to include twining_record rather than rewrite the scorers to read the resulting .twining store — widening is a minimal, attributable fix that makes the existing dimensions honest; a store-reading content scorer is the separate step 4 instrument and must not land in the same change as a correction to the old one; Chose to update the two existing condition assertions to REQUIRE the pin rather than relax them to accept either form — they encoded the unpinned behavior that caused the problem, so inverting them is the point\nFindings: twining-mcp 2.6.0 published to npm and verified (npm view returns 2.6.0); Publish workflow succeeded in 1m22s. Plugin 1.24.0 ships with it, carrying both the agent-frontmatter fix and the launcher fallback the field project needs.; Benchmark harness migrated to the sqlite backend: 116 posts, 96 decisions, 238 entities, 340 relations, 4 handoffs, all verified present by migrate --check. 89 active / 7 superseded decisions intact.; warning: the harness's .twining/config.yml carries a stale priority-weight key 'graph_connectivity' — the real key is 'graph_reachability', which the loader therefore sets to 0. Graph-based ranking has been silently disabled in the harness's own store. Not fixed; flagged because the same class of key drift could exist in field configs.; My scorer regression test initially did NOT discriminate on the v2-path assertion — it passed unfixed because three unrelated regexes elsewhere in conflict-resolution.ts also match '.twining/records/decisions/'. Scoped the extraction to the coordinationFilePatterns array specifically. This is the third time in this review that a first-draft test failed to pin the behavior it named; always verify by stashing the fix.; need: step 4 (a content-reading scorer) is the actual instrument for the 'does richer structure help?' question and has NOT been built. Current scorers count tool invocations by name and cannot see record quality at all, so no amount of capture improvement can move them. rationale_source, shipped in 2.6.0, makes authored-vs-echoed directly measurable for the first time.",
+  "entry_type": "status",
+  "id": "01KZ5EEJ7EX6NZ0CYRCTHM1J82",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "20ec0ef8b20c89ab4105fddd4ee122f83dd841c3",
+    "recorded_at": "2026-08-04T03:53:02.939Z"
+  },
+  "scope": "project",
+  "summary": "Released twining-mcp 2.6.0, migrated the benchmark harness to v2, and fixed its version-control and scorer-recognition defects (steps 1-3)",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-04T03:53:02.958Z"
+}

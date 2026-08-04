@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: step 4 (a content-reading scorer) is the actual instrument for the 'does richer structure help?' question and has NOT been built. Current scorers count tool invocations by name and cannot see record quality at all, so no amount of capture improvement can move them. rationale_source, shipped in 2.6.0, makes authored-vs-echoed directly measurable for the first time.",
+  "entry_type": "need",
+  "id": "01KZ5EEJT7VFXKCSW4T17WW0MH",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "20ec0ef8b20c89ab4105fddd4ee122f83dd841c3",
+    "recorded_at": "2026-08-04T03:53:03.540Z"
+  },
+  "scope": "project",
+  "summary": "step 4 (a content-reading scorer) is the actual instrument for the 'does richer structure help?' question and has NOT been built. Current scorers count tool invocations by name and cannot see recor…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-04T03:53:03.559Z"
+}

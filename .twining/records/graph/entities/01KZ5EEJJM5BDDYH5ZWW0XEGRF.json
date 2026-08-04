@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-04T03:53:03.316Z",
+  "id": "01KZ5EEJJM5BDDYH5ZWW0XEGRF",
+  "name": "01KZ5EEJGMA7RYAY7JZJK0S2W8",
+  "properties": {
+    "scope": "project",
+    "summary": "Chose to widen the scorer regexes to include twining_record rather than rewrite the scorers to read the resulting .twining store"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-04T03:53:03.316Z"
+}

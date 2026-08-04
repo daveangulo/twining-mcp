@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "relax them to accept either form",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Released twining-mcp 2.6.0, migrated the benchmark harness to v2, and fixed its version-control and scorer-recognition defects (steps 1-3)",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KZ5EEJK9RWKB4D9WMW5PP7MF",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "20ec0ef8b20c89ab4105fddd4ee122f83dd841c3",
+    "recorded_at": "2026-08-04T03:53:03.317Z"
+  },
+  "rationale": "they encoded the unpinned behavior that caused the problem, so inverting them is the point",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Chose to update the two existing condition assertions to REQUIRE the pin rather than relax them to accept either form",
+  "timestamp": "2026-08-04T03:53:03.337Z"
+}

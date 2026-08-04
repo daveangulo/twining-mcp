@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: the harness's .twining/config.yml carries a stale priority-weight key 'graph_connectivity' — the real key is 'graph_reachability', which the loader therefore sets to 0. Graph-based ranking has been silently disabled in the harness's own store. Not fixed; flagged because the same class of key drift could exist in field configs.",
+  "entry_type": "warning",
+  "id": "01KZ5EEJR5S61M6M49111M9NBT",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "20ec0ef8b20c89ab4105fddd4ee122f83dd841c3",
+    "recorded_at": "2026-08-04T03:53:03.474Z"
+  },
+  "scope": "project",
+  "summary": "the harness's .twining/config.yml carries a stale priority-weight key 'graph_connectivity' — the real key is 'graph_reachability', which the loader therefore sets to 0. Graph-based ranking has been…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-04T03:53:03.493Z"
+}

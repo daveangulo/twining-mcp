@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-04T03:53:03.417Z",
+  "id": "01KZ5EEJNS6ERZ0NCBDRMH85J1",
+  "name": "01KZ5EEJK9RWKB4D9WMW5PP7MF",
+  "properties": {
+    "scope": "project",
+    "summary": "Chose to update the two existing condition assertions to REQUIRE the pin rather than relax them to accept either form"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-04T03:53:03.417Z"
+}
