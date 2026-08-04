@@ -1,0 +1,25 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Retired the 07-24 verify-agent mutation warning via #40 relates_to resolution; discovered why it kept surfacing — this machine's sessions run the repo's dist/ via the npm-link global, and dist was stale at Jul 24 (pre-2.6.0 assemble fixes). Rebuilt dist; restart applies both the fresh server and plugin 1.24.1.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KZ743YXP2RP202QST1AV6Q08",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "5dee214d48acdde5f3b730e0e0f02b15c9d84beb",
+    "recorded_at": "2026-08-04T19:30:58.592Z"
+  },
+  "rationale": "The #40 predicate (computeResolvedIds) is the twining-native retirement: any live entry back-referencing the id resolves it, assemble drops it (2.6.0+), and the next age-based archive sweep moves it out since resolved warnings lose their age exemption. twining_archive's keep_open_needs_warnings:false alternative would force-sweep ALL open warnings, including the live 08-04 worktree-isolation guidance that must keep surfacing.",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Retired the 07-24 mutation warning with a relates_to resolution post rather than a forced archive sweep",
+  "timestamp": "2026-08-04T19:30:58.614Z"
+}

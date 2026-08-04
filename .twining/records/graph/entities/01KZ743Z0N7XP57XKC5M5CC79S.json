@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-04T19:30:58.709Z",
+  "id": "01KZ743Z0N7XP57XKC5M5CC79S",
+  "name": "01KZ743YXP2RP202QST1AV6Q08",
+  "properties": {
+    "scope": "project",
+    "summary": "Retired the 07-24 mutation warning with a relates_to resolution post rather than a forced archive sweep"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-04T19:30:58.709Z"
+}
