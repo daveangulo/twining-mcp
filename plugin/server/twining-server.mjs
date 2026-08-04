@@ -11965,6 +11965,48 @@ var init_decision_store = __esm({
   }
 });
 
+// src/utils/entity-properties.ts
+function splitSetProperty(value) {
+  if (!value) return [];
+  return value.split(SET_SEPARATOR).map((s) => s.trim()).filter((s) => s.length > 0);
+}
+function joinSetProperty(members) {
+  const unique = [...new Set(members.map((m) => m.trim()).filter(Boolean))].sort();
+  const capped = [];
+  let length = 0;
+  for (const m of unique) {
+    if (capped.length >= MAX_SET_ENTRIES) break;
+    const added = length === 0 ? m.length : m.length + SET_SEPARATOR.length;
+    if (length + added > MAX_SET_LENGTH) break;
+    capped.push(m);
+    length += added;
+  }
+  return capped.join(SET_SEPARATOR);
+}
+function mergeEntityProperties(existing, incoming) {
+  const merged = { ...existing ?? {} };
+  for (const [key, value] of Object.entries(incoming ?? {})) {
+    if (SET_VALUED_KEYS.has(key)) {
+      const union2 = [...splitSetProperty(merged[key]), ...splitSetProperty(value)];
+      const joined = joinSetProperty(union2);
+      if (joined) merged[key] = joined;
+      continue;
+    }
+    merged[key] = value;
+  }
+  return merged;
+}
+var SET_VALUED_KEYS, SET_SEPARATOR, MAX_SET_ENTRIES, MAX_SET_LENGTH;
+var init_entity_properties = __esm({
+  "src/utils/entity-properties.ts"() {
+    "use strict";
+    SET_VALUED_KEYS = /* @__PURE__ */ new Set(["scope"]);
+    SET_SEPARATOR = ",";
+    MAX_SET_ENTRIES = 12;
+    MAX_SET_LENGTH = 480;
+  }
+});
+
 // src/storage/graph-store.ts
 import fs6 from "node:fs";
 import path7 from "node:path";
@@ -11975,6 +12017,7 @@ var init_graph_store = __esm({
     import_proper_lockfile3 = __toESM(require_proper_lockfile(), 1);
     init_file_store();
     init_ids();
+    init_entity_properties();
     init_errors();
     GraphStore = class {
       entitiesPath;
@@ -12010,10 +12053,10 @@ var init_graph_store = __esm({
             (e) => e.name === input.name && e.type === input.type
           );
           if (existing) {
-            existing.properties = {
-              ...existing.properties,
-              ...input.properties ?? {}
-            };
+            existing.properties = mergeEntityProperties(
+              existing.properties,
+              input.properties
+            );
             existing.updated_at = now;
             atomicWriteFileSync(
               this.entitiesPath,
@@ -12416,6 +12459,7 @@ var init_sqlite_stores = __esm({
   "src/storage/sqlite/sqlite-stores.ts"() {
     "use strict";
     init_ids();
+    init_entity_properties();
     init_tags();
     init_scope();
     init_errors();
@@ -12605,10 +12649,10 @@ var init_sqlite_stores = __esm({
           const existingRow = this.db.prepare("SELECT data FROM entities WHERE name = ? AND type = ?").get(input.name, input.type);
           if (existingRow) {
             const existing = JSON.parse(existingRow.data);
-            existing.properties = {
-              ...existing.properties,
-              ...input.properties ?? {}
-            };
+            existing.properties = mergeEntityProperties(
+              existing.properties,
+              input.properties
+            );
             existing.updated_at = now;
             this.db.prepare("UPDATE entities SET data = ? WHERE id = ?").run(JSON.stringify(existing), existing.id);
             return existing;
@@ -29170,12 +29214,15 @@ var DecisionEngine = class {
     const droppedDependsOn = requestedDependsOn.filter(
       (id) => !knownIds.has(id)
     );
-    const alternatives = (input.alternatives ?? []).map((alt) => ({
-      option: alt.option,
-      pros: alt.pros ?? [],
-      cons: alt.cons ?? [],
-      reason_rejected: alt.reason_rejected
-    }));
+    const alternatives = (input.alternatives ?? []).map((alt) => {
+      const normalized = {
+        option: alt.option,
+        pros: alt.pros ?? [],
+        cons: alt.cons ?? []
+      };
+      if (alt.reason_rejected) normalized.reason_rejected = alt.reason_rejected;
+      return normalized;
+    });
     const agentId = input.agent_id ?? "main";
     const assembledBefore = this.assemblyChecker ? this.assemblyChecker(agentId) : void 0;
     const decision = await this.decisionStore.create({
@@ -29185,6 +29232,7 @@ var DecisionEngine = class {
       summary: input.summary,
       context: input.context,
       rationale: input.rationale,
+      ...input.rationale_source ? { rationale_source: input.rationale_source } : {},
       constraints: input.constraints ?? [],
       alternatives,
       depends_on: validDependsOn,
@@ -29720,6 +29768,11 @@ Note: ${downstreamIds.length} downstream decisions may be affected: ${downstream
 // src/engine/graph.ts
 init_errors();
 var GraphEngine = class {
+  /**
+   * Readable so maintenance passes (engine/entity-scope-repair.ts) can walk
+   * entities and relations directly without the engine growing a delegate
+   * method per query shape.
+   */
   graphStore;
   constructor(graphStore) {
     this.graphStore = graphStore;
@@ -30229,7 +30282,9 @@ var ContextAssembler = class _ContextAssembler {
           confidence: d.confidence,
           affected_files: d.affected_files,
           constraints: d.constraints?.length > 0 ? d.constraints : void 0,
-          rejected_alternatives: d.alternatives?.length > 0 ? d.alternatives.map((a) => `${a.option}: ${a.reason_rejected}`) : void 0,
+          rejected_alternatives: d.alternatives?.length > 0 ? d.alternatives.map(
+            (a) => a.reason_rejected ? `${a.option}: ${a.reason_rejected}` : a.option
+          ) : void 0,
           assumptions: d.assumptions
         };
         const path36 = reachabilityPaths.get(d.id);
@@ -32528,14 +32583,12 @@ var EXPLICIT_RATIONALE_MARKERS = /\b(?:Rationale|Why|Reason|Because)\s*:\s*/i;
 var FALLBACK_SEPARATORS = [
   /\s+—\s+/,
   /\s+--\s+/,
-  /\s+(?:because|since|due to|so that)\s+/i,
-  /\s+as\s+/i
+  /\s+(?:because|since|due to|so that)\s+/i
 ];
 var REJECTION_PATTERNS = [
   /\bover\s+(.+?)(?:\s+(?:—|--|because|since|due to)|$)/gi,
   /\binstead of\s+(.+?)(?:\s+(?:—|--|because|since|due to)|$)/gi,
-  /\brather than\s+(.+?)(?:\s+(?:—|--|because|since|due to)|$)/gi,
-  /\bnot\s+(.+?)(?:\s+(?:—|--|because|since|due to)|$)/gi
+  /\brather than\s+(.+?)(?:\s+(?:—|--|because|since|due to)|$)/gi
 ];
 var LABELLED_REJECTION_PATTERNS = [
   // "Alternative rejected: X — reason" / "Rejected alternative: X."
@@ -32561,7 +32614,7 @@ function splitSummaryAndRationale(text) {
     const summary = text.slice(0, explicit.index).trim();
     const rationale = text.slice(explicit.index + explicit[0].length).trim();
     if (summary.length > 0 && rationale.length > 0) {
-      return { summary, rationale };
+      return { summary, rationale, rationale_source: "authored" };
     }
   }
   for (const sep of FALLBACK_SEPARATORS) {
@@ -32570,45 +32623,57 @@ function splitSummaryAndRationale(text) {
       const summary = text.slice(0, match.index).trim();
       const rationale = text.slice(match.index + match[0].length).trim();
       if (summary.length > 0 && rationale.length > 0) {
-        return { summary, rationale };
+        return { summary, rationale, rationale_source: "authored" };
       }
     }
   }
   const trimmed = text.trim();
-  return { summary: trimmed, rationale: trimmed };
+  return { summary: trimmed, rationale: trimmed, rationale_source: "derived" };
 }
+var NEGATED_CHOICE = /\b(?:chose|decided|opted|elected)\s+(?:explicitly\s+)?not\s+to\b/i;
+var LABELLED_REASON_SPLIT = /\s+—\s+|\s+--\s+|\s+because\s+|\s+due to\s+/;
 function extractRejectedAlternatives(text) {
   const seen = /* @__PURE__ */ new Set();
   const out = [];
-  const push = (raw) => {
-    const cleaned = raw.trim().replace(/[.,;]+$/, "").trim();
-    if (cleaned.length === 0) return;
-    const key = cleaned.toLowerCase();
+  const push = (raw, allowReason) => {
+    let option = raw.trim().replace(/[.,;]+$/, "").trim();
+    let reason;
+    if (allowReason) {
+      const split = option.split(LABELLED_REASON_SPLIT);
+      const head = split[0]?.trim() ?? "";
+      const tail = split.slice(1).join(" ").trim();
+      if (split.length > 1 && head && tail) {
+        option = head.replace(/[.,;]+$/, "").trim();
+        reason = tail.replace(/[.,;]+$/, "").trim();
+      }
+    }
+    if (option.length === 0) return;
+    const key = option.toLowerCase();
     if (seen.has(key)) return;
     seen.add(key);
-    out.push(cleaned);
+    out.push(reason ? { option, reason_rejected: reason } : { option });
   };
   for (const pattern of LABELLED_REJECTION_PATTERNS) {
     for (const match of text.matchAll(pattern)) {
-      if (match[1]) push(match[1]);
+      if (match[1]) push(match[1], true);
     }
   }
   if (/\b(?:rejected|alternatives?)\b/i.test(text)) {
     for (const match of text.matchAll(NUMBERED_LIST_PATTERN)) {
-      if (match[2]) push(match[2]);
+      if (match[2]) push(match[2], false);
     }
   }
-  if (out.length === 0) {
+  if (out.length === 0 && !NEGATED_CHOICE.test(text)) {
     for (const pattern of REJECTION_PATTERNS) {
       for (const match of text.matchAll(pattern)) {
-        if (match[1]) push(match[1]);
+        if (match[1]) push(match[1], false);
       }
     }
   }
   return out;
 }
 function parseDecision(text) {
-  const { summary, rationale } = splitSummaryAndRationale(text);
+  const { summary, rationale, rationale_source } = splitSummaryAndRationale(text);
   const rejected = extractRejectedAlternatives(text);
   const lower = text.toLowerCase();
   let domain = "implementation";
@@ -32618,7 +32683,13 @@ function parseDecision(text) {
       break;
     }
   }
-  return { summary, rationale, rejected_alternatives: rejected, domain };
+  return {
+    summary,
+    rationale,
+    rationale_source,
+    rejected_alternatives: rejected,
+    domain
+  };
 }
 
 // src/tools/record-tools.ts
@@ -32663,10 +32734,14 @@ function buildFromNaturalLanguage(text, sessionSummary) {
     summary: parsed.summary,
     context: sessionSummary,
     rationale: parsed.rationale,
-    alternatives: parsed.rejected_alternatives.map((alt) => ({
-      option: alt,
-      reason_rejected: "Not chosen"
-    })),
+    rationale_source: parsed.rationale_source,
+    // A rejected option whose reason the prose never stated is recorded with
+    // no reason at all. The old placeholder ("Not chosen") filled the why-not
+    // field with a tautology on every NL-derived alternative — 217 of 217 in
+    // this project's own store — which is worse than an honest absence.
+    alternatives: parsed.rejected_alternatives.map(
+      (alt) => alt.reason_rejected ? { option: alt.option, reason_rejected: alt.reason_rejected } : { option: alt.option }
+    ),
     confidence: "medium"
   };
 }
@@ -32676,6 +32751,10 @@ function buildFromStructured(item, sessionSummary) {
     summary: item.summary,
     context: item.context ?? sessionSummary,
     rationale: item.rationale ?? item.summary,
+    // The structured builder owns most laundering in practice: a caller that
+    // supplies no rationale gets the summary echoed back, which reads as a
+    // stated WHY unless it is marked.
+    rationale_source: item.rationale ? "authored" : "derived",
     alternatives: item.alternatives ?? [],
     confidence: item.confidence ?? "medium"
   };
@@ -33807,7 +33886,9 @@ var Exporter = class {
         if (d.alternatives && d.alternatives.length > 0) {
           lines.push("**Alternatives considered:**");
           for (const alt of d.alternatives) {
-            lines.push(`- ${alt.option}: ${alt.reason_rejected}`);
+            lines.push(
+              alt.reason_rejected ? `- ${alt.option}: ${alt.reason_rejected}` : `- ${alt.option}`
+            );
           }
           lines.push("");
         }
@@ -34417,6 +34498,64 @@ async function compactFile(filePath, execute) {
   }
 }
 
+// src/engine/entity-scope-repair.ts
+init_entity_properties();
+var SAMPLE_LIMIT = 20;
+async function repairEntityScopes(graphStore, options = {}) {
+  const execute = options.execute ?? false;
+  const report = {
+    examined: 0,
+    repairable: 0,
+    repaired: 0,
+    items: [],
+    dry_run: !execute
+  };
+  const entities = await graphStore.getEntities();
+  const relations = await graphStore.getRelations();
+  const byId = new Map(entities.map((e) => [e.id, e]));
+  const recovered = /* @__PURE__ */ new Map();
+  for (const rel of relations) {
+    if (rel.type !== "decided_by") continue;
+    const decision = byId.get(rel.target);
+    if (!decision) continue;
+    const decisionScope = decision.properties?.scope;
+    if (!decisionScope) continue;
+    let set2 = recovered.get(rel.source);
+    if (!set2) {
+      set2 = /* @__PURE__ */ new Set();
+      recovered.set(rel.source, set2);
+    }
+    for (const s of splitSetProperty(decisionScope)) set2.add(s);
+  }
+  for (const entity of entities) {
+    const stored = entity.properties?.scope;
+    if (!stored) continue;
+    report.examined++;
+    const union2 = new Set(splitSetProperty(stored));
+    for (const s of recovered.get(entity.id) ?? []) union2.add(s);
+    const after = joinSetProperty([...union2]);
+    if (after === stored) continue;
+    report.repairable++;
+    if (report.items.length < SAMPLE_LIMIT) {
+      report.items.push({
+        entity: entity.name,
+        type: entity.type,
+        before: stored,
+        after
+      });
+    }
+    if (execute) {
+      await graphStore.addEntity({
+        name: entity.name,
+        type: entity.type,
+        properties: { ...entity.properties, scope: after }
+      });
+      report.repaired++;
+    }
+  }
+  return report;
+}
+
 // src/engine/housekeeping.ts
 var STALE_PROVISIONAL_DAYS = 7;
 var DEFAULT_STALENESS_THRESHOLD = 0.95;
@@ -34446,6 +34585,7 @@ var HousekeepingEngine = class {
     const stalenessReview = options?.staleness_review ?? false;
     const mergeSweep = options?.merge_sweep ?? false;
     const compactArchivesOpt = options?.compact_archives ?? false;
+    const repairEntityScopesOpt = options?.repair_entity_scopes ?? false;
     const archiveEnabled = options?.archive ?? true;
     const result = {
       archived: { count: 0, file: "", kept_open: 0 },
@@ -34682,6 +34822,15 @@ var HousekeepingEngine = class {
       } catch {
       }
     }
+    if (repairEntityScopesOpt && this.graphEngine) {
+      try {
+        result.entity_scope_repair = await repairEntityScopes(
+          this.graphEngine.graphStore,
+          { execute }
+        );
+      } catch {
+      }
+    }
     if (result.staleness_review && result.merge_sweep) {
       const sweepIds = new Set(result.merge_sweep.candidates.map((c) => c.id));
       result.staleness_review.candidates = result.staleness_review.candidates.filter((c) => !sweepIds.has(c.id));
@@ -34738,6 +34887,9 @@ function registerHousekeepingTools(server, housekeepingEngine, blackboardEngine,
         compact_archives: external_exports.boolean().optional().describe(
           "Set to true to scan .twining/archive/*.jsonl for junk generated by the pre-1.24.0 auto-archive feedback loop ('Archive: N entries archived' summary findings, #35) and report how much is reclaimable. With execute: true, junk lines are dropped (streaming, atomic rewrite), archive files left empty are deleted, and an audit-trail finding is posted. Only entries matching the archiver's exact signature are dropped \u2014 everything else, including unparseable lines, is preserved."
         ),
+        repair_entity_scopes: external_exports.boolean().optional().describe(
+          "Set to true to recompute knowledge-graph entity scopes from their decided_by relations. Before scopes became a union, a decision in one scope overwrote the scope another decision had stamped on the same file \u2014 leaving entities asserting a single scope that was merely the most recent. Reports what would change; with execute: true, rewrites them. Safe to run repeatedly."
+        ),
         archive: external_exports.boolean().optional().describe(
           "Defaults to true. Set to false to skip the blackboard archive pass while still running the other passes. The archive pass takes no cutoff, so with execute: true it archives the ENTIRE live board, not just old entries \u2014 pass archive: false when you want a targeted repair (notably compact_archives, which needs execute: true to do real work) without sweeping the board."
         ),
@@ -34754,6 +34906,7 @@ function registerHousekeepingTools(server, housekeepingEngine, blackboardEngine,
           merge_sweep: args.merge_sweep,
           compact_archives: args.compact_archives,
           archive: args.archive,
+          repair_entity_scopes: args.repair_entity_scopes,
           stale_days: args.stale_days,
           metrics_retention_days: args.metrics_retention_days
         });
@@ -35078,7 +35231,7 @@ var MetricsStore = class {
 };
 
 // src/server.ts
-var PKG_VERSION = true ? "2.5.0" : createRequire(import.meta.url)("../package.json").version;
+var PKG_VERSION = true ? "2.6.0" : createRequire(import.meta.url)("../package.json").version;
 function createServer(projectRoot) {
   const twiningDir = ensureInitialized(projectRoot);
   const config2 = loadConfig(twiningDir);
@@ -36833,7 +36986,7 @@ var TelemetryClient = class {
 // src/index.ts
 init_project_root();
 if (process.argv.includes("--version") || process.argv.includes("-v")) {
-  const version2 = true ? "2.5.0" : createRequire(import.meta.url)("../package.json").version;
+  const version2 = true ? "2.6.0" : createRequire(import.meta.url)("../package.json").version;
   console.log(`twining-mcp ${version2}`);
   process.exit(0);
 }
