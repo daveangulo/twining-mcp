@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Decisions: Chose to stage the harness handoff under the harness repo's gitignored benchmark-results/ rather than docs/ or the session scratchpad — reason: the session scratchpad is under /private/tmp and is reaped, while docs/ would make a temporary coordination artifact into tracked project documentation and dirty a tree that currently carries only a pre-existing STATE.md edit. Rejected alternative: docs/ alongside CONTENT-SCORER.md, reason_rejected: this is a handoff meant to be recorded into Twining and then discarded, not documentation.\nFindings: need: the benchmark-harness content-scorer findings are still UNFILED in the harness's own Twining store. They are staged durably at /Users/dave/code/twining-benchmark-harness/benchmark-results/scorer-verification-2026-08-04/ (gitignored, so it will not show in git status and will not be committed): HARNESS-HANDOFF.md is the writeup, with mutation-results.json, mutation-plan.md, spread-rows.json and the re-runnable mutate.mjs / spread.mts alongside. Filing requires a session whose MCP server is rooted at the harness repo — see finding 01KZ9M6PQ16CZP5BPTWYRHMPYP for why no subagent from a twining-mcp session can do it.; The single most actionable result of this session for twining-mcp itself is warning 01KZ7G5HTEKDNAJA2KD9RFESKG: rationale_source never reaches persisted decision records. It blocks the benchmark's ability to measure record quality at all, so it gates any further paid benchmark run — the 0.35-weighted rationale term will read as unknown-provenance on every record until it is fixed. Fix it before spending on a run.; Method note worth reusing: the project's standard 'git stash push src/' discrimination check is a NO-OP against a net-new module — stashing deletes the file so every test dies on an import error, which makes a test that pins nothing look identical to one that pins everything. Semantic mutation that keeps the module compiling is the technique that works. 28 hand-written mutants over the documented design claims found 4 real gaps that a 15-mutant pass by the module's own author had missed.; Method note: mutation testing alone was insufficient here and would have produced false confidence. A scorer can catch 24 of 28 mutants and still be a constant on real data — which is exactly what happened, 96.1% of 1075 real stores scoring exactly 100. Any new scoring instrument needs a discrimination check against real recorded data, not just a passing test suite.",
+  "entry_type": "status",
+  "id": "01KZC0R6BB8S7K1X628G00TAS8",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3106deb49c527532b4b89fcb14ef36fb001c0dd7",
+    "recorded_at": "2026-08-06T17:08:19.410Z"
+  },
+  "scope": ".twining/",
+  "summary": "Session close: verified the harness content scorer by 28-mutant pass and 2472-session spread check. Findings recorded here for twining-mcp; harness-specific findings staged but still UNFILED.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-06T17:08:19.435Z"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: this failure mode is silent and structural, not a one-off. Because the global twining-mcp bin is npm-linked to this repo's dist/, every rebuild makes already-running servers stale, and nothing surfaces which build a server is actually running. Any behaviour observed through a long-lived session may reflect code from an arbitrary earlier point. Diagnose with `ps` + readlink + dist mtimes before concluding a code defect — I spent a full investigation cycle concluding a bug that did not exist.",
+  "entry_type": "warning",
+  "id": "01KZC1J7KWCJ948ARKJTRHC7EQ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3106deb49c527532b4b89fcb14ef36fb001c0dd7",
+    "recorded_at": "2026-08-06T17:22:32.681Z"
+  },
+  "scope": "src/engine/",
+  "summary": "this failure mode is silent and structural, not a one-off. Because the global twining-mcp bin is npm-linked to this repo's dist/, every rebuild makes already-running servers stale, and nothing surf…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-06T17:22:32.700Z"
+}

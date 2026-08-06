@@ -1,0 +1,46 @@
+{
+  "affected_files": [
+    "src/engine/record-parser.ts",
+    "src/tools/record-tools.ts",
+    "src/engine/decisions.ts",
+    "src/storage/sync/record-export.ts"
+  ],
+  "affected_symbols": [
+    "parseDecision",
+    "buildFromNaturalLanguage",
+    "buildFromStructured",
+    "RecordExporter.decision"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "record everything here so nothing is lost, reason_rejected: a finding filed against a repo that does not contain the file it names is worse than no finding, because twining_why will surface it as a constraint on a path that does not exist",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "The MCP server serving this session is the same one that wrote 01KZ77G2NF1SFW4RXMS6B7HTYM — if a different process wrote it the parser-vs-record contradiction has a different explanation",
+    "record-export.ts writing the decision object verbatim means no field whitelist strips rationale_source at the mirror layer"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Found that rationale_source is emitted by the parser but absent from 100% of persisted decision records (0/456), including ones written today — the marker is dropped downstream of parseDecision.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KZ7G5HPFGCMKQGX2H49R350C",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3106deb49c527532b4b89fcb14ef36fb001c0dd7",
+    "recorded_at": "2026-08-04T23:01:33.499Z"
+  },
+  "rationale": "those describe src/analyzer/record-content.ts in /Users/dave/code/twining-benchmark-harness, which has its own .twining store, and filing them here would repeat the misfiling already visible in the 5dee214 records. Rejected alternative: record everything here so nothing is lost, reason_rejected: a finding filed against a repo that does not contain the file it names is worse than no finding, because twining_why will surface it as a constraint on a path that does not exist.",
+  "reversible": true,
+  "scope": "src/engine/",
+  "status": "active",
+  "summary": "Chose to record only the rationale_source defect in this store and deliberately withhold the benchmark-harness scorer findings (28-mutant pass, 4 surviving gaps, 2472-session spread analysis)",
+  "timestamp": "2026-08-04T23:01:33.519Z"
+}

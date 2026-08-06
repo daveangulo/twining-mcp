@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-06T17:41:25.977Z",
+  "id": "01KZC2MTASNPD44PWES5DHW1ZR",
+  "properties": {
+    "decision_summary": "Chose to verify the rationale_source marker by reading exported record JSON rather than tool output"
+  },
+  "source": "01KY6EEVNYT9CWMATFTKJ1KYGE",
+  "target": "01KZC2MTARMM29R6QQVS6MG51N",
+  "type": "decided_by"
+}

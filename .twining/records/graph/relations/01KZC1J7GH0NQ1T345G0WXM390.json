@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-06T17:22:32.593Z",
+  "id": "01KZC1J7GH0NQ1T345G0WXM390",
+  "properties": {
+    "decision_summary": "Chose to make no source change for the rationale_source drop and to report the premise as false instead —"
+  },
+  "source": "01KZC1J7GG441XM1EN5Y2HFG8G",
+  "target": "01KZC1J7GE3K1MD7PSTT6EJD0H",
+  "type": "decided_by"
+}

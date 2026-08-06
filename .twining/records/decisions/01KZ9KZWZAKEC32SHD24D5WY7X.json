@@ -1,0 +1,36 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "hand-write the JSON records into the harness",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "The subagent shares this session's MCP server process and therefore its store binding — this is the hypothesis under test, not an established fact",
+    "The harness .twining store is sqlite-backed, inferred from its 'chore: migrate .twining to the sqlite backend' commit rather than verified directly"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Spawned a subagent to file harness findings into the harness store, with a blocking routing check first — testing whether a subagent inherits the parent session's store binding. Result not yet in.",
+  "depends_on": [],
+  "domain": "api-design",
+  "id": "01KZ9KZWZAKEC32SHD24D5WY7X",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3106deb49c527532b4b89fcb14ef36fb001c0dd7",
+    "recorded_at": "2026-08-05T18:46:51.605Z"
+  },
+  "rationale": "a misrouted write compounds the exact defect already recorded here as finding 01KZ77G2PM12N8AN2P6T2W5KP3, and an unwritten finding is recoverable from the scratchpad handoff whereas a finding filed against a repo that does not contain the files it names actively misleads twining_why. Rejected alternative: hand-write the JSON records into the harness .twining/records tree, reason_rejected: that store is sqlite-backed and the mirror would desynchronise from the live db.",
+  "reversible": true,
+  "scope": ".twining/",
+  "status": "active",
+  "summary": "Chose to dispatch the harness recording to a subagent with a blocking routing pre-flight that makes it STOP and report rather than write, instead of either letting it record blind or hand-writing records into the harness store myself —",
+  "timestamp": "2026-08-05T18:46:51.626Z"
+}

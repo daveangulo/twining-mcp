@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-06T17:41:25.976Z",
+  "id": "01KZC2MTARMM29R6QQVS6MG51N",
+  "name": "01KZC2MT8JJKT362C7WDTA2PS8",
+  "properties": {
+    "scope": "src/storage/",
+    "summary": "Chose to verify the rationale_source marker by reading exported record JSON rather than tool output"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-06T17:41:25.976Z"
+}

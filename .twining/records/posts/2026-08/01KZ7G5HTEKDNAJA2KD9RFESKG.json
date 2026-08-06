@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: rationale_source is absent as a FIELD on 456 of 456 decision records in this store, including 01KZ77G2NF1SFW4RXMS6B7HTYM written today by the running server via twining_record with a genuinely authored rationale. Running the repo's own parseDecision on that record's exact text returns rationale_source='authored', so the parser marks it correctly and the value is lost somewhere between parseDecision and the persisted record. Every consumer that reads the marker off committed records currently sees 'unknown provenance' universally.",
+  "entry_type": "warning",
+  "id": "01KZ7G5HTEKDNAJA2KD9RFESKG",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3106deb49c527532b4b89fcb14ef36fb001c0dd7",
+    "recorded_at": "2026-08-04T23:01:33.626Z"
+  },
+  "scope": "src/engine/",
+  "summary": "rationale_source is absent as a FIELD on 456 of 456 decision records in this store, including 01KZ77G2NF1SFW4RXMS6B7HTYM written today by the running server via twining_record with a genuinely auth…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-04T23:01:33.646Z"
+}

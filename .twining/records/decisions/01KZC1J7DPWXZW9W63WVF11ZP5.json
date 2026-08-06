@@ -1,0 +1,40 @@
+{
+  "affected_files": [
+    "dist/index.js",
+    "src/engine/decisions.ts",
+    "src/tools/record-tools.ts",
+    "src/engine/record-parser.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "patch the forwarding in decisions",
+      "pros": [],
+      "reason_rejected": "Not chosen"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "The two twining-mcp server processes visible in ps (started Tue 07:00 and Tue 09:00) include the one bound to this session — both predate the 12:30 rebuild, so the conclusion holds for either"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Disproved my own rationale_source warning: source and build are both correct. The marker is missing because the running server process predates the Aug 4 12:30 rebuild and serves stale in-memory code.",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KZC1J7DPWXZW9W63WVF11ZP5",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3106deb49c527532b4b89fcb14ef36fb001c0dd7",
+    "recorded_at": "2026-08-06T17:22:32.482Z"
+  },
+  "rationale": "an end-to-end probe of the current build persists the field correctly, so every candidate 'fix' would have been a no-op edit to correct code, and shipping one would have masked the real cause while appearing to resolve it. Rejected alternative: patch the forwarding in decisions.ts or record-tools.ts defensively anyway, reason_rejected: both already forward the field, and a redundant guard would make the next stale-process incident harder to recognise, not easier.",
+  "reversible": true,
+  "scope": "src/engine/",
+  "status": "active",
+  "summary": "Chose to make no source change for the rationale_source drop and to report the premise as false instead —",
+  "timestamp": "2026-08-06T17:22:32.502Z"
+}

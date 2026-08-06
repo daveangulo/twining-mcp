@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-05T18:46:51.682Z",
+  "id": "01KZ9KZX12GAAZ67PBXYP14J83",
+  "name": "01KZ9KZWZAKEC32SHD24D5WY7X",
+  "properties": {
+    "scope": ".twining/",
+    "summary": "Chose to dispatch the harness recording to a subagent with a blocking routing pre-flight that makes it STOP and report rather than write, instead of either letting it record blind or hand-writing records into the harness store myself —"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-05T18:46:51.682Z"
+}

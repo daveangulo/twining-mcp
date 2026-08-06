@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: The record-content scorer session wrote its decisions and posts into twining-mcp's store (committed in 5dee214, e.g. .twining/records/posts/2026-08/01KZ6J7B12SC6RAWY2BQ3AHWHN.json) even though every file it describes — src/analyzer/record-content.ts, src/runner/data-collector.ts, src/scenarios/, src/conditions/ — exists only in /Users/dave/code/twining-benchmark-harness. Records landed in the wrong repo's store. Worth checking whether the MCP server resolved the store from a stale cwd, since the affected_files in those decisions point at paths that do not exist in this repo.",
+  "entry_type": "finding",
+  "id": "01KZ77G2PM12N8AN2P6T2W5KP3",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3106deb49c527532b4b89fcb14ef36fb001c0dd7",
+    "recorded_at": "2026-08-04T20:30:01.408Z"
+  },
+  "scope": ".twining/",
+  "summary": "The record-content scorer session wrote its decisions and posts into twining-mcp's store (committed in 5dee214, e.g. .twining/records/posts/2026-08/01KZ6J7B12SC6RAWY2BQ3AHWHN.json) even though ever…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-04T20:30:01.428Z"
+}

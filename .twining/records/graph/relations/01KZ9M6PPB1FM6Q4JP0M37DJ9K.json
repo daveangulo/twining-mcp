@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-05T18:50:34.571Z",
+  "id": "01KZ9M6PPB1FM6Q4JP0M37DJ9K",
+  "properties": {
+    "decision_summary": "Chose to answer the subagent store-routing question by reading the server's root-resolution code rather than continuing to query the dispatched subagent —"
+  },
+  "source": "01KJD595NBM3QK28EQJ3JG8QXV",
+  "target": "01KZ9M6PPAYJS1YNMA08XMQ7CD",
+  "type": "decided_by"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-04T23:01:33.622Z",
+  "id": "01KZ7G5HSP0HVDXTCG03FZRF8Y",
+  "properties": {
+    "decision_summary": "Chose to record only the rationale_source defect in this store and deliberately withhold the benchmark-harness scorer findings (28-mutant pass, 4 surviving gaps, 2472-session spread analysis)"
+  },
+  "source": "01KQ0VBWQD6CN2Z785D73HC6RS",
+  "target": "01KZ7G5HSCCK6R5FP03CKQ7BVA",
+  "type": "decided_by"
+}

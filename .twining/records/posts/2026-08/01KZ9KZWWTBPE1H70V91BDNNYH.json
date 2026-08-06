@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Decisions: Chose to dispatch the harness recording to a subagent with a blocking routing pre-flight that makes it STOP and report rather than write, instead of either letting it record blind or hand-writing records into the harness store myself — reason: a misrouted write compounds the exact defect already recorded here as finding 01KZ77G2PM12N8AN2P6T2W5KP3, and an unwritten finding is recoverable from the scratchpad handoff whereas a finding filed against a repo that does not contain the files it names actively misleads twining_why. Rejected alternative: hand-write the JSON records into the harness .twining/records tree, reason_rejected: that store is sqlite-backed and the mirror would desynchronise from the live db.\nFindings: OPEN QUESTION, verification in flight and NOT yet answered: does a subagent spawned from a session inherit the parent's Twining store binding rather than resolving from its own working directory? If it does, Twining cannot record correctly for any work spanning two repos, because a subagent dispatched to work in repo B will file its records into repo A's store. A subagent was dispatched with a blocking pre-flight check (compare newest record mtimes and git status in both repos before and after its Gate 1 assemble, and refuse to write if records appear in the wrong store). Do not treat this as confirmed either way until that agent reports.; Candidate mechanism for the already-recorded misfiling (finding 01KZ77G2PM12N8AN2P6T2W5KP3, where the content-scorer session's records landed in twining-mcp's store while every file they name lives in twining-benchmark-harness): if store resolution is per-session rather than per-call, any agent working outside the session's root misfiles by construction, and no amount of care in the agent's prompt prevents it. That would make it a product defect rather than an operator mistake. Unverified — see the open question above.; Hand-writing JSON records into a sqlite-backed .twining/records/ tree is NOT a safe workaround for a misrouted store. The sqlite db is the live store and records/ is the mirrored export; files dropped in by hand are not ingested until something calls the record-ingest path, so the store and its mirror silently disagree. The dispatched subagent was explicitly forbidden from attempting this.",
+  "entry_type": "status",
+  "id": "01KZ9KZWWTBPE1H70V91BDNNYH",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3106deb49c527532b4b89fcb14ef36fb001c0dd7",
+    "recorded_at": "2026-08-05T18:46:51.518Z"
+  },
+  "scope": ".twining/",
+  "summary": "Spawned a subagent to file harness findings into the harness store, with a blocking routing check first — testing whether a subagent inherits the parent session's store binding. Result not yet in.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-05T18:46:51.546Z"
+}

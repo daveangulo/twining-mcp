@@ -3,8 +3,8 @@
   "id": "01KJD595NBM3QK28EQJ3JG8QXV",
   "name": "src/index.ts",
   "properties": {
-    "scope": "src/utils/project-root.ts"
+    "scope": "src/utils/"
   },
   "type": "file",
-  "updated_at": "2026-07-21T21:19:22.908Z"
+  "updated_at": "2026-08-05T18:50:34.570Z"
 }

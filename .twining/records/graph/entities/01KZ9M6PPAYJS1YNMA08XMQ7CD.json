@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-05T18:50:34.570Z",
+  "id": "01KZ9M6PPAYJS1YNMA08XMQ7CD",
+  "name": "01KZ9M6PNS1NVSCR9C4XV36PYB",
+  "properties": {
+    "scope": "src/utils/",
+    "summary": "Chose to answer the subagent store-routing question by reading the server's root-resolution code rather than continuing to query the dispatched subagent —"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-05T18:50:34.570Z"
+}

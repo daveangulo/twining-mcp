@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-06T17:41:26.086Z",
+  "id": "01KZC2MTE6871C5TVPZ9Z6DZQP",
+  "properties": {
+    "decision_summary": "Chose to run the marker verification against the live plugin server instead of a local build"
+  },
+  "source": "01KY6EEVNYT9CWMATFTKJ1KYGE",
+  "target": "01KZC2MTE5GV1G0EWTWRBV8CDT",
+  "type": "decided_by"
+}

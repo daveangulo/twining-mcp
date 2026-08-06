@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: the benchmark-harness content-scorer findings are still UNFILED in the harness's own Twining store. They are staged durably at /Users/dave/code/twining-benchmark-harness/benchmark-results/scorer-verification-2026-08-04/ (gitignored, so it will not show in git status and will not be committed): HARNESS-HANDOFF.md is the writeup, with mutation-results.json, mutation-plan.md, spread-rows.json and the re-runnable mutate.mjs / spread.mts alongside. Filing requires a session whose MCP server is rooted at the harness repo — see finding 01KZ9M6PQ16CZP5BPTWYRHMPYP for why no subagent from a twining-mcp session can do it.",
+  "entry_type": "need",
+  "id": "01KZC0R6F19J31ANJ11660AEN4",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3106deb49c527532b4b89fcb14ef36fb001c0dd7",
+    "recorded_at": "2026-08-06T17:08:19.534Z"
+  },
+  "scope": ".twining/",
+  "summary": "the benchmark-harness content-scorer findings are still UNFILED in the harness's own Twining store. They are staged durably at /Users/dave/code/twining-benchmark-harness/benchmark-results/scorer-ve…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-06T17:08:19.553Z"
+}

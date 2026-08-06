@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Decisions: Chose to verify the rationale_source marker by reading exported record JSON rather than tool output — the presentation layer never renders the marker, so only the persisted record is decisive evidence; Chose to run the marker verification against the live plugin server instead of a local build\nFindings: Sqlite backend is full-fidelity for decision records: the data column holds JSON.stringify of the whole Decision object (sqlite-stores.ts:178) and RecordExporter mirrors that same object, so exported JSON never drops fields like rationale_source on create or updateStatus round-trips",
+  "entry_type": "status",
+  "id": "01KZC2MT73M28T5A54F8HV1RH0",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3106deb49c527532b4b89fcb14ef36fb001c0dd7",
+    "recorded_at": "2026-08-06T17:41:25.830Z"
+  },
+  "scope": "src/storage/",
+  "summary": "Verified rationale_source marker persistence end-to-end: live twining_record through the plugin server, then asserted the marker in the exported record JSON",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-06T17:41:25.860Z"
+}

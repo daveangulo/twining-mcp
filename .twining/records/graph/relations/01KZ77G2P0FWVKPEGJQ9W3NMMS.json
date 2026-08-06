@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-04T20:30:01.408Z",
+  "id": "01KZ77G2P0FWVKPEGJQ9W3NMMS",
+  "properties": {
+    "decision_summary": "Chose to stop work in twining-mcp and hand the mutation pass to a session rooted in twining-benchmark-harness rather than driving the harness repo over absolute paths from here"
+  },
+  "source": "01KZ77G2NZHYZ1G5SQ5BSV4ZSF",
+  "target": "01KZ77G2NYM88XC8S3PKVQKVVZ",
+  "type": "decided_by"
+}

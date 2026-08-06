@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-04T23:01:33.625Z",
+  "id": "01KZ7G5HSSNQTCYB24Y38N81TG",
+  "name": "RecordExporter.decision",
+  "properties": {
+    "scope": "src/engine/"
+  },
+  "type": "function",
+  "updated_at": "2026-08-04T23:01:33.625Z"
+}

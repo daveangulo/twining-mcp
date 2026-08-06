@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: twining-mcp main is 1491 passed / 2 skipped across 111 files as of 3106deb. The 859-test figure attached to the content-scorer work is the harness repo's own suite — the two counts are not comparable and neither is a regression of the other.",
+  "entry_type": "finding",
+  "id": "01KZ77G2S4MDHGV8X4A0TKHVWD",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3106deb49c527532b4b89fcb14ef36fb001c0dd7",
+    "recorded_at": "2026-08-04T20:30:01.488Z"
+  },
+  "scope": ".twining/",
+  "summary": "twining-mcp main is 1491 passed / 2 skipped across 111 files as of 3106deb. The 859-test figure attached to the content-scorer work is the harness repo's own suite — the two counts are not comparab…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-04T20:30:01.508Z"
+}

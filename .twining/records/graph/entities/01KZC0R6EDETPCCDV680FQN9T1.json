@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-06T17:08:19.533Z",
+  "id": "01KZC0R6EDETPCCDV680FQN9T1",
+  "name": "01KZC0R6DT3ASQR4XWCYZRTTSG",
+  "properties": {
+    "scope": ".twining/",
+    "summary": "Chose to stage the harness handoff under the harness repo's gitignored benchmark-results/ rather than docs/ or the session scratchpad —"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-06T17:08:19.533Z"
+}

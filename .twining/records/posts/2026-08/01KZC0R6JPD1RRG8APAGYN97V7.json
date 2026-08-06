@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Method note: mutation testing alone was insufficient here and would have produced false confidence. A scorer can catch 24 of 28 mutants and still be a constant on real data — which is exactly what happened, 96.1% of 1075 real stores scoring exactly 100. Any new scoring instrument needs a discrimination check against real recorded data, not just a passing test suite.",
+  "entry_type": "finding",
+  "id": "01KZC0R6JPD1RRG8APAGYN97V7",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3106deb49c527532b4b89fcb14ef36fb001c0dd7",
+    "recorded_at": "2026-08-06T17:08:19.652Z"
+  },
+  "scope": ".twining/",
+  "summary": "Method note: mutation testing alone was insufficient here and would have produced false confidence. A scorer can catch 24 of 28 mutants and still be a constant on real data — which is exactly what …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-06T17:08:19.670Z"
+}

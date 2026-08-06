@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: decisions in this store referencing src/scenarios/*.ts, src/conditions/twining-*.ts, src/runner/orchestrator.ts and src/runner/data-collector.ts are about the benchmark harness, not twining-mcp. twining_why on those paths from this repo will return constraints for files that do not exist here, and assemble surfaced them under a src/benchmark/ scope query.",
+  "entry_type": "warning",
+  "id": "01KZ77G2R04D1BG8SJH23ZTGNN",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3106deb49c527532b4b89fcb14ef36fb001c0dd7",
+    "recorded_at": "2026-08-04T20:30:01.452Z"
+  },
+  "scope": ".twining/",
+  "summary": "decisions in this store referencing src/scenarios/*.ts, src/conditions/twining-*.ts, src/runner/orchestrator.ts and src/runner/data-collector.ts are about the benchmark harness, not twining-mcp. tw…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-04T20:30:01.472Z"
+}

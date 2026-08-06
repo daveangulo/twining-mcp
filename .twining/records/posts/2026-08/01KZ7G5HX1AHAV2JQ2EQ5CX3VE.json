@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Candidate cause, NOT confirmed: ~/.claude/settings.json:33 has \\\"twining@twining-marketplace\\\": false, so the server serving this session is not the marketplace bundle. captureProvenance (e3cd5f3) and assembled_before (b2d9d70) both predate ab48f81, so a server can emit provenance and assembled_before — which today's records do — while still lacking rationale_source. Identifying the binary actually bound to this session would settle it.",
+  "entry_type": "finding",
+  "id": "01KZ7G5HX1AHAV2JQ2EQ5CX3VE",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3106deb49c527532b4b89fcb14ef36fb001c0dd7",
+    "recorded_at": "2026-08-04T23:01:33.709Z"
+  },
+  "scope": "src/engine/",
+  "summary": "Candidate cause, NOT confirmed: ~/.claude/settings.json:33 has \\\"twining@twining-marketplace\\\": false, so the server serving this session is not the marketplace bundle. captureProvenance (e3cd5f3) …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-04T23:01:33.729Z"
+}

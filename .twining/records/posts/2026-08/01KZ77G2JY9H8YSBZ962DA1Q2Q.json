@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Decisions: Chose to stop work in twining-mcp and hand the mutation pass to a session rooted in twining-benchmark-harness rather than driving the harness repo over absolute paths from here — the harness has its own .twining store and config, so recording from this cwd writes coordination state into the wrong project's store, which is the exact defect already visible in the 5dee214 records. Rejected alternative: keep operating cross-repo with cd, reason_rejected: the mutation pass produces findings worth recording and they would compound the misfiling.\nFindings: The record-content scorer session wrote its decisions and posts into twining-mcp's store (committed in 5dee214, e.g. .twining/records/posts/2026-08/01KZ6J7B12SC6RAWY2BQ3AHWHN.json) even though every file it describes — src/analyzer/record-content.ts, src/runner/data-collector.ts, src/scenarios/, src/conditions/ — exists only in /Users/dave/code/twining-benchmark-harness. Records landed in the wrong repo's store. Worth checking whether the MCP server resolved the store from a stale cwd, since the affected_files in those decisions point at paths that do not exist in this repo.; warning: decisions in this store referencing src/scenarios/*.ts, src/conditions/twining-*.ts, src/runner/orchestrator.ts and src/runner/data-collector.ts are about the benchmark harness, not twining-mcp. twining_why on those paths from this repo will return constraints for files that do not exist here, and assemble surfaced them under a src/benchmark/ scope query.; twining-mcp main is 1491 passed / 2 skipped across 111 files as of 3106deb. The 859-test figure attached to the content-scorer work is the harness repo's own suite — the two counts are not comparable and neither is a regression of the other.; The content-scorer build session already recorded a systematic mutation pass: 'Fifteen targeted mutations were applied one at a time and all fifteen were caught by the intended test.' It independently hit the same obstacle Dave did — that the project's standard 'git stash push src/' check is a no-op on a NET-NEW module, because stashing deletes the file and every test dies on an import error, making a test that pins nothing look identical to one that pins everything. So the mutation claim exists and needs independent confirmation rather than a from-scratch pass.",
+  "entry_type": "status",
+  "id": "01KZ77G2JY9H8YSBZ962DA1Q2Q",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3106deb49c527532b4b89fcb14ef36fb001c0dd7",
+    "recorded_at": "2026-08-04T20:30:01.283Z"
+  },
+  "scope": ".twining/",
+  "summary": "Investigated the record-content scorer mutation-verification request; found the code lives in the sibling twining-benchmark-harness repo, so handing off to a session there. No code changed.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-04T20:30:01.310Z"
+}

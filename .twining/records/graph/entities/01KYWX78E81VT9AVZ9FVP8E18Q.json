@@ -3,8 +3,8 @@
   "id": "01KYWX78E81VT9AVZ9FVP8E18Q",
   "name": "src/storage/sync/record-export.ts",
   "properties": {
-    "scope": "project"
+    "scope": "src/engine/,src/storage/"
   },
   "type": "file",
-  "updated_at": "2026-07-31T20:18:02.312Z"
+  "updated_at": "2026-08-06T17:41:26.087Z"
 }
