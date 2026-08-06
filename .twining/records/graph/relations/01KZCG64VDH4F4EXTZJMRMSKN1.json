@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-06T21:38:05.293Z",
+  "id": "01KZCG64VDH4F4EXTZJMRMSKN1",
+  "properties": {
+    "decision_summary": "Chose to keep the session-record tag on the status post only rather than dropping tags entirely"
+  },
+  "source": "01KX4E5JHDP9RY55NA912A2FV2",
+  "target": "01KZCG64V7CHKV16BWPZHD11N6",
+  "type": "decided_by"
+}

@@ -163,6 +163,9 @@ function blackboardItem(
     age_ms: nowMs - Date.parse(entry.timestamp),
     tags: entry.tags,
   };
+  // Narration/discovery provenance (D1) — passed through so consumers can
+  // separate what a session found from what it merely narrated.
+  if (entry.origin) item.origin = entry.origin;
   if (delegation) {
     // Delegation needs omit detail_preview — their detail is the JSON
     // metadata blob; the parsed fields replace it (§4).

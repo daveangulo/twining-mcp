@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-06T21:38:05.287Z",
+  "id": "01KZCG64V7CHKV16BWPZHD11N6",
+  "name": "01KZCG64SMETD0V1Y9ZCHBZ166",
+  "properties": {
+    "scope": "src/tools/",
+    "summary": "Chose to keep the session-record tag on the status post only rather than dropping tags entirely"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-06T21:38:05.287Z"
+}

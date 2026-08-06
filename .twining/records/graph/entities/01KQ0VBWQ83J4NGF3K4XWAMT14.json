@@ -3,8 +3,8 @@
   "id": "01KQ0VBWQ83J4NGF3K4XWAMT14",
   "name": "src/tools/record-tools.ts",
   "properties": {
-    "scope": "src/engine/"
+    "scope": "src/engine/,src/tools/"
   },
   "type": "file",
-  "updated_at": "2026-08-06T17:22:32.595Z"
+  "updated_at": "2026-08-06T21:38:05.290Z"
 }

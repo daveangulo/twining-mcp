@@ -83,6 +83,7 @@ async function showBlackboardDetail(row) {
     detailField(panel, "Scope", entry.scope);
     detailField(panel, "Agent ID", entry.agent_id);
     detailField(panel, "Tags", entry.tags && entry.tags.length ? entry.tags.join(", ") : null);
+    detailField(panel, "Origin", entry.origin || null);
     if (entry.relates_to && entry.relates_to.length) {
       const div = el("div", "detail-field");
       div.appendChild(el("div", "detail-label", "Relates To"));

@@ -341,7 +341,11 @@ export function registerRecordTools(
           entry_type: "status",
           summary: statusSummary,
           detail: detailParts.join("\n"),
+          // "session-record" marks the auto-emitted narration ONLY; findings
+          // carry "session-finding" + origin "discovery" so consumers can
+          // tell what the session did from what it found (field defect D1).
           tags: ["session-record"],
+          origin: "narration",
           scope,
           agent_id: agentId,
         });
@@ -417,7 +421,8 @@ export function registerRecordTools(
                 detail: findingTruncated
                   ? `Full summary: ${parsed.summary}`
                   : "",
-                tags: ["session-record"],
+                tags: ["session-finding"],
+                origin: "discovery",
                 scope,
                 agent_id: agentId,
               });

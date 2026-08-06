@@ -20,6 +20,16 @@ export const ENTRY_TYPES = [
 
 export type EntryType = (typeof ENTRY_TYPES)[number];
 
+/**
+ * How an entry came to exist relative to the session that wrote it.
+ * "narration" — the session describing its own activity (twining_record's
+ * auto-emitted status post). "discovery" — something the session found
+ * (twining_record's findings fan-out). An ABSENT marker means unknown
+ * (records written before this field existed, or posted directly via
+ * twining_post); never read absence as either value.
+ */
+export type EntryOrigin = "narration" | "discovery";
+
 /** Blackboard Entry — spec section 3.1 */
 export interface BlackboardEntry {
   id: string;
@@ -32,6 +42,8 @@ export interface BlackboardEntry {
   summary: string;
   detail: string;
   embedding_id?: string;
+  /** Provenance of the entry relative to its writing session. */
+  origin?: EntryOrigin;
   /** Branch + commit at time of recording; used for staleness detection. */
   provenance?: Provenance;
 }
@@ -639,6 +651,7 @@ export interface TriageItem {
   timestamp: string;       // ISO: Decision.timestamp / BlackboardEntry.timestamp
   age_ms: number;          // injectedNow − timestamp; presentation only, NEVER an ordering key
   tags?: string[];         // blackboard-sourced kinds only; OMITTED (not []) for decisions
+  origin?: EntryOrigin;    // blackboard-sourced kinds only; OMITTED when the entry has none
   detail_preview?: string; // collapse-then-truncate at 200 chars; OMITTED when
                            // source empty; OMITTED for delegation needs (the
                            // parsed urgency/expires_at fields replace it)

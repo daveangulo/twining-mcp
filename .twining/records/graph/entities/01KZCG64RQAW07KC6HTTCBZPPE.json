@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-06T21:38:05.207Z",
+  "id": "01KZCG64RQAW07KC6HTTCBZPPE",
+  "name": "01KZCG64QEVSS85NPZ4XM80P2R",
+  "properties": {
+    "scope": "src/tools/",
+    "summary": "Chose an additive origin field plus a tag split (session-finding for findings) over a lifecycle-state redesign for D1"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-06T21:38:05.207Z"
+}

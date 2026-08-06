@@ -3,8 +3,8 @@
   "id": "01KY79614ZHKTMBNY786112S2B",
   "name": "src/engine/triage.ts",
   "properties": {
-    "scope": "src/"
+    "scope": "src/,src/tools/"
   },
   "type": "file",
-  "updated_at": "2026-07-23T10:43:47.809Z"
+  "updated_at": "2026-08-06T21:38:05.291Z"
 }

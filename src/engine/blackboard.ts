@@ -80,6 +80,7 @@ export class BlackboardEngine {
     scope?: string;
     relates_to?: string[];
     agent_id?: string;
+    origin?: "narration" | "discovery";
     // Bypasses the entry_type "decision" rejection. No production callers
     // since issue #30 removed the decision cross-post; kept so tests can
     // simulate legacy mirror entries still present on field blackboards.
@@ -121,6 +122,7 @@ export class BlackboardEngine {
       scope: input.scope ?? "project",
       relates_to: input.relates_to,
       agent_id: input.agent_id ?? "main",
+      ...(input.origin ? { origin: input.origin } : {}),
       provenance: captureProvenance(this.projectRoot),
     });
 

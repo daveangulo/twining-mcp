@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Stage 1 of field-defect campaign (D1): BlackboardEntry gains origin narration|discovery; twining_record status post keeps session-record tag, findings fan-out now tagged session-finding with origin discovery\nDecisions: Chose an additive origin field plus a tag split (session-finding for findings) over a lifecycle-state redesign for D1 — origin follows the rationale_source absent-means-unknown convention, needs no schema migration, and the lifecycle half of the field complaint is handled separately in D2; Chose to keep the session-record tag on the status post only rather than dropping tags entirely — the transport breadcrumb stays useful for audit while no longer covering discoveries\nFindings: External consumers filtering twining_read by tags [session-record] will stop matching new findings fan-out entries (now session-finding) — intended, that filter was the D1 defect, but the field memo must call it out",
+  "entry_type": "status",
+  "id": "01KZCG64P0P92Z5VG3QKRHDHFK",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "9ad807fd9c234de8bc65aced970723e49d0ca2c6",
+    "recorded_at": "2026-08-06T21:38:05.097Z"
+  },
+  "scope": "src/tools/",
+  "summary": "Stage 1 of field-defect campaign (D1): BlackboardEntry gains origin narration|discovery; twining_record status post keeps session-record tag, findings fan-out now tagged session-finding with origin…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-06T21:38:05.120Z"
+}

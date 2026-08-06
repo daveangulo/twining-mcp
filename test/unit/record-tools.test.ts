@@ -580,3 +580,46 @@ describe("twining_record — status error paths (2.5.0 review fixes)", () => {
     expect(incumbent.status).toBe("active");
   });
 });
+
+describe("twining_record — origin marker and tag split (field defect D1)", () => {
+  it("stamps the status post with tag session-record and origin narration", async () => {
+    await callTool("twining_record", {
+      summary: "Session narration summary",
+      findings: ["Discovered something load-bearing"],
+    });
+
+    const { entries } = await bbStore.read();
+    const status = entries.find((e) => e.entry_type === "status");
+    expect(status).toBeDefined();
+    expect(status!.tags).toContain("session-record");
+    expect(status!.origin).toBe("narration");
+  });
+
+  it("stamps fanned-out findings with tag session-finding (NOT session-record) and origin discovery", async () => {
+    await callTool("twining_record", {
+      summary: "Session narration summary",
+      findings: [
+        "Plain finding text",
+        "warning: something risky",
+        "need: something owed",
+      ],
+    });
+
+    const { entries } = await bbStore.read();
+    const fanned = entries.filter((e) => e.entry_type !== "status");
+    expect(fanned).toHaveLength(3);
+    for (const entry of fanned) {
+      expect(entry.tags).toContain("session-finding");
+      expect(entry.tags).not.toContain("session-record");
+      expect(entry.origin).toBe("discovery");
+    }
+    const types = fanned.map((e) => e.entry_type).sort();
+    expect(types).toEqual(["finding", "need", "warning"]);
+  });
+
+  it("leaves origin absent on plain twining_post entries (absent = unknown, mirroring rationale_source)", async () => {
+    await bbEngine.post({ entry_type: "finding", summary: "direct post" });
+    const { entries } = await bbStore.read();
+    expect(entries[0]!.origin).toBeUndefined();
+  });
+});

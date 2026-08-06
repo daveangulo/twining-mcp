@@ -1012,5 +1012,21 @@ for (const backend of BACKENDS) {
         expect("detail_truncated" in emptyItem).toBe(false);
       });
     });
+
+    describe("origin passthrough (D1)", () => {
+      it("carries a blackboard entry's origin onto the TriageItem and omits it when absent", async () => {
+        const discovered = fx.postEntry("warning", "discovered warning", {
+          origin: "discovery",
+        });
+        const untagged = fx.postEntry("warning", "legacy warning");
+
+        const result = await buildTriage(fx.stores(), {}, now);
+
+        const discoveredItem = result.open!.find((i) => i.id === discovered)!;
+        expect(discoveredItem.origin).toBe("discovery");
+        const legacyItem = result.open!.find((i) => i.id === untagged)!;
+        expect("origin" in legacyItem).toBe(false);
+      });
+    });
   });
 }

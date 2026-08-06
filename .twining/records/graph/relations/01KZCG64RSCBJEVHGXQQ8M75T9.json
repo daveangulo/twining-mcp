@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-06T21:38:05.209Z",
+  "id": "01KZCG64RSCBJEVHGXQQ8M75T9",
+  "properties": {
+    "decision_summary": "Chose an additive origin field plus a tag split (session-finding for findings) over a lifecycle-state redesign for D1"
+  },
+  "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+  "target": "01KZCG64RQAW07KC6HTTCBZPPE",
+  "type": "decided_by"
+}
