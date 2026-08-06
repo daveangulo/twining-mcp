@@ -2,14 +2,50 @@
  * MCP tool handlers for blackboard operations.
  * Registers twining_post, twining_read, and twining_recent.
  */
+import fs from "node:fs";
+import path from "node:path";
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { BlackboardEngine } from "../engine/blackboard.js";
 import type { DecisionEngine } from "../engine/decisions.js";
 import type { IDecisionStore } from "../storage/interfaces.js";
+import type { BlackboardEntry } from "../utils/types.js";
 import { ENTRY_TYPES } from "../utils/types.js";
 import { toolResult, toolError, TwiningError } from "../utils/errors.js";
 import { writeRecordSentinel } from "../utils/record-sentinel.js";
+import { ensureDir } from "../storage/file-store.js";
+
+/**
+ * Append dismissal tombstones to the day's archive file (D2). Dismissal
+ * deletes the live row in both backends; the tombstone preserves the entry
+ * plus who dismissed it and why, so "handled as noise" stays auditable.
+ * The archive compactor only strips its own exact junk signature, so
+ * tombstone lines are preserved.
+ */
+function appendDismissalTombstones(
+  twiningDir: string,
+  entries: BlackboardEntry[],
+  meta: { reason?: string; dismissed_by?: string },
+): void {
+  if (entries.length === 0) return;
+  const archiveDir = path.join(twiningDir, "archive");
+  ensureDir(archiveDir);
+  const now = new Date().toISOString();
+  const file = path.join(archiveDir, `${now.slice(0, 10)}-blackboard.jsonl`);
+  const lines = entries
+    .map((e) =>
+      JSON.stringify({
+        ...e,
+        dismissed: {
+          dismissed_at: now,
+          ...(meta.dismissed_by ? { dismissed_by: meta.dismissed_by } : {}),
+          ...(meta.reason ? { reason: meta.reason } : {}),
+        },
+      }),
+    )
+    .join("\n");
+  fs.appendFileSync(file, lines + "\n");
+}
 
 /** Whether an entry_types filter admits decision-store results. */
 function includesDecisions(entryTypes?: string[]): boolean {
@@ -55,7 +91,12 @@ export function registerBlackboardTools(
         relates_to: z
           .array(z.string())
           .optional()
-          .describe("IDs of related entries"),
+          .describe(
+            "IDs of related entries. Back-referencing an open need/question/" +
+              "warning marks it resolved out of the open triage lane (e.g. an " +
+              "answer posted with relates_to: [question_id]). For an explicit, " +
+              "durable resolution prefer twining_resolve.",
+          ),
         agent_id: z
           .string()
           .optional()
@@ -230,12 +271,55 @@ export function registerBlackboardTools(
     },
   );
 
+  // twining_resolve — Mark open items handled while preserving the record.
+  // DEFAULT surface deliberately (unlike twining_dismiss): the field defect
+  // behind this tool (D2) was that the everyday surface offered no exit from
+  // the open lane at all, so agents let it grow rather than delete history.
+  server.registerTool(
+    "twining_resolve",
+    {
+      description:
+        "Mark open blackboard items (needs, questions, warnings) as handled. Persists status \"resolved\" with resolver identity and an optional note; the entry leaves the open triage/assemble lane but stays on the board as searchable history. This is the everyday exit for open items — use twining_dismiss only for noise that should never have been recorded.",
+      inputSchema: {
+        ids: z
+          .array(z.string())
+          .min(1)
+          .describe("Entry IDs to mark resolved"),
+        note: z
+          .string()
+          .optional()
+          .describe("How the item was handled — stored as resolution_note"),
+        agent_id: z
+          .string()
+          .optional()
+          .describe("Identifier for the resolving agent"),
+      },
+    },
+    async (args) => {
+      try {
+        const result = await engine.resolve(args.ids, {
+          agent_id: args.agent_id,
+          note: args.note,
+        });
+        return toolResult(result);
+      } catch (e) {
+        if (e instanceof TwiningError) {
+          return toolError(e.message, e.code);
+        }
+        return toolError(
+          e instanceof Error ? e.message : "Unknown error",
+          "INTERNAL_ERROR",
+        );
+      }
+    },
+  );
+
   // twining_dismiss — Remove specific blackboard entries by ID (full surface only)
   if (options.fullSurface) server.registerTool(
     "twining_dismiss",
     {
       description:
-        "Remove specific blackboard entries by ID. Use this to clean up false-positive warnings, resolved entries, or other noise. Returns which IDs were dismissed and which were not found.",
+        "Remove blackboard entries by ID — for noise only: false positives, duplicates, test debris. Dismissal DELETES the live entry (a tombstone with your reason is appended to .twining/archive/). For substantive items that were handled, use twining_resolve instead — it preserves the record while closing the open lane.",
       inputSchema: {
         ids: z
           .array(z.string())
@@ -244,12 +328,29 @@ export function registerBlackboardTools(
         reason: z
           .string()
           .optional()
-          .describe("Why these entries are being dismissed (logged but not stored)"),
+          .describe("Why these entries are being dismissed — stored on the archive tombstone"),
+        agent_id: z
+          .string()
+          .optional()
+          .describe("Identifier for the dismissing agent — stored on the tombstone"),
       },
     },
     async (args) => {
       try {
+        // Capture doomed entries BEFORE the delete so the tombstone can
+        // carry the full record. limit: 0 disables the read cap.
+        const { entries } = await engine.read({ limit: 0 });
+        const idSet = new Set(args.ids);
+        const doomed = entries.filter((e) => idSet.has(e.id));
+
         const result = await engine.dismiss(args.ids);
+
+        const dismissedSet = new Set(result.dismissed);
+        appendDismissalTombstones(
+          twiningDir,
+          doomed.filter((e) => dismissedSet.has(e.id)),
+          { reason: args.reason, dismissed_by: args.agent_id },
+        );
         return toolResult(result);
       } catch (e) {
         if (e instanceof TwiningError) {

@@ -3,8 +3,8 @@
   "id": "01KY796150QNG025F82XRT2HXX",
   "name": "src/engine/resolution.ts",
   "properties": {
-    "scope": "src/"
+    "scope": "src/,src/storage/"
   },
   "type": "file",
-  "updated_at": "2026-07-23T10:43:47.810Z"
+  "updated_at": "2026-08-06T22:21:50.482Z"
 }

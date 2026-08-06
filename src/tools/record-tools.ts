@@ -299,6 +299,12 @@ export function registerRecordTools(
           .describe(
             "ID of a prior decision that your work replaces or invalidates",
           ),
+        resolves: z
+          .array(z.string())
+          .optional()
+          .describe(
+            "Blackboard entry IDs (needs/questions/warnings from twining_assemble or twining_triage) that this session's work handled — they are marked resolved and leave the open lane, and the status post back-references them",
+          ),
         reversible: z
           .boolean()
           .optional()
@@ -346,9 +352,23 @@ export function registerRecordTools(
           // tell what the session did from what it found (field defect D1).
           tags: ["session-record"],
           origin: "narration",
+          // Back-reference handled items so even pre-D2 consumers of the
+          // relates_to predicate see them as resolved.
+          ...(args.resolves?.length ? { relates_to: args.resolves } : {}),
           scope,
           agent_id: agentId,
         });
+
+        // Explicit resolution (D2): survives the status post being archived,
+        // and records who closed the item. Failures surface in the response
+        // rather than failing the record.
+        let resolveResult: { resolved: string[]; not_found: string[] } | undefined;
+        if (args.resolves?.length) {
+          resolveResult = await blackboardEngine.resolve(args.resolves, {
+            agent_id: agentId,
+            note: `Resolved by session record: ${statusSummary}`,
+          });
+        }
 
         // 2. Create decision records — each item is either NL (string) or structured object.
         const decisionErrors: string[] = [];
@@ -462,6 +482,16 @@ export function registerRecordTools(
         };
         if (decisionErrors.length > 0) response.decision_errors = decisionErrors;
         if (findingErrors.length > 0) response.finding_errors = findingErrors;
+        if (resolveResult) {
+          response.resolved = resolveResult.resolved;
+          if (resolveResult.not_found.length > 0) {
+            response.resolve_not_found = resolveResult.not_found;
+            parts.push(
+              `${resolveResult.not_found.length} resolve id(s) not found`,
+            );
+            response.message = parts.join(" + ");
+          }
+        }
         if (droppedDependsOnIds.size > 0)
           response.dropped_depends_on = [...droppedDependsOnIds];
         if (summaryTruncated) {

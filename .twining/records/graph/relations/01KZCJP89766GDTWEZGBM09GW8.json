@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-06T22:21:50.247Z",
+  "id": "01KZCJP89766GDTWEZGBM09GW8",
+  "properties": {
+    "decision_summary": "Chose to keep lifecycle status inside the entry JSON blob over adding a sqlite status column"
+  },
+  "source": "01KJD8KGK434DH6PX2BNXW4W71",
+  "target": "01KZCJP8907HCSSN51CES30XYR",
+  "type": "decided_by"
+}

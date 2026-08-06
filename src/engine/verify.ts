@@ -231,6 +231,11 @@ export class VerifyEngine {
     const resolvedIds = new Set<string>();
 
     for (const entry of allEntries) {
+      // Persisted lifecycle (D2): an explicit resolve is the strongest
+      // resolution signal and survives its resolver being archived.
+      if (entry.status === "resolved") {
+        resolvedIds.add(entry.id);
+      }
       if (entry.relates_to) {
         for (const refId of entry.relates_to) {
           if (entry.entry_type === "answer" || entry.entry_type === "finding") {

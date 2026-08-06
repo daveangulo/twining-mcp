@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-06T22:21:50.240Z",
+  "id": "01KZCJP8907HCSSN51CES30XYR",
+  "name": "01KZCJP87G6PN4D6KN8YZX44SP",
+  "properties": {
+    "scope": "src/storage/",
+    "summary": "Chose to keep lifecycle status inside the entry JSON blob over adding a sqlite status column"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-06T22:21:50.240Z"
+}

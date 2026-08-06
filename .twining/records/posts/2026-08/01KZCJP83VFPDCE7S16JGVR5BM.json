@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Stage 2 (D2): persisted blackboard lifecycle — status resolved with audit fields in both backends, twining_resolve tool, twining_record resolves[], union resolution predicate, dismiss tombstones with reason\nDecisions: Chose to register twining_resolve on the DEFAULT surface rather than mirroring its sibling twining_dismiss's full-surface gating — the field defect was precisely that the everyday surface offered no exit from the open lane, and resolve is constructive (preserves the record) while dismiss is destructive; this deviates from the plan's mirror-sibling assumption deliberately; Chose to keep lifecycle status inside the entry JSON blob over adding a sqlite status column — no SQLITE_SCHEMA_VERSION bump, no downgrade hazard, and the open lane is already computed in JS over full entries; Chose first-resolve-wins idempotency for re-resolves — the audit stamp records the actual resolution event; overwriting it on repeat calls would falsify history; Chose to implement dismissal tombstones in the tool handler appending to the archive jsonl rather than a soft-delete status — zero read-path changes, the archiver's internal dismiss stays tombstone-free, and the compactor's exact-signature matching preserves tombstone lines\nFindings: Explicitly resolved needs/warnings now DRAIN via the archiver — the #40 exemption no longer shields them once resolved; intended behavior change, must be called out in CHANGELOG and field memo; twining_record with resolves[] both back-references (old predicate) and explicitly resolves (new predicate) — double coverage so pre-2.7 consumers of relates_to still agree",
+  "entry_type": "status",
+  "id": "01KZCJP83VFPDCE7S16JGVR5BM",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3ddb2e24255a8eaf38632ce72cd972600d88ab3d",
+    "recorded_at": "2026-08-06T22:21:50.056Z"
+  },
+  "scope": "src/storage/",
+  "summary": "Stage 2 (D2): persisted blackboard lifecycle — status resolved with audit fields in both backends, twining_resolve tool, twining_record resolves[], union resolution predicate, dismiss tombstones wi…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-06T22:21:50.075Z"
+}

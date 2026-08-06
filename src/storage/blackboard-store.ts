@@ -157,4 +157,61 @@ export class BlackboardStore implements IBlackboardStore {
       await release();
     }
   }
+
+  /** Mark entries resolved in place. Rewrites matched lines, preserves the rest. */
+  async resolve(
+    ids: string[],
+    opts: { by?: string; note?: string },
+  ): Promise<{ resolved: string[]; not_found: string[] }> {
+    const idSet = new Set(ids);
+    const bbPath = this.blackboardPath;
+
+    if (!fs.existsSync(bbPath)) {
+      return { resolved: [], not_found: ids };
+    }
+
+    const lockfileModule = await import("proper-lockfile");
+    const release = await lockfileModule.default.lock(bbPath, LOCK_OPTIONS);
+
+    try {
+      const content = fs.readFileSync(bbPath, "utf-8");
+      const lines = content.split("\n").filter((line) => line.trim().length > 0);
+      const out: string[] = [];
+      const resolved: string[] = [];
+      let mutated = false;
+
+      for (const line of lines) {
+        try {
+          const entry = JSON.parse(line) as BlackboardEntry;
+          if (idSet.has(entry.id)) {
+            resolved.push(entry.id);
+            if (entry.status !== "resolved") {
+              // First resolve wins — the audit stamp is never overwritten.
+              entry.status = "resolved";
+              entry.resolved_at = new Date().toISOString();
+              if (opts.by) entry.resolved_by = opts.by;
+              if (opts.note) entry.resolution_note = opts.note;
+              out.push(JSON.stringify(entry));
+              mutated = true;
+              continue;
+            }
+          }
+          out.push(line);
+        } catch {
+          out.push(line); // Preserve unparseable lines
+        }
+      }
+
+      const not_found = ids.filter((id) => !resolved.includes(id));
+
+      if (mutated) {
+        atomicWriteFileSync(bbPath, out.join("\n") + "\n");
+        this.cachedEntries = null;
+      }
+
+      return { resolved, not_found };
+    } finally {
+      await release();
+    }
+  }
 }

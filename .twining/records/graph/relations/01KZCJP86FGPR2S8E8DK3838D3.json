@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-06T22:21:50.159Z",
+  "id": "01KZCJP86FGPR2S8E8DK3838D3",
+  "properties": {
+    "decision_summary": "Chose to register twining_resolve on the DEFAULT surface rather than mirroring its sibling twining_dismiss's full-surface gating"
+  },
+  "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+  "target": "01KZCJP86EDTQWRNXQS67P09QS",
+  "type": "decided_by"
+}

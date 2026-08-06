@@ -44,6 +44,20 @@ export interface BlackboardEntry {
   embedding_id?: string;
   /** Provenance of the entry relative to its writing session. */
   origin?: EntryOrigin;
+  /**
+   * Persisted lifecycle (D2). ABSENT means open (every record written
+   * before this field existed is open, not unknown — openness was the only
+   * state). "resolved" closes the entry out of the open triage lane while
+   * preserving the record; contrast twining_dismiss, which removes it.
+   * The relates_to back-reference mechanism (resolution.ts) remains valid —
+   * computeResolvedIds unions both — but explicit status survives its
+   * resolver being archived or dismissed, which the back-reference does not.
+   */
+  status?: "open" | "resolved";
+  /** ISO timestamp of the first resolve; never overwritten by re-resolves. */
+  resolved_at?: string;
+  resolved_by?: string;
+  resolution_note?: string;
   /** Branch + commit at time of recording; used for staleness detection. */
   provenance?: Provenance;
 }

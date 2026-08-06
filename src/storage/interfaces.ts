@@ -44,6 +44,15 @@ export interface IBlackboardStore {
   dismiss(
     ids: string[],
   ): Promise<{ dismissed: string[]; not_found: string[] }>;
+  /**
+   * Mark entries resolved in place (D2). Idempotent: an already-resolved
+   * entry counts as resolved but keeps its original audit stamp. Unknown
+   * ids land in not_found.
+   */
+  resolve(
+    ids: string[],
+    opts: { by?: string; note?: string },
+  ): Promise<{ resolved: string[]; not_found: string[] }>;
 }
 
 /** Decision persistence (decisions/<id>.json + index.json today). */

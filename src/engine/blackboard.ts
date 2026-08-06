@@ -250,4 +250,24 @@ export class BlackboardEngine {
 
     return result;
   }
+
+  /**
+   * Mark entries resolved (D2) — the record-preserving exit from the open
+   * lane. Embeddings are untouched: the entry's text is unchanged and
+   * resolved entries remain searchable history.
+   */
+  async resolve(
+    ids: string[],
+    opts?: { agent_id?: string; note?: string },
+  ): Promise<{ resolved: string[]; not_found: string[] }> {
+    if (!ids || ids.length === 0) {
+      throw new TwiningError("At least one entry ID is required", "INVALID_INPUT");
+    }
+    const result = await this.store.resolve(ids, {
+      by: opts?.agent_id,
+      note: opts?.note,
+    });
+    this.touchAgent(opts?.agent_id);
+    return result;
+  }
 }

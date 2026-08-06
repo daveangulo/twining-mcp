@@ -166,6 +166,23 @@ class ExportingBlackboardStore implements IBlackboardStore {
   read: IBlackboardStore["read"] = (filters) => this.inner.read(filters);
   recent: IBlackboardStore["recent"] = (n, t) => this.inner.recent(n, t);
 
+  async resolve(
+    ids: string[],
+    opts: { by?: string; note?: string },
+  ): Promise<{ resolved: string[]; not_found: string[] }> {
+    const result = await this.inner.resolve(ids, opts);
+    if (result.resolved.length > 0) {
+      // Re-export the mutated records — same-file rewrite, mirroring how
+      // decision updateStatus re-exports.
+      const resolvedSet = new Set(result.resolved);
+      const { entries } = await this.inner.read();
+      for (const entry of entries) {
+        if (resolvedSet.has(entry.id)) this.exporter.post(entry);
+      }
+    }
+    return result;
+  }
+
   async dismiss(
     ids: string[],
   ): Promise<{ dismissed: string[]; not_found: string[] }> {

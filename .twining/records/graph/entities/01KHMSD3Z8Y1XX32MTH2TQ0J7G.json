@@ -5,8 +5,8 @@
   "properties": {
     "description": "JSONL-backed blackboard persistence",
     "layer": "storage",
-    "scope": "src/tools/blackboard-tools.ts"
+    "scope": "src/storage/,src/tools/blackboard-tools.ts"
   },
   "type": "file",
-  "updated_at": "2026-02-26T15:20:45.409Z"
+  "updated_at": "2026-08-06T22:21:50.479Z"
 }

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-06T22:21:50.479Z",
+  "id": "01KZCJP8GFT66ZDQKVTS2568BY",
+  "properties": {
+    "decision_summary": "Chose to implement dismissal tombstones in the tool handler appending to the archive jsonl rather than a soft-delete status"
+  },
+  "source": "01KY87YQ5TPSFXYW0T6TYGK85P",
+  "target": "01KZCJP8GDD8GRZG1D8E463TVM",
+  "type": "decided_by"
+}

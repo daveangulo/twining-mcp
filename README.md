@@ -280,13 +280,14 @@ Built to stay usable at scale: lists are virtualized with live facet counts, the
 
 ### Core Tools (always available)
 
-The full default surface is these 13 tools. Everything else needs `full_surface: true` — if a tool is not on this list, assume you cannot call it until you have opted in.
+The full default surface is these 14 tools. Everything else needs `full_surface: true` — if a tool is not on this list, assume you cannot call it until you have opted in.
 
 | Tool | What It Does |
 |------|-------------|
 | `twining_assemble` | **Gate 1:** Build tailored context for a task — decisions, warnings, handoffs, within a token budget |
 | `twining_record` | **Gate 2:** Record what you did and any choices made — natural language in, structured decisions out |
 | `twining_post` | Share findings, warnings, needs, or status during work. `summary` is capped at 200 characters and longer summaries are **rejected** — put the substance in `detail` |
+| `twining_resolve` | Mark open needs/questions/warnings handled. Persists `status: "resolved"` with resolver identity and note; the record stays on the board as searchable history. The everyday exit from the open lane (dismissal is for noise only) |
 | `twining_why` | Check what decisions constrain a file before modifying it |
 | `twining_status` | Health check — entry counts, decision counts, actionable warnings |
 | `twining_housekeeping` | Periodic maintenance — archive, deduplicate, surface stale decisions (dry-run by default). Optional `staleness_review`, `merge_sweep`, and `compact_archives` flags |

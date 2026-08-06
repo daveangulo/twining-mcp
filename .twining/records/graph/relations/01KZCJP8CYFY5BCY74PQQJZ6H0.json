@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-06T22:21:50.366Z",
+  "id": "01KZCJP8CYFY5BCY74PQQJZ6H0",
+  "properties": {
+    "decision_summary": "Chose first-resolve-wins idempotency for re-resolves"
+  },
+  "source": "01KJD8KGK434DH6PX2BNXW4W71",
+  "target": "01KZCJP8CQ7AFHB1NMYHB04GEA",
+  "type": "decided_by"
+}

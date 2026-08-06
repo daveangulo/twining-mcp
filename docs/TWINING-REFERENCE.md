@@ -11,6 +11,7 @@ Full reference for all Twining MCP tools. See `CLAUDE.md` for mandatory workflow
 | `twining_assemble` | Gate 1 | Build tailored context — decisions, warnings, handoffs, within a token budget |
 | `twining_record` | Gate 2 | Record what you did and choices made — natural language parsed into structured decisions |
 | `twining_post` | During work | Share findings, warnings, needs, or status updates |
+| `twining_resolve` | During work | Mark open needs/questions/warnings handled — persists `status: "resolved"` with resolver identity and note; the record stays on the board as history. The everyday exit from the open lane (dismiss is for noise only) |
 | `twining_why` | Gate 1 | Check what decisions constrain a file before modifying it |
 | `twining_housekeeping` | Maintenance | Archive, deduplicate, surface stale state (dry-run by default). Add `staleness_review: true` for orphan detection (missing scope/files/branch) or `merge_sweep: true` to flag entries from branches deleted since the last run |
 | `twining_archive_stale` | Maintenance | Archive caller-confirmed IDs from `staleness_review` or `merge_sweep`. Decisions move to `archived` status; blackboard entries are dismissed. Provenance preserved |
@@ -22,7 +23,7 @@ Full reference for all Twining MCP tools. See `CLAUDE.md` for mandatory workflow
 | `twining_graph_query` | Optional | Search graph entities by name or property |
 | `twining_prune_graph` | Maintenance | Remove stale graph nodes |
 
-That is the complete default surface — 13 tools. **If a tool is not in this table, it does not exist unless the project sets `tools.full_surface: true`.** Notably `twining_decide`, `twining_link_commit`, `twining_verify`, `twining_dismiss`, and `twining_handoff` are *not* available by default: use `twining_record` instead, whose `decisions` array writes to the same store and which also accepts `commit_hash`, `supersedes`, and `depends_on`.
+That is the complete default surface — 14 tools. **If a tool is not in this table, it does not exist unless the project sets `tools.full_surface: true`.** Notably `twining_decide`, `twining_link_commit`, `twining_verify`, `twining_dismiss`, and `twining_handoff` are *not* available by default: use `twining_record` instead, whose `decisions` array writes to the same store and which also accepts `commit_hash`, `supersedes`, and `depends_on`.
 
 ## Extended Tools (require `full_surface: true`)
 
@@ -39,7 +40,7 @@ tools:
 | `twining_read` | Read entries with filters (type, scope, tags, since, limit) |
 | `twining_query` | Semantic search across entries (embeddings with keyword fallback) |
 | `twining_recent` | Latest N entries, most recent first |
-| `twining_dismiss` | Remove resolved or false-positive entries |
+| `twining_dismiss` | Remove noise entries (false positives, duplicates, test debris). Deletes the live row; a tombstone with the reason is appended to `.twining/archive/`. Handled items should use the default-surface resolve tool instead |
 
 ### Decisions (structured rationale)
 | Tool | Purpose |

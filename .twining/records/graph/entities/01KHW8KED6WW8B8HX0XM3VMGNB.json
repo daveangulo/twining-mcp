@@ -3,8 +3,8 @@
   "id": "01KHW8KED6WW8B8HX0XM3VMGNB",
   "name": "src/engine/verify.ts",
   "properties": {
-    "scope": "src/engine/verify.ts"
+    "scope": "src/engine/verify.ts,src/storage/"
   },
   "type": "file",
-  "updated_at": "2026-02-20T15:32:38.273Z"
+  "updated_at": "2026-08-06T22:21:50.483Z"
 }

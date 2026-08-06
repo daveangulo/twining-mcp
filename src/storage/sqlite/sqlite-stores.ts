@@ -138,6 +138,30 @@ export class SqliteBlackboardStore implements IBlackboardStore {
     const not_found = ids.filter((id) => !dismissed.includes(id));
     return { dismissed, not_found };
   }
+
+  async resolve(
+    ids: string[],
+    opts: { by?: string; note?: string },
+  ): Promise<{ resolved: string[]; not_found: string[] }> {
+    assertWritable();
+    const resolved: string[] = [];
+    const select = this.db.prepare("SELECT data FROM blackboard WHERE id = ?");
+    const update = this.db.prepare("UPDATE blackboard SET data = ? WHERE id = ?");
+    for (const id of ids) {
+      const row = select.get(id);
+      if (!row) continue;
+      const entry = JSON.parse(row.data as string) as BlackboardEntry;
+      resolved.push(id);
+      if (entry.status === "resolved") continue; // first resolve wins
+      entry.status = "resolved";
+      entry.resolved_at = new Date().toISOString();
+      if (opts.by) entry.resolved_by = opts.by;
+      if (opts.note) entry.resolution_note = opts.note;
+      update.run(JSON.stringify(entry), id);
+    }
+    const not_found = ids.filter((id) => !resolved.includes(id));
+    return { resolved, not_found };
+  }
 }
 
 export class SqliteDecisionStore implements IDecisionStore {
