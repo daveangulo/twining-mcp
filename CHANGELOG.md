@@ -2,6 +2,85 @@
 
 All notable changes to Twining MCP are documented here.
 
+## [2.7.0] - 2026-08-06
+
+Field-defect release. A cross-repo handoff from a 3,052-decision field
+deployment reported five defects in the coordination lane, staleness checker,
+and triage enumeration (D1–D5); all five were verified at HEAD and fixed.
+Details: `docs/field-responses/2026-08-06-handoff-response.md`.
+
+### Added
+- **Persisted blackboard lifecycle (D2).** Entries can now carry
+  `status: "resolved"` with `resolved_at`/`resolved_by`/`resolution_note`;
+  absent means open, so every existing record is unaffected. The new
+  **`twining_resolve`** tool ships on the **default surface** — the everyday,
+  record-preserving exit from the open lane that was missing: the only
+  discoverable exit used to be `twining_dismiss`, which hard-deletes, so agents
+  correctly declined to use it on substantive items and the open lane grew
+  monotonically (177→320 in three days in the field). The resolution predicate
+  is now the union of explicit status and the existing `relates_to`
+  back-reference, honored uniformly by triage, assemble, the archiver, and the
+  auto-archive trigger — and unlike a back-reference, explicit status survives
+  its resolver being archived. `twining_record` gains **`resolves: [ids]`** to
+  close items at the natural "I handled this" moment.
+- **`origin: "narration" | "discovery"` on blackboard entries (D1).**
+  `twining_record` stamped the identical `session-record` tag on its status
+  post and its findings fan-out, leaving consumers one tag that conflated what
+  a session *did* with what it *found* — the field measured an 89% false noise
+  floor built on that inference (real: ~12%). Findings now carry tag
+  `session-finding` + `origin: "discovery"`; the status post keeps
+  `session-record` + `origin: "narration"`. Absent origin means unknown.
+- **`open_after` keyset cursor on `twining_triage` (D5).** The open lane is
+  unbounded by design but was capped at 200 per delivery with no paging — the
+  field's 320-item lane left the 120 *newest* items unreachable. A truncated
+  open bucket now returns `open_cursor`; pass it back as `open_after` to page.
+  Keyset on the contractual `(timestamp, id)` sort key, so paging is skip-free
+  under concurrent lane drain. TRIAGE-SPEC §11.7's revisit trigger fired.
+- **Count-based archive retention (D4).** `archive.retain_recent` (default 200)
+  keeps the newest K non-exempt entries on the board through any sweep,
+  including the 500-entry auto-archive. Count-based, not age-based — the #35
+  outage proved an age cutoff cannot bound a same-hour burst. `twining_archive`
+  gains an explicit `retain` parameter (legacy calls unchanged).
+- **`twining_unarchive` (D3)** — restores archived decisions to `active`; the
+  undo that made a bad staleness sweep practically irreversible before.
+- **`archived_excluded_count` on assemble and why (D3)** — a scope whose
+  decisions were archived away now reads "N archived excluded", never the
+  indistinguishable "no decisions exist". The assemble briefing names the
+  recovery tool when the count is non-zero.
+
+### Fixed
+- **Staleness scoring produced false positives at a uniform 1.0 (D3).** All
+  three signals were structurally wrong in the field (584 candidates, every
+  sampled one false): compound scopes (`"specs/ + rfcs/"`, `"spec.md §2.7"`)
+  were stat'd as one filesystem path; git-mv'd files read as deleted; normal
+  post-merge branch deletion scored as content rot. Scopes are now split and
+  probed per segment; `affected_files` consult a one-shot `git ls-files`
+  basename index (moved ≠ gone); scores are capped (`scope_path_missing` 0.8,
+  `branch_gone` 0.4, file proportion ≤0.95) and combine by noisy-or, so **no
+  heuristic — alone or combined — can emit 1.0**. `twining_archive_stale` warns
+  on batches above max(20, 5% of live decisions).
+- **`twining_dismiss` silently discarded its `reason`** (documented "logged but
+  not stored"; it was neither). Dismissals now append a tombstone with the
+  entry, reason, and dismisser to `.twining/archive/`.
+- **Auto-archive trigger and sweep could drift (#35 class).** The trigger count
+  now calls the *same* `partitionArchivable` function the sweep executes, so a
+  counted-but-never-archived class — the mechanism of the original feedback
+  loop — is structurally impossible.
+
+### Changed
+- **`twining_housekeeping`'s archive pass is now opt-in (`archive: true`,
+  previously default-on) (D4).** The pass takes no age cutoff, so
+  `housekeeping({execute: true})` archived the *entire* live board as a side
+  effect of any maintenance call — the safe `compact_archives` repair and the
+  destructive sweep shared one flag. The 2.6.0 `archive: false` workaround is
+  obsolete; repairs now run safely with plain `execute: true`.
+- **Unresolved questions join the archive exemption (#40 widened, D4).** Triage
+  counts open questions as obligations, but the archiver swept them by age —
+  the field's 371-archived/319-kept split. With D2, *resolved* questions drain.
+- **Explicitly resolved needs/warnings are archivable (D2).** The #40 exemption
+  protects *open* obligations; a resolved item is handled history and now
+  drains on sweeps.
+
 ## Plugin [1.24.1] - 2026-08-04
 
 ### Fixed

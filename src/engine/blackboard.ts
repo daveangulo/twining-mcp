@@ -11,7 +11,7 @@ import type { Embedder } from "../embeddings/embedder.js";
 import { blackboardEmbedText, embedContentHash } from "../embeddings/embed-text.js";
 import type { SearchEngine, BlackboardSearchResult } from "../embeddings/search.js";
 import type { Archiver } from "./archiver.js";
-import { partitionArchivable } from "./archiver.js";
+import { NO_AGE_CUTOFF, partitionArchivable } from "./archiver.js";
 import { computeResolvedIds } from "./resolution.js";
 import type { GraphAutoPopulator } from "./graph-auto-populator.js";
 import type { IAgentStore, IBlackboardStore, IIndexManager } from "../storage/interfaces.js";
@@ -173,12 +173,19 @@ export class BlackboardEngine {
       const { entries } = await this.store.read();
       const resolvedIds = computeResolvedIds(entries);
       const { to_archive } = partitionArchivable(entries, resolvedIds, {
-        before: "9999-12-31T23:59:59.999Z",
+        before: NO_AGE_CUTOFF,
         retain: this.archiveRetain,
       });
       if (to_archive.length >= this.archiveThreshold) {
+        // Same NO_AGE_CUTOFF as the count above — a cutoff=now sweep would
+        // exclude future-stamped entries the count included, re-firing on
+        // every post while archiving nothing (clock-skew #35 variant).
         this.archiver
-          .archive({ summarize: true, retain: this.archiveRetain })
+          .archive({
+            summarize: true,
+            retain: this.archiveRetain,
+            before: NO_AGE_CUTOFF,
+          })
           .catch((err) => {
             console.error("[twining] Auto-archive failed (non-fatal):", err);
           });

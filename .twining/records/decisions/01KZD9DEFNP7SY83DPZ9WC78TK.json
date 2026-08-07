@@ -1,0 +1,35 @@
+{
+  "affected_files": [
+    "src/tools/housekeeping-tools.ts",
+    "src/tools/blackboard-tools.ts",
+    "src/tools/lifecycle-tools.ts",
+    "src/engine/archiver.ts",
+    "src/engine/blackboard.ts",
+    "src/server.ts",
+    "CHANGELOG.md",
+    "docs/field-responses/2026-08-06-handoff-response.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Adversarial review round 1: three confirmed defects in the D1-D5 fixes, all fixed — archive_stale now tombstones dismissed blackboard entries and states honestly that unarchive restores decisions only; auto-archive trigger and fired sweep share NO_AGE_CUTOFF (clock-skew #35 variant closed); twining_status needs_archiving computed from the archive partition instead of the raw count",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01KZD9DEFNP7SY83DPZ9WC78TK",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "c4bcba989fba2f5e2bab44ee5354d976d8a58c6c",
+    "recorded_at": "2026-08-07T04:58:58.914Z"
+  },
+  "rationale": "future-stamped entries (git-synced fast-clock stores, VM clock resets) were counted but never archived, re-firing a no-op sweep on every post; the verifier reproduced this executable before the fix",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/tools/",
+  "status": "active",
+  "summary": "Chose to pass NO_AGE_CUTOFF to the trigger-fired sweep so trigger and sweep have literally identical partition inputs",
+  "timestamp": "2026-08-07T04:58:58.933Z"
+}

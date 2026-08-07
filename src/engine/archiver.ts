@@ -12,6 +12,16 @@ import type { BlackboardEngine } from "./blackboard.js";
 import type { BlackboardEntry } from "../utils/types.js";
 import type { IBlackboardStore, IIndexManager } from "../storage/interfaces.js";
 
+/**
+ * Sentinel cutoff meaning "no age filter". The auto-archive trigger and the
+ * sweep it fires MUST both use it: if the trigger counts future-stamped
+ * entries (clock rolled back, git-synced store authored on a faster clock)
+ * but the sweep's cutoff=now excludes them, the trigger re-fires on every
+ * post while archiving nothing — the #35 counted-but-never-archived loop
+ * through the clock-skew door.
+ */
+export const NO_AGE_CUTOFF = "9999-12-31T23:59:59.999Z";
+
 export interface ArchivePartitionOptions {
   before?: string;
   keep_decisions?: boolean;

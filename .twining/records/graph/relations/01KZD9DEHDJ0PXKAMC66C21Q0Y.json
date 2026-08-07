@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-07T04:58:58.989Z",
+  "id": "01KZD9DEHDJ0PXKAMC66C21Q0Y",
+  "properties": {
+    "decision_summary": "Chose to pass NO_AGE_CUTOFF to the trigger-fired sweep so trigger and sweep have literally identical partition inputs"
+  },
+  "source": "01KHMSDPPSS0QE5B5RT17WGBN1",
+  "target": "01KZD9DEHATKR67E4VN70AY70G",
+  "type": "decided_by"
+}

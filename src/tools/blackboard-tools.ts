@@ -20,9 +20,11 @@ import { ensureDir } from "../storage/file-store.js";
  * deletes the live row in both backends; the tombstone preserves the entry
  * plus who dismissed it and why, so "handled as noise" stays auditable.
  * The archive compactor only strips its own exact junk signature, so
- * tombstone lines are preserved.
+ * tombstone lines are preserved. Exported for every dismissal path — a
+ * dismissal without a tombstone is unrecoverable data loss (review finding:
+ * archive_stale's blackboard branch lacked one).
  */
-function appendDismissalTombstones(
+export function appendDismissalTombstones(
   twiningDir: string,
   entries: BlackboardEntry[],
   meta: { reason?: string; dismissed_by?: string },

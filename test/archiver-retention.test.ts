@@ -245,3 +245,46 @@ describe("trigger/sweep mirror + housekeeping defaults", () => {
     ); // newest 2 retained
   });
 });
+
+describe("clock-skew auto-archive (review fix: trigger and fired sweep share the no-age-cutoff)", () => {
+  it("future-stamped entries that arm the trigger are actually archived by the fired sweep — no permanent re-fire", async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "twining-clockskew-"));
+    try {
+      fs.writeFileSync(path.join(dir, "blackboard.jsonl"), "");
+      fs.mkdirSync(path.join(dir, "decisions"), { recursive: true });
+      fs.writeFileSync(path.join(dir, "decisions", "index.json"), "[]");
+
+      // Seed FUTURE-stamped findings (git-synced store from a fast clock, or
+      // local RTC rolled back) at the trigger threshold.
+      const future = new Date(Date.now() + 3_600_000).toISOString();
+      const lines = Array.from({ length: 5 }, (_, i) =>
+        JSON.stringify(entry(`future-${i}`, "finding", future)),
+      );
+      fs.writeFileSync(path.join(dir, "blackboard.jsonl"), lines.join("\n") + "\n");
+
+      const store = new BlackboardStore(dir);
+      const engine = new BlackboardEngine(store);
+      const archiver = new Archiver(dir, store, engine, null);
+      engine.setArchiver(archiver, {
+        archive: {
+          auto_archive_on_commit: true,
+          auto_archive_on_context_switch: true,
+          max_blackboard_entries_before_archive: 5,
+          retain_recent: 0,
+        },
+      } as never);
+
+      await engine.post({ entry_type: "finding", summary: "the arming post" });
+      // Fire-and-forget sweep — wait for it to settle.
+      await new Promise((r) => setTimeout(r, 100));
+
+      const { entries } = await store.read();
+      const futureLeft = entries.filter((e) => e.id.startsWith("future-"));
+      // Pre-fix: cutoff=now excluded all 5 future entries; the board never
+      // shrank and every subsequent post re-fired a no-op sweep.
+      expect(futureLeft).toHaveLength(0);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});

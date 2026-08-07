@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Stage 6 in progress: CHANGELOG 2.7.0 entry written, field response memo authored at docs/field-responses/2026-08-06-handoff-response.md (all five defects accepted+fixed, interim 2.6.0 guidance, upgrade behavior changes); adversarial review workflow over 3106deb..HEAD launched and running\nFindings: need: adversarial review workflow wf_f385ffc8-54b still running — next step is triage of confirmed findings, then live smoke against a scratch store with rebuilt dist (watch the npm-link staleness trap), then npm version 2.7.0 + tag push + plugin bump; Field memo commits the project to the claim that pre-2.7 records read as origin-unknown and that tag-filtered session-record queries stop matching new findings — keep those claims true through any review-driven changes",
+  "entry_type": "status",
+  "id": "01KZCVH78GS4SNS54ZAWC5XXE8",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "c4bcba989fba2f5e2bab44ee5354d976d8a58c6c",
+    "recorded_at": "2026-08-07T00:56:22.525Z"
+  },
+  "scope": "docs/",
+  "summary": "Stage 6 in progress: CHANGELOG 2.7.0 entry written, field response memo authored at docs/field-responses/2026-08-06-handoff-response.md (all five defects accepted+fixed, interim 2.6.0 guidance, upg…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-07T00:56:22.544Z"
+}

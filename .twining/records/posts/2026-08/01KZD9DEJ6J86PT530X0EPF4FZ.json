@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: 4 of 5 review finder dimensions stalled (machine contention window, 6 retries each) — only the d4 lens ran; resuming the workflow for d2-lifecycle, d5-cursor, d3-staleness, and cross-cutting coverage before release",
+  "entry_type": "warning",
+  "id": "01KZD9DEJ6J86PT530X0EPF4FZ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "c4bcba989fba2f5e2bab44ee5354d976d8a58c6c",
+    "recorded_at": "2026-08-07T04:58:58.994Z"
+  },
+  "scope": "src/tools/",
+  "summary": "4 of 5 review finder dimensions stalled (machine contention window, 6 retries each) — only the d4 lens ran; resuming the workflow for d2-lifecycle, d5-cursor, d3-staleness, and cross-cutting covera…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-07T04:58:59.014Z"
+}

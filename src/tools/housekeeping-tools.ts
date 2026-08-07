@@ -7,6 +7,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { HousekeepingEngine } from "../engine/housekeeping.js";
 import type { BlackboardEngine } from "../engine/blackboard.js";
 import { formatBytes } from "../engine/archive-compactor.js";
+import { appendDismissalTombstones } from "./blackboard-tools.js";
 import { toolResult, toolError } from "../utils/errors.js";
 import type { IDecisionStore } from "../storage/interfaces.js";
 
@@ -15,6 +16,7 @@ export function registerHousekeepingTools(
   housekeepingEngine: HousekeepingEngine,
   blackboardEngine: BlackboardEngine,
   decisionStore: IDecisionStore,
+  twiningDir: string,
 ): void {
   server.registerTool(
     "twining_housekeeping",
@@ -126,7 +128,7 @@ export function registerHousekeepingTools(
     "twining_archive_stale",
     {
       description:
-        "Archive a list of stale items by ID — typically the candidate IDs returned by twining_housekeeping with staleness_review: true. Decisions move to status \"archived\" (excluded from assemble/why). Blackboard entries are dismissed. Items remain on disk with provenance preserved.",
+        "Archive a list of stale items by ID — typically the candidate IDs returned by twining_housekeeping with staleness_review: true. Decisions move to status \"archived\" (excluded from assemble/why; reversible via twining_unarchive). Blackboard entries are DELETED from the live board, with a tombstone (full entry + reason) appended to .twining/archive/ — twining_unarchive does NOT restore them.",
       inputSchema: {
         ids: z
           .array(z.string())
@@ -164,7 +166,7 @@ export function registerHousekeepingTools(
         const batchWarningThreshold = Math.max(20, Math.ceil(activeCount * 0.05));
         const batchWarning =
           args.ids.length > batchWarningThreshold
-            ? `Archiving ${args.ids.length} items — more than ${batchWarningThreshold} (5% of ${activeCount} live decisions). Staleness signals are heuristics; verify a sample before trusting a batch this large. Archived decisions vanish from assemble/why; twining_unarchive reverses mistakes.`
+            ? `Archiving ${args.ids.length} items — more than ${batchWarningThreshold} (5% of ${activeCount} live decisions). Staleness signals are heuristics; verify a sample before trusting a batch this large. Archived DECISIONS vanish from assemble/why and are restorable via twining_unarchive; BLACKBOARD entries are deleted (tombstoned to .twining/archive/) and no tool restores them.`
             : undefined;
 
         const blackboardIds: string[] = [];
@@ -182,9 +184,28 @@ export function registerHousekeepingTools(
         }
 
         if (blackboardIds.length > 0) {
+          // Capture doomed entries BEFORE the delete: dismissal removes the
+          // live row in both backends and unlinks the exported record, so
+          // the tombstone is the only surviving copy (review finding — this
+          // path used to delete with no tombstone while the tool text
+          // claimed recoverability). limit: 0 disables the read cap.
+          const { entries } = await blackboardEngine.read({ limit: 0 });
+          const doomedSet = new Set(blackboardIds);
+          const doomed = entries.filter((e) => doomedSet.has(e.id));
+
           const dismissed = await blackboardEngine.dismiss(blackboardIds);
           archivedEntries.push(...dismissed.dismissed);
           notFound.push(...dismissed.not_found);
+
+          const dismissedSet = new Set(dismissed.dismissed);
+          appendDismissalTombstones(
+            twiningDir,
+            doomed.filter((e) => dismissedSet.has(e.id)),
+            {
+              reason: args.reason ?? "archived as stale via twining_archive_stale",
+              dismissed_by: "archive_stale",
+            },
+          );
         }
 
         if (archivedDecisions.length + archivedEntries.length > 0) {

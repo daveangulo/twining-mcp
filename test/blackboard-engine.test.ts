@@ -193,7 +193,7 @@ describe("BlackboardEngine auto-archive", () => {
     // Wait for fire-and-forget to settle
     await new Promise((r) => setTimeout(r, 50));
 
-    expect(mockArchiver.archive).toHaveBeenCalledWith({ summarize: true, retain: 0 });
+    expect(mockArchiver.archive).toHaveBeenCalledWith({ summarize: true, retain: 0, before: "9999-12-31T23:59:59.999Z" });
   });
 
   it("does not trigger archive when below threshold", async () => {
@@ -370,7 +370,7 @@ describe("BlackboardEngine auto-archive", () => {
 
     await new Promise((r) => setTimeout(r, 50));
 
-    expect(mockArchiver.archive).toHaveBeenCalledWith({ summarize: true, retain: 0 });
+    expect(mockArchiver.archive).toHaveBeenCalledWith({ summarize: true, retain: 0, before: "9999-12-31T23:59:59.999Z" });
   });
 });
 

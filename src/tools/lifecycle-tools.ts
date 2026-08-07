@@ -6,6 +6,8 @@ import path from "node:path";
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { Archiver } from "../engine/archiver.js";
+import { NO_AGE_CUTOFF, partitionArchivable } from "../engine/archiver.js";
+import { computeResolvedIds } from "../engine/resolution.js";
 import type { TwiningConfig } from "../utils/types.js";
 import {
   computeLiveness,
@@ -79,10 +81,23 @@ export function registerLifecycleTools(
           last_activity = lastDecisionActivity;
         }
 
-        // Archiving threshold
+        // Archiving threshold — computed from THE archive partition, not the
+        // raw entry count (review finding): exempt classes (decisions, open
+        // obligations) and the D4 retention floor never archive, so a raw
+        // count reads "archive recommended" permanently on a busy board and
+        // steers agents into pointless (or retention-bypassing) sweeps.
         const archiveThreshold =
           config.archive.max_blackboard_entries_before_archive;
-        const needs_archiving = blackboard_entries >= archiveThreshold;
+        const { entries: allBoardEntries } = await blackboardStore.read();
+        const archivableCount = partitionArchivable(
+          allBoardEntries,
+          computeResolvedIds(allBoardEntries),
+          {
+            before: NO_AGE_CUTOFF,
+            retain: config.archive.retain_recent ?? 0,
+          },
+        ).to_archive.length;
+        const needs_archiving = archivableCount >= archiveThreshold;
 
         // Actionable warnings
         const warnings: string[] = [];
@@ -104,7 +119,7 @@ export function registerLifecycleTools(
         // Archive needed
         if (needs_archiving) {
           warnings.push(
-            `Blackboard has ${blackboard_entries} entries, archive recommended (threshold: ${archiveThreshold})`,
+            `Blackboard has ${archivableCount} archivable entries (${blackboard_entries} total), archive recommended (threshold: ${archiveThreshold}) — twining_housekeeping({archive: true, execute: true})`,
           );
         }
 

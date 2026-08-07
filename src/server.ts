@@ -259,7 +259,7 @@ export function createServer(projectRoot: string): ServerContext {
   registerRecordTools(server, blackboardEngine, decisionEngine, projectRoot, twiningDir, {
     fullSurface,
   });
-  registerHousekeepingTools(server, housekeepingEngine, blackboardEngine, decisionStore);
+  registerHousekeepingTools(server, housekeepingEngine, blackboardEngine, decisionStore, twiningDir);
   registerBlackboardTools(server, blackboardEngine, twiningDir, {
     fullSurface,
     decisionEngine,

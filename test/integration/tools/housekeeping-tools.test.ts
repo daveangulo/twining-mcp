@@ -381,3 +381,76 @@ describe("twining_unarchive + archive visibility (D3 recovery)", () => {
     expect(small.warning).toBeUndefined();
   });
 });
+
+describe("archive_stale blackboard tombstones + status archivable count (review fixes)", () => {
+  it("archive_stale writes a dismissal tombstone for blackboard entries (they are deleted, not status-flipped)", async () => {
+    gitInit(tmpDir);
+    server = createTestServer(tmpDir);
+
+    const posted = parseToolResponse(
+      await callTool(server, "twining_post", {
+        entry_type: "finding",
+        summary: "stale finding to be archived",
+        scope: "src/",
+      }),
+    ) as { id: string };
+
+    await callTool(server, "twining_archive_stale", {
+      ids: [posted.id],
+      reason: "flagged by staleness review",
+    });
+
+    const archiveDir = path.join(tmpDir, ".twining", "archive");
+    const files = fs.existsSync(archiveDir) ? fs.readdirSync(archiveDir) : [];
+    expect(files.length).toBe(1);
+    const lines = fs
+      .readFileSync(path.join(archiveDir, files[0]!), "utf-8")
+      .trim()
+      .split("\n")
+      .map((l) => JSON.parse(l));
+    const tomb = lines.find((l) => l.id === posted.id);
+    expect(tomb).toBeDefined();
+    expect(tomb.summary).toBe("stale finding to be archived");
+    expect(tomb.dismissed.reason).toBe("flagged by staleness review");
+    expect(tomb.dismissed.dismissed_by).toBe("archive_stale");
+  });
+
+  it("twining_status computes needs_archiving from the archive partition, not the raw count", async () => {
+    gitInit(tmpDir);
+
+    // Seed BEFORE creating the server (auto-backend resolves at startup;
+    // legacy jsonl content pins the files backend). 6 OPEN needs against a
+    // threshold of 5 — the raw count exceeds it, but every entry is exempt
+    // from archiving, so recommending an archive would be a permanent false
+    // positive steering agents into pointless sweeps.
+    const twiningDir = path.join(tmpDir, ".twining");
+    fs.appendFileSync(
+      path.join(twiningDir, "config.yml"),
+      "archive:\n  max_blackboard_entries_before_archive: 5\n",
+    );
+    const lines = Array.from({ length: 6 }, (_, i) =>
+      JSON.stringify({
+        id: `need-${String(i).padStart(4, "0")}`,
+        timestamp: "2026-01-01T00:00:00.000Z",
+        agent_id: "main",
+        entry_type: "need",
+        tags: [],
+        scope: "src/",
+        summary: `open need ${i}`,
+        detail: "",
+      }),
+    );
+    fs.appendFileSync(
+      path.join(twiningDir, "blackboard.jsonl"),
+      lines.join("\n") + "\n",
+    );
+    server = createTestServer(tmpDir);
+
+    const status = parseToolResponse(
+      await callTool(server, "twining_status", {}),
+    ) as { blackboard_entries: number; needs_archiving: boolean; warnings: string[] };
+    expect(status.blackboard_entries).toBeGreaterThanOrEqual(6);
+    expect(status.needs_archiving).toBe(false);
+    expect(status.warnings.join(" ")).not.toContain("archive recommended");
+  });
+});
