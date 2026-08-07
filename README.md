@@ -280,7 +280,7 @@ Built to stay usable at scale: lists are virtualized with live facet counts, the
 
 ### Core Tools (always available)
 
-The full default surface is these 14 tools. Everything else needs `full_surface: true` — if a tool is not on this list, assume you cannot call it until you have opted in.
+The full default surface is these 15 tools. Everything else needs `full_surface: true` — if a tool is not on this list, assume you cannot call it until you have opted in.
 
 | Tool | What It Does |
 |------|-------------|
@@ -292,7 +292,8 @@ The full default surface is these 14 tools. Everything else needs `full_surface:
 | `twining_status` | Health check — entry counts, decision counts, actionable warnings |
 | `twining_housekeeping` | Periodic maintenance — archive, deduplicate, surface stale decisions (dry-run by default). Optional `staleness_review`, `merge_sweep`, and `compact_archives` flags |
 | `twining_archive` | Move blackboard entries to the archive tier. **Takes no cutoff by default — an argument-free call archives everything archivable**, so pass `before` unless you intend a full sweep |
-| `twining_archive_stale` | Archive caller-confirmed candidate IDs from staleness or merge-sweep review. Decisions move to `archived` status; entries are dismissed. Provenance preserved |
+| `twining_archive_stale` | Archive caller-confirmed candidate IDs from staleness or merge-sweep review. Decisions move to `archived` status; entries are dismissed. Provenance preserved. Warns on batches above 5% of live decisions |
+| `twining_unarchive` | Restore archived decisions to `active` — the undo for a bad archive sweep. Assemble/why report hidden archived decisions as `archived_excluded_count` |
 | `twining_add_entity` | Add a knowledge-graph entity |
 | `twining_add_relation` | Add a knowledge-graph relation |
 | `twining_neighbors` | Traverse the graph from an entity |

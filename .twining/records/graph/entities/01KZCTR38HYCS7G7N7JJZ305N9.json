@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-07T00:42:39.249Z",
+  "id": "01KZCTR38HYCS7G7N7JJZ305N9",
+  "name": "01KZCTR376NMC744KYJQN8YXYT",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Chose a git ls-files basename index over git log --follow for moved-file detection"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-07T00:42:39.249Z"
+}

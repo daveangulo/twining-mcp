@@ -50,6 +50,10 @@ export function registerContextTools(
           decisions_count: context.active_decisions.length,
           warnings_count: context.active_warnings.length,
           needs_count: context.open_needs.length,
+          // D3: distinguishes "decisions were archived away" from "none exist"
+          ...(context.archived_excluded_count
+            ? { archived_excluded_count: context.archived_excluded_count }
+            : {}),
           token_estimate: context.token_estimate,
         });
       } catch (e) {

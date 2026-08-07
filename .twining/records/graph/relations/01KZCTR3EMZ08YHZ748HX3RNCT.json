@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-07T00:42:39.444Z",
+  "id": "01KZCTR3EMZ08YHZ748HX3RNCT",
+  "properties": {
+    "decision_summary": "Chose to cap affected_files_missing at 0.95 rather than leaving proportion uncapped"
+  },
+  "source": "01KHMSDMRQ5HSX2W6SBDT3RND2",
+  "target": "01KZCTR3EFH0S4WVJANYD9ZT06",
+  "type": "decided_by"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-07T00:42:39.256Z",
+  "id": "01KZCTR38R5GSZYKVN7R9MGC7F",
+  "properties": {
+    "decision_summary": "Chose a git ls-files basename index over git log --follow for moved-file detection"
+  },
+  "source": "01KWX0NM7WTBT16746BTH2RP1D",
+  "target": "01KZCTR38HYCS7G7N7JJZ305N9",
+  "type": "decided_by"
+}

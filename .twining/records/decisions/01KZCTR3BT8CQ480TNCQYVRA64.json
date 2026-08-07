@@ -1,0 +1,41 @@
+{
+  "affected_files": [
+    "src/engine/staleness.ts",
+    "src/engine/context-assembler.ts",
+    "src/engine/decisions.ts",
+    "src/tools/housekeeping-tools.ts",
+    "src/tools/context-tools.ts",
+    "src/utils/types.ts",
+    "docs/TWINING-REFERENCE.md",
+    "README.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "leaving proportion uncapped",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Stage 3 (D3): staleness probes fixed — compound-scope splitting, git-mv basename fallback, capped scores with noisy-or; plus twining_unarchive, archive_stale batch warning, and archived_excluded_count in assemble/why",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KZCTR3BT8CQ480TNCQYVRA64",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0b79c990a41b2359874184538547d3ca6e27c56d",
+    "recorded_at": "2026-08-07T00:42:39.334Z"
+  },
+  "rationale": "an existsSync+basename miss is still a heuristic; 0.95 still crosses the default threshold alone when every file is gone, but certainty (1.0) is now unreachable by construction everywhere",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/engine/",
+  "status": "active",
+  "summary": "Chose to cap affected_files_missing at 0.95 rather than leaving proportion uncapped",
+  "timestamp": "2026-08-07T00:42:39.354Z"
+}

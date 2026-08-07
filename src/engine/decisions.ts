@@ -80,6 +80,13 @@ export interface WhyResult {
   truncated: boolean;
   total_in_scope: number;
   superseded_count: number;
+  /**
+   * Archived decisions hidden from this result (D3). Present so a blinded
+   * gate reads "0 decisions (N archived in scope)" instead of "no decisions
+   * exist" — a wrongly-archived store is otherwise indistinguishable from an
+   * empty one. Restore with twining_unarchive.
+   */
+  archived_excluded_count?: number;
   active_count: number;
   provisional_count: number;
   token_estimate: number;
@@ -540,6 +547,9 @@ export class DecisionEngine {
     const provisional_count = matches.filter(
       (d) => d.status === "provisional",
     ).length;
+    const archived_excluded_count = options?.include_superseded
+      ? 0
+      : all.filter((d) => d.status === "archived").length;
 
     return {
       decisions,
@@ -548,6 +558,7 @@ export class DecisionEngine {
       truncated: more.length > 0,
       total_in_scope: matches.length,
       superseded_count,
+      ...(archived_excluded_count > 0 ? { archived_excluded_count } : {}),
       active_count,
       provisional_count,
       token_estimate: tokensUsed,

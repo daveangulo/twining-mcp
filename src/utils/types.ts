@@ -178,6 +178,13 @@ export interface AssembledContext {
    * incomplete and must not claim there are no constraints.
    */
   warnings_omitted?: number;
+  /**
+   * Archived decisions in scope hidden from this briefing (D3). Non-zero
+   * distinguishes "decisions were archived away" from "no decisions exist" —
+   * without it, a bad archive sweep blinds the gate invisibly. Restore with
+   * twining_unarchive.
+   */
+  archived_excluded_count?: number;
   active_decisions: {
     id: string;
     summary: string;

@@ -27,13 +27,15 @@ describe("scoreItem", () => {
     expect(r.reasons).toEqual([]);
   });
 
-  it("scores 1.0 when scope path is missing", () => {
+  it("caps scope_path_missing at 0.8 — a lone heuristic must not read as certainty (D3)", () => {
     const r = scoreItem(
       { scope: "removed-dir/", affected_files: [], provenance: { branch: "main" } },
       { ...allKnownProbes, scopePathExists: () => false },
     );
-    expect(r.score).toBe(1.0);
+    expect(r.score).toBeCloseTo(0.8);
     expect(r.reasons[0]?.signal).toBe("scope_path_missing");
+    // Below the default 0.95 threshold: cannot flag alone.
+    expect(r.score).toBeLessThan(0.95);
   });
 
   it("scores by proportion when only some affected_files are missing", () => {
@@ -52,16 +54,16 @@ describe("scoreItem", () => {
     expect(r.reasons[0]?.signal).toBe("affected_files_missing");
   });
 
-  it("scores 1.0 when branch is gone", () => {
+  it("caps branch_gone at 0.4 — post-merge deletion is hygiene, not content rot (D3)", () => {
     const r = scoreItem(
       { scope: "src/auth/", affected_files: [], provenance: { branch: "feature/x" } },
       { ...allKnownProbes, branchKnown: () => false },
     );
-    expect(r.score).toBe(1.0);
+    expect(r.score).toBeCloseTo(0.4);
     expect(r.reasons[0]?.signal).toBe("branch_gone");
   });
 
-  it("takes max() across signals — multiple weak signals don't compound", () => {
+  it("combines signals by noisy-or — independent evidence corroborates", () => {
     const r = scoreItem(
       {
         scope: "src/auth/",
@@ -71,11 +73,34 @@ describe("scoreItem", () => {
       {
         scopePathExists: () => true,
         fileExists: (f: string) => f === "a.ts", // 1/2 missing → 0.5
-        branchKnown: () => false,                 // 1.0
+        branchKnown: () => false,                 // 0.4
       },
     );
-    expect(r.score).toBe(1.0); // max, not 0.5 + 1.0
+    expect(r.score).toBeCloseTo(1 - 0.5 * 0.6); // 0.7
     expect(r.reasons.length).toBe(2);
+  });
+
+  it("caps affected_files_missing at 0.95 — no heuristic ever emits 1.0 (D3)", () => {
+    const r = scoreItem(
+      { scope: "src/auth/", affected_files: ["a.ts", "b.ts"], provenance: { branch: "main" } },
+      { ...allKnownProbes, fileExists: () => false },
+    );
+    expect(r.score).toBeCloseTo(0.95);
+    expect(r.score).toBeLessThan(1.0);
+  });
+
+  it("corroborated signals cross the 0.95 threshold; no combination reaches exactly 1.0", () => {
+    const r = scoreItem(
+      {
+        scope: "gone/",
+        affected_files: ["a.ts"],
+        provenance: { branch: "feature/x" },
+      },
+      allMissingProbes,
+    );
+    // 1 − (1−0.8)(1−0.95)(1−0.4) = 0.994
+    expect(r.score).toBeGreaterThan(0.95);
+    expect(r.score).toBeLessThan(1.0);
   });
 
   it("scores 0 when scope is 'project' (categorical, not a path)", () => {
@@ -122,6 +147,44 @@ describe("buildProbes — real filesystem & git", () => {
     expect(probes.scopePathExists("architecture")).toBe(null);
   });
 
+  it("compound scopes: probes per segment instead of statting the whole string (D3 field cases)", () => {
+    dir = mkRepo();
+    fs.mkdirSync(path.join(dir, "specs", "claim-machinery"), { recursive: true });
+    fs.mkdirSync(path.join(dir, "rfcs"), { recursive: true });
+    fs.mkdirSync(path.join(dir, "tools"), { recursive: true });
+    fs.mkdirSync(path.join(dir, ".github", "workflows"), { recursive: true });
+    fs.writeFileSync(path.join(dir, "specs", "claim-machinery", "spec.md"), "x");
+    const probes = buildProbes(dir);
+
+    // The four verbatim field false positives — every one must now resolve.
+    expect(probes.scopePathExists("specs/ + rfcs/")).toBe(true);
+    expect(probes.scopePathExists("rfcs/, specs/claim-machinery/")).toBe(true);
+    expect(probes.scopePathExists("specs/claim-machinery/spec.md §2.7")).toBe(true);
+    expect(probes.scopePathExists(".github/workflows/ tools/ tests/")).toBe(true);
+
+    // All segments genuinely gone still reads missing.
+    expect(probes.scopePathExists("vanished/ + also-gone/")).toBe(false);
+    // Purely categorical compound stays null.
+    expect(probes.scopePathExists("architecture design")).toBe(null);
+  });
+
+  it("fileExists: a git-mv'd file (basename survives in the index) counts as present (D3)", () => {
+    dir = mkRepo();
+    fs.mkdirSync(path.join(dir, "analysis", "scratch", "archive"), { recursive: true });
+    fs.writeFileSync(
+      path.join(dir, "analysis", "scratch", "archive", "epistemic-steelman.md"),
+      "moved here",
+    );
+    execFileSync("git", ["add", "-A"], { cwd: dir });
+    execFileSync("git", ["commit", "-q", "-m", "add"], { cwd: dir });
+    const probes = buildProbes(dir);
+
+    // Recorded at the old location; moved to archive/ per repo convention.
+    expect(probes.fileExists("analysis/scratch/epistemic-steelman.md")).toBe(true);
+    // Genuinely deleted file is still missing.
+    expect(probes.fileExists("analysis/scratch/never-existed.md")).toBe(false);
+  });
+
   it("branch_gone: detects deleted branches", () => {
     dir = mkRepo();
     execFileSync("git", ["branch", "feature/keep"], { cwd: dir });
@@ -149,8 +212,15 @@ describe("auditStaleness — end to end", () => {
 
     const decisions: Decision[] = [
       makeDecision("d1", "src/kept/", { branch: "main" }, []),
-      makeDecision("d2", "src/gone/", { branch: "main" }, []),                     // scope missing
-      makeDecision("d3", "src/kept/", { branch: "feature/dead" }, []),             // branch gone
+      // scope missing (0.8) + branch gone (0.4) → noisy-or 0.88: below 0.95
+      makeDecision("d2", "src/gone/", { branch: "feature/dead" }, []),
+      // scope missing + all files missing + branch gone → 0.994: flagged
+      makeDecision("d3", "src/gone/", { branch: "feature/dead" }, [
+        "src/gone/a.ts",
+        "src/gone/b.ts",
+      ]),
+      // single weak signal (branch gone, 0.4): far below threshold
+      makeDecision("d4", "src/kept/", { branch: "feature/dead" }, []),
     ];
     const entries: BlackboardEntry[] = [
       makeEntry("e1", "project", { branch: "main" }),                              // no signals
@@ -162,11 +232,9 @@ describe("auditStaleness — end to end", () => {
     });
 
     const ids = result.candidates.map((c) => c.id);
-    expect(ids).toContain("d2");
-    expect(ids).toContain("d3");
-    expect(ids).not.toContain("d1");
-    expect(ids).not.toContain("e1");
-    expect(result.candidates[0]!.score).toBeGreaterThanOrEqual(result.candidates[1]!.score);
+    expect(ids).toEqual(["d3"]);
+    expect(result.candidates[0]!.score).toBeGreaterThan(0.95);
+    expect(result.candidates[0]!.score).toBeLessThan(1.0);
   });
 
   it("does not flag branch_gone when listing branches fails (non-git dir)", () => {
@@ -199,8 +267,11 @@ describe("auditStaleness — end to end", () => {
       makeEntry("e-dead-branch", "project", { branch: "feature/long-gone" }),
     ];
 
+    // Threshold below the 0.4 branch_gone cap — this test pins that the
+    // SIGNAL fires for blackboard-only audits, not that it flags at the
+    // default threshold (it deliberately cannot, D3).
     const result = auditStaleness([], entries, {
-      threshold: 0.95,
+      threshold: 0.3,
       projectRoot: dir,
     });
     expect(result.candidates.map((c) => c.id)).toEqual(["e-dead-branch"]);

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-07T00:42:39.183Z",
+  "id": "01KZCTR36FXPHB376FMSG22YWY",
+  "properties": {
+    "decision_summary": "Chose noisy-or aggregation over keeping max() with lowered caps"
+  },
+  "source": "01KJGX8KNRTGKE7PVC2GH1QSTE",
+  "target": "01KZCTR366WMGYWA1AGBV4PVFR",
+  "type": "decided_by"
+}

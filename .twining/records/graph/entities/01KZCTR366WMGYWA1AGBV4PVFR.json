@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-07T00:42:39.174Z",
+  "id": "01KZCTR366WMGYWA1AGBV4PVFR",
+  "name": "01KZCTR33A8675JSCCDM0678C9",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Chose noisy-or aggregation over keeping max() with lowered caps"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-07T00:42:39.174Z"
+}

@@ -14,7 +14,8 @@ Full reference for all Twining MCP tools. See `CLAUDE.md` for mandatory workflow
 | `twining_resolve` | During work | Mark open needs/questions/warnings handled — persists `status: "resolved"` with resolver identity and note; the record stays on the board as history. The everyday exit from the open lane (dismiss is for noise only) |
 | `twining_why` | Gate 1 | Check what decisions constrain a file before modifying it |
 | `twining_housekeeping` | Maintenance | Archive, deduplicate, surface stale state (dry-run by default). Add `staleness_review: true` for orphan detection (missing scope/files/branch) or `merge_sweep: true` to flag entries from branches deleted since the last run |
-| `twining_archive_stale` | Maintenance | Archive caller-confirmed IDs from `staleness_review` or `merge_sweep`. Decisions move to `archived` status; blackboard entries are dismissed. Provenance preserved |
+| `twining_archive_stale` | Maintenance | Archive caller-confirmed IDs from `staleness_review` or `merge_sweep`. Decisions move to `archived` status; blackboard entries are dismissed. Provenance preserved. Warns on batches above 5% of live decisions — staleness scores are heuristics |
+| `twining_unarchive` | Maintenance | Restore archived decisions to `active` — the undo for a bad archive sweep. Assemble/why report hidden archived decisions as `archived_excluded_count` |
 | `twining_status` | Anytime | Health check — entry counts, decision counts, actionable warnings |
 | `twining_archive` | Maintenance | Move blackboard entries to the archive tier. Takes no cutoff by default — an argument-free call archives everything archivable, so pass `before` unless a full sweep is intended |
 | `twining_add_entity` | Optional | Record a code entity in the knowledge graph |
@@ -23,7 +24,7 @@ Full reference for all Twining MCP tools. See `CLAUDE.md` for mandatory workflow
 | `twining_graph_query` | Optional | Search graph entities by name or property |
 | `twining_prune_graph` | Maintenance | Remove stale graph nodes |
 
-That is the complete default surface — 14 tools. **If a tool is not in this table, it does not exist unless the project sets `tools.full_surface: true`.** Notably `twining_decide`, `twining_link_commit`, `twining_verify`, `twining_dismiss`, and `twining_handoff` are *not* available by default: use `twining_record` instead, whose `decisions` array writes to the same store and which also accepts `commit_hash`, `supersedes`, and `depends_on`.
+That is the complete default surface — 15 tools. **If a tool is not in this table, it does not exist unless the project sets `tools.full_surface: true`.** Notably `twining_decide`, `twining_link_commit`, `twining_verify`, `twining_dismiss`, and `twining_handoff` are *not* available by default: use `twining_record` instead, whose `decisions` array writes to the same store and which also accepts `commit_hash`, `supersedes`, and `depends_on`.
 
 ## Extended Tools (require `full_surface: true`)
 

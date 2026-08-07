@@ -2,23 +2,37 @@
  * Staleness detection — scores blackboard entries and decisions on three
  * deterministic signals:
  *
- *   1. scope_path_missing — scope looks like a file/dir path and no longer exists.
- *   2. affected_files_missing — proportion of an entry's affected_files no longer on disk.
- *   3. branch_gone — provenance.branch is no longer in the local git ref list
- *      (i.e. branch was deleted, typically after merge).
+ *   1. scope_path_missing (0.8) — no path-like segment of the scope exists on
+ *      disk. Scopes are free text in the field: compound lists
+ *      ("specs/ + rfcs/", "rfcs/, specs/x/"), section refs ("spec.md §2.7"),
+ *      and multi-path strings are split and probed per segment.
+ *   2. affected_files_missing (proportion) — share of an entry's
+ *      affected_files no longer resolvable. A file whose basename still
+ *      exists in the git index counts as present (git-mv'd, not gone).
+ *   3. branch_gone (0.4) — provenance.branch is no longer in refs/heads.
+ *      Deliberately weak: post-merge branch deletion is normal hygiene and
+ *      says nothing about content liveness; merge_sweep is the sanctioned,
+ *      human-gated flow for branch-deletion cleanup.
  *
- * Final score is max() of the three signals; an entry is flagged when the score
- * crosses a configurable threshold (default 0.95). Items with no checkable
- * signals (scope=="project", no affected_files, no provenance) score 0 and are
- * never flagged.
+ * Signals combine by noisy-or (1 − Π(1−sᵢ)) so independent evidence
+ * corroborates, and NO single heuristic can reach 1.0 by construction —
+ * a lone heuristic firing must never read as certainty (field defect D3:
+ * a uniform wall of 1.0 scores invited a bulk archive that would have
+ * silently blinded assemble/why on live decisions). With the default 0.95
+ * threshold, only a near-total affected_files miss or corroborated signals
+ * can flag an item. Items with no checkable signals score 0.
  *
  * Semantic-content review (LLM-judged "Wave 3 / HMS Lancaster" cases) is out
  * of scope here — see follow-up issue.
  */
 import fs from "node:fs";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 import type { BlackboardEntry, Decision } from "../utils/types.js";
 import { listLocalBranches } from "../utils/git-branches.js";
+
+const SCOPE_PATH_MISSING_SCORE = 0.8;
+const BRANCH_GONE_SCORE = 0.4;
 
 export interface StalenessReason {
   signal: "scope_path_missing" | "affected_files_missing" | "branch_gone";
@@ -67,37 +81,54 @@ export function scoreItem(
   if (scopeProbe === false) {
     reasons.push({
       signal: "scope_path_missing",
-      score: 1.0,
-      detail: `scope "${item.scope}" no longer exists on disk`,
+      score: SCOPE_PATH_MISSING_SCORE,
+      detail: `no path-like segment of scope "${item.scope}" exists on disk`,
     });
   }
 
-  // Signal 2: affected files missing (proportion)
+  // Signal 2: affected files missing (proportion, capped below certainty —
+  // an existsSync+basename miss is still a heuristic, never proof)
   if (item.affected_files && item.affected_files.length > 0) {
     const missing = item.affected_files.filter((f) => !probes.fileExists(f));
     if (missing.length > 0) {
       const proportion = missing.length / item.affected_files.length;
       reasons.push({
         signal: "affected_files_missing",
-        score: proportion,
+        score: Math.min(proportion, 0.95),
         detail: `${missing.length}/${item.affected_files.length} affected files missing: ${missing.slice(0, 3).join(", ")}${missing.length > 3 ? ", …" : ""}`,
       });
     }
   }
 
-  // Signal 3: branch gone
+  // Signal 3: branch gone — corroborating evidence only, never decisive
   if (item.provenance?.branch && !probes.branchKnown(item.provenance.branch)) {
     reasons.push({
       signal: "branch_gone",
-      score: 1.0,
-      detail: `originating branch "${item.provenance.branch}" no longer exists`,
+      score: BRANCH_GONE_SCORE,
+      detail: `originating branch "${item.provenance.branch}" no longer exists (normal post-merge cleanup — corroborating signal only)`,
     });
   }
 
-  const score = reasons.length > 0
-    ? Math.max(...reasons.map((r) => r.score))
-    : 0;
+  // Noisy-or: independent signals corroborate; a single capped heuristic
+  // can never reach the certainty band on its own.
+  const score =
+    reasons.length > 0
+      ? 1 - reasons.reduce((acc, r) => acc * (1 - r.score), 1)
+      : 0;
   return { score, reasons };
+}
+
+/**
+ * Split a free-text scope into probeable path segments. Field scopes are
+ * compound ("specs/ + rfcs/", "rfcs/, specs/x/", ".github/workflows/ tools/")
+ * and carry section refs ("spec.md §2.7") — statting the whole string as one
+ * path is guaranteed-false. Exported for unit testing.
+ */
+export function splitScopeSegments(scope: string): string[] {
+  return scope
+    .split(/[,+]|\s+/)
+    .map((s) => s.replace(/§.*$/, "").trim())
+    .filter((s) => s.length > 0);
 }
 
 /** Build the three probes for a real project root. Cheap one-shot setup. */
@@ -113,19 +144,52 @@ export function buildProbes(projectRoot: string): {
   const listingFailed = knownBranches === null;
   const branches = knownBranches ?? new Set<string>();
 
+  // One-shot basename index of git-tracked files. A recorded affected_file
+  // whose basename still exists somewhere in the index was moved (archive/
+  // conventions, refactors), not destroyed — treating git-mv'd files as
+  // missing inverted the signal: hygiene-compliant history read as rot.
+  // null = git unavailable → no fallback, existsSync alone decides.
+  const trackedBasenames: Set<string> | null = (() => {
+    try {
+      const out = execFileSync("git", ["ls-files", "-z"], {
+        cwd: projectRoot,
+        encoding: "utf-8",
+        maxBuffer: 64 * 1024 * 1024,
+      });
+      const set = new Set<string>();
+      for (const f of out.split("\0")) {
+        if (f) set.add(path.basename(f));
+      }
+      return set;
+    } catch {
+      return null;
+    }
+  })();
+
   return {
     scopePathExists: (scope: string) => {
       if (!scope || scope === "project" || scope === "global") return null;
-      // Heuristic: a "path-like" scope contains "/" or matches a real entry on disk.
-      // Strings like "architecture" or "implementation" are categorical, not paths — return null.
-      const looksLikePath = scope.includes("/") || scope.includes(".");
-      if (!looksLikePath) return null;
-      const candidate = scope.endsWith("/") ? scope.slice(0, -1) : scope;
-      return fs.existsSync(path.join(projectRoot, candidate));
+      const segments = splitScopeSegments(scope);
+      // Categorical strings ("architecture") are not paths — return null.
+      const pathLike = segments.filter(
+        (s) => s.includes("/") || s.includes("."),
+      );
+      if (pathLike.length === 0) return null;
+      // ANY existing segment proves the scope still points at something real.
+      return pathLike.some((segment) => {
+        const candidate = segment.endsWith("/")
+          ? segment.slice(0, -1)
+          : segment;
+        return fs.existsSync(path.join(projectRoot, candidate));
+      });
     },
     fileExists: (file: string) => {
       if (!file) return true;
-      return fs.existsSync(path.join(projectRoot, file));
+      if (fs.existsSync(path.join(projectRoot, file))) return true;
+      // Moved-not-gone: basename survives in the git index.
+      return trackedBasenames !== null
+        ? trackedBasenames.has(path.basename(file))
+        : false;
     },
     branchKnown: (branch: string) =>
       listingFailed ? true : branches.has(branch),

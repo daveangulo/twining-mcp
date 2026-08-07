@@ -1217,7 +1217,8 @@ function minimalDecisionFields(overrides: Record<string, unknown>): Record<strin
 
 /**
  * Fixture covering every health-report check:
- *  - DEC-STALE: scope is a nonexistent file path -> stale.
+ *  - DEC-STALE: scope AND affected_files nonexistent -> stale (corroborated;
+ *    a lone dead-scope signal caps at 0.8 and no longer flags, D3).
  *  - DEC-A -> DEC-B -> DEC-C: 3-link superseded chain, head DEC-C, length 3.
  *  - DEC-OTHER: unrelated active decision (must not appear anywhere).
  *  - 2 blackboard warnings at different ages (+ 1 non-warning entry, must be excluded).
@@ -1286,7 +1287,8 @@ function createHealthReportTestProject(): { projectRoot: string; publicDir: stri
   );
 
   const indexEntries = [
-    { id: "DEC-STALE", timestamp: "2026-02-17T09:00:00.000Z", domain: "architecture", scope: "does/not/exist/file.ts", summary: "Decision with a dead scope path", confidence: "high", status: "active", affected_files: [], affected_symbols: [], commit_hashes: [] },
+    // Dead scope alone caps at 0.8 since D3 — missing affected_files corroborate it past the 0.95 threshold (noisy-or).
+    { id: "DEC-STALE", timestamp: "2026-02-17T09:00:00.000Z", domain: "architecture", scope: "does/not/exist/file.ts", summary: "Decision with a dead scope path", confidence: "high", status: "active", affected_files: ["does/not/exist/file.ts", "does/not/exist/other.ts"], affected_symbols: [], commit_hashes: [] },
     { id: "DEC-A", timestamp: "2026-02-17T09:01:00.000Z", domain: "architecture", scope: "project", summary: "Decision A (earliest)", confidence: "medium", status: "superseded", affected_files: [], affected_symbols: [], commit_hashes: [] },
     { id: "DEC-B", timestamp: "2026-02-17T09:02:00.000Z", domain: "architecture", scope: "project", summary: "Decision B (middle)", confidence: "medium", status: "superseded", affected_files: [], affected_symbols: [], commit_hashes: [] },
     { id: "DEC-C", timestamp: "2026-02-17T09:03:00.000Z", domain: "architecture", scope: "project", summary: "Decision C (chain head)", confidence: "medium", status: "active", affected_files: [], affected_symbols: [], commit_hashes: [] },

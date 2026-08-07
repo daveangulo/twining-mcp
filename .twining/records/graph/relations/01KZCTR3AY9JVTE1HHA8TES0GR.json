@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-07T00:42:39.326Z",
+  "id": "01KZCTR3AY9JVTE1HHA8TES0GR",
+  "properties": {
+    "decision_summary": "Chose a non-blocking batch-size warning on twining_archive_stale over a hard re-score gate"
+  },
+  "source": "01KQWE98BCW4SXZR7KP8QNPNJK",
+  "target": "01KZCTR3AX96KDQBJM7GMF3HDG",
+  "type": "decided_by"
+}

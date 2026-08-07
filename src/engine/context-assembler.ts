@@ -94,6 +94,12 @@ export class ContextAssembler {
     const activeDecisions = scopeDecisions.filter(
       (d) => d.status === "active" || d.status === "provisional",
     );
+    // Archived decisions are invisible below; count them so a blinded gate
+    // (e.g. after a bad archive_stale sweep, D3) reads "N archived excluded"
+    // instead of the indistinguishable "no decisions exist".
+    const archivedExcluded = scopeDecisions.filter(
+      (d) => d.status === "archived",
+    ).length;
 
     // 2. Retrieve semantically relevant decisions (merge by ID, keep highest relevance)
     const decisionRelevance = new Map<string, number>();
@@ -478,6 +484,9 @@ export class ContextAssembler {
       scope,
       token_estimate: tokensUsed,
       ...(warningsOmitted > 0 ? { warnings_omitted: warningsOmitted } : {}),
+      ...(archivedExcluded > 0
+        ? { archived_excluded_count: archivedExcluded }
+        : {}),
       active_decisions: activeDecisionResults,
       open_needs: openNeeds,
       recent_findings: recentFindings,
@@ -755,6 +764,13 @@ export class ContextAssembler {
     // Status summary (P5.1)
     if (statusSummary) {
       quickRef.push(`Status: ${statusSummary}`);
+    }
+
+    // Archived-exclusion visibility (D3): a blinded gate must say so.
+    if ((ctx.archived_excluded_count ?? 0) > 0) {
+      quickRef.push(
+        `Note: ${ctx.archived_excluded_count} archived decision(s) in this scope are excluded from the briefing — if that is unexpected, twining_unarchive can restore them.`,
+      );
     }
 
     // Questions

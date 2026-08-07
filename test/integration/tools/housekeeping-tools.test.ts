@@ -39,7 +39,10 @@ describe("twining_housekeeping with staleness_review", () => {
     fs.mkdirSync(path.join(tmpDir, "src", "kept"), { recursive: true });
     server = createTestServer(tmpDir);
 
-    // Record a decision against a path that exists, and one against a path that doesn't.
+    // Record a decision against a path that exists, and one against a path
+    // that doesn't. Since D3, a lone scope_path_missing signal (0.8) cannot
+    // cross the 0.95 threshold — the doomed decision also names missing
+    // affected_files so corroborated signals flag it (noisy-or ≈ 0.99).
     await callTool(server, "twining_record", {
       summary: "Initial work in src/kept",
       decisions: [{ summary: "Chose A over B for kept code", rationale: "kept reasoning" }],
@@ -49,6 +52,7 @@ describe("twining_housekeeping with staleness_review", () => {
       summary: "Work in src/gone (which we'll delete)",
       decisions: [{ summary: "Chose C over D for gone code", rationale: "doomed reasoning" }],
       scope: "src/gone/",
+      affected_files: ["src/gone/a.ts", "src/gone/b.ts"],
     });
 
     const res = await callTool(server, "twining_housekeeping", { staleness_review: true });
@@ -283,5 +287,97 @@ describe("twining_archive_stale", () => {
     expect(parsed.archived_decisions).toEqual([]);
     expect(parsed.not_found.length).toBe(2);
     expect(parsed.total_archived).toBe(0);
+  });
+});
+
+describe("twining_unarchive + archive visibility (D3 recovery)", () => {
+  it("restores archived decisions to active and posts an audit finding", async () => {
+    gitInit(tmpDir);
+    server = createTestServer(tmpDir);
+
+    const rec = parseToolResponse(
+      await callTool(server, "twining_record", {
+        summary: "Decision that will be wrongly archived",
+        decisions: [{ summary: "Chose X over Y for the doomed area", rationale: "solid reasoning" }],
+        scope: "src/doomed/",
+      }),
+    ) as { decisions_created: Array<{ id: string }> };
+    const decisionId = rec.decisions_created[0]!.id;
+
+    await callTool(server, "twining_archive_stale", { ids: [decisionId] });
+
+    const restored = parseToolResponse(
+      await callTool(server, "twining_unarchive", {
+        ids: [decisionId, "missing-id"],
+        reason: "false positive from compound-scope bug",
+      }),
+    ) as { restored: string[]; not_archived: string[]; not_found: string[] };
+    expect(restored.restored).toEqual([decisionId]);
+    expect(restored.not_found).toEqual(["missing-id"]);
+
+    // Restored decision is authoritative again in why().
+    const why = parseToolResponse(
+      await callTool(server, "twining_why", { scope: "src/doomed/" }),
+    ) as { decisions: Array<{ id: string; status: string }> };
+    const match = why.decisions.find((d) => d.id === decisionId);
+    expect(match).toBeDefined();
+    expect(match!.status).toBe("active");
+
+    // Re-unarchiving reports not_archived, not an error.
+    const again = parseToolResponse(
+      await callTool(server, "twining_unarchive", { ids: [decisionId] }),
+    ) as { restored: string[]; not_archived: string[] };
+    expect(again.restored).toEqual([]);
+    expect(again.not_archived).toEqual([decisionId]);
+  });
+
+  it("assemble and why report archived decisions as archived_excluded_count instead of silence", async () => {
+    gitInit(tmpDir);
+    server = createTestServer(tmpDir);
+
+    const rec = parseToolResponse(
+      await callTool(server, "twining_record", {
+        summary: "Only decision in this scope",
+        decisions: [{ summary: "Chose M over N in the blinded area", rationale: "reasoning" }],
+        scope: "src/blinded/",
+      }),
+    ) as { decisions_created: Array<{ id: string }> };
+    await callTool(server, "twining_archive_stale", {
+      ids: [rec.decisions_created[0]!.id],
+    });
+
+    const why = parseToolResponse(
+      await callTool(server, "twining_why", { scope: "src/blinded/" }),
+    ) as { decisions: unknown[]; archived_excluded_count?: number };
+    expect(why.decisions).toEqual([]);
+    expect(why.archived_excluded_count).toBe(1);
+
+    const assemble = parseToolResponse(
+      await callTool(server, "twining_assemble", {
+        task: "verify the blinded gate says so",
+        scope: "src/blinded/",
+      }),
+    ) as { briefing: string; archived_excluded_count?: number };
+    expect(assemble.archived_excluded_count).toBe(1);
+    expect(assemble.briefing).toContain("archived decision(s) in this scope are excluded");
+  });
+
+  it("archive_stale warns on batches above max(20, 5% of live decisions)", async () => {
+    gitInit(tmpDir);
+    server = createTestServer(tmpDir);
+
+    // 21 bogus blackboard-side IDs — above the floor of 20; all not_found,
+    // the warning keys on requested batch size, not archive success.
+    const ids = Array.from({ length: 21 }, (_, i) => `bogus-${i}`);
+    const parsed = parseToolResponse(
+      await callTool(server, "twining_archive_stale", { ids }),
+    ) as { warning?: string };
+    expect(parsed.warning).toBeDefined();
+    expect(parsed.warning).toContain("heuristics");
+
+    const small = parseToolResponse(
+      await callTool(server, "twining_archive_stale", { ids: ["one-id"] }),
+    ) as { warning?: string };
+    expect(small.warning).toBeUndefined();
   });
 });

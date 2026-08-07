@@ -154,6 +154,19 @@ export function registerHousekeepingTools(
         const decisionIndex = await decisionStore.getIndex();
         const decisionIds = new Set(decisionIndex.map((e) => e.id));
 
+        // Batch-size sanity signal (D3): heuristic staleness scoring has
+        // produced false-positive walls before (584 candidates, all wrong).
+        // Non-blocking — but a batch this size deserves a second look before
+        // the caller trusts it.
+        const activeCount = decisionIndex.filter(
+          (e) => e.status === "active" || e.status === "provisional",
+        ).length;
+        const batchWarningThreshold = Math.max(20, Math.ceil(activeCount * 0.05));
+        const batchWarning =
+          args.ids.length > batchWarningThreshold
+            ? `Archiving ${args.ids.length} items — more than ${batchWarningThreshold} (5% of ${activeCount} live decisions). Staleness signals are heuristics; verify a sample before trusting a batch this large. Archived decisions vanish from assemble/why; twining_unarchive reverses mistakes.`
+            : undefined;
+
         const blackboardIds: string[] = [];
         for (const id of args.ids) {
           if (decisionIds.has(id)) {
@@ -203,6 +216,74 @@ export function registerHousekeepingTools(
           archived_entries: archivedEntries,
           not_found: notFound,
           total_archived: archivedDecisions.length + archivedEntries.length,
+          ...(batchWarning ? { warning: batchWarning } : {}),
+        });
+      } catch (e) {
+        return toolError(
+          e instanceof Error ? e.message : "Unknown error",
+          "INTERNAL_ERROR",
+        );
+      }
+    },
+  );
+
+  // twining_unarchive — the recovery path for bad archive sweeps (D3).
+  // Archiving only flips decision status, so restoration is a one-call
+  // status write; without this tool a false-positive staleness batch was
+  // practically irreversible (hand-editing store records).
+  server.registerTool(
+    "twining_unarchive",
+    {
+      description:
+        "Restore archived decisions to active status — the undo for twining_archive_stale. Archived decisions are excluded from assemble/why (assemble reports them as archived_excluded_count); unarchiving makes them authoritative again. Only decisions currently in status \"archived\" are restored; other IDs are reported back untouched.",
+      inputSchema: {
+        ids: z
+          .array(z.string())
+          .min(1)
+          .describe("Decision IDs to restore to active status"),
+        reason: z
+          .string()
+          .optional()
+          .describe("Why these decisions are being restored — recorded in the audit-trail finding"),
+      },
+    },
+    async (args) => {
+      try {
+        const restored: string[] = [];
+        const notArchived: string[] = [];
+        const notFound: string[] = [];
+
+        for (const id of args.ids) {
+          const decision = await decisionStore.get(id);
+          if (!decision) {
+            notFound.push(id);
+          } else if (decision.status !== "archived") {
+            notArchived.push(id);
+          } else {
+            await decisionStore.updateStatus(id, "active");
+            restored.push(id);
+          }
+        }
+
+        if (restored.length > 0) {
+          await blackboardEngine.post({
+            entry_type: "finding",
+            summary: `Unarchived ${restored.length} decision(s) — restored to active`,
+            detail: [
+              args.reason ? `Reason: ${args.reason}` : null,
+              `Decisions: ${restored.join(", ")}`,
+            ]
+              .filter(Boolean)
+              .join("\n"),
+            tags: ["housekeeping", "unarchive"],
+            scope: "project",
+          });
+        }
+
+        return toolResult({
+          restored,
+          not_archived: notArchived,
+          not_found: notFound,
         });
       } catch (e) {
         return toolError(

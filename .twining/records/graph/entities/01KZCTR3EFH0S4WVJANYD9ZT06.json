@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-07T00:42:39.439Z",
+  "id": "01KZCTR3EFH0S4WVJANYD9ZT06",
+  "name": "01KZCTR3BT8CQ480TNCQYVRA64",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Chose to cap affected_files_missing at 0.95 rather than leaving proportion uncapped"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-07T00:42:39.439Z"
+}
