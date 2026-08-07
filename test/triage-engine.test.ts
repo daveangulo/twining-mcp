@@ -1013,6 +1013,133 @@ for (const backend of BACKENDS) {
       });
     });
 
+    describe("open-bucket keyset cursor (D5)", () => {
+      it("enumerates an open lane larger than the cap by looping open_after until open_cursor is absent", async () => {
+        const seeded: string[] = [];
+        for (let i = 0; i < 30; i++) {
+          seeded.push(
+            fx.postEntry("need", `need ${i}`, {
+              timestamp: `2026-07-20T00:00:${String(i).padStart(2, "0")}.000Z`,
+            }),
+          );
+        }
+
+        const collected: string[] = [];
+        let cursor: string | undefined;
+        let pages = 0;
+        do {
+          const page = await buildTriage(
+            fx.stores(),
+            { limit: 7, ...(cursor ? { open_after: cursor } : {}) },
+            now,
+          );
+          expect(page.counts.open.total).toBe(30); // full-lane total on every page
+          collected.push(...ids(page.open));
+          cursor = page.open_cursor;
+          pages++;
+        } while (cursor && pages < 10);
+
+        expect(pages).toBe(Math.ceil(30 / 7));
+        expect(collected).toHaveLength(30);
+        expect(new Set(collected).size).toBe(30);
+        expect(collected.sort()).toEqual([...seeded].sort());
+      });
+
+      it("keyset paging is skip-free when items resolve mid-enumeration", async () => {
+        for (let i = 0; i < 6; i++) {
+          fx.postEntry("need", `need ${i}`, {
+            timestamp: `2026-07-20T00:00:0${i}.000Z`,
+          });
+        }
+        const page1 = await buildTriage(fx.stores(), { limit: 2 }, now);
+        expect(page1.open_cursor).toBeDefined();
+        const delivered1 = ids(page1.open);
+
+        // The last-delivered item resolves between pages — its key vanishing
+        // must not skip anything (keyset, not offset).
+        fx.postEntry("status", "resolver", {
+          relates_to: [delivered1[1]!],
+          timestamp: "2026-07-20T01:00:00.000Z",
+        });
+
+        const page2 = await buildTriage(
+          fx.stores(),
+          { limit: 200, open_after: page1.open_cursor },
+          now,
+        );
+        const delivered2 = ids(page2.open);
+        expect(delivered2).toHaveLength(4); // the 4 remaining, none skipped
+        expect(new Set([...delivered1, ...delivered2]).size).toBe(6);
+      });
+
+      it("cursor composes with scope filtering and section: open", async () => {
+        for (let i = 0; i < 4; i++) {
+          fx.postEntry("warning", `auth warning ${i}`, {
+            scope: "src/auth/",
+            timestamp: `2026-07-20T00:00:0${i}.000Z`,
+          });
+          fx.postEntry("warning", `other warning ${i}`, {
+            scope: "src/other/",
+            timestamp: `2026-07-20T00:01:0${i}.000Z`,
+          });
+        }
+        const page1 = await buildTriage(
+          fx.stores(),
+          { scope: "src/auth/", section: "open", limit: 3 },
+          now,
+        );
+        expect(page1.open).toHaveLength(3);
+        expect(page1.open_cursor).toBeDefined();
+        expect(page1.recent).toBeUndefined();
+
+        const page2 = await buildTriage(
+          fx.stores(),
+          {
+            scope: "src/auth/",
+            section: "open",
+            limit: 3,
+            open_after: page1.open_cursor,
+          },
+          now,
+        );
+        expect(page2.open).toHaveLength(1);
+        expect(page2.open_cursor).toBeUndefined(); // lane fully delivered
+        for (const item of [...page1.open!, ...page2.open!]) {
+          expect(item.scope).toBe("src/auth/");
+        }
+      });
+
+      it("malformed cursors are ignored like unparseable since; exact-boundary cursor yields empty without a next cursor", async () => {
+        const only = fx.postEntry("need", "solo need", {
+          timestamp: "2026-07-20T00:00:00.000Z",
+        });
+
+        const garbage = await buildTriage(
+          fx.stores(),
+          { open_after: "not-a-cursor!!" },
+          now,
+        );
+        expect(ids(garbage.open)).toEqual([only]);
+        expect(garbage.open_cursor).toBeUndefined();
+
+        // Cursor at the last item's own key → nothing after it.
+        const full = await buildTriage(fx.stores(), {}, now);
+        expect(full.open_cursor).toBeUndefined();
+        const boundaryCursor = Buffer.from(
+          `2026-07-20T00:00:00.000Z|${only}`,
+          "utf-8",
+        ).toString("base64url");
+        const after = await buildTriage(
+          fx.stores(),
+          { open_after: boundaryCursor },
+          now,
+        );
+        expect(after.open).toEqual([]);
+        expect(after.open_cursor).toBeUndefined();
+        expect(after.counts.open.total).toBe(1); // total is the full lane
+      });
+    });
+
     describe("origin passthrough (D1)", () => {
       it("carries a blackboard entry's origin onto the TriageItem and omits it when absent", async () => {
         const discovered = fx.postEntry("warning", "discovered warning", {

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-07T00:53:43.870Z",
+  "id": "01KZCVCC9YHGMMASGNN6PZPDW8",
+  "properties": {
+    "decision_summary": "Chose the spec-pre-approved keyset cursor over raising or removing the 200 cap"
+  },
+  "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+  "target": "01KZCVCC9SFJRY57M8GPJV36SJ",
+  "type": "decided_by"
+}

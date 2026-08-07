@@ -40,12 +40,20 @@ export function registerTriageTools(
         limit: z
           .number()
           .optional()
-          .describe("Maximum items per bucket (default: 25, max: 200)"),
+          .describe(
+            "Maximum items per bucket (default: 25, max: 200). Truncation is detectable as counts.<bucket>.total > array length; a truncated open bucket also returns open_cursor for paging via open_after.",
+          ),
         since: z
           .string()
           .optional()
           .describe(
-            "ISO timestamp cursor — only recent items strictly after this instant; pass the previous result's generated_at",
+            "ISO timestamp cursor — only recent items strictly after this instant; pass the previous result's generated_at. Applies to the recent bucket ONLY; page the open bucket with open_after.",
+          ),
+        open_after: z
+          .string()
+          .optional()
+          .describe(
+            "Opaque keyset cursor from a previous result's open_cursor — returns open items strictly after that position in the (timestamp, id) order. Loop until open_cursor is absent to enumerate an open lane larger than the limit cap. Malformed cursors are ignored.",
           ),
         for_agent: z
           .string()

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-07T00:53:43.942Z",
+  "id": "01KZCVCCC6CJZ6Y8JB1DMEMA6S",
+  "properties": {
+    "decision_summary": "Chose to keep counts.open.total as the FULL-lane total on every page rather than the post-cursor remainder"
+  },
+  "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+  "target": "01KZCVCCC237N6H6F8A8FKZ76Z",
+  "type": "decided_by"
+}

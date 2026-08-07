@@ -714,6 +714,8 @@ export function createApiHandler(
         if (forAgent) input.for_agent = forAgent;
         const since = parsed.searchParams.get("since");
         if (since) input.since = since;
+        const openAfter = parsed.searchParams.get("open_after");
+        if (openAfter) input.open_after = openAfter;
         const section = parsed.searchParams.get("section");
         if (section === "all" || section === "open" || section === "recent") {
           input.section = section;

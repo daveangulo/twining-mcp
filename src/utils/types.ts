@@ -704,6 +704,10 @@ export interface TriageResult {
   open?: TriageItem[];     // present iff section is "all" or names it; ABSENT
                            // (undefined) when not requested — distinguishable from
                            // genuinely-empty []
+  open_cursor?: string;    // present iff the open bucket was truncated (D5):
+                           // opaque keyset cursor for the next page via
+                           // open_after; ABSENT means the lane is fully
+                           // delivered through this page
   recent?: TriageItem[];
   counts: {                // ALWAYS computed over BOTH buckets regardless of
                            // section; PRE-TRUNCATION totals (limit truncates

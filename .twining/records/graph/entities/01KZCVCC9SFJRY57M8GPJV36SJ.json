@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-07T00:53:43.865Z",
+  "id": "01KZCVCC9SFJRY57M8GPJV36SJ",
+  "name": "01KZCVCC9CCCFK99SZ9FQVP0X3",
+  "properties": {
+    "scope": "src/engine/triage.ts",
+    "summary": "Chose the spec-pre-approved keyset cursor over raising or removing the 200 cap"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-07T00:53:43.865Z"
+}

@@ -3,8 +3,8 @@
   "id": "01KY7347N5X10SY7Z4B6W9V9ZV",
   "name": "docs/TRIAGE-SPEC.md",
   "properties": {
-    "scope": "src/engine/"
+    "scope": "src/engine/,src/engine/triage.ts"
   },
   "type": "file",
-  "updated_at": "2026-07-23T20:10:04.812Z"
+  "updated_at": "2026-08-07T00:53:43.943Z"
 }

@@ -508,14 +508,19 @@ that would make the tool reject values HTTP silently defaults, forking the adapt
   `(timestamp, id)` descending. Future ordering changes may REORDER delivered
   items but never change which items survive truncation (§4.2). A §10 test asserts
   selection as set membership, separate from the ordering golden fixture.
-- **Known v1 limitation — the 200 cap:** because `open` is unbounded by design and
-  has no offset/cursor, a project whose open total exceeds 200 can see the total in
-  `counts.open.total` (and the ratify-lane in `counts.open.irreversible`) but
-  cannot enumerate items beyond the 200 retained through any triage surface — the
-  remainder requires the underlying stores. Triage is a read-model, not an export;
-  the mitigation is counts-driven drain-down. A future additive `offset` or
-  keyset cursor on the `(timestamp, id)` sort key is non-breaking future work
-  (§11.7).
+- **The 200 cap + `open_after` keyset cursor (D5, was the v1 limitation):** the
+  §11.7 revisit trigger fired — a field deployment reported a 320-item
+  steady-state open lane, leaving 120 items unreachable through any triage
+  surface. The open bucket now pages via an additive keyset cursor:
+  `open_after` (opaque base64url of the last delivered `(timestamp, id)` sort
+  key) delivers items strictly after that position in the contractual ascending
+  order; a truncated open bucket returns `open_cursor` (the next-page key),
+  and its ABSENCE means the lane is fully delivered through this page. Keyset,
+  not offset: items resolving out of the lane mid-enumeration never shift later
+  keys, so paging is skip-free under concurrent drain. Malformed cursors are
+  ignored exactly like unparseable `since` (not echoed, not an error).
+  `counts.open.total` remains the FULL-lane total on every page so pages can be
+  summed against it. Omitting `open_after` preserves pre-D5 behavior exactly.
 - **`since`:** `recent`-only additional cutoff, strict `>` on epoch-normalized
   values; effective cutoff per §3.2. Never filters `open`.
 - **`for_agent`:** per §3.6.
@@ -949,10 +954,12 @@ Nothing here blocks implementation; these record resolutions and known edges.
 5. **Surface promotion/removal test** — see §6.1; the numbers ship as written.
 6. **Provisional-at-creation** — see §9 consumer guidance; optional additive
    `twining_decide` status input is future work.
-7. **Open-bucket enumeration beyond 200** — see §4.1: `counts.open.total` above the
-   clamp is visible but not enumerable through triage surfaces. Future additive
-   `offset` or keyset cursor on `(timestamp, id)` is non-breaking future work,
-   taken up only on field evidence of >200 steady-state open backlogs.
+7. **Open-bucket enumeration beyond 200 — RESOLVED (D5, 2026-08-06):** the revisit
+   trigger fired (field evidence: a 320-item steady-state open lane, 120 items
+   unreachable). Shipped as the pre-approved additive keyset cursor on the
+   `(timestamp, id)` sort key — `open_after` input / `open_cursor` output, see
+   §4.1. Omitting the cursor preserves prior behavior exactly; the 200 clamp
+   itself is unchanged (triage remains a read-model with bounded payloads).
 8. **verify.ts predicate stays type-discriminating** — see §5.1: intentionally
    different semantics, explicitly excluded from the shared-helper refactor; any
    future unification is a separate recorded decision.

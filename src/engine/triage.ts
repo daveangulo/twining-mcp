@@ -44,6 +44,13 @@ export interface TriageInput {
   limit?: number;
   since?: string;
   for_agent?: string;
+  /**
+   * Keyset cursor for paging the open bucket (D5 — the §11.7 revisit
+   * trigger fired on field evidence of a 320-item open lane). Opaque value
+   * from a prior result's open_cursor. Malformed values are ignored, like
+   * unparseable since.
+   */
+  open_after?: string;
 }
 
 interface NormalizedInput {
@@ -54,6 +61,32 @@ interface NormalizedInput {
   since?: string;
   sinceMs?: number;
   forAgent?: string;
+  openAfter?: { timestamp: string; id: string };
+}
+
+/**
+ * Opaque keyset cursor: base64url of "<timestamp>|<id>" — the open bucket's
+ * contractual (timestamp, id) ascending sort key. Keyset (not offset) so
+ * concurrent lane drain never skips items: resolved items disappearing
+ * before the cursor position cannot shift later keys.
+ */
+function encodeOpenCursor(item: TriageItem): string {
+  return Buffer.from(`${item.timestamp}|${item.id}`, "utf-8").toString(
+    "base64url",
+  );
+}
+
+function decodeOpenCursor(
+  cursor: string,
+): { timestamp: string; id: string } | null {
+  try {
+    const raw = Buffer.from(cursor, "base64url").toString("utf-8");
+    const sep = raw.indexOf("|");
+    if (sep <= 0 || sep === raw.length - 1) return null;
+    return { timestamp: raw.slice(0, sep), id: raw.slice(sep + 1) };
+  } catch {
+    return null;
+  }
 }
 
 function normalize(input: TriageInput): NormalizedInput {
@@ -94,6 +127,11 @@ function normalize(input: TriageInput): NormalizedInput {
       normalized.since = input.since;
       normalized.sinceMs = parsed;
     }
+  }
+  if (input.open_after) {
+    // Foreign input like since: malformed cursors are ignored, not errors.
+    const decoded = decodeOpenCursor(input.open_after);
+    if (decoded) normalized.openAfter = decoded;
   }
   return normalized;
 }
@@ -297,7 +335,28 @@ export async function buildTriage(
   if (opts.scope !== undefined) result.scope = opts.scope;
   if (opts.forAgent !== undefined) result.for_agent = opts.forAgent;
   if (opts.since !== undefined) result.since = opts.since;
-  if (opts.section !== "recent") result.open = openItems.slice(0, opts.limit);
+  if (opts.section !== "recent") {
+    // Keyset paging (D5): deliver strictly after the cursor key in the
+    // contractual ascending order. counts.open.total stays the FULL lane
+    // total (pre-cursor, pre-truncation) so pages can be summed against it.
+    let deliverable = openItems;
+    if (opts.openAfter) {
+      const key = opts.openAfter;
+      deliverable = openItems.filter(
+        (i) =>
+          i.timestamp > key.timestamp ||
+          (i.timestamp === key.timestamp && i.id > key.id),
+      );
+    }
+    result.open = deliverable.slice(0, opts.limit);
+    if (deliverable.length > opts.limit) {
+      // More remains — hand back the next-page key. Absence of open_cursor
+      // means the lane was fully delivered through this page.
+      result.open_cursor = encodeOpenCursor(
+        result.open[result.open.length - 1]!,
+      );
+    }
+  }
   if (opts.section !== "open") result.recent = recentItems.slice(0, opts.limit);
   return result;
 }
