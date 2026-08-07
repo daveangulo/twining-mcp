@@ -179,6 +179,7 @@ describe("BlackboardEngine auto-archive", () => {
       archive: {
         ...DEFAULT_CONFIG.archive,
         max_blackboard_entries_before_archive: 3,
+        retain_recent: 0, // D4: retention off so small thresholds still trigger in these tests
       },
     };
 
@@ -192,7 +193,7 @@ describe("BlackboardEngine auto-archive", () => {
     // Wait for fire-and-forget to settle
     await new Promise((r) => setTimeout(r, 50));
 
-    expect(mockArchiver.archive).toHaveBeenCalledWith({ summarize: true });
+    expect(mockArchiver.archive).toHaveBeenCalledWith({ summarize: true, retain: 0 });
   });
 
   it("does not trigger archive when below threshold", async () => {
@@ -204,6 +205,7 @@ describe("BlackboardEngine auto-archive", () => {
       archive: {
         ...DEFAULT_CONFIG.archive,
         max_blackboard_entries_before_archive: 10,
+        retain_recent: 0, // D4: retention off so small thresholds still trigger in these tests
       },
     };
 
@@ -236,6 +238,7 @@ describe("BlackboardEngine auto-archive", () => {
       archive: {
         ...DEFAULT_CONFIG.archive,
         max_blackboard_entries_before_archive: 5,
+        retain_recent: 0, // D4: retention off so small thresholds still trigger in these tests
       },
     };
 
@@ -269,6 +272,7 @@ describe("BlackboardEngine auto-archive", () => {
       archive: {
         ...DEFAULT_CONFIG.archive,
         max_blackboard_entries_before_archive: 5,
+        retain_recent: 0, // D4: retention off so small thresholds still trigger in these tests
       },
     };
 
@@ -292,6 +296,7 @@ describe("BlackboardEngine auto-archive", () => {
       archive: {
         ...DEFAULT_CONFIG.archive,
         max_blackboard_entries_before_archive: 3,
+        retain_recent: 0, // D4: retention off so small thresholds still trigger in these tests
       },
     };
 
@@ -323,6 +328,7 @@ describe("BlackboardEngine auto-archive", () => {
       archive: {
         ...DEFAULT_CONFIG.archive,
         max_blackboard_entries_before_archive: 3,
+        retain_recent: 0, // D4: retention off so small thresholds still trigger in these tests
       },
     };
 
@@ -352,6 +358,7 @@ describe("BlackboardEngine auto-archive", () => {
       archive: {
         ...DEFAULT_CONFIG.archive,
         max_blackboard_entries_before_archive: 5,
+        retain_recent: 0, // D4: retention off so small thresholds still trigger in these tests
       },
     };
 
@@ -363,7 +370,7 @@ describe("BlackboardEngine auto-archive", () => {
 
     await new Promise((r) => setTimeout(r, 50));
 
-    expect(mockArchiver.archive).toHaveBeenCalledWith({ summarize: true });
+    expect(mockArchiver.archive).toHaveBeenCalledWith({ summarize: true, retain: 0 });
   });
 });
 

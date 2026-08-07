@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Stage 4 (D4): count-based archive retention via shared partitionArchivable used by both plan() and the auto-archive trigger; housekeeping archive default flipped to false; open questions join the #40 exemption; retain param on twining_archive\nDecisions: Chose to supersede the archive:false workaround: housekeeping's archive pass now defaults OFF and the sweep itself is bounded by count-based retention (archive.retain_recent, default 200) — the prior guidance 'safe invocation is twining_housekeeping({compact_archives:true, execute:true, archive:false})' is obsolete because execute:true no longer sweeps by default; Chose count-based retention (retain newest K) over an age cutoff for the archive pass — the #35 field outage proved an age cutoff cannot bound a same-hour burst; K anchored at 200 to match triage LIMIT_MAX; Chose to make the auto-archive trigger count call the SAME partitionArchivable function the sweep uses, dropping the ad-hoc predicate including its archive-tag exclusion — counted entries are now archived by construction, so the counted-but-exempt re-arm class (#35) is structurally impossible; the tag exclusion was subsumed; Chose to widen the #40 exemption to unresolved questions — triage counts open questions as obligations, and with D2 resolved questions now drain, so the lane asymmetry (questions silently swept) had no remaining justification\nFindings: Trigger uses a far-future cutoff so a same-millisecond post cannot dodge the count while the fired sweep uses cutoff=now — a just-posted entry may survive one sweep cycle; transient by design, safe direction; Legacy explicit twining_archive calls keep retain:0 (no retention) — only housekeeping and the auto-archive trigger get the config default; explicit callers must opt in via the new retain param",
+  "entry_type": "status",
+  "id": "01KZCV4VG2ZKTMTQE3FEHX0VXY",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "cbac09fe1b415bc2f46a8a8b552a6f4a96c29bd6",
+    "recorded_at": "2026-08-07T00:49:37.263Z"
+  },
+  "scope": "src/engine/",
+  "summary": "Stage 4 (D4): count-based archive retention via shared partitionArchivable used by both plan() and the auto-archive trigger; housekeeping archive default flipped to false; open questions join the #…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-07T00:49:37.282Z"
+}

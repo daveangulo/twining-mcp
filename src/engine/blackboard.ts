@@ -11,6 +11,7 @@ import type { Embedder } from "../embeddings/embedder.js";
 import { blackboardEmbedText, embedContentHash } from "../embeddings/embed-text.js";
 import type { SearchEngine, BlackboardSearchResult } from "../embeddings/search.js";
 import type { Archiver } from "./archiver.js";
+import { partitionArchivable } from "./archiver.js";
 import { computeResolvedIds } from "./resolution.js";
 import type { GraphAutoPopulator } from "./graph-auto-populator.js";
 import type { IAgentStore, IBlackboardStore, IIndexManager } from "../storage/interfaces.js";
@@ -23,6 +24,7 @@ export class BlackboardEngine {
   private readonly projectRoot: string | null;
   private archiver: Archiver | null = null;
   private archiveThreshold: number | null = null;
+  private archiveRetain = 0;
   private graphPopulator: GraphAutoPopulator | null = null;
   private agentStore: IAgentStore | null = null;
 
@@ -44,6 +46,7 @@ export class BlackboardEngine {
   setArchiver(archiver: Archiver, config: TwiningConfig): void {
     this.archiver = archiver;
     this.archiveThreshold = config.archive.max_blackboard_entries_before_archive;
+    this.archiveRetain = config.archive.retain_recent ?? 0;
   }
 
   /** Inject graph auto-populator for relation extraction from posts. */
@@ -155,29 +158,30 @@ export class BlackboardEngine {
     }
 
     // Auto-archive if threshold exceeded (fire-and-forget, non-fatal) — spec §6.1.3
-    // Counts only archivable entries: decision entries (legacy cross-post
-    // mirrors — new decisions no longer post to the blackboard, issue #30)
-    // are never archived while keep_decisions defaults true, entries
-    // tagged "archive" are the archiver's own summary posts, and unresolved
-    // need/warning entries are exempt from archiving (#40) — including any
-    // of these in the count would let the trigger permanently re-arm itself
-    // (the archive-loop field bug).
+    // The count IS the sweep's own partition (partitionArchivable): any
+    // drift between what the trigger counts and what the sweep archives is
+    // how the #35 feedback loop happened (counted-but-exempt entries kept
+    // the count permanently over threshold, firing on every post). The old
+    // ad-hoc predicate — no decisions, no "archive"-tagged summary posts,
+    // no unresolved need/warning — is subsumed: exempt classes never enter
+    // to_archive, and anything counted WILL be archived by the same
+    // partition, so re-arming is impossible by construction. The far-future
+    // cutoff mirrors the old no-age-filter count semantics (a same-
+    // millisecond post must not dodge the count); retention (D4) bounds the
+    // sweep to all but the newest retain_recent entries.
     if (this.archiver && this.archiveThreshold && !input._skipAutoArchive) {
       const { entries } = await this.store.read();
       const resolvedIds = computeResolvedIds(entries);
-      const archivableCount = entries.filter(
-        (e) =>
-          e.entry_type !== "decision" &&
-          !(e.tags ?? []).includes("archive") &&
-          !(
-            (e.entry_type === "need" || e.entry_type === "warning") &&
-            !resolvedIds.has(e.id)
-          ),
-      ).length;
-      if (archivableCount >= this.archiveThreshold) {
-        this.archiver.archive({ summarize: true }).catch((err) => {
-          console.error("[twining] Auto-archive failed (non-fatal):", err);
-        });
+      const { to_archive } = partitionArchivable(entries, resolvedIds, {
+        before: "9999-12-31T23:59:59.999Z",
+        retain: this.archiveRetain,
+      });
+      if (to_archive.length >= this.archiveThreshold) {
+        this.archiver
+          .archive({ summarize: true, retain: this.archiveRetain })
+          .catch((err) => {
+            console.error("[twining] Auto-archive failed (non-fatal):", err);
+          });
       }
     }
 

@@ -5,8 +5,8 @@
   "properties": {
     "description": "Archives old blackboard entries, preserves decisions, optional summary posting",
     "layer": "engine",
-    "scope": "src/"
+    "scope": "src/,src/engine/"
   },
   "type": "file",
-  "updated_at": "2026-07-23T02:56:45.350Z"
+  "updated_at": "2026-08-07T00:49:37.786Z"
 }

@@ -269,6 +269,12 @@ export interface TwiningConfig {
     auto_archive_on_commit: boolean;
     auto_archive_on_context_switch: boolean;
     max_blackboard_entries_before_archive: number;
+    /**
+     * Count-based retention (D4): sweeps keep the newest N non-exempt
+     * entries on the board. Count-based, not age-based — the #35 outage
+     * proved an age cutoff cannot bound a same-hour burst. 0 disables.
+     */
+    retain_recent: number;
   };
   context_assembly: {
     default_max_tokens: number;

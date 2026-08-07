@@ -78,7 +78,7 @@ describe("housekeeping preview/execute parity (#39)", () => {
     seedEntry("finding", "Old finding A", OLD);
     seedEntry("finding", "Old finding B", OLD);
 
-    const preview = await engine.run({ execute: false });
+    const preview = await engine.run({ execute: false, archive: true });
 
     expect(preview.dry_run).toBe(true);
     expect(preview.archived.count).toBe(2);
@@ -97,8 +97,8 @@ describe("housekeeping preview/execute parity (#39)", () => {
     seedEntry("need", "Open duplicate need", OLD);
     seedEntry("need", "Open duplicate need", OLD);
 
-    const preview = await engine.run({ execute: false });
-    const execute = await engine.run({ execute: true });
+    const preview = await engine.run({ execute: false, archive: true });
+    const execute = await engine.run({ execute: true, archive: true });
 
     expect(preview.archived.count).toBe(execute.archived.count);
     expect(preview.deduplicated.removed).toBe(execute.deduplicated.removed);
@@ -117,7 +117,7 @@ describe("housekeeping preview/execute parity (#39)", () => {
       relates_to: [resolvedId],
     });
 
-    const preview = await engine.run({ execute: false });
+    const preview = await engine.run({ execute: false, archive: true });
 
     expect(preview.dangling_warnings.count).toBe(1);
     expect(preview.dangling_warnings.items[0]!.summary).toBe("Open warning");
@@ -128,10 +128,10 @@ describe("housekeeping preview/execute parity (#39)", () => {
     seedEntry("warning", "Open warning", OLD);
     seedEntry("finding", "Old finding", OLD);
 
-    const preview = await engine.run({ execute: false });
+    const preview = await engine.run({ execute: false, archive: true });
     expect(preview.archived.kept_open).toBe(2);
 
-    const execute = await engine.run({ execute: true });
+    const execute = await engine.run({ execute: true, archive: true });
     expect(execute.archived.kept_open).toBe(2);
     expect(execute.archived.count).toBe(1);
 

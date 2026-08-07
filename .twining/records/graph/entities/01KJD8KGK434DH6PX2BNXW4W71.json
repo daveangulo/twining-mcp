@@ -3,8 +3,8 @@
   "id": "01KJD8KGK434DH6PX2BNXW4W71",
   "name": "src/engine/blackboard.ts",
   "properties": {
-    "scope": "src/,src/storage/,src/tools/"
+    "scope": "src/,src/engine/,src/storage/,src/tools/"
   },
   "type": "file",
-  "updated_at": "2026-08-06T22:21:50.483Z"
+  "updated_at": "2026-08-07T00:49:37.787Z"
 }

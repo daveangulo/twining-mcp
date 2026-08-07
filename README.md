@@ -290,8 +290,8 @@ The full default surface is these 15 tools. Everything else needs `full_surface:
 | `twining_resolve` | Mark open needs/questions/warnings handled. Persists `status: "resolved"` with resolver identity and note; the record stays on the board as searchable history. The everyday exit from the open lane (dismissal is for noise only) |
 | `twining_why` | Check what decisions constrain a file before modifying it |
 | `twining_status` | Health check — entry counts, decision counts, actionable warnings |
-| `twining_housekeeping` | Periodic maintenance — archive, deduplicate, surface stale decisions (dry-run by default). Optional `staleness_review`, `merge_sweep`, and `compact_archives` flags |
-| `twining_archive` | Move blackboard entries to the archive tier. **Takes no cutoff by default — an argument-free call archives everything archivable**, so pass `before` unless you intend a full sweep |
+| `twining_housekeeping` | Periodic maintenance — deduplicate, surface stale decisions, prune, rotate (dry-run by default). The board-archive pass is **opt-in** (`archive: true`) and retains the newest `archive.retain_recent` entries. Optional `staleness_review`, `merge_sweep`, and `compact_archives` flags |
+| `twining_archive` | Move blackboard entries to the archive tier. **Takes no cutoff by default — an argument-free call archives everything archivable**, so pass `before` or `retain` (keep newest N) unless you intend a full sweep |
 | `twining_archive_stale` | Archive caller-confirmed candidate IDs from staleness or merge-sweep review. Decisions move to `archived` status; entries are dismissed. Provenance preserved. Warns on batches above 5% of live decisions |
 | `twining_unarchive` | Restore archived decisions to `active` — the undo for a bad archive sweep. Assemble/why report hidden archived decisions as `archived_excluded_count` |
 | `twining_add_entity` | Add a knowledge-graph entity |

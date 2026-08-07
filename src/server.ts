@@ -197,6 +197,7 @@ export function createServer(projectRoot: string): ServerContext {
     graphEngine,
     projectRoot,
     config.housekeeping?.staleness_threshold,
+    config.archive.retain_recent,
   );
 
   // Create exporter

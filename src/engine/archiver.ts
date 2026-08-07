@@ -12,6 +12,87 @@ import type { BlackboardEngine } from "./blackboard.js";
 import type { BlackboardEntry } from "../utils/types.js";
 import type { IBlackboardStore, IIndexManager } from "../storage/interfaces.js";
 
+export interface ArchivePartitionOptions {
+  before?: string;
+  keep_decisions?: boolean;
+  /** Exempts unresolved needs, warnings, AND open questions (D4 widened
+   *  the set to match triage's open-obligation concept). */
+  keep_open_needs_warnings?: boolean;
+  /**
+   * Count-based retention (D4): keep the newest `retain` non-exempt entries
+   * on the board regardless of age. Count-based, not age-based, because the
+   * #35 field outage proved an age cutoff cannot bound a same-hour burst.
+   * Undefined/0 = no retention (legacy explicit-call semantics).
+   */
+  retain?: number;
+}
+
+export interface ArchivePartition {
+  to_archive: BlackboardEntry[];
+  kept_open_count: number;
+  retained_count: number;
+  cutoff: string;
+}
+
+/**
+ * THE archive partition — the single source of truth for "what would a sweep
+ * archive". Used by Archiver.plan()/archive() AND by the blackboard
+ * auto-archive trigger count: the two MUST stay the same function, because
+ * any entry class that is counted by the trigger but never archived by the
+ * sweep re-arms the trigger permanently (the #35 auto-archive feedback
+ * loop). Sharing the partition makes that drift impossible by construction.
+ */
+export function partitionArchivable(
+  allEntries: BlackboardEntry[],
+  resolvedIds: Set<string>,
+  options?: ArchivePartitionOptions,
+): ArchivePartition {
+  const cutoff = options?.before ?? new Date().toISOString();
+  const keepDecisions = options?.keep_decisions ?? true;
+  const keepOpen = options?.keep_open_needs_warnings ?? true;
+  const retain = options?.retain ?? 0;
+
+  const toArchive: BlackboardEntry[] = [];
+  let keptOpen = 0;
+  for (const entry of allEntries) {
+    const isOldEnough = entry.timestamp < cutoff;
+    if (!isOldEnough) continue;
+    if (keepDecisions && entry.entry_type === "decision") continue;
+    if (
+      keepOpen &&
+      (entry.entry_type === "need" ||
+        entry.entry_type === "warning" ||
+        entry.entry_type === "question") &&
+      !resolvedIds.has(entry.id)
+    ) {
+      keptOpen++;
+      continue;
+    }
+    toArchive.push(entry);
+  }
+
+  // Retention: the newest K archivable entries stay on the board. Applied
+  // after exemptions so K is a floor of recent working memory, not a quota
+  // consumed by open obligations.
+  let retainedCount = 0;
+  let finalToArchive = toArchive;
+  if (retain > 0 && toArchive.length > 0) {
+    const sorted = [...toArchive].sort(
+      (a, b) => b.timestamp.localeCompare(a.timestamp) || b.id.localeCompare(a.id),
+    );
+    const retained = new Set(sorted.slice(0, retain).map((e) => e.id));
+    retainedCount = Math.min(retain, sorted.length);
+    finalToArchive = toArchive.filter((e) => !retained.has(e.id));
+  }
+
+  return {
+    to_archive: finalToArchive,
+    kept_open_count: keptOpen,
+    retained_count: retainedCount,
+    cutoff,
+  };
+}
+
 export class Archiver {
   private readonly twiningDir: string;
   private readonly blackboardStore: IBlackboardStore;
@@ -33,52 +114,25 @@ export class Archiver {
   /**
    * Compute the archive partition without touching the store (#39).
    * Entries before the cutoff are archivable UNLESS they are decisions
-   * (LIFE-03) or unresolved need/warning entries (#40). A need/warning
-   * counts as resolved when any other entry back-references it via
+   * (LIFE-03) or unresolved need/warning/question entries (#40, widened to
+   * questions by D4). An item counts as resolved when explicitly resolved
+   * (status "resolved", D2) or when any other entry back-references it via
    * relates_to — age is the wrong archival signal for open obligations,
-   * which matter MORE as they age, not less.
+   * which matter MORE as they age, not less. `retain` keeps the newest K
+   * archivable entries on the board (D4 count-based retention).
    */
-  async plan(options?: {
-    before?: string;
-    keep_decisions?: boolean;
-    keep_open_needs_warnings?: boolean;
-  }): Promise<{
-    to_archive: BlackboardEntry[];
-    kept_open_count: number;
-    cutoff: string;
-  }> {
-    const cutoff = options?.before ?? new Date().toISOString();
-    const keepDecisions = options?.keep_decisions ?? true;
-    const keepOpen = options?.keep_open_needs_warnings ?? true;
-
+  async plan(options?: ArchivePartitionOptions): Promise<ArchivePartition> {
     // Read through the store interface — backend-agnostic (W2.2). The old
     // implementation read and rewrote blackboard.jsonl directly, which would
     // silently no-op under the sqlite backend.
     const { entries: allEntries } = await this.blackboardStore.read();
 
-    // A need/warning referenced by any other entry's relates_to is resolved.
     // Resolvers archived in earlier runs aren't visible here — that fails
-    // toward keeping the entry, never toward losing an open obligation.
+    // toward keeping the entry, never toward losing an open obligation
+    // (explicit D2 status survives regardless).
     const resolvedIds = computeResolvedIds(allEntries);
 
-    const toArchive: BlackboardEntry[] = [];
-    let keptOpen = 0;
-    for (const entry of allEntries) {
-      const isOldEnough = entry.timestamp < cutoff;
-      if (!isOldEnough) continue;
-      if (keepDecisions && entry.entry_type === "decision") continue;
-      if (
-        keepOpen &&
-        (entry.entry_type === "need" || entry.entry_type === "warning") &&
-        !resolvedIds.has(entry.id)
-      ) {
-        keptOpen++;
-        continue;
-      }
-      toArchive.push(entry);
-    }
-
-    return { to_archive: toArchive, kept_open_count: keptOpen, cutoff };
+    return partitionArchivable(allEntries, resolvedIds, options);
   }
 
   /**
@@ -88,15 +142,13 @@ export class Archiver {
    * Archived entries are moved to archive/{YYYY-MM-DD}-blackboard.jsonl.
    * Optionally posts a summary finding (LIFE-02).
    */
-  async archive(options?: {
-    before?: string;
-    keep_decisions?: boolean;
-    keep_open_needs_warnings?: boolean;
+  async archive(options?: ArchivePartitionOptions & {
     summarize?: boolean;
   }): Promise<{
     archived_count: number;
     archive_file: string;
     kept_open_count: number;
+    retained_count: number;
     summary?: string;
   }> {
     const summarize = options?.summarize ?? true;
@@ -104,11 +156,12 @@ export class Archiver {
     const {
       to_archive: toArchive,
       kept_open_count,
+      retained_count,
       cutoff,
     } = await this.plan(options);
 
     if (toArchive.length === 0) {
-      return { archived_count: 0, archive_file: "", kept_open_count };
+      return { archived_count: 0, archive_file: "", kept_open_count, retained_count };
     }
 
     // Write archived entries to the archive file BEFORE removing them from
@@ -155,6 +208,7 @@ export class Archiver {
       archived_count: toArchive.length,
       archive_file: archiveFile,
       kept_open_count,
+      retained_count,
       summary: summaryText,
     };
   }

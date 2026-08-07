@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-07T00:49:37.442Z",
+  "id": "01KZCV4VN228K8WD5S51VXCG46",
+  "name": "01KZCV4VJ64N2QJZV8P2Z9KXDQ",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Chose to supersede the archive:false workaround: housekeeping's archive pass now defaults OFF and the sweep itself is bounded by count-based retention (archive.retain_recent, default 200)"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-07T00:49:37.442Z"
+}

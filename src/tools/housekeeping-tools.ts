@@ -21,8 +21,8 @@ export function registerHousekeepingTools(
     {
       description:
         "Run periodic maintenance on Twining stores. Preview by default (dry run); preview simulates the full pass pipeline, so its counts match what execute will do on the same state (#39). " +
-        "Archives old entries (keeping decisions and unresolved need/warning entries, #40), removes duplicates, surfaces stale decisions and dangling warnings, " +
-        "prunes orphaned graph entities, rotates old metrics, and backfills missing superseded_by back-links on superseded decisions. " +
+        "Removes duplicates, surfaces stale decisions and dangling warnings, prunes orphaned graph entities, rotates old metrics, and backfills missing superseded_by back-links on superseded decisions. " +
+        "The blackboard archive pass is OPT-IN (archive: true): it sweeps every archivable entry regardless of age, keeping decisions, unresolved need/warning/question entries (#40), and the newest archive.retain_recent entries (D4). " +
         "Pass staleness_review: true to also flag entries whose scope/files/branch are gone. " +
         "Pass execute: true to apply changes.",
       inputSchema: {
@@ -62,7 +62,7 @@ export function registerHousekeepingTools(
           .boolean()
           .optional()
           .describe(
-            "Defaults to true. Set to false to skip the blackboard archive pass while still running the other passes. The archive pass takes no cutoff, so with execute: true it archives the ENTIRE live board, not just old entries — pass archive: false when you want a targeted repair (notably compact_archives, which needs execute: true to do real work) without sweeping the board.",
+            "Defaults to FALSE (D4) — housekeeping no longer sweeps the board as a side effect; repairs like compact_archives can run with execute: true safely. Set archive: true to run the blackboard archive pass: it takes no age cutoff, archiving every archivable entry except decisions, unresolved need/warning/question entries, and the newest archive.retain_recent entries (default 200).",
           ),
         stale_days: z
           .number()

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-07T00:49:37.559Z",
+  "id": "01KZCV4VRQ7R6E08403B2JEX9B",
+  "properties": {
+    "decision_summary": "Chose count-based retention (retain newest K) over an age cutoff for the archive pass"
+  },
+  "source": "01KHMSDV08WTQDVVSF4159DVB1",
+  "target": "01KZCV4VRNVAG5AD5NRHJ4PS4N",
+  "type": "decided_by"
+}

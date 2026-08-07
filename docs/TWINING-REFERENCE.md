@@ -13,11 +13,11 @@ Full reference for all Twining MCP tools. See `CLAUDE.md` for mandatory workflow
 | `twining_post` | During work | Share findings, warnings, needs, or status updates |
 | `twining_resolve` | During work | Mark open needs/questions/warnings handled — persists `status: "resolved"` with resolver identity and note; the record stays on the board as history. The everyday exit from the open lane (dismiss is for noise only) |
 | `twining_why` | Gate 1 | Check what decisions constrain a file before modifying it |
-| `twining_housekeeping` | Maintenance | Archive, deduplicate, surface stale state (dry-run by default). Add `staleness_review: true` for orphan detection (missing scope/files/branch) or `merge_sweep: true` to flag entries from branches deleted since the last run |
+| `twining_housekeeping` | Maintenance | Deduplicate, surface stale state, prune, rotate (dry-run by default). The board-archive pass is opt-in (`archive: true`) and retains the newest `archive.retain_recent` entries. Add `staleness_review: true` for orphan detection (missing scope/files/branch) or `merge_sweep: true` to flag entries from branches deleted since the last run |
 | `twining_archive_stale` | Maintenance | Archive caller-confirmed IDs from `staleness_review` or `merge_sweep`. Decisions move to `archived` status; blackboard entries are dismissed. Provenance preserved. Warns on batches above 5% of live decisions — staleness scores are heuristics |
 | `twining_unarchive` | Maintenance | Restore archived decisions to `active` — the undo for a bad archive sweep. Assemble/why report hidden archived decisions as `archived_excluded_count` |
 | `twining_status` | Anytime | Health check — entry counts, decision counts, actionable warnings |
-| `twining_archive` | Maintenance | Move blackboard entries to the archive tier. Takes no cutoff by default — an argument-free call archives everything archivable, so pass `before` unless a full sweep is intended |
+| `twining_archive` | Maintenance | Move blackboard entries to the archive tier. Takes no cutoff by default — an argument-free call archives everything archivable, so pass `before` or `retain` (keep newest N) unless a full sweep is intended |
 | `twining_add_entity` | Optional | Record a code entity in the knowledge graph |
 | `twining_add_relation` | Optional | Record a relationship in the knowledge graph |
 | `twining_neighbors` | Optional | Explore entity connections up to depth 3 |

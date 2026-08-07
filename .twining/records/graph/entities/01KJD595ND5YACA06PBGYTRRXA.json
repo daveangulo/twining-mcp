@@ -3,8 +3,8 @@
   "id": "01KJD595ND5YACA06PBGYTRRXA",
   "name": "src/config.ts",
   "properties": {
-    "scope": "project"
+    "scope": "project,src/engine/"
   },
   "type": "file",
-  "updated_at": "2026-07-31T20:18:02.314Z"
+  "updated_at": "2026-08-07T00:49:37.789Z"
 }

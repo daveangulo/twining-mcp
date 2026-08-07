@@ -47,6 +47,7 @@ export const DEFAULT_CONFIG: TwiningConfig = {
     auto_archive_on_commit: true,
     auto_archive_on_context_switch: true,
     max_blackboard_entries_before_archive: 500,
+    retain_recent: 200,     // sweeps keep the newest 200 non-exempt entries (D4); anchored to triage's LIMIT_MAX
   },
   context_assembly: {
     default_max_tokens: 4000,

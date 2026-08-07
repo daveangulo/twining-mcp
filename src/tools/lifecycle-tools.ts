@@ -177,7 +177,7 @@ export function registerLifecycleTools(
     "twining_archive",
     {
       description:
-        "Archive old blackboard entries. Moves entries older than a cutoff timestamp to an archive file, preserving decision entries and unresolved need/warning entries (#40 — a need/warning counts as resolved when a later entry references it via relates_to). Optionally posts a summary finding.",
+        "Archive old blackboard entries. Moves entries older than a cutoff timestamp to an archive file, preserving decision entries and unresolved need/warning/question entries (#40 — an item counts as resolved when explicitly resolved via twining_resolve or when a later entry references it via relates_to). Optionally posts a summary finding. WARNING: the cutoff defaults to now, so an argument-free call archives everything archivable — pass `before` or `retain` unless a full sweep is intended.",
       inputSchema: {
         before: z
           .string()
@@ -186,6 +186,14 @@ export function registerLifecycleTools(
           })
           .optional()
           .describe("ISO timestamp cutoff — archive entries before this time (default: now)"),
+        retain: z
+          .number()
+          .int()
+          .min(0)
+          .optional()
+          .describe(
+            "Keep the newest N archivable entries on the board regardless of age (D4 count-based retention — an age cutoff cannot bound a same-hour burst). Default 0 = no retention.",
+          ),
         keep_decisions: z
           .boolean()
           .optional()

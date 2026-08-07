@@ -94,6 +94,8 @@ export class HousekeepingEngine {
     private readonly graphEngine: GraphEngine | null,
     private readonly projectRoot: string | null = null,
     private readonly stalenessThreshold: number = DEFAULT_STALENESS_THRESHOLD,
+    /** Newest-K retention for the opt-in archive pass (config archive.retain_recent). */
+    private readonly archiveRetain: number = 0,
   ) {}
 
   async run(options?: {
@@ -110,11 +112,12 @@ export class HousekeepingEngine {
      */
     repair_entity_scopes?: boolean;
     /**
-     * Set false to skip the blackboard archive pass (step 1) while still
-     * running the other passes. Step 1 archives with no cutoff, so on
-     * `execute: true` it sweeps the whole live board — which made the
-     * `compact_archives` repair path unusable, since compaction also needs
-     * `execute: true` to do real work. Defaults true to preserve behavior.
+     * Set true to run the blackboard archive pass (step 1). OFF BY DEFAULT
+     * since D4: the pass takes no age cutoff, so on `execute: true` it used
+     * to sweep the whole live board as a side effect of any maintenance
+     * call — an agent reaching for the `compact_archives` repair got a
+     * full-board archive it never asked for. When enabled, the sweep
+     * retains the newest `archive.retain_recent` entries (constructor).
      */
     archive?: boolean;
   }): Promise<HousekeepingResult> {
@@ -126,7 +129,7 @@ export class HousekeepingEngine {
     const mergeSweep = options?.merge_sweep ?? false;
     const compactArchivesOpt = options?.compact_archives ?? false;
     const repairEntityScopesOpt = options?.repair_entity_scopes ?? false;
-    const archiveEnabled = options?.archive ?? true;
+    const archiveEnabled = options?.archive ?? false;
 
     const result: HousekeepingResult = {
       archived: { count: 0, file: "", kept_open: 0 },
@@ -153,7 +156,10 @@ export class HousekeepingEngine {
       // a sweep happened.
     } else if (execute) {
       try {
-        const archiveResult = await this.archiver.archive({ summarize: false });
+        const archiveResult = await this.archiver.archive({
+          summarize: false,
+          retain: this.archiveRetain,
+        });
         result.archived.count = archiveResult.archived_count;
         result.archived.file = archiveResult.archive_file;
         result.archived.kept_open = archiveResult.kept_open_count;
@@ -162,7 +168,8 @@ export class HousekeepingEngine {
       }
     } else {
       try {
-        const plan = await this.archiver.plan();
+        // Same retain as execute — preview/execute parity (#39).
+        const plan = await this.archiver.plan({ retain: this.archiveRetain });
         result.archived.count = plan.to_archive.length;
         result.archived.kept_open = plan.kept_open_count;
         plannedArchiveIds = new Set(plan.to_archive.map((e) => e.id));

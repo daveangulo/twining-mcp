@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-07T00:49:37.678Z",
+  "id": "01KZCV4VWEX4GDNER3H8WB8QCC",
+  "properties": {
+    "decision_summary": "Chose to make the auto-archive trigger count call the SAME partitionArchivable function the sweep uses, dropping the ad-hoc predicate including its archive-tag exclusion"
+  },
+  "source": "01KHMSDEJH7CQCE97XA0ZAP52A",
+  "target": "01KZCV4VW9E80ZSM7NZ5AH2CQH",
+  "type": "decided_by"
+}

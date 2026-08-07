@@ -1,0 +1,35 @@
+{
+  "affected_files": [
+    "src/engine/archiver.ts",
+    "src/engine/blackboard.ts",
+    "src/engine/housekeeping.ts",
+    "src/config.ts",
+    "src/server.ts",
+    "src/tools/housekeeping-tools.ts",
+    "src/tools/lifecycle-tools.ts",
+    "src/utils/types.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Stage 4 (D4): count-based archive retention via shared partitionArchivable used by both plan() and the auto-archive trigger; housekeeping archive default flipped to false; open questions join the #40 exemption; retain param on twining_archive",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KZCV4VSKMK6JS6V5C6EFB2RR",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "cbac09fe1b415bc2f46a8a8b552a6f4a96c29bd6",
+    "recorded_at": "2026-08-07T00:49:37.567Z"
+  },
+  "rationale": "counted entries are now archived by construction, so the counted-but-exempt re-arm class (#35) is structurally impossible; the tag exclusion was subsumed",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/engine/",
+  "status": "active",
+  "summary": "Chose to make the auto-archive trigger count call the SAME partitionArchivable function the sweep uses, dropping the ad-hoc predicate including its archive-tag exclusion",
+  "timestamp": "2026-08-07T00:49:37.587Z"
+}
