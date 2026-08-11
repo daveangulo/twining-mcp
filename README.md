@@ -1,3 +1,5 @@
+[![MCP Toplist](https://mcptoplist.com/badge/glama%2Fdaveangulo%2Ftwining-mcp.svg)](https://mcptoplist.com/server/glama%2Fdaveangulo%2Ftwining-mcp)
+
 <p align="center">
   <img src="assets/logo.png" alt="Twining" width="400">
 </p>
