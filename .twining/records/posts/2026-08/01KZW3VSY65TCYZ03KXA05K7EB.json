@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: follow-up — committed, propagating dismissal audit (records/dismissals or equivalent) so multi-machine stores keep the dismissal trail; tombstones in gitignored archive/ exist on the dismissing machine only",
+  "entry_type": "need",
+  "id": "01KZW3VSY65TCYZ03KXA05K7EB",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "ea0f2ea826d833ac470c613c340cfb6e12f3afe5",
+    "recorded_at": "2026-08-12T23:10:34.418Z"
+  },
+  "scope": "src/",
+  "summary": "follow-up — committed, propagating dismissal audit (records/dismissals or equivalent) so multi-machine stores keep the dismissal trail; tombstones in gitignored archive/ exist on the dismissing mac…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-12T23:10:34.438Z"
+}

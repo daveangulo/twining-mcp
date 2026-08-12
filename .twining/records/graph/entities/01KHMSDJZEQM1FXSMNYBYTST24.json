@@ -5,8 +5,8 @@
   "properties": {
     "description": "MCP tool handlers: twining_post, twining_read, twining_query, twining_recent",
     "layer": "tools",
-    "scope": "project,src/storage/,src/tools/"
+    "scope": "project,src/,src/storage/,src/tools/"
   },
   "type": "file",
-  "updated_at": "2026-08-07T04:58:58.987Z"
+  "updated_at": "2026-08-12T23:10:34.406Z"
 }

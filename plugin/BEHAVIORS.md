@@ -59,7 +59,7 @@ The unified Gate 2 recording tool — call before every git commit and before en
 <!-- tier: 2 -->
 
 #### Context
-Periodic store maintenance in one call: archival, deduplication, stale-provisional surfacing, orphaned-graph pruning, metrics rotation. Optional passes: `staleness_review` (deterministic orphan signals) and `merge_sweep` (records whose originating branch was deleted). Dry-run by default.
+Periodic store maintenance in one call: deduplication, stale-provisional surfacing, orphaned-graph pruning, metrics rotation. The blackboard archive pass is **opt-in** (`archive: true`, off by default since 2.7.0) and retains the newest `archive.retain_recent` entries when it runs — repairs like `compact_archives` are safe with plain `execute: true`. Optional passes: `staleness_review` (deterministic orphan signals) and `merge_sweep` (records whose originating branch was deleted). Dry-run by default.
 
 #### Rules
 | ID | Level | Rule |
@@ -67,12 +67,36 @@ Periodic store maintenance in one call: archival, deduplication, stale-provision
 | HK-01 | SHOULD | Run with `{}` (preview) at the start of long sessions — preview never mutates |
 | HK-02 | MUST | Only pass `execute: true` after reviewing the preview output |
 | HK-03 | SHOULD | Treat staleness/merge-sweep output as candidates for `twining_archive_stale`, never as auto-deletions |
+| HK-04 | MUST | Pass `archive: true` only when a board sweep is the actual intent — it is no longer a side effect of `execute: true` |
+
+### twining_resolve
+<!-- tier: 2 -->
+
+#### Context
+The everyday exit from the open lane (2.7.0): marks open needs/questions/warnings handled, persisting `status: "resolved"` with resolver identity and an optional note. The entry stays on the board as searchable history and leaves triage/assemble. `twining_record`'s `resolves: [ids]` does the same at session end.
+
+#### Rules
+| ID | Level | Rule |
+|----|-------|------|
+| RES-01 | SHOULD | Resolve handled items instead of dismissing them — dismissal is for noise that should never have been recorded |
+| RES-02 | SHOULD | Pass a note saying HOW the item was handled — the note is the audit trail |
+
+### twining_unarchive
+<!-- tier: 2 -->
+
+#### Context
+The undo for `twining_archive_stale` (2.7.0): restores archived **decisions** to their pre-archive status (a provisional returns to the ratification queue, not to `active`). Does not restore blackboard entries — those are deleted at archive time with a machine-local tombstone in `.twining/archive/`.
+
+#### Rules
+| ID | Level | Rule |
+|----|-------|------|
+| UNARCH-01 | SHOULD | When assemble/why report a surprising `archived_excluded_count`, review and unarchive before treating the scope as decision-free |
 
 ### twining_archive_stale
 <!-- tier: 2 -->
 
 #### Context
-Archives a reviewed list of stale item IDs (typically candidates from `twining_housekeeping`'s staleness or merge-sweep passes). Decisions move to `archived` status (excluded from assemble/why but kept on disk); blackboard entries are dismissed. Posts an audit-trail finding.
+Archives a reviewed list of stale item IDs (typically candidates from `twining_housekeeping`'s staleness or merge-sweep passes). Decisions move to `archived` status (excluded from assemble/why, reversible via `twining_unarchive`, pre-archive status remembered); blackboard entries are **deleted** with a tombstone (entry + reason) appended to the machine-local `.twining/archive/`. Warns on batches above 5% of live decisions. Posts an audit-trail finding.
 
 #### Rules
 | ID | Level | Rule |

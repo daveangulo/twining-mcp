@@ -33,15 +33,21 @@ export class PendingProcessor {
   private readonly twiningDir: string;
   private readonly blackboardEngine: BlackboardEngine;
   private readonly archiver: Archiver | null;
+  private readonly archiveRetain: number;
 
   constructor(
     twiningDir: string,
     blackboardEngine: BlackboardEngine,
     archiver: Archiver | null,
+    /** Newest-K retention for queued archive actions (config archive.retain_recent).
+     *  Hook-fired sweeps must be bounded like every other automatic sweep (D4) —
+     *  this path used to full-board sweep with no retention (review finding). */
+    archiveRetain = 0,
   ) {
     this.twiningDir = twiningDir;
     this.blackboardEngine = blackboardEngine;
     this.archiver = archiver;
+    this.archiveRetain = archiveRetain;
   }
 
   /**
@@ -91,6 +97,9 @@ export class PendingProcessor {
         if (action.action === "archive" && this.archiver) {
           await this.archiver.archive({
             before: action.before as string | undefined,
+            // Queued actions may override; otherwise the configured floor
+            // applies — hook-fired sweeps are bounded like the auto-trigger.
+            retain: (action.retain as number | undefined) ?? this.archiveRetain,
           });
         }
         // Other action types can be added here in the future

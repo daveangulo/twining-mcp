@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Adversarial review round 2 (full 5-lens coverage, 23 raw, 15 confirmed): all fixed — resolves[] now stamps before the status post with error containment; archived_from round-trip so unarchive is no longer a lossy undo; dedup is lifecycle-aware and tombstones; all sweep surfaces share NO_AGE_CUTOFF + retention (incl. pending-actions hook path); archive filenames clamped to run day; corroborated-pair staleness scoring un-mutes blackboard entries; basename inference requires uniqueness; triage/dismiss/BEHAVIORS docs made honest\nDecisions: Chose the corroborated-pair rule (2+ signals lift to max(noisy-or, 0.95)) over raising branch_gone to 0.75 — D3's demotion of branch_gone as a lone signal survives, while blackboard entries (structurally file-less, ceiling 0.88) become flaggable exactly when two independent structural signals agree; still never 1.0; Chose to restore archived decisions to a remembered archived_from status rather than refusing to archive non-active decisions — archiving a stale provisional is legitimate housekeeping; the defect was only the forced-active restore that ratified it; Chose basename-uniqueness for the moved-not-gone inference over git log --follow rename detection — keeps the probe one subprocess; a unique surviving basename is strong movement evidence, a common one is none; Chose to keep dismissal tombstones machine-local and document that plainly, deferring a committed records/dismissals tree — propagating tombstones needs an ingest design (id collisions, deletion semantics) that should not be rushed into a release; recorded as follow-up\nFindings: need: follow-up — committed, propagating dismissal audit (records/dismissals or equivalent) so multi-machine stores keep the dismissal trail; tombstones in gitignored archive/ exist on the dismissing machine only; need: follow-up — Archiver.archive still writes plan()-time entry copies to the archive file before dismissing; a concurrent mutation between plan-read and dismiss can archive a stale copy (window now tiny after the resolves reorder, but capture-under-dismiss would close it for every mutator); The eval BEHAVIORS schema pins the tool-entry count (was 35) — any new tool section must bump it in test/eval/types.ts AND behaviors-parser.test.ts (now 37)",
+  "entry_type": "status",
+  "id": "01KZW3VSAPD51XF2WRXFGX8Y80",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "ea0f2ea826d833ac470c613c340cfb6e12f3afe5",
+    "recorded_at": "2026-08-12T23:10:33.790Z"
+  },
+  "scope": "src/",
+  "summary": "Adversarial review round 2 (full 5-lens coverage, 23 raw, 15 confirmed): all fixed — resolves[] now stamps before the status post with error containment; archived_from round-trip so unarchive is no…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-12T23:10:33.814Z"
+}

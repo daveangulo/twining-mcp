@@ -343,6 +343,30 @@ export function registerRecordTools(
         if (args.decisions?.length) detailParts.push(`Decisions: ${args.decisions.join("; ")}`);
         if (args.findings?.length) detailParts.push(`Findings: ${args.findings.join("; ")}`);
 
+        // Explicit resolution (D2) BEFORE the status post: the post's
+        // relates_to back-references instantly make the targets archivable,
+        // and if the board is at the auto-archive threshold the post fires a
+        // concurrent sweep — resolving first persists the audit stamps
+        // before any sweep can capture or delete the targets (review
+        // finding: stamping after the post lost resolved_by/note on busy
+        // boards, reproduced 4/4). Failures surface in the response rather
+        // than failing the record — the resolve is an annotation on the
+        // session, not its substance.
+        let resolveResult: { resolved: string[]; not_found: string[] } | undefined;
+        const resolveErrors: string[] = [];
+        if (args.resolves?.length) {
+          try {
+            resolveResult = await blackboardEngine.resolve(args.resolves, {
+              agent_id: agentId,
+              note: `Resolved by session record: ${statusSummary}`,
+            });
+          } catch (error) {
+            resolveErrors.push(
+              error instanceof Error ? error.message : String(error),
+            );
+          }
+        }
+
         const statusEntry = await blackboardEngine.post({
           entry_type: "status",
           summary: statusSummary,
@@ -358,17 +382,6 @@ export function registerRecordTools(
           scope,
           agent_id: agentId,
         });
-
-        // Explicit resolution (D2): survives the status post being archived,
-        // and records who closed the item. Failures surface in the response
-        // rather than failing the record.
-        let resolveResult: { resolved: string[]; not_found: string[] } | undefined;
-        if (args.resolves?.length) {
-          resolveResult = await blackboardEngine.resolve(args.resolves, {
-            agent_id: agentId,
-            note: `Resolved by session record: ${statusSummary}`,
-          });
-        }
 
         // 2. Create decision records — each item is either NL (string) or structured object.
         const decisionErrors: string[] = [];
@@ -491,6 +504,11 @@ export function registerRecordTools(
             );
             response.message = parts.join(" + ");
           }
+        }
+        if (resolveErrors.length > 0) {
+          response.resolve_errors = resolveErrors;
+          parts.push("resolve failed (items left open)");
+          response.message = parts.join(" + ");
         }
         if (droppedDependsOnIds.size > 0)
           response.dropped_depends_on = [...droppedDependsOnIds];

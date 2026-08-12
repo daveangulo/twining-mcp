@@ -288,3 +288,100 @@ describe("clock-skew auto-archive (review fix: trigger and fired sweep share the
     }
   });
 });
+
+describe("review fixes: dedup lifecycle, archive filename clamp, housekeeping cutoff", () => {
+  let dir: string;
+  let store: BlackboardStore;
+  let engine: BlackboardEngine;
+  let archiver: Archiver;
+
+  beforeEach(() => {
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), "twining-review2-"));
+    fs.writeFileSync(path.join(dir, "blackboard.jsonl"), "");
+    fs.mkdirSync(path.join(dir, "decisions"), { recursive: true });
+    fs.writeFileSync(path.join(dir, "decisions", "index.json"), "[]");
+    store = new BlackboardStore(dir);
+    engine = new BlackboardEngine(store);
+    archiver = new Archiver(dir, store, engine, null);
+  });
+
+  afterEach(() => {
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it("dedup never deletes lifecycle-stamped entries in either role, and tombstones plain duplicates", async () => {
+    const rows = [
+      // Resolved copy + later same-text open repost: BOTH must survive.
+      entry("resolved-old", "need", "2026-01-01T00:00:00.000Z", {
+        status: "resolved",
+        resolved_by: "someone",
+        resolution_note: "handled last month",
+      }),
+      entry("resolved-old-repost", "need", "2026-02-01T00:00:00.000Z"),
+      // Plain duplicate pair: older one dedups away WITH a tombstone.
+      entry("dup-old", "finding", "2026-01-05T00:00:00.000Z"),
+      entry("dup-new", "finding", "2026-01-06T00:00:00.000Z", {
+        // same dedup identity as dup-old
+        summary: "dup-old summary",
+      }),
+    ];
+    // Same-key duplicates need identical summaries; entry() derives summary
+    // from id, so align the pair explicitly.
+    rows[2]!.summary = "dup-old summary";
+    rows[0]!.summary = "recurring need";
+    rows[1]!.summary = "recurring need";
+    fs.writeFileSync(
+      path.join(dir, "blackboard.jsonl"),
+      rows.map((r) => JSON.stringify(r)).join("\n") + "\n",
+    );
+
+    const hk = new HousekeepingEngine(dir, store, new DecisionStore(dir), archiver, null);
+    const result = await hk.run({ execute: true });
+
+    const { entries } = await new BlackboardStore(dir).read();
+    const ids = entries.map((e) => e.id);
+    expect(ids).toContain("resolved-old"); // audit preserved
+    expect(ids).toContain("resolved-old-repost"); // open obligation preserved
+    expect(ids).toContain("dup-new");
+    expect(ids).not.toContain("dup-old");
+    expect(result.deduplicated.removed).toBe(1);
+
+    const archiveDir = path.join(dir, "archive");
+    const lines = fs
+      .readdirSync(archiveDir)
+      .flatMap((f) =>
+        fs.readFileSync(path.join(archiveDir, f), "utf-8").trim().split("\n").map((l) => JSON.parse(l)),
+      );
+    const tomb = lines.find((l) => l.id === "dup-old");
+    expect(tomb).toBeDefined();
+    expect(tomb.dismissed.dismissed_by).toBe("housekeeping-dedup");
+  });
+
+  it("archive filename is dated by run day even under NO_AGE_CUTOFF (no eternal 9999-12-31 file)", async () => {
+    await store.append({
+      entry_type: "finding", summary: "sweep me", detail: "", tags: [], scope: "src/", agent_id: "main",
+    });
+    const result = await archiver.archive({ before: FUTURE, summarize: false });
+    expect(result.archived_count).toBe(1);
+    const today = new Date().toISOString().slice(0, 10);
+    expect(path.basename(result.archive_file)).toBe(`${today}-blackboard.jsonl`);
+  });
+
+  it("housekeeping archive:true sweeps future-stamped entries (NO_AGE_CUTOFF parity with twining_status)", async () => {
+    const future = new Date(Date.now() + 3_600_000).toISOString();
+    fs.writeFileSync(
+      path.join(dir, "blackboard.jsonl"),
+      [
+        JSON.stringify(entry("future-1", "finding", future)),
+        JSON.stringify(entry("future-2", "finding", future)),
+      ].join("\n") + "\n",
+    );
+    const hk = new HousekeepingEngine(
+      dir, new BlackboardStore(dir), new DecisionStore(dir), archiver, null,
+    );
+    const result = await hk.run({ archive: true, execute: true });
+    expect(result.archived.count).toBe(2);
+    const { entries } = await new BlackboardStore(dir).read();
+    expect(entries.filter((e) => e.id.startsWith("future-"))).toHaveLength(0);
+  });
+});

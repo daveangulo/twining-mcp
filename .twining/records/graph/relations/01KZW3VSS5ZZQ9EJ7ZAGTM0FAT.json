@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-12T23:10:34.277Z",
+  "id": "01KZW3VSS5ZZQ9EJ7ZAGTM0FAT",
+  "properties": {
+    "decision_summary": "Chose basename-uniqueness for the moved-not-gone inference over git log --follow rename detection"
+  },
+  "source": "01KHMSDV08WTQDVVSF4159DVB1",
+  "target": "01KZW3VSRZRDMM5H7VQ0PY8SV1",
+  "type": "decided_by"
+}

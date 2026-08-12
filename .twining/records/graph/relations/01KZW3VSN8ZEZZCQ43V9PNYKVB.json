@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-12T23:10:34.152Z",
+  "id": "01KZW3VSN8ZEZZCQ43V9PNYKVB",
+  "properties": {
+    "decision_summary": "Chose to restore archived decisions to a remembered archived_from status rather than refusing to archive non-active decisions"
+  },
+  "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+  "target": "01KZW3VSMWJWXSSM568NNQKH3H",
+  "type": "decided_by"
+}

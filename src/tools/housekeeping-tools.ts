@@ -7,9 +7,10 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { HousekeepingEngine } from "../engine/housekeeping.js";
 import type { BlackboardEngine } from "../engine/blackboard.js";
 import { formatBytes } from "../engine/archive-compactor.js";
-import { appendDismissalTombstones } from "./blackboard-tools.js";
+import { appendDismissalTombstones } from "../engine/tombstones.js";
 import { toolResult, toolError } from "../utils/errors.js";
 import type { IDecisionStore } from "../storage/interfaces.js";
+import type { Decision } from "../utils/types.js";
 
 export function registerHousekeepingTools(
   server: McpServer,
@@ -169,11 +170,22 @@ export function registerHousekeepingTools(
             ? `Archiving ${args.ids.length} items — more than ${batchWarningThreshold} (5% of ${activeCount} live decisions). Staleness signals are heuristics; verify a sample before trusting a batch this large. Archived DECISIONS vanish from assemble/why and are restorable via twining_unarchive; BLACKBOARD entries are deleted (tombstoned to .twining/archive/) and no tool restores them.`
             : undefined;
 
+        const statusById = new Map(decisionIndex.map((e) => [e.id, e.status]));
         const blackboardIds: string[] = [];
         for (const id of args.ids) {
           if (decisionIds.has(id)) {
             try {
-              await decisionStore.updateStatus(id, "archived");
+              // Remember the pre-archive status so unarchive can restore it
+              // (review finding: forcing "active" on restore silently
+              // ratified provisionals and resurrected superseded decisions).
+              const prior = statusById.get(id);
+              await decisionStore.updateStatus(
+                id,
+                "archived",
+                prior && prior !== "archived"
+                  ? { archived_from: prior as Decision["status"] }
+                  : undefined,
+              );
               archivedDecisions.push(id);
             } catch {
               notFound.push(id);
@@ -256,7 +268,7 @@ export function registerHousekeepingTools(
     "twining_unarchive",
     {
       description:
-        "Restore archived decisions to active status — the undo for twining_archive_stale. Archived decisions are excluded from assemble/why (assemble reports them as archived_excluded_count); unarchiving makes them authoritative again. Only decisions currently in status \"archived\" are restored; other IDs are reported back untouched.",
+        "Restore archived decisions — the undo for twining_archive_stale. Each decision returns to its PRE-ARCHIVE status (archived_from): a provisional goes back to the ratification queue, a superseded decision stays retired, and only previously-active decisions become authoritative again. Archived decisions are excluded from assemble/why (assemble reports them as archived_excluded_count). Only decisions currently in status \"archived\" are restored; other IDs are reported back untouched.",
       inputSchema: {
         ids: z
           .array(z.string())
@@ -281,7 +293,14 @@ export function registerHousekeepingTools(
           } else if (decision.status !== "archived") {
             notArchived.push(id);
           } else {
-            await decisionStore.updateStatus(id, "active");
+            // Restore the pre-archive status (absent on pre-2.7 archives →
+            // "active", the only restore that existed then) and clear the
+            // marker — Object.assign with undefined drops it on serialize.
+            await decisionStore.updateStatus(
+              id,
+              decision.archived_from ?? "active",
+              { archived_from: undefined },
+            );
             restored.push(id);
           }
         }
@@ -289,7 +308,7 @@ export function registerHousekeepingTools(
         if (restored.length > 0) {
           await blackboardEngine.post({
             entry_type: "finding",
-            summary: `Unarchived ${restored.length} decision(s) — restored to active`,
+            summary: `Unarchived ${restored.length} decision(s) — restored to their pre-archive status`,
             detail: [
               args.reason ? `Reason: ${args.reason}` : null,
               `Decisions: ${restored.join(", ")}`,

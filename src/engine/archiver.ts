@@ -180,7 +180,11 @@ export class Archiver {
     // regardless of backend.
     const archiveDir = path.join(this.twiningDir, "archive");
     ensureDir(archiveDir);
-    const dateStr = cutoff.slice(0, 10); // YYYY-MM-DD
+    // Filename dated by run day, clamped: with the NO_AGE_CUTOFF sentinel a
+    // cutoff-derived name would grow one 9999-12-31 file forever (review
+    // finding); explicit historical cutoffs keep their dated files.
+    const nowIso = new Date().toISOString();
+    const dateStr = (cutoff < nowIso ? cutoff : nowIso).slice(0, 10); // YYYY-MM-DD
     const archiveFile = path.join(archiveDir, `${dateStr}-blackboard.jsonl`);
     const archiveContent =
       toArchive.map((e) => JSON.stringify(e)).join("\n") + "\n";

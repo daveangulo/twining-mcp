@@ -454,3 +454,42 @@ describe("archive_stale blackboard tombstones + status archivable count (review 
     expect(status.warnings.join(" ")).not.toContain("archive recommended");
   });
 });
+
+describe("archived_from round-trip (review fix: unarchive is no longer a lossy undo)", () => {
+  it("a provisional decision archived by archive_stale returns to provisional, not active", async () => {
+    gitInit(tmpDir);
+    server = createTestServer(tmpDir);
+
+    const rec = parseToolResponse(
+      await callTool(server, "twining_record", {
+        summary: "Provisional awaiting ratification",
+        decisions: [
+          {
+            summary: "Provisionally chose P over Q pending lead review",
+            rationale: "needs ratification",
+            status: "provisional",
+          },
+        ],
+        scope: "src/prov/",
+      }),
+    ) as { decisions_created: Array<{ id: string }> };
+    const id = rec.decisions_created[0]!.id;
+
+    await callTool(server, "twining_archive_stale", { ids: [id] });
+    const restored = parseToolResponse(
+      await callTool(server, "twining_unarchive", { ids: [id] }),
+    ) as { restored: string[] };
+    expect(restored.restored).toEqual([id]);
+
+    // Assert against the exported record — the committed truth on the
+    // sqlite backend this fixture resolves to.
+    const decisionFile = JSON.parse(
+      fs.readFileSync(
+        path.join(tmpDir, ".twining", "records", "decisions", `${id}.json`),
+        "utf-8",
+      ),
+    );
+    expect(decisionFile.status).toBe("provisional"); // NOT silently ratified
+    expect(decisionFile.archived_from).toBeUndefined(); // marker cleared
+  });
+});

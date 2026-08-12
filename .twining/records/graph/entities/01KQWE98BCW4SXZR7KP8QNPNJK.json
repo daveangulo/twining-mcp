@@ -3,8 +3,8 @@
   "id": "01KQWE98BCW4SXZR7KP8QNPNJK",
   "name": "src/engine/staleness.ts",
   "properties": {
-    "scope": "src/engine/"
+    "scope": "src/,src/engine/"
   },
   "type": "file",
-  "updated_at": "2026-08-07T00:42:39.439Z"
+  "updated_at": "2026-08-12T23:10:34.412Z"
 }

@@ -623,3 +623,48 @@ describe("twining_record — origin marker and tag split (field defect D1)", () 
     expect(entries[0]!.origin).toBeUndefined();
   });
 });
+
+describe("twining_record resolves[] — ordering and failure containment (review fixes)", () => {
+  it("resolves BEFORE posting the status entry, so stamps persist before any post-triggered sweep", async () => {
+    const { vi } = await import("vitest");
+    const need = await bbEngine.post({ entry_type: "need", summary: "race target" });
+    const resolveSpy = vi.spyOn(bbEngine, "resolve");
+    const postSpy = vi.spyOn(bbEngine, "post");
+
+    await callTool("twining_record", {
+      summary: "Handled the race target",
+      resolves: [need.id],
+    });
+
+    expect(resolveSpy).toHaveBeenCalledTimes(1);
+    expect(postSpy).toHaveBeenCalled();
+    const resolveOrder = resolveSpy.mock.invocationCallOrder[0]!;
+    const firstPostOrder = postSpy.mock.invocationCallOrder[0]!;
+    expect(resolveOrder).toBeLessThan(firstPostOrder);
+
+    const { entries } = await bbStore.read();
+    const target = entries.find((e) => e.id === need.id)!;
+    expect(target.status).toBe("resolved");
+    resolveSpy.mockRestore();
+    postSpy.mockRestore();
+  });
+
+  it("a throwing resolve degrades to resolve_errors instead of aborting the record", async () => {
+    const { vi } = await import("vitest");
+    const resolveSpy = vi
+      .spyOn(bbEngine, "resolve")
+      .mockRejectedValueOnce(new Error("lock contention"));
+
+    const parsed = parseToolResponse(
+      await callTool("twining_record", {
+        summary: "Record survives resolve failure",
+        resolves: ["some-id"],
+      }),
+    ) as { status_entry_id?: string; resolve_errors?: string[]; message: string };
+
+    expect(parsed.status_entry_id).toBeDefined();
+    expect(parsed.resolve_errors).toEqual(["lock contention"]);
+    expect(parsed.message).toContain("resolve failed");
+    resolveSpy.mockRestore();
+  });
+});

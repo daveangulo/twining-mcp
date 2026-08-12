@@ -33,7 +33,7 @@ fi
 
 Make it executable: `chmod +x .git/hooks/post-commit`
 
-On the next MCP server startup, `PendingProcessor` will process the archive action.
+On the next MCP server startup, `PendingProcessor` will process the archive action. The sweep keeps the newest `archive.retain_recent` entries (default 200) plus decisions and unresolved needs/warnings/questions; a queued action may pass its own `retain` to override.
 
 ## Threshold-Based Auto-Archiving
 

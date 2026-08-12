@@ -3,8 +3,8 @@
   "id": "01KWQFW6CHJ7156C0GM07X5NQ8",
   "name": "src/engine/pending-processor.ts",
   "properties": {
-    "scope": "plugin/hooks/"
+    "scope": "plugin/hooks/,src/"
   },
   "type": "file",
-  "updated_at": "2026-07-21T20:32:20.178Z"
+  "updated_at": "2026-08-12T23:10:34.411Z"
 }

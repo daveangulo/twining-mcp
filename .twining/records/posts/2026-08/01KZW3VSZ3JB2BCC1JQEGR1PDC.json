@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: follow-up — Archiver.archive still writes plan()-time entry copies to the archive file before dismissing; a concurrent mutation between plan-read and dismiss can archive a stale copy (window now tiny after the resolves reorder, but capture-under-dismiss would close it for every mutator)",
+  "entry_type": "need",
+  "id": "01KZW3VSZ3JB2BCC1JQEGR1PDC",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "ea0f2ea826d833ac470c613c340cfb6e12f3afe5",
+    "recorded_at": "2026-08-12T23:10:34.448Z"
+  },
+  "scope": "src/",
+  "summary": "follow-up — Archiver.archive still writes plan()-time entry copies to the archive file before dismissing; a concurrent mutation between plan-read and dismiss can archive a stale copy (window now ti…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-12T23:10:34.467Z"
+}

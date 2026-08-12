@@ -8,6 +8,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import type { Archiver } from "./archiver.js";
+import { NO_AGE_CUTOFF } from "./archiver.js";
+import { appendDismissalTombstones } from "./tombstones.js";
 import type { GraphEngine } from "./graph.js";
 import type { BlackboardEntry, Decision } from "../utils/types.js";
 import { auditStaleness, type StaleItem } from "./staleness.js";
@@ -156,9 +158,15 @@ export class HousekeepingEngine {
       // a sweep happened.
     } else if (execute) {
       try {
+        // NO_AGE_CUTOFF: the pass is documented as age-blind, twining_status
+        // counts archivable with the same sentinel, and the auto-trigger
+        // already unified count and sweep on it — a cutoff=now sweep here
+        // would strand future-stamped entries the status warning counted
+        // (review finding: counted-but-never-archived drift across surfaces).
         const archiveResult = await this.archiver.archive({
           summarize: false,
           retain: this.archiveRetain,
+          before: NO_AGE_CUTOFF,
         });
         result.archived.count = archiveResult.archived_count;
         result.archived.file = archiveResult.archive_file;
@@ -168,8 +176,11 @@ export class HousekeepingEngine {
       }
     } else {
       try {
-        // Same retain as execute — preview/execute parity (#39).
-        const plan = await this.archiver.plan({ retain: this.archiveRetain });
+        // Same retain and cutoff as execute — preview/execute parity (#39).
+        const plan = await this.archiver.plan({
+          retain: this.archiveRetain,
+          before: NO_AGE_CUTOFF,
+        });
         result.archived.count = plan.to_archive.length;
         result.archived.kept_open = plan.kept_open_count;
         plannedArchiveIds = new Set(plan.to_archive.map((e) => e.id));
@@ -187,15 +198,24 @@ export class HousekeepingEngine {
         : boardEntries.filter((e) => !plannedArchiveIds.has(e.id));
       const seen = new Map<string, BlackboardEntry>();
       const duplicateIds: string[] = [];
+      const doomed: BlackboardEntry[] = [];
 
-      // Walk newest-first so we keep the latest
+      // Walk newest-first so we keep the latest. Entries carrying a D2
+      // lifecycle stamp (status "resolved") are excluded from dedup in BOTH
+      // roles (review finding): deleting a resolved copy destroys the
+      // resolution audit twining_resolve promises to preserve, and letting a
+      // resolved copy shadow an open same-text repost silently deletes an
+      // open obligation. A resolved entry and its recurrence are different
+      // facts, not duplicates.
       const sorted = [...entries].sort(
         (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
       );
       for (const entry of sorted) {
+        if (entry.status === "resolved") continue;
         const key = `${entry.entry_type}|${entry.summary}|${entry.scope}`;
         if (seen.has(key)) {
           duplicateIds.push(entry.id);
+          doomed.push(entry);
         } else {
           seen.set(key, entry);
         }
@@ -203,6 +223,12 @@ export class HousekeepingEngine {
 
       if (duplicateIds.length > 0 && execute) {
         await this.blackboardStore.dismiss(duplicateIds);
+        // Every dismissal path tombstones (review finding: dedup was the
+        // last path that hard-deleted without one).
+        appendDismissalTombstones(this.twiningDir, doomed, {
+          reason: "duplicate of a newer same-text entry",
+          dismissed_by: "housekeeping-dedup",
+        });
       }
       result.deduplicated.removed = duplicateIds.length;
 

@@ -63,7 +63,7 @@ describe("scoreItem", () => {
     expect(r.reasons[0]?.signal).toBe("branch_gone");
   });
 
-  it("combines signals by noisy-or — independent evidence corroborates", () => {
+  it("two independent signals corroborate into the flaggable band (max(noisy-or, 0.95))", () => {
     const r = scoreItem(
       {
         scope: "src/auth/",
@@ -76,8 +76,21 @@ describe("scoreItem", () => {
         branchKnown: () => false,                 // 0.4
       },
     );
-    expect(r.score).toBeCloseTo(1 - 0.5 * 0.6); // 0.7
+    // noisy-or would be 0.7; corroboration (2+ signals) lifts to 0.95 —
+    // without this, blackboard entries (no affected_files field) could
+    // never reach the default threshold at all.
+    expect(r.score).toBeCloseTo(0.95);
+    expect(r.score).toBeLessThan(1.0);
     expect(r.reasons.length).toBe(2);
+  });
+
+  it("a blackboard-shaped item (scope + branch only) flags when both signals fire", () => {
+    const r = scoreItem(
+      { scope: "analysis/gone/", provenance: { branch: "worktree-dead" } },
+      allMissingProbes,
+    );
+    expect(r.score).toBeCloseTo(0.95);
+    expect(r.score).toBeGreaterThanOrEqual(0.95);
   });
 
   it("caps affected_files_missing at 0.95 — no heuristic ever emits 1.0 (D3)", () => {
@@ -185,6 +198,23 @@ describe("buildProbes — real filesystem & git", () => {
     expect(probes.fileExists("analysis/scratch/never-existed.md")).toBe(false);
   });
 
+  it("fileExists: the moved-not-gone inference requires a UNIQUE basename — common names stay missing", () => {
+    dir = mkRepo();
+    // Two surviving index.ts files elsewhere in the repo.
+    fs.mkdirSync(path.join(dir, "src", "auth"), { recursive: true });
+    fs.mkdirSync(path.join(dir, "src", "billing"), { recursive: true });
+    fs.writeFileSync(path.join(dir, "src", "auth", "index.ts"), "a");
+    fs.writeFileSync(path.join(dir, "src", "billing", "index.ts"), "b");
+    execFileSync("git", ["add", "-A"], { cwd: dir });
+    execFileSync("git", ["commit", "-q", "-m", "add"], { cwd: dir });
+    const probes = buildProbes(dir);
+
+    // A deleted subsystem's index.ts must NOT read as "moved" just because
+    // unrelated index.ts files survive — that would permanently mute the
+    // file signal for exactly the wholesale-deleted dirs it exists to catch.
+    expect(probes.fileExists("src/payments/index.ts")).toBe(false);
+  });
+
   it("branch_gone: detects deleted branches", () => {
     dir = mkRepo();
     execFileSync("git", ["branch", "feature/keep"], { cwd: dir });
@@ -212,7 +242,7 @@ describe("auditStaleness — end to end", () => {
 
     const decisions: Decision[] = [
       makeDecision("d1", "src/kept/", { branch: "main" }, []),
-      // scope missing (0.8) + branch gone (0.4) → noisy-or 0.88: below 0.95
+      // scope missing (0.8) + branch gone (0.4): corroborated pair → 0.95, flagged
       makeDecision("d2", "src/gone/", { branch: "feature/dead" }, []),
       // scope missing + all files missing + branch gone → 0.994: flagged
       makeDecision("d3", "src/gone/", { branch: "feature/dead" }, [
@@ -232,9 +262,10 @@ describe("auditStaleness — end to end", () => {
     });
 
     const ids = result.candidates.map((c) => c.id);
-    expect(ids).toEqual(["d3"]);
+    expect(ids).toEqual(["d3", "d2"]); // sorted by score desc
     expect(result.candidates[0]!.score).toBeGreaterThan(0.95);
     expect(result.candidates[0]!.score).toBeLessThan(1.0);
+    expect(result.candidates[1]!.score).toBeCloseTo(0.95);
   });
 
   it("does not flag branch_gone when listing branches fails (non-git dir)", () => {

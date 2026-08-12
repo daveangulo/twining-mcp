@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-12T23:10:34.416Z",
+  "id": "01KZW3VSXG6WT08JY43CRQ7GTB",
+  "properties": {
+    "decision_summary": "Chose to keep dismissal tombstones machine-local and document that plainly, deferring a committed records/dismissals tree"
+  },
+  "source": "01KJQ647P1MGGRERHA1JH2BE8T",
+  "target": "01KZW3VSX4FKFB2DTD9B8H3R2X",
+  "type": "decided_by"
+}

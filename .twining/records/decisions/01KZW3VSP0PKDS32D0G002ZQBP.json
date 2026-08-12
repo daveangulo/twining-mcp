@@ -1,0 +1,48 @@
+{
+  "affected_files": [
+    "src/tools/record-tools.ts",
+    "src/tools/housekeeping-tools.ts",
+    "src/tools/blackboard-tools.ts",
+    "src/tools/lifecycle-tools.ts",
+    "src/tools/triage-tools.ts",
+    "src/engine/housekeeping.ts",
+    "src/engine/archiver.ts",
+    "src/engine/pending-processor.ts",
+    "src/engine/staleness.ts",
+    "src/engine/tombstones.ts",
+    "src/server.ts",
+    "src/utils/types.ts",
+    "plugin/BEHAVIORS.md",
+    "docs/hooks.md",
+    "CHANGELOG.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "git log",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Adversarial review round 2 (full 5-lens coverage, 23 raw, 15 confirmed): all fixed — resolves[] now stamps before the status post with error containment; archived_from round-trip so unarchive is no longer a lossy undo; dedup is lifecycle-aware and tombstones; all sweep surfaces share NO_AGE_CUTOFF + retention (incl. pending-actions hook path); archive filenames clamped to run day; corroborated-pair staleness scoring un-mutes blackboard entries; basename inference requires uniqueness; triage/dismiss/BEHAVIORS docs made honest",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KZW3VSP0PKDS32D0G002ZQBP",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "ea0f2ea826d833ac470c613c340cfb6e12f3afe5",
+    "recorded_at": "2026-08-12T23:10:34.157Z"
+  },
+  "rationale": "keeps the probe one subprocess; a unique surviving basename is strong movement evidence, a common one is none",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Chose basename-uniqueness for the moved-not-gone inference over git log --follow rename detection",
+  "timestamp": "2026-08-12T23:10:34.176Z"
+}

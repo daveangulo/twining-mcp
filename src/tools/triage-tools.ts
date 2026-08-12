@@ -41,7 +41,7 @@ export function registerTriageTools(
           .number()
           .optional()
           .describe(
-            "Maximum items per bucket (default: 25, max: 200). Truncation is detectable as counts.<bucket>.total > array length; a truncated open bucket also returns open_cursor for paging via open_after.",
+            "Maximum items per bucket (default: 25, max: 200). For the OPEN bucket, open_cursor is the authoritative more-remains signal: present = pass it back as open_after for the next page; absent = lane fully delivered through this page. counts.open.total is the full-lane denominator on EVERY page, so total > array length on a cursored call means mid-enumeration, not items unreachable. For the recent bucket (no cursor), counts.recent.total > array length detects truncation.",
           ),
         since: z
           .string()

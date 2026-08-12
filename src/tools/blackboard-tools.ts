@@ -2,52 +2,15 @@
  * MCP tool handlers for blackboard operations.
  * Registers twining_post, twining_read, and twining_recent.
  */
-import fs from "node:fs";
-import path from "node:path";
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { BlackboardEngine } from "../engine/blackboard.js";
 import type { DecisionEngine } from "../engine/decisions.js";
 import type { IDecisionStore } from "../storage/interfaces.js";
-import type { BlackboardEntry } from "../utils/types.js";
 import { ENTRY_TYPES } from "../utils/types.js";
 import { toolResult, toolError, TwiningError } from "../utils/errors.js";
 import { writeRecordSentinel } from "../utils/record-sentinel.js";
-import { ensureDir } from "../storage/file-store.js";
-
-/**
- * Append dismissal tombstones to the day's archive file (D2). Dismissal
- * deletes the live row in both backends; the tombstone preserves the entry
- * plus who dismissed it and why, so "handled as noise" stays auditable.
- * The archive compactor only strips its own exact junk signature, so
- * tombstone lines are preserved. Exported for every dismissal path — a
- * dismissal without a tombstone is unrecoverable data loss (review finding:
- * archive_stale's blackboard branch lacked one).
- */
-export function appendDismissalTombstones(
-  twiningDir: string,
-  entries: BlackboardEntry[],
-  meta: { reason?: string; dismissed_by?: string },
-): void {
-  if (entries.length === 0) return;
-  const archiveDir = path.join(twiningDir, "archive");
-  ensureDir(archiveDir);
-  const now = new Date().toISOString();
-  const file = path.join(archiveDir, `${now.slice(0, 10)}-blackboard.jsonl`);
-  const lines = entries
-    .map((e) =>
-      JSON.stringify({
-        ...e,
-        dismissed: {
-          dismissed_at: now,
-          ...(meta.dismissed_by ? { dismissed_by: meta.dismissed_by } : {}),
-          ...(meta.reason ? { reason: meta.reason } : {}),
-        },
-      }),
-    )
-    .join("\n");
-  fs.appendFileSync(file, lines + "\n");
-}
+import { appendDismissalTombstones } from "../engine/tombstones.js";
 
 /** Whether an entry_types filter admits decision-store results. */
 function includesDecisions(entryTypes?: string[]): boolean {
@@ -321,7 +284,7 @@ export function registerBlackboardTools(
     "twining_dismiss",
     {
       description:
-        "Remove blackboard entries by ID — for noise only: false positives, duplicates, test debris. Dismissal DELETES the live entry (a tombstone with your reason is appended to .twining/archive/). For substantive items that were handled, use twining_resolve instead — it preserves the record while closing the open lane.",
+        "Remove blackboard entries by ID — for noise only: false positives, duplicates, test debris. Dismissal DELETES the live entry everywhere (including the committed record on export-backed stores); a tombstone with your reason is appended to .twining/archive/, which is gitignored — the tombstone audit trail is LOCAL to this machine. For substantive items that were handled, use twining_resolve instead — it preserves the record while closing the open lane.",
       inputSchema: {
         ids: z
           .array(z.string())

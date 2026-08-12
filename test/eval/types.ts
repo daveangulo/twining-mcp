@@ -67,7 +67,7 @@ export const QualityCriterionSchema = z.object({
 export const BehaviorSpecSchema = z.object({
   tools: z
     .array(ToolBehaviorSchema)
-    .length(35, "Spec must contain exactly 35 tool entries"),
+    .length(37, "Spec must contain exactly 37 tool entries"),
   workflows: z
     .array(WorkflowScenarioSchema)
     .min(8, "Spec must contain at least 8 workflow scenarios"),

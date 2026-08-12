@@ -110,11 +110,18 @@ export function scoreItem(
   }
 
   // Noisy-or: independent signals corroborate; a single capped heuristic
-  // can never reach the certainty band on its own.
-  const score =
+  // can never reach the certainty band on its own. Two or more independent
+  // structural signals ARE the corroboration this scoring demands, so a
+  // corroborated item is lifted to the flaggable band — without this,
+  // blackboard entries (which have no affected_files field) topped out at
+  // 1−(0.2·0.6)=0.88 < 0.95 and could NEVER be flagged (review finding),
+  // while pre-D3 they flagged on any single signal. Still capped below 1.0:
+  // heuristics never emit certainty.
+  const noisyOr =
     reasons.length > 0
       ? 1 - reasons.reduce((acc, r) => acc * (1 - r.score), 1)
       : 0;
+  const score = reasons.length >= 2 ? Math.max(noisyOr, 0.95) : noisyOr;
   return { score, reasons };
 }
 
@@ -145,22 +152,28 @@ export function buildProbes(projectRoot: string): {
   const branches = knownBranches ?? new Set<string>();
 
   // One-shot basename index of git-tracked files. A recorded affected_file
-  // whose basename still exists somewhere in the index was moved (archive/
+  // whose basename still exists in the index was moved (archive/
   // conventions, refactors), not destroyed — treating git-mv'd files as
   // missing inverted the signal: hygiene-compliant history read as rot.
+  // The inference requires the basename to be UNIQUE in the index (review
+  // finding): common names — index.ts, types.ts, README.md — match dozens
+  // of unrelated survivors, which would mute the file signal permanently
+  // for exactly the wholesale-deleted subsystems it exists to catch.
   // null = git unavailable → no fallback, existsSync alone decides.
-  const trackedBasenames: Set<string> | null = (() => {
+  const basenameCounts: Map<string, number> | null = (() => {
     try {
       const out = execFileSync("git", ["ls-files", "-z"], {
         cwd: projectRoot,
         encoding: "utf-8",
         maxBuffer: 64 * 1024 * 1024,
       });
-      const set = new Set<string>();
+      const counts = new Map<string, number>();
       for (const f of out.split("\0")) {
-        if (f) set.add(path.basename(f));
+        if (!f) continue;
+        const base = path.basename(f);
+        counts.set(base, (counts.get(base) ?? 0) + 1);
       }
-      return set;
+      return counts;
     } catch {
       return null;
     }
@@ -186,9 +199,9 @@ export function buildProbes(projectRoot: string): {
     fileExists: (file: string) => {
       if (!file) return true;
       if (fs.existsSync(path.join(projectRoot, file))) return true;
-      // Moved-not-gone: basename survives in the git index.
-      return trackedBasenames !== null
-        ? trackedBasenames.has(path.basename(file))
+      // Moved-not-gone: basename survives UNIQUELY in the git index.
+      return basenameCounts !== null
+        ? basenameCounts.get(path.basename(file)) === 1
         : false;
     },
     branchKnown: (branch: string) =>

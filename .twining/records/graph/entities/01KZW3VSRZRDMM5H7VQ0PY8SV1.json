@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-12T23:10:34.271Z",
+  "id": "01KZW3VSRZRDMM5H7VQ0PY8SV1",
+  "name": "01KZW3VSP0PKDS32D0G002ZQBP",
+  "properties": {
+    "scope": "src/",
+    "summary": "Chose basename-uniqueness for the moved-not-gone inference over git log --follow rename detection"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-12T23:10:34.271Z"
+}

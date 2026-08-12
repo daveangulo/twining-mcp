@@ -48,7 +48,13 @@ Details: `docs/field-responses/2026-08-06-handoff-response.md`.
   indistinguishable "no decisions exist". The assemble briefing names the
   recovery tool when the count is non-zero.
 
-### Fixed
+### Fixed (pre-release adversarial review of this release's own diff — 18 confirmed findings, all addressed)
+- **`twining_record`'s `resolves[]` raced the auto-archive its own status post could trigger** — resolution stamps were lost or targets falsely reported not found on boards at the archive threshold (reproduced 4/4). Resolution now persists *before* the status post; resolve failures degrade to `resolve_errors` in the response instead of aborting Gate 2 after the post landed.
+- **`twining_archive_stale` hard-deleted blackboard entries with no tombstone** while claiming items "remain on disk" and pointing at an undo that only restores decisions. It now tombstones every blackboard dismissal and states exactly what is recoverable by which path — as do the dismissal tombstones now written by the housekeeping dedup pass, the last path that deleted without one.
+- **`twining_unarchive` forced restored decisions to `active`**, silently ratifying provisionals and resurrecting superseded decisions as authoritative. Archiving now remembers `archived_from`; restore returns each decision to its pre-archive status.
+- **Housekeeping dedup deleted resolution audits**: a resolved entry colliding with a same-text repost lost its `resolved_by`/note (or, reversed, an open obligation was silently deleted). Entries carrying lifecycle stamps are no longer dedup candidates in either role.
+- **Three surfaces disagreed on the archive partition cutoff** (#35-class counted-but-never-archived drift): the auto-archive trigger counted future-stamped entries its fired sweep then excluded (clock skew / git-synced stores — reproduced executable); `twining_status` counted them while its recommended housekeeping sweep excluded them; and the documented commit-hook archive path bypassed retention entirely. All sweeps now share `NO_AGE_CUTOFF` + the configured retention, and archive filenames are dated by run day (the sentinel no longer creates an ever-growing `9999-12-31` file).
+- **Blackboard entries could never be flagged stale**: with no `affected_files` field their signal ceiling was 0.88, below the 0.95 threshold — the checker's false-positive fix had overcorrected into a structural false negative. Two independent structural signals now corroborate to 0.95 (still never 1.0). The moved-not-gone basename inference also now requires a *unique* basename, so a deleted subsystem's `index.ts` no longer reads as "moved" because unrelated `index.ts` files survive.
 - **Staleness scoring produced false positives at a uniform 1.0 (D3).** All
   three signals were structurally wrong in the field (584 candidates, every
   sampled one false): compound scopes (`"specs/ + rfcs/"`, `"spec.md §2.7"`)

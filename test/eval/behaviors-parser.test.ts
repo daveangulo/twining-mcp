@@ -2,7 +2,7 @@
  * Test suite for the BEHAVIORS.md parser.
  *
  * Validates the parser against the ACTUAL plugin/BEHAVIORS.md file,
- * ensuring all 35 tool behaviors, workflows, anti-patterns, and quality
+ * ensuring all 37 tool behaviors, workflows, anti-patterns, and quality
  * criteria are extracted correctly into typed BehaviorSpec objects.
  */
 import { describe, it, expect, beforeAll } from "vitest";
@@ -47,8 +47,8 @@ describe("behaviors-parser", () => {
   });
 
   describe("tool behaviors", () => {
-    it("has exactly 35 tool entries", () => {
-      expect(spec.tools).toHaveLength(35);
+    it("has exactly 37 tool entries", () => {
+      expect(spec.tools).toHaveLength(37);
     });
 
     it("each tool name starts with twining_", () => {
@@ -173,7 +173,7 @@ describe("behaviors-parser", () => {
     it("handles blank lines between sections without breaking", () => {
       // The real BEHAVIORS.md has blank lines between sections.
       // If we get here with a valid spec, the parser handles them.
-      expect(spec.tools.length).toBe(35);
+      expect(spec.tools.length).toBe(37);
       expect(spec.workflows.length).toBeGreaterThanOrEqual(8);
     });
   });

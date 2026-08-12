@@ -111,6 +111,13 @@ export interface Decision {
   supersedes?: string;
   /** Back-link written when another decision supersedes this one (#31). */
   superseded_by?: string;
+  /**
+   * Status the decision held before twining_archive_stale archived it —
+   * twining_unarchive restores to it, so a provisional never comes back
+   * ratified and a superseded decision never resurrects as authoritative.
+   * Cleared on restore; absent on records archived before this field.
+   */
+  archived_from?: DecisionStatus;
   confidence: DecisionConfidence;
   status: DecisionStatus;
   reversible: boolean;

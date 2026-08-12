@@ -208,6 +208,7 @@ export function createServer(projectRoot: string): ServerContext {
     twiningDir,
     blackboardEngine,
     archiver,
+    config.archive.retain_recent,
   );
   pendingProcessor.processOnStartup().catch((err) => {
     console.error("[twining] Pending processor failed (non-fatal):", err);

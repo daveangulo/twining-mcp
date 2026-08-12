@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-12T23:10:34.021Z",
+  "id": "01KZW3VSH5AVM2AB3VZ05JYSCY",
+  "properties": {
+    "decision_summary": "Chose the corroborated-pair rule (2+ signals lift to max(noisy-or, 0.95)) over raising branch_gone to 0.75"
+  },
+  "source": "01KZW3VSH5AVM2AB3VZ05JYSCX",
+  "target": "01KZW3VSGMT73HYY6QKV4AEET5",
+  "type": "decided_by"
+}
