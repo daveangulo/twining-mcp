@@ -3244,8 +3244,8 @@ var require_utils = __commonJS({
       }
       return ind;
     }
-    function removeDotSegments(path36) {
-      let input = path36;
+    function removeDotSegments(path37) {
+      let input = path37;
       const output = [];
       let nextSlash = -1;
       let len = 0;
@@ -3444,8 +3444,8 @@ var require_schemes = __commonJS({
         wsComponent.secure = void 0;
       }
       if (wsComponent.resourceName) {
-        const [path36, query] = wsComponent.resourceName.split("?");
-        wsComponent.path = path36 && path36 !== "/" ? path36 : void 0;
+        const [path37, query] = wsComponent.resourceName.split("?");
+        wsComponent.path = path37 && path37 !== "/" ? path37 : void 0;
         wsComponent.query = query;
         wsComponent.resourceName = void 0;
       }
@@ -6807,12 +6807,12 @@ var require_dist = __commonJS({
         throw new Error(`Unknown format "${name}"`);
       return f;
     };
-    function addFormats(ajv, list, fs31, exportName) {
+    function addFormats(ajv, list, fs32, exportName) {
       var _a;
       var _b;
       (_a = (_b = ajv.opts.code).formats) !== null && _a !== void 0 ? _a : _b.formats = (0, codegen_1._)`require("ajv-formats/dist/formats").${exportName}`;
       for (const f of list)
-        ajv.addFormat(f, fs31[f]);
+        ajv.addFormat(f, fs32[f]);
     }
     module.exports = exports = formatsPlugin;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -9581,7 +9581,9 @@ var init_config = __esm({
       archive: {
         auto_archive_on_commit: true,
         auto_archive_on_context_switch: true,
-        max_blackboard_entries_before_archive: 500
+        max_blackboard_entries_before_archive: 500,
+        retain_recent: 200
+        // sweeps keep the newest 200 non-exempt entries (D4); anchored to triage's LIMIT_MAX
       },
       context_assembly: {
         default_max_tokens: 4e3,
@@ -9807,54 +9809,54 @@ var require_polyfills = __commonJS({
     }
     var chdir;
     module.exports = patch;
-    function patch(fs31) {
+    function patch(fs32) {
       if (constants.hasOwnProperty("O_SYMLINK") && process.version.match(/^v0\.6\.[0-2]|^v0\.5\./)) {
-        patchLchmod(fs31);
+        patchLchmod(fs32);
       }
-      if (!fs31.lutimes) {
-        patchLutimes(fs31);
+      if (!fs32.lutimes) {
+        patchLutimes(fs32);
       }
-      fs31.chown = chownFix(fs31.chown);
-      fs31.fchown = chownFix(fs31.fchown);
-      fs31.lchown = chownFix(fs31.lchown);
-      fs31.chmod = chmodFix(fs31.chmod);
-      fs31.fchmod = chmodFix(fs31.fchmod);
-      fs31.lchmod = chmodFix(fs31.lchmod);
-      fs31.chownSync = chownFixSync(fs31.chownSync);
-      fs31.fchownSync = chownFixSync(fs31.fchownSync);
-      fs31.lchownSync = chownFixSync(fs31.lchownSync);
-      fs31.chmodSync = chmodFixSync(fs31.chmodSync);
-      fs31.fchmodSync = chmodFixSync(fs31.fchmodSync);
-      fs31.lchmodSync = chmodFixSync(fs31.lchmodSync);
-      fs31.stat = statFix(fs31.stat);
-      fs31.fstat = statFix(fs31.fstat);
-      fs31.lstat = statFix(fs31.lstat);
-      fs31.statSync = statFixSync(fs31.statSync);
-      fs31.fstatSync = statFixSync(fs31.fstatSync);
-      fs31.lstatSync = statFixSync(fs31.lstatSync);
-      if (fs31.chmod && !fs31.lchmod) {
-        fs31.lchmod = function(path36, mode, cb) {
+      fs32.chown = chownFix(fs32.chown);
+      fs32.fchown = chownFix(fs32.fchown);
+      fs32.lchown = chownFix(fs32.lchown);
+      fs32.chmod = chmodFix(fs32.chmod);
+      fs32.fchmod = chmodFix(fs32.fchmod);
+      fs32.lchmod = chmodFix(fs32.lchmod);
+      fs32.chownSync = chownFixSync(fs32.chownSync);
+      fs32.fchownSync = chownFixSync(fs32.fchownSync);
+      fs32.lchownSync = chownFixSync(fs32.lchownSync);
+      fs32.chmodSync = chmodFixSync(fs32.chmodSync);
+      fs32.fchmodSync = chmodFixSync(fs32.fchmodSync);
+      fs32.lchmodSync = chmodFixSync(fs32.lchmodSync);
+      fs32.stat = statFix(fs32.stat);
+      fs32.fstat = statFix(fs32.fstat);
+      fs32.lstat = statFix(fs32.lstat);
+      fs32.statSync = statFixSync(fs32.statSync);
+      fs32.fstatSync = statFixSync(fs32.fstatSync);
+      fs32.lstatSync = statFixSync(fs32.lstatSync);
+      if (fs32.chmod && !fs32.lchmod) {
+        fs32.lchmod = function(path37, mode, cb) {
           if (cb) process.nextTick(cb);
         };
-        fs31.lchmodSync = function() {
+        fs32.lchmodSync = function() {
         };
       }
-      if (fs31.chown && !fs31.lchown) {
-        fs31.lchown = function(path36, uid, gid, cb) {
+      if (fs32.chown && !fs32.lchown) {
+        fs32.lchown = function(path37, uid, gid, cb) {
           if (cb) process.nextTick(cb);
         };
-        fs31.lchownSync = function() {
+        fs32.lchownSync = function() {
         };
       }
       if (platform === "win32") {
-        fs31.rename = typeof fs31.rename !== "function" ? fs31.rename : (function(fs$rename) {
+        fs32.rename = typeof fs32.rename !== "function" ? fs32.rename : (function(fs$rename) {
           function rename(from, to, cb) {
             var start = Date.now();
             var backoff = 0;
             fs$rename(from, to, function CB(er) {
               if (er && (er.code === "EACCES" || er.code === "EPERM" || er.code === "EBUSY") && Date.now() - start < 6e4) {
                 setTimeout(function() {
-                  fs31.stat(to, function(stater, st) {
+                  fs32.stat(to, function(stater, st) {
                     if (stater && stater.code === "ENOENT")
                       fs$rename(from, to, CB);
                     else
@@ -9870,9 +9872,9 @@ var require_polyfills = __commonJS({
           }
           if (Object.setPrototypeOf) Object.setPrototypeOf(rename, fs$rename);
           return rename;
-        })(fs31.rename);
+        })(fs32.rename);
       }
-      fs31.read = typeof fs31.read !== "function" ? fs31.read : (function(fs$read) {
+      fs32.read = typeof fs32.read !== "function" ? fs32.read : (function(fs$read) {
         function read(fd, buffer, offset, length, position, callback_) {
           var callback;
           if (callback_ && typeof callback_ === "function") {
@@ -9880,22 +9882,22 @@ var require_polyfills = __commonJS({
             callback = function(er, _, __) {
               if (er && er.code === "EAGAIN" && eagCounter < 10) {
                 eagCounter++;
-                return fs$read.call(fs31, fd, buffer, offset, length, position, callback);
+                return fs$read.call(fs32, fd, buffer, offset, length, position, callback);
               }
               callback_.apply(this, arguments);
             };
           }
-          return fs$read.call(fs31, fd, buffer, offset, length, position, callback);
+          return fs$read.call(fs32, fd, buffer, offset, length, position, callback);
         }
         if (Object.setPrototypeOf) Object.setPrototypeOf(read, fs$read);
         return read;
-      })(fs31.read);
-      fs31.readSync = typeof fs31.readSync !== "function" ? fs31.readSync : /* @__PURE__ */ (function(fs$readSync) {
+      })(fs32.read);
+      fs32.readSync = typeof fs32.readSync !== "function" ? fs32.readSync : /* @__PURE__ */ (function(fs$readSync) {
         return function(fd, buffer, offset, length, position) {
           var eagCounter = 0;
           while (true) {
             try {
-              return fs$readSync.call(fs31, fd, buffer, offset, length, position);
+              return fs$readSync.call(fs32, fd, buffer, offset, length, position);
             } catch (er) {
               if (er.code === "EAGAIN" && eagCounter < 10) {
                 eagCounter++;
@@ -9905,11 +9907,11 @@ var require_polyfills = __commonJS({
             }
           }
         };
-      })(fs31.readSync);
-      function patchLchmod(fs32) {
-        fs32.lchmod = function(path36, mode, callback) {
-          fs32.open(
-            path36,
+      })(fs32.readSync);
+      function patchLchmod(fs33) {
+        fs33.lchmod = function(path37, mode, callback) {
+          fs33.open(
+            path37,
             constants.O_WRONLY | constants.O_SYMLINK,
             mode,
             function(err, fd) {
@@ -9917,80 +9919,80 @@ var require_polyfills = __commonJS({
                 if (callback) callback(err);
                 return;
               }
-              fs32.fchmod(fd, mode, function(err2) {
-                fs32.close(fd, function(err22) {
+              fs33.fchmod(fd, mode, function(err2) {
+                fs33.close(fd, function(err22) {
                   if (callback) callback(err2 || err22);
                 });
               });
             }
           );
         };
-        fs32.lchmodSync = function(path36, mode) {
-          var fd = fs32.openSync(path36, constants.O_WRONLY | constants.O_SYMLINK, mode);
+        fs33.lchmodSync = function(path37, mode) {
+          var fd = fs33.openSync(path37, constants.O_WRONLY | constants.O_SYMLINK, mode);
           var threw = true;
           var ret;
           try {
-            ret = fs32.fchmodSync(fd, mode);
+            ret = fs33.fchmodSync(fd, mode);
             threw = false;
           } finally {
             if (threw) {
               try {
-                fs32.closeSync(fd);
+                fs33.closeSync(fd);
               } catch (er) {
               }
             } else {
-              fs32.closeSync(fd);
+              fs33.closeSync(fd);
             }
           }
           return ret;
         };
       }
-      function patchLutimes(fs32) {
-        if (constants.hasOwnProperty("O_SYMLINK") && fs32.futimes) {
-          fs32.lutimes = function(path36, at, mt, cb) {
-            fs32.open(path36, constants.O_SYMLINK, function(er, fd) {
+      function patchLutimes(fs33) {
+        if (constants.hasOwnProperty("O_SYMLINK") && fs33.futimes) {
+          fs33.lutimes = function(path37, at, mt, cb) {
+            fs33.open(path37, constants.O_SYMLINK, function(er, fd) {
               if (er) {
                 if (cb) cb(er);
                 return;
               }
-              fs32.futimes(fd, at, mt, function(er2) {
-                fs32.close(fd, function(er22) {
+              fs33.futimes(fd, at, mt, function(er2) {
+                fs33.close(fd, function(er22) {
                   if (cb) cb(er2 || er22);
                 });
               });
             });
           };
-          fs32.lutimesSync = function(path36, at, mt) {
-            var fd = fs32.openSync(path36, constants.O_SYMLINK);
+          fs33.lutimesSync = function(path37, at, mt) {
+            var fd = fs33.openSync(path37, constants.O_SYMLINK);
             var ret;
             var threw = true;
             try {
-              ret = fs32.futimesSync(fd, at, mt);
+              ret = fs33.futimesSync(fd, at, mt);
               threw = false;
             } finally {
               if (threw) {
                 try {
-                  fs32.closeSync(fd);
+                  fs33.closeSync(fd);
                 } catch (er) {
                 }
               } else {
-                fs32.closeSync(fd);
+                fs33.closeSync(fd);
               }
             }
             return ret;
           };
-        } else if (fs32.futimes) {
-          fs32.lutimes = function(_a, _b, _c, cb) {
+        } else if (fs33.futimes) {
+          fs33.lutimes = function(_a, _b, _c, cb) {
             if (cb) process.nextTick(cb);
           };
-          fs32.lutimesSync = function() {
+          fs33.lutimesSync = function() {
           };
         }
       }
       function chmodFix(orig) {
         if (!orig) return orig;
         return function(target, mode, cb) {
-          return orig.call(fs31, target, mode, function(er) {
+          return orig.call(fs32, target, mode, function(er) {
             if (chownErOk(er)) er = null;
             if (cb) cb.apply(this, arguments);
           });
@@ -10000,7 +10002,7 @@ var require_polyfills = __commonJS({
         if (!orig) return orig;
         return function(target, mode) {
           try {
-            return orig.call(fs31, target, mode);
+            return orig.call(fs32, target, mode);
           } catch (er) {
             if (!chownErOk(er)) throw er;
           }
@@ -10009,7 +10011,7 @@ var require_polyfills = __commonJS({
       function chownFix(orig) {
         if (!orig) return orig;
         return function(target, uid, gid, cb) {
-          return orig.call(fs31, target, uid, gid, function(er) {
+          return orig.call(fs32, target, uid, gid, function(er) {
             if (chownErOk(er)) er = null;
             if (cb) cb.apply(this, arguments);
           });
@@ -10019,7 +10021,7 @@ var require_polyfills = __commonJS({
         if (!orig) return orig;
         return function(target, uid, gid) {
           try {
-            return orig.call(fs31, target, uid, gid);
+            return orig.call(fs32, target, uid, gid);
           } catch (er) {
             if (!chownErOk(er)) throw er;
           }
@@ -10039,13 +10041,13 @@ var require_polyfills = __commonJS({
             }
             if (cb) cb.apply(this, arguments);
           }
-          return options ? orig.call(fs31, target, options, callback) : orig.call(fs31, target, callback);
+          return options ? orig.call(fs32, target, options, callback) : orig.call(fs32, target, callback);
         };
       }
       function statFixSync(orig) {
         if (!orig) return orig;
         return function(target, options) {
-          var stats = options ? orig.call(fs31, target, options) : orig.call(fs31, target);
+          var stats = options ? orig.call(fs32, target, options) : orig.call(fs32, target);
           if (stats) {
             if (stats.uid < 0) stats.uid += 4294967296;
             if (stats.gid < 0) stats.gid += 4294967296;
@@ -10074,16 +10076,16 @@ var require_legacy_streams = __commonJS({
   "node_modules/graceful-fs/legacy-streams.js"(exports, module) {
     var Stream = __require("stream").Stream;
     module.exports = legacy;
-    function legacy(fs31) {
+    function legacy(fs32) {
       return {
         ReadStream,
         WriteStream
       };
-      function ReadStream(path36, options) {
-        if (!(this instanceof ReadStream)) return new ReadStream(path36, options);
+      function ReadStream(path37, options) {
+        if (!(this instanceof ReadStream)) return new ReadStream(path37, options);
         Stream.call(this);
         var self2 = this;
-        this.path = path36;
+        this.path = path37;
         this.fd = null;
         this.readable = true;
         this.paused = false;
@@ -10117,7 +10119,7 @@ var require_legacy_streams = __commonJS({
           });
           return;
         }
-        fs31.open(this.path, this.flags, this.mode, function(err, fd) {
+        fs32.open(this.path, this.flags, this.mode, function(err, fd) {
           if (err) {
             self2.emit("error", err);
             self2.readable = false;
@@ -10128,10 +10130,10 @@ var require_legacy_streams = __commonJS({
           self2._read();
         });
       }
-      function WriteStream(path36, options) {
-        if (!(this instanceof WriteStream)) return new WriteStream(path36, options);
+      function WriteStream(path37, options) {
+        if (!(this instanceof WriteStream)) return new WriteStream(path37, options);
         Stream.call(this);
-        this.path = path36;
+        this.path = path37;
         this.fd = null;
         this.writable = true;
         this.flags = "w";
@@ -10156,7 +10158,7 @@ var require_legacy_streams = __commonJS({
         this.busy = false;
         this._queue = [];
         if (this.fd === null) {
-          this._open = fs31.open;
+          this._open = fs32.open;
           this._queue.push([this._open, this.path, this.flags, this.mode, void 0]);
           this.flush();
         }
@@ -10191,7 +10193,7 @@ var require_clone = __commonJS({
 // node_modules/graceful-fs/graceful-fs.js
 var require_graceful_fs = __commonJS({
   "node_modules/graceful-fs/graceful-fs.js"(exports, module) {
-    var fs31 = __require("fs");
+    var fs32 = __require("fs");
     var polyfills = require_polyfills();
     var legacy = require_legacy_streams();
     var clone2 = require_clone();
@@ -10223,12 +10225,12 @@ var require_graceful_fs = __commonJS({
         m = "GFS4: " + m.split(/\n/).join("\nGFS4: ");
         console.error(m);
       };
-    if (!fs31[gracefulQueue]) {
+    if (!fs32[gracefulQueue]) {
       queue = global[gracefulQueue] || [];
-      publishQueue(fs31, queue);
-      fs31.close = (function(fs$close) {
+      publishQueue(fs32, queue);
+      fs32.close = (function(fs$close) {
         function close(fd, cb) {
-          return fs$close.call(fs31, fd, function(err) {
+          return fs$close.call(fs32, fd, function(err) {
             if (!err) {
               resetQueue();
             }
@@ -10240,48 +10242,48 @@ var require_graceful_fs = __commonJS({
           value: fs$close
         });
         return close;
-      })(fs31.close);
-      fs31.closeSync = (function(fs$closeSync) {
+      })(fs32.close);
+      fs32.closeSync = (function(fs$closeSync) {
         function closeSync(fd) {
-          fs$closeSync.apply(fs31, arguments);
+          fs$closeSync.apply(fs32, arguments);
           resetQueue();
         }
         Object.defineProperty(closeSync, previousSymbol, {
           value: fs$closeSync
         });
         return closeSync;
-      })(fs31.closeSync);
+      })(fs32.closeSync);
       if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || "")) {
         process.on("exit", function() {
-          debug(fs31[gracefulQueue]);
-          __require("assert").equal(fs31[gracefulQueue].length, 0);
+          debug(fs32[gracefulQueue]);
+          __require("assert").equal(fs32[gracefulQueue].length, 0);
         });
       }
     }
     var queue;
     if (!global[gracefulQueue]) {
-      publishQueue(global, fs31[gracefulQueue]);
+      publishQueue(global, fs32[gracefulQueue]);
     }
-    module.exports = patch(clone2(fs31));
-    if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH && !fs31.__patched) {
-      module.exports = patch(fs31);
-      fs31.__patched = true;
+    module.exports = patch(clone2(fs32));
+    if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH && !fs32.__patched) {
+      module.exports = patch(fs32);
+      fs32.__patched = true;
     }
-    function patch(fs32) {
-      polyfills(fs32);
-      fs32.gracefulify = patch;
-      fs32.createReadStream = createReadStream;
-      fs32.createWriteStream = createWriteStream;
-      var fs$readFile = fs32.readFile;
-      fs32.readFile = readFile;
-      function readFile(path36, options, cb) {
+    function patch(fs33) {
+      polyfills(fs33);
+      fs33.gracefulify = patch;
+      fs33.createReadStream = createReadStream;
+      fs33.createWriteStream = createWriteStream;
+      var fs$readFile = fs33.readFile;
+      fs33.readFile = readFile;
+      function readFile(path37, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$readFile(path36, options, cb);
-        function go$readFile(path37, options2, cb2, startTime) {
-          return fs$readFile(path37, options2, function(err) {
+        return go$readFile(path37, options, cb);
+        function go$readFile(path38, options2, cb2, startTime) {
+          return fs$readFile(path38, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$readFile, [path37, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$readFile, [path38, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -10289,16 +10291,16 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$writeFile = fs32.writeFile;
-      fs32.writeFile = writeFile;
-      function writeFile(path36, data, options, cb) {
+      var fs$writeFile = fs33.writeFile;
+      fs33.writeFile = writeFile;
+      function writeFile(path37, data, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$writeFile(path36, data, options, cb);
-        function go$writeFile(path37, data2, options2, cb2, startTime) {
-          return fs$writeFile(path37, data2, options2, function(err) {
+        return go$writeFile(path37, data, options, cb);
+        function go$writeFile(path38, data2, options2, cb2, startTime) {
+          return fs$writeFile(path38, data2, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$writeFile, [path37, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$writeFile, [path38, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -10306,17 +10308,17 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$appendFile = fs32.appendFile;
+      var fs$appendFile = fs33.appendFile;
       if (fs$appendFile)
-        fs32.appendFile = appendFile;
-      function appendFile(path36, data, options, cb) {
+        fs33.appendFile = appendFile;
+      function appendFile(path37, data, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$appendFile(path36, data, options, cb);
-        function go$appendFile(path37, data2, options2, cb2, startTime) {
-          return fs$appendFile(path37, data2, options2, function(err) {
+        return go$appendFile(path37, data, options, cb);
+        function go$appendFile(path38, data2, options2, cb2, startTime) {
+          return fs$appendFile(path38, data2, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$appendFile, [path37, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$appendFile, [path38, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -10324,9 +10326,9 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$copyFile = fs32.copyFile;
+      var fs$copyFile = fs33.copyFile;
       if (fs$copyFile)
-        fs32.copyFile = copyFile;
+        fs33.copyFile = copyFile;
       function copyFile(src, dest, flags, cb) {
         if (typeof flags === "function") {
           cb = flags;
@@ -10344,34 +10346,34 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$readdir = fs32.readdir;
-      fs32.readdir = readdir;
+      var fs$readdir = fs33.readdir;
+      fs33.readdir = readdir;
       var noReaddirOptionVersions = /^v[0-5]\./;
-      function readdir(path36, options, cb) {
+      function readdir(path37, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        var go$readdir = noReaddirOptionVersions.test(process.version) ? function go$readdir2(path37, options2, cb2, startTime) {
-          return fs$readdir(path37, fs$readdirCallback(
-            path37,
+        var go$readdir = noReaddirOptionVersions.test(process.version) ? function go$readdir2(path38, options2, cb2, startTime) {
+          return fs$readdir(path38, fs$readdirCallback(
+            path38,
             options2,
             cb2,
             startTime
           ));
-        } : function go$readdir2(path37, options2, cb2, startTime) {
-          return fs$readdir(path37, options2, fs$readdirCallback(
-            path37,
+        } : function go$readdir2(path38, options2, cb2, startTime) {
+          return fs$readdir(path38, options2, fs$readdirCallback(
+            path38,
             options2,
             cb2,
             startTime
           ));
         };
-        return go$readdir(path36, options, cb);
-        function fs$readdirCallback(path37, options2, cb2, startTime) {
+        return go$readdir(path37, options, cb);
+        function fs$readdirCallback(path38, options2, cb2, startTime) {
           return function(err, files) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
               enqueue([
                 go$readdir,
-                [path37, options2, cb2],
+                [path38, options2, cb2],
                 err,
                 startTime || Date.now(),
                 Date.now()
@@ -10386,21 +10388,21 @@ var require_graceful_fs = __commonJS({
         }
       }
       if (process.version.substr(0, 4) === "v0.8") {
-        var legStreams = legacy(fs32);
+        var legStreams = legacy(fs33);
         ReadStream = legStreams.ReadStream;
         WriteStream = legStreams.WriteStream;
       }
-      var fs$ReadStream = fs32.ReadStream;
+      var fs$ReadStream = fs33.ReadStream;
       if (fs$ReadStream) {
         ReadStream.prototype = Object.create(fs$ReadStream.prototype);
         ReadStream.prototype.open = ReadStream$open;
       }
-      var fs$WriteStream = fs32.WriteStream;
+      var fs$WriteStream = fs33.WriteStream;
       if (fs$WriteStream) {
         WriteStream.prototype = Object.create(fs$WriteStream.prototype);
         WriteStream.prototype.open = WriteStream$open;
       }
-      Object.defineProperty(fs32, "ReadStream", {
+      Object.defineProperty(fs33, "ReadStream", {
         get: function() {
           return ReadStream;
         },
@@ -10410,7 +10412,7 @@ var require_graceful_fs = __commonJS({
         enumerable: true,
         configurable: true
       });
-      Object.defineProperty(fs32, "WriteStream", {
+      Object.defineProperty(fs33, "WriteStream", {
         get: function() {
           return WriteStream;
         },
@@ -10421,7 +10423,7 @@ var require_graceful_fs = __commonJS({
         configurable: true
       });
       var FileReadStream = ReadStream;
-      Object.defineProperty(fs32, "FileReadStream", {
+      Object.defineProperty(fs33, "FileReadStream", {
         get: function() {
           return FileReadStream;
         },
@@ -10432,7 +10434,7 @@ var require_graceful_fs = __commonJS({
         configurable: true
       });
       var FileWriteStream = WriteStream;
-      Object.defineProperty(fs32, "FileWriteStream", {
+      Object.defineProperty(fs33, "FileWriteStream", {
         get: function() {
           return FileWriteStream;
         },
@@ -10442,7 +10444,7 @@ var require_graceful_fs = __commonJS({
         enumerable: true,
         configurable: true
       });
-      function ReadStream(path36, options) {
+      function ReadStream(path37, options) {
         if (this instanceof ReadStream)
           return fs$ReadStream.apply(this, arguments), this;
         else
@@ -10462,7 +10464,7 @@ var require_graceful_fs = __commonJS({
           }
         });
       }
-      function WriteStream(path36, options) {
+      function WriteStream(path37, options) {
         if (this instanceof WriteStream)
           return fs$WriteStream.apply(this, arguments), this;
         else
@@ -10480,22 +10482,22 @@ var require_graceful_fs = __commonJS({
           }
         });
       }
-      function createReadStream(path36, options) {
-        return new fs32.ReadStream(path36, options);
+      function createReadStream(path37, options) {
+        return new fs33.ReadStream(path37, options);
       }
-      function createWriteStream(path36, options) {
-        return new fs32.WriteStream(path36, options);
+      function createWriteStream(path37, options) {
+        return new fs33.WriteStream(path37, options);
       }
-      var fs$open = fs32.open;
-      fs32.open = open;
-      function open(path36, flags, mode, cb) {
+      var fs$open = fs33.open;
+      fs33.open = open;
+      function open(path37, flags, mode, cb) {
         if (typeof mode === "function")
           cb = mode, mode = null;
-        return go$open(path36, flags, mode, cb);
-        function go$open(path37, flags2, mode2, cb2, startTime) {
-          return fs$open(path37, flags2, mode2, function(err, fd) {
+        return go$open(path37, flags, mode, cb);
+        function go$open(path38, flags2, mode2, cb2, startTime) {
+          return fs$open(path38, flags2, mode2, function(err, fd) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$open, [path37, flags2, mode2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$open, [path38, flags2, mode2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -10503,20 +10505,20 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      return fs32;
+      return fs33;
     }
     function enqueue(elem) {
       debug("ENQUEUE", elem[0].name, elem[1]);
-      fs31[gracefulQueue].push(elem);
+      fs32[gracefulQueue].push(elem);
       retry();
     }
     var retryTimer;
     function resetQueue() {
       var now = Date.now();
-      for (var i2 = 0; i2 < fs31[gracefulQueue].length; ++i2) {
-        if (fs31[gracefulQueue][i2].length > 2) {
-          fs31[gracefulQueue][i2][3] = now;
-          fs31[gracefulQueue][i2][4] = now;
+      for (var i2 = 0; i2 < fs32[gracefulQueue].length; ++i2) {
+        if (fs32[gracefulQueue][i2].length > 2) {
+          fs32[gracefulQueue][i2][3] = now;
+          fs32[gracefulQueue][i2][4] = now;
         }
       }
       retry();
@@ -10524,9 +10526,9 @@ var require_graceful_fs = __commonJS({
     function retry() {
       clearTimeout(retryTimer);
       retryTimer = void 0;
-      if (fs31[gracefulQueue].length === 0)
+      if (fs32[gracefulQueue].length === 0)
         return;
-      var elem = fs31[gracefulQueue].shift();
+      var elem = fs32[gracefulQueue].shift();
       var fn = elem[0];
       var args = elem[1];
       var err = elem[2];
@@ -10548,7 +10550,7 @@ var require_graceful_fs = __commonJS({
           debug("RETRY", fn.name, args);
           fn.apply(null, args.concat([startTime]));
         } else {
-          fs31[gracefulQueue].push(elem);
+          fs32[gracefulQueue].push(elem);
         }
       }
       if (retryTimer === void 0) {
@@ -10983,10 +10985,10 @@ var require_mtime_precision = __commonJS({
   "node_modules/proper-lockfile/lib/mtime-precision.js"(exports, module) {
     "use strict";
     var cacheSymbol = /* @__PURE__ */ Symbol();
-    function probe(file, fs31, callback) {
-      const cachedPrecision = fs31[cacheSymbol];
+    function probe(file, fs32, callback) {
+      const cachedPrecision = fs32[cacheSymbol];
       if (cachedPrecision) {
-        return fs31.stat(file, (err, stat) => {
+        return fs32.stat(file, (err, stat) => {
           if (err) {
             return callback(err);
           }
@@ -10994,16 +10996,16 @@ var require_mtime_precision = __commonJS({
         });
       }
       const mtime = new Date(Math.ceil(Date.now() / 1e3) * 1e3 + 5);
-      fs31.utimes(file, mtime, mtime, (err) => {
+      fs32.utimes(file, mtime, mtime, (err) => {
         if (err) {
           return callback(err);
         }
-        fs31.stat(file, (err2, stat) => {
+        fs32.stat(file, (err2, stat) => {
           if (err2) {
             return callback(err2);
           }
           const precision = stat.mtime.getTime() % 1e3 === 0 ? "s" : "ms";
-          Object.defineProperty(fs31, cacheSymbol, { value: precision });
+          Object.defineProperty(fs32, cacheSymbol, { value: precision });
           callback(null, stat.mtime, precision);
         });
       });
@@ -11024,8 +11026,8 @@ var require_mtime_precision = __commonJS({
 var require_lockfile = __commonJS({
   "node_modules/proper-lockfile/lib/lockfile.js"(exports, module) {
     "use strict";
-    var path36 = __require("path");
-    var fs31 = require_graceful_fs();
+    var path37 = __require("path");
+    var fs32 = require_graceful_fs();
     var retry = require_retry2();
     var onExit = require_signal_exit();
     var mtimePrecision = require_mtime_precision();
@@ -11035,7 +11037,7 @@ var require_lockfile = __commonJS({
     }
     function resolveCanonicalPath(file, options, callback) {
       if (!options.realpath) {
-        return callback(null, path36.resolve(file));
+        return callback(null, path37.resolve(file));
       }
       options.fs.realpath(file, callback);
     }
@@ -11156,7 +11158,7 @@ var require_lockfile = __commonJS({
         update: null,
         realpath: true,
         retries: 0,
-        fs: fs31,
+        fs: fs32,
         onCompromised: (err) => {
           throw err;
         },
@@ -11200,7 +11202,7 @@ var require_lockfile = __commonJS({
     }
     function unlock(file, options, callback) {
       options = {
-        fs: fs31,
+        fs: fs32,
         realpath: true,
         ...options
       };
@@ -11222,7 +11224,7 @@ var require_lockfile = __commonJS({
       options = {
         stale: 1e4,
         realpath: true,
-        fs: fs31,
+        fs: fs32,
         ...options
       };
       options.stale = Math.max(options.stale || 0, 2e3);
@@ -11261,16 +11263,16 @@ var require_lockfile = __commonJS({
 var require_adapter = __commonJS({
   "node_modules/proper-lockfile/lib/adapter.js"(exports, module) {
     "use strict";
-    var fs31 = require_graceful_fs();
-    function createSyncFs(fs32) {
+    var fs32 = require_graceful_fs();
+    function createSyncFs(fs33) {
       const methods = ["mkdir", "realpath", "stat", "rmdir", "utimes"];
-      const newFs = { ...fs32 };
+      const newFs = { ...fs33 };
       methods.forEach((method) => {
         newFs[method] = (...args) => {
           const callback = args.pop();
           let ret;
           try {
-            ret = fs32[`${method}Sync`](...args);
+            ret = fs33[`${method}Sync`](...args);
           } catch (err) {
             return callback(err);
           }
@@ -11308,7 +11310,7 @@ var require_adapter = __commonJS({
     }
     function toSyncOptions(options) {
       options = { ...options };
-      options.fs = createSyncFs(options.fs || fs31);
+      options.fs = createSyncFs(options.fs || fs32);
       if (typeof options.retries === "number" && options.retries > 0 || options.retries && typeof options.retries.retries === "number" && options.retries.retries > 0) {
         throw Object.assign(new Error("Cannot use retries with the sync api"), { code: "ESYNC" });
       }
@@ -11774,6 +11776,51 @@ var init_blackboard_store = __esm({
             this.cachedEntries = null;
           }
           return { dismissed, not_found };
+        } finally {
+          await release();
+        }
+      }
+      /** Mark entries resolved in place. Rewrites matched lines, preserves the rest. */
+      async resolve(ids, opts) {
+        const idSet = new Set(ids);
+        const bbPath = this.blackboardPath;
+        if (!fs4.existsSync(bbPath)) {
+          return { resolved: [], not_found: ids };
+        }
+        const lockfileModule = await Promise.resolve().then(() => __toESM(require_proper_lockfile(), 1));
+        const release = await lockfileModule.default.lock(bbPath, LOCK_OPTIONS);
+        try {
+          const content = fs4.readFileSync(bbPath, "utf-8");
+          const lines = content.split("\n").filter((line) => line.trim().length > 0);
+          const out = [];
+          const resolved = [];
+          let mutated = false;
+          for (const line of lines) {
+            try {
+              const entry = JSON.parse(line);
+              if (idSet.has(entry.id)) {
+                resolved.push(entry.id);
+                if (entry.status !== "resolved") {
+                  entry.status = "resolved";
+                  entry.resolved_at = (/* @__PURE__ */ new Date()).toISOString();
+                  if (opts.by) entry.resolved_by = opts.by;
+                  if (opts.note) entry.resolution_note = opts.note;
+                  out.push(JSON.stringify(entry));
+                  mutated = true;
+                  continue;
+                }
+              }
+              out.push(line);
+            } catch {
+              out.push(line);
+            }
+          }
+          const not_found = ids.filter((id) => !resolved.includes(id));
+          if (mutated) {
+            atomicWriteFileSync(bbPath, out.join("\n") + "\n");
+            this.cachedEntries = null;
+          }
+          return { resolved, not_found };
         } finally {
           await release();
         }
@@ -12530,6 +12577,26 @@ var init_sqlite_stores = __esm({
         const not_found = ids.filter((id) => !dismissed.includes(id));
         return { dismissed, not_found };
       }
+      async resolve(ids, opts) {
+        assertWritable2();
+        const resolved = [];
+        const select = this.db.prepare("SELECT data FROM blackboard WHERE id = ?");
+        const update = this.db.prepare("UPDATE blackboard SET data = ? WHERE id = ?");
+        for (const id of ids) {
+          const row = select.get(id);
+          if (!row) continue;
+          const entry = JSON.parse(row.data);
+          resolved.push(id);
+          if (entry.status === "resolved") continue;
+          entry.status = "resolved";
+          entry.resolved_at = (/* @__PURE__ */ new Date()).toISOString();
+          if (opts.by) entry.resolved_by = opts.by;
+          if (opts.note) entry.resolution_note = opts.note;
+          update.run(JSON.stringify(entry), id);
+        }
+        const not_found = ids.filter((id) => !resolved.includes(id));
+        return { resolved, not_found };
+      }
     };
     SqliteDecisionStore = class {
       constructor(db) {
@@ -13057,6 +13124,17 @@ var init_record_export = __esm({
       }
       read = (filters) => this.inner.read(filters);
       recent = (n, t) => this.inner.recent(n, t);
+      async resolve(ids, opts) {
+        const result = await this.inner.resolve(ids, opts);
+        if (result.resolved.length > 0) {
+          const resolvedSet = new Set(result.resolved);
+          const { entries } = await this.inner.read();
+          for (const entry of entries) {
+            if (resolvedSet.has(entry.id)) this.exporter.post(entry);
+          }
+        }
+        return result;
+      }
       async dismiss(ids) {
         const { entries } = await this.inner.read();
         const byId = new Map(entries.map((e) => [e.id, e]));
@@ -13291,23 +13369,23 @@ var init_record_ingest = __esm({
 });
 
 // src/utils/project-root.ts
-import fs26 from "node:fs";
-import path31 from "node:path";
+import fs27 from "node:fs";
+import path32 from "node:path";
 function resolveWorktreeMain(dir) {
   try {
-    const dotGit = path31.join(dir, ".git");
-    if (!fs26.statSync(dotGit).isFile()) return null;
-    const firstLine = fs26.readFileSync(dotGit, "utf8").split("\n")[0] ?? "";
+    const dotGit = path32.join(dir, ".git");
+    if (!fs27.statSync(dotGit).isFile()) return null;
+    const firstLine = fs27.readFileSync(dotGit, "utf8").split("\n")[0] ?? "";
     if (!firstLine.startsWith("gitdir: ")) return null;
     const rawGitdir = firstLine.slice("gitdir: ".length).replace(/\r$/, "");
     if (!rawGitdir) return null;
-    const gitdir = path31.resolve(dir, rawGitdir);
-    const marker = `${path31.sep}.git${path31.sep}worktrees${path31.sep}`;
+    const gitdir = path32.resolve(dir, rawGitdir);
+    const marker = `${path32.sep}.git${path32.sep}worktrees${path32.sep}`;
     const markerIndex = gitdir.lastIndexOf(marker);
     if (markerIndex === -1) return null;
     const mainRoot = gitdir.slice(0, markerIndex);
     if (!mainRoot) return null;
-    if (!fs26.statSync(mainRoot).isDirectory()) return null;
+    if (!fs27.statSync(mainRoot).isDirectory()) return null;
     return mainRoot;
   } catch {
     return null;
@@ -13320,7 +13398,7 @@ function resolveProjectRoot(argv, env, cwd) {
   }
   const fromEnv = env["TWINING_PROJECT"];
   if (fromEnv && fromEnv.trim().length > 0) {
-    return path31.resolve(cwd, fromEnv);
+    return path32.resolve(cwd, fromEnv);
   }
   if (env["TWINING_WORKTREE_LOCAL"] === "true") {
     return cwd;
@@ -13334,21 +13412,21 @@ var init_project_root = __esm({
 });
 
 // src/migrate/config-edit.ts
-import fs27 from "node:fs";
-import path32 from "node:path";
+import fs28 from "node:fs";
+import path33 from "node:path";
 function setStorageBackend(twiningDir, backend, opts) {
-  const configPath = path32.join(twiningDir, "config.yml");
-  if (!fs27.existsSync(configPath)) {
-    fs27.writeFileSync(
+  const configPath = path33.join(twiningDir, "config.yml");
+  if (!fs28.existsSync(configPath)) {
+    fs28.writeFileSync(
       configPath,
       jsYaml.dump({ version: opts?.formatVersion ?? 1, storage: { backend } })
     );
     return { backedUpTo: null, hadComments: false };
   }
-  const raw = fs27.readFileSync(configPath, "utf-8");
+  const raw = fs28.readFileSync(configPath, "utf-8");
   const backupPath = configPath + ".pre-migrate.bak";
-  if (!fs27.existsSync(backupPath)) {
-    fs27.copyFileSync(configPath, backupPath);
+  if (!fs28.existsSync(backupPath)) {
+    fs28.copyFileSync(configPath, backupPath);
   }
   const loaded = jsYaml.load(raw);
   if (loaded !== null && loaded !== void 0 && (typeof loaded !== "object" || Array.isArray(loaded))) {
@@ -13446,25 +13524,25 @@ var forward_exports = {};
 __export(forward_exports, {
   migrateForward: () => migrateForward
 });
-import fs28 from "node:fs";
-import path33 from "node:path";
+import fs29 from "node:fs";
+import path34 from "node:path";
 function ensureDbGitignored(twiningDir) {
-  const gitignorePath = path33.join(twiningDir, ".gitignore");
+  const gitignorePath = path34.join(twiningDir, ".gitignore");
   const wanted = ["twining.db", "twining.db-wal", "twining.db-shm"];
-  const exists = fs28.existsSync(gitignorePath);
-  const raw = exists ? fs28.readFileSync(gitignorePath, "utf-8") : "";
+  const exists = fs29.existsSync(gitignorePath);
+  const raw = exists ? fs29.readFileSync(gitignorePath, "utf-8") : "";
   const present = new Set(raw.split("\n").map((l) => l.trim()));
   const toAdd = wanted.filter((line) => !present.has(line));
   if (toAdd.length === 0) return false;
   const base = raw.length > 0 && !raw.endsWith("\n") ? raw + "\n" : raw;
   const next = base + toAdd.join("\n") + "\n";
   if (exists) atomicWriteFileSync(gitignorePath, next);
-  else fs28.writeFileSync(gitignorePath, next);
+  else fs29.writeFileSync(gitignorePath, next);
   return true;
 }
 async function migrateForward(opts) {
-  const twiningDir = path33.join(opts.projectRoot, ".twining");
-  if (!fs28.existsSync(twiningDir)) {
+  const twiningDir = path34.join(opts.projectRoot, ".twining");
+  if (!fs29.existsSync(twiningDir)) {
     throw new Error(`no .twining/ directory at ${twiningDir} \u2014 nothing to migrate`);
   }
   if (!sqliteAvailable()) {
@@ -13511,7 +13589,7 @@ async function migrateForward(opts) {
       orphans_salvaged: 0
     };
   }
-  if (opts.checkOnly && !fs28.existsSync(path33.join(twiningDir, "twining.db"))) {
+  if (opts.checkOnly && !fs29.existsSync(path34.join(twiningDir, "twining.db"))) {
     const counts = {
       posts: (await legacy.blackboardStore.read()).entries.length,
       decisions: (await legacy.decisionStore.getIndex()).length,
@@ -13545,14 +13623,14 @@ async function migrateForward(opts) {
       const decision = await legacy.decisionStore.get(ix.id);
       if (decision) exporter.decision(decision);
     }
-    const decisionsDir = path33.join(twiningDir, "decisions");
-    if (fs28.existsSync(decisionsDir)) {
-      for (const file of fs28.readdirSync(decisionsDir)) {
+    const decisionsDir = path34.join(twiningDir, "decisions");
+    if (fs29.existsSync(decisionsDir)) {
+      for (const file of fs29.readdirSync(decisionsDir)) {
         if (file === "index.json" || !file.endsWith(".json")) continue;
         const id = file.slice(0, -".json".length);
         if (indexedDecisionIds.has(id)) continue;
         try {
-          const raw = fs28.readFileSync(path33.join(decisionsDir, file), "utf-8");
+          const raw = fs29.readFileSync(path34.join(decisionsDir, file), "utf-8");
           const orphan = JSON.parse(raw);
           exporter.decision(orphan);
           orphansSalvaged++;
@@ -13639,11 +13717,11 @@ var init_forward = __esm({
 });
 
 // src/migrate/reverse.ts
-import fs29 from "node:fs";
-import path34 from "node:path";
+import fs30 from "node:fs";
+import path35 from "node:path";
 async function migrateReverse(opts) {
-  const twiningDir = path34.join(opts.projectRoot, ".twining");
-  if (!fs29.existsSync(twiningDir)) {
+  const twiningDir = path35.join(opts.projectRoot, ".twining");
+  if (!fs30.existsSync(twiningDir)) {
     throw new Error(`no .twining/ directory at ${twiningDir} \u2014 nothing to migrate`);
   }
   if (!sqliteAvailable()) {
@@ -13651,8 +13729,8 @@ async function migrateReverse(opts) {
       "node:sqlite is unavailable (requires Node >= 22.13) \u2014 cannot read the sqlite state to reverse it"
     );
   }
-  const hasDb = fs29.existsSync(path34.join(twiningDir, "twining.db"));
-  const hasTree = fs29.existsSync(path34.join(twiningDir, "records"));
+  const hasDb = fs30.existsSync(path35.join(twiningDir, "twining.db"));
+  const hasTree = fs30.existsSync(path35.join(twiningDir, "records"));
   if (!hasDb && !hasTree) {
     throw new Error(
       "no sqlite state found (neither twining.db nor records/) \u2014 nothing to reverse"
@@ -13716,54 +13794,54 @@ async function migrateReverse(opts) {
         orphans_salvaged: 0
       };
     }
-    const backupDir = path34.join(twiningDir, "pre-reverse-backup");
+    const backupDir = path35.join(twiningDir, "pre-reverse-backup");
     ensureDir(backupDir);
     for (const rel of ["blackboard.jsonl", "decisions", "graph", "handoffs"]) {
-      const src = path34.join(twiningDir, rel);
-      if (fs29.existsSync(src)) {
-        fs29.cpSync(src, path34.join(backupDir, rel), { recursive: true, force: true });
+      const src = path35.join(twiningDir, rel);
+      if (fs30.existsSync(src)) {
+        fs30.cpSync(src, path35.join(backupDir, rel), { recursive: true, force: true });
       }
     }
     atomicWriteFileSync(
-      path34.join(twiningDir, "blackboard.jsonl"),
+      path35.join(twiningDir, "blackboard.jsonl"),
       entries.map((e) => JSON.stringify(e)).join("\n") + (entries.length ? "\n" : "")
     );
-    ensureDir(path34.join(twiningDir, "decisions"));
+    ensureDir(path35.join(twiningDir, "decisions"));
     for (const ix of decisionIndex) {
       const decision = await sqlite.decisionStore.get(ix.id);
       if (decision) {
         atomicWriteFileSync(
-          path34.join(twiningDir, "decisions", `${decision.id}.json`),
+          path35.join(twiningDir, "decisions", `${decision.id}.json`),
           JSON.stringify(decision, null, 2)
         );
       }
     }
     atomicWriteFileSync(
-      path34.join(twiningDir, "decisions", "index.json"),
+      path35.join(twiningDir, "decisions", "index.json"),
       JSON.stringify(decisionIndex, null, 2)
     );
-    ensureDir(path34.join(twiningDir, "graph"));
+    ensureDir(path35.join(twiningDir, "graph"));
     atomicWriteFileSync(
-      path34.join(twiningDir, "graph", "entities.json"),
+      path35.join(twiningDir, "graph", "entities.json"),
       JSON.stringify(entities, null, 2)
     );
     atomicWriteFileSync(
-      path34.join(twiningDir, "graph", "relations.json"),
+      path35.join(twiningDir, "graph", "relations.json"),
       JSON.stringify(relations, null, 2)
     );
-    ensureDir(path34.join(twiningDir, "handoffs"));
+    ensureDir(path35.join(twiningDir, "handoffs"));
     for (const ix of handoffIndex) {
       const record2 = await sqlite.handoffStore.get(ix.id);
       if (record2) {
         atomicWriteFileSync(
-          path34.join(twiningDir, "handoffs", `${record2.id}.json`),
+          path35.join(twiningDir, "handoffs", `${record2.id}.json`),
           JSON.stringify(record2, null, 2)
         );
       }
     }
     const indexRows = db.prepare("SELECT index_data FROM handoffs ORDER BY seq").all().map((r) => r.index_data);
     atomicWriteFileSync(
-      path34.join(twiningDir, "handoffs", "index.jsonl"),
+      path35.join(twiningDir, "handoffs", "index.jsonl"),
       indexRows.join("\n") + (indexRows.length ? "\n" : "")
     );
     const files = {
@@ -13924,11 +14002,11 @@ var auto_exports = {};
 __export(auto_exports, {
   maybeAutoMigrate: () => maybeAutoMigrate
 });
-import fs30 from "node:fs";
-import path35 from "node:path";
+import fs31 from "node:fs";
+import path36 from "node:path";
 async function maybeAutoMigrate(projectRoot) {
-  const twiningDir = path35.join(projectRoot, ".twining");
-  if (!fs30.existsSync(twiningDir)) return;
+  const twiningDir = path36.join(projectRoot, ".twining");
+  if (!fs31.existsSync(twiningDir)) return;
   const config2 = loadConfig(twiningDir);
   const optedIn = process.env.TWINING_AUTO_MIGRATE === "1" || config2.storage?.auto_migrate === true;
   if (!optedIn) return;
@@ -14165,10 +14243,10 @@ function assignProp(target, prop, value) {
     configurable: true
   });
 }
-function getElementAtPath(obj, path36) {
-  if (!path36)
+function getElementAtPath(obj, path37) {
+  if (!path37)
     return obj;
-  return path36.reduce((acc, key) => acc?.[key], obj);
+  return path37.reduce((acc, key) => acc?.[key], obj);
 }
 function promiseAllObject(promisesObj) {
   const keys = Object.keys(promisesObj);
@@ -14488,11 +14566,11 @@ function aborted(x, startIndex = 0) {
   }
   return false;
 }
-function prefixIssues(path36, issues) {
+function prefixIssues(path37, issues) {
   return issues.map((iss) => {
     var _a;
     (_a = iss).path ?? (_a.path = []);
-    iss.path.unshift(path36);
+    iss.path.unshift(path37);
     return iss;
   });
 }
@@ -20553,8 +20631,8 @@ function getErrorMap() {
 
 // node_modules/zod/v3/helpers/parseUtil.js
 var makeIssue = (params) => {
-  const { data, path: path36, errorMaps, issueData } = params;
-  const fullPath = [...path36, ...issueData.path || []];
+  const { data, path: path37, errorMaps, issueData } = params;
+  const fullPath = [...path37, ...issueData.path || []];
   const fullIssue = {
     ...issueData,
     path: fullPath
@@ -20670,11 +20748,11 @@ var errorUtil;
 
 // node_modules/zod/v3/types.js
 var ParseInputLazyPath = class {
-  constructor(parent, value, path36, key) {
+  constructor(parent, value, path37, key) {
     this._cachedPath = [];
     this.parent = parent;
     this.data = value;
-    this._path = path36;
+    this._path = path37;
     this._key = key;
   }
   get path() {
@@ -28656,14 +28734,159 @@ function safeGit(cwd, args) {
   }
 }
 
+// src/engine/archiver.ts
+init_file_store();
+import fs13 from "node:fs";
+import path15 from "node:path";
+
 // src/engine/resolution.ts
 function computeResolvedIds(entries) {
   const resolvedIds = /* @__PURE__ */ new Set();
   for (const entry of entries) {
+    if (entry.status === "resolved") resolvedIds.add(entry.id);
     for (const id of entry.relates_to ?? []) resolvedIds.add(id);
   }
   return resolvedIds;
 }
+
+// src/engine/archiver.ts
+var NO_AGE_CUTOFF = "9999-12-31T23:59:59.999Z";
+function partitionArchivable(allEntries, resolvedIds, options) {
+  const cutoff = options?.before ?? (/* @__PURE__ */ new Date()).toISOString();
+  const keepDecisions = options?.keep_decisions ?? true;
+  const keepOpen = options?.keep_open_needs_warnings ?? true;
+  const retain = options?.retain ?? 0;
+  const toArchive = [];
+  let keptOpen = 0;
+  for (const entry of allEntries) {
+    const isOldEnough = entry.timestamp < cutoff;
+    if (!isOldEnough) continue;
+    if (keepDecisions && entry.entry_type === "decision") continue;
+    if (keepOpen && (entry.entry_type === "need" || entry.entry_type === "warning" || entry.entry_type === "question") && !resolvedIds.has(entry.id)) {
+      keptOpen++;
+      continue;
+    }
+    toArchive.push(entry);
+  }
+  let retainedCount = 0;
+  let finalToArchive = toArchive;
+  if (retain > 0 && toArchive.length > 0) {
+    const sorted = [...toArchive].sort(
+      (a, b) => b.timestamp.localeCompare(a.timestamp) || b.id.localeCompare(a.id)
+    );
+    const retained = new Set(sorted.slice(0, retain).map((e) => e.id));
+    retainedCount = Math.min(retain, sorted.length);
+    finalToArchive = toArchive.filter((e) => !retained.has(e.id));
+  }
+  return {
+    to_archive: finalToArchive,
+    kept_open_count: keptOpen,
+    retained_count: retainedCount,
+    cutoff
+  };
+}
+var Archiver = class {
+  twiningDir;
+  blackboardStore;
+  blackboardEngine;
+  indexManager;
+  constructor(twiningDir, blackboardStore, blackboardEngine, indexManager) {
+    this.twiningDir = twiningDir;
+    this.blackboardStore = blackboardStore;
+    this.blackboardEngine = blackboardEngine;
+    this.indexManager = indexManager;
+  }
+  /**
+   * Compute the archive partition without touching the store (#39).
+   * Entries before the cutoff are archivable UNLESS they are decisions
+   * (LIFE-03) or unresolved need/warning/question entries (#40, widened to
+   * questions by D4). An item counts as resolved when explicitly resolved
+   * (status "resolved", D2) or when any other entry back-references it via
+   * relates_to — age is the wrong archival signal for open obligations,
+   * which matter MORE as they age, not less. `retain` keeps the newest K
+   * archivable entries on the board (D4 count-based retention).
+   */
+  async plan(options) {
+    const { entries: allEntries } = await this.blackboardStore.read();
+    const resolvedIds = computeResolvedIds(allEntries);
+    return partitionArchivable(allEntries, resolvedIds, options);
+  }
+  /**
+   * Archive old blackboard entries.
+   * Decision entries are never archived (LIFE-03); unresolved need/warning
+   * entries are exempt unless keep_open_needs_warnings is false (#40).
+   * Archived entries are moved to archive/{YYYY-MM-DD}-blackboard.jsonl.
+   * Optionally posts a summary finding (LIFE-02).
+   */
+  async archive(options) {
+    const summarize = options?.summarize ?? true;
+    const {
+      to_archive: toArchive,
+      kept_open_count,
+      retained_count,
+      cutoff
+    } = await this.plan(options);
+    if (toArchive.length === 0) {
+      return { archived_count: 0, archive_file: "", kept_open_count, retained_count };
+    }
+    const archiveDir = path15.join(this.twiningDir, "archive");
+    ensureDir(archiveDir);
+    const nowIso = (/* @__PURE__ */ new Date()).toISOString();
+    const dateStr = (cutoff < nowIso ? cutoff : nowIso).slice(0, 10);
+    const archiveFile = path15.join(archiveDir, `${dateStr}-blackboard.jsonl`);
+    const archiveContent = toArchive.map((e) => JSON.stringify(e)).join("\n") + "\n";
+    fs13.appendFileSync(archiveFile, archiveContent);
+    await this.blackboardStore.dismiss(toArchive.map((e) => e.id));
+    if (this.indexManager) {
+      try {
+        const archivedIds = toArchive.map((e) => e.id);
+        await this.indexManager.removeEntries("blackboard", archivedIds);
+      } catch {
+      }
+    }
+    let summaryText;
+    if (summarize) {
+      summaryText = this.buildSummary(toArchive);
+      await this.blackboardEngine.post({
+        entry_type: "finding",
+        summary: `Archive: ${toArchive.length} entries archived`,
+        detail: summaryText,
+        tags: ["archive"],
+        scope: "project",
+        _skipAutoArchive: true
+      });
+    }
+    return {
+      archived_count: toArchive.length,
+      archive_file: archiveFile,
+      kept_open_count,
+      retained_count,
+      summary: summaryText
+    };
+  }
+  /** Build a human-readable summary of archived entries. */
+  buildSummary(archived) {
+    const groups = /* @__PURE__ */ new Map();
+    for (const entry of archived) {
+      if (!groups.has(entry.entry_type)) groups.set(entry.entry_type, []);
+      groups.get(entry.entry_type).push(entry);
+    }
+    const parts = [];
+    parts.push(`Archive summary: ${archived.length} entries archived.`);
+    for (const [type2, entries] of groups) {
+      const sorted = entries.sort(
+        (a, b) => b.timestamp.localeCompare(a.timestamp)
+      );
+      const topSummaries = sorted.slice(0, 3).map((e) => e.summary).join("; ");
+      parts.push(`${type2}: ${entries.length} entries (${topSummaries}).`);
+    }
+    let summary = parts.join(" ");
+    if (summary.length > 2e3) {
+      summary = summary.slice(0, 1997) + "...";
+    }
+    return summary;
+  }
+};
 
 // src/engine/blackboard.ts
 var BlackboardEngine = class {
@@ -28674,6 +28897,7 @@ var BlackboardEngine = class {
   projectRoot;
   archiver = null;
   archiveThreshold = null;
+  archiveRetain = 0;
   graphPopulator = null;
   agentStore = null;
   constructor(store, embedder, indexManager, searchEngine, projectRoot) {
@@ -28687,6 +28911,7 @@ var BlackboardEngine = class {
   setArchiver(archiver, config2) {
     this.archiver = archiver;
     this.archiveThreshold = config2.archive.max_blackboard_entries_before_archive;
+    this.archiveRetain = config2.archive.retain_recent ?? 0;
   }
   /** Inject graph auto-populator for relation extraction from posts. */
   setGraphPopulator(populator) {
@@ -28740,6 +28965,7 @@ var BlackboardEngine = class {
       scope: input.scope ?? "project",
       relates_to: input.relates_to,
       agent_id: input.agent_id ?? "main",
+      ...input.origin ? { origin: input.origin } : {},
       provenance: captureProvenance(this.projectRoot)
     });
     this.touchAgent(input.agent_id);
@@ -28765,11 +28991,16 @@ var BlackboardEngine = class {
     if (this.archiver && this.archiveThreshold && !input._skipAutoArchive) {
       const { entries } = await this.store.read();
       const resolvedIds = computeResolvedIds(entries);
-      const archivableCount = entries.filter(
-        (e) => e.entry_type !== "decision" && !(e.tags ?? []).includes("archive") && !((e.entry_type === "need" || e.entry_type === "warning") && !resolvedIds.has(e.id))
-      ).length;
-      if (archivableCount >= this.archiveThreshold) {
-        this.archiver.archive({ summarize: true }).catch((err) => {
+      const { to_archive } = partitionArchivable(entries, resolvedIds, {
+        before: NO_AGE_CUTOFF,
+        retain: this.archiveRetain
+      });
+      if (to_archive.length >= this.archiveThreshold) {
+        this.archiver.archive({
+          summarize: true,
+          retain: this.archiveRetain,
+          before: NO_AGE_CUTOFF
+        }).catch((err) => {
           console.error("[twining] Auto-archive failed (non-fatal):", err);
         });
       }
@@ -28817,11 +29048,27 @@ var BlackboardEngine = class {
     }
     return result;
   }
+  /**
+   * Mark entries resolved (D2) — the record-preserving exit from the open
+   * lane. Embeddings are untouched: the entry's text is unchanged and
+   * resolved entries remain searchable history.
+   */
+  async resolve(ids, opts) {
+    if (!ids || ids.length === 0) {
+      throw new TwiningError("At least one entry ID is required", "INVALID_INPUT");
+    }
+    const result = await this.store.resolve(ids, {
+      by: opts?.agent_id,
+      note: opts?.note
+    });
+    this.touchAgent(opts?.agent_id);
+    return result;
+  }
 };
 
 // src/engine/decisions.ts
-import fs13 from "node:fs";
-import path15 from "node:path";
+import fs14 from "node:fs";
+import path16 from "node:path";
 init_errors();
 
 // src/utils/tokens.ts
@@ -29139,9 +29386,9 @@ var DecisionEngine = class {
   syncToPlanning(summary) {
     if (!this.projectRoot) return;
     try {
-      const statePath = path15.join(this.projectRoot, ".planning", "STATE.md");
-      if (!fs13.existsSync(statePath)) return;
-      const content = fs13.readFileSync(statePath, "utf-8");
+      const statePath = path16.join(this.projectRoot, ".planning", "STATE.md");
+      if (!fs14.existsSync(statePath)) return;
+      const content = fs14.readFileSync(statePath, "utf-8");
       const lines = content.split("\n");
       let decisionsLineIndex = -1;
       for (let i2 = 0; i2 < lines.length; i2++) {
@@ -29164,7 +29411,7 @@ var DecisionEngine = class {
       }
       const newLine = `- ${summary}`;
       lines.splice(insertAt, 0, newLine);
-      fs13.writeFileSync(statePath, lines.join("\n"), "utf-8");
+      fs14.writeFileSync(statePath, lines.join("\n"), "utf-8");
     } catch (error2) {
       console.error(
         "[twining] STATE.md sync failed (non-fatal):",
@@ -29370,6 +29617,7 @@ ${conflictDetails}`,
     const provisional_count = matches.filter(
       (d) => d.status === "provisional"
     ).length;
+    const archived_excluded_count = options?.include_superseded ? 0 : all.filter((d) => d.status === "archived").length;
     return {
       decisions,
       ...more.length > 0 ? { more } : {},
@@ -29377,6 +29625,7 @@ ${conflictDetails}`,
       truncated: more.length > 0,
       total_in_scope: matches.length,
       superseded_count,
+      ...archived_excluded_count > 0 ? { archived_excluded_count } : {},
       active_count,
       provisional_count,
       token_estimate: tokensUsed
@@ -29953,123 +30202,6 @@ var GraphEngine = class {
   }
 };
 
-// src/engine/archiver.ts
-init_file_store();
-import fs14 from "node:fs";
-import path16 from "node:path";
-var Archiver = class {
-  twiningDir;
-  blackboardStore;
-  blackboardEngine;
-  indexManager;
-  constructor(twiningDir, blackboardStore, blackboardEngine, indexManager) {
-    this.twiningDir = twiningDir;
-    this.blackboardStore = blackboardStore;
-    this.blackboardEngine = blackboardEngine;
-    this.indexManager = indexManager;
-  }
-  /**
-   * Compute the archive partition without touching the store (#39).
-   * Entries before the cutoff are archivable UNLESS they are decisions
-   * (LIFE-03) or unresolved need/warning entries (#40). A need/warning
-   * counts as resolved when any other entry back-references it via
-   * relates_to — age is the wrong archival signal for open obligations,
-   * which matter MORE as they age, not less.
-   */
-  async plan(options) {
-    const cutoff = options?.before ?? (/* @__PURE__ */ new Date()).toISOString();
-    const keepDecisions = options?.keep_decisions ?? true;
-    const keepOpen = options?.keep_open_needs_warnings ?? true;
-    const { entries: allEntries } = await this.blackboardStore.read();
-    const resolvedIds = computeResolvedIds(allEntries);
-    const toArchive = [];
-    let keptOpen = 0;
-    for (const entry of allEntries) {
-      const isOldEnough = entry.timestamp < cutoff;
-      if (!isOldEnough) continue;
-      if (keepDecisions && entry.entry_type === "decision") continue;
-      if (keepOpen && (entry.entry_type === "need" || entry.entry_type === "warning") && !resolvedIds.has(entry.id)) {
-        keptOpen++;
-        continue;
-      }
-      toArchive.push(entry);
-    }
-    return { to_archive: toArchive, kept_open_count: keptOpen, cutoff };
-  }
-  /**
-   * Archive old blackboard entries.
-   * Decision entries are never archived (LIFE-03); unresolved need/warning
-   * entries are exempt unless keep_open_needs_warnings is false (#40).
-   * Archived entries are moved to archive/{YYYY-MM-DD}-blackboard.jsonl.
-   * Optionally posts a summary finding (LIFE-02).
-   */
-  async archive(options) {
-    const summarize = options?.summarize ?? true;
-    const {
-      to_archive: toArchive,
-      kept_open_count,
-      cutoff
-    } = await this.plan(options);
-    if (toArchive.length === 0) {
-      return { archived_count: 0, archive_file: "", kept_open_count };
-    }
-    const archiveDir = path16.join(this.twiningDir, "archive");
-    ensureDir(archiveDir);
-    const dateStr = cutoff.slice(0, 10);
-    const archiveFile = path16.join(archiveDir, `${dateStr}-blackboard.jsonl`);
-    const archiveContent = toArchive.map((e) => JSON.stringify(e)).join("\n") + "\n";
-    fs14.appendFileSync(archiveFile, archiveContent);
-    await this.blackboardStore.dismiss(toArchive.map((e) => e.id));
-    if (this.indexManager) {
-      try {
-        const archivedIds = toArchive.map((e) => e.id);
-        await this.indexManager.removeEntries("blackboard", archivedIds);
-      } catch {
-      }
-    }
-    let summaryText;
-    if (summarize) {
-      summaryText = this.buildSummary(toArchive);
-      await this.blackboardEngine.post({
-        entry_type: "finding",
-        summary: `Archive: ${toArchive.length} entries archived`,
-        detail: summaryText,
-        tags: ["archive"],
-        scope: "project",
-        _skipAutoArchive: true
-      });
-    }
-    return {
-      archived_count: toArchive.length,
-      archive_file: archiveFile,
-      kept_open_count,
-      summary: summaryText
-    };
-  }
-  /** Build a human-readable summary of archived entries. */
-  buildSummary(archived) {
-    const groups = /* @__PURE__ */ new Map();
-    for (const entry of archived) {
-      if (!groups.has(entry.entry_type)) groups.set(entry.entry_type, []);
-      groups.get(entry.entry_type).push(entry);
-    }
-    const parts = [];
-    parts.push(`Archive summary: ${archived.length} entries archived.`);
-    for (const [type2, entries] of groups) {
-      const sorted = entries.sort(
-        (a, b) => b.timestamp.localeCompare(a.timestamp)
-      );
-      const topSummaries = sorted.slice(0, 3).map((e) => e.summary).join("; ");
-      parts.push(`${type2}: ${entries.length} entries (${topSummaries}).`);
-    }
-    let summary = parts.join(" ");
-    if (summary.length > 2e3) {
-      summary = summary.slice(0, 1997) + "...";
-    }
-    return summary;
-  }
-};
-
 // src/utils/liveness.ts
 var DEFAULT_LIVENESS_THRESHOLDS = {
   idle_after_ms: 5 * 60 * 1e3,
@@ -30126,6 +30258,9 @@ var ContextAssembler = class _ContextAssembler {
     const activeDecisions = scopeDecisions.filter(
       (d) => d.status === "active" || d.status === "provisional"
     );
+    const archivedExcluded = scopeDecisions.filter(
+      (d) => d.status === "archived"
+    ).length;
     const decisionRelevance = /* @__PURE__ */ new Map();
     if (this.searchEngine) {
       const allDecisions = [];
@@ -30287,9 +30422,9 @@ var ContextAssembler = class _ContextAssembler {
           ) : void 0,
           assumptions: d.assumptions
         };
-        const path36 = reachabilityPaths.get(d.id);
-        if (path36) {
-          decisionEntry.relevance_path = path36;
+        const path37 = reachabilityPaths.get(d.id);
+        if (path37) {
+          decisionEntry.relevance_path = path37;
         }
         activeDecisionResults.push(decisionEntry);
       } else {
@@ -30405,6 +30540,7 @@ var ContextAssembler = class _ContextAssembler {
       scope,
       token_estimate: tokensUsed,
       ...warningsOmitted > 0 ? { warnings_omitted: warningsOmitted } : {},
+      ...archivedExcluded > 0 ? { archived_excluded_count: archivedExcluded } : {},
       active_decisions: activeDecisionResults,
       open_needs: openNeeds,
       recent_findings: recentFindings,
@@ -30614,6 +30750,11 @@ var ContextAssembler = class _ContextAssembler {
     const quickRef = ["\n---"];
     if (statusSummary) {
       quickRef.push(`Status: ${statusSummary}`);
+    }
+    if ((ctx.archived_excluded_count ?? 0) > 0) {
+      quickRef.push(
+        `Note: ${ctx.archived_excluded_count} archived decision(s) in this scope are excluded from the briefing \u2014 if that is unexpected, twining_unarchive can restore them.`
+      );
     }
     if (ctx.recent_questions.length > 0) {
       quickRef.push(`Open questions: ${ctx.recent_questions.map((q) => q.summary).join("; ")}`);
@@ -31339,6 +31480,9 @@ var VerifyEngine = class _VerifyEngine {
     const acknowledgedIds = /* @__PURE__ */ new Set();
     const resolvedIds = /* @__PURE__ */ new Set();
     for (const entry of allEntries) {
+      if (entry.status === "resolved") {
+        resolvedIds.add(entry.id);
+      }
       if (entry.relates_to) {
         for (const refId of entry.relates_to) {
           if (entry.entry_type === "answer" || entry.entry_type === "finding") {
@@ -31536,10 +31680,12 @@ var PendingProcessor = class {
   twiningDir;
   blackboardEngine;
   archiver;
-  constructor(twiningDir, blackboardEngine, archiver) {
+  archiveRetain;
+  constructor(twiningDir, blackboardEngine, archiver, archiveRetain = 0) {
     this.twiningDir = twiningDir;
     this.blackboardEngine = blackboardEngine;
     this.archiver = archiver;
+    this.archiveRetain = archiveRetain;
   }
   /**
    * Process all pending posts and actions currently queued.
@@ -31578,7 +31724,10 @@ ${detail}`;
       async (action) => {
         if (action.action === "archive" && this.archiver) {
           await this.archiver.archive({
-            before: action.before
+            before: action.before,
+            // Queued actions may override; otherwise the configured floor
+            // applies — hook-fired sweeps are bounded like the auto-trigger.
+            retain: action.retain ?? this.archiveRetain
           });
         }
       },
@@ -32009,6 +32158,29 @@ function writeRecordSentinel(twiningDir) {
   }
 }
 
+// src/engine/tombstones.ts
+init_file_store();
+import fs17 from "node:fs";
+import path20 from "node:path";
+function appendDismissalTombstones(twiningDir, entries, meta) {
+  if (entries.length === 0) return;
+  const archiveDir = path20.join(twiningDir, "archive");
+  ensureDir(archiveDir);
+  const now = (/* @__PURE__ */ new Date()).toISOString();
+  const file = path20.join(archiveDir, `${now.slice(0, 10)}-blackboard.jsonl`);
+  const lines = entries.map(
+    (e) => JSON.stringify({
+      ...e,
+      dismissed: {
+        dismissed_at: now,
+        ...meta.dismissed_by ? { dismissed_by: meta.dismissed_by } : {},
+        ...meta.reason ? { reason: meta.reason } : {}
+      }
+    })
+  ).join("\n");
+  fs17.appendFileSync(file, lines + "\n");
+}
+
 // src/tools/blackboard-tools.ts
 function includesDecisions(entryTypes) {
   return !entryTypes || entryTypes.includes("decision");
@@ -32026,7 +32198,9 @@ function registerBlackboardTools(server, engine, twiningDir, options = {}) {
         detail: external_exports.string().optional().describe("Full context and details"),
         tags: external_exports.array(external_exports.string()).optional().describe("Domain tags for filtering"),
         scope: external_exports.string().optional().describe('File path, module name, or "project"'),
-        relates_to: external_exports.array(external_exports.string()).optional().describe("IDs of related entries"),
+        relates_to: external_exports.array(external_exports.string()).optional().describe(
+          "IDs of related entries. Back-referencing an open need/question/warning marks it resolved out of the open triage lane (e.g. an answer posted with relates_to: [question_id]). For an explicit, durable resolution prefer twining_resolve."
+        ),
         agent_id: external_exports.string().optional().describe("Identifier for the posting agent")
       }
     },
@@ -32148,18 +32322,56 @@ function registerBlackboardTools(server, engine, twiningDir, options = {}) {
       }
     }
   );
-  if (options.fullSurface) server.registerTool(
-    "twining_dismiss",
+  server.registerTool(
+    "twining_resolve",
     {
-      description: "Remove specific blackboard entries by ID. Use this to clean up false-positive warnings, resolved entries, or other noise. Returns which IDs were dismissed and which were not found.",
+      description: 'Mark open blackboard items (needs, questions, warnings) as handled. Persists status "resolved" with resolver identity and an optional note; the entry leaves the open triage/assemble lane but stays on the board as searchable history. This is the everyday exit for open items \u2014 use twining_dismiss only for noise that should never have been recorded.',
       inputSchema: {
-        ids: external_exports.array(external_exports.string()).min(1).describe("Entry IDs to remove from the blackboard"),
-        reason: external_exports.string().optional().describe("Why these entries are being dismissed (logged but not stored)")
+        ids: external_exports.array(external_exports.string()).min(1).describe("Entry IDs to mark resolved"),
+        note: external_exports.string().optional().describe("How the item was handled \u2014 stored as resolution_note"),
+        agent_id: external_exports.string().optional().describe("Identifier for the resolving agent")
       }
     },
     async (args) => {
       try {
+        const result = await engine.resolve(args.ids, {
+          agent_id: args.agent_id,
+          note: args.note
+        });
+        return toolResult(result);
+      } catch (e) {
+        if (e instanceof TwiningError) {
+          return toolError(e.message, e.code);
+        }
+        return toolError(
+          e instanceof Error ? e.message : "Unknown error",
+          "INTERNAL_ERROR"
+        );
+      }
+    }
+  );
+  if (options.fullSurface) server.registerTool(
+    "twining_dismiss",
+    {
+      description: "Remove blackboard entries by ID \u2014 for noise only: false positives, duplicates, test debris. Dismissal DELETES the live entry everywhere (including the committed record on export-backed stores); a tombstone with your reason is appended to .twining/archive/, which is gitignored \u2014 the tombstone audit trail is LOCAL to this machine. For substantive items that were handled, use twining_resolve instead \u2014 it preserves the record while closing the open lane.",
+      inputSchema: {
+        ids: external_exports.array(external_exports.string()).min(1).describe("Entry IDs to remove from the blackboard"),
+        reason: external_exports.string().optional().describe("Why these entries are being dismissed \u2014 stored on the archive tombstone"),
+        agent_id: external_exports.string().optional().describe("Identifier for the dismissing agent \u2014 stored on the tombstone")
+      }
+    },
+    async (args) => {
+      try {
+        const { entries } = await engine.read({ limit: 0 });
+        const idSet = new Set(args.ids);
+        const doomed = entries.filter((e) => idSet.has(e.id));
         const result = await engine.dismiss(args.ids);
+        const dismissedSet = new Set(result.dismissed);
+        appendDismissalTombstones(
+          twiningDir,
+          doomed.filter((e) => dismissedSet.has(e.id)),
+          { reason: args.reason, dismissed_by: args.agent_id }
+        );
         return toolResult(result);
       } catch (e) {
         if (e instanceof TwiningError) {
@@ -32508,6 +32720,8 @@ function registerContextTools(server, contextAssembler, options = {}) {
           decisions_count: context.active_decisions.length,
           warnings_count: context.active_warnings.length,
           needs_count: context.open_needs.length,
+          // D3: distinguishes "decisions were archived away" from "none exist"
+          ...context.archived_excluded_count ? { archived_excluded_count: context.archived_excluded_count } : {},
           token_estimate: context.token_estimate
         });
       } catch (e) {
@@ -32841,6 +33055,9 @@ function registerRecordTools(server, blackboardEngine, decisionEngine, projectRo
         supersedes: external_exports.string().optional().describe(
           "ID of a prior decision that your work replaces or invalidates"
         ),
+        resolves: external_exports.array(external_exports.string()).optional().describe(
+          "Blackboard entry IDs (needs/questions/warnings from twining_assemble or twining_triage) that this session's work handled \u2014 they are marked resolved and leave the open lane, and the status post back-references them"
+        ),
         reversible: external_exports.boolean().optional().describe("Whether your decisions are easily reversible (default: true)"),
         commit_hash: external_exports.string().optional().describe("Git commit hash to associate with these decisions"),
         scope: external_exports.string().optional().describe("Area of codebase affected. Auto-inferred from git diff if omitted."),
@@ -32860,11 +33077,32 @@ function registerRecordTools(server, blackboardEngine, decisionEngine, projectRo
         }
         if (args.decisions?.length) detailParts.push(`Decisions: ${args.decisions.join("; ")}`);
         if (args.findings?.length) detailParts.push(`Findings: ${args.findings.join("; ")}`);
+        let resolveResult;
+        const resolveErrors = [];
+        if (args.resolves?.length) {
+          try {
+            resolveResult = await blackboardEngine.resolve(args.resolves, {
+              agent_id: agentId,
+              note: `Resolved by session record: ${statusSummary}`
+            });
+          } catch (error2) {
+            resolveErrors.push(
+              error2 instanceof Error ? error2.message : String(error2)
+            );
+          }
+        }
         const statusEntry = await blackboardEngine.post({
           entry_type: "status",
           summary: statusSummary,
           detail: detailParts.join("\n"),
+          // "session-record" marks the auto-emitted narration ONLY; findings
+          // carry "session-finding" + origin "discovery" so consumers can
+          // tell what the session did from what it found (field defect D1).
           tags: ["session-record"],
+          origin: "narration",
+          // Back-reference handled items so even pre-D2 consumers of the
+          // relates_to predicate see them as resolved.
+          ...args.resolves?.length ? { relates_to: args.resolves } : {},
           scope,
           agent_id: agentId
         });
@@ -32920,7 +33158,8 @@ function registerRecordTools(server, blackboardEngine, decisionEngine, projectRo
                 entry_type: parsed.entry_type,
                 summary: findingSummary,
                 detail: findingTruncated ? `Full summary: ${parsed.summary}` : "",
-                tags: ["session-record"],
+                tags: ["session-finding"],
+                origin: "discovery",
                 scope,
                 agent_id: agentId
               });
@@ -32957,6 +33196,21 @@ function registerRecordTools(server, blackboardEngine, decisionEngine, projectRo
         };
         if (decisionErrors.length > 0) response.decision_errors = decisionErrors;
         if (findingErrors.length > 0) response.finding_errors = findingErrors;
+        if (resolveResult) {
+          response.resolved = resolveResult.resolved;
+          if (resolveResult.not_found.length > 0) {
+            response.resolve_not_found = resolveResult.not_found;
+            parts.push(
+              `${resolveResult.not_found.length} resolve id(s) not found`
+            );
+            response.message = parts.join(" + ");
+          }
+        }
+        if (resolveErrors.length > 0) {
+          response.resolve_errors = resolveErrors;
+          parts.push("resolve failed (items left open)");
+          response.message = parts.join(" + ");
+        }
         if (droppedDependsOnIds.size > 0)
           response.dropped_depends_on = [...droppedDependsOnIds];
         if (summaryTruncated) {
@@ -32982,7 +33236,7 @@ function registerRecordTools(server, blackboardEngine, decisionEngine, projectRo
 }
 
 // src/tools/lifecycle-tools.ts
-import path20 from "node:path";
+import path21 from "node:path";
 init_errors();
 function registerLifecycleTools(server, twiningDir, blackboardStore, decisionStore, graphStore, archiver, config2, agentStore = null) {
   server.registerTool(
@@ -32992,8 +33246,8 @@ function registerLifecycleTools(server, twiningDir, blackboardStore, decisionSto
     },
     async () => {
       try {
-        const projectRoot = path20.dirname(twiningDir);
-        const project = path20.basename(projectRoot);
+        const projectRoot = path21.dirname(twiningDir);
+        const project = path21.basename(projectRoot);
         const { total_count: blackboard_entries } = await blackboardStore.read();
         const index = await decisionStore.getIndex();
         const active_decisions = index.filter(
@@ -33021,7 +33275,16 @@ function registerLifecycleTools(server, twiningDir, blackboardStore, decisionSto
           last_activity = lastDecisionActivity;
         }
         const archiveThreshold = config2.archive.max_blackboard_entries_before_archive;
-        const needs_archiving = blackboard_entries >= archiveThreshold;
+        const { entries: allBoardEntries } = await blackboardStore.read();
+        const archivableCount = partitionArchivable(
+          allBoardEntries,
+          computeResolvedIds(allBoardEntries),
+          {
+            before: NO_AGE_CUTOFF,
+            retain: config2.archive.retain_recent ?? 0
+          }
+        ).to_archive.length;
+        const needs_archiving = archivableCount >= archiveThreshold;
         const warnings = [];
         const sevenDaysAgo = new Date(
           Date.now() - 7 * 24 * 60 * 60 * 1e3
@@ -33036,7 +33299,7 @@ function registerLifecycleTools(server, twiningDir, blackboardStore, decisionSto
         }
         if (needs_archiving) {
           warnings.push(
-            `Blackboard has ${blackboard_entries} entries, archive recommended (threshold: ${archiveThreshold})`
+            `Blackboard has ${archivableCount} archivable entries (${blackboard_entries} total), archive recommended (threshold: ${archiveThreshold}) \u2014 twining_housekeeping({archive: true, execute: true})`
           );
         }
         if (graph_entities > 0) {
@@ -33095,11 +33358,14 @@ function registerLifecycleTools(server, twiningDir, blackboardStore, decisionSto
   server.registerTool(
     "twining_archive",
     {
-      description: "Archive old blackboard entries. Moves entries older than a cutoff timestamp to an archive file, preserving decision entries and unresolved need/warning entries (#40 \u2014 a need/warning counts as resolved when a later entry references it via relates_to). Optionally posts a summary finding.",
+      description: "Archive old blackboard entries. Moves entries older than a cutoff timestamp to an archive file, preserving decision entries and unresolved need/warning/question entries (#40 \u2014 an item counts as resolved when explicitly resolved via twining_resolve or when a later entry references it via relates_to). Optionally posts a summary finding. WARNING: the cutoff defaults to now, so an argument-free call archives everything archivable \u2014 pass `before` or `retain` unless a full sweep is intended.",
       inputSchema: {
         before: external_exports.string().refine((val) => !isNaN(Date.parse(val)), {
           message: "Must be a valid ISO 8601 timestamp"
         }).optional().describe("ISO timestamp cutoff \u2014 archive entries before this time (default: now)"),
+        retain: external_exports.number().int().min(0).optional().describe(
+          "Keep the newest N archivable entries on the board regardless of age (D4 count-based retention \u2014 an age cutoff cannot bound a same-hour burst). Default 0 = no retention."
+        ),
         keep_decisions: external_exports.boolean().optional().describe("Whether to keep decision entries in the blackboard (default: true)"),
         keep_open_needs_warnings: external_exports.boolean().optional().describe(
           "Whether to exempt unresolved need/warning entries from age-based archiving (default: true). Set false to force a full sweep."
@@ -33546,6 +33812,21 @@ var DEFAULT_LIMIT = 25;
 var LIMIT_MIN = 1;
 var LIMIT_MAX = 200;
 var PREVIEW_CHARS = 200;
+function encodeOpenCursor(item) {
+  return Buffer.from(`${item.timestamp}|${item.id}`, "utf-8").toString(
+    "base64url"
+  );
+}
+function decodeOpenCursor(cursor) {
+  try {
+    const raw = Buffer.from(cursor, "base64url").toString("utf-8");
+    const sep = raw.indexOf("|");
+    if (sep <= 0 || sep === raw.length - 1) return null;
+    return { timestamp: raw.slice(0, sep), id: raw.slice(sep + 1) };
+  } catch {
+    return null;
+  }
+}
 function normalize(input) {
   const normalized = {
     // Empty-string scope/for_agent are treated as absent — "" passed to
@@ -33574,6 +33855,10 @@ function normalize(input) {
       normalized.since = input.since;
       normalized.sinceMs = parsed;
     }
+  }
+  if (input.open_after) {
+    const decoded = decodeOpenCursor(input.open_after);
+    if (decoded) normalized.openAfter = decoded;
   }
   return normalized;
 }
@@ -33619,6 +33904,7 @@ function blackboardItem(entry, kind, nowMs, delegation) {
     age_ms: nowMs - Date.parse(entry.timestamp),
     tags: entry.tags
   };
+  if (entry.origin) item.origin = entry.origin;
   if (delegation) {
     item.urgency = delegation.urgency;
     item.expires_at = delegation.expires_at;
@@ -33716,7 +34002,21 @@ async function buildTriage(stores, input = {}, now = () => /* @__PURE__ */ new D
   if (opts.scope !== void 0) result.scope = opts.scope;
   if (opts.forAgent !== void 0) result.for_agent = opts.forAgent;
   if (opts.since !== void 0) result.since = opts.since;
-  if (opts.section !== "recent") result.open = openItems.slice(0, opts.limit);
+  if (opts.section !== "recent") {
+    let deliverable = openItems;
+    if (opts.openAfter) {
+      const key = opts.openAfter;
+      deliverable = openItems.filter(
+        (i2) => i2.timestamp > key.timestamp || i2.timestamp === key.timestamp && i2.id > key.id
+      );
+    }
+    result.open = deliverable.slice(0, opts.limit);
+    if (deliverable.length > opts.limit) {
+      result.open_cursor = encodeOpenCursor(
+        result.open[result.open.length - 1]
+      );
+    }
+  }
   if (opts.section !== "open") result.recent = recentItems.slice(0, opts.limit);
   return result;
 }
@@ -33738,9 +34038,14 @@ function registerTriageTools(server, stores) {
           "Time window for recent activity in milliseconds (default: 7 days)"
         ),
         section: external_exports.enum(["all", "open", "recent"]).optional().describe('Which bucket(s) to return (default: "all")'),
-        limit: external_exports.number().optional().describe("Maximum items per bucket (default: 25, max: 200)"),
+        limit: external_exports.number().optional().describe(
+          "Maximum items per bucket (default: 25, max: 200). For the OPEN bucket, open_cursor is the authoritative more-remains signal: present = pass it back as open_after for the next page; absent = lane fully delivered through this page. counts.open.total is the full-lane denominator on EVERY page, so total > array length on a cursored call means mid-enumeration, not items unreachable. For the recent bucket (no cursor), counts.recent.total > array length detects truncation."
+        ),
         since: external_exports.string().optional().describe(
-          "ISO timestamp cursor \u2014 only recent items strictly after this instant; pass the previous result's generated_at"
+          "ISO timestamp cursor \u2014 only recent items strictly after this instant; pass the previous result's generated_at. Applies to the recent bucket ONLY; page the open bucket with open_after."
+        ),
+        open_after: external_exports.string().optional().describe(
+          "Opaque keyset cursor from a previous result's open_cursor \u2014 returns open items strictly after that position in the (timestamp, id) order. Loop until open_cursor is absent to enumerate an open lane larger than the limit cap. Malformed cursors are ignored."
         ),
         for_agent: external_exports.string().optional().describe(
           "Exclude this agent's own outbound blackboard posts (matches self-reported agent_id)"
@@ -34212,12 +34517,13 @@ function registerCoordinationTools(server, agentStore, coordinationEngine, confi
 }
 
 // src/engine/housekeeping.ts
-import fs20 from "node:fs";
-import path24 from "node:path";
+import fs21 from "node:fs";
+import path25 from "node:path";
 
 // src/engine/staleness.ts
-import fs17 from "node:fs";
-import path21 from "node:path";
+import fs18 from "node:fs";
+import path22 from "node:path";
+import { execFileSync as execFileSync6 } from "node:child_process";
 
 // src/utils/git-branches.ts
 import { execFileSync as execFileSync5 } from "node:child_process";
@@ -34242,14 +34548,16 @@ function listLocalBranches(projectRoot) {
 }
 
 // src/engine/staleness.ts
+var SCOPE_PATH_MISSING_SCORE = 0.8;
+var BRANCH_GONE_SCORE = 0.4;
 function scoreItem(item, probes) {
   const reasons = [];
   const scopeProbe = probes.scopePathExists(item.scope);
   if (scopeProbe === false) {
     reasons.push({
       signal: "scope_path_missing",
-      score: 1,
-      detail: `scope "${item.scope}" no longer exists on disk`
+      score: SCOPE_PATH_MISSING_SCORE,
+      detail: `no path-like segment of scope "${item.scope}" exists on disk`
     });
   }
   if (item.affected_files && item.affected_files.length > 0) {
@@ -34258,7 +34566,7 @@ function scoreItem(item, probes) {
       const proportion = missing.length / item.affected_files.length;
       reasons.push({
         signal: "affected_files_missing",
-        score: proportion,
+        score: Math.min(proportion, 0.95),
         detail: `${missing.length}/${item.affected_files.length} affected files missing: ${missing.slice(0, 3).join(", ")}${missing.length > 3 ? ", \u2026" : ""}`
       });
     }
@@ -34266,28 +34574,56 @@ function scoreItem(item, probes) {
   if (item.provenance?.branch && !probes.branchKnown(item.provenance.branch)) {
     reasons.push({
       signal: "branch_gone",
-      score: 1,
-      detail: `originating branch "${item.provenance.branch}" no longer exists`
+      score: BRANCH_GONE_SCORE,
+      detail: `originating branch "${item.provenance.branch}" no longer exists (normal post-merge cleanup \u2014 corroborating signal only)`
     });
   }
-  const score = reasons.length > 0 ? Math.max(...reasons.map((r) => r.score)) : 0;
+  const noisyOr = reasons.length > 0 ? 1 - reasons.reduce((acc, r) => acc * (1 - r.score), 1) : 0;
+  const score = reasons.length >= 2 ? Math.max(noisyOr, 0.95) : noisyOr;
   return { score, reasons };
+}
+function splitScopeSegments(scope) {
+  return scope.split(/[,+]|\s+/).map((s) => s.replace(/§.*$/, "").trim()).filter((s) => s.length > 0);
 }
 function buildProbes(projectRoot) {
   const knownBranches = listLocalBranches(projectRoot);
   const listingFailed = knownBranches === null;
   const branches = knownBranches ?? /* @__PURE__ */ new Set();
+  const basenameCounts = (() => {
+    try {
+      const out = execFileSync6("git", ["ls-files", "-z"], {
+        cwd: projectRoot,
+        encoding: "utf-8",
+        maxBuffer: 64 * 1024 * 1024
+      });
+      const counts = /* @__PURE__ */ new Map();
+      for (const f of out.split("\0")) {
+        if (!f) continue;
+        const base = path22.basename(f);
+        counts.set(base, (counts.get(base) ?? 0) + 1);
+      }
+      return counts;
+    } catch {
+      return null;
+    }
+  })();
   return {
     scopePathExists: (scope) => {
       if (!scope || scope === "project" || scope === "global") return null;
-      const looksLikePath = scope.includes("/") || scope.includes(".");
-      if (!looksLikePath) return null;
-      const candidate = scope.endsWith("/") ? scope.slice(0, -1) : scope;
-      return fs17.existsSync(path21.join(projectRoot, candidate));
+      const segments = splitScopeSegments(scope);
+      const pathLike = segments.filter(
+        (s) => s.includes("/") || s.includes(".")
+      );
+      if (pathLike.length === 0) return null;
+      return pathLike.some((segment) => {
+        const candidate = segment.endsWith("/") ? segment.slice(0, -1) : segment;
+        return fs18.existsSync(path22.join(projectRoot, candidate));
+      });
     },
     fileExists: (file) => {
       if (!file) return true;
-      return fs17.existsSync(path21.join(projectRoot, file));
+      if (fs18.existsSync(path22.join(projectRoot, file))) return true;
+      return basenameCounts !== null ? basenameCounts.get(path22.basename(file)) === 1 : false;
     },
     branchKnown: (branch) => listingFailed ? true : branches.has(branch)
   };
@@ -34337,14 +34673,14 @@ function auditStaleness(decisions, blackboardEntries, options) {
 }
 
 // src/engine/branch-watcher.ts
-import fs18 from "node:fs";
-import path22 from "node:path";
+import fs19 from "node:fs";
+import path23 from "node:path";
 var STATE_FILE = ".last-known-branches.json";
 function readKnownBranches(twiningDir) {
-  const p = path22.join(twiningDir, STATE_FILE);
-  if (!fs18.existsSync(p)) return null;
+  const p = path23.join(twiningDir, STATE_FILE);
+  if (!fs19.existsSync(p)) return null;
   try {
-    const parsed = JSON.parse(fs18.readFileSync(p, "utf-8"));
+    const parsed = JSON.parse(fs19.readFileSync(p, "utf-8"));
     if (!Array.isArray(parsed.branches) || typeof parsed.recorded_at !== "string") {
       return null;
     }
@@ -34358,8 +34694,8 @@ function writeKnownBranches(twiningDir, branches) {
     recorded_at: (/* @__PURE__ */ new Date()).toISOString(),
     branches: [...branches].sort()
   };
-  fs18.writeFileSync(
-    path22.join(twiningDir, STATE_FILE),
+  fs19.writeFileSync(
+    path23.join(twiningDir, STATE_FILE),
     JSON.stringify(state, null, 2),
     "utf-8"
   );
@@ -34399,8 +34735,8 @@ function detectDeletedBranches(twiningDir, projectRoot, commit = true) {
 }
 
 // src/engine/archive-compactor.ts
-import fs19 from "node:fs";
-import path23 from "node:path";
+import fs20 from "node:fs";
+import path24 from "node:path";
 import readline from "node:readline";
 import { once } from "node:events";
 var JUNK_SUMMARY_RE = /^Archive: \d+ entries archived$/;
@@ -34433,9 +34769,9 @@ async function compactArchives(twiningDir, options) {
     total_bytes_reclaimable: 0,
     files_deleted: 0
   };
-  const archiveDir = path23.join(twiningDir, "archive");
-  if (!fs19.existsSync(archiveDir)) return report;
-  const files = fs19.readdirSync(archiveDir, { withFileTypes: true }).filter((d) => d.isFile() && d.name.endsWith(".jsonl")).map((d) => path23.join(archiveDir, d.name)).sort();
+  const archiveDir = path24.join(twiningDir, "archive");
+  if (!fs20.existsSync(archiveDir)) return report;
+  const files = fs20.readdirSync(archiveDir, { withFileTypes: true }).filter((d) => d.isFile() && d.name.endsWith(".jsonl")).map((d) => path24.join(archiveDir, d.name)).sort();
   for (const file of files) {
     const fileReport = await compactFile(file, execute);
     report.files.push(fileReport);
@@ -34458,7 +34794,7 @@ async function compactFile(filePath, execute) {
   let out = null;
   try {
     const rl = readline.createInterface({
-      input: fs19.createReadStream(filePath, { encoding: "utf-8" }),
+      input: fs20.createReadStream(filePath, { encoding: "utf-8" }),
       crlfDelay: Infinity
     });
     for await (const line of rl) {
@@ -34469,7 +34805,7 @@ async function compactFile(filePath, execute) {
       }
       result.survivor_count++;
       if (execute) {
-        out ??= fs19.createWriteStream(tmpPath);
+        out ??= fs20.createWriteStream(tmpPath);
         if (!out.write(line + "\n")) await once(out, "drain");
       }
     }
@@ -34478,20 +34814,20 @@ async function compactFile(filePath, execute) {
       await once(out, "finish");
     }
     if (!execute || result.junk_count === 0) {
-      if (fs19.existsSync(tmpPath)) fs19.unlinkSync(tmpPath);
+      if (fs20.existsSync(tmpPath)) fs20.unlinkSync(tmpPath);
       return result;
     }
     if (result.survivor_count === 0) {
-      if (fs19.existsSync(tmpPath)) fs19.unlinkSync(tmpPath);
-      fs19.unlinkSync(filePath);
+      if (fs20.existsSync(tmpPath)) fs20.unlinkSync(tmpPath);
+      fs20.unlinkSync(filePath);
       result.deleted = true;
       return result;
     }
-    fs19.renameSync(tmpPath, filePath);
+    fs20.renameSync(tmpPath, filePath);
     return result;
   } catch (err) {
     try {
-      if (fs19.existsSync(tmpPath)) fs19.unlinkSync(tmpPath);
+      if (fs20.existsSync(tmpPath)) fs20.unlinkSync(tmpPath);
     } catch {
     }
     throw err;
@@ -34561,7 +34897,7 @@ var STALE_PROVISIONAL_DAYS = 7;
 var DEFAULT_STALENESS_THRESHOLD = 0.95;
 var METRICS_RETENTION_DAYS = 30;
 var HousekeepingEngine = class {
-  constructor(twiningDir, blackboardStore, decisionStore, archiver, graphEngine, projectRoot = null, stalenessThreshold = DEFAULT_STALENESS_THRESHOLD) {
+  constructor(twiningDir, blackboardStore, decisionStore, archiver, graphEngine, projectRoot = null, stalenessThreshold = DEFAULT_STALENESS_THRESHOLD, archiveRetain = 0) {
     this.twiningDir = twiningDir;
     this.blackboardStore = blackboardStore;
     this.decisionStore = decisionStore;
@@ -34569,6 +34905,7 @@ var HousekeepingEngine = class {
     this.graphEngine = graphEngine;
     this.projectRoot = projectRoot;
     this.stalenessThreshold = stalenessThreshold;
+    this.archiveRetain = archiveRetain;
   }
   twiningDir;
   blackboardStore;
@@ -34577,6 +34914,7 @@ var HousekeepingEngine = class {
   graphEngine;
   projectRoot;
   stalenessThreshold;
+  archiveRetain;
   async run(options) {
     const staleDays = options?.stale_days ?? STALE_PROVISIONAL_DAYS;
     const metricsRetentionDays = options?.metrics_retention_days ?? METRICS_RETENTION_DAYS;
@@ -34586,7 +34924,7 @@ var HousekeepingEngine = class {
     const mergeSweep = options?.merge_sweep ?? false;
     const compactArchivesOpt = options?.compact_archives ?? false;
     const repairEntityScopesOpt = options?.repair_entity_scopes ?? false;
-    const archiveEnabled = options?.archive ?? true;
+    const archiveEnabled = options?.archive ?? false;
     const result = {
       archived: { count: 0, file: "", kept_open: 0 },
       deduplicated: { removed: 0 },
@@ -34604,7 +34942,11 @@ var HousekeepingEngine = class {
     if (!archiveEnabled) {
     } else if (execute) {
       try {
-        const archiveResult = await this.archiver.archive({ summarize: false });
+        const archiveResult = await this.archiver.archive({
+          summarize: false,
+          retain: this.archiveRetain,
+          before: NO_AGE_CUTOFF
+        });
         result.archived.count = archiveResult.archived_count;
         result.archived.file = archiveResult.archive_file;
         result.archived.kept_open = archiveResult.kept_open_count;
@@ -34612,7 +34954,10 @@ var HousekeepingEngine = class {
       }
     } else {
       try {
-        const plan = await this.archiver.plan();
+        const plan = await this.archiver.plan({
+          retain: this.archiveRetain,
+          before: NO_AGE_CUTOFF
+        });
         result.archived.count = plan.to_archive.length;
         result.archived.kept_open = plan.kept_open_count;
         plannedArchiveIds = new Set(plan.to_archive.map((e) => e.id));
@@ -34624,19 +34969,26 @@ var HousekeepingEngine = class {
       const entries = execute ? boardEntries : boardEntries.filter((e) => !plannedArchiveIds.has(e.id));
       const seen = /* @__PURE__ */ new Map();
       const duplicateIds = [];
+      const doomed = [];
       const sorted = [...entries].sort(
         (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
       );
       for (const entry of sorted) {
+        if (entry.status === "resolved") continue;
         const key = `${entry.entry_type}|${entry.summary}|${entry.scope}`;
         if (seen.has(key)) {
           duplicateIds.push(entry.id);
+          doomed.push(entry);
         } else {
           seen.set(key, entry);
         }
       }
       if (duplicateIds.length > 0 && execute) {
         await this.blackboardStore.dismiss(duplicateIds);
+        appendDismissalTombstones(this.twiningDir, doomed, {
+          reason: "duplicate of a newer same-text entry",
+          dismissed_by: "housekeeping-dedup"
+        });
       }
       result.deduplicated.removed = duplicateIds.length;
       const warnings = entries.filter((e) => e.entry_type === "warning");
@@ -34683,12 +35035,12 @@ var HousekeepingEngine = class {
       }
     }
     try {
-      const metricsPath = path24.join(this.twiningDir, "metrics.jsonl");
-      if (fs20.existsSync(metricsPath)) {
+      const metricsPath = path25.join(this.twiningDir, "metrics.jsonl");
+      if (fs21.existsSync(metricsPath)) {
         const cutoff = new Date(
           now - metricsRetentionDays * 24 * 60 * 60 * 1e3
         ).toISOString();
-        const content = fs20.readFileSync(metricsPath, "utf-8");
+        const content = fs21.readFileSync(metricsPath, "utf-8");
         const lines = content.split("\n").filter((l) => l.trim());
         const kept = [];
         let removed = 0;
@@ -34705,7 +35057,7 @@ var HousekeepingEngine = class {
           }
         }
         if (removed > 0 && execute) {
-          fs20.writeFileSync(metricsPath, kept.join("\n") + (kept.length > 0 ? "\n" : ""));
+          fs21.writeFileSync(metricsPath, kept.join("\n") + (kept.length > 0 ? "\n" : ""));
         }
         result.metrics_rotated.removed = removed;
       }
@@ -34870,11 +35222,11 @@ var HousekeepingEngine = class {
 
 // src/tools/housekeeping-tools.ts
 init_errors();
-function registerHousekeepingTools(server, housekeepingEngine, blackboardEngine, decisionStore) {
+function registerHousekeepingTools(server, housekeepingEngine, blackboardEngine, decisionStore, twiningDir) {
   server.registerTool(
     "twining_housekeeping",
     {
-      description: "Run periodic maintenance on Twining stores. Preview by default (dry run); preview simulates the full pass pipeline, so its counts match what execute will do on the same state (#39). Archives old entries (keeping decisions and unresolved need/warning entries, #40), removes duplicates, surfaces stale decisions and dangling warnings, prunes orphaned graph entities, rotates old metrics, and backfills missing superseded_by back-links on superseded decisions. Pass staleness_review: true to also flag entries whose scope/files/branch are gone. Pass execute: true to apply changes.",
+      description: "Run periodic maintenance on Twining stores. Preview by default (dry run); preview simulates the full pass pipeline, so its counts match what execute will do on the same state (#39). Removes duplicates, surfaces stale decisions and dangling warnings, prunes orphaned graph entities, rotates old metrics, and backfills missing superseded_by back-links on superseded decisions. The blackboard archive pass is OPT-IN (archive: true): it sweeps every archivable entry regardless of age, keeping decisions, unresolved need/warning/question entries (#40), and the newest archive.retain_recent entries (D4). Pass staleness_review: true to also flag entries whose scope/files/branch are gone. Pass execute: true to apply changes.",
       inputSchema: {
         execute: external_exports.boolean().optional().describe("Set to true to apply changes. Default is false (preview only)."),
         promote_provisionals: external_exports.boolean().optional().describe("Set to true to auto-promote stale provisional decisions to active. Default is false (report only)."),
@@ -34891,7 +35243,7 @@ function registerHousekeepingTools(server, housekeepingEngine, blackboardEngine,
           "Set to true to recompute knowledge-graph entity scopes from their decided_by relations. Before scopes became a union, a decision in one scope overwrote the scope another decision had stamped on the same file \u2014 leaving entities asserting a single scope that was merely the most recent. Reports what would change; with execute: true, rewrites them. Safe to run repeatedly."
         ),
         archive: external_exports.boolean().optional().describe(
-          "Defaults to true. Set to false to skip the blackboard archive pass while still running the other passes. The archive pass takes no cutoff, so with execute: true it archives the ENTIRE live board, not just old entries \u2014 pass archive: false when you want a targeted repair (notably compact_archives, which needs execute: true to do real work) without sweeping the board."
+          "Defaults to FALSE (D4) \u2014 housekeeping no longer sweeps the board as a side effect; repairs like compact_archives can run with execute: true safely. Set archive: true to run the blackboard archive pass: it takes no age cutoff, archiving every archivable entry except decisions, unresolved need/warning/question entries, and the newest archive.retain_recent entries (default 200)."
         ),
         stale_days: external_exports.number().optional().describe("Flag provisional decisions older than this many days (default: 7)"),
         metrics_retention_days: external_exports.number().optional().describe("Remove metrics older than this many days (default: 30)")
@@ -34940,7 +35292,7 @@ function registerHousekeepingTools(server, housekeepingEngine, blackboardEngine,
   server.registerTool(
     "twining_archive_stale",
     {
-      description: 'Archive a list of stale items by ID \u2014 typically the candidate IDs returned by twining_housekeeping with staleness_review: true. Decisions move to status "archived" (excluded from assemble/why). Blackboard entries are dismissed. Items remain on disk with provenance preserved.',
+      description: 'Archive a list of stale items by ID \u2014 typically the candidate IDs returned by twining_housekeeping with staleness_review: true. Decisions move to status "archived" (excluded from assemble/why; reversible via twining_unarchive). Blackboard entries are DELETED from the live board, with a tombstone (full entry + reason) appended to .twining/archive/ \u2014 twining_unarchive does NOT restore them.',
       inputSchema: {
         ids: external_exports.array(external_exports.string()).min(1).describe("IDs to archive (mix of decision and blackboard IDs)"),
         reason: external_exports.string().optional().describe("Optional rationale for the archive \u2014 recorded as a finding for the audit trail"),
@@ -34956,11 +35308,22 @@ function registerHousekeepingTools(server, housekeepingEngine, blackboardEngine,
         const notFound = [];
         const decisionIndex = await decisionStore.getIndex();
         const decisionIds = new Set(decisionIndex.map((e) => e.id));
+        const activeCount = decisionIndex.filter(
+          (e) => e.status === "active" || e.status === "provisional"
+        ).length;
+        const batchWarningThreshold = Math.max(20, Math.ceil(activeCount * 0.05));
+        const batchWarning = args.ids.length > batchWarningThreshold ? `Archiving ${args.ids.length} items \u2014 more than ${batchWarningThreshold} (5% of ${activeCount} live decisions). Staleness signals are heuristics; verify a sample before trusting a batch this large. Archived DECISIONS vanish from assemble/why and are restorable via twining_unarchive; BLACKBOARD entries are deleted (tombstoned to .twining/archive/) and no tool restores them.` : void 0;
+        const statusById = new Map(decisionIndex.map((e) => [e.id, e.status]));
         const blackboardIds = [];
         for (const id of args.ids) {
           if (decisionIds.has(id)) {
             try {
-              await decisionStore.updateStatus(id, "archived");
+              const prior = statusById.get(id);
+              await decisionStore.updateStatus(
+                id,
+                "archived",
+                prior && prior !== "archived" ? { archived_from: prior } : void 0
+              );
               archivedDecisions.push(id);
             } catch {
               notFound.push(id);
@@ -34970,9 +35333,21 @@ function registerHousekeepingTools(server, housekeepingEngine, blackboardEngine,
           }
         }
         if (blackboardIds.length > 0) {
+          const { entries } = await blackboardEngine.read({ limit: 0 });
+          const doomedSet = new Set(blackboardIds);
+          const doomed = entries.filter((e) => doomedSet.has(e.id));
           const dismissed = await blackboardEngine.dismiss(blackboardIds);
           archivedEntries.push(...dismissed.dismissed);
           notFound.push(...dismissed.not_found);
+          const dismissedSet = new Set(dismissed.dismissed);
+          appendDismissalTombstones(
+            twiningDir,
+            doomed.filter((e) => dismissedSet.has(e.id)),
+            {
+              reason: args.reason ?? "archived as stale via twining_archive_stale",
+              dismissed_by: "archive_stale"
+            }
+          );
         }
         if (archivedDecisions.length + archivedEntries.length > 0) {
           const perItemReasons = Object.entries(args.reasons ?? {}).filter(
@@ -34996,7 +35371,62 @@ ${perItemReasons.join("\n")}` : null
           archived_decisions: archivedDecisions,
           archived_entries: archivedEntries,
           not_found: notFound,
-          total_archived: archivedDecisions.length + archivedEntries.length
+          total_archived: archivedDecisions.length + archivedEntries.length,
+          ...batchWarning ? { warning: batchWarning } : {}
+        });
+      } catch (e) {
+        return toolError(
+          e instanceof Error ? e.message : "Unknown error",
+          "INTERNAL_ERROR"
+        );
+      }
+    }
+  );
+  server.registerTool(
+    "twining_unarchive",
+    {
+      description: 'Restore archived decisions \u2014 the undo for twining_archive_stale. Each decision returns to its PRE-ARCHIVE status (archived_from): a provisional goes back to the ratification queue, a superseded decision stays retired, and only previously-active decisions become authoritative again. Archived decisions are excluded from assemble/why (assemble reports them as archived_excluded_count). Only decisions currently in status "archived" are restored; other IDs are reported back untouched.',
+      inputSchema: {
+        ids: external_exports.array(external_exports.string()).min(1).describe("Decision IDs to restore to active status"),
+        reason: external_exports.string().optional().describe("Why these decisions are being restored \u2014 recorded in the audit-trail finding")
+      }
+    },
+    async (args) => {
+      try {
+        const restored = [];
+        const notArchived = [];
+        const notFound = [];
+        for (const id of args.ids) {
+          const decision = await decisionStore.get(id);
+          if (!decision) {
+            notFound.push(id);
+          } else if (decision.status !== "archived") {
+            notArchived.push(id);
+          } else {
+            await decisionStore.updateStatus(
+              id,
+              decision.archived_from ?? "active",
+              { archived_from: void 0 }
+            );
+            restored.push(id);
+          }
+        }
+        if (restored.length > 0) {
+          await blackboardEngine.post({
+            entry_type: "finding",
+            summary: `Unarchived ${restored.length} decision(s) \u2014 restored to their pre-archive status`,
+            detail: [
+              args.reason ? `Reason: ${args.reason}` : null,
+              `Decisions: ${restored.join(", ")}`
+            ].filter(Boolean).join("\n"),
+            tags: ["housekeeping", "unarchive"],
+            scope: "project"
+          });
+        }
+        return toolResult({
+          restored,
+          not_archived: notArchived,
+          not_found: notFound
         });
       } catch (e) {
         return toolError(
@@ -35010,12 +35440,12 @@ ${perItemReasons.join("\n")}` : null
 
 // src/analytics/metrics-collector.ts
 init_file_store();
-import path25 from "node:path";
+import path26 from "node:path";
 var MetricsCollector = class {
   metricsPath;
   telemetryClient = null;
   constructor(twiningDir) {
-    this.metricsPath = path25.join(twiningDir, "metrics.jsonl");
+    this.metricsPath = path26.join(twiningDir, "metrics.jsonl");
   }
   /** Set an optional telemetry client to forward sanitized events */
   setTelemetryClient(client) {
@@ -35130,20 +35560,20 @@ Call \`twining_record\` with a summary and any decisions before every \`git comm
 
 // src/analytics/metrics-store.ts
 init_file_store();
-import fs21 from "node:fs";
-import path26 from "node:path";
+import fs22 from "node:fs";
+import path27 from "node:path";
 var MetricsStore = class {
   metricsPath;
   cachedEntries = null;
   cachedMtime = 0;
   constructor(twiningDir) {
-    this.metricsPath = path26.join(twiningDir, "metrics.jsonl");
+    this.metricsPath = path27.join(twiningDir, "metrics.jsonl");
   }
   /** Read all metrics, using mtime cache when possible */
   async readAll() {
     try {
-      if (!fs21.existsSync(this.metricsPath)) return [];
-      const stat = fs21.statSync(this.metricsPath);
+      if (!fs22.existsSync(this.metricsPath)) return [];
+      const stat = fs22.statSync(this.metricsPath);
       if (this.cachedEntries !== null && stat.mtimeMs === this.cachedMtime) {
         return this.cachedEntries;
       }
@@ -35330,13 +35760,15 @@ function createServer(projectRoot) {
     archiver,
     graphEngine,
     projectRoot,
-    config2.housekeeping?.staleness_threshold
+    config2.housekeeping?.staleness_threshold,
+    config2.archive.retain_recent
   );
   const exporter = new Exporter(blackboardStore, decisionStore, graphStore);
   const pendingProcessor = new PendingProcessor(
     twiningDir,
     blackboardEngine,
-    archiver
+    archiver,
+    config2.archive.retain_recent
   );
   pendingProcessor.processOnStartup().catch((err) => {
     console.error("[twining] Pending processor failed (non-fatal):", err);
@@ -35368,7 +35800,7 @@ function createServer(projectRoot) {
   registerRecordTools(server, blackboardEngine, decisionEngine, projectRoot, twiningDir, {
     fullSurface
   });
-  registerHousekeepingTools(server, housekeepingEngine, blackboardEngine, decisionStore);
+  registerHousekeepingTools(server, housekeepingEngine, blackboardEngine, decisionStore, twiningDir);
   registerBlackboardTools(server, blackboardEngine, twiningDir, {
     fullSurface,
     decisionEngine,
@@ -35415,8 +35847,8 @@ function createServer(projectRoot) {
 
 // src/dashboard/http-server.ts
 import http from "node:http";
-import fs25 from "node:fs/promises";
-import path30 from "node:path";
+import fs26 from "node:fs/promises";
+import path31 from "node:path";
 import { fileURLToPath } from "node:url";
 
 // src/dashboard/dashboard-config.ts
@@ -35432,8 +35864,8 @@ function getDashboardConfig() {
 init_blackboard_store();
 init_decision_store();
 init_graph_store();
-import fs22 from "node:fs";
-import path27 from "node:path";
+import fs23 from "node:fs";
+import path28 from "node:path";
 init_handoff_store();
 
 // src/analytics/analytics-engine.ts
@@ -35575,7 +36007,7 @@ var EMPTY_TRIAGE_STORES = {
   }
 };
 function createApiHandler(projectRoot, deps) {
-  const twiningDir = path27.join(projectRoot, ".twining");
+  const twiningDir = path28.join(projectRoot, ".twining");
   const blackboardStore = deps?.blackboardStore ?? new BlackboardStore(twiningDir);
   const decisionStore = deps?.decisionStore ?? new DecisionStore(twiningDir);
   const graphStore = deps?.graphStore ?? new GraphStore(twiningDir);
@@ -35639,7 +36071,7 @@ function createApiHandler(projectRoot, deps) {
     const url = req.url || "/";
     if (url.startsWith("/api/search")) {
       try {
-        if (!fs22.existsSync(twiningDir)) {
+        if (!fs23.existsSync(twiningDir)) {
           const parsed2 = new URL(url, "http://localhost");
           sendJSON(res, {
             query: parsed2.searchParams.get("q") || "",
@@ -35757,10 +36189,10 @@ function createApiHandler(projectRoot, deps) {
     }
     if (url === "/api/status") {
       try {
-        if (!fs22.existsSync(twiningDir)) {
+        if (!fs23.existsSync(twiningDir)) {
           sendJSON(res, {
             initialized: false,
-            project_name: path27.basename(path27.resolve(projectRoot)),
+            project_name: path28.basename(path28.resolve(projectRoot)),
             blackboard_entries: 0,
             active_decisions: 0,
             provisional_decisions: 0,
@@ -35817,7 +36249,7 @@ function createApiHandler(projectRoot, deps) {
         const total_handoffs = handoffs.length;
         sendJSON(res, {
           initialized: true,
-          project_name: path27.basename(path27.resolve(projectRoot)),
+          project_name: path28.basename(path28.resolve(projectRoot)),
           blackboard_entries,
           active_decisions,
           provisional_decisions,
@@ -35837,7 +36269,7 @@ function createApiHandler(projectRoot, deps) {
     }
     if (url === "/api/blackboard") {
       try {
-        if (!fs22.existsSync(twiningDir)) {
+        if (!fs23.existsSync(twiningDir)) {
           sendJSON(res, {
             initialized: false,
             entries: [],
@@ -35860,7 +36292,7 @@ function createApiHandler(projectRoot, deps) {
           sendJSON(res, { error: "Decision ID required" }, 400);
           return true;
         }
-        if (!fs22.existsSync(twiningDir)) {
+        if (!fs23.existsSync(twiningDir)) {
           sendJSON(res, { error: "Decision not found" }, 404);
           return true;
         }
@@ -35878,7 +36310,7 @@ function createApiHandler(projectRoot, deps) {
     }
     if (url === "/api/decisions") {
       try {
-        if (!fs22.existsSync(twiningDir)) {
+        if (!fs23.existsSync(twiningDir)) {
           sendJSON(res, {
             initialized: false,
             decisions: [],
@@ -35900,7 +36332,7 @@ function createApiHandler(projectRoot, deps) {
     }
     if (url === "/api/agents") {
       try {
-        if (!fs22.existsSync(twiningDir)) {
+        if (!fs23.existsSync(twiningDir)) {
           sendJSON(res, { initialized: false, agents: [], total: 0 });
           return true;
         }
@@ -35923,7 +36355,7 @@ function createApiHandler(projectRoot, deps) {
     }
     if (url === "/api/delegations") {
       try {
-        if (!fs22.existsSync(twiningDir)) {
+        if (!fs23.existsSync(twiningDir)) {
           sendJSON(res, { initialized: false, delegations: [], total: 0 });
           return true;
         }
@@ -35982,7 +36414,7 @@ function createApiHandler(projectRoot, deps) {
           sendJSON(res, { error: "Handoff ID required" }, 400);
           return true;
         }
-        if (!fs22.existsSync(twiningDir)) {
+        if (!fs23.existsSync(twiningDir)) {
           sendJSON(res, { error: "Handoff not found" }, 404);
           return true;
         }
@@ -36000,7 +36432,7 @@ function createApiHandler(projectRoot, deps) {
     }
     if (url === "/api/handoffs") {
       try {
-        if (!fs22.existsSync(twiningDir)) {
+        if (!fs23.existsSync(twiningDir)) {
           sendJSON(res, { initialized: false, handoffs: [], total: 0 });
           return true;
         }
@@ -36027,6 +36459,8 @@ function createApiHandler(projectRoot, deps) {
         if (forAgent) input.for_agent = forAgent;
         const since = parsed.searchParams.get("since");
         if (since) input.since = since;
+        const openAfter = parsed.searchParams.get("open_after");
+        if (openAfter) input.open_after = openAfter;
         const section = parsed.searchParams.get("section");
         if (section === "all" || section === "open" || section === "recent") {
           input.section = section;
@@ -36041,7 +36475,7 @@ function createApiHandler(projectRoot, deps) {
           const limit = Number(limitParam);
           if (!Number.isNaN(limit)) input.limit = limit;
         }
-        if (!fs22.existsSync(twiningDir)) {
+        if (!fs23.existsSync(twiningDir)) {
           const zero = await buildTriage(EMPTY_TRIAGE_STORES, input);
           sendJSON(res, { initialized: false, ...zero });
           return true;
@@ -36056,7 +36490,7 @@ function createApiHandler(projectRoot, deps) {
     }
     if (url === "/api/graph") {
       try {
-        if (!fs22.existsSync(twiningDir)) {
+        if (!fs23.existsSync(twiningDir)) {
           sendJSON(res, {
             initialized: false,
             entities: [],
@@ -36083,7 +36517,7 @@ function createApiHandler(projectRoot, deps) {
     }
     if (url === "/api/analytics/value-stats") {
       try {
-        if (!fs22.existsSync(twiningDir)) {
+        if (!fs23.existsSync(twiningDir)) {
           sendJSON(res, {
             blind_decisions_prevented: { total_decisions: 0, assembled_before: 0, prevention_rate: 0 },
             warnings_surfaced: { total: 0, acknowledged: 0, resolved: 0, ignored: 0 },
@@ -36147,31 +36581,31 @@ init_blackboard_store();
 init_decision_store();
 init_graph_store();
 init_handoff_store();
-import fs24 from "node:fs";
-import path29 from "node:path";
+import fs25 from "node:fs";
+import path30 from "node:path";
 import zlib from "node:zlib";
 init_config();
 
 // src/dashboard/raw-path.ts
-import fs23 from "node:fs";
-import path28 from "node:path";
+import fs24 from "node:fs";
+import path29 from "node:path";
 var RAW_FILE_MAX_BYTES = 1e6;
 function resolveRawPath(projectRoot, rel) {
   if (typeof rel !== "string" || rel.length === 0 || rel.length > 1024) return null;
-  if (path28.isAbsolute(rel) || rel.includes("\\") || rel.includes("\0")) return null;
+  if (path29.isAbsolute(rel) || rel.includes("\\") || rel.includes("\0")) return null;
   const segments = rel.split("/");
   if (segments.some((s) => s === "" || s.startsWith("."))) return null;
   let rootReal;
   let real;
   try {
-    rootReal = fs23.realpathSync(projectRoot);
-    real = fs23.realpathSync(path28.resolve(rootReal, rel));
+    rootReal = fs24.realpathSync(projectRoot);
+    real = fs24.realpathSync(path29.resolve(rootReal, rel));
   } catch {
     return null;
   }
-  if (!real.startsWith(rootReal + path28.sep)) return null;
+  if (!real.startsWith(rootReal + path29.sep)) return null;
   try {
-    if (!fs23.statSync(real).isFile()) return null;
+    if (!fs24.statSync(real).isFile()) return null;
   } catch {
     return null;
   }
@@ -36179,7 +36613,7 @@ function resolveRawPath(projectRoot, rel) {
 }
 
 // src/dashboard/repo-info.ts
-import { execFileSync as execFileSync6 } from "node:child_process";
+import { execFileSync as execFileSync7 } from "node:child_process";
 function remoteToWebUrl(remote) {
   if (!remote) return null;
   const ssh = remote.match(/^git@([^:]+):(.+?)(?:\.git)?$/);
@@ -36191,7 +36625,7 @@ function remoteToWebUrl(remote) {
 function computeRepoInfo(projectRoot) {
   const run = (args) => {
     try {
-      const out = execFileSync6("git", args, {
+      const out = execFileSync7("git", args, {
         cwd: projectRoot,
         encoding: "utf8",
         stdio: ["ignore", "pipe", "ignore"],
@@ -36283,7 +36717,7 @@ function sendJSON2(req, res, data, status = 200) {
   }
 }
 function createQueryHandler(projectRoot, deps) {
-  const twiningDir = path29.join(projectRoot, ".twining");
+  const twiningDir = path30.join(projectRoot, ".twining");
   const blackboardStore = deps?.blackboardStore ?? new BlackboardStore(twiningDir);
   const decisionStore = deps?.decisionStore ?? new DecisionStore(twiningDir);
   const graphStore = deps?.graphStore ?? new GraphStore(twiningDir);
@@ -36301,11 +36735,11 @@ function createQueryHandler(projectRoot, deps) {
           sendJSON2(req, res, { error: "Not found" }, 404);
           return true;
         }
-        if (fs24.statSync(abs).size > RAW_FILE_MAX_BYTES) {
+        if (fs25.statSync(abs).size > RAW_FILE_MAX_BYTES) {
           sendJSON2(req, res, { error: "File too large" }, 413);
           return true;
         }
-        const body = fs24.readFileSync(abs);
+        const body = fs25.readFileSync(abs);
         res.writeHead(200, {
           "Content-Type": "text/plain; charset=utf-8",
           "X-Content-Type-Options": "nosniff",
@@ -36338,7 +36772,7 @@ function createQueryHandler(projectRoot, deps) {
           sendJSON2(req, res, { error: "Blackboard entry ID required" }, 400);
           return true;
         }
-        if (!fs24.existsSync(twiningDir)) {
+        if (!fs25.existsSync(twiningDir)) {
           sendJSON2(req, res, { error: "Blackboard entry not found" }, 404);
           return true;
         }
@@ -36357,7 +36791,7 @@ function createQueryHandler(projectRoot, deps) {
     }
     if (route === "/api/index") {
       try {
-        if (!fs24.existsSync(twiningDir)) {
+        if (!fs25.existsSync(twiningDir)) {
           sendJSON2(req, res, { initialized: false, rows: [], total_counts: { blackboard: 0, decisions: { active: 0, provisional: 0, superseded: 0, overridden: 0 } }, generated_at: (/* @__PURE__ */ new Date()).toISOString() });
           return true;
         }
@@ -36403,7 +36837,7 @@ function createQueryHandler(projectRoot, deps) {
     }
     if (route === "/api/graph/summary") {
       try {
-        if (!fs24.existsSync(twiningDir)) {
+        if (!fs25.existsSync(twiningDir)) {
           sendJSON2(req, res, {
             initialized: false,
             groups: [],
@@ -36460,7 +36894,7 @@ function createQueryHandler(projectRoot, deps) {
     }
     if (route === "/api/graph/entities") {
       try {
-        if (!fs24.existsSync(twiningDir)) {
+        if (!fs25.existsSync(twiningDir)) {
           sendJSON2(req, res, { entities: [], total: 0, offset: 0 });
           return true;
         }
@@ -36513,7 +36947,7 @@ function createQueryHandler(projectRoot, deps) {
           sendJSON2(req, res, { error: "id query parameter required" }, 400);
           return true;
         }
-        if (!fs24.existsSync(twiningDir)) {
+        if (!fs25.existsSync(twiningDir)) {
           sendJSON2(req, res, { error: "Entity not found" }, 404);
           return true;
         }
@@ -36648,7 +37082,7 @@ function createQueryHandler(projectRoot, deps) {
     }
     if (route === "/api/health-report") {
       try {
-        if (!fs24.existsSync(twiningDir)) {
+        if (!fs25.existsSync(twiningDir)) {
           sendJSON2(req, res, {
             stale_decisions: [],
             unresolved_warnings: [],
@@ -36753,16 +37187,16 @@ function serveStatic(publicDir) {
     const rawPath = qIndex >= 0 ? rawUrl.slice(0, qIndex) : rawUrl;
     const decodedPath = decodeURIComponent(rawPath);
     const pathname = decodedPath === "/" ? "/index.html" : decodedPath;
-    const filePath = path30.join(publicDir, pathname);
-    const resolved = path30.resolve(filePath);
-    if (!resolved.startsWith(path30.resolve(publicDir))) {
+    const filePath = path31.join(publicDir, pathname);
+    const resolved = path31.resolve(filePath);
+    if (!resolved.startsWith(path31.resolve(publicDir))) {
       res.writeHead(403);
       res.end("Forbidden");
       return;
     }
     try {
-      const data = await fs25.readFile(resolved);
-      const ext = path30.extname(resolved);
+      const data = await fs26.readFile(resolved);
+      const ext = path31.extname(resolved);
       res.writeHead(200, {
         "Content-Type": MIME_TYPES[ext] || "application/octet-stream"
       });
@@ -36804,7 +37238,7 @@ function handleRequest(publicDir, projectRoot, deps) {
   const staticHandler = serveStatic(publicDir);
   const queryHandler = createQueryHandler(projectRoot, deps);
   const apiHandler = createApiHandler(projectRoot, deps);
-  const resolvedProjectRoot = path30.resolve(projectRoot);
+  const resolvedProjectRoot = path31.resolve(projectRoot);
   return (req, res) => {
     queryHandler(req, res).then((queryHandled) => queryHandled ? true : apiHandler(req, res)).then((handled) => {
       if (handled) return;
@@ -36836,7 +37270,7 @@ async function startDashboard(projectRoot, deps) {
   if (!config2.enabled) {
     return null;
   }
-  const resolvedRoot = path30.resolve(projectRoot);
+  const resolvedRoot = path31.resolve(projectRoot);
   if (config2.port !== 0) {
     for (let p = config2.port; p <= config2.port + DASHBOARD_PORT_RETRIES; p++) {
       if (await isExistingDashboard(p, resolvedRoot)) {
@@ -36848,14 +37282,14 @@ async function startDashboard(projectRoot, deps) {
     }
   }
   const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path30.dirname(__filename);
-  const publicDir = path30.join(__dirname, "public");
+  const __dirname = path31.dirname(__filename);
+  const publicDir = path31.join(__dirname, "public");
   const server = http.createServer(handleRequest(publicDir, projectRoot, deps));
   const port = await tryListen(server, config2.port, DASHBOARD_PORT_RETRIES);
   const url = `http://127.0.0.1:${port}`;
   console.error(`[twining] Dashboard: ${url}`);
   if (config2.autoOpen) {
-    const resolvedRoot2 = path30.resolve(projectRoot);
+    const resolvedRoot2 = path31.resolve(projectRoot);
     const skipOpen = port !== config2.port && await isExistingDashboard(config2.port, resolvedRoot2);
     if (skipOpen) {
       console.error(

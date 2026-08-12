@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Releasing 2.7.0: live smoke ALL PASS against the built server (record/resolve/cursor/housekeeping-defaults/compound-scope-staleness/tombstone/unarchive end-to-end); cutting plugin 1.25.0 + server 2.7.0, tag push to CI\nDecisions: Chose plugin minor bump 1.25.0 alongside server 2.7.0 in the same version commit — plugin/BEHAVIORS.md and the bundled server change together, and the CI plugin-version-check requires the bump with any plugin/ change\nFindings: Live smoke must run from inside the repo tree (bare-specifier SDK imports resolve from the script path, not cwd) — scratchpad scripts importing repo deps need a temp copy in the repo root; need: after the 2.7.0 release lands, update the local plugin install in BOTH user and project scopes (stale project pin shadows user scope) and notify the field repo to upgrade + delete their interim-guidance CLAUDE.md section",
+  "entry_type": "status",
+  "id": "01KZW3Z8HDQSZ4GJDNCER1VK54",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "71ed32c15b9546559a2bcffa1073ef90e40709d8",
+    "recorded_at": "2026-08-12T23:12:27.674Z"
+  },
+  "scope": "project",
+  "summary": "Releasing 2.7.0: live smoke ALL PASS against the built server (record/resolve/cursor/housekeeping-defaults/compound-scope-staleness/tombstone/unarchive end-to-end); cutting plugin 1.25.0 + server 2…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-12T23:12:27.693Z"
+}

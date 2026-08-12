@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-12T23:12:27.835Z",
+  "id": "01KZW3Z8NVNBQYZR1JP7ST05PQ",
+  "name": "01KZW3Z8K32QR8T4DC783A7PCQ",
+  "properties": {
+    "scope": "project",
+    "summary": "Chose plugin minor bump 1.25.0 alongside server 2.7.0 in the same version commit"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-12T23:12:27.835Z"
+}
