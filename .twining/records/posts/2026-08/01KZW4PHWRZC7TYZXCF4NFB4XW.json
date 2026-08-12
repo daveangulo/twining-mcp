@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "need",
+  "id": "01KZW4PHWRZC7TYZXCF4NFB4XW",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "83c3bd464f65882c91ca1f8bae809ea4990266c0",
+    "recorded_at": "2026-08-12T23:25:10.916Z"
+  },
+  "scope": "project",
+  "summary": "send docs/field-responses/2026-08-06-handoff-response.md to the agentic-platform-design field repo and have them upgrade to 2.7.0 + delete their interim-guidance section",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-12T23:25:10.936Z"
+}

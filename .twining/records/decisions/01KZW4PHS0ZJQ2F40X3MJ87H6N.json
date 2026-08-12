@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "trim plugin skills or re-baseline the cap",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "2.7.0 SHIPPED: npm publish succeeded (twining-mcp@2.7.0 live), plugin 1.25.0, tag v2.7.0. All five field defects fixed, two adversarial review rounds (18 confirmed findings) closed, live smoke ALL PASS. Field memo at docs/field-responses/2026-08-06-handoff-response.md ready to send",
+  "depends_on": [],
+  "domain": "security",
+  "id": "01KZW4PHS0ZJQ2F40X3MJ87H6N",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "83c3bd464f65882c91ca1f8bae809ea4990266c0",
+    "recorded_at": "2026-08-12T23:25:10.796Z"
+  },
+  "rationale": "verified the identical 5119-byte overrun exists at v2.6.0, so it is a pre-existing failure unrelated to this release (this release touched no skills/agents files the gate counts); trimming skill content or moving a deliberate guardrail is a scope decision for the owner, not a release-gate patch",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Chose to ship with the plugin-token-budget CI job red rather than trim plugin skills or re-baseline the cap",
+  "timestamp": "2026-08-12T23:25:10.816Z"
+}
