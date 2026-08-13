@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-13T00:00:54.642Z",
+  "id": "01KZW6QZBJTF11CYQ53T56D6K3",
+  "name": "01KZW6QZ8TFSVDT2SCXB9GHWZ6",
+  "properties": {
+    "scope": "src/",
+    "summary": "Sequenced D13 ask 4 (declared-vs-derived relation marker with confidence vocabulary) BEFORE ask 1 (commit-provenance derivation)"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-13T00:00:54.642Z"
+}

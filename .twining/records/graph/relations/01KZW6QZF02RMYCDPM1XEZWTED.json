@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T00:00:54.752Z",
+  "id": "01KZW6QZF02RMYCDPM1XEZWTED",
+  "properties": {
+    "decision_summary": "Reclassified onPost's relates_to graph population as a defect rather than a feature gap"
+  },
+  "source": "01KZW6QYXPYKH8NF0BK53CGE9E",
+  "target": "01KZW6QZEZ8EPQ9QNXH6QY833R",
+  "type": "decided_by"
+}

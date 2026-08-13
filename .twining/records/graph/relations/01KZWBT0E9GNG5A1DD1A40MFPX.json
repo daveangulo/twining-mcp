@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T01:29:24.169Z",
+  "id": "01KZWBT0E9GNG5A1DD1A40MFPX",
+  "properties": {
+    "decision_summary": "Chose to test the zod half of D7 via the registered tool's inputSchema.safeParse asserting field RETENTION (not just acceptance)"
+  },
+  "source": "01KJQ647P1MGGRERHA1JH2BE8T",
+  "target": "01KZWBT0E6N8CD8Q4SGM2VSG81",
+  "type": "decided_by"
+}

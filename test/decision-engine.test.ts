@@ -463,6 +463,28 @@ describe("DecisionEngine.why bounding (#41)", () => {
     expect(retired!.status).toBe("superseded");
   });
 
+  it("total_in_scope counts live decisions only by default, all statuses with include_superseded", async () => {
+    // Field consumers use total_in_scope as the absence instrument for a
+    // "no decision authorizes X" gate — it must be the live in-scope
+    // population, never page occupancy and never inflated by retired records.
+    const first = await decisionEngine.decide(
+      validDecisionInput({ summary: "Old choice" }),
+    );
+    await decisionEngine.decide(
+      validDecisionInput({ summary: "New choice", supersedes: first.id }),
+    );
+    await decisionEngine.decide(validDecisionInput({ summary: "Third choice" }));
+
+    const result = await decisionEngine.why("src/auth/");
+    expect(result.total_in_scope).toBe(2);
+    expect(result.superseded_count).toBe(1);
+
+    const withRetired = await decisionEngine.why("src/auth/", {
+      include_superseded: true,
+    });
+    expect(withRetired.total_in_scope).toBe(3);
+  });
+
   it("ranks exact-scope matches above ancestor-scope matches regardless of recency", async () => {
     // Ancestor-scoped decision recorded LAST (most recent) — must still rank below.
     await decisionEngine.decide(

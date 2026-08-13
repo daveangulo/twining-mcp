@@ -1,0 +1,20 @@
+{
+  "agent_id": "main",
+  "detail": "Field defect D12 (wave-2 handoff) investigated by agent, load-bearing claims re-verified by controller. Verdict: symptoms confirmed, but the field's DIAGNOSIS is inverted — the lane is not unranked; it is score-sorted with recency as the only live differentiator, which is precisely what produces the self-post dilution.\n\nMechanism: warning score = recency*0.2 + relevance*0.2 + 0.5*0.15 (confidence hardcoded for non-decisions) + 1.0*0.1 (warning_boost, constant across all warnings), all * weightScale (context-assembler.ts:241-250; sort :272-273; weights config.ts:54-60). Confidence and boost are constants, so recency (exp(-ageHours/168), :1135-1139) and relevance are the only differentiators — and relevance is a flat 0.5 for scope-only matches (:243). The caller's own posts are by definition newest, so ranking systematically promotes them. Field's ask (a) \"rank by recency x severity\" as written would ENTRENCH the bug — no severity model exists (EntryType is a kind enum, types.ts:8-21), and recency already dominates. Better-aimed one-liner: give entries the scopeProximity dampening decisions already get (compare :220-221 vs :243).\n\nagent_id: available at assemble time but never read in lane construction (only consumer is the assemblyLog gate map at :581) — self-posts treated identically, confirmed. BUT ask (b) as specified cannot use agent_id: it is a role label, not a session identity — 61% of this repo's board is \"main\", no session_id exists anywhere in src/. Correct same-session signal: process start time (stdio server is one process per session, cf. record-tools.ts:15 qualityNudgeSent comment) — entry.timestamp >= processStartedAt is exact, zero storage change. ~15 lines: mark, don't score.\n\nContinue-work lane: handoffStore.list sorted created_at desc, limit 5 — no since, no age cutoff, no [BLOCKED] age handling (context-assembler.ts:530-549, formatting :653-666, [BLOCKED] at :661). created_at is already on the object (:545) and simply never printed — ask (c) is ~5 lines at :657/:661, e.g. \"[BLOCKED 15d]\".\n\nNEW ROOT CAUSE (controller-verified): scopeless handoffs match EVERY scope forever. scopeMatches is bidirectional startsWith (scope.ts:8); handoff-store.ts:96 passes e.scope ?? \"\" and every string startsWith(\"\") — universal match. createHandoff passes scope through undefaulted (coordination.ts:303) despite the tool schema documenting default \"project\" (only the side-effect blackboard post gets ?? \"project\", :318). This — not missing decay — is the likely mechanism for the field's 07-28 item surfacing in a narrow-scope call on 08-12. Two-line fix: default scope at coordination.ts:303. Note: twining_handoff is deprecated, full-surface-only, v3-removal (#33) — yet the lane replays legacy records indefinitely; fixes here are maintenance on a doomed API.\n\n2.7.0 touched none of this (only archived_excluded_count, cbac09f). Archiver deliberately never ages out open warnings (archiver.ts:127-141) — monotonic growth is a settled decision; D12 fixes must land in ranking/presentation, not retention, consistent with the field's \"do not make the lane quieter\".",
+  "entry_type": "finding",
+  "id": "01KZW612FJK779HBEZNBDE45MR",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "429a2d23c9fcae7b8bd8c77cd12381ef4877961f",
+    "recorded_at": "2026-08-12T23:48:24.154Z"
+  },
+  "scope": "src/engine/context-assembler.ts",
+  "summary": "D12 verified: warning lane IS ranked but recency-dominant (context-assembler.ts:241-272) so self-posts win by construction; scopeless handoffs match every scope (scope.ts:8, handoff-store.ts:96)",
+  "tags": [
+    "field-defect",
+    "D12",
+    "assemble",
+    "wave-2"
+  ],
+  "timestamp": "2026-08-12T23:48:24.178Z"
+}

@@ -80,6 +80,8 @@ interface DecideInput {
   constraints?: string[];
   confidence: "high" | "medium" | "low";
   status?: "active" | "provisional";
+  affected_files?: string[];
+  affected_symbols?: string[];
 }
 
 function buildFromNaturalLanguage(
@@ -121,6 +123,8 @@ interface StructuredDecision {
   constraints?: string[];
   confidence?: "high" | "medium" | "low";
   status?: "active" | "provisional";
+  affected_files?: string[];
+  affected_symbols?: string[];
 }
 
 function buildFromStructured(
@@ -144,6 +148,10 @@ function buildFromStructured(
   if (item.assumptions !== undefined) result.assumptions = item.assumptions;
   if (item.constraints !== undefined) result.constraints = item.constraints;
   if (item.status !== undefined) result.status = item.status;
+  if (item.affected_files !== undefined)
+    result.affected_files = item.affected_files;
+  if (item.affected_symbols !== undefined)
+    result.affected_symbols = item.affected_symbols;
   return result;
 }
 
@@ -233,6 +241,18 @@ export function registerRecordTools(
                   .optional()
                   .describe(
                     "What limited the options (overrides the session-level constraints for this decision)",
+                  ),
+                affected_files: z
+                  .array(z.string())
+                  .optional()
+                  .describe(
+                    "File paths THIS decision governs (overrides the session-level affected_files for this decision; falls back to it when omitted). Enables scope-based retrieval via twining_why and the drift check.",
+                  ),
+                affected_symbols: z
+                  .array(z.string())
+                  .optional()
+                  .describe(
+                    "Function/class/method names THIS decision governs (overrides the session-level affected_symbols for this decision; falls back to it when omitted)",
                   ),
                 confidence: z
                   .enum(["high", "medium", "low"])
@@ -413,8 +433,9 @@ export function registerRecordTools(
                 depends_on: args.depends_on,
                 supersedes: args.supersedes,
                 reversible: args.reversible,
-                affected_files: args.affected_files ?? [],
-                affected_symbols: args.affected_symbols ?? [],
+                affected_files: input.affected_files ?? args.affected_files ?? [],
+                affected_symbols:
+                  input.affected_symbols ?? args.affected_symbols ?? [],
                 commit_hash: args.commit_hash,
                 agent_id: agentId,
               });

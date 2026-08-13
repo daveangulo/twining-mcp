@@ -1,0 +1,23 @@
+{
+  "agent_id": "main",
+  "detail": "Refinement to the D13 assessment after the store-measurement correction (78/89 empty-affected_files decisions carry provenance.commit_sha on the authoritative mirror).\n\nDesign conclusion inverts the investigating agent's original recommendation: retroactive derivation over provenance.commit_sha clears the existing backlog on its own (~90% yield), making it the PRIMARY mechanism; capturing the discarded diff at record-tools.ts:48 fixes the forward path (no git resolution needed at all). Complementary, not competing — build both, derivation first.\n\nThe parent-sha trap gets SHARPER at 90% coverage: every stored sha is the commit BEFORE the work (Gate 2 records pre-commit). A derivation reading them directly produces confidently wrong file edges at ~90% coverage — strictly worse than today's 0%, because it is silent and the edges look declared-quality. Requirements for whatever lands: (1) child-commit resolution, e.g. git log --ancestry-path <sha>..HEAD | tail -1; (2) explicit bail when the record→commit pairing is not 1:1; (3) the bail case is exactly where the ask-4 inferred marker must carry a CONFIDENCE signal, not just a source label — plan the marker vocabulary accordingly (e.g. derivation: \"commit-provenance\", confidence: \"exact\"|\"ambiguous\").\n\nProcess note for the audit trail: the original low-yield estimate came from reading the stale v1 store (.twining/decisions/, last written Jul 5) instead of the sqlite mirror — the same staleness tell the agent had already caught for graph relations one lane over. When counting on this repo, always use .twining/records/ or the db, never the v1 directories.",
+  "entry_type": "finding",
+  "id": "01KZW6B3RV1E0FH7BAXRHMFV2A",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "429a2d23c9fcae7b8bd8c77cd12381ef4877961f",
+    "recorded_at": "2026-08-12T23:53:53.153Z"
+  },
+  "relates_to": [
+    "01KZW69CY90FFGDF972CPY0GJQ"
+  ],
+  "scope": "src/engine/graph-auto-populator.ts",
+  "summary": "D13 addendum: build both fixes, derivation first — backlog via commit_sha (child-commit resolution + 1:1 bail required), forward via capturing discarded diff; naive derivation worse than none",
+  "tags": [
+    "field-defect",
+    "D13",
+    "graph",
+    "wave-2"
+  ],
+  "timestamp": "2026-08-12T23:53:53.179Z"
+}

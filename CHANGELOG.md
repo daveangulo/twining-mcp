@@ -2,6 +2,32 @@
 
 All notable changes to Twining MCP are documented here.
 
+## [2.8.0] - 2026-08-12
+
+Field-defect release, pulled ahead of the rest of the wave-2 plan at the
+field's request: their binding carrier rule ("decisions owing `affected_files`
+MUST use `twining_decide`") is unfollowable on any default-surface store,
+because `twining_decide` is full-surface-only. Details and the full wave-2
+disposition: `docs/field-responses/2026-08-12-wave2-response.md`.
+
+### Fixed
+- **`twining_record` no longer silently drops `affected_files` /
+  `affected_symbols` on structured decision objects (field D7).** The defect
+  was double-locked: the nested decision schema had no such fields, so zod
+  stripped the keys with no error and a success response; and the dispatch
+  loop then applied the session-level list unconditionally after the input
+  spread, so the value could not have survived anyway. Six field records in
+  one day passed a path and stored `affected_files: []` — and because no tool
+  can amend a written record's metadata (field D11, fix scheduled), every
+  occurrence was a permanent orphan. Both structured decision fields now
+  exist per-decision: they **override** the session-level lists for that
+  decision and **fall back** to them when omitted (same precedence as
+  `assumptions`/`constraints`; NL string decisions keep the session-level
+  lists). Empty `affected_files` blinds eleven consumers — the drift check,
+  staleness signal 2, all graph `decided_by` edges, test-coverage derivation,
+  assemble's FILES TO CHECK lane, and file-scoped retrieval among them — so
+  the drop was a retrieval defect, not a cosmetic one.
+
 ## [2.7.0] - 2026-08-06
 
 Field-defect release. A cross-repo handoff from a 3,052-decision field

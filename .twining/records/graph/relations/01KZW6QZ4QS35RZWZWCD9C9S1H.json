@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T00:00:54.423Z",
+  "id": "01KZW6QZ4QS35RZWZWCD9C9S1H",
+  "properties": {
+    "decision_summary": "Rejected field ask D12(a) rank-by-recency-x-severity as specified"
+  },
+  "source": "01KZW6QYXPYKH8NF0BK53CGE9E",
+  "target": "01KZW6QZ4P2B3Q2JKC05VFKP70",
+  "type": "decided_by"
+}

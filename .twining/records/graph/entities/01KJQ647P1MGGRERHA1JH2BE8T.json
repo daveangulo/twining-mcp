@@ -3,8 +3,8 @@
   "id": "01KJQ647P1MGGRERHA1JH2BE8T",
   "name": "plugin/BEHAVIORS.md",
   "properties": {
-    "scope": "plugin/,src/"
+    "scope": "plugin/,src/,src/tools/record-tools.ts"
   },
   "type": "file",
-  "updated_at": "2026-08-12T23:10:34.415Z"
+  "updated_at": "2026-08-13T01:29:24.237Z"
 }

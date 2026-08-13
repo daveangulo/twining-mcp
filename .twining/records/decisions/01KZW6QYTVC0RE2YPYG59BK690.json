@@ -1,0 +1,28 @@
+{
+  "affected_files": [
+    "docs/field-responses/2026-08-12-wave2-response.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Investigated wave-2 field defects D9-D13: all confirmed/accepted via dual independent investigation + adversarial verification; disposition doc written to docs/field-responses/2026-08-12-wave2-response.md. No fixes shipped.",
+  "depends_on": [],
+  "domain": "security",
+  "id": "01KZW6QYTVC0RE2YPYG59BK690",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "429a2d23c9fcae7b8bd8c77cd12381ef4877961f",
+    "recorded_at": "2026-08-13T00:00:54.086Z"
+  },
+  "rationale": "two independent investigations per defect plus per-claim adversarial verification gave corroboration; every root-cause claim across all four defects came back CONFIRMED, at the cost of ~640k subagent tokens under the ultracode directive",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Chose to keep the duplicate Workflow replication running after the four teammate agents turned out alive",
+  "timestamp": "2026-08-13T00:00:54.107Z"
+}

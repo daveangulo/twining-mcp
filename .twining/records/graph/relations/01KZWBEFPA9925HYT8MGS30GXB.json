@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T01:23:06.570Z",
+  "id": "01KZWBEFPA9925HYT8MGS30GXB",
+  "properties": {
+    "decision_summary": "Chose to pin total_in_scope semantics with a new regression test rather than only asserting correctness in prose"
+  },
+  "source": "01KZW6QYXPYKH8NF0BK53CGE9E",
+  "target": "01KZWBEFP6MB9W72SN4HBMT6Y2",
+  "type": "decided_by"
+}

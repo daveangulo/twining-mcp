@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T01:23:06.487Z",
+  "id": "01KZWBEFKQBFHEYGT4MNK0GQ2C",
+  "properties": {
+    "decision_summary": "Elevated the D7 fix (per-decision affected_files/affected_symbols on the structured decision object, loop clobber at record-tools.ts:416 removed, persistence test) to ship FIRST, ahead of the rest of Wave B"
+  },
+  "source": "01KZW6QYXPYKH8NF0BK53CGE9E",
+  "target": "01KZWBEFKMXG8C75J3D4RKV0JF",
+  "type": "decided_by"
+}

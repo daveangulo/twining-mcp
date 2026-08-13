@@ -38,12 +38,20 @@ The unified Gate 2 recording tool — call before every git commit and before en
 | RECORD-04 | SHOULD | Prefix findings with "warning:" or "need:" to set severity; plain strings become findings |
 | RECORD-05 | SHOULD | Let scope auto-infer from the git diff when unsure; otherwise use the narrowest covering path |
 | RECORD-06 | SHOULD | Use the structured-object decision form when rationale is long or ≥2 rejected alternatives must survive verbatim — it bypasses the NL parser |
+| RECORD-07 | SHOULD | Put affected_files/affected_symbols ON the structured decision object when a decision governs different files than the session diff — per-decision lists override the session-level ones, which remain the fallback (server ≥2.8; earlier servers silently drop the nested field) |
 
 #### Correct Usage
 ```json
 {
   "summary": "Hardened the auth token refresh path",
-  "decisions": ["Chose sliding-window refresh over fixed expiry — fixed expiry forced re-login mid-operation"],
+  "decisions": [
+    "Chose sliding-window refresh over fixed expiry — fixed expiry forced re-login mid-operation",
+    {
+      "summary": "Retired the cookie-refresh fallback",
+      "rationale": "Breaks the mobile client and duplicates the sliding-window path",
+      "affected_files": ["src/auth/cookie-refresh.ts"]
+    }
+  ],
   "findings": ["warning: refresh and logout race when both fire in the same tick", "Dead end: cookie-based refresh breaks the mobile client"],
   "affected_files": ["src/auth/refresh.ts"]
 }

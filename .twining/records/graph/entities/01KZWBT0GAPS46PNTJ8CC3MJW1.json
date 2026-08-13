@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-13T01:29:24.234Z",
+  "id": "01KZWBT0GAPS46PNTJ8CC3MJW1",
+  "name": "01KZWBT0F26YRWB7QYP4VZ1N04",
+  "properties": {
+    "scope": "src/tools/record-tools.ts",
+    "summary": "Chose semver minor 2.8.0 over patch"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-13T01:29:24.234Z"
+}

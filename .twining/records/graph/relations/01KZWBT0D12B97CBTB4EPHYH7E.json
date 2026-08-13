@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T01:29:24.129Z",
+  "id": "01KZWBT0D12B97CBTB4EPHYH7E",
+  "properties": {
+    "decision_summary": "Chose per-decision-overrides-session-level precedence with session-level as fallback (input.affected_files ?? args.affected_files ?? []) over per-decision-only"
+  },
+  "source": "01KJQ647P1MGGRERHA1JH2BE8T",
+  "target": "01KZWBT0CX9G3YZBHFTY27GW7B",
+  "type": "decided_by"
+}

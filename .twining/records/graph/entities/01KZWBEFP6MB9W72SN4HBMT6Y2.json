@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-13T01:23:06.566Z",
+  "id": "01KZWBEFP6MB9W72SN4HBMT6Y2",
+  "name": "01KZWBEFMF7CK3MJ0840YN7Z9H",
+  "properties": {
+    "scope": "src/engine/decisions.ts",
+    "summary": "Chose to pin total_in_scope semantics with a new regression test rather than only asserting correctness in prose"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-13T01:23:06.566Z"
+}

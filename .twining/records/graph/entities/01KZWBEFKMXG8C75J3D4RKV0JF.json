@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-13T01:23:06.484Z",
+  "id": "01KZWBEFKMXG8C75J3D4RKV0JF",
+  "name": "01KZWBEFK4EZ63Q2DMH92ATESH",
+  "properties": {
+    "scope": "src/engine/decisions.ts",
+    "summary": "Elevated the D7 fix (per-decision affected_files/affected_symbols on the structured decision object, loop clobber at record-tools.ts:416 removed, persistence test) to ship FIRST, ahead of the rest of Wave B"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-13T01:23:06.484Z"
+}

@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Confirmed total_in_scope as the field's absence instrument and pinned it with a regression test; elevated D7 to ship-first ahead of Wave B per field sequencing request. All wave-2 dispositions now mutually accepted.\nDecisions: Elevated the D7 fix (per-decision affected_files/affected_symbols on the structured decision object, loop clobber at record-tools.ts:416 removed, persistence test) to ship FIRST, ahead of the rest of Wave B — the field's carrier rule is unfollowable on any default-surface store because twining_decide is full-surface-only, leaving a silent correctness hole in their two sibling repos; single highest-value item per their reply; Chose to pin total_in_scope semantics with a new regression test rather than only asserting correctness in prose — the field encoded a hard CLAUDE.md gate on it; budget-independence was already pinned (60-in-scope under a 1-token budget) but nothing pinned that retired records never inflate the default count; added test passes (80/80 in file)\nFindings: total_in_scope verified as a real pre-truncation total (matches.length at decisions.ts:559) — but the field's absence gate must know two caveats: default excludes retired statuses (superseded_count/archived_excluded_count carry them), and getByScope matches scope-prefix OR affected_files OR affected_symbols, so empty-list project-scoped decisions (their 59) are invisible — it measures indexed evidence, not ontological absence, until D7/D11 land; warning: the field's D11 caution about mirror pruning conflates tiers — auto-archive prunes only records/posts/; the decisions mirror is never pruned (archiver exempts decisions), so twining_amend is not exposed to prune-completeness; the live invariant remains ExportingDecisionStore delegation; Field validated two wave-2 findings from the outside: the record-tools.ts:414 supersedes fan-out explains their observed my-intent-to-supersede-one-limb-executed-wholesale artifact, and the scopeless-handoff universal match was their 07-28-fossil mechanism (they have deleted the handoff records and forbidden twining_handoff); Field confirmed graph write tools are on their surface (tools.mode unset, defaults full) — no D13 ask needs new tool surface; their priority_weights (recency 0.3, relevance 0.4, confidence 0.2, warning_boost 0.1) are tunable but degenerate inputs mean re-weighting cannot fix D12, confirming the replacement design",
+  "entry_type": "status",
+  "id": "01KZWBEFGFFFZZAKZ2RTFM6YWJ",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "429a2d23c9fcae7b8bd8c77cd12381ef4877961f",
+    "recorded_at": "2026-08-13T01:23:06.358Z"
+  },
+  "scope": "src/engine/decisions.ts",
+  "summary": "Confirmed total_in_scope as the field's absence instrument and pinned it with a regression test; elevated D7 to ship-first ahead of Wave B per field sequencing request. All wave-2 dispositions now …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-13T01:23:06.383Z"
+}

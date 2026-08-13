@@ -3,8 +3,8 @@
   "id": "01KQV9J8B49121D9ZY3ZNPCK77",
   "name": "CHANGELOG.md",
   "properties": {
-    "scope": "plugin/,src/,src/tools/"
+    "scope": "plugin/,src/,src/tools/,src/tools/record-tools.ts"
   },
   "type": "file",
-  "updated_at": "2026-08-12T23:10:34.417Z"
+  "updated_at": "2026-08-13T01:29:24.238Z"
 }

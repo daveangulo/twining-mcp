@@ -668,3 +668,98 @@ describe("twining_record resolves[] — ordering and failure containment (review
     resolveSpy.mockRestore();
   });
 });
+
+describe("twining_record — per-decision affected_files/affected_symbols (field D7)", () => {
+  it("persists per-decision affected_files and affected_symbols from a structured decision", async () => {
+    const body = parseToolResponse(
+      await callTool("twining_record", {
+        summary: "Session fixing the governance carrier",
+        scope: "src/engine/",
+        decisions: [
+          {
+            summary: "Fixed GOVERN-2.1 to name both carriers",
+            rationale: "The spec named only one carrier site.",
+            affected_files: ["specs/compliance-projection/spec.md"],
+            affected_symbols: ["GovernanceKernel.emitMask"],
+          },
+        ],
+      }),
+    ) as { decisions_created: Array<{ id: string }> };
+
+    expect(body.decisions_created.length).toBe(1);
+    const stored = loadDecisionFile(body.decisions_created[0]!.id);
+    expect(stored.affected_files).toEqual([
+      "specs/compliance-projection/spec.md",
+    ]);
+    expect(stored.affected_symbols).toEqual(["GovernanceKernel.emitMask"]);
+  });
+
+  it("prefers per-decision affected_files over the session-level list, falling back when absent", async () => {
+    const body = parseToolResponse(
+      await callTool("twining_record", {
+        summary: "Session touching two areas",
+        scope: "src/",
+        affected_files: ["src/session-level.ts"],
+        decisions: [
+          {
+            summary: "Decision with its own file list",
+            rationale: "Governs a different artifact than the session diff.",
+            affected_files: ["specs/own-target.md"],
+          },
+          {
+            summary: "Decision without a file list",
+            rationale: "Falls back to the session-level list.",
+          },
+        ],
+      }),
+    ) as { decisions_created: Array<{ id: string }> };
+
+    expect(body.decisions_created.length).toBe(2);
+    const first = loadDecisionFile(body.decisions_created[0]!.id);
+    const second = loadDecisionFile(body.decisions_created[1]!.id);
+    expect(first.affected_files).toEqual(["specs/own-target.md"]);
+    expect(second.affected_files).toEqual(["src/session-level.ts"]);
+  });
+
+  it("keeps the session-level affected_files for NL string decisions", async () => {
+    const body = parseToolResponse(
+      await callTool("twining_record", {
+        summary: "Session with an NL decision",
+        scope: "src/",
+        affected_files: ["src/nl-target.ts"],
+        decisions: ["Chose X over Y — session-level files apply"],
+      }),
+    ) as { decisions_created: Array<{ id: string }> };
+
+    const stored = loadDecisionFile(body.decisions_created[0]!.id);
+    expect(stored.affected_files).toEqual(["src/nl-target.ts"]);
+  });
+
+  it("inputSchema retains per-decision affected_files instead of stripping them (D7 zod half)", async () => {
+    const registered = (
+      server as unknown as {
+        _registeredTools: Record<
+          string,
+          { inputSchema?: { safeParse: (v: unknown) => { success: boolean; data?: unknown } } }
+        >;
+      }
+    )._registeredTools;
+    const schema = registered["twining_record"]!.inputSchema!;
+    const result = schema.safeParse({
+      summary: "Schema round-trip",
+      scope: "src/",
+      decisions: [
+        {
+          summary: "Carries its own files",
+          affected_files: ["specs/spec.md"],
+          affected_symbols: ["Klass.method"],
+        },
+      ],
+    });
+    expect(result.success).toBe(true);
+    const decisions = (result.data as { decisions: Array<Record<string, unknown>> })
+      .decisions;
+    expect(decisions[0]!.affected_files).toEqual(["specs/spec.md"]);
+    expect(decisions[0]!.affected_symbols).toEqual(["Klass.method"]);
+  });
+});

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T01:29:24.235Z",
+  "id": "01KZWBT0GBP1W4MKY9DYBC7J8J",
+  "properties": {
+    "decision_summary": "Chose semver minor 2.8.0 over patch"
+  },
+  "source": "01KQ0VBWQ83J4NGF3K4XWAMT14",
+  "target": "01KZWBT0GAPS46PNTJ8CC3MJW1",
+  "type": "decided_by"
+}

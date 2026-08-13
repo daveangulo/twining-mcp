@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T00:00:54.312Z",
+  "id": "01KZW6QZ18T5RGD6SAWEQE2QSG",
+  "properties": {
+    "decision_summary": "Chose the authoritative sqlite mirror (.twining/records/decisions/) over the legacy v1 directories for all store measurements"
+  },
+  "source": "01KZW6QYXPYKH8NF0BK53CGE9E",
+  "target": "01KZW6QZ17X0KM026V1NFAE1ET",
+  "type": "decided_by"
+}

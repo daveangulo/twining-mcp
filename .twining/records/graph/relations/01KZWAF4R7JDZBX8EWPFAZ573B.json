@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T01:05:59.559Z",
+  "id": "01KZWAF4R7JDZBX8EWPFAZ573B",
+  "properties": {
+    "decision_summary": "Accepted the field's withdrawal of D13 ask 1 as specified and dropped commit archaeology entirely"
+  },
+  "source": "01KZW6QYXPYKH8NF0BK53CGE9E",
+  "target": "01KZWAF4R5PJNPJRZ3VJTVN9PE",
+  "type": "decided_by"
+}

@@ -1,0 +1,20 @@
+{
+  "agent_id": "main",
+  "detail": "Field defect D10 (wave-2 handoff) CONFIRMED via independent investigation agent, key claims re-verified against HEAD by controller.\n\nRoot cause: Decision is atomic with a single status field (types.ts:97-131); supersession is one unconditional updateStatus(target, \"superseded\") at decisions.ts:387-391 — no target read, no cardinality/complexity check, no warning, and the decide() response never even acknowledges the supersession happened. \"Supersede clause 3\" is unrepresentable at every layer (schema, both stores, index, propertyless supersedes graph relation at graph-auto-populator.ts:87-94). The NL parser never splits multi-part decisions (record-parser.ts:188-208 returns exactly one ParsedDecision per string; numbered lists feed extractRejectedAlternatives, not sibling decisions) — so the field repo's 8-concretizations-in-one-record was recorded as one atomic unit with no warning.\n\nAMPLIFIER 1 (new, unreported by field, controller-verified): twining_record's supersedes is session-level and fans out INSIDE the per-decision loop (record-tools.ts:390, :414) — N nested decisions produce N supersede flips on the same target with superseded_by overwritten each time (Object.assign at decisions.ts:388-390, last writer wins). The structured decision object schema (record-tools.ts:172-247) has no per-decision supersedes. Inverse is impossible: cannot supersede a different prior per new decision in one call. Warn-or-error when args.supersedes is set with decisions.length > 1 is a free, purely structural guard.\n\nAMPLIFIER 2 (new, controller-verified): assemble is WORSE than why. why() surfaces superseded_count (decisions.ts:497, weakly — bare int, no message, overloaded with overridden+archived and double-counts vs archived_excluded_count). Assemble — mandatory Gate 1 — filters superseded at context-assembler.ts:94-96 with NO count, no include_superseded escape, prints \"No active decisions for this scope.\" (:709). The 2.7.0 D3 fix added archived_excluded_count (:100-102) for the identical failure class; superseded was simply out of D3's scope. Fix is the same pattern line-for-line.\n\nAlso: dangling supersedes ID silently no-ops (decisions.ts:385-386, test decision-engine.test.ts:141) — typo'd target indistinguishable from success; close in same pass as any warn work.\n\nFix ranking from investigation: (c) surface-superseded-with-status = ~40 additive lines mirroring the shipped archived pattern, do first; structural fan-out guard at record-tools.ts:414 regardless; (b) multi-part warning needs prose heuristics (risky, ab48f81 scar); (a) partial supersession = data-model change touching a dozen status filters + 3k-record migration — prefer write-time decomposition instead: per-decision supersedes on the structured object, which also fixes Amplifier 1.",
+  "entry_type": "finding",
+  "id": "01KZW5Z3H8CWSHC0GZBGC9WEP8",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "429a2d23c9fcae7b8bd8c77cd12381ef4877961f",
+    "recorded_at": "2026-08-12T23:47:19.691Z"
+  },
+  "scope": "src/engine/decisions.ts",
+  "summary": "D10 confirmed: supersession is one unconditional whole-record flip (decisions.ts:387); 2 new amplifiers — record supersedes fan-out (record-tools.ts:414), assemble drops superseded uncounted",
+  "tags": [
+    "field-defect",
+    "D10",
+    "supersession",
+    "wave-2"
+  ],
+  "timestamp": "2026-08-12T23:47:19.720Z"
+}

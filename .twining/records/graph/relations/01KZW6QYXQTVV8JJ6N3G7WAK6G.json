@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T00:00:54.199Z",
+  "id": "01KZW6QYXQTVV8JJ6N3G7WAK6G",
+  "properties": {
+    "decision_summary": "Chose to keep the duplicate Workflow replication running after the four teammate agents turned out alive"
+  },
+  "source": "01KZW6QYXPYKH8NF0BK53CGE9E",
+  "target": "01KZW6QYXNRDJRZR3YRH8P2P6C",
+  "type": "decided_by"
+}

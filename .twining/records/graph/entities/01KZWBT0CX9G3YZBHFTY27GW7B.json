@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-13T01:29:24.125Z",
+  "id": "01KZWBT0CX9G3YZBHFTY27GW7B",
+  "name": "01KZWBT0CDKSHEGFX82PGTJGAQ",
+  "properties": {
+    "scope": "src/tools/record-tools.ts",
+    "summary": "Chose per-decision-overrides-session-level precedence with session-level as fallback (input.affected_files ?? args.affected_files ?? []) over per-decision-only"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-13T01:29:24.125Z"
+}

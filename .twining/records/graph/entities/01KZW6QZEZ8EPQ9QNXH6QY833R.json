@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-13T00:00:54.751Z",
+  "id": "01KZW6QZEZ8EPQ9QNXH6QY833R",
+  "name": "01KZW6QZCAHSN9P60DEMCYTHJA",
+  "properties": {
+    "scope": "src/",
+    "summary": "Reclassified onPost's relates_to graph population as a defect rather than a feature gap"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-13T00:00:54.751Z"
+}
