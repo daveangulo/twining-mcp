@@ -35769,7 +35769,7 @@ var MetricsStore = class {
 };
 
 // src/server.ts
-var PKG_VERSION = true ? "2.8.0" : createRequire(import.meta.url)("../package.json").version;
+var PKG_VERSION = true ? "2.9.0" : createRequire(import.meta.url)("../package.json").version;
 function createServer(projectRoot) {
   const twiningDir = ensureInitialized(projectRoot);
   const config2 = loadConfig(twiningDir);
@@ -37528,7 +37528,7 @@ var TelemetryClient = class {
 // src/index.ts
 init_project_root();
 if (process.argv.includes("--version") || process.argv.includes("-v")) {
-  const version2 = true ? "2.8.0" : createRequire(import.meta.url)("../package.json").version;
+  const version2 = true ? "2.9.0" : createRequire(import.meta.url)("../package.json").version;
   console.log(`twining-mcp ${version2}`);
   process.exit(0);
 }
