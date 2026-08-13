@@ -12338,7 +12338,7 @@ var init_handoff_store = __esm({
           }
           if (filters.scope) {
             const filterScope = filters.scope;
-            entries = entries.filter((e) => scopeMatches(e.scope ?? "", filterScope));
+            entries = entries.filter((e) => scopeMatches(e.scope ?? "project", filterScope));
           }
           if (filters.since) {
             const since = filters.since;
@@ -12914,7 +12914,7 @@ var init_sqlite_stores = __esm({
           }
           if (filters.scope) {
             const filterScope = filters.scope;
-            entries = entries.filter((e) => scopeMatches(e.scope ?? "", filterScope));
+            entries = entries.filter((e) => scopeMatches(e.scope ?? "project", filterScope));
           }
           if (filters.since) {
             const since = filters.since;
@@ -29020,7 +29020,7 @@ var BlackboardEngine = class {
   /** Semantic search across blackboard entries. Default limit: 10. */
   async query(query, options) {
     if (!this.searchEngine) {
-      return { results: [], fallback_mode: true };
+      return { results: [], total_matched: 0, fallback_mode: true };
     }
     const { entries } = await this.store.read();
     const limit = options?.limit ?? 10;
@@ -29074,6 +29074,198 @@ init_errors();
 // src/utils/tokens.ts
 function estimateTokens(text) {
   return Math.ceil(text.length / 4);
+}
+
+// src/embeddings/search.ts
+var SEARCH_NOISE_FLOOR = 0.3;
+var RETIRED_STATUS_DEBOOST = 0.75;
+var RETIRED_STATUSES = /* @__PURE__ */ new Set(["superseded", "overridden", "archived"]);
+var SearchEngine = class {
+  embedder;
+  indexManager;
+  constructor(embedder, indexManager) {
+    this.embedder = embedder;
+    this.indexManager = indexManager;
+  }
+  /** Search blackboard entries by semantic similarity or keyword fallback. */
+  async searchBlackboard(query, entries, options) {
+    const limit = options?.limit ?? 10;
+    let filtered = entries;
+    if (options?.entry_types && options.entry_types.length > 0) {
+      filtered = filtered.filter(
+        (e) => options.entry_types.includes(e.entry_type)
+      );
+    }
+    if (filtered.length === 0) {
+      return {
+        results: [],
+        total_matched: 0,
+        fallback_mode: this.embedder.isFallbackMode()
+      };
+    }
+    if (!this.embedder.isFallbackMode()) {
+      const queryVector = await this.embedder.embed(query);
+      if (queryVector) {
+        const index = await this.indexManager.load("blackboard");
+        const vectorMap = new Map(
+          index.entries.map((e) => [e.id, e.vector])
+        );
+        const scored = [];
+        let matched = 0;
+        for (const entry of filtered) {
+          const entryVector = vectorMap.get(entry.id);
+          if (entryVector) {
+            const relevance = cosineSimilarity(queryVector, entryVector);
+            if (relevance >= SEARCH_NOISE_FLOOR) matched++;
+            scored.push({ entry, relevance });
+          } else {
+            const text = blackboardEmbedText(entry);
+            const kwResults2 = keywordSearch(
+              query,
+              [{ id: entry.id, text }],
+              1
+            );
+            const score = kwResults2[0]?.score ?? 0;
+            if (score > 0) {
+              matched++;
+              scored.push({ entry, relevance: score * 0.5 });
+            }
+          }
+        }
+        scored.sort((a, b) => b.relevance - a.relevance);
+        return {
+          results: scored.slice(0, limit),
+          total_matched: matched,
+          fallback_mode: false
+        };
+      }
+    }
+    const items = filtered.map((e) => ({
+      id: e.id,
+      text: blackboardEmbedText(e)
+    }));
+    const kwResults = keywordSearch(query, items, filtered.length);
+    const idToScore = new Map(kwResults.map((r) => [r.id, r.score]));
+    const results = [];
+    for (const entry of filtered) {
+      const score = idToScore.get(entry.id);
+      if (score !== void 0 && score > 0) {
+        results.push({ entry, relevance: score });
+      }
+    }
+    results.sort((a, b) => b.relevance - a.relevance);
+    return {
+      results: results.slice(0, limit),
+      total_matched: results.length,
+      fallback_mode: true
+    };
+  }
+  /** Search decisions by semantic similarity or keyword fallback. */
+  async searchDecisions(query, decisions, options) {
+    const limit = options?.limit ?? 10;
+    if (decisions.length === 0) {
+      return {
+        results: [],
+        total_matched: 0,
+        fallback_mode: this.embedder.isFallbackMode()
+      };
+    }
+    const deboost = (d, relevance) => RETIRED_STATUSES.has(d.status) && relevance > 0 ? relevance * RETIRED_STATUS_DEBOOST : relevance;
+    if (!this.embedder.isFallbackMode()) {
+      const queryVector = await this.embedder.embed(query);
+      if (queryVector) {
+        const index = await this.indexManager.load("decisions");
+        const vectorMap = new Map(
+          index.entries.map((e) => [e.id, e.vector])
+        );
+        const scored = [];
+        let matched = 0;
+        for (const decision of decisions) {
+          const decisionVector = vectorMap.get(decision.id);
+          if (decisionVector) {
+            const raw = cosineSimilarity(queryVector, decisionVector);
+            if (raw >= SEARCH_NOISE_FLOOR) matched++;
+            scored.push({ decision, relevance: deboost(decision, raw) });
+          } else {
+            const text = decisionEmbedText(decision);
+            const kwResults2 = keywordSearch(
+              query,
+              [{ id: decision.id, text }],
+              1
+            );
+            const score = kwResults2[0]?.score ?? 0;
+            if (score > 0) {
+              matched++;
+              scored.push({
+                decision,
+                relevance: deboost(decision, score * 0.5)
+              });
+            }
+          }
+        }
+        scored.sort((a, b) => b.relevance - a.relevance);
+        return {
+          results: scored.slice(0, limit),
+          total_matched: matched,
+          fallback_mode: false
+        };
+      }
+    }
+    const items = decisions.map((d) => ({
+      id: d.id,
+      text: decisionEmbedText(d)
+    }));
+    const kwResults = keywordSearch(query, items, decisions.length);
+    const idToScore = new Map(kwResults.map((r) => [r.id, r.score]));
+    const results = [];
+    for (const decision of decisions) {
+      const score = idToScore.get(decision.id);
+      if (score !== void 0 && score > 0) {
+        results.push({ decision, relevance: deboost(decision, score) });
+      }
+    }
+    results.sort((a, b) => b.relevance - a.relevance);
+    return {
+      results: results.slice(0, limit),
+      total_matched: results.length,
+      fallback_mode: true
+    };
+  }
+};
+function cosineSimilarity(a, b) {
+  if (a.length !== b.length) {
+    console.error(
+      `[twining] Cosine similarity dimension mismatch: ${a.length} vs ${b.length}. Returning 0.`
+    );
+    return 0;
+  }
+  let sum = 0;
+  for (let i2 = 0; i2 < a.length; i2++) {
+    sum += a[i2] * b[i2];
+  }
+  return sum;
+}
+function keywordSearch(query, items, limit) {
+  const queryTerms = query.toLowerCase().split(/\s+/).filter((t) => t.length > 0);
+  if (queryTerms.length === 0) return [];
+  const results = [];
+  for (const item of items) {
+    const textLower = item.text.toLowerCase();
+    let score = 0;
+    for (const term of queryTerms) {
+      if (textLower.includes(term)) {
+        const parts = textLower.split(term);
+        const matches = parts.length - 1;
+        score += Math.log(1 + matches);
+      }
+    }
+    const normalizedScore = score / queryTerms.length;
+    if (normalizedScore > 0) {
+      results.push({ id: item.id, score: normalizedScore });
+    }
+  }
+  results.sort((a, b) => b.score - a.score);
+  return results.slice(0, limit);
 }
 
 // src/engine/graph-auto-populator.ts
@@ -29495,10 +29687,16 @@ var DecisionEngine = class {
       provenance: captureProvenance(this.projectRoot)
     });
     this.blackboardEngine.touchAgent(agentId);
+    let supersededDangling;
     if (input.supersedes) {
-      await this.decisionStore.updateStatus(input.supersedes, "superseded", {
-        superseded_by: decision.id
-      });
+      const target = await this.decisionStore.get(input.supersedes);
+      if (target) {
+        await this.decisionStore.updateStatus(input.supersedes, "superseded", {
+          superseded_by: decision.id
+        });
+      } else {
+        supersededDangling = input.supersedes;
+      }
     }
     if (conflicts.length > 0) {
       const conflictDetails = conflicts.map((c) => `- ${c.id}: "${c.summary}"`).join("\n");
@@ -29556,6 +29754,9 @@ ${conflictDetails}`,
     if (droppedDependsOn.length > 0) {
       result.dropped_depends_on = droppedDependsOn;
     }
+    if (supersededDangling) {
+      result.supersedes_dangling = supersededDangling;
+    }
     return result;
   }
   /**
@@ -29574,9 +29775,14 @@ ${conflictDetails}`,
     const budget = options?.max_tokens ?? DEFAULT_WHY_MAX_TOKENS;
     const all = await this.decisionStore.getByScope(scope);
     const superseded_count = all.filter(
-      (d) => WHY_RETIRED_STATUSES.has(d.status)
+      (d) => d.status === "superseded" || d.status === "overridden"
     ).length;
     const matches = options?.include_superseded ? all : all.filter((d) => !WHY_RETIRED_STATUSES.has(d.status));
+    const superseded_excluded = options?.include_superseded ? [] : all.filter((d) => d.status === "superseded" || d.status === "overridden").slice(0, 20).map((d) => ({
+      id: d.id,
+      summary: d.summary,
+      ...d.superseded_by ? { superseded_by: d.superseded_by } : {}
+    }));
     const ranked = [...matches].sort(
       (a, b) => whySpecificity(b, scope) - whySpecificity(a, scope) || (WHY_STATUS_RANK[b.status] ?? 0) - (WHY_STATUS_RANK[a.status] ?? 0) || b.timestamp.localeCompare(a.timestamp) || b.id.localeCompare(a.id)
     );
@@ -29625,6 +29831,7 @@ ${conflictDetails}`,
       truncated: more.length > 0,
       total_in_scope: matches.length,
       superseded_count,
+      ...superseded_excluded.length > 0 ? { superseded_excluded } : {},
       ...archived_excluded_count > 0 ? { archived_excluded_count } : {},
       active_count,
       provisional_count,
@@ -29918,7 +30125,7 @@ Note: ${downstreamIds.length} downstream decisions may be affected: ${downstream
     const maxResults = limit ?? 20;
     try {
       if (!query || query.trim().length === 0) {
-        return { results: [], total_matched: 0, fallback_mode: true };
+        return { results: [], total_matched: 0, returned: 0, fallback_mode: true };
       }
       const index = await this.decisionStore.getIndex();
       let filtered = index;
@@ -29938,7 +30145,7 @@ Note: ${downstreamIds.length} downstream decisions may be affected: ${downstream
         );
       }
       if (filtered.length === 0) {
-        return { results: [], total_matched: 0, fallback_mode: true };
+        return { results: [], total_matched: 0, returned: 0, fallback_mode: true };
       }
       const decisions = [];
       for (const entry of filtered) {
@@ -29963,13 +30170,14 @@ Note: ${downstreamIds.length} downstream decisions may be affected: ${downstream
             relevance: r.relevance,
             commit_hashes: r.decision.commit_hashes ?? []
           })),
-          total_matched: searchResults.results.length,
+          total_matched: searchResults.total_matched,
+          returned: searchResults.results.length,
           fallback_mode: searchResults.fallback_mode
         };
       }
       const queryTerms = query.toLowerCase().split(/\s+/).filter((t) => t.length > 0);
       if (queryTerms.length === 0) {
-        return { results: [], total_matched: 0, fallback_mode: true };
+        return { results: [], total_matched: 0, returned: 0, fallback_mode: true };
       }
       const scored = [];
       for (const decision of decisions) {
@@ -29984,7 +30192,8 @@ Note: ${downstreamIds.length} downstream decisions may be affected: ${downstream
         }
         const normalizedScore = score / queryTerms.length;
         if (normalizedScore > 0) {
-          scored.push({ decision, relevance: normalizedScore });
+          const weight = WHY_RETIRED_STATUSES.has(decision.status) ? 0.75 : 1;
+          scored.push({ decision, relevance: normalizedScore * weight });
         }
       }
       scored.sort((a, b) => b.relevance - a.relevance);
@@ -30001,7 +30210,11 @@ Note: ${downstreamIds.length} downstream decisions may be affected: ${downstream
           relevance: r.relevance,
           commit_hashes: r.decision.commit_hashes ?? []
         })),
-        total_matched: topResults.length,
+        // Keyword mode: every literal term hit is a match (TF scores are a
+        // different scale than the cosine noise floor); the de-boost above is
+        // ordering-only and never affects membership.
+        total_matched: scored.length,
+        returned: topResults.length,
         fallback_mode: true
       };
     } catch (error2) {
@@ -30009,7 +30222,7 @@ Note: ${downstreamIds.length} downstream decisions may be affected: ${downstream
         "[twining] searchDecisions failed (non-fatal):",
         error2
       );
-      return { results: [], total_matched: 0, fallback_mode: true };
+      return { results: [], total_matched: 0, returned: 0, fallback_mode: true };
     }
   }
 };
@@ -30219,6 +30432,7 @@ function computeLiveness(lastActive, now = /* @__PURE__ */ new Date(), threshold
 // src/engine/context-assembler.ts
 init_tags();
 var RECENCY_HALF_LIFE = 168;
+var SEMANTIC_ADMISSION_FLOOR = SEARCH_NOISE_FLOOR;
 var ContextAssembler = class _ContextAssembler {
   blackboardStore;
   decisionStore;
@@ -30260,6 +30474,9 @@ var ContextAssembler = class _ContextAssembler {
     );
     const archivedExcluded = scopeDecisions.filter(
       (d) => d.status === "archived"
+    ).length;
+    const supersededExcluded = scopeDecisions.filter(
+      (d) => d.status === "superseded" || d.status === "overridden"
     ).length;
     const decisionRelevance = /* @__PURE__ */ new Map();
     if (this.searchEngine) {
@@ -30311,7 +30528,12 @@ var ContextAssembler = class _ContextAssembler {
     }
     if (this.searchEngine) {
       for (const e of allEntries) {
-        if (e.entry_type !== "decision" && entryRelevance.has(e.id) && !mergedEntryMap.has(e.id)) {
+        if (e.entry_type !== "decision" && entryRelevance.has(e.id) && !mergedEntryMap.has(e.id) && // Relevance floor on semantic-only admission (field D12): the
+        // search path has no minimum score, so 10 arbitrary-similarity
+        // entries from anywhere on the board entered every assemble.
+        // Scope-matched entries are never floored — this gates only what
+        // similarity alone drags in.
+        entryRelevance.get(e.id) >= SEMANTIC_ADMISSION_FLOOR) {
           mergedEntryMap.set(e.id, e);
         }
       }
@@ -30348,7 +30570,7 @@ var ContextAssembler = class _ContextAssembler {
     }
     for (const [id, entry] of mergedEntryMap) {
       const recency = this.recencyScore(entry.timestamp, now);
-      const relevance = entryRelevance.get(id) ?? 0.5;
+      const relevance = (entryRelevance.get(id) ?? 0.5) * _ContextAssembler.scopeProximity(scope, entry.scope);
       const confidence = 0.5;
       const warningBoost = entry.entry_type === "warning" ? 1 : 0;
       const score = recency * weights.recency * weightScale + relevance * weights.relevance * weightScale + confidence * weights.decision_confidence * weightScale + warningBoost * weights.warning_boost * weightScale;
@@ -30541,6 +30763,7 @@ var ContextAssembler = class _ContextAssembler {
       token_estimate: tokensUsed,
       ...warningsOmitted > 0 ? { warnings_omitted: warningsOmitted } : {},
       ...archivedExcluded > 0 ? { archived_excluded_count: archivedExcluded } : {},
+      ...supersededExcluded > 0 ? { superseded_excluded_count: supersededExcluded } : {},
       active_decisions: activeDecisionResults,
       open_needs: openNeeds,
       recent_findings: recentFindings,
@@ -30637,11 +30860,17 @@ var ContextAssembler = class _ContextAssembler {
   static formatForLLM(ctx, statusSummary) {
     const hasContent = ctx.active_warnings.length > 0 || ctx.active_decisions.length > 0 || ctx.recent_findings.length > 0 || ctx.open_needs.length > 0 || ctx.recent_questions.length > 0 || ctx.recent_handoffs && ctx.recent_handoffs.length > 0 || ctx.planning_state != null || // Warnings dropped for budget are still context. Reporting "no prior
     // context" here would state the opposite of the truth.
-    (ctx.warnings_omitted ?? 0) > 0;
+    (ctx.warnings_omitted ?? 0) > 0 || // Excluded decisions are context too (D3/D10): a scope whose only
+    // decisions were archived or superseded must surface the exclusion
+    // note, never the indistinguishable "No prior context".
+    (ctx.archived_excluded_count ?? 0) > 0 || (ctx.superseded_excluded_count ?? 0) > 0;
     if (!hasContent) {
       return `No prior context for scope: ${ctx.scope}`;
     }
-    if (ctx.active_warnings.length === 0 && ctx.active_decisions.length === 0 && ctx.recent_findings.length === 0 && ctx.open_needs.length === 0 && ctx.recent_questions.length === 0 && (ctx.warnings_omitted ?? 0) > 0) {
+    if (ctx.active_warnings.length === 0 && ctx.active_decisions.length === 0 && ctx.recent_findings.length === 0 && ctx.open_needs.length === 0 && ctx.recent_questions.length === 0 && (ctx.warnings_omitted ?? 0) > 0 && // With excluded decisions in scope, fall through to the full briefing so
+    // the D3/D10 exclusion notes render alongside the omitted-warnings
+    // directive — this early return must not swallow them.
+    (ctx.archived_excluded_count ?? 0) === 0 && (ctx.superseded_excluded_count ?? 0) === 0) {
       return `Context for scope ${ctx.scope} exceeded the token budget: ${ctx.warnings_omitted} warning(s) could not be shown. Call twining_read with entry_types:["warning"] before proceeding.`;
     }
     const sections = [];
@@ -30657,10 +30886,15 @@ var ContextAssembler = class _ContextAssembler {
       sections.push("\n### CONTINUE FROM PREVIOUS WORK");
       for (const h of ctx.recent_handoffs) {
         const status = h.acknowledged ? "acknowledged" : "pending";
-        sections.push(`**${h.source_agent} \u2192 ${h.target_agent || "any"}** (${status}): ${h.summary}`);
+        const ageDays2 = h.created_at ? Math.floor(
+          (Date.now() - new Date(h.created_at).getTime()) / (24 * 60 * 60 * 1e3)
+        ) : 0;
+        const ageStamp = ageDays2 >= 1 ? ` (${ageDays2}d ago)` : "";
+        sections.push(`**${h.source_agent} \u2192 ${h.target_agent || "any"}** (${status})${ageStamp}: ${h.summary}`);
         if (h.results && h.results.length > 0) {
           for (const r of h.results) {
-            const icon = r.status === "completed" ? "[x]" : r.status === "blocked" ? "[BLOCKED]" : "[ ]";
+            const blockedIcon = ageDays2 >= 1 ? `[BLOCKED ${ageDays2}d]` : "[BLOCKED]";
+            const icon = r.status === "completed" ? "[x]" : r.status === "blocked" ? blockedIcon : "[ ]";
             sections.push(`  - ${icon} ${r.description}${r.notes ? ` \u2014 ${r.notes}` : ""}`);
           }
         }
@@ -30754,6 +30988,11 @@ var ContextAssembler = class _ContextAssembler {
     if ((ctx.archived_excluded_count ?? 0) > 0) {
       quickRef.push(
         `Note: ${ctx.archived_excluded_count} archived decision(s) in this scope are excluded from the briefing \u2014 if that is unexpected, twining_unarchive can restore them.`
+      );
+    }
+    if ((ctx.superseded_excluded_count ?? 0) > 0) {
+      quickRef.push(
+        `Note: ${ctx.superseded_excluded_count} superseded/overridden decision(s) in this scope are excluded \u2014 call twining_why on this scope to see them with their successors before concluding nothing constrains it.`
       );
     }
     if (ctx.recent_questions.length > 0) {
@@ -31974,173 +32213,6 @@ var Embedder = class _Embedder {
   }
 };
 
-// src/embeddings/search.ts
-var SearchEngine = class {
-  embedder;
-  indexManager;
-  constructor(embedder, indexManager) {
-    this.embedder = embedder;
-    this.indexManager = indexManager;
-  }
-  /** Search blackboard entries by semantic similarity or keyword fallback. */
-  async searchBlackboard(query, entries, options) {
-    const limit = options?.limit ?? 10;
-    let filtered = entries;
-    if (options?.entry_types && options.entry_types.length > 0) {
-      filtered = filtered.filter(
-        (e) => options.entry_types.includes(e.entry_type)
-      );
-    }
-    if (filtered.length === 0) {
-      return { results: [], fallback_mode: this.embedder.isFallbackMode() };
-    }
-    if (!this.embedder.isFallbackMode()) {
-      const queryVector = await this.embedder.embed(query);
-      if (queryVector) {
-        const index = await this.indexManager.load("blackboard");
-        const vectorMap = new Map(
-          index.entries.map((e) => [e.id, e.vector])
-        );
-        const scored = [];
-        for (const entry of filtered) {
-          const entryVector = vectorMap.get(entry.id);
-          if (entryVector) {
-            const relevance = cosineSimilarity(queryVector, entryVector);
-            scored.push({ entry, relevance });
-          } else {
-            const text = blackboardEmbedText(entry);
-            const kwResults2 = keywordSearch(
-              query,
-              [{ id: entry.id, text }],
-              1
-            );
-            const score = kwResults2[0]?.score ?? 0;
-            if (score > 0) {
-              scored.push({ entry, relevance: score * 0.5 });
-            }
-          }
-        }
-        scored.sort((a, b) => b.relevance - a.relevance);
-        return {
-          results: scored.slice(0, limit),
-          fallback_mode: false
-        };
-      }
-    }
-    const items = filtered.map((e) => ({
-      id: e.id,
-      text: blackboardEmbedText(e)
-    }));
-    const kwResults = keywordSearch(query, items, limit);
-    const idToScore = new Map(kwResults.map((r) => [r.id, r.score]));
-    const results = [];
-    for (const entry of filtered) {
-      const score = idToScore.get(entry.id);
-      if (score !== void 0 && score > 0) {
-        results.push({ entry, relevance: score });
-      }
-    }
-    results.sort((a, b) => b.relevance - a.relevance);
-    return {
-      results: results.slice(0, limit),
-      fallback_mode: true
-    };
-  }
-  /** Search decisions by semantic similarity or keyword fallback. */
-  async searchDecisions(query, decisions, options) {
-    const limit = options?.limit ?? 10;
-    if (decisions.length === 0) {
-      return { results: [], fallback_mode: this.embedder.isFallbackMode() };
-    }
-    if (!this.embedder.isFallbackMode()) {
-      const queryVector = await this.embedder.embed(query);
-      if (queryVector) {
-        const index = await this.indexManager.load("decisions");
-        const vectorMap = new Map(
-          index.entries.map((e) => [e.id, e.vector])
-        );
-        const scored = [];
-        for (const decision of decisions) {
-          const decisionVector = vectorMap.get(decision.id);
-          if (decisionVector) {
-            const relevance = cosineSimilarity(queryVector, decisionVector);
-            scored.push({ decision, relevance });
-          } else {
-            const text = decisionEmbedText(decision);
-            const kwResults2 = keywordSearch(
-              query,
-              [{ id: decision.id, text }],
-              1
-            );
-            const score = kwResults2[0]?.score ?? 0;
-            if (score > 0) {
-              scored.push({ decision, relevance: score * 0.5 });
-            }
-          }
-        }
-        scored.sort((a, b) => b.relevance - a.relevance);
-        return {
-          results: scored.slice(0, limit),
-          fallback_mode: false
-        };
-      }
-    }
-    const items = decisions.map((d) => ({
-      id: d.id,
-      text: decisionEmbedText(d)
-    }));
-    const kwResults = keywordSearch(query, items, limit);
-    const idToScore = new Map(kwResults.map((r) => [r.id, r.score]));
-    const results = [];
-    for (const decision of decisions) {
-      const score = idToScore.get(decision.id);
-      if (score !== void 0 && score > 0) {
-        results.push({ decision, relevance: score });
-      }
-    }
-    results.sort((a, b) => b.relevance - a.relevance);
-    return {
-      results: results.slice(0, limit),
-      fallback_mode: true
-    };
-  }
-};
-function cosineSimilarity(a, b) {
-  if (a.length !== b.length) {
-    console.error(
-      `[twining] Cosine similarity dimension mismatch: ${a.length} vs ${b.length}. Returning 0.`
-    );
-    return 0;
-  }
-  let sum = 0;
-  for (let i2 = 0; i2 < a.length; i2++) {
-    sum += a[i2] * b[i2];
-  }
-  return sum;
-}
-function keywordSearch(query, items, limit) {
-  const queryTerms = query.toLowerCase().split(/\s+/).filter((t) => t.length > 0);
-  if (queryTerms.length === 0) return [];
-  const results = [];
-  for (const item of items) {
-    const textLower = item.text.toLowerCase();
-    let score = 0;
-    for (const term of queryTerms) {
-      if (textLower.includes(term)) {
-        const parts = textLower.split(term);
-        const matches = parts.length - 1;
-        score += Math.log(1 + matches);
-      }
-    }
-    const normalizedScore = score / queryTerms.length;
-    if (normalizedScore > 0) {
-      results.push({ id: item.id, score: normalizedScore });
-    }
-  }
-  results.sort((a, b) => b.score - a.score);
-  return results.slice(0, limit);
-}
-
 // src/tools/blackboard-tools.ts
 init_errors();
 
@@ -32624,7 +32696,7 @@ function registerDecisionTools(server, engine, twiningDir, options = {}) {
   if (options.fullSurface) server.registerTool(
     "twining_search_decisions",
     {
-      description: "Search for decisions across all scopes by keyword or topic. Use when you need to find a specific past decision without knowing its exact scope.",
+      description: "Search for decisions across all scopes by keyword or topic. Use when you need to find a specific past decision without knowing its exact scope. This is a relevance RANKER, not an existence test: ABSENCE IS NOT EXPRESSIBLE \u2014 a nonsense query still returns a confident page (pure noise scores ~0.26-0.28 in semantic mode; treat scores near that floor as noise). To test whether ANY decision governs a path, use twining_why with an explicit scope and read total_in_scope instead. total_matched is a true pre-page match count (semantic mode: raw cosine above the ~0.3 noise floor; keyword mode: any literal term hit) and is never deflated by status de-ranking; `returned` is the delivered page size, which may include sub-floor rows for ranking context. Retired decisions (superseded/overridden/archived) are included but de-ranked \u2014 check `status` and follow superseded_by to the current answer.",
       inputSchema: {
         query: external_exports.string().describe(
           "Search query \u2014 keywords or natural language description of what you're looking for"
@@ -32722,6 +32794,7 @@ function registerContextTools(server, contextAssembler, options = {}) {
           needs_count: context.open_needs.length,
           // D3: distinguishes "decisions were archived away" from "none exist"
           ...context.archived_excluded_count ? { archived_excluded_count: context.archived_excluded_count } : {},
+          ...context.superseded_excluded_count ? { superseded_excluded_count: context.superseded_excluded_count } : {},
           token_estimate: context.token_estimate
         });
       } catch (e) {
@@ -33063,7 +33136,7 @@ function registerRecordTools(server, blackboardEngine, decisionEngine, projectRo
           "IDs of prior decisions that your decisions depend on (from twining_assemble or twining_why output)"
         ),
         supersedes: external_exports.string().optional().describe(
-          "ID of a prior decision that your work replaces or invalidates"
+          "ID of a prior decision that your work replaces or invalidates. Requires exactly ONE decision in this call \u2014 with multiple decisions the superseding record is ambiguous, so the supersession is SKIPPED and reported (supersedes_skipped). A target id that does not exist is also reported (supersedes_dangling), not silently ignored."
         ),
         resolves: external_exports.array(external_exports.string()).optional().describe(
           "Blackboard entry IDs (needs/questions/warnings from twining_assemble or twining_triage) that this session's work handled \u2014 they are marked resolved and leave the open lane, and the status post back-references them"
@@ -33118,6 +33191,8 @@ function registerRecordTools(server, blackboardEngine, decisionEngine, projectRo
         });
         const decisionErrors = [];
         const droppedDependsOnIds = /* @__PURE__ */ new Set();
+        const supersedesAmbiguous = Boolean(args.supersedes) && (args.decisions?.length ?? 0) > 1;
+        let supersedesDangling;
         if (args.decisions?.length) {
           for (const item of args.decisions) {
             const input = typeof item === "string" ? buildFromNaturalLanguage(item, args.summary) : buildFromStructured(item, args.summary);
@@ -33134,7 +33209,7 @@ function registerRecordTools(server, blackboardEngine, decisionEngine, projectRo
                 assumptions: input.assumptions ?? args.assumptions,
                 constraints: input.constraints ?? args.constraints,
                 depends_on: args.depends_on,
-                supersedes: args.supersedes,
+                supersedes: supersedesAmbiguous ? void 0 : args.supersedes,
                 reversible: args.reversible,
                 affected_files: input.affected_files ?? args.affected_files ?? [],
                 affected_symbols: input.affected_symbols ?? args.affected_symbols ?? [],
@@ -33145,6 +33220,9 @@ function registerRecordTools(server, blackboardEngine, decisionEngine, projectRo
                 id: decision.id,
                 summary: input.summary
               });
+              if (decision.supersedes_dangling) {
+                supersedesDangling = decision.supersedes_dangling;
+              }
               if (decision.dropped_depends_on?.length) {
                 for (const id of decision.dropped_depends_on) {
                   droppedDependsOnIds.add(id);
@@ -33197,6 +33275,19 @@ function registerRecordTools(server, blackboardEngine, decisionEngine, projectRo
           parts.push(
             `ignored ${droppedDependsOnIds.size} unknown depends_on id(s): ${[...droppedDependsOnIds].join(", ")}`
           );
+        if (supersedesAmbiguous)
+          parts.push(
+            `supersedes SKIPPED: ${args.decisions.length} decisions in one call makes the superseding decision ambiguous \u2014 target ${args.supersedes} was NOT retired; re-record the superseding decision alone (or via twining_decide) with supersedes`
+          );
+        if (supersedesDangling)
+          parts.push(
+            `supersedes target ${supersedesDangling} does not exist \u2014 it was NOT retired; check the id and re-record the supersession`
+          );
+        const supersedesUncarried = Boolean(args.supersedes) && !supersedesAmbiguous && createdDecisions.length === 0;
+        if (supersedesUncarried)
+          parts.push(
+            `supersedes SKIPPED: no decision was recorded to carry it \u2014 target ${args.supersedes} was NOT retired`
+          );
         const response = {
           status_entry_id: statusEntry.id,
           decisions_created: createdDecisions,
@@ -33206,6 +33297,9 @@ function registerRecordTools(server, blackboardEngine, decisionEngine, projectRo
         };
         if (decisionErrors.length > 0) response.decision_errors = decisionErrors;
         if (findingErrors.length > 0) response.finding_errors = findingErrors;
+        if (supersedesAmbiguous || supersedesUncarried)
+          response.supersedes_skipped = true;
+        if (supersedesDangling) response.supersedes_dangling = supersedesDangling;
         if (resolveResult) {
           response.resolved = resolveResult.resolved;
           if (resolveResult.not_found.length > 0) {
@@ -33792,7 +33886,11 @@ var CoordinationEngine = class {
     const record2 = await this.handoffStore.create({
       source_agent: input.source_agent,
       target_agent: input.target_agent,
-      scope: input.scope,
+      // The tool schema has always documented default "project", but only the
+      // side-effect blackboard post applied it — the record itself persisted
+      // undefined, and an undefined scope matched EVERY scope in the list
+      // filter (field D12). Apply the documented default at the source.
+      scope: input.scope ?? "project",
       summary: input.summary,
       results: input.results,
       context_snapshot
