@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: local plugin installs on this machine and the field machines still pin older plugin versions — upgrading closes D7 exposure; remember BOTH user and project scopes when updating the local pin (proven shadowing hazard)",
+  "entry_type": "need",
+  "id": "01KZWCKG74PS9ACMNCBP8WM4TJ",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "bdce0dc71592b7ba14908e25785f042dfdda9c08",
+    "recorded_at": "2026-08-13T01:43:19.504Z"
+  },
+  "scope": "src/tools/record-tools.ts",
+  "summary": "local plugin installs on this machine and the field machines still pin older plugin versions — upgrading closes D7 exposure; remember BOTH user and project scopes when updating the local pin (prove…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-08-13T01:43:19.524Z"
+}

@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Ship state: v2.8.0 tag -> Publish workflow green -> npm latest = 2.8.0 confirmed via npm view; commits 440b48f (fix + wave-2 disposition docs) / 4b3b84a (plugin 1.26.0 bundle) / bdce0dc (version). Main-branch CI carries the known pre-existing token-budget red (since 2.6.0), unrelated to Publish",
+  "entry_type": "finding",
+  "id": "01KZWCKG5SFT22TX1J5ZW9WR1N",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "bdce0dc71592b7ba14908e25785f042dfdda9c08",
+    "recorded_at": "2026-08-13T01:43:19.462Z"
+  },
+  "scope": "src/tools/record-tools.ts",
+  "summary": "Ship state: v2.8.0 tag -> Publish workflow green -> npm latest = 2.8.0 confirmed via npm view; commits 440b48f (fix + wave-2 disposition docs) / 4b3b84a (plugin 1.26.0 bundle) / bdce0dc (version). …",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-08-13T01:43:19.481Z"
+}
