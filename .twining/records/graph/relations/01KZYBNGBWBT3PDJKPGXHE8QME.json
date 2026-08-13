@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T20:05:25.500Z",
+  "id": "01KZYBNGBWBT3PDJKPGXHE8QME",
+  "properties": {
+    "decision_summary": "Chose to reject empty/whitespace amend entries with INVALID_INPUT rather than silently filtering"
+  },
+  "source": "01KKNE77Z5ZR4YZA92Q52HKRJ2",
+  "target": "01KZYBNGBN6H58KVFFV8SRQD59",
+  "type": "decided_by"
+}

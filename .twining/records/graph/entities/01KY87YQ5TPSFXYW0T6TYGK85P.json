@@ -3,8 +3,8 @@
   "id": "01KY87YQ5TPSFXYW0T6TYGK85P",
   "name": "src/storage/interfaces.ts",
   "properties": {
-    "scope": "src/engine/,src/storage/"
+    "scope": "src/,src/engine/,src/storage/"
   },
   "type": "file",
-  "updated_at": "2026-08-06T22:21:50.478Z"
+  "updated_at": "2026-08-13T20:05:25.617Z"
 }

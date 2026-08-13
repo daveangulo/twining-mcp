@@ -3,8 +3,8 @@
   "id": "01KKNE77Z5ZR4YZA92Q52HKRJ2",
   "name": "src/engine/graph-auto-populator.ts",
   "properties": {
-    "scope": "src/engine/"
+    "scope": "src/,src/engine/"
   },
   "type": "file",
-  "updated_at": "2026-03-14T05:48:32.101Z"
+  "updated_at": "2026-08-13T20:05:25.623Z"
 }

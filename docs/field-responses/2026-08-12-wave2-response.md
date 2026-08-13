@@ -136,8 +136,8 @@ independently by construction.
   FILES TO CHECK lane. Degraded: `getByScope` retrieval, `why` specificity
   ranking, keyword scoring, export, dashboard health.
 
-**Disposition:** accepted. `twining_amend({id, affected_files,
-affected_symbols})` — restricted to exactly those two fields (both absent
+**Disposition:** accepted. `twining_amend({decision_id, add_affected_files,
+add_affected_symbols, reason})` — append-only, restricted to exactly those two fields (both absent
 from the embed text, so no reindex; everything semantic stays immutable),
 recording an in-record `amendments[]` provenance entry (house style:
 `archived_from`) plus an audit-trail finding. Four invariants bound the

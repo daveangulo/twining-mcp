@@ -1611,3 +1611,72 @@ describe("ContextAssembler — review-finding pins", () => {
     expect(briefing).not.toContain("d ago)");
   });
 });
+
+describe("ContextAssembler — self-post marking (field D12, wave B)", () => {
+  function makeDir3(): string {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "twining-selfpost-"));
+    fs.mkdirSync(path.join(dir, "decisions"), { recursive: true });
+    fs.writeFileSync(path.join(dir, "blackboard.jsonl"), "");
+    fs.writeFileSync(
+      path.join(dir, "decisions", "index.json"),
+      JSON.stringify([]),
+    );
+    return dir;
+  }
+
+  it("marks warnings this session's engine posted as self_authored", async () => {
+    const dir = makeDir3();
+    const bbStore = new BlackboardStore(dir);
+    const { BlackboardEngine } = await import("../src/engine/blackboard.js");
+    const bbEngine = new BlackboardEngine(bbStore);
+    const assembler = new ContextAssembler(
+      bbStore,
+      new DecisionStore(dir),
+      null,
+      makeConfig(),
+    );
+    assembler.setSessionPostIds(bbEngine.sessionPostIds);
+    await bbEngine.post({
+      entry_type: "warning",
+      scope: "src/auth/",
+      summary: "My own fresh warning",
+    });
+
+    const result = await assembler.assemble("continue work", "src/auth/");
+    expect(result.active_warnings).toHaveLength(1);
+    expect(result.active_warnings[0]!.self_authored).toBe(true);
+    const briefing = ContextAssembler.formatForLLM(result);
+    expect(briefing).toContain("[this session]");
+  });
+
+  it("never marks a CONCURRENT session's warning, even when newer than this session's start", async () => {
+    const dir = makeDir3();
+    const bbStore = new BlackboardStore(dir);
+    const { BlackboardEngine } = await import("../src/engine/blackboard.js");
+    const bbEngine = new BlackboardEngine(bbStore);
+    const assembler = new ContextAssembler(
+      bbStore,
+      new DecisionStore(dir),
+      null,
+      makeConfig(),
+    );
+    assembler.setSessionPostIds(bbEngine.sessionPostIds);
+    // Another session sharing the store posts AFTER this session started —
+    // a store-level append this engine never saw. A timestamp heuristic
+    // would mislabel it "[this session]"; id membership must not.
+    await bbStore.append({
+      agent_id: "main",
+      entry_type: "warning",
+      tags: [],
+      scope: "src/auth/",
+      summary: "Concurrent session warning",
+      detail: "",
+    });
+
+    const result = await assembler.assemble("continue work", "src/auth/");
+    expect(result.active_warnings).toHaveLength(1);
+    expect(result.active_warnings[0]!.self_authored).toBeUndefined();
+    const briefing = ContextAssembler.formatForLLM(result);
+    expect(briefing).not.toContain("[this session]");
+  });
+});

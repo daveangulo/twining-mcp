@@ -356,6 +356,51 @@ describe.skipIf(!HAS_SQLITE)("sqlite backend", () => {
       expect(byName).toEqual({ empty: "completed", uniform: "failed", mixed: "mixed" });
     });
 
+    it("amendMetadata updates record and file-scoped retrieval (field D11)", async () => {
+      const store = new SqliteDecisionStore(db);
+      const d = await store.create({
+        agent_id: "main",
+        domain: "architecture",
+        scope: "src/",
+        summary: "amendable",
+        context: "ctx",
+        rationale: "because",
+        alternatives: [],
+        confidence: "medium" as const,
+        affected_files: [],
+        affected_symbols: [],
+        reversible: true,
+      });
+      await store.amendMetadata(d.id, {
+        add_affected_files: ["specs/target.md"],
+        add_affected_symbols: ["Klass.method"],
+        amendment: {
+          amended_at: new Date().toISOString(),
+          amended_by: "repair",
+          added_files: ["specs/target.md"],
+          added_symbols: ["Klass.method"],
+        },
+      });
+      // Missing id: silent no-op, matching updateStatus semantics.
+      await expect(
+        store.amendMetadata("missing", {
+          add_affected_files: ["x.md"],
+          add_affected_symbols: [],
+          amendment: {
+            amended_at: new Date().toISOString(),
+            amended_by: "repair",
+            added_files: ["x.md"],
+            added_symbols: [],
+          },
+        }),
+      ).resolves.toBeUndefined();
+      const stored = await store.get(d.id);
+      expect(stored!.affected_files).toEqual(["specs/target.md"]);
+      expect(stored!.amendments).toHaveLength(1);
+      const byFile = await store.getByScope("specs/target.md");
+      expect(byFile.map((x) => x.id)).toContain(d.id);
+    });
+
     it("a scopeless handoff reads as project scope, never match-everything (field D12)", async () => {
       const store = new SqliteHandoffStore(db);
       await store.create(handoffInput("scopeless", [], { scope: undefined }));

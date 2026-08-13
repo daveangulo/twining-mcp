@@ -308,7 +308,7 @@ For advanced workflows — deep decision management, graph exploration, multi-ag
 
 | Category | Tools |
 |----------|-------|
-| **Decisions** | `twining_decide`, `twining_search_decisions`, `twining_reconsider`, `twining_link_commit`, `twining_trace`, `twining_override`, `twining_promote`, `twining_commits` |
+| **Decisions** | `twining_decide`, `twining_search_decisions`, `twining_reconsider`, `twining_link_commit`, `twining_amend`, `twining_trace`, `twining_override`, `twining_promote`, `twining_commits` |
 | **Blackboard** | `twining_read`, `twining_query`, `twining_recent`, `twining_dismiss` |
 | **Context** | `twining_summarize`, `twining_what_changed` |
 | **Triage** | `twining_triage` |

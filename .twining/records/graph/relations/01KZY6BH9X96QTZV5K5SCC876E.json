@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T18:32:35.901Z",
+  "id": "01KZY6BH9X96QTZV5K5SCC876E",
+  "properties": {
+    "decision_summary": "Chose process-start-time for self-post detection with mark-don't-score rendering"
+  },
+  "source": "01KHMSDM44AFAD0VVEK8T9N3TK",
+  "target": "01KZY6BH9MMPZBFZZA9XRKGVRH",
+  "type": "decided_by"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-13T18:32:35.401Z",
+  "id": "01KZY6BGT9KM48SCBB9H2WMZAK",
+  "name": "01KZY6BGQMW0G1711YN4EFX2FB",
+  "properties": {
+    "scope": "src/",
+    "summary": "Chose add-only union semantics for twining_amend over replace"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-13T18:32:35.401Z"
+}

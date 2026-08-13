@@ -16,6 +16,7 @@ import { estimateTokens } from "../utils/tokens.js";
 import type {
   Decision,
   DecisionAlternative,
+  DecisionAmendment,
   DecisionConfidence,
   DecisionStatus,
   RationaleSource,
@@ -501,6 +502,142 @@ export class DecisionEngine {
     }
 
     return result;
+  }
+
+  /**
+   * Append-only metadata repair (field D11). Adds affected_files/
+   * affected_symbols to an existing record — the two fields the retrieval
+   * graph and divergence checks key on — with an in-record provenance trail.
+   * Semantic content is never amendable (that would demand embedding
+   * reindexing and break "a decision record is what was decided, then").
+   * Works on retired records: the file list is a factual attribute, not a
+   * lifecycle claim. Idempotent: already-present entries append no
+   * provenance and touch no store.
+   */
+  async amend(input: {
+    id: string;
+    add_affected_files?: string[];
+    add_affected_symbols?: string[];
+    reason?: string;
+    agent_id?: string;
+  }): Promise<{
+    id: string;
+    status: DecisionStatus;
+    added_files: string[];
+    added_symbols: string[];
+    already_present: string[];
+    /** False when the amendment persisted but the audit finding could not be posted. */
+    audit_posted?: boolean;
+  }> {
+    if (!input.id) {
+      throw new TwiningError("id is required", "INVALID_INPUT");
+    }
+    const wantFiles = input.add_affected_files ?? [];
+    const wantSymbols = input.add_affected_symbols ?? [];
+    if (wantFiles.length === 0 && wantSymbols.length === 0) {
+      throw new TwiningError(
+        "Nothing to amend: provide add_affected_files and/or add_affected_symbols",
+        "INVALID_INPUT",
+      );
+    }
+    // An empty or whitespace path would prefix-match EVERY scope query
+    // (scopeMatches is bidirectional startsWith), making the decision
+    // universally retrieved — and amend has no removal path to undo it.
+    if ([...wantFiles, ...wantSymbols].some((s) => s.trim().length === 0)) {
+      throw new TwiningError(
+        "Empty or whitespace entries are not amendable — they would match every scope query",
+        "INVALID_INPUT",
+      );
+    }
+
+    const decision = await this.decisionStore.get(input.id);
+    if (!decision) {
+      throw new TwiningError(`Decision not found: ${input.id}`, "NOT_FOUND");
+    }
+
+    const existingFiles = new Set(decision.affected_files);
+    const existingSymbols = new Set(decision.affected_symbols);
+    const addedFiles = [...new Set(wantFiles)].filter(
+      (f) => !existingFiles.has(f),
+    );
+    const addedSymbols = [...new Set(wantSymbols)].filter(
+      (s) => !existingSymbols.has(s),
+    );
+    const alreadyPresent = [
+      ...new Set([
+        ...wantFiles.filter((f) => existingFiles.has(f)),
+        ...wantSymbols.filter((s) => existingSymbols.has(s)),
+      ]),
+    ];
+
+    if (addedFiles.length === 0 && addedSymbols.length === 0) {
+      return {
+        id: decision.id,
+        status: decision.status,
+        added_files: [],
+        added_symbols: [],
+        already_present: alreadyPresent,
+      };
+    }
+
+    const amendment: DecisionAmendment = {
+      amended_at: new Date().toISOString(),
+      amended_by: input.agent_id ?? "main",
+      added_files: addedFiles,
+      added_symbols: addedSymbols,
+      ...(input.reason ? { reason: input.reason } : {}),
+    };
+
+    // Deltas only — the backend merges inside its critical section, so a
+    // concurrent amend's additions are never clobbered by this one's
+    // stale read (lost-update hazard, review finding).
+    await this.decisionStore.amendMetadata(decision.id, {
+      add_affected_files: addedFiles,
+      add_affected_symbols: addedSymbols,
+      amendment,
+    });
+
+    // Graph edges for the NEW paths only — relations never deduplicate.
+    if (this.graphPopulator) {
+      await this.graphPopulator.onAmend(
+        {
+          added_files: addedFiles,
+          added_symbols: addedSymbols,
+          scope: decision.scope,
+          summary: decision.summary,
+        },
+        decision.id,
+      );
+    }
+
+    // Audit trail on the blackboard (housekeeping-tools pattern): the
+    // amendment must be discoverable without opening the record. Non-fatal
+    // like graph population — the amendment is already durably persisted,
+    // and erroring here would make a retry hit the idempotent no-op path,
+    // losing the audit entry forever while telling the caller it failed.
+    let auditPosted = true;
+    try {
+      await this.blackboardEngine.post({
+        entry_type: "finding",
+        summary: `Amended decision ${decision.id}: +${addedFiles.length} file(s), +${addedSymbols.length} symbol(s)`,
+        detail: `Added affected_files: [${addedFiles.join(", ")}]; affected_symbols: [${addedSymbols.join(", ")}]${input.reason ? `. Reason: ${input.reason}` : ""}. Amended by ${amendment.amended_by}; decision status: ${decision.status}.`,
+        tags: ["amend", "audit-trail"],
+        scope: decision.scope,
+        agent_id: amendment.amended_by,
+      });
+    } catch (error) {
+      auditPosted = false;
+      console.error("[twining] amend audit post failed (non-fatal):", error);
+    }
+
+    return {
+      id: decision.id,
+      status: decision.status,
+      added_files: addedFiles,
+      added_symbols: addedSymbols,
+      already_present: alreadyPresent,
+      ...(auditPosted ? {} : { audit_posted: false }),
+    };
   }
 
   /**

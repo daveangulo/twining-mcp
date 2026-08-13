@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-13T20:05:25.232Z",
+  "id": "01KZYBNG3GSA3H971J65RRX962",
+  "name": "01KZYBNG0JEH0DJKN3F2NHCFYF",
+  "properties": {
+    "scope": "src/",
+    "summary": "Chose delta-merge inside the store's critical section over engine-computed unions for amendMetadata"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-13T20:05:25.232Z"
+}

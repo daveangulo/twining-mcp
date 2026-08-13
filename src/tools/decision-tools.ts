@@ -410,6 +410,54 @@ export function registerDecisionTools(
     },
   );
 
+  // twining_amend — Append-only metadata repair for affected_files/affected_symbols (full surface only, field D11)
+  if (options.fullSurface) server.registerTool(
+    "twining_amend",
+    {
+      description:
+        "Add affected_files/affected_symbols to an EXISTING decision record — the append-only repair for records written with empty lists (which are invisible to twining_why file queries, the drift check, and the knowledge graph). Strictly additive: never removes entries, never touches semantic content (summary/rationale/context are not amendable), works on retired records, and appends a provenance entry to the record's amendments[] trail plus an audit finding to the blackboard.",
+      inputSchema: {
+        decision_id: z.string().describe("ID of the decision to amend"),
+        add_affected_files: z
+          .array(z.string())
+          .optional()
+          .describe("File paths to add (existing entries are kept; duplicates ignored)"),
+        add_affected_symbols: z
+          .array(z.string())
+          .optional()
+          .describe("Function/class/method names to add"),
+        reason: z
+          .string()
+          .optional()
+          .describe("Why the metadata is being amended — stored in the provenance trail"),
+        agent_id: z
+          .string()
+          .optional()
+          .describe("ID of the agent performing the amendment"),
+      },
+    },
+    async (args) => {
+      try {
+        const result = await engine.amend({
+          id: args.decision_id,
+          add_affected_files: args.add_affected_files,
+          add_affected_symbols: args.add_affected_symbols,
+          reason: args.reason,
+          agent_id: args.agent_id,
+        });
+        return toolResult(result);
+      } catch (e) {
+        if (e instanceof TwiningError) {
+          return toolError(e.message, e.code);
+        }
+        return toolError(
+          e instanceof Error ? e.message : "Unknown error",
+          "INTERNAL_ERROR",
+        );
+      }
+    },
+  );
+
   // twining_link_commit — Link a git commit hash to an existing decision (full surface only — use commit_hash param on twining_record instead)
   if (options.fullSurface) server.registerTool(
     "twining_link_commit",

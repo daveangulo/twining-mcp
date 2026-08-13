@@ -10,6 +10,7 @@ import { generateId } from "../utils/ids.js";
 import { scopeMatches } from "../utils/scope.js";
 import type {
   Decision,
+  DecisionAmendment,
   DecisionIndexEntry,
   DecisionStatus,
 } from "../utils/types.js";
@@ -126,6 +127,59 @@ export class DecisionStore implements IDecisionStore {
       const indexEntry = index.find((e) => e.id === id);
       if (indexEntry) {
         indexEntry.status = status;
+      }
+      atomicWriteFileSync(this.indexPath, JSON.stringify(index, null, 2));
+    } finally {
+      await release();
+    }
+    this.cachedIndex = null; // Invalidate index cache
+  }
+
+  /**
+   * Persist an append-only metadata amendment (field D11). Unlike
+   * updateStatus, this rewrites the index entry's affected_files/
+   * affected_symbols too — getByScope reads them from the index, so a
+   * record-only write would leave the repair invisible to retrieval.
+   * Deltas merge against the in-lock read: concurrent amends both survive.
+   */
+  async amendMetadata(
+    id: string,
+    delta: {
+      add_affected_files: string[];
+      add_affected_symbols: string[];
+      amendment: DecisionAmendment;
+    },
+  ): Promise<void> {
+    const filePath = path.join(this.decisionsDir, `${id}.json`);
+    if (!fs.existsSync(filePath)) return;
+
+    const release = await lockfile.lock(this.indexPath, LOCK_OPTIONS);
+    try {
+      const decision = JSON.parse(
+        fs.readFileSync(filePath, "utf-8"),
+      ) as Decision;
+      decision.affected_files = [
+        ...decision.affected_files,
+        ...delta.add_affected_files.filter(
+          (f) => !decision.affected_files.includes(f),
+        ),
+      ];
+      decision.affected_symbols = [
+        ...decision.affected_symbols,
+        ...delta.add_affected_symbols.filter(
+          (s) => !decision.affected_symbols.includes(s),
+        ),
+      ];
+      decision.amendments = [...(decision.amendments ?? []), delta.amendment];
+      atomicWriteFileSync(filePath, JSON.stringify(decision, null, 2));
+
+      const index = JSON.parse(
+        fs.readFileSync(this.indexPath, "utf-8"),
+      ) as DecisionIndexEntry[];
+      const indexEntry = index.find((e) => e.id === id);
+      if (indexEntry) {
+        indexEntry.affected_files = decision.affected_files;
+        indexEntry.affected_symbols = decision.affected_symbols;
       }
       atomicWriteFileSync(this.indexPath, JSON.stringify(index, null, 2));
     } finally {

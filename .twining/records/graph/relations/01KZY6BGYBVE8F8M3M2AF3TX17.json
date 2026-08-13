@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T18:32:35.531Z",
+  "id": "01KZY6BGYBVE8F8M3M2AF3TX17",
+  "properties": {
+    "decision_summary": "Chose a dedicated IDecisionStore.amendMetadata over widening updateStatus"
+  },
+  "source": "01KHMSDM44AFAD0VVEK8T9N3TK",
+  "target": "01KZY6BGY2KHZZ4DE4B4JF3AJH",
+  "type": "decided_by"
+}

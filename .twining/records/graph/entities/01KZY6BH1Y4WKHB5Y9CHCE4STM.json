@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-13T18:32:35.646Z",
+  "id": "01KZY6BH1Y4WKHB5Y9CHCE4STM",
+  "name": "01KZY6BGZ5WHJ6SK9Z85HRQ7WZ",
+  "properties": {
+    "scope": "src/",
+    "summary": "Chose GraphAutoPopulator.onAmend receiving ONLY newly-added paths over re-running onDecide"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-13T18:32:35.646Z"
+}

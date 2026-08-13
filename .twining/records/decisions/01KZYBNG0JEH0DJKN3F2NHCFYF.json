@@ -1,0 +1,44 @@
+{
+  "affected_files": [
+    "src/storage/interfaces.ts",
+    "src/storage/decision-store.ts",
+    "src/storage/sqlite/sqlite-stores.ts",
+    "src/engine/decisions.ts",
+    "src/engine/blackboard.ts",
+    "src/engine/context-assembler.ts",
+    "src/engine/graph-auto-populator.ts",
+    "src/server.ts",
+    "README.md",
+    "docs/TWINING-REFERENCE.md",
+    "docs/field-responses/2026-08-12-wave2-response.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "engine-computed unions for amendMetadata",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Wave B review round complete: fixed both majors (amend lost-update via in-lock delta merge; self-post marking rebuilt on posted-id membership after the timestamp heuristic mislabeled concurrent sessions) plus 5 minors. 1598 green. Shipping 2.10.0.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01KZYBNG0JEH0DJKN3F2NHCFYF",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "92292fc487279e8e8821c3e0e23f86d9d9a148f2",
+    "recorded_at": "2026-08-13T20:05:25.118Z"
+  },
+  "rationale": "the review reproduced the lost-update live (concurrent amends erased one side's files AND provenance while its response claimed success); this is the exact hazard class withWriteTxn's own docs name, and the delta signature makes the stale-union bug inexpressible",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Chose delta-merge inside the store's critical section over engine-computed unions for amendMetadata",
+  "timestamp": "2026-08-13T20:05:25.138Z"
+}

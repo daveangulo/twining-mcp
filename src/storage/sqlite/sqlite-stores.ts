@@ -19,6 +19,7 @@ import type {
   AgentRecord,
   BlackboardEntry,
   Decision,
+  DecisionAmendment,
   DecisionIndexEntry,
   DecisionStatus,
   Entity,
@@ -238,6 +239,41 @@ export class SqliteDecisionStore implements IDecisionStore {
       if (!decision) return; // file backend: silently no-op when file missing
       decision.status = status;
       if (extra) Object.assign(decision, extra);
+      this.save(decision);
+    });
+  }
+
+  /**
+   * Append-only metadata amendment (field D11). The sqlite index is a
+   * read-time projection over the record, so rewriting the record keeps
+   * every read model consistent. Deltas merge against the in-transaction
+   * read: concurrent amends both survive.
+   */
+  async amendMetadata(
+    id: string,
+    delta: {
+      add_affected_files: string[];
+      add_affected_symbols: string[];
+      amendment: DecisionAmendment;
+    },
+  ): Promise<void> {
+    assertWritable();
+    withWriteTxn(this.db, () => {
+      const decision = this.load(id);
+      if (!decision) return;
+      decision.affected_files = [
+        ...decision.affected_files,
+        ...delta.add_affected_files.filter(
+          (f) => !decision.affected_files.includes(f),
+        ),
+      ];
+      decision.affected_symbols = [
+        ...decision.affected_symbols,
+        ...delta.add_affected_symbols.filter(
+          (s) => !decision.affected_symbols.includes(s),
+        ),
+      ];
+      decision.amendments = [...(decision.amendments ?? []), delta.amendment];
       this.save(decision);
     });
   }

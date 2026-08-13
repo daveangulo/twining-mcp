@@ -17,6 +17,14 @@ import type { GraphAutoPopulator } from "./graph-auto-populator.js";
 import type { IAgentStore, IBlackboardStore, IIndexManager } from "../storage/interfaces.js";
 
 export class BlackboardEngine {
+  /**
+   * IDs of entries posted through THIS engine instance — i.e. by the calling
+   * session, since the stdio server is one process per session. The exact
+   * self-authorship signal for assemble's lane marking (field D12): a
+   * timestamp heuristic mislabels concurrent sessions sharing the store,
+   * and agent_id is a role label, not an identity.
+   */
+  readonly sessionPostIds = new Set<string>();
   private readonly store: IBlackboardStore;
   private readonly embedder: Embedder | null;
   private readonly indexManager: IIndexManager | null;
@@ -128,6 +136,7 @@ export class BlackboardEngine {
       ...(input.origin ? { origin: input.origin } : {}),
       provenance: captureProvenance(this.projectRoot),
     });
+    this.sessionPostIds.add(entry.id);
 
     // Registry auto-touch (#32): every write marks its author as a
     // participant so the registry reflects who actually worked here.

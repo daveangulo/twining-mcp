@@ -5,8 +5,8 @@
   "properties": {
     "description": "Decision index + individual record persistence",
     "layer": "storage",
-    "scope": "src/engine/"
+    "scope": "src/,src/engine/"
   },
   "type": "file",
-  "updated_at": "2026-07-23T19:41:33.950Z"
+  "updated_at": "2026-08-13T20:05:25.618Z"
 }

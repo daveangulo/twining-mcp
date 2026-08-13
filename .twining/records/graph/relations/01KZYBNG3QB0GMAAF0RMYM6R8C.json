@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T20:05:25.239Z",
+  "id": "01KZYBNG3QB0GMAAF0RMYM6R8C",
+  "properties": {
+    "decision_summary": "Chose delta-merge inside the store's critical section over engine-computed unions for amendMetadata"
+  },
+  "source": "01KJD8KGK434DH6PX2BNXW4W71",
+  "target": "01KZYBNG3GSA3H971J65RRX962",
+  "type": "decided_by"
+}

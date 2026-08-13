@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T18:32:35.771Z",
+  "id": "01KZY6BH5V5WMK9BQE8G9J84Z5",
+  "properties": {
+    "decision_summary": "Chose full-surface registration for twining_amend, matching twining_link_commit's metadata-mutation class"
+  },
+  "source": "01KY87YQ5TPSFXYW0T6TYGK85P",
+  "target": "01KZY6BH5SNCYP4MC186KHARAQ",
+  "type": "decided_by"
+}

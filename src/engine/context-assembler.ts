@@ -51,6 +51,20 @@ export class ContextAssembler {
   /** In-memory log of last assembly time per agent (not persisted across restarts). */
   private readonly assemblyLog = new Map<string, string>();
 
+  /**
+   * Exact self-authorship signal (field D12): the ids BlackboardEngine
+   * posted in this process. A timestamp-vs-process-start heuristic mislabels
+   * CONCURRENT sessions sharing the store (the coordination case the lane
+   * exists for), and agent_id is a role label, not an identity. Unset (e.g.
+   * dashboard-constructed assemblers) means nothing is ever marked.
+   */
+  private sessionPostIds: ReadonlySet<string> | null = null;
+
+  /** Wire the posting session's entry-id set (server.ts). */
+  setSessionPostIds(ids: ReadonlySet<string>): void {
+    this.sessionPostIds = ids;
+  }
+
   constructor(
     blackboardStore: IBlackboardStore,
     decisionStore: IDecisionStore,
@@ -406,6 +420,10 @@ export class ContextAssembler {
               detail: summaryOnlyWarnings.has(e.id) ? "" : e.detail,
               scope: e.scope,
               timestamp: e.timestamp,
+              // Same-session detection by posted-id membership (field D12).
+              ...(this.sessionPostIds?.has(e.id)
+                ? { self_authored: true }
+                : {}),
             });
             break;
           case "finding":
@@ -686,7 +704,8 @@ export class ContextAssembler {
     if (ctx.active_warnings.length > 0) {
       sections.push("\n### STOP — READ THESE WARNINGS");
       for (const w of ctx.active_warnings) {
-        sections.push(`- **${w.summary}**${w.detail ? `\n  ${w.detail}` : ""}`);
+        const selfMark = w.self_authored ? " [this session]" : "";
+        sections.push(`- **${w.summary}**${selfMark}${w.detail ? `\n  ${w.detail}` : ""}`);
       }
     }
 

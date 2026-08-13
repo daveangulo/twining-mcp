@@ -2,6 +2,34 @@
 
 All notable changes to Twining MCP are documented here.
 
+## [2.10.0] - 2026-08-13
+
+Wave B of the second field-defect wave (D11, D12 remainder) — the
+schema-additive half. Full disposition:
+`docs/field-responses/2026-08-12-wave2-response.md`.
+
+### Added
+- **`twining_amend` (full surface): append-only metadata repair (D11).** No
+  tool could edit a written record's `affected_files`/`affected_symbols` —
+  the two fields the drift check, staleness signal 2, all graph `decided_by`
+  edges, test-coverage derivation, and file-scoped retrieval key on — so a
+  record written empty (the D7 class; 17-18% of both measured stores) was
+  permanently invisible to eleven consumers, repairable only by a redundant
+  second record. `twining_amend` adds entries (never removes, never touches
+  semantic content), appends an in-record `amendments[]` provenance trail,
+  posts an audit finding, works on retired records, and keeps every backend
+  consistent: the file backend rewrites the index entry retrieval reads
+  from, the sqlite mirror re-exports so file-wins ingest propagates rather
+  than reverts, and graph edges are minted for newly added paths only
+  (relations never deduplicate).
+- **Self-authored warnings are marked in assemble's lane (D12).** In a long
+  session the warning lane fills with the caller's own posts — and
+  `agent_id` cannot distinguish them (it is a role label; "main" on most
+  entries). The server process is one-per-session, so entries newer than
+  process start are the caller's: they now carry `self_authored: true` and
+  render a `[this session]` suffix. Marked, never hidden or re-scored — a
+  session that lost context genuinely wants its own trail.
+
 ## [2.9.0] - 2026-08-13
 
 Wave A of the second field-defect wave (D9, D10, D12) — response-shape fixes

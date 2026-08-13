@@ -233,6 +233,17 @@ class ExportingDecisionStore implements IDecisionStore {
     const updated = await this.inner.get(id);
     if (updated) this.exporter.decision(updated);
   }
+
+  // Mirror invariant (field D11): without this delegation the amendment
+  // would live only in the db and the next file-wins ingest would REVERT it.
+  async amendMetadata(
+    id: string,
+    fields: Parameters<IDecisionStore["amendMetadata"]>[1],
+  ): Promise<void> {
+    await this.inner.amendMetadata(id, fields);
+    const updated = await this.inner.get(id);
+    if (updated) this.exporter.decision(updated);
+  }
 }
 
 class ExportingGraphStore implements IGraphStore {

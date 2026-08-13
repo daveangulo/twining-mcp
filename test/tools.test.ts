@@ -253,3 +253,51 @@ describe("twining_status tool", () => {
     expect(data.active_agents).toBe(0);
   });
 });
+
+describe("twining_amend (field D11)", () => {
+  it("amends an existing decision through the tool and reports what was added", async () => {
+    const created = JSON.parse(
+      (
+        (await callTool("twining_decide", {
+          domain: "architecture",
+          scope: "src/auth/",
+          summary: "Empty-list record",
+          context: "ctx",
+          rationale: "why",
+        })) as { content: Array<{ text: string }> }
+      ).content[0]!.text,
+    ) as { id: string };
+
+    const resp = JSON.parse(
+      (
+        (await callTool("twining_amend", {
+          decision_id: created.id,
+          add_affected_files: ["specs/target.md"],
+          reason: "backfill",
+        })) as { content: Array<{ text: string }> }
+      ).content[0]!.text,
+    ) as { id: string; added_files: string[] };
+
+    expect(resp.id).toBe(created.id);
+    expect(resp.added_files).toEqual(["specs/target.md"]);
+    const stored = await dcsnStore.get(created.id);
+    expect(stored!.affected_files).toEqual(["specs/target.md"]);
+    expect(stored!.amendments).toHaveLength(1);
+  });
+
+  it("is registered on the full surface only", async () => {
+    const { McpServer } = await import(
+      "@modelcontextprotocol/sdk/server/mcp.js"
+    );
+    const defaultServer = new McpServer({ name: "t", version: "1.0.0" });
+    registerDecisionTools(defaultServer, dcsnEngine, tmpDir, {
+      fullSurface: false,
+    });
+    const registered = (
+      defaultServer as unknown as {
+        _registeredTools: Record<string, unknown>;
+      }
+    )._registeredTools;
+    expect(registered["twining_amend"]).toBeUndefined();
+  });
+});

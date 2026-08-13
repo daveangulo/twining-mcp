@@ -130,6 +130,21 @@ export interface Decision {
   assembled_before?: boolean;
   /** Branch + commit at time of recording; used for staleness detection. */
   provenance?: Provenance;
+  /**
+   * Append-only metadata repair trail (field D11). Each entry records what
+   * twining_amend added and why; the record's semantic content (summary,
+   * rationale, context, alternatives) is never amendable.
+   */
+  amendments?: DecisionAmendment[];
+}
+
+/** One append-only metadata amendment on a decision (field D11). */
+export interface DecisionAmendment {
+  amended_at: string;
+  amended_by: string;
+  added_files: string[];
+  added_symbols: string[];
+  reason?: string;
 }
 
 /** Knowledge Graph Entity — spec section 3.3 */
@@ -212,10 +227,18 @@ export interface AssembledContext {
     BlackboardEntry,
     "id" | "summary" | "detail" | "scope" | "timestamp"
   >[];
-  active_warnings: Pick<
+  active_warnings: (Pick<
     BlackboardEntry,
     "id" | "summary" | "detail" | "scope" | "timestamp"
-  >[];
+  > & {
+    /**
+     * Posted by THIS server process, i.e. the calling session (field D12).
+     * agent_id cannot carry this — it is a role label ("main" on most
+     * entries), not a session identity. Marked, never hidden or re-scored:
+     * a session that lost context genuinely wants its own trail.
+     */
+    self_authored?: boolean;
+  })[];
   recent_questions: Pick<
     BlackboardEntry,
     "id" | "summary" | "scope" | "timestamp"

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T20:05:25.379Z",
+  "id": "01KZYBNG835Z1514K7FCYRVPHW",
+  "properties": {
+    "decision_summary": "Superseded the process-start-time self-post heuristic with posted-id membership (BlackboardEngine.sessionPostIds -> ContextAssembler.setSessionPostIds)"
+  },
+  "source": "01KJGX8KNRTGKE7PVC2GH1QSTE",
+  "target": "01KZYBNG7SKNFWKTB45DRQ3S9M",
+  "type": "decided_by"
+}

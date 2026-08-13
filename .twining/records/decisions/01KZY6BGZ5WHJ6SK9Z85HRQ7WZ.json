@@ -1,0 +1,44 @@
+{
+  "affected_files": [
+    "src/utils/types.ts",
+    "src/storage/interfaces.ts",
+    "src/storage/decision-store.ts",
+    "src/storage/sqlite/sqlite-stores.ts",
+    "src/storage/sync/record-export.ts",
+    "src/engine/graph-auto-populator.ts",
+    "src/engine/decisions.ts",
+    "src/engine/context-assembler.ts",
+    "src/tools/decision-tools.ts",
+    "docs/TWINING-REFERENCE.md",
+    "CHANGELOG.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "re-running onDecide",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Wave B implemented (TDD, unreleased): twining_amend across all storage layers + graph + tool, and self-post marking in assemble. 1592 tests green, build clean. Adversarial review workflow in flight; release follows its findings.",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01KZY6BGZ5WHJ6SK9Z85HRQ7WZ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "92292fc487279e8e8821c3e0e23f86d9d9a148f2",
+    "recorded_at": "2026-08-13T18:32:35.536Z"
+  },
+  "rationale": "relations are append-only and never deduplicated in either backend, so full-list re-population would duplicate every existing decided_by edge; the concept upsert guarantees the relation target exists for pre-graph decisions",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Chose GraphAutoPopulator.onAmend receiving ONLY newly-added paths over re-running onDecide",
+  "timestamp": "2026-08-13T18:32:35.557Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T20:05:25.623Z",
+  "id": "01KZYBNGFQK63H7WTM14HJ99MG",
+  "properties": {
+    "decision_summary": "Made the amend audit post non-fatal with an audit_posted:false response flag"
+  },
+  "source": "01KHXTXPP31RWYHVGNGXN9REW8",
+  "target": "01KZYBNGFH495KQP14TWB8C0AT",
+  "type": "decided_by"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-13T18:32:35.892Z",
+  "id": "01KZY6BH9MMPZBFZZA9XRKGVRH",
+  "name": "01KZY6BH6V8ZD6QYNQZR8VK7CQ",
+  "properties": {
+    "scope": "src/",
+    "summary": "Chose process-start-time for self-post detection with mark-don't-score rendering"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-13T18:32:35.892Z"
+}

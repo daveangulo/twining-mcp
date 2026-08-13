@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-13T20:05:25.617Z",
+  "id": "01KZYBNGFH495KQP14TWB8C0AT",
+  "name": "01KZYBNGCN23M5G3EGE4E6GWZX",
+  "properties": {
+    "scope": "src/",
+    "summary": "Made the amend audit post non-fatal with an audit_posted:false response flag"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-13T20:05:25.617Z"
+}

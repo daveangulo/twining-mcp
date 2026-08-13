@@ -112,6 +112,65 @@ export class GraphAutoPopulator {
   }
 
   /**
+   * Auto-populate from twining_amend (field D11). Receives ONLY the newly
+   * added files/symbols — relations are append-only and never deduplicated
+   * in either backend, so re-running the onDecide loops over the full lists
+   * would duplicate every existing decided_by edge. The concept upsert is
+   * idempotent and guarantees the relation target exists even for decisions
+   * recorded before graph population.
+   */
+  async onAmend(
+    input: {
+      added_files: string[];
+      added_symbols: string[];
+      scope: string;
+      summary: string;
+    },
+    decisionId: string,
+  ): Promise<void> {
+    try {
+      const decisionEntity = await this.graphEngine.addEntity({
+        name: decisionId,
+        type: "concept",
+        properties: { summary: input.summary, scope: input.scope },
+      });
+
+      // Relations addressed by entity ID, not name (review finding): name
+      // resolution throws AMBIGUOUS_ENTITY when types collide on a name,
+      // aborting the remaining edges of the amend; the ids in hand are exact.
+      for (const filePath of input.added_files) {
+        const entity = await this.graphEngine.addEntity({
+          name: filePath,
+          type: "file",
+          properties: { scope: input.scope },
+        });
+        await this.graphEngine.addRelation({
+          source: entity.id,
+          target: decisionEntity.id,
+          type: "decided_by",
+          properties: { decision_summary: input.summary },
+        });
+      }
+
+      for (const symbol of input.added_symbols) {
+        const entity = await this.graphEngine.addEntity({
+          name: symbol,
+          type: "function",
+          properties: { scope: input.scope },
+        });
+        await this.graphEngine.addRelation({
+          source: entity.id,
+          target: decisionEntity.id,
+          type: "decided_by",
+          properties: { decision_summary: input.summary },
+        });
+      }
+    } catch (error) {
+      console.error("[twining] GraphAutoPopulator.onAmend failed (non-fatal):", error);
+    }
+  }
+
+  /**
    * Auto-populate from twining_post.
    * Creates scope entities (file or module), relates_to relations,
    * affects relations for warnings and findings.

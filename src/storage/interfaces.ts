@@ -15,6 +15,7 @@ import type {
   BlackboardEntry,
   Decision,
   DecisionIndexEntry,
+  DecisionAmendment,
   DecisionStatus,
   Entity,
   HandoffIndexEntry,
@@ -74,6 +75,23 @@ export interface IDecisionStore {
   getIndex(): Promise<DecisionIndexEntry[]>;
   linkCommit(id: string, commitHash: string): Promise<void>;
   getByCommitHash(commitHash: string): Promise<Decision[]>;
+  /**
+   * Persist an append-only metadata amendment (field D11). Receives DELTAS
+   * and merges them against the freshly-read record INSIDE the backend's
+   * critical section — an engine-computed union would be a lost-update under
+   * concurrent amends (the withWriteTxn doc's exact hazard class). Must keep
+   * every index the backend maintains consistent: the file backend's index
+   * carries affected_files/affected_symbols that getByScope reads, so a
+   * record-only write would be a half-repair retrieval cannot see.
+   */
+  amendMetadata(
+    id: string,
+    delta: {
+      add_affected_files: string[];
+      add_affected_symbols: string[];
+      amendment: DecisionAmendment;
+    },
+  ): Promise<void>;
 }
 
 /** Knowledge-graph persistence (graph/entities.json + relations.json today). */

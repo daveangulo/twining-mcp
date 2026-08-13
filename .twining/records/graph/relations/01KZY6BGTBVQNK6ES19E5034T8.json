@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T18:32:35.403Z",
+  "id": "01KZY6BGTBVQNK6ES19E5034T8",
+  "properties": {
+    "decision_summary": "Chose add-only union semantics for twining_amend over replace"
+  },
+  "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+  "target": "01KZY6BGT9KM48SCBB9H2WMZAK",
+  "type": "decided_by"
+}

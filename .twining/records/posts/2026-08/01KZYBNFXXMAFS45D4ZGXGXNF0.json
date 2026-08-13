@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Wave B review round complete: fixed both majors (amend lost-update via in-lock delta merge; self-post marking rebuilt on posted-id membership after the timestamp heuristic mislabeled concurrent sessions) plus 5 minors. 1598 green. Shipping 2.10.0.\nDecisions: Chose delta-merge inside the store's critical section over engine-computed unions for amendMetadata — the review reproduced the lost-update live (concurrent amends erased one side's files AND provenance while its response claimed success); this is the exact hazard class withWriteTxn's own docs name, and the delta signature makes the stale-union bug inexpressible; Superseded the process-start-time self-post heuristic with posted-id membership (BlackboardEngine.sessionPostIds -> ContextAssembler.setSessionPostIds) — one-process-per-session was true but one-SESSION-per-store is false: a concurrent worktree session's warning posted after our start was marked [this session], discounting exactly the cross-session signal the lane exists to deliver; id membership is exact, clock-skew immune, and unset assemblers (dashboard) simply never mark; Chose to reject empty/whitespace amend entries with INVALID_INPUT rather than silently filtering — an empty string prefix-matches EVERY scope query via bidirectional startsWith and amend has no removal path to undo it; Made the amend audit post non-fatal with an audit_posted:false response flag — erroring after durable persistence would make a retry hit the idempotent no-op path, losing the audit entry forever while telling the caller the amend failed; matches the graph-population non-fatal treatment\nFindings: Second consecutive release where the adversarial review caught majors in reviewed code: the Wave B round found the amend lost-update (mutation-verified), the concurrent-session mislabel, name-vs-id relation addressing in onAmend, and empty-string amend poisoning — 21 agents, every finding verified, several by scratchpad mutation testing; onDecide still addresses its graph relations by entity NAME (same ambiguity class the review flagged for onAmend, fixed there) — pre-existing behavior left unchanged this release; worth a Wave C line item alongside relation dedup",
+  "entry_type": "status",
+  "id": "01KZYBNFXXMAFS45D4ZGXGXNF0",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "92292fc487279e8e8821c3e0e23f86d9d9a148f2",
+    "recorded_at": "2026-08-13T20:05:25.029Z"
+  },
+  "scope": "src/",
+  "summary": "Wave B review round complete: fixed both majors (amend lost-update via in-lock delta merge; self-post marking rebuilt on posted-id membership after the timestamp heuristic mislabeled concurrent ses…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-13T20:05:25.053Z"
+}

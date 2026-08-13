@@ -160,6 +160,9 @@ export function createServer(projectRoot: string): ServerContext {
     handoffStore,   // for recent handoffs in assembly
     agentStore,     // for agent suggestions in assembly
   );
+  // Self-authorship marking in the warning lane (field D12): the assembler
+  // marks entries this session posted, by exact id membership.
+  contextAssembler.setSessionPostIds(blackboardEngine.sessionPostIds);
 
   // Wire assembly-before-decision tracking
   decisionEngine.setAssemblyChecker((agentId) =>

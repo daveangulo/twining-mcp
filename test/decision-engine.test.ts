@@ -1558,3 +1558,289 @@ describe("DecisionEngine.searchDecisions — semantic path (review findings)", (
     expect(result.total_matched).toBe(1);
   });
 });
+
+describe("DecisionEngine.amend — append-only metadata repair (field D11)", () => {
+  it("adds affected_files/affected_symbols, records provenance, and makes the decision retrievable by file", async () => {
+    const d = await decisionEngine.decide(
+      validDecisionInput({ summary: "Empty-list record from the D7 era" }),
+    );
+
+    const result = await decisionEngine.amend({
+      id: d.id,
+      add_affected_files: ["specs/governed.md"],
+      add_affected_symbols: ["Kernel.emit"],
+      reason: "backfill after D7",
+      agent_id: "repair-agent",
+    });
+    expect(result.added_files).toEqual(["specs/governed.md"]);
+    expect(result.added_symbols).toEqual(["Kernel.emit"]);
+
+    const stored = await decisionStore.get(d.id);
+    expect(stored!.affected_files).toEqual(["specs/governed.md"]);
+    expect(stored!.affected_symbols).toEqual(["Kernel.emit"]);
+    expect(stored!.amendments).toHaveLength(1);
+    expect(stored!.amendments![0]).toMatchObject({
+      amended_by: "repair-agent",
+      added_files: ["specs/governed.md"],
+      added_symbols: ["Kernel.emit"],
+      reason: "backfill after D7",
+    });
+    expect(stored!.amendments![0]!.amended_at).toBeTruthy();
+
+    // Invariant 1: file-backend retrieval reads affected_files from the
+    // INDEX — the amend must reach it, or the repair is invisible.
+    const byFile = await decisionStore.getByScope("specs/governed.md");
+    expect(byFile.map((x) => x.id)).toContain(d.id);
+    const indexEntry = (await decisionStore.getIndex()).find(
+      (e) => e.id === d.id,
+    )!;
+    expect(indexEntry.affected_files).toEqual(["specs/governed.md"]);
+  });
+
+  it("is add-only and idempotent: existing entries are never removed or duplicated", async () => {
+    const d = await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Already has one file",
+        affected_files: ["src/auth/jwt.ts"],
+      }),
+    );
+
+    const result = await decisionEngine.amend({
+      id: d.id,
+      add_affected_files: ["src/auth/jwt.ts", "src/auth/middleware.ts"],
+    });
+    expect(result.added_files).toEqual(["src/auth/middleware.ts"]);
+    expect(result.already_present).toEqual(["src/auth/jwt.ts"]);
+
+    const again = await decisionEngine.amend({
+      id: d.id,
+      add_affected_files: ["src/auth/middleware.ts"],
+    });
+    expect(again.added_files).toEqual([]);
+
+    const stored = await decisionStore.get(d.id);
+    expect(stored!.affected_files).toEqual([
+      "src/auth/jwt.ts",
+      "src/auth/middleware.ts",
+    ]);
+    // A no-op amend appends no provenance entry.
+    expect(stored!.amendments).toHaveLength(1);
+  });
+
+  it("amends retired records without touching their status", async () => {
+    const d = await decisionEngine.decide(
+      validDecisionInput({ summary: "Superseded but factual" }),
+    );
+    await decisionEngine.decide(
+      validDecisionInput({ summary: "Replacement", supersedes: d.id }),
+    );
+
+    await decisionEngine.amend({
+      id: d.id,
+      add_affected_files: ["specs/old-target.md"],
+    });
+    const stored = await decisionStore.get(d.id);
+    expect(stored!.status).toBe("superseded");
+    expect(stored!.superseded_by).toBeTruthy();
+    expect(stored!.affected_files).toEqual(["specs/old-target.md"]);
+  });
+
+  it("adds graph edges for newly added paths only — existing files gain no duplicate decided_by", async () => {
+    const { GraphStore } = await import("../src/storage/graph-store.js");
+    const { GraphEngine } = await import("../src/engine/graph.js");
+    const { GraphAutoPopulator } = await import(
+      "../src/engine/graph-auto-populator.js"
+    );
+    fs.mkdirSync(path.join(tmpDir, "graph"), { recursive: true });
+    const graphStore = new GraphStore(tmpDir);
+    const graphEngine = new GraphEngine(graphStore);
+    const engine = new DecisionEngine(
+      decisionStore,
+      blackboardEngine,
+      null,
+      null,
+      null,
+      null,
+      new GraphAutoPopulator(graphEngine),
+    );
+
+    const d = await engine.decide(
+      validDecisionInput({
+        summary: "Has one declared file",
+        affected_files: ["src/auth/a.ts"],
+      }),
+    );
+    await engine.amend({
+      id: d.id,
+      add_affected_files: ["src/auth/a.ts", "specs/b.md"],
+    });
+
+    // Relations store entity ULIDs, not names — resolve through the entity list.
+    const entities = await graphStore.getEntities();
+    const idToName = new Map(entities.map((e) => [e.id, e.name]));
+    const conceptId = entities.find((e) => e.name === d.id)!.id;
+    const relations = await graphStore.getRelations();
+    const decidedBy = relations.filter(
+      (r) => r.type === "decided_by" && r.target === conceptId,
+    );
+    const bySource = decidedBy.reduce<Record<string, number>>((acc, r) => {
+      const name = idToName.get(r.source)!;
+      acc[name] = (acc[name] ?? 0) + 1;
+      return acc;
+    }, {});
+    expect(bySource["src/auth/a.ts"]).toBe(1);
+    expect(bySource["specs/b.md"]).toBe(1);
+  });
+
+  it("posts an audit-trail finding to the blackboard", async () => {
+    const d = await decisionEngine.decide(
+      validDecisionInput({ summary: "Audited amend" }),
+    );
+    await decisionEngine.amend({
+      id: d.id,
+      add_affected_files: ["specs/a.md"],
+      reason: "traceability",
+    });
+    const { entries } = await blackboardEngine.read({
+      entry_types: ["finding"],
+    });
+    const audit = entries.find((e) => e.summary.includes(d.id));
+    expect(audit).toBeDefined();
+    expect(audit!.detail).toContain("specs/a.md");
+    expect(audit!.detail).toContain("traceability");
+  });
+
+  it("concurrent amends both survive: merge happens inside the store's critical section", async () => {
+    const d = await decisionEngine.decide(
+      validDecisionInput({ summary: "Raced record" }),
+    );
+    await Promise.all([
+      decisionEngine.amend({ id: d.id, add_affected_files: ["a.ts"] }),
+      decisionEngine.amend({ id: d.id, add_affected_files: ["b.ts"] }),
+    ]);
+    const stored = await decisionStore.get(d.id);
+    expect([...stored!.affected_files].sort()).toEqual(["a.ts", "b.ts"]);
+    expect(stored!.amendments).toHaveLength(2);
+  });
+
+  it("amends symbols only, idempotently, and executes the graph symbol path", async () => {
+    const { GraphStore } = await import("../src/storage/graph-store.js");
+    const { GraphEngine } = await import("../src/engine/graph.js");
+    const { GraphAutoPopulator } = await import(
+      "../src/engine/graph-auto-populator.js"
+    );
+    fs.mkdirSync(path.join(tmpDir, "graph"), { recursive: true });
+    const graphStore = new GraphStore(tmpDir);
+    const engine = new DecisionEngine(
+      decisionStore,
+      blackboardEngine,
+      null,
+      null,
+      null,
+      null,
+      new GraphAutoPopulator(new GraphEngine(graphStore)),
+    );
+    const d = await engine.decide(
+      validDecisionInput({ summary: "Symbols-only amend" }),
+    );
+
+    const first = await engine.amend({
+      id: d.id,
+      add_affected_symbols: ["Kernel.emit", "Kernel.emit"],
+    });
+    expect(first.added_symbols).toEqual(["Kernel.emit"]);
+    const again = await engine.amend({
+      id: d.id,
+      add_affected_symbols: ["Kernel.emit"],
+    });
+    expect(again.added_symbols).toEqual([]);
+    expect(again.already_present).toEqual(["Kernel.emit"]);
+
+    const stored = await decisionStore.get(d.id);
+    expect(stored!.affected_symbols).toEqual(["Kernel.emit"]);
+    expect(stored!.amendments).toHaveLength(1);
+
+    const entities = await graphStore.getEntities();
+    const symbolEntity = entities.find((e) => e.name === "Kernel.emit")!;
+    expect(symbolEntity.type).toBe("function");
+    const conceptId = entities.find((e) => e.name === d.id)!.id;
+    const relations = await graphStore.getRelations();
+    const edges = relations.filter(
+      (r) =>
+        r.type === "decided_by" &&
+        r.source === symbolEntity.id &&
+        r.target === conceptId,
+    );
+    expect(edges).toHaveLength(1);
+  });
+
+  it("amend leaves every untouched field intact", async () => {
+    const d = await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Field isolation",
+        alternatives: [{ option: "Alt", reason_rejected: "No" }],
+      }),
+    );
+    const before = await decisionStore.get(d.id);
+    await decisionEngine.amend({ id: d.id, add_affected_files: ["x.md"] });
+    const after = await decisionStore.get(d.id);
+    expect(after!.summary).toBe(before!.summary);
+    expect(after!.rationale).toBe(before!.rationale);
+    expect(after!.alternatives).toEqual(before!.alternatives);
+    expect(after!.status).toBe(before!.status);
+    expect(after!.timestamp).toBe(before!.timestamp);
+  });
+
+  it("rejects empty and whitespace-only path entries — they would match every scope query", async () => {
+    const d = await decisionEngine.decide(validDecisionInput());
+    await expect(
+      decisionEngine.amend({ id: d.id, add_affected_files: [""] }),
+    ).rejects.toThrow(TwiningError);
+    await expect(
+      decisionEngine.amend({ id: d.id, add_affected_symbols: ["  "] }),
+    ).rejects.toThrow(TwiningError);
+  });
+
+  it("already_present is deduplicated even when the input repeats entries", async () => {
+    const d = await decisionEngine.decide(
+      validDecisionInput({ affected_files: ["a.ts"] }),
+    );
+    const result = await decisionEngine.amend({
+      id: d.id,
+      add_affected_files: ["a.ts", "a.ts", "b.ts"],
+    });
+    expect(result.already_present).toEqual(["a.ts"]);
+    expect(result.added_files).toEqual(["b.ts"]);
+  });
+
+  it("a failing audit post never un-persists the amendment; the response flags it", async () => {
+    const { vi } = await import("vitest");
+    const d = await decisionEngine.decide(validDecisionInput());
+    const postSpy = vi
+      .spyOn(blackboardEngine, "post")
+      .mockRejectedValueOnce(new Error("lock contention"));
+    const result = await decisionEngine.amend({
+      id: d.id,
+      add_affected_files: ["persisted.md"],
+    });
+    expect(result.added_files).toEqual(["persisted.md"]);
+    expect(result.audit_posted).toBe(false);
+    const stored = await decisionStore.get(d.id);
+    expect(stored!.affected_files).toEqual(["persisted.md"]);
+    postSpy.mockRestore();
+  });
+
+  it("rejects unknown ids and empty amendments", async () => {
+    await expect(
+      decisionEngine.amend({
+        id: "01GHOST00000000000000000000",
+        add_affected_files: ["x.md"],
+      }),
+    ).rejects.toThrow(TwiningError);
+
+    const d = await decisionEngine.decide(validDecisionInput());
+    await expect(decisionEngine.amend({ id: d.id })).rejects.toThrow(
+      TwiningError,
+    );
+  });
+});

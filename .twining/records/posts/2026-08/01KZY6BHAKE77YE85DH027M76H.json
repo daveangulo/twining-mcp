@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Graph relations store entity ULIDs, not names — a test asserting relation.target === decisionId silently matches nothing; resolve through the entity list (cost one investigation cycle in this session's graph-edge test)",
+  "entry_type": "finding",
+  "id": "01KZY6BHAKE77YE85DH027M76H",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "92292fc487279e8e8821c3e0e23f86d9d9a148f2",
+    "recorded_at": "2026-08-13T18:32:35.903Z"
+  },
+  "scope": "src/",
+  "summary": "Graph relations store entity ULIDs, not names — a test asserting relation.target === decisionId silently matches nothing; resolve through the entity list (cost one investigation cycle in this sessi…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-08-13T18:32:35.923Z"
+}

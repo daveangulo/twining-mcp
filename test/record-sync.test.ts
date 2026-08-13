@@ -179,6 +179,32 @@ describe.skipIf(!HAS_SQLITE)("record export tree", () => {
     ).toBe(false);
   });
 
+  it("amendMetadata rewrites the decision mirror (field D11 invariant 2)", async () => {
+    fs.mkdirSync(path.join(dirA, ".twining"), { recursive: true });
+    const stores = createStores(path.join(dirA, ".twining"), sqliteConfig());
+    const { decision } = await seed(stores);
+
+    await stores.decisionStore.amendMetadata(decision.id, {
+      add_affected_files: ["specs/amended.md"],
+      add_affected_symbols: [],
+      amendment: {
+        amended_at: new Date().toISOString(),
+        amended_by: "repair",
+        added_files: ["specs/amended.md"],
+        added_symbols: [],
+      },
+    });
+
+    const mirrored = JSON.parse(
+      fs.readFileSync(
+        path.join(dirA, ".twining", "records", "decisions", `${decision.id}.json`),
+        "utf-8",
+      ),
+    );
+    expect(mirrored.affected_files).toContain("specs/amended.md");
+    expect(mirrored.amendments).toHaveLength(1);
+  });
+
   it("export_records: false disables the tree", async () => {
     const cfg = sqliteConfig();
     cfg.storage!.export_records = false;
