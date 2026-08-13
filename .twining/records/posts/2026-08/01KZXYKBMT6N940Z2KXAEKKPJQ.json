@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: send the wave-2 response doc (docs/field-responses/2026-08-12-wave2-response.md) to the field repo — with 2.8.0 (D7) and 2.9.0 (Wave A) both shipped, their CLAUDE.md workarounds for D9 (absence sentence) and the carrier rule are retirable once their machines upgrade",
+  "entry_type": "need",
+  "id": "01KZXYKBMT6N940Z2KXAEKKPJQ",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "6c7f3d698d5a2ac7008ecbc039568b7c48b779e2",
+    "recorded_at": "2026-08-13T16:17:03.622Z"
+  },
+  "scope": "src/",
+  "summary": "send the wave-2 response doc (docs/field-responses/2026-08-12-wave2-response.md) to the field repo — with 2.8.0 (D7) and 2.9.0 (Wave A) both shipped, their CLAUDE.md workarounds for D9 (absence sen…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-08-13T16:17:03.642Z"
+}
