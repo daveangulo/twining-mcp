@@ -32975,6 +32975,10 @@ function buildFromStructured(item, sessionSummary) {
   if (item.assumptions !== void 0) result.assumptions = item.assumptions;
   if (item.constraints !== void 0) result.constraints = item.constraints;
   if (item.status !== void 0) result.status = item.status;
+  if (item.affected_files !== void 0)
+    result.affected_files = item.affected_files;
+  if (item.affected_symbols !== void 0)
+    result.affected_symbols = item.affected_symbols;
   return result;
 }
 function parseFinding(text) {
@@ -33024,6 +33028,12 @@ function registerRecordTools(server, blackboardEngine, decisionEngine, projectRo
               ),
               constraints: external_exports.array(external_exports.string()).optional().describe(
                 "What limited the options (overrides the session-level constraints for this decision)"
+              ),
+              affected_files: external_exports.array(external_exports.string()).optional().describe(
+                "File paths THIS decision governs (overrides the session-level affected_files for this decision; falls back to it when omitted). Enables scope-based retrieval via twining_why and the drift check."
+              ),
+              affected_symbols: external_exports.array(external_exports.string()).optional().describe(
+                "Function/class/method names THIS decision governs (overrides the session-level affected_symbols for this decision; falls back to it when omitted)"
               ),
               confidence: external_exports.enum(["high", "medium", "low"]).optional().describe('Confidence level (default: "medium")'),
               status: external_exports.enum(["active", "provisional"]).optional().describe(
@@ -33126,8 +33136,8 @@ function registerRecordTools(server, blackboardEngine, decisionEngine, projectRo
                 depends_on: args.depends_on,
                 supersedes: args.supersedes,
                 reversible: args.reversible,
-                affected_files: args.affected_files ?? [],
-                affected_symbols: args.affected_symbols ?? [],
+                affected_files: input.affected_files ?? args.affected_files ?? [],
+                affected_symbols: input.affected_symbols ?? args.affected_symbols ?? [],
                 commit_hash: args.commit_hash,
                 agent_id: agentId
               });
