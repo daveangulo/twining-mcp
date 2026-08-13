@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T15:26:53.326Z",
+  "id": "01KZXVQFWE5EG70RQYQECQQDK7",
+  "properties": {
+    "decision_summary": "Chose to stamp continue-work item ages without adding an age cutoff"
+  },
+  "source": "01KYWX78E4EMD5AF81MXE75DBK",
+  "target": "01KZXVQFWD21Y896JRR9MYHFP7",
+  "type": "decided_by"
+}

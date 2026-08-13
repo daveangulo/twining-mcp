@@ -22,7 +22,7 @@ import type {
 } from "../utils/types.js";
 import type { Embedder } from "../embeddings/embedder.js";
 import { decisionEmbedText, embedContentHash } from "../embeddings/embed-text.js";
-import type { SearchEngine } from "../embeddings/search.js";
+import { SEARCH_NOISE_FLOOR, type SearchEngine } from "../embeddings/search.js";
 import { GraphAutoPopulator } from "./graph-auto-populator.js";
 import type { IDecisionStore, IIndexManager } from "../storage/interfaces.js";
 
@@ -80,6 +80,19 @@ export interface WhyResult {
   truncated: boolean;
   total_in_scope: number;
   superseded_count: number;
+  /**
+   * Compact identity of the superseded/overridden records the default filter
+   * hid, each pointing at its successor (field D10). A bare count read as
+   * "returns nothing" in the field when a multi-part record was wholly
+   * retired; the ids make the exclusion recoverable (include_superseded, or
+   * follow superseded_by). Absent when include_superseded is set or nothing
+   * was hidden. Capped at 20.
+   */
+  superseded_excluded?: Array<{
+    id: string;
+    summary: string;
+    superseded_by?: string;
+  }>;
   /**
    * Archived decisions hidden from this result (D3). Present so a blinded
    * gate reads "0 decisions (N archived in scope)" instead of "no decisions
@@ -260,6 +273,8 @@ export class DecisionEngine {
     timestamp: string;
     conflicts?: { id: string; summary: string }[];
     dropped_depends_on?: string[];
+    /** Set when the supersedes target does not exist — it was NOT retired (field D10). */
+    supersedes_dangling?: string;
   }> {
     // Validate required fields
     if (!input.domain) {
@@ -383,11 +398,20 @@ export class DecisionEngine {
     // Retire the superseded decision and write the superseded_by back-link so
     // the retired record points at its replacement (#31). Done after create so
     // the replacement id exists; if create throws, the old decision is
-    // untouched. Silently no-ops on a dangling target (store semantics).
+    // untouched. A dangling target no longer passes silently (field D10): a
+    // typo'd id was indistinguishable from a completed supersession, which
+    // reads as a discharged obligation in stores with a supersession-hygiene
+    // rule. Still no throw — the new decision itself is valid.
+    let supersededDangling: string | undefined;
     if (input.supersedes) {
-      await this.decisionStore.updateStatus(input.supersedes, "superseded", {
-        superseded_by: decision.id,
-      });
+      const target = await this.decisionStore.get(input.supersedes);
+      if (target) {
+        await this.decisionStore.updateStatus(input.supersedes, "superseded", {
+          superseded_by: decision.id,
+        });
+      } else {
+        supersededDangling = input.supersedes;
+      }
     }
 
     // If conflicts exist, post an informational finding (not a warning — warnings get
@@ -458,6 +482,7 @@ export class DecisionEngine {
       timestamp: string;
       conflicts?: { id: string; summary: string }[];
       dropped_depends_on?: string[];
+      supersedes_dangling?: string;
     } = { id: decision.id, timestamp: decision.timestamp };
 
     if (conflicts.length > 0) {
@@ -469,6 +494,10 @@ export class DecisionEngine {
 
     if (droppedDependsOn.length > 0) {
       result.dropped_depends_on = droppedDependsOn;
+    }
+
+    if (supersededDangling) {
+      result.supersedes_dangling = supersededDangling;
     }
 
     return result;
@@ -491,15 +520,29 @@ export class DecisionEngine {
     const budget = options?.max_tokens ?? DEFAULT_WHY_MAX_TOKENS;
     const all = await this.decisionStore.getByScope(scope);
 
-    // Counts every retired status, not just "superseded" — an overridden or
-    // archived decision is equally non-authoritative, and previously both fell
-    // through the filter into the full-detail tier.
-    const superseded_count = all.filter((d) =>
-      WHY_RETIRED_STATUSES.has(d.status),
+    // Counts superseded + overridden. Archived are counted ONLY by
+    // archived_excluded_count — the old widen-everything semantics double-
+    // counted them across both fields (field D10; supersedes the original
+    // widening choice). The FILTER below still hides all three retired
+    // statuses — only the count partition changed.
+    const superseded_count = all.filter(
+      (d) => d.status === "superseded" || d.status === "overridden",
     ).length;
     const matches = options?.include_superseded
       ? all
       : all.filter((d) => !WHY_RETIRED_STATUSES.has(d.status));
+    // Compact identity of the hidden superseded/overridden records with their
+    // successors (field D10) — a bare count reads as silence at the gate.
+    const superseded_excluded = options?.include_superseded
+      ? []
+      : all
+          .filter((d) => d.status === "superseded" || d.status === "overridden")
+          .slice(0, 20)
+          .map((d) => ({
+            id: d.id,
+            summary: d.summary,
+            ...(d.superseded_by ? { superseded_by: d.superseded_by } : {}),
+          }));
 
     const ranked = [...matches].sort(
       (a, b) =>
@@ -558,6 +601,7 @@ export class DecisionEngine {
       truncated: more.length > 0,
       total_in_scope: matches.length,
       superseded_count,
+      ...(superseded_excluded.length > 0 ? { superseded_excluded } : {}),
       ...(archived_excluded_count > 0 ? { archived_excluded_count } : {}),
       active_count,
       provisional_count,
@@ -968,14 +1012,24 @@ export class DecisionEngine {
       relevance: number;
       commit_hashes: string[];
     }>;
+    /**
+     * Pre-slice match count — never capped by limit (field D9). Semantic
+     * mode counts raw cosine >= the ~0.3 noise floor; keyword mode counts
+     * every literal term hit. Membership is always tested on RAW scores,
+     * before the retired-status de-boost, so a superseded decision counts
+     * exactly like an active one. The results page may include sub-floor
+     * rows for ranking context.
+     */
     total_matched: number;
+    /** Page size actually delivered: results.length. */
+    returned: number;
     fallback_mode: boolean;
   }> {
     const maxResults = limit ?? 20;
 
     try {
       if (!query || query.trim().length === 0) {
-        return { results: [], total_matched: 0, fallback_mode: true };
+        return { results: [], total_matched: 0, returned: 0, fallback_mode: true };
       }
 
       // Load index and apply filters before loading full decision files
@@ -999,7 +1053,7 @@ export class DecisionEngine {
       }
 
       if (filtered.length === 0) {
-        return { results: [], total_matched: 0, fallback_mode: true };
+        return { results: [], total_matched: 0, returned: 0, fallback_mode: true };
       }
 
       // Load full Decision objects for filtered entries
@@ -1028,7 +1082,8 @@ export class DecisionEngine {
             relevance: r.relevance,
             commit_hashes: r.decision.commit_hashes ?? [],
           })),
-          total_matched: searchResults.results.length,
+          total_matched: searchResults.total_matched,
+          returned: searchResults.results.length,
           fallback_mode: searchResults.fallback_mode,
         };
       }
@@ -1040,7 +1095,7 @@ export class DecisionEngine {
         .filter((t) => t.length > 0);
 
       if (queryTerms.length === 0) {
-        return { results: [], total_matched: 0, fallback_mode: true };
+        return { results: [], total_matched: 0, returned: 0, fallback_mode: true };
       }
 
       const scored: Array<{
@@ -1068,7 +1123,10 @@ export class DecisionEngine {
 
         const normalizedScore = score / queryTerms.length;
         if (normalizedScore > 0) {
-          scored.push({ decision, relevance: normalizedScore });
+          // Same retired-status de-boost as SearchEngine (field D9): a
+          // superseded original must not outrank its own amendment.
+          const weight = WHY_RETIRED_STATUSES.has(decision.status) ? 0.75 : 1;
+          scored.push({ decision, relevance: normalizedScore * weight });
         }
       }
 
@@ -1087,7 +1145,11 @@ export class DecisionEngine {
           relevance: r.relevance,
           commit_hashes: r.decision.commit_hashes ?? [],
         })),
-        total_matched: topResults.length,
+        // Keyword mode: every literal term hit is a match (TF scores are a
+        // different scale than the cosine noise floor); the de-boost above is
+        // ordering-only and never affects membership.
+        total_matched: scored.length,
+        returned: topResults.length,
         fallback_mode: true,
       };
     } catch (error) {
@@ -1095,7 +1157,7 @@ export class DecisionEngine {
         "[twining] searchDecisions failed (non-fatal):",
         error,
       );
-      return { results: [], total_matched: 0, fallback_mode: true };
+      return { results: [], total_matched: 0, returned: 0, fallback_mode: true };
     }
   }
 }

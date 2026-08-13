@@ -1,0 +1,51 @@
+{
+  "affected_files": [
+    "src/embeddings/search.ts",
+    "src/engine/decisions.ts",
+    "src/engine/context-assembler.ts",
+    "src/engine/blackboard.ts",
+    "src/engine/coordination.ts",
+    "src/storage/handoff-store.ts",
+    "src/storage/sqlite/sqlite-stores.ts",
+    "src/tools/decision-tools.ts",
+    "src/tools/record-tools.ts",
+    "src/tools/context-tools.ts",
+    "src/utils/types.ts",
+    "docs/TWINING-REFERENCE.md",
+    "CHANGELOG.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "guess-or-error for twining_record supersedes ambiguity",
+      "pros": []
+    },
+    {
+      "cons": [],
+      "option": "flipping the target N times (data damage), guessing the first decision (silent wrong mapping), or hard-erroring (would block Gate 2 records at commit time)",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Implemented Wave A (D9/D10/D12) via TDD + adversarial review workflow: honest total_matched, retired de-boost, superseded visibility at both gates, supersedes guards, handoff aging, lane dampening. 1580 tests green, build clean.",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KZXVQFNDWXGBYTRE36AWBAPP",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "320845cdc7cd25403cc9f5e0e17c012b85695ef8",
+    "recorded_at": "2026-08-13T15:26:53.081Z"
+  },
+  "rationale": "with multiple decisions (or none surviving) the supersession is skipped with supersedes_skipped:true and an explanatory message rather than flipping the target N times (data damage), guessing the first decision (silent wrong mapping), or hard-erroring (would block Gate 2 records at commit time)",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Chose skip-loudly over guess-or-error for twining_record supersedes ambiguity",
+  "timestamp": "2026-08-13T15:26:53.101Z"
+}

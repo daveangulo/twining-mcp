@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Implemented Wave A (D9/D10/D12) via TDD + adversarial review workflow: honest total_matched, retired de-boost, superseded visibility at both gates, supersedes guards, handoff aging, lane dampening. 1580 tests green, build clean.\nDecisions: Chose match-membership on RAW scores with the 0.75 retired de-boost applied to ordering only (and never to negative cosines) — the review's adversarial round proved counting weighted relevance against the raw-calibrated 0.3 floor deflated total_matched for exactly the retired decisions D9 wants discoverable, and that TF keyword scores are a different scale where any literal hit is a match; semantic mode floors raw cosine at 0.3, keyword mode counts score>0; Chose skip-loudly over guess-or-error for twining_record supersedes ambiguity — with multiple decisions (or none surviving) the supersession is skipped with supersedes_skipped:true and an explanatory message rather than flipping the target N times (data damage), guessing the first decision (silent wrong mapping), or hard-erroring (would block Gate 2 records at commit time); Chose to stamp continue-work item ages without adding an age cutoff — the field's top-line constraint was do-not-make-assemble-quieter and the lane is already capped at 5; a cutoff could hide a live-but-old handoff, so visibility over suppression; deviates from the disposition doc's stamps/cutoff phrasing deliberately; Chose a shared SEARCH_NOISE_FLOOR constant consumed by both search total_matched counting and assemble's semantic-admission floor — one definition of noise everywhere; admission and counting apply it differently by design (admission floors keyword scores too, counting does not, because dragging a 1-of-6-term match into a briefing is dilution while counting it as a match is honest); Chose age stamps only for handoffs >=1 day old — same-day handoffs render exactly as before, so no existing briefing or test output changes for fresh handoffs\nFindings: The pre-release adversarial review workflow earned its cost: it caught the sqlite backend's duplicate scopeless-handoff match (the file-backend fix alone would have shipped broken for every DEFAULT-backend store), the record-tools drop of supersedes_dangling (the default surface is the only path most installs have), the de-boost deflating total_matched membership, the TF-vs-cosine scale mismatch, and the negative-cosine ranking inversion — two of those were bugs in my fixes to its own earlier findings; review-of-fixes is not optional on this codebase; warning: overlapping a vitest run with a many-agent workflow reproduces the documented lock/timeout artifact — three tests failed at ~368s timeouts during contention and passed clean immediately after; never diagnose test failures taken during a concurrent workflow; Review minors accepted without fix: project-scoped handoffs do not cascade into narrow-scope assembles (pre-existing scopeMatches semantics, now inherited by legacy scopeless records — intended direction of the D12 fix); the 0.3 floor vs measured 0.26-0.28 noise band leaves a thin margin — calibration can be revisited with field data",
+  "entry_type": "status",
+  "id": "01KZXVQFEWEGGQXX1VBT8TD4CB",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "320845cdc7cd25403cc9f5e0e17c012b85695ef8",
+    "recorded_at": "2026-08-13T15:26:52.864Z"
+  },
+  "scope": "src/",
+  "summary": "Implemented Wave A (D9/D10/D12) via TDD + adversarial review workflow: honest total_matched, retired de-boost, superseded visibility at both gates, supersedes guards, handoff aging, lane dampening.…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-13T15:26:52.892Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T15:26:53.076Z",
+  "id": "01KZXVQFMMM7A3VK6J7GPKDK3K",
+  "properties": {
+    "decision_summary": "Chose match-membership on RAW scores with the 0.75 retired de-boost applied to ordering only (and never to negative cosines)"
+  },
+  "source": "01KHMSDMRQ5HSX2W6SBDT3RND2",
+  "target": "01KZXVQFMA64WWDZJ4G3SN169T",
+  "type": "decided_by"
+}

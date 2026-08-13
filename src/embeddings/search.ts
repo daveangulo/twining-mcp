@@ -20,8 +20,32 @@ export interface DecisionSearchResult {
 
 export interface SearchResults<T> {
   results: T[];
+  /**
+   * Pre-slice match count — never capped by limit (field D9). Membership is
+   * tested on RAW scores, before any status de-boost: semantic mode counts
+   * raw cosine >= SEARCH_NOISE_FLOOR (every embedded item gets a score, so
+   * an unfloored count would equal the corpus size; noise sits ~0.26-0.28);
+   * keyword mode counts every literal term hit (score > 0 — TF scores are a
+   * different scale and a literal hit is never noise). The results page
+   * itself is NOT floored — it stays a ranked page.
+   */
+  total_matched: number;
   fallback_mode: boolean;
 }
+
+/**
+ * Relevance below this is indistinguishable from noise (measured ~0.26-0.28
+ * cosine for nonsense queries on MiniLM). Used for total_matched counting
+ * here and for assemble's semantic-admission floor.
+ */
+export const SEARCH_NOISE_FLOOR = 0.3;
+
+// Retired decisions stay searchable (their status is in the result row) but a
+// superseded original must not outrank its own amendment on raw similarity —
+// originals state the thing more plainly than corrections do, so without this
+// the top hit is biased toward the stale answer (field D9).
+const RETIRED_STATUS_DEBOOST = 0.75;
+const RETIRED_STATUSES = new Set(["superseded", "overridden", "archived"]);
 
 export class SearchEngine {
   private readonly embedder: Embedder;
@@ -49,7 +73,11 @@ export class SearchEngine {
     }
 
     if (filtered.length === 0) {
-      return { results: [], fallback_mode: this.embedder.isFallbackMode() };
+      return {
+        results: [],
+        total_matched: 0,
+        fallback_mode: this.embedder.isFallbackMode(),
+      };
     }
 
     // Try semantic search first
@@ -62,10 +90,12 @@ export class SearchEngine {
         );
 
         const scored: BlackboardSearchResult[] = [];
+        let matched = 0;
         for (const entry of filtered) {
           const entryVector = vectorMap.get(entry.id);
           if (entryVector) {
             const relevance = cosineSimilarity(queryVector, entryVector);
+            if (relevance >= SEARCH_NOISE_FLOOR) matched++;
             scored.push({ entry, relevance });
           } else {
             // Entry has no embedding — use keyword as individual fallback
@@ -77,6 +107,7 @@ export class SearchEngine {
             );
             const score = kwResults[0]?.score ?? 0;
             if (score > 0) {
+              matched++; // A literal term hit is a match regardless of scale.
               scored.push({ entry, relevance: score * 0.5 }); // Discount keyword scores
             }
           }
@@ -85,17 +116,19 @@ export class SearchEngine {
         scored.sort((a, b) => b.relevance - a.relevance);
         return {
           results: scored.slice(0, limit),
+          total_matched: matched,
           fallback_mode: false,
         };
       }
     }
 
-    // Keyword fallback
+    // Keyword fallback — pass the full population so total_matched is a real
+    // count, not page occupancy; slice to limit only at the end.
     const items = filtered.map((e) => ({
       id: e.id,
       text: blackboardEmbedText(e),
     }));
-    const kwResults = keywordSearch(query, items, limit);
+    const kwResults = keywordSearch(query, items, filtered.length);
     const idToScore = new Map(kwResults.map((r) => [r.id, r.score]));
 
     const results: BlackboardSearchResult[] = [];
@@ -109,6 +142,7 @@ export class SearchEngine {
 
     return {
       results: results.slice(0, limit),
+      total_matched: results.length,
       fallback_mode: true,
     };
   }
@@ -122,8 +156,20 @@ export class SearchEngine {
     const limit = options?.limit ?? 10;
 
     if (decisions.length === 0) {
-      return { results: [], fallback_mode: this.embedder.isFallbackMode() };
+      return {
+        results: [],
+        total_matched: 0,
+        fallback_mode: this.embedder.isFallbackMode(),
+      };
     }
+
+    // Ordering-only de-boost: membership (total_matched) always tests RAW
+    // scores. Applied only to positive relevance — multiplying a negative
+    // cosine by 0.75 would RAISE it, inverting the intended demotion.
+    const deboost = (d: Decision, relevance: number): number =>
+      RETIRED_STATUSES.has(d.status) && relevance > 0
+        ? relevance * RETIRED_STATUS_DEBOOST
+        : relevance;
 
     // Try semantic search first
     if (!this.embedder.isFallbackMode()) {
@@ -135,11 +181,13 @@ export class SearchEngine {
         );
 
         const scored: DecisionSearchResult[] = [];
+        let matched = 0;
         for (const decision of decisions) {
           const decisionVector = vectorMap.get(decision.id);
           if (decisionVector) {
-            const relevance = cosineSimilarity(queryVector, decisionVector);
-            scored.push({ decision, relevance });
+            const raw = cosineSimilarity(queryVector, decisionVector);
+            if (raw >= SEARCH_NOISE_FLOOR) matched++;
+            scored.push({ decision, relevance: deboost(decision, raw) });
           } else {
             const text = decisionEmbedText(decision);
             const kwResults = keywordSearch(
@@ -149,7 +197,11 @@ export class SearchEngine {
             );
             const score = kwResults[0]?.score ?? 0;
             if (score > 0) {
-              scored.push({ decision, relevance: score * 0.5 });
+              matched++; // Literal term hit — a match regardless of scale.
+              scored.push({
+                decision,
+                relevance: deboost(decision, score * 0.5),
+              });
             }
           }
         }
@@ -157,30 +209,32 @@ export class SearchEngine {
         scored.sort((a, b) => b.relevance - a.relevance);
         return {
           results: scored.slice(0, limit),
+          total_matched: matched,
           fallback_mode: false,
         };
       }
     }
 
-    // Keyword fallback
+    // Keyword fallback — full population, slice at the end (see searchBlackboard).
     const items = decisions.map((d) => ({
       id: d.id,
       text: decisionEmbedText(d),
     }));
-    const kwResults = keywordSearch(query, items, limit);
+    const kwResults = keywordSearch(query, items, decisions.length);
     const idToScore = new Map(kwResults.map((r) => [r.id, r.score]));
 
     const results: DecisionSearchResult[] = [];
     for (const decision of decisions) {
       const score = idToScore.get(decision.id);
       if (score !== undefined && score > 0) {
-        results.push({ decision, relevance: score });
+        results.push({ decision, relevance: deboost(decision, score) });
       }
     }
     results.sort((a, b) => b.relevance - a.relevance);
 
     return {
       results: results.slice(0, limit),
+      total_matched: results.length,
       fallback_mode: true,
     };
   }

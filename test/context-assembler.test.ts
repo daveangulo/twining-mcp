@@ -1236,3 +1236,378 @@ Last session: 2026-02-17
     });
   });
 });
+
+describe("ContextAssembler — superseded exclusion visibility (field D10)", () => {
+  it("counts superseded decisions excluded from the briefing instead of silence", async () => {
+    const twiningDir = fs.mkdtempSync(
+      path.join(os.tmpdir(), "twining-d10-assembler-"),
+    );
+    fs.mkdirSync(path.join(twiningDir, "decisions"), { recursive: true });
+    fs.writeFileSync(path.join(twiningDir, "blackboard.jsonl"), "");
+    fs.writeFileSync(
+      path.join(twiningDir, "decisions", "index.json"),
+      JSON.stringify([]),
+    );
+    const bbStore = new BlackboardStore(twiningDir);
+    const dStore = new DecisionStore(twiningDir);
+
+    const base = {
+      agent_id: "test",
+      domain: "implementation",
+      context: "ctx",
+      rationale: "why",
+      constraints: [],
+      alternatives: [],
+      depends_on: [],
+      confidence: "high" as const,
+      reversible: true,
+      affected_files: [],
+      affected_symbols: [],
+    };
+    const old = await dStore.create({
+      ...base,
+      scope: "src/gate/",
+      summary: "Original choice, later superseded",
+    });
+    const successor = await dStore.create({
+      ...base,
+      scope: "src/other/",
+      summary: "The replacement (different scope)",
+    });
+    await dStore.updateStatus(old.id, "superseded", {
+      superseded_by: successor.id,
+    });
+
+    const assembler = new ContextAssembler(
+      bbStore,
+      dStore,
+      null,
+      makeConfig(),
+    );
+    const result = await assembler.assemble("check the gate", "src/gate/");
+
+    expect(result.active_decisions).toHaveLength(0);
+    expect(result.superseded_excluded_count).toBe(1);
+    const briefing = ContextAssembler.formatForLLM(result);
+    expect(briefing).toContain("superseded");
+    expect(briefing).not.toMatch(/^No prior context/);
+  });
+});
+
+describe("ContextAssembler — continue-work lane aging and entry dampening (field D12)", () => {
+  function makeDir(): string {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "twining-d12-"));
+    fs.mkdirSync(path.join(dir, "decisions"), { recursive: true });
+    fs.mkdirSync(path.join(dir, "embeddings"), { recursive: true });
+    fs.writeFileSync(path.join(dir, "blackboard.jsonl"), "");
+    fs.writeFileSync(
+      path.join(dir, "decisions", "index.json"),
+      JSON.stringify([]),
+    );
+    return dir;
+  }
+
+  it("a legacy scopeless handoff no longer matches every scope", async () => {
+    const dir = makeDir();
+    const handoffStore = new HandoffStore(dir);
+    await handoffStore.create({
+      source_agent: "agent-legacy",
+      summary: "Scopeless legacy handoff",
+      results: [{ description: "Old work", status: "completed" }],
+      context_snapshot: {
+        decision_ids: [],
+        warning_ids: [],
+        finding_ids: [],
+        summaries: [],
+      },
+    });
+
+    const assembler = new ContextAssembler(
+      new BlackboardStore(dir),
+      new DecisionStore(dir),
+      null,
+      makeConfig(),
+      null,
+      null,
+      handoffStore,
+      null,
+    );
+    const result = await assembler.assemble("narrow task", "src/auth/");
+    expect(result.recent_handoffs).toBeUndefined();
+
+    const atProject = await assembler.assemble("broad task", "project");
+    expect(atProject.recent_handoffs).toHaveLength(1);
+  });
+
+  it("stamps continue-work items and blocked results with their age", async () => {
+    const dir = makeDir();
+    const handoffStore = new HandoffStore(dir);
+    const rec = await handoffStore.create({
+      source_agent: "agent-a",
+      scope: "src/auth/",
+      summary: "Fifteen day old handoff",
+      results: [{ description: "Stuck migration", status: "blocked" }],
+      context_snapshot: {
+        decision_ids: [],
+        warning_ids: [],
+        finding_ids: [],
+        summaries: [],
+      },
+    });
+    // Age the record 15 days: rewrite created_at in both the index and the file.
+    const old = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString();
+    const indexPath = path.join(dir, "handoffs", "index.jsonl");
+    fs.writeFileSync(
+      indexPath,
+      fs
+        .readFileSync(indexPath, "utf-8")
+        .split("\n")
+        .map((l) => (l ? JSON.stringify({ ...JSON.parse(l), created_at: old }) : l))
+        .join("\n"),
+    );
+    const filePath = path.join(dir, "handoffs", `${rec.id}.json`);
+    fs.writeFileSync(
+      filePath,
+      JSON.stringify({ ...JSON.parse(fs.readFileSync(filePath, "utf-8")), created_at: old }),
+    );
+
+    const assembler = new ContextAssembler(
+      new BlackboardStore(dir),
+      new DecisionStore(dir),
+      null,
+      makeConfig(),
+      null,
+      null,
+      handoffStore,
+      null,
+    );
+    const result = await assembler.assemble("continue auth", "src/auth/");
+    const briefing = ContextAssembler.formatForLLM(result);
+    expect(briefing).toContain("15d ago");
+    expect(briefing).toContain("[BLOCKED 15d]");
+  });
+
+  it("drops semantically-admitted entries below the relevance floor, keeps strong matches", async () => {
+    const dir = makeDir();
+    const bbStore = new BlackboardStore(dir);
+    await bbStore.append({
+      agent_id: "t",
+      entry_type: "finding",
+      tags: [],
+      scope: "src/zebra/",
+      summary: "cache mention only",
+      detail: "",
+    });
+    await bbStore.append({
+      agent_id: "t",
+      entry_type: "finding",
+      tags: [],
+      scope: "src/zebra/",
+      summary: "cache invalidation strategy review analysis pass",
+      detail: "",
+    });
+
+    const embedder = new Embedder(dir);
+    (embedder as any).fallbackMode = true;
+    const searchEngine = new SearchEngine(embedder, new IndexManager(dir));
+
+    const assembler = new ContextAssembler(
+      bbStore,
+      new DecisionStore(dir),
+      searchEngine,
+      makeConfig(),
+    );
+    const result = await assembler.assemble(
+      "cache invalidation strategy review analysis pass",
+      "src/auth/",
+    );
+    const summaries = result.recent_findings.map((f) => f.summary);
+    expect(summaries).toContain(
+      "cache invalidation strategy review analysis pass",
+    );
+    expect(summaries).not.toContain("cache mention only");
+  });
+
+  it("dampens off-scope semantic admissions so in-scope warnings outrank them", async () => {
+    const dir = makeDir();
+    const bbStore = new BlackboardStore(dir);
+    await bbStore.append({
+      agent_id: "t",
+      entry_type: "warning",
+      tags: [],
+      scope: "src/zebra/",
+      summary: "cache invalidation strategy review",
+      detail: "",
+    });
+    await bbStore.append({
+      agent_id: "t",
+      entry_type: "warning",
+      tags: [],
+      scope: "src/auth/",
+      summary: "Unrelated local constraint zzz",
+      detail: "",
+    });
+
+    const embedder = new Embedder(dir);
+    (embedder as any).fallbackMode = true;
+    const searchEngine = new SearchEngine(embedder, new IndexManager(dir));
+
+    const assembler = new ContextAssembler(
+      bbStore,
+      new DecisionStore(dir),
+      searchEngine,
+      makeConfig(),
+    );
+    const result = await assembler.assemble(
+      "cache invalidation strategy review",
+      "src/auth/",
+    );
+    expect(result.active_warnings.length).toBe(2);
+    expect(result.active_warnings[0]!.summary).toBe(
+      "Unrelated local constraint zzz",
+    );
+  });
+});
+
+describe("ContextAssembler — review-finding pins", () => {
+  function makeDir2(): string {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "twining-pins-"));
+    fs.mkdirSync(path.join(dir, "decisions"), { recursive: true });
+    fs.mkdirSync(path.join(dir, "embeddings"), { recursive: true });
+    fs.writeFileSync(path.join(dir, "blackboard.jsonl"), "");
+    fs.writeFileSync(
+      path.join(dir, "decisions", "index.json"),
+      JSON.stringify([]),
+    );
+    return dir;
+  }
+  const baseDecision = {
+    agent_id: "test",
+    domain: "implementation",
+    context: "ctx",
+    rationale: "why",
+    constraints: [],
+    alternatives: [],
+    depends_on: [],
+    confidence: "high" as const,
+    reversible: true,
+    affected_files: [],
+    affected_symbols: [],
+  };
+
+  it("a scope whose only decision is archived renders the archived note, not 'No prior context'", async () => {
+    const dir = makeDir2();
+    const dStore = new DecisionStore(dir);
+    const d = await dStore.create({
+      ...baseDecision,
+      scope: "src/gate/",
+      summary: "Archived away",
+    });
+    await dStore.updateStatus(d.id, "archived", { archived_from: "active" });
+
+    const assembler = new ContextAssembler(
+      new BlackboardStore(dir),
+      dStore,
+      null,
+      makeConfig(),
+    );
+    const result = await assembler.assemble("check", "src/gate/");
+    expect(result.archived_excluded_count).toBe(1);
+    const briefing = ContextAssembler.formatForLLM(result);
+    expect(briefing).toContain("archived decision(s) in this scope are excluded");
+    expect(briefing).not.toMatch(/^No prior context/);
+  });
+
+  it("budget-exhausted briefings still render the exclusion notes", async () => {
+    const dir = makeDir2();
+    const dStore = new DecisionStore(dir);
+    const bbStore = new BlackboardStore(dir);
+    const old = await dStore.create({
+      ...baseDecision,
+      scope: "src/gate/",
+      summary: "Superseded away",
+    });
+    const succ = await dStore.create({
+      ...baseDecision,
+      scope: "src/other/",
+      summary: "Successor",
+    });
+    await dStore.updateStatus(old.id, "superseded", { superseded_by: succ.id });
+    await bbStore.append({
+      agent_id: "t",
+      entry_type: "warning",
+      tags: [],
+      scope: "src/gate/",
+      summary: "A warning that will not fit the budget",
+      detail: "D".repeat(2000),
+    });
+
+    const assembler = new ContextAssembler(bbStore, dStore, null, makeConfig());
+    const result = await assembler.assemble("check", "src/gate/", 10);
+    const briefing = ContextAssembler.formatForLLM(result);
+    expect(briefing).toContain("superseded/overridden decision(s) in this scope are excluded");
+  });
+
+  it("exact-scope warnings rank above parent-scope warnings with identical content", async () => {
+    const dir = makeDir2();
+    const bbStore = new BlackboardStore(dir);
+    await bbStore.append({
+      agent_id: "t",
+      entry_type: "warning",
+      tags: [],
+      scope: "src/",
+      summary: "Broad parent warning zzz",
+      detail: "",
+    });
+    await bbStore.append({
+      agent_id: "t",
+      entry_type: "warning",
+      tags: [],
+      scope: "src/auth/",
+      summary: "Exact scope warning zzz",
+      detail: "",
+    });
+
+    const assembler = new ContextAssembler(
+      bbStore,
+      new DecisionStore(dir),
+      null,
+      makeConfig(),
+    );
+    const result = await assembler.assemble("unrelated task text", "src/auth/");
+    expect(result.active_warnings).toHaveLength(2);
+    expect(result.active_warnings[0]!.summary).toBe("Exact scope warning zzz");
+  });
+
+  it("same-day handoffs carry no age stamp", async () => {
+    const dir = makeDir2();
+    const handoffStore = new HandoffStore(dir);
+    await handoffStore.create({
+      source_agent: "agent-a",
+      scope: "src/auth/",
+      summary: "Fresh handoff",
+      results: [{ description: "Stuck bit", status: "blocked" }],
+      context_snapshot: {
+        decision_ids: [],
+        warning_ids: [],
+        finding_ids: [],
+        summaries: [],
+      },
+    });
+    const assembler = new ContextAssembler(
+      new BlackboardStore(dir),
+      new DecisionStore(dir),
+      null,
+      makeConfig(),
+      null,
+      null,
+      handoffStore,
+      null,
+    );
+    const result = await assembler.assemble("continue", "src/auth/");
+    const briefing = ContextAssembler.formatForLLM(result);
+    expect(briefing).toContain("[BLOCKED]");
+    expect(briefing).not.toMatch(/\[BLOCKED \d+d\]/);
+    expect(briefing).not.toContain("d ago)");
+  });
+});

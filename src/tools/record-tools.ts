@@ -317,7 +317,7 @@ export function registerRecordTools(
           .string()
           .optional()
           .describe(
-            "ID of a prior decision that your work replaces or invalidates",
+            "ID of a prior decision that your work replaces or invalidates. Requires exactly ONE decision in this call — with multiple decisions the superseding record is ambiguous, so the supersession is SKIPPED and reported (supersedes_skipped). A target id that does not exist is also reported (supersedes_dangling), not silently ignored.",
           ),
         resolves: z
           .array(z.string())
@@ -406,6 +406,19 @@ export function registerRecordTools(
         // 2. Create decision records — each item is either NL (string) or structured object.
         const decisionErrors: string[] = [];
         const droppedDependsOnIds = new Set<string>();
+        // Fan-out guard (field D10): the session-level supersedes used to be
+        // applied inside this loop, flipping the same target once per decision
+        // and overwriting superseded_by each time — the back-link ended up
+        // pointing at an arbitrary one of the N. With multiple decisions the
+        // target mapping is ambiguous, so the supersession is skipped loudly
+        // rather than executed N times or guessed onto one item.
+        const supersedesAmbiguous =
+          Boolean(args.supersedes) && (args.decisions?.length ?? 0) > 1;
+        // Dangling-target detection must reach THIS response (review finding):
+        // twining_decide forwards decide()'s supersedes_dangling, but on the
+        // default surface twining_record is the only supersession path, so a
+        // typo'd target reported only through decide()'s return would vanish.
+        let supersedesDangling: string | undefined;
         if (args.decisions?.length) {
           for (const item of args.decisions) {
             const input =
@@ -431,7 +444,7 @@ export function registerRecordTools(
                 assumptions: input.assumptions ?? args.assumptions,
                 constraints: input.constraints ?? args.constraints,
                 depends_on: args.depends_on,
-                supersedes: args.supersedes,
+                supersedes: supersedesAmbiguous ? undefined : args.supersedes,
                 reversible: args.reversible,
                 affected_files: input.affected_files ?? args.affected_files ?? [],
                 affected_symbols:
@@ -443,6 +456,9 @@ export function registerRecordTools(
                 id: decision.id,
                 summary: input.summary,
               });
+              if (decision.supersedes_dangling) {
+                supersedesDangling = decision.supersedes_dangling;
+              }
               if (decision.dropped_depends_on?.length) {
                 for (const id of decision.dropped_depends_on) {
                   droppedDependsOnIds.add(id);
@@ -506,6 +522,24 @@ export function registerRecordTools(
           parts.push(
             `ignored ${droppedDependsOnIds.size} unknown depends_on id(s): ${[...droppedDependsOnIds].join(", ")}`,
           );
+        if (supersedesAmbiguous)
+          parts.push(
+            `supersedes SKIPPED: ${args.decisions!.length} decisions in one call makes the superseding decision ambiguous — target ${args.supersedes} was NOT retired; re-record the superseding decision alone (or via twining_decide) with supersedes`,
+          );
+        if (supersedesDangling)
+          parts.push(
+            `supersedes target ${supersedesDangling} does not exist — it was NOT retired; check the id and re-record the supersession`,
+          );
+        // supersedes with no surviving decision has nothing to carry it — the
+        // target was never touched; say so instead of silently ignoring it.
+        const supersedesUncarried =
+          Boolean(args.supersedes) &&
+          !supersedesAmbiguous &&
+          createdDecisions.length === 0;
+        if (supersedesUncarried)
+          parts.push(
+            `supersedes SKIPPED: no decision was recorded to carry it — target ${args.supersedes} was NOT retired`,
+          );
 
         const response: Record<string, unknown> = {
           status_entry_id: statusEntry.id,
@@ -516,6 +550,9 @@ export function registerRecordTools(
         };
         if (decisionErrors.length > 0) response.decision_errors = decisionErrors;
         if (findingErrors.length > 0) response.finding_errors = findingErrors;
+        if (supersedesAmbiguous || supersedesUncarried)
+          response.supersedes_skipped = true;
+        if (supersedesDangling) response.supersedes_dangling = supersedesDangling;
         if (resolveResult) {
           response.resolved = resolveResult.resolved;
           if (resolveResult.not_found.length > 0) {

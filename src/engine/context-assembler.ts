@@ -3,7 +3,7 @@
  * Builds tailored context packages for agent tasks within token budgets.
  * Uses weighted multi-signal scoring: recency, relevance, confidence, warning boost.
  */
-import type { SearchEngine } from "../embeddings/search.js";
+import { SEARCH_NOISE_FLOOR, type SearchEngine } from "../embeddings/search.js";
 import type { GraphEngine } from "./graph.js";
 import type { PlanningBridge } from "./planning-bridge.js";
 import type {
@@ -23,6 +23,11 @@ import type { IAgentStore, IBlackboardStore, IDecisionStore, IHandoffStore } fro
 
 /** Half-life for recency decay in hours (one week). */
 const RECENCY_HALF_LIFE = 168;
+
+// Minimum relevance for an entry to enter the briefing on similarity alone
+// (field D12). Shared with search's total_matched counting so "a match" means
+// the same thing everywhere; scope-matched entries bypass the floor entirely.
+const SEMANTIC_ADMISSION_FLOOR = SEARCH_NOISE_FLOOR;
 
 /** Scored item for budget filling. */
 interface ScoredItem {
@@ -100,6 +105,12 @@ export class ContextAssembler {
     const archivedExcluded = scopeDecisions.filter(
       (d) => d.status === "archived",
     ).length;
+    // Same blindness class for superseded/overridden (field D10): a wholesale
+    // supersession of a multi-part record silently withdrew authority from
+    // live prose, and Gate 1 printed "No active decisions" with zero trace.
+    const supersededExcluded = scopeDecisions.filter(
+      (d) => d.status === "superseded" || d.status === "overridden",
+    ).length;
 
     // 2. Retrieve semantically relevant decisions (merge by ID, keep highest relevance)
     const decisionRelevance = new Map<string, number>();
@@ -173,7 +184,17 @@ export class ContextAssembler {
     }
     if (this.searchEngine) {
       for (const e of allEntries) {
-        if (e.entry_type !== "decision" && entryRelevance.has(e.id) && !mergedEntryMap.has(e.id)) {
+        if (
+          e.entry_type !== "decision" &&
+          entryRelevance.has(e.id) &&
+          !mergedEntryMap.has(e.id) &&
+          // Relevance floor on semantic-only admission (field D12): the
+          // search path has no minimum score, so 10 arbitrary-similarity
+          // entries from anywhere on the board entered every assemble.
+          // Scope-matched entries are never floored — this gates only what
+          // similarity alone drags in.
+          entryRelevance.get(e.id)! >= SEMANTIC_ADMISSION_FLOOR
+        ) {
           mergedEntryMap.set(e.id, e);
         }
       }
@@ -240,7 +261,14 @@ export class ContextAssembler {
 
     for (const [id, entry] of mergedEntryMap) {
       const recency = this.recencyScore(entry.timestamp, now);
-      const relevance = entryRelevance.get(id) ?? 0.5;
+      // Entries get the same scope-proximity dampening decisions have always
+      // had (field D12): without it, a strongly-similar off-scope entry
+      // outranked every in-scope warning, and since the caller's own posts
+      // are the newest AND often the most task-similar, the lane filled with
+      // self-authored material from other scopes.
+      const relevance =
+        (entryRelevance.get(id) ?? 0.5) *
+        ContextAssembler.scopeProximity(scope, entry.scope);
       const confidence = 0.5; // Neutral for non-decisions
       const warningBoost = entry.entry_type === "warning" ? 1.0 : 0.0;
       const score =
@@ -487,6 +515,9 @@ export class ContextAssembler {
       ...(archivedExcluded > 0
         ? { archived_excluded_count: archivedExcluded }
         : {}),
+      ...(supersededExcluded > 0
+        ? { superseded_excluded_count: supersededExcluded }
+        : {}),
       active_decisions: activeDecisionResults,
       open_needs: openNeeds,
       recent_findings: recentFindings,
@@ -621,7 +652,12 @@ export class ContextAssembler {
       ctx.planning_state != null ||
       // Warnings dropped for budget are still context. Reporting "no prior
       // context" here would state the opposite of the truth.
-      (ctx.warnings_omitted ?? 0) > 0;
+      (ctx.warnings_omitted ?? 0) > 0 ||
+      // Excluded decisions are context too (D3/D10): a scope whose only
+      // decisions were archived or superseded must surface the exclusion
+      // note, never the indistinguishable "No prior context".
+      (ctx.archived_excluded_count ?? 0) > 0 ||
+      (ctx.superseded_excluded_count ?? 0) > 0;
     if (!hasContent) {
       return `No prior context for scope: ${ctx.scope}`;
     }
@@ -631,7 +667,12 @@ export class ContextAssembler {
       ctx.recent_findings.length === 0 &&
       ctx.open_needs.length === 0 &&
       ctx.recent_questions.length === 0 &&
-      (ctx.warnings_omitted ?? 0) > 0
+      (ctx.warnings_omitted ?? 0) > 0 &&
+      // With excluded decisions in scope, fall through to the full briefing so
+      // the D3/D10 exclusion notes render alongside the omitted-warnings
+      // directive — this early return must not swallow them.
+      (ctx.archived_excluded_count ?? 0) === 0 &&
+      (ctx.superseded_excluded_count ?? 0) === 0
     ) {
       return `Context for scope ${ctx.scope} exceeded the token budget: ${ctx.warnings_omitted} warning(s) could not be shown. Call twining_read with entry_types:["warning"] before proceeding.`;
     }
@@ -654,11 +695,22 @@ export class ContextAssembler {
       sections.push("\n### CONTINUE FROM PREVIOUS WORK");
       for (const h of ctx.recent_handoffs) {
         const status = h.acknowledged ? "acknowledged" : "pending";
-        sections.push(`**${h.source_agent} → ${h.target_agent || "any"}** (${status}): ${h.summary}`);
+        // Age stamp (field D12): the lane replayed a 15-day-old item with no
+        // temporal context, indistinguishable from a live handoff. Same-day
+        // items stay unstamped so fresh handoffs read as before.
+        const ageDays = h.created_at
+          ? Math.floor(
+              (Date.now() - new Date(h.created_at).getTime()) /
+                (24 * 60 * 60 * 1000),
+            )
+          : 0;
+        const ageStamp = ageDays >= 1 ? ` (${ageDays}d ago)` : "";
+        sections.push(`**${h.source_agent} → ${h.target_agent || "any"}** (${status})${ageStamp}: ${h.summary}`);
         // Detailed checklist of individual results
         if (h.results && h.results.length > 0) {
           for (const r of h.results) {
-            const icon = r.status === "completed" ? "[x]" : r.status === "blocked" ? "[BLOCKED]" : "[ ]";
+            const blockedIcon = ageDays >= 1 ? `[BLOCKED ${ageDays}d]` : "[BLOCKED]";
+            const icon = r.status === "completed" ? "[x]" : r.status === "blocked" ? blockedIcon : "[ ]";
             sections.push(`  - ${icon} ${r.description}${r.notes ? ` — ${r.notes}` : ""}`);
           }
         }
@@ -770,6 +822,12 @@ export class ContextAssembler {
     if ((ctx.archived_excluded_count ?? 0) > 0) {
       quickRef.push(
         `Note: ${ctx.archived_excluded_count} archived decision(s) in this scope are excluded from the briefing — if that is unexpected, twining_unarchive can restore them.`,
+      );
+    }
+    // Superseded-exclusion visibility (field D10): same failure class.
+    if ((ctx.superseded_excluded_count ?? 0) > 0) {
+      quickRef.push(
+        `Note: ${ctx.superseded_excluded_count} superseded/overridden decision(s) in this scope are excluded — call twining_why on this scope to see them with their successors before concluding nothing constrains it.`,
       );
     }
 

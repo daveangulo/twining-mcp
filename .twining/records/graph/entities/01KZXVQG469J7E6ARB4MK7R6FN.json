@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-13T15:26:53.574Z",
+  "id": "01KZXVQG469J7E6ARB4MK7R6FN",
+  "name": "01KZXVQG1HYKK6JYGKD5HBHHHE",
+  "properties": {
+    "scope": "src/",
+    "summary": "Chose age stamps only for handoffs >=1 day old"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-13T15:26:53.574Z"
+}

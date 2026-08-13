@@ -2,6 +2,73 @@
 
 All notable changes to Twining MCP are documented here.
 
+## [2.9.0] - 2026-08-13
+
+Wave A of the second field-defect wave (D9, D10, D12) — response-shape fixes
+only, no schema or store changes. Full disposition:
+`docs/field-responses/2026-08-12-wave2-response.md`. Every change below was
+adversarially reviewed pre-release; the review itself contributed five fixes,
+including one that made the D12 handoff fix reach the default (sqlite)
+backend at all.
+
+### Fixed
+- **`twining_search_decisions` reports an honest `total_matched` (D9).** It
+  was the length of the already-truncated page — `limit: N` returned
+  `total_matched: N` at every N, so raising the limit "to check the total"
+  confirmed the artifact, and one field agent published a false "no decision
+  authorizes X" claim on the strength of it. `total_matched` is now a true
+  pre-page match count: raw cosine above the ~0.3 noise floor in semantic
+  mode, any literal term hit in keyword mode — membership is always tested
+  on raw scores. A new `returned` field carries the page size. The tool
+  description now states the noise floor, that absence is not expressible
+  with a ranker (use `twining_why` + `total_in_scope`), and the count
+  semantics.
+- **Retired decisions no longer outrank their own amendments (D9).**
+  Relevance ranking was raw similarity over all statuses, and an original
+  states the thing more plainly than its correction — the field measured a
+  superseded record at rank 1 above the decision that changed it. Superseded,
+  overridden, and archived decisions now carry a 0.75 ordering de-boost
+  (never applied to negative scores, never affecting `total_matched`).
+- **Superseded decisions are visible as exclusions at both context gates
+  (D10).** `twining_why` hid them behind a bare, overloaded
+  `superseded_count`; assemble — the mandatory Gate 1 — dropped them with no
+  count at all and printed "No active decisions for this scope." after a
+  wholesale supersession of a multi-part record. `why` now returns
+  `superseded_excluded` (id, summary, successor; capped at 20), assemble
+  reports `superseded_excluded_count` with a briefing note (mirroring D3's
+  archived pattern), and both exclusion classes render even in
+  exclusion-only and budget-exhausted briefings. `superseded_count` now
+  counts superseded + overridden only — archived are counted solely by
+  `archived_excluded_count`, ending the double-count.
+- **`twining_record`'s `supersedes` no longer fans out or fails silently
+  (D10).** The session-level id was applied inside the per-decision loop — N
+  decisions flipped the same target N times, overwriting `superseded_by`
+  each time, so the back-link pointed at an arbitrary one of the N. With
+  multiple decisions the supersession is now SKIPPED and reported
+  (`supersedes_skipped`); with none recorded, likewise. A target id that
+  does not exist is reported as `supersedes_dangling` on both
+  `twining_record` and `twining_decide` — a typo'd id was previously
+  indistinguishable from a completed supersession.
+- **Scopeless handoffs no longer match every scope (D12).** `scopeMatches`
+  is bidirectional prefix and every string starts with `""`, so a handoff
+  persisted without a scope surfaced in every scoped assemble forever — the
+  field's 15-day-old `[BLOCKED]` fossil. `createHandoff` now applies its
+  documented `"project"` default, and both backends' list filters read
+  legacy scopeless records as `"project"` (the sqlite side was caught by the
+  pre-release review — the file-backend fix alone would have missed the
+  default backend).
+- **The assemble warning lane resists self-post and off-scope dilution
+  (D12).** The lane was recency-dominant in all but name (confidence and
+  warning boost are constants), so the caller's own newest posts
+  systematically outranked cross-session signal. Entries now get the same
+  scope-proximity dampening decisions have always had, and semantic-only
+  admission requires relevance above the shared noise floor — scope-matched
+  entries are never floored, and nothing the lane previously surfaced is
+  hidden, only re-ordered.
+- **Continue-work items carry their age (D12).** Handoffs a day or older
+  render `(Nd ago)` and blocked results `[BLOCKED Nd]` — a two-week-old
+  blocked item is no longer indistinguishable from this morning's.
+
 ## [2.8.0] - 2026-08-12
 
 Field-defect release, pulled ahead of the rest of the wave-2 plan at the

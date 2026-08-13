@@ -1,0 +1,40 @@
+{
+  "affected_files": [
+    "src/embeddings/search.ts",
+    "src/engine/decisions.ts",
+    "src/engine/context-assembler.ts",
+    "src/engine/blackboard.ts",
+    "src/engine/coordination.ts",
+    "src/storage/handoff-store.ts",
+    "src/storage/sqlite/sqlite-stores.ts",
+    "src/tools/decision-tools.ts",
+    "src/tools/record-tools.ts",
+    "src/tools/context-tools.ts",
+    "src/utils/types.ts",
+    "docs/TWINING-REFERENCE.md",
+    "CHANGELOG.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Implemented Wave A (D9/D10/D12) via TDD + adversarial review workflow: honest total_matched, retired de-boost, superseded visibility at both gates, supersedes guards, handoff aging, lane dampening. 1580 tests green, build clean.",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KZXVQFHA7P7H14324FSWX7JA",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "320845cdc7cd25403cc9f5e0e17c012b85695ef8",
+    "recorded_at": "2026-08-13T15:26:52.950Z"
+  },
+  "rationale": "the review's adversarial round proved counting weighted relevance against the raw-calibrated 0.3 floor deflated total_matched for exactly the retired decisions D9 wants discoverable, and that TF keyword scores are a different scale where any literal hit is a match; semantic mode floors raw cosine at 0.3, keyword mode counts score>0",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Chose match-membership on RAW scores with the 0.75 retired de-boost applied to ordering only (and never to negative cosines)",
+  "timestamp": "2026-08-13T15:26:52.970Z"
+}

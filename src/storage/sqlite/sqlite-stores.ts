@@ -585,7 +585,10 @@ export class SqliteHandoffStore implements IHandoffStore {
       }
       if (filters.scope) {
         const filterScope = filters.scope;
-        entries = entries.filter((e) => scopeMatches(e.scope ?? "", filterScope));
+        // Legacy scopeless records read as "project", never as match-everything
+        // (field D12) — mirrors handoff-store.ts; "" matches every scope via
+        // bidirectional startsWith.
+        entries = entries.filter((e) => scopeMatches(e.scope ?? "project", filterScope));
       }
       if (filters.since) {
         const since = filters.since;

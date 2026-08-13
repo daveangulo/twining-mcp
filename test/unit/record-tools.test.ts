@@ -763,3 +763,101 @@ describe("twining_record — per-decision affected_files/affected_symbols (field
     expect(decisions[0]!.affected_symbols).toEqual(["Klass.method"]);
   });
 });
+
+describe("twining_record — supersedes fan-out guard (field D10)", () => {
+  async function createTarget(): Promise<string> {
+    const body = parseToolResponse(
+      await callTool("twining_record", {
+        summary: "Session creating the target",
+        scope: "src/",
+        decisions: ["Chose the original approach — it worked"],
+      }),
+    ) as { decisions_created: Array<{ id: string }> };
+    return body.decisions_created[0]!.id;
+  }
+
+  it("skips the supersession and says so when supersedes is combined with multiple decisions", async () => {
+    const targetId = await createTarget();
+    const body = parseToolResponse(
+      await callTool("twining_record", {
+        summary: "Session with ambiguous supersession",
+        scope: "src/",
+        supersedes: targetId,
+        decisions: [
+          "Chose A over B — first reason",
+          "Chose C over D — second reason",
+        ],
+      }),
+    ) as {
+      decisions_created: Array<{ id: string }>;
+      supersedes_skipped?: boolean;
+      message: string;
+    };
+
+    expect(body.decisions_created).toHaveLength(2);
+    expect(body.supersedes_skipped).toBe(true);
+    expect(body.message).toContain("supersede");
+    // The target must NOT have been flipped N times — it stays active.
+    const target = loadDecisionFile(targetId);
+    expect(target.status).toBe("active");
+    expect(target.superseded_by).toBeUndefined();
+  });
+
+  it("applies the supersession normally with a single decision", async () => {
+    const targetId = await createTarget();
+    const body = parseToolResponse(
+      await callTool("twining_record", {
+        summary: "Session with unambiguous supersession",
+        scope: "src/",
+        supersedes: targetId,
+        decisions: ["Chose the replacement — the original aged out"],
+      }),
+    ) as { decisions_created: Array<{ id: string }>; supersedes_skipped?: boolean };
+
+    expect(body.supersedes_skipped).toBeUndefined();
+    const target = loadDecisionFile(targetId);
+    expect(target.status).toBe("superseded");
+    expect(target.superseded_by).toBe(body.decisions_created[0]!.id);
+  });
+});
+
+describe("twining_record — dangling supersedes surfaces on the default surface (review finding)", () => {
+  it("reports supersedes_dangling in the response and message for a typo'd target", async () => {
+    const body = parseToolResponse(
+      await callTool("twining_record", {
+        summary: "Session superseding a ghost",
+        scope: "src/",
+        supersedes: "01GHOST00000000000000000000",
+        decisions: ["Chose the replacement — target id was mistyped"],
+      }),
+    ) as {
+      decisions_created: Array<{ id: string }>;
+      supersedes_dangling?: string;
+      message: string;
+    };
+
+    expect(body.decisions_created).toHaveLength(1);
+    expect(body.supersedes_dangling).toBe("01GHOST00000000000000000000");
+    expect(body.message).toContain("NOT retired");
+  });
+
+  it("does not set supersedes_dangling when the target exists", async () => {
+    const target = parseToolResponse(
+      await callTool("twining_record", {
+        summary: "Session creating the target",
+        scope: "src/",
+        decisions: ["Chose the original — it worked"],
+      }),
+    ) as { decisions_created: Array<{ id: string }> };
+
+    const body = parseToolResponse(
+      await callTool("twining_record", {
+        summary: "Session superseding for real",
+        scope: "src/",
+        supersedes: target.decisions_created[0]!.id,
+        decisions: ["Chose the replacement — the original aged out"],
+      }),
+    ) as { supersedes_dangling?: string };
+    expect(body.supersedes_dangling).toBeUndefined();
+  });
+});

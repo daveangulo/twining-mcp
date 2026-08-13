@@ -356,6 +356,13 @@ describe.skipIf(!HAS_SQLITE)("sqlite backend", () => {
       expect(byName).toEqual({ empty: "completed", uniform: "failed", mixed: "mixed" });
     });
 
+    it("a scopeless handoff reads as project scope, never match-everything (field D12)", async () => {
+      const store = new SqliteHandoffStore(db);
+      await store.create(handoffInput("scopeless", [], { scope: undefined }));
+      expect(await store.list({ scope: "src/auth/" })).toHaveLength(0);
+      expect(await store.list({ scope: "project" })).toHaveLength(1);
+    });
+
     it("lists newest-first with filters and limit; acknowledge updates record and index", async () => {
       const store = new SqliteHandoffStore(db);
       const h1 = await store.create(handoffInput("one"));

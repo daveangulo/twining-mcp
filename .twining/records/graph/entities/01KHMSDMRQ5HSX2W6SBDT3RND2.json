@@ -5,8 +5,8 @@
   "properties": {
     "description": "MCP tool handlers: twining_assemble, twining_summarize, twining_what_changed",
     "layer": "tools",
-    "scope": "src/engine/,src/tools/"
+    "scope": "src/,src/engine/,src/tools/"
   },
   "type": "file",
-  "updated_at": "2026-08-07T00:42:39.443Z"
+  "updated_at": "2026-08-13T15:26:53.588Z"
 }

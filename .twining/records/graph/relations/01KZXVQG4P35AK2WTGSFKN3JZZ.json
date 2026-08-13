@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T15:26:53.590Z",
+  "id": "01KZXVQG4P35AK2WTGSFKN3JZZ",
+  "properties": {
+    "decision_summary": "Chose age stamps only for handoffs >=1 day old"
+  },
+  "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+  "target": "01KZXVQG469J7E6ARB4MK7R6FN",
+  "type": "decided_by"
+}

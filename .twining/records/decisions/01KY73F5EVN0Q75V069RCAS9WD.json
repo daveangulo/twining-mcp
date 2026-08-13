@@ -19,7 +19,8 @@
   "rationale": "verified equivalent to the original e.scope?.startsWith(filterScope) || filterScope.startsWith(e.scope ?? \"\") because the filter is truthy-guarded (filterScope never empty), so an undefined entry scope still matches everything.",
   "reversible": true,
   "scope": "src/engine/",
-  "status": "active",
+  "status": "superseded",
   "summary": "Preserved handoff-store's optional-scope behavior via scopeMatches(e.scope ?? \"\", filterScope)",
+  "superseded_by": "01KZXVD3AXV4Y7PNM46P99NWS3",
   "timestamp": "2026-07-23T09:03:55.355Z"
 }

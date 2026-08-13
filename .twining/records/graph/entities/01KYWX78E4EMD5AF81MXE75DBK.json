@@ -3,8 +3,8 @@
   "id": "01KYWX78E4EMD5AF81MXE75DBK",
   "name": "src/embeddings/search.ts",
   "properties": {
-    "scope": "project"
+    "scope": "project,src/"
   },
   "type": "file",
-  "updated_at": "2026-07-31T20:18:02.308Z"
+  "updated_at": "2026-08-13T15:26:53.574Z"
 }

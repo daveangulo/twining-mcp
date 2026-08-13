@@ -192,6 +192,8 @@ export interface AssembledContext {
    * twining_unarchive.
    */
   archived_excluded_count?: number;
+  /** Superseded/overridden decisions hidden from this briefing (field D10) — same blindness class as archived_excluded_count. */
+  superseded_excluded_count?: number;
   active_decisions: {
     id: string;
     summary: string;

@@ -323,3 +323,103 @@ describe("SearchEngine", () => {
     });
   });
 });
+
+describe("SearchEngine — total_matched and lifecycle de-boost (field D9)", () => {
+  function fallbackEngine(): SearchEngine {
+    const tmpDir = makeTempDir();
+    const embedder = new Embedder(tmpDir);
+    (embedder as any).fallbackMode = true;
+    return new SearchEngine(embedder, new IndexManager(tmpDir));
+  }
+
+  it("searchDecisions reports total_matched as the pre-slice match count", async () => {
+    const engine = fallbackEngine();
+    const decisions = Array.from({ length: 10 }, (_, i) =>
+      makeDecision(`d-${i}`, `cache strategy variant ${i}`),
+    );
+    const { results, total_matched } = await engine.searchDecisions(
+      "cache",
+      decisions,
+      { limit: 3 },
+    );
+    expect(results).toHaveLength(3);
+    expect(total_matched).toBe(10);
+  });
+
+  it("searchBlackboard reports total_matched as the pre-slice match count", async () => {
+    const engine = fallbackEngine();
+    const entries = Array.from({ length: 8 }, (_, i) =>
+      makeEntry(`e-${i}`, `test item ${i}`),
+    );
+    const { results, total_matched } = await engine.searchBlackboard(
+      "test",
+      entries,
+      { limit: 5 },
+    );
+    expect(results).toHaveLength(5);
+    expect(total_matched).toBe(8);
+  });
+
+  it("ranks an active decision above an identically-matching superseded one", async () => {
+    const engine = fallbackEngine();
+    const active = makeDecision("live", "Use Redis cache for sessions");
+    const superseded = {
+      ...makeDecision("old", "Use Redis cache for sessions"),
+      status: "superseded" as const,
+    };
+    const { results } = await engine.searchDecisions("Redis cache", [
+      superseded,
+      active,
+    ]);
+    expect(results[0]!.decision.id).toBe("live");
+    expect(results[0]!.relevance).toBeGreaterThan(results[1]!.relevance);
+  });
+});
+
+describe("SearchEngine — membership vs ordering (review findings)", () => {
+  function semanticEngine(queryVector: number[]) {
+    const tmpDir = makeTempDir();
+    const stub = {
+      isFallbackMode: () => false,
+      embed: async () => queryVector,
+    } as unknown as Embedder;
+    const indexManager = new IndexManager(tmpDir);
+    return { engine: new SearchEngine(stub, indexManager), indexManager };
+  }
+
+  it("floor boundary: raw cosine 0.30 counts, 0.29 does not", async () => {
+    const { engine, indexManager } = semanticEngine([1, 0]);
+    const at = makeDecision("at-floor", "A");
+    const below = makeDecision("below-floor", "B");
+    await indexManager.addEntry("decisions", at.id, [0.3, 0.9539], "h1");
+    await indexManager.addEntry("decisions", below.id, [0.29, 0.957], "h2");
+    const r = await engine.searchDecisions("q", [at, below]);
+    expect(r.total_matched).toBe(1);
+    expect(r.results).toHaveLength(2);
+  });
+
+  it("never RAISES a negative cosine for retired decisions", async () => {
+    const { engine, indexManager } = semanticEngine([1, 0]);
+    const retired = {
+      ...makeDecision("neg-retired", "X"),
+      status: "superseded" as const,
+    };
+    await indexManager.addEntry("decisions", retired.id, [-0.4, 0.9165], "h1");
+    const r = await engine.searchDecisions("q", [retired]);
+    // Multiplying -0.4 by 0.75 would yield -0.3 (a boost); the guard keeps it raw.
+    expect(r.results[0]!.relevance).toBeCloseTo(-0.4, 5);
+    expect(r.total_matched).toBe(0);
+  });
+
+  it("keyword-mode total_matched counts every literal hit at any score", async () => {
+    const tmpDir = makeTempDir();
+    const embedder = new Embedder(tmpDir);
+    (embedder as any).fallbackMode = true;
+    const engine = new SearchEngine(embedder, new IndexManager(tmpDir));
+    // 3-term query, one term matched once: TF score 0.231 < 0.3 floor.
+    const d = makeDecision("partial", "the handoff design note");
+    const r = await engine.searchDecisions("handoff scoping filtration", [d]);
+    expect(r.results).toHaveLength(1);
+    expect(r.total_matched).toBe(1);
+  });
+});

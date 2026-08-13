@@ -54,6 +54,9 @@ export function registerContextTools(
           ...(context.archived_excluded_count
             ? { archived_excluded_count: context.archived_excluded_count }
             : {}),
+          ...(context.superseded_excluded_count
+            ? { superseded_excluded_count: context.superseded_excluded_count }
+            : {}),
           token_estimate: context.token_estimate,
         });
       } catch (e) {

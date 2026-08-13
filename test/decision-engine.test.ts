@@ -138,7 +138,7 @@ describe("DecisionEngine.decide", () => {
     expect(result.conflicts ?? []).toEqual([]);
   });
 
-  it("silently tolerates a dangling supersedes target", async () => {
+  it("tolerates a dangling supersedes target but reports it (field D10)", async () => {
     const result = await decisionEngine.decide(
       validDecisionInput({
         summary: "Replacement of a ghost",
@@ -146,6 +146,18 @@ describe("DecisionEngine.decide", () => {
       }),
     );
     expect(result.id).toHaveLength(26);
+    // No throw — but a typo'd target must not be indistinguishable from success.
+    expect(result.supersedes_dangling).toBe("01GHOST00000000000000000000");
+  });
+
+  it("does not set supersedes_dangling when the target exists", async () => {
+    const first = await decisionEngine.decide(
+      validDecisionInput({ summary: "Real target" }),
+    );
+    const result = await decisionEngine.decide(
+      validDecisionInput({ summary: "Replacement", supersedes: first.id }),
+    );
+    expect(result.supersedes_dangling).toBeUndefined();
   });
 
   it("applies defaults (confidence, reversible, agent_id)", async () => {
@@ -461,6 +473,62 @@ describe("DecisionEngine.why bounding (#41)", () => {
     expect(result.decisions).toHaveLength(2);
     const retired = result.decisions.find((d) => d.id === first.id);
     expect(retired!.status).toBe("superseded");
+  });
+
+  it("caps superseded_excluded at 20 entries", async () => {
+    for (let i = 0; i < 21; i++) {
+      const target = await decisionEngine.decide(
+        validDecisionInput({ summary: `Target ${i}` }),
+      );
+      await decisionEngine.decide(
+        validDecisionInput({ summary: `Replacement ${i}`, supersedes: target.id }),
+      );
+    }
+    const result = await decisionEngine.why("src/auth/");
+    expect(result.superseded_count).toBe(21);
+    expect(result.superseded_excluded).toHaveLength(20);
+  });
+
+  it("superseded_count excludes archived — archived are counted only by archived_excluded_count (field D10)", async () => {
+    const a = await decisionEngine.decide(
+      validDecisionInput({ summary: "Old choice" }),
+    );
+    await decisionEngine.decide(
+      validDecisionInput({ summary: "New choice", supersedes: a.id }),
+    );
+    const b = await decisionEngine.decide(
+      validDecisionInput({ summary: "Archived choice" }),
+    );
+    await decisionStore.updateStatus(b.id, "archived", {
+      archived_from: "active",
+    });
+
+    const result = await decisionEngine.why("src/auth/");
+    expect(result.superseded_count).toBe(1);
+    expect(result.archived_excluded_count).toBe(1);
+  });
+
+  it("reports excluded superseded records compactly with their successor (field D10)", async () => {
+    const first = await decisionEngine.decide(
+      validDecisionInput({ summary: "Eight concretizations in one record" }),
+    );
+    const second = await decisionEngine.decide(
+      validDecisionInput({ summary: "Amends one limb", supersedes: first.id }),
+    );
+
+    const result = await decisionEngine.why("src/auth/");
+    expect(result.superseded_excluded).toBeDefined();
+    expect(result.superseded_excluded).toHaveLength(1);
+    expect(result.superseded_excluded![0]).toMatchObject({
+      id: first.id,
+      summary: "Eight concretizations in one record",
+      superseded_by: second.id,
+    });
+
+    const withRetired = await decisionEngine.why("src/auth/", {
+      include_superseded: true,
+    });
+    expect(withRetired.superseded_excluded).toBeUndefined();
   });
 
   it("total_in_scope counts live decisions only by default, all statuses with include_superseded", async () => {
@@ -1111,6 +1179,56 @@ describe("DecisionEngine conflict detection", () => {
 });
 
 describe("DecisionEngine.searchDecisions", () => {
+  it("reports total_matched pre-slice and returned as the page size (field D9)", async () => {
+    for (let i = 0; i < 5; i++) {
+      await decisionEngine.decide(
+        validDecisionInput({ summary: `Cache layer option ${i}` }),
+      );
+    }
+    const result = await decisionEngine.searchDecisions("cache", undefined, 2);
+    expect(result.results).toHaveLength(2);
+    expect(result.returned).toBe(2);
+    expect(result.total_matched).toBe(5);
+  });
+
+  it("de-ranks retired decisions below an identically-matching active one", async () => {
+    const first = await decisionEngine.decide(
+      validDecisionInput({ summary: "Use Redis cache for sessions" }),
+    );
+    await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Use Redis cache for sessions",
+        supersedes: first.id,
+      }),
+    );
+    const result = await decisionEngine.searchDecisions("Redis cache");
+    expect(result.results.length).toBe(2);
+    expect(result.results[0]!.status).toBe("active");
+  });
+
+  it("de-ranks all three retired statuses, not only superseded", async () => {
+    const overridden = await decisionEngine.decide(
+      validDecisionInput({ summary: "Shared identical summary text" }),
+    );
+    const archived = await decisionEngine.decide(
+      validDecisionInput({ summary: "Shared identical summary text" }),
+    );
+    await decisionEngine.decide(
+      validDecisionInput({ summary: "Shared identical summary text" }),
+    );
+    await decisionStore.updateStatus(overridden.id, "overridden");
+    await decisionStore.updateStatus(archived.id, "archived", {
+      archived_from: "active",
+    });
+
+    const result = await decisionEngine.searchDecisions("shared identical");
+    expect(result.results[0]!.status).toBe("active");
+    const activeRelevance = result.results[0]!.relevance;
+    for (const row of result.results.slice(1)) {
+      expect(row.relevance).toBeLessThan(activeRelevance);
+    }
+  });
+
   it("finds decisions by keyword", async () => {
     await decisionEngine.decide(
       validDecisionInput({ summary: "Use JWT for authentication" }),
@@ -1321,5 +1439,122 @@ describe("DecisionEngine.promote", () => {
       { id: d1.id, status: "overridden" },
     ]);
     expect(result.not_found).toEqual(["nonexistent"]);
+  });
+});
+
+describe("DecisionEngine.searchDecisions — semantic path (review findings)", () => {
+  // Stub embedder: SearchEngine only needs isFallbackMode() and embed().
+  // Vectors are hand-crafted so cosine (dot product) is exact: query [1,0].
+  function semanticHarness() {
+    const stubEmbedder = {
+      isFallbackMode: () => false,
+      embed: async () => [1, 0],
+    };
+    return stubEmbedder as unknown as import("../src/embeddings/embedder.js").Embedder;
+  }
+
+  it("delegation branch reports above-floor total_matched, returned, and de-boosts retired decisions", async () => {
+    const { IndexManager } = await import("../src/embeddings/index-manager.js");
+    const { SearchEngine } = await import("../src/embeddings/search.js");
+    const embedder = semanticHarness();
+    const indexManager = new IndexManager(tmpDir);
+    const searchEngine = new SearchEngine(embedder, indexManager);
+    const engine = new DecisionEngine(
+      decisionStore,
+      blackboardEngine,
+      null,
+      null,
+      null,
+      searchEngine,
+    );
+
+    // Two identical strong matches (cosine 1.0), one superseded; one noise
+    // decision (cosine 0.0, below the 0.3 floor).
+    const active = await engine.decide(
+      validDecisionInput({ summary: "Use Redis cache for sessions" }),
+    );
+    const old = await engine.decide(
+      validDecisionInput({ summary: "Use Redis cache for sessions (v1)" }),
+    );
+    await engine.decide(
+      validDecisionInput({ summary: "Replacement", supersedes: old.id }),
+    );
+    const noise = await engine.decide(
+      validDecisionInput({ summary: "Unrelated marmalade flurbulator" }),
+    );
+
+    // The replacement also needs a vector; give strong matches [1,0]-aligned
+    // vectors and the noise decision an orthogonal one.
+    await indexManager.addEntry("decisions", active.id, [1, 0], "h1");
+    await indexManager.addEntry("decisions", old.id, [1, 0], "h2");
+    await indexManager.addEntry("decisions", noise.id, [0, 1], "h3");
+
+    const result = await engine.searchDecisions("redis cache");
+    expect(result.fallback_mode).toBe(false);
+
+    // De-boost: identical cosine, but the superseded record ranks below the
+    // active one at 0.75x relevance.
+    const activeRow = result.results.find((r) => r.id === active.id)!;
+    const oldRow = result.results.find((r) => r.id === old.id)!;
+    expect(activeRow.relevance).toBeCloseTo(1.0, 5);
+    expect(oldRow.relevance).toBeCloseTo(0.75, 5);
+    expect(result.results.indexOf(activeRow)).toBeLessThan(
+      result.results.indexOf(oldRow),
+    );
+
+    // total_matched counts only above-floor matches: the noise decision
+    // (cosine 0) and the un-embedded replacement are excluded; returned is
+    // the page size.
+    expect(result.total_matched).toBe(2);
+    expect(result.returned).toBe(result.results.length);
+  });
+
+  it("counts membership on RAW cosine — the de-boost never deflates total_matched", async () => {
+    const { IndexManager } = await import("../src/embeddings/index-manager.js");
+    const { SearchEngine } = await import("../src/embeddings/search.js");
+    const embedder = semanticHarness();
+    const indexManager = new IndexManager(tmpDir);
+    const searchEngine = new SearchEngine(embedder, indexManager);
+    const engine = new DecisionEngine(
+      decisionStore,
+      blackboardEngine,
+      null,
+      null,
+      null,
+      searchEngine,
+    );
+
+    // A superseded decision at raw cosine 0.38 — a genuine match above the
+    // 0.3 floor — whose de-boosted display relevance (0.285) dips below it.
+    const old = await engine.decide(
+      validDecisionInput({ summary: "The only decision on this topic" }),
+    );
+    await engine.decide(
+      validDecisionInput({ summary: "Replacement", supersedes: old.id }),
+    );
+    await indexManager.addEntry("decisions", old.id, [0.38, 0.925], "h1");
+
+    const result = await engine.searchDecisions("topic query");
+    const row = result.results.find((r) => r.id === old.id)!;
+    expect(row.relevance).toBeCloseTo(0.285, 3);
+    // Membership from the RAW 0.38, not the weighted 0.285.
+    expect(result.total_matched).toBe(1);
+  });
+
+  it("counts every literal keyword hit as a match — TF scores are not held to the cosine floor", async () => {
+    // Fallback path: 3-term query, decision mentions exactly one term once.
+    // TF score = ln(2)/3 = 0.231 < 0.3, but a literal hit is never noise.
+    await decisionEngine.decide(
+      validDecisionInput({
+        summary: "Reworked the handoff store",
+        rationale: "Persistence change",
+        context: "storage work",
+      }),
+    );
+    const result = await decisionEngine.searchDecisions(
+      "handoff scoping filtration",
+    );
+    expect(result.results).toHaveLength(1);
+    expect(result.total_matched).toBe(1);
   });
 });

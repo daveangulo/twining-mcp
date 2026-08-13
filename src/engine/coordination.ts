@@ -301,7 +301,11 @@ export class CoordinationEngine {
     const record = await this.handoffStore.create({
       source_agent: input.source_agent,
       target_agent: input.target_agent,
-      scope: input.scope,
+      // The tool schema has always documented default "project", but only the
+      // side-effect blackboard post applied it — the record itself persisted
+      // undefined, and an undefined scope matched EVERY scope in the list
+      // filter (field D12). Apply the documented default at the source.
+      scope: input.scope ?? "project",
       summary: input.summary,
       results: input.results,
       context_snapshot,

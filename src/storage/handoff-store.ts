@@ -93,7 +93,12 @@ export class HandoffStore implements IHandoffStore {
       }
       if (filters.scope) {
         const filterScope = filters.scope;
-        entries = entries.filter((e) => scopeMatches(e.scope ?? "", filterScope));
+        // Legacy scopeless records read as "project", never as match-everything:
+        // scopeMatches is bidirectional startsWith and every string starts with
+        // "", so `?? ""` made a scopeless handoff surface in EVERY scoped
+        // assemble forever (field D12; supersedes the deliberate preservation
+        // in the scopeMatches extraction).
+        entries = entries.filter((e) => scopeMatches(e.scope ?? "project", filterScope));
       }
       if (filters.since) {
         const since = filters.since;

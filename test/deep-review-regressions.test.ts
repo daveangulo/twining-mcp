@@ -226,7 +226,11 @@ describe("why() hides non-authoritative decisions", () => {
     expect(surfaced).toContain(live.id);
     expect(surfaced).not.toContain(gone.id);
     expect(surfaced).not.toContain(shelved.id);
-    expect(why.superseded_count).toBe(2);
+    // Count partition (field D10): superseded_count covers superseded +
+    // overridden; archived are counted ONLY by archived_excluded_count.
+    // The filter still hides all three — only the counts partition.
+    expect(why.superseded_count).toBe(1);
+    expect(why.archived_excluded_count).toBe(1);
   });
 });
 

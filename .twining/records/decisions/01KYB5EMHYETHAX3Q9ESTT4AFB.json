@@ -42,7 +42,8 @@
   "rationale": "avoids a breaking change to the why() response shape for a count that is only ever displayed as 'N more retired decisions'",
   "reversible": true,
   "scope": "src/",
-  "status": "active",
+  "status": "superseded",
   "summary": "Chose to keep the existing superseded_count field name while widening what it counts, rather than adding a separate retired_count",
+  "superseded_by": "01KZXVCSJA3CKY4V6YB7SQQN94",
   "timestamp": "2026-07-24T22:55:32.926Z"
 }

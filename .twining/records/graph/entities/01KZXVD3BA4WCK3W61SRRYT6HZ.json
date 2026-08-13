@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-13T15:21:12.810Z",
+  "id": "01KZXVD3BA4WCK3W61SRRYT6HZ",
+  "name": "01KZXVD3AXV4Y7PNM46P99NWS3",
+  "properties": {
+    "scope": "src/storage/handoff-store.ts",
+    "summary": "Chose to read legacy scopeless handoff records as scope \"project\" in both list filters and to default createHandoff's scope to \"project\""
+  },
+  "type": "concept",
+  "updated_at": "2026-08-13T15:21:12.810Z"
+}

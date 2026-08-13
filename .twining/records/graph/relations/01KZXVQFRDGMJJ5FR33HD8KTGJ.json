@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T15:26:53.197Z",
+  "id": "01KZXVQFRDGMJJ5FR33HD8KTGJ",
+  "properties": {
+    "decision_summary": "Chose skip-loudly over guess-or-error for twining_record supersedes ambiguity"
+  },
+  "source": "01KJD8KGK434DH6PX2BNXW4W71",
+  "target": "01KZXVQFR8DXQMJ139631J8PB3",
+  "type": "decided_by"
+}

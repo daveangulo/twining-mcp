@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T15:26:53.456Z",
+  "id": "01KZXVQG0GK26E0MBY5MQ30HQC",
+  "properties": {
+    "decision_summary": "Chose a shared SEARCH_NOISE_FLOOR constant consumed by both search total_matched counting and assemble's semantic-admission floor"
+  },
+  "source": "01KJD8KGK434DH6PX2BNXW4W71",
+  "target": "01KZXVQG0B14TV2JCQ384D9R5T",
+  "type": "decided_by"
+}

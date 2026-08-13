@@ -3,8 +3,8 @@
   "id": "01KHXTX66C7PGD6VT0Z8397D7Y",
   "name": "src/storage/handoff-store.ts",
   "properties": {
-    "scope": "src/storage/"
+    "scope": "src/,src/storage/,src/storage/handoff-store.ts"
   },
   "type": "file",
-  "updated_at": "2026-02-20T15:32:45.900Z"
+  "updated_at": "2026-08-13T15:26:53.580Z"
 }

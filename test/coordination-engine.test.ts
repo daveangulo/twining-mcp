@@ -627,6 +627,15 @@ describe("CoordinationEngine.createHandoff()", () => {
     expect(result.results[0]!.status).toBe("completed");
   });
 
+  it("defaults a missing scope to \"project\" instead of persisting undefined (field D12)", async () => {
+    const result = await engine.createHandoff({
+      source_agent: "agent-builder",
+      summary: "Scopeless handoff",
+      results: [{ description: "Did the thing", status: "completed" }],
+    });
+    expect(result.scope).toBe("project");
+  });
+
   it("returns a HandoffRecord with generated id and created_at", async () => {
     const result = await engine.createHandoff({
       source_agent: "agent-builder",

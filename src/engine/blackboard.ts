@@ -218,10 +218,12 @@ export class BlackboardEngine {
     options?: { entry_types?: string[]; limit?: number },
   ): Promise<{
     results: BlackboardSearchResult[];
+    /** Pre-slice count of matches above the noise floor (field D9). */
+    total_matched: number;
     fallback_mode: boolean;
   }> {
     if (!this.searchEngine) {
-      return { results: [], fallback_mode: true };
+      return { results: [], total_matched: 0, fallback_mode: true };
     }
 
     const { entries } = await this.store.read();
