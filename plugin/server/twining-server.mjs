@@ -11922,6 +11922,49 @@ var init_decision_store = __esm({
         }
         this.cachedIndex = null;
       }
+      /**
+       * Persist an append-only metadata amendment (field D11). Unlike
+       * updateStatus, this rewrites the index entry's affected_files/
+       * affected_symbols too — getByScope reads them from the index, so a
+       * record-only write would leave the repair invisible to retrieval.
+       * Deltas merge against the in-lock read: concurrent amends both survive.
+       */
+      async amendMetadata(id, delta) {
+        const filePath = path6.join(this.decisionsDir, `${id}.json`);
+        if (!fs5.existsSync(filePath)) return;
+        const release = await import_proper_lockfile2.default.lock(this.indexPath, LOCK_OPTIONS);
+        try {
+          const decision = JSON.parse(
+            fs5.readFileSync(filePath, "utf-8")
+          );
+          decision.affected_files = [
+            ...decision.affected_files,
+            ...delta.add_affected_files.filter(
+              (f) => !decision.affected_files.includes(f)
+            )
+          ];
+          decision.affected_symbols = [
+            ...decision.affected_symbols,
+            ...delta.add_affected_symbols.filter(
+              (s) => !decision.affected_symbols.includes(s)
+            )
+          ];
+          decision.amendments = [...decision.amendments ?? [], delta.amendment];
+          atomicWriteFileSync(filePath, JSON.stringify(decision, null, 2));
+          const index = JSON.parse(
+            fs5.readFileSync(this.indexPath, "utf-8")
+          );
+          const indexEntry = index.find((e) => e.id === id);
+          if (indexEntry) {
+            indexEntry.affected_files = decision.affected_files;
+            indexEntry.affected_symbols = decision.affected_symbols;
+          }
+          atomicWriteFileSync(this.indexPath, JSON.stringify(index, null, 2));
+        } finally {
+          await release();
+        }
+        this.cachedIndex = null;
+      }
       /** Get the full decision index, with mtime-based caching. */
       async getIndex() {
         try {
@@ -12654,6 +12697,33 @@ var init_sqlite_stores = __esm({
           this.save(decision);
         });
       }
+      /**
+       * Append-only metadata amendment (field D11). The sqlite index is a
+       * read-time projection over the record, so rewriting the record keeps
+       * every read model consistent. Deltas merge against the in-transaction
+       * read: concurrent amends both survive.
+       */
+      async amendMetadata(id, delta) {
+        assertWritable2();
+        withWriteTxn(this.db, () => {
+          const decision = this.load(id);
+          if (!decision) return;
+          decision.affected_files = [
+            ...decision.affected_files,
+            ...delta.add_affected_files.filter(
+              (f) => !decision.affected_files.includes(f)
+            )
+          ];
+          decision.affected_symbols = [
+            ...decision.affected_symbols,
+            ...delta.add_affected_symbols.filter(
+              (s) => !decision.affected_symbols.includes(s)
+            )
+          ];
+          decision.amendments = [...decision.amendments ?? [], delta.amendment];
+          this.save(decision);
+        });
+      }
       async getIndex() {
         return this.db.prepare("SELECT data FROM decisions ORDER BY seq").all().map((r) => {
           const d = JSON.parse(r.data);
@@ -13169,6 +13239,13 @@ var init_record_export = __esm({
       }
       async linkCommit(id, commitHash) {
         await this.inner.linkCommit(id, commitHash);
+        const updated = await this.inner.get(id);
+        if (updated) this.exporter.decision(updated);
+      }
+      // Mirror invariant (field D11): without this delegation the amendment
+      // would live only in the db and the next file-wins ingest would REVERT it.
+      async amendMetadata(id, fields) {
+        await this.inner.amendMetadata(id, fields);
         const updated = await this.inner.get(id);
         if (updated) this.exporter.decision(updated);
       }
@@ -28890,6 +28967,14 @@ var Archiver = class {
 
 // src/engine/blackboard.ts
 var BlackboardEngine = class {
+  /**
+   * IDs of entries posted through THIS engine instance — i.e. by the calling
+   * session, since the stdio server is one process per session. The exact
+   * self-authorship signal for assemble's lane marking (field D12): a
+   * timestamp heuristic mislabels concurrent sessions sharing the store,
+   * and agent_id is a role label, not an identity.
+   */
+  sessionPostIds = /* @__PURE__ */ new Set();
   store;
   embedder;
   indexManager;
@@ -28968,6 +29053,7 @@ var BlackboardEngine = class {
       ...input.origin ? { origin: input.origin } : {},
       provenance: captureProvenance(this.projectRoot)
     });
+    this.sessionPostIds.add(entry.id);
     this.touchAgent(input.agent_id);
     if (this.graphPopulator) {
       await this.graphPopulator.onPost(entry);
@@ -29347,6 +29433,51 @@ var GraphAutoPopulator = class {
       }
     } catch (error2) {
       console.error("[twining] GraphAutoPopulator.onDecide failed (non-fatal):", error2);
+    }
+  }
+  /**
+   * Auto-populate from twining_amend (field D11). Receives ONLY the newly
+   * added files/symbols — relations are append-only and never deduplicated
+   * in either backend, so re-running the onDecide loops over the full lists
+   * would duplicate every existing decided_by edge. The concept upsert is
+   * idempotent and guarantees the relation target exists even for decisions
+   * recorded before graph population.
+   */
+  async onAmend(input, decisionId) {
+    try {
+      const decisionEntity = await this.graphEngine.addEntity({
+        name: decisionId,
+        type: "concept",
+        properties: { summary: input.summary, scope: input.scope }
+      });
+      for (const filePath of input.added_files) {
+        const entity = await this.graphEngine.addEntity({
+          name: filePath,
+          type: "file",
+          properties: { scope: input.scope }
+        });
+        await this.graphEngine.addRelation({
+          source: entity.id,
+          target: decisionEntity.id,
+          type: "decided_by",
+          properties: { decision_summary: input.summary }
+        });
+      }
+      for (const symbol of input.added_symbols) {
+        const entity = await this.graphEngine.addEntity({
+          name: symbol,
+          type: "function",
+          properties: { scope: input.scope }
+        });
+        await this.graphEngine.addRelation({
+          source: entity.id,
+          target: decisionEntity.id,
+          type: "decided_by",
+          properties: { decision_summary: input.summary }
+        });
+      }
+    } catch (error2) {
+      console.error("[twining] GraphAutoPopulator.onAmend failed (non-fatal):", error2);
     }
   }
   /**
@@ -29758,6 +29889,107 @@ ${conflictDetails}`,
       result.supersedes_dangling = supersededDangling;
     }
     return result;
+  }
+  /**
+   * Append-only metadata repair (field D11). Adds affected_files/
+   * affected_symbols to an existing record — the two fields the retrieval
+   * graph and divergence checks key on — with an in-record provenance trail.
+   * Semantic content is never amendable (that would demand embedding
+   * reindexing and break "a decision record is what was decided, then").
+   * Works on retired records: the file list is a factual attribute, not a
+   * lifecycle claim. Idempotent: already-present entries append no
+   * provenance and touch no store.
+   */
+  async amend(input) {
+    if (!input.id) {
+      throw new TwiningError("id is required", "INVALID_INPUT");
+    }
+    const wantFiles = input.add_affected_files ?? [];
+    const wantSymbols = input.add_affected_symbols ?? [];
+    if (wantFiles.length === 0 && wantSymbols.length === 0) {
+      throw new TwiningError(
+        "Nothing to amend: provide add_affected_files and/or add_affected_symbols",
+        "INVALID_INPUT"
+      );
+    }
+    if ([...wantFiles, ...wantSymbols].some((s) => s.trim().length === 0)) {
+      throw new TwiningError(
+        "Empty or whitespace entries are not amendable \u2014 they would match every scope query",
+        "INVALID_INPUT"
+      );
+    }
+    const decision = await this.decisionStore.get(input.id);
+    if (!decision) {
+      throw new TwiningError(`Decision not found: ${input.id}`, "NOT_FOUND");
+    }
+    const existingFiles = new Set(decision.affected_files);
+    const existingSymbols = new Set(decision.affected_symbols);
+    const addedFiles = [...new Set(wantFiles)].filter(
+      (f) => !existingFiles.has(f)
+    );
+    const addedSymbols = [...new Set(wantSymbols)].filter(
+      (s) => !existingSymbols.has(s)
+    );
+    const alreadyPresent = [
+      .../* @__PURE__ */ new Set([
+        ...wantFiles.filter((f) => existingFiles.has(f)),
+        ...wantSymbols.filter((s) => existingSymbols.has(s))
+      ])
+    ];
+    if (addedFiles.length === 0 && addedSymbols.length === 0) {
+      return {
+        id: decision.id,
+        status: decision.status,
+        added_files: [],
+        added_symbols: [],
+        already_present: alreadyPresent
+      };
+    }
+    const amendment = {
+      amended_at: (/* @__PURE__ */ new Date()).toISOString(),
+      amended_by: input.agent_id ?? "main",
+      added_files: addedFiles,
+      added_symbols: addedSymbols,
+      ...input.reason ? { reason: input.reason } : {}
+    };
+    await this.decisionStore.amendMetadata(decision.id, {
+      add_affected_files: addedFiles,
+      add_affected_symbols: addedSymbols,
+      amendment
+    });
+    if (this.graphPopulator) {
+      await this.graphPopulator.onAmend(
+        {
+          added_files: addedFiles,
+          added_symbols: addedSymbols,
+          scope: decision.scope,
+          summary: decision.summary
+        },
+        decision.id
+      );
+    }
+    let auditPosted = true;
+    try {
+      await this.blackboardEngine.post({
+        entry_type: "finding",
+        summary: `Amended decision ${decision.id}: +${addedFiles.length} file(s), +${addedSymbols.length} symbol(s)`,
+        detail: `Added affected_files: [${addedFiles.join(", ")}]; affected_symbols: [${addedSymbols.join(", ")}]${input.reason ? `. Reason: ${input.reason}` : ""}. Amended by ${amendment.amended_by}; decision status: ${decision.status}.`,
+        tags: ["amend", "audit-trail"],
+        scope: decision.scope,
+        agent_id: amendment.amended_by
+      });
+    } catch (error2) {
+      auditPosted = false;
+      console.error("[twining] amend audit post failed (non-fatal):", error2);
+    }
+    return {
+      id: decision.id,
+      status: decision.status,
+      added_files: addedFiles,
+      added_symbols: addedSymbols,
+      already_present: alreadyPresent,
+      ...auditPosted ? {} : { audit_posted: false }
+    };
   }
   /**
    * Retrieve decision chain for a scope or file (#41: bounded).
@@ -30444,6 +30676,18 @@ var ContextAssembler = class _ContextAssembler {
   agentStore;
   /** In-memory log of last assembly time per agent (not persisted across restarts). */
   assemblyLog = /* @__PURE__ */ new Map();
+  /**
+   * Exact self-authorship signal (field D12): the ids BlackboardEngine
+   * posted in this process. A timestamp-vs-process-start heuristic mislabels
+   * CONCURRENT sessions sharing the store (the coordination case the lane
+   * exists for), and agent_id is a role label, not an identity. Unset (e.g.
+   * dashboard-constructed assemblers) means nothing is ever marked.
+   */
+  sessionPostIds = null;
+  /** Wire the posting session's entry-id set (server.ts). */
+  setSessionPostIds(ids) {
+    this.sessionPostIds = ids;
+  }
   constructor(blackboardStore, decisionStore, searchEngine, config2, graphEngine, planningBridge, handoffStore, agentStore) {
     this.blackboardStore = blackboardStore;
     this.decisionStore = decisionStore;
@@ -30666,7 +30910,9 @@ var ContextAssembler = class _ContextAssembler {
               summary: e.summary,
               detail: summaryOnlyWarnings.has(e.id) ? "" : e.detail,
               scope: e.scope,
-              timestamp: e.timestamp
+              timestamp: e.timestamp,
+              // Same-session detection by posted-id membership (field D12).
+              ...this.sessionPostIds?.has(e.id) ? { self_authored: true } : {}
             });
             break;
           case "finding":
@@ -30878,7 +31124,8 @@ var ContextAssembler = class _ContextAssembler {
     if (ctx.active_warnings.length > 0) {
       sections.push("\n### STOP \u2014 READ THESE WARNINGS");
       for (const w of ctx.active_warnings) {
-        sections.push(`- **${w.summary}**${w.detail ? `
+        const selfMark = w.self_authored ? " [this session]" : "";
+        sections.push(`- **${w.summary}**${selfMark}${w.detail ? `
   ${w.detail}` : ""}`);
       }
     }
@@ -32720,6 +32967,39 @@ function registerDecisionTools(server, engine, twiningDir, options = {}) {
           Object.keys(filters).length > 0 ? filters : void 0,
           args.limit
         );
+        return toolResult(result);
+      } catch (e) {
+        if (e instanceof TwiningError) {
+          return toolError(e.message, e.code);
+        }
+        return toolError(
+          e instanceof Error ? e.message : "Unknown error",
+          "INTERNAL_ERROR"
+        );
+      }
+    }
+  );
+  if (options.fullSurface) server.registerTool(
+    "twining_amend",
+    {
+      description: "Add affected_files/affected_symbols to an EXISTING decision record \u2014 the append-only repair for records written with empty lists (which are invisible to twining_why file queries, the drift check, and the knowledge graph). Strictly additive: never removes entries, never touches semantic content (summary/rationale/context are not amendable), works on retired records, and appends a provenance entry to the record's amendments[] trail plus an audit finding to the blackboard.",
+      inputSchema: {
+        decision_id: external_exports.string().describe("ID of the decision to amend"),
+        add_affected_files: external_exports.array(external_exports.string()).optional().describe("File paths to add (existing entries are kept; duplicates ignored)"),
+        add_affected_symbols: external_exports.array(external_exports.string()).optional().describe("Function/class/method names to add"),
+        reason: external_exports.string().optional().describe("Why the metadata is being amended \u2014 stored in the provenance trail"),
+        agent_id: external_exports.string().optional().describe("ID of the agent performing the amendment")
+      }
+    },
+    async (args) => {
+      try {
+        const result = await engine.amend({
+          id: args.decision_id,
+          add_affected_files: args.add_affected_files,
+          add_affected_symbols: args.add_affected_symbols,
+          reason: args.reason,
+          agent_id: args.agent_id
+        });
         return toolResult(result);
       } catch (e) {
         if (e instanceof TwiningError) {
@@ -35840,6 +36120,7 @@ function createServer(projectRoot) {
     agentStore
     // for agent suggestions in assembly
   );
+  contextAssembler.setSessionPostIds(blackboardEngine.sessionPostIds);
   decisionEngine.setAssemblyChecker(
     (agentId) => contextAssembler.hasRecentAssembly(agentId)
   );
