@@ -1559,6 +1559,63 @@ describe("DecisionEngine.searchDecisions — semantic path (review findings)", (
   });
 });
 
+describe("DecisionEngine.why — lineage resolution (field D13 ask 3)", () => {
+  it("attaches the lineage head to excluded superseded records when lineage: true", async () => {
+    const a = await decisionEngine.decide(
+      validDecisionInput({ summary: "Original" }),
+    );
+    const b = await decisionEngine.decide(
+      validDecisionInput({ summary: "First amendment", supersedes: a.id }),
+    );
+    const c = await decisionEngine.decide(
+      validDecisionInput({ summary: "Current head", supersedes: b.id }),
+    );
+
+    const result = await decisionEngine.why("src/auth/", { lineage: true });
+    const excludedA = result.superseded_excluded!.find((e) => e.id === a.id)!;
+    const excludedB = result.superseded_excluded!.find((e) => e.id === b.id)!;
+    expect(excludedA.lineage_head).toMatchObject({
+      id: c.id,
+      summary: "Current head",
+      chain_length: 2,
+    });
+    expect(excludedB.lineage_head).toMatchObject({ id: c.id, chain_length: 1 });
+  });
+
+  it("omits lineage by default and never attaches it to live decisions", async () => {
+    const a = await decisionEngine.decide(
+      validDecisionInput({ summary: "Original" }),
+    );
+    await decisionEngine.decide(
+      validDecisionInput({ summary: "Head", supersedes: a.id }),
+    );
+    const plain = await decisionEngine.why("src/auth/");
+    expect(plain.superseded_excluded![0]!.lineage_head).toBeUndefined();
+    const withLineage = await decisionEngine.why("src/auth/", { lineage: true });
+    for (const d of withLineage.decisions) {
+      expect((d as Record<string, unknown>).lineage_head).toBeUndefined();
+    }
+  });
+
+  it("terminates on a superseded_by cycle", async () => {
+    const a = await decisionEngine.decide(
+      validDecisionInput({ summary: "Cycle A" }),
+    );
+    const b = await decisionEngine.decide(
+      validDecisionInput({ summary: "Cycle B", supersedes: a.id }),
+    );
+    // Manufacture the cycle: B superseded back by A.
+    await decisionStore.updateStatus(b.id, "superseded", { superseded_by: a.id });
+    await decisionStore.updateStatus(a.id, "superseded", { superseded_by: b.id });
+
+    const result = await decisionEngine.why("src/auth/", { lineage: true });
+    // Both are retired; the walker must terminate and report SOME head.
+    for (const e of result.superseded_excluded!) {
+      expect(e.lineage_head).toBeDefined();
+    }
+  });
+});
+
 describe("DecisionEngine.amend — append-only metadata repair (field D11)", () => {
   it("adds affected_files/affected_symbols, records provenance, and makes the decision retrievable by file", async () => {
     const d = await decisionEngine.decide(
@@ -1690,6 +1747,13 @@ describe("DecisionEngine.amend — append-only metadata repair (field D11)", () 
     }, {});
     expect(bySource["src/auth/a.ts"]).toBe(1);
     expect(bySource["specs/b.md"]).toBe(1);
+
+    // Provenance marker (field D13 ask 4): auto-populated edges are machine-
+    // derived and must say so; absent = legacy/unknown, "declared" = agent-
+    // typed via twining_add_relation.
+    for (const r of decidedBy) {
+      expect(r.properties.origin).toBe("derived");
+    }
   });
 
   it("posts an audit-trail finding to the blackboard", async () => {

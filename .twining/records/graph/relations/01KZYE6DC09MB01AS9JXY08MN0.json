@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T20:49:36.640Z",
+  "id": "01KZYE6DC09MB01AS9JXY08MN0",
+  "properties": {
+    "decision_summary": "Chose lineage as an opt-in flag on twining_why attaching lineage_head to superseded_excluded entries, with a fresh cycle-guarded depth-capped walker in DecisionEngine"
+  },
+  "source": "01KHMSDNP6W0G4PM1EF27453CS",
+  "target": "01KZYE6DBT5BGVFEE75XEGCRMM",
+  "type": "decided_by"
+}

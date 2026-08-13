@@ -4,6 +4,7 @@ import path from "node:path";
 import os from "node:os";
 import { GraphStore } from "../src/storage/graph-store.js";
 import { GraphEngine } from "../src/engine/graph.js";
+import { GraphAutoPopulator } from "../src/engine/graph-auto-populator.js";
 import { TwiningError } from "../src/utils/errors.js";
 
 let tmpDir: string;
@@ -289,5 +290,57 @@ describe("GraphEngine.prune", () => {
     const result = await engine.prune();
     expect(result.total_orphans_found).toBe(0);
     expect(result.pruned).toEqual([]);
+  });
+});
+
+describe("GraphAutoPopulator — per-step isolation and dead related_to removal (wave C)", () => {
+  function harness() {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "twining-populator-"));
+    fs.mkdirSync(path.join(dir, "graph"), { recursive: true });
+    const graphStore = new GraphStore(dir);
+    const engine = new GraphEngine(graphStore);
+    return { graphStore, populator: new GraphAutoPopulator(engine) };
+  }
+
+  it("a failing depends_on edge does not abort the supersedes edge (per-step isolation)", async () => {
+    const { graphStore, populator } = harness();
+    // Target concept exists; the dep target does NOT (pre-graph decision).
+    await populator.onDecide(
+      { scope: "src/", summary: "old", affected_files: [] },
+      "OLD-DECISION",
+    );
+    await populator.onDecide(
+      {
+        scope: "src/",
+        summary: "new",
+        depends_on: ["GHOST-NEVER-GRAPHED"],
+        supersedes: "OLD-DECISION",
+      },
+      "NEW-DECISION",
+    );
+    const relations = await graphStore.getRelations();
+    expect(relations.some((r) => r.type === "supersedes")).toBe(true);
+  });
+
+  it("onPost no longer writes speculative related_to edges, and still creates the affects edge", async () => {
+    const { graphStore, populator } = harness();
+    // An entity whose NAME coincides with a relates_to entry id — the old
+    // speculative loop would resolve it and mint a bogus related_to edge.
+    const engine2 = new GraphEngine(graphStore);
+    await engine2.addEntity({ name: "SOME-ENTRY-ID", type: "concept" });
+    await populator.onPost({
+      id: "E1",
+      timestamp: new Date().toISOString(),
+      agent_id: "t",
+      entry_type: "warning",
+      tags: [],
+      scope: "src/auth/",
+      summary: "warn",
+      detail: "",
+      relates_to: ["SOME-ENTRY-ID", "ANOTHER-ENTRY-ID"],
+    } as any);
+    const relations = await graphStore.getRelations();
+    expect(relations.filter((r) => r.type === "related_to")).toHaveLength(0);
+    expect(relations.filter((r) => r.type === "affects")).toHaveLength(1);
   });
 });

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T20:49:36.399Z",
+  "id": "01KZYE6D4F0PRP05Z6512D8FGS",
+  "properties": {
+    "decision_summary": "Chose properties.origin declared|derived (absent = legacy/unknown) following the shipped rationale_source/origin precedents"
+  },
+  "source": "01KKNE77Z5ZR4YZA92Q52HKRJ2",
+  "target": "01KZYE6D4CGQW8BJ3D2G4YXNNP",
+  "type": "decided_by"
+}

@@ -56,7 +56,7 @@ export class GraphAutoPopulator {
           source: entity.name,
           target: decisionEntity.name,
           type: "decided_by",
-          properties: { decision_summary: input.summary },
+          properties: { origin: "derived", decision_summary: input.summary },
         });
       }
 
@@ -71,40 +71,55 @@ export class GraphAutoPopulator {
           source: entity.name,
           target: decisionEntity.name,
           type: "decided_by",
-          properties: { decision_summary: input.summary },
+          properties: { origin: "derived", decision_summary: input.summary },
         });
       }
 
-      // depends_on relations between decision concept nodes
+      // Per-step isolation (wave C): these edge groups target concepts that
+      // may not exist in the graph (pre-graph decisions, pruned orphans) —
+      // one NOT_FOUND must not abort the remaining, unrelated edges.
       for (const depId of input.depends_on ?? []) {
-        await this.graphEngine.addRelation({
-          source: decisionId,
-          target: depId,
-          type: "depends_on",
-        });
+        try {
+          await this.graphEngine.addRelation({
+            source: decisionId,
+            target: depId,
+            type: "depends_on",
+            properties: { origin: "derived" },
+          });
+        } catch (error) {
+          console.error("[twining] onDecide depends_on edge failed (non-fatal):", error);
+        }
       }
 
-      // supersedes relation
       if (input.supersedes) {
-        await this.graphEngine.addRelation({
-          source: decisionId,
-          target: input.supersedes,
-          type: "supersedes",
-        });
+        try {
+          await this.graphEngine.addRelation({
+            source: decisionId,
+            target: input.supersedes,
+            type: "supersedes",
+            properties: { origin: "derived" },
+          });
+        } catch (error) {
+          console.error("[twining] onDecide supersedes edge failed (non-fatal):", error);
+        }
       }
 
-      // commit entity with decided_by relation
       if (input.commit_hash) {
-        await this.graphEngine.addEntity({
-          name: input.commit_hash,
-          type: "commit",
-          properties: { decision: decisionId },
-        });
-        await this.graphEngine.addRelation({
-          source: input.commit_hash,
-          target: decisionId,
-          type: "decided_by",
-        });
+        try {
+          await this.graphEngine.addEntity({
+            name: input.commit_hash,
+            type: "commit",
+            properties: { decision: decisionId },
+          });
+          await this.graphEngine.addRelation({
+            source: input.commit_hash,
+            target: decisionId,
+            type: "decided_by",
+            properties: { origin: "derived" },
+          });
+        } catch (error) {
+          console.error("[twining] onDecide commit edge failed (non-fatal):", error);
+        }
       }
     } catch (error) {
       console.error("[twining] GraphAutoPopulator.onDecide failed (non-fatal):", error);
@@ -148,7 +163,7 @@ export class GraphAutoPopulator {
           source: entity.id,
           target: decisionEntity.id,
           type: "decided_by",
-          properties: { decision_summary: input.summary },
+          properties: { origin: "derived", decision_summary: input.summary },
         });
       }
 
@@ -162,7 +177,7 @@ export class GraphAutoPopulator {
           source: entity.id,
           target: decisionEntity.id,
           type: "decided_by",
-          properties: { decision_summary: input.summary },
+          properties: { origin: "derived", decision_summary: input.summary },
         });
       }
     } catch (error) {
@@ -172,8 +187,8 @@ export class GraphAutoPopulator {
 
   /**
    * Auto-populate from twining_post.
-   * Creates scope entities (file or module), relates_to relations,
-   * affects relations for warnings and findings.
+   * Creates scope entities (file or module) and affects relations for
+   * warnings and findings.
    */
   async onPost(entry: BlackboardEntry): Promise<void> {
     try {
@@ -210,24 +225,16 @@ export class GraphAutoPopulator {
           source: conceptEntity.name,
           target: scopeEntity.name,
           type: "affects",
-          properties: { summary: entry.summary },
+          properties: { origin: "derived", summary: entry.summary },
         });
       }
 
-      // relates_to → related_to relations between scope entities
-      if (entry.relates_to && entry.relates_to.length > 0) {
-        // We create related_to relations from this entry's scope to related entries' scopes
-        // We can't look up the related entries here (no blackboard access), but we create
-        // relations using the entry IDs as potential entity names
-        for (const relatedId of entry.relates_to) {
-          await this.graphEngine.addRelation({
-            source: scopeEntity.name,
-            target: relatedId,
-            type: "related_to",
-            properties: { via: entry.id },
-          });
-        }
-      }
+      // The speculative relates_to → related_to loop was REMOVED (wave C,
+      // field D13 review): it targeted blackboard entry IDs, which are never
+      // graph entities — the NOT_FOUND was swallowed and aborted the rest of
+      // the call, and the 1-in-2,352 live edge it did mint was an entry-id/
+      // entity-name coincidence. Linking posts to posts is the blackboard's
+      // relates_to field's job; the graph edge added nothing but noise.
     } catch (error) {
       console.error("[twining] GraphAutoPopulator.onPost failed (non-fatal):", error);
     }
@@ -261,7 +268,7 @@ export class GraphAutoPopulator {
           source: sourceEntity.name,
           target: targetEntity.name,
           type: "related_to",
-          properties: { type: "handoff" },
+          properties: { origin: "derived", type: "handoff" },
         });
       }
 
@@ -278,6 +285,7 @@ export class GraphAutoPopulator {
               source: input.source_agent,
               target: artifact,
               type: "produces",
+              properties: { origin: "derived" },
             });
           }
         }
@@ -297,7 +305,7 @@ export class GraphAutoPopulator {
           source: input.source_agent,
           target: scopeEntity.name,
           type: "affects",
-          properties: { via: "handoff" },
+          properties: { origin: "derived", via: "handoff" },
         });
       }
     } catch (error) {
@@ -320,6 +328,7 @@ export class GraphAutoPopulator {
         source: commitHash,
         target: decisionId,
         type: "decided_by",
+        properties: { origin: "derived" },
       });
     } catch (error) {
       console.error("[twining] GraphAutoPopulator.onLinkCommit failed (non-fatal):", error);
@@ -372,7 +381,7 @@ export class GraphAutoPopulator {
         source: agentId,
         target: decisionId,
         type: "challenged",
-        properties: { action },
+        properties: { origin: "derived", action },
       });
     } catch (error) {
       console.error("[twining] GraphAutoPopulator.onChallenge failed (non-fatal):", error);

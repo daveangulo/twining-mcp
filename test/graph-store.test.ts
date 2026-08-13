@@ -284,3 +284,39 @@ describe("GraphStore.removeEntities", () => {
     expect(result.removedRelations).toBe(0);
   });
 });
+
+describe("GraphStore.addRelation — upsert semantics (wave C)", () => {
+  it("re-adding the same (source, target, type) merges properties instead of appending a duplicate", async () => {
+    const source = await store.addEntity({ name: "src/a.ts", type: "file" });
+    const target = await store.addEntity({ name: "D1", type: "concept" });
+
+    const first = await store.addRelation({
+      source: source.id,
+      target: target.id,
+      type: "decided_by",
+      properties: { decision_summary: "original" },
+    });
+    const second = await store.addRelation({
+      source: source.id,
+      target: target.id,
+      type: "decided_by",
+      properties: { decision_summary: "updated", origin: "derived" },
+    });
+
+    expect(second.id).toBe(first.id);
+    const relations = await store.getRelations();
+    expect(relations).toHaveLength(1);
+    expect(relations[0]!.properties).toEqual({
+      decision_summary: "updated",
+      origin: "derived",
+    });
+  });
+
+  it("different type between the same entities is a distinct relation", async () => {
+    const source = await store.addEntity({ name: "src/b.ts", type: "file" });
+    const target = await store.addEntity({ name: "D2", type: "concept" });
+    await store.addRelation({ source: source.id, target: target.id, type: "decided_by" });
+    await store.addRelation({ source: source.id, target: target.id, type: "tested_by" });
+    expect(await store.getRelations()).toHaveLength(2);
+  });
+});

@@ -59,7 +59,7 @@ export function registerGraphTools(
     "twining_add_relation",
     {
       description:
-        "Add a relation between two knowledge graph entities. Source and target can be entity IDs or names. Returns an error for ambiguous name matches.",
+        "Add a relation between two knowledge graph entities. Source and target can be entity IDs or names. Returns an error for ambiguous name matches. Upsert semantics: re-adding the same (source, target, type) merges properties instead of duplicating the edge. Relations are provenance-marked: agent-typed edges get properties.origin \"declared\", auto-populated edges \"derived\", absent means legacy/unknown.",
       inputSchema: {
         source: z
           .string()
@@ -84,11 +84,13 @@ export function registerGraphTools(
     },
     async (args) => {
       try {
+        // Provenance marker (field D13 ask 4): agent-typed = declared; a
+        // caller-supplied origin wins (spread order).
         const relation = await engine.addRelation({
           source: args.source,
           target: args.target,
           type: args.type as Parameters<typeof engine.addRelation>[0]["type"],
-          properties: args.properties,
+          properties: { origin: "declared", ...(args.properties ?? {}) },
         });
         return toolResult({ id: relation.id });
       } catch (e) {

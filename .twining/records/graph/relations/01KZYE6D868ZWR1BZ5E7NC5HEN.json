@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T20:49:36.518Z",
+  "id": "01KZYE6D868ZWR1BZ5E7NC5HEN",
+  "properties": {
+    "decision_summary": "Chose to REMOVE onPost's speculative relates_to loop rather than repair it"
+  },
+  "source": "01KHMSD5WQ8BBAQ8QPQMQXSMFH",
+  "target": "01KZYE6D85W4GB5066G22VDQ2W",
+  "type": "decided_by"
+}

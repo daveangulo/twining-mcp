@@ -301,6 +301,33 @@ describe.skipIf(!HAS_SQLITE)("sqlite backend", () => {
       ).rejects.toMatchObject({ code: "AMBIGUOUS_ENTITY" });
     });
 
+    it("upserts relations by (source, target, type), merging properties (wave C)", async () => {
+      const store = new SqliteGraphStore(db);
+      const a = await store.addEntity({ name: "src/a.ts", type: "file" });
+      const b = await store.addEntity({ name: "D1", type: "concept" });
+      const first = await store.addRelation({
+        source: a.id,
+        target: b.id,
+        type: "decided_by",
+        properties: { decision_summary: "original" },
+      });
+      const second = await store.addRelation({
+        source: a.id,
+        target: b.id,
+        type: "decided_by",
+        properties: { origin: "derived" },
+      });
+      expect(second.id).toBe(first.id);
+      const relations = await store.getRelations();
+      expect(relations).toHaveLength(1);
+      expect(relations[0]!.properties).toEqual({
+        decision_summary: "original",
+        origin: "derived",
+      });
+      await store.addRelation({ source: a.id, target: b.id, type: "tested_by" });
+      expect(await store.getRelations()).toHaveLength(2);
+    });
+
     it("removeEntities cascades relations and reports counts", async () => {
       const store = new SqliteGraphStore(db);
       const a = await store.addEntity({ name: "a", type: "module" });

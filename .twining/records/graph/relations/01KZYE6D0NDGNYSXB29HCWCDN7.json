@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T20:49:36.277Z",
+  "id": "01KZYE6D0NDGNYSXB29HCWCDN7",
+  "properties": {
+    "decision_summary": "Chose relation upsert by (source, target, type) with last-wins property merge in BOTH backends, mirroring addEntity's name+type upsert"
+  },
+  "source": "01KHMSDM44AFAD0VVEK8T9N3TK",
+  "target": "01KZYE6D0CD4FB0MPJTTSNP3AM",
+  "type": "decided_by"
+}

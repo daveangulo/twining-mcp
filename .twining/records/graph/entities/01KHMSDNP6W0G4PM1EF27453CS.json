@@ -5,8 +5,8 @@
   "properties": {
     "description": "MCP tool handlers: twining_add_entity, twining_add_relation, twining_neighbors, twining_graph_query",
     "layer": "tools",
-    "scope": "src/tools/"
+    "scope": "src/,src/tools/"
   },
   "type": "file",
-  "updated_at": "2026-03-28T11:33:12.429Z"
+  "updated_at": "2026-08-13T20:49:36.640Z"
 }

@@ -141,6 +141,29 @@ export class GraphStore implements IGraphStore {
         fs.readFileSync(this.relationsPath, "utf-8"),
       ) as Relation[];
 
+      // Upsert by (source, target, type), mirroring addEntity's name+type
+      // upsert (wave C): append-only relations duplicated decided_by edges on
+      // every re-record and made derivation passes non-idempotent. Properties
+      // merge last-wins, matching entity semantics. Parity with the sqlite
+      // backend is contractual.
+      const existing = relations.find(
+        (r) =>
+          r.source === sourceEntity.id &&
+          r.target === targetEntity.id &&
+          r.type === input.type,
+      );
+      if (existing) {
+        existing.properties = {
+          ...existing.properties,
+          ...(input.properties ?? {}),
+        };
+        atomicWriteFileSync(
+          this.relationsPath,
+          JSON.stringify(relations, null, 2),
+        );
+        return existing;
+      }
+
       const relation: Relation = {
         id: generateId(),
         source: sourceEntity.id,

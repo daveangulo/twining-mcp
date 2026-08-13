@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-13T20:49:36.396Z",
+  "id": "01KZYE6D4CGQW8BJ3D2G4YXNNP",
+  "name": "01KZYE6D1B9JGTRJH950R7WMWW",
+  "properties": {
+    "scope": "src/",
+    "summary": "Chose properties.origin declared|derived (absent = legacy/unknown) following the shipped rationale_source/origin precedents"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-13T20:49:36.396Z"
+}

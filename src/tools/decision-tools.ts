@@ -143,6 +143,12 @@ export function registerDecisionTools(
           .boolean()
           .optional()
           .describe("Include superseded decisions (excluded by default)"),
+        lineage: z
+          .boolean()
+          .optional()
+          .describe(
+            "Resolve each excluded superseded/overridden record's lineage HEAD (walks superseded_by to the current answer). Off by default.",
+          ),
         ids: z
           .array(z.string())
           .optional()
@@ -162,6 +168,7 @@ export function registerDecisionTools(
         const result = await engine.why(args.scope ?? "", {
           max_tokens: args.max_tokens,
           include_superseded: args.include_superseded,
+          lineage: args.lineage,
           ids: args.ids,
         });
         const response: Record<string, unknown> = { ...result };

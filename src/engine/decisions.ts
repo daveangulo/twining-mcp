@@ -44,6 +44,12 @@ export interface WhyOptions {
   include_superseded?: boolean;
   /** Return full detail for exactly these decision ids; scope and budget are ignored. */
   ids?: string[];
+  /**
+   * Resolve each excluded superseded/overridden record's lineage HEAD by
+   * walking superseded_by (field D13 ask 3) — "what is the current answer",
+   * not "what ranks highest". Off by default (extra store reads).
+   */
+  lineage?: boolean;
 }
 
 /** Full-detail decision record returned by why(). */
@@ -93,6 +99,8 @@ export interface WhyResult {
     id: string;
     summary: string;
     superseded_by?: string;
+    /** Terminal record of this decision's supersession chain (lineage: true). */
+    lineage_head?: { id: string; summary: string; chain_length: number };
   }>;
   /**
    * Archived decisions hidden from this result (D3). Present so a blinded
@@ -670,16 +678,23 @@ export class DecisionEngine {
       : all.filter((d) => !WHY_RETIRED_STATUSES.has(d.status));
     // Compact identity of the hidden superseded/overridden records with their
     // successors (field D10) — a bare count reads as silence at the gate.
-    const superseded_excluded = options?.include_superseded
+    const supersededRecords = options?.include_superseded
       ? []
       : all
           .filter((d) => d.status === "superseded" || d.status === "overridden")
-          .slice(0, 20)
-          .map((d) => ({
-            id: d.id,
-            summary: d.summary,
-            ...(d.superseded_by ? { superseded_by: d.superseded_by } : {}),
-          }));
+          .slice(0, 20);
+    const superseded_excluded = await Promise.all(
+      supersededRecords.map(async (d) => ({
+        id: d.id,
+        summary: d.summary,
+        ...(d.superseded_by ? { superseded_by: d.superseded_by } : {}),
+        ...(options?.lineage && d.superseded_by
+          ? {
+              lineage_head: await this.resolveLineageHead(d.superseded_by),
+            }
+          : {}),
+      })),
+    );
 
     const ranked = [...matches].sort(
       (a, b) =>
@@ -744,6 +759,31 @@ export class DecisionEngine {
       provisional_count,
       token_estimate: tokensUsed,
     };
+  }
+
+  /**
+   * Walk superseded_by to the terminal record of a supersession chain
+   * (field D13 ask 3). Cycle-guarded and depth-capped; on a cycle or a
+   * dangling link the last reachable record is the reported head.
+   */
+  private async resolveLineageHead(
+    firstSuccessorId: string,
+  ): Promise<{ id: string; summary: string; chain_length: number }> {
+    const visited = new Set<string>();
+    let current = await this.decisionStore.get(firstSuccessorId);
+    let head: { id: string; summary: string } = {
+      id: firstSuccessorId,
+      summary: current?.summary ?? "(unresolved successor)",
+    };
+    let hops = 1;
+    while (current && !visited.has(current.id) && hops < 50) {
+      visited.add(current.id);
+      head = { id: current.id, summary: current.summary };
+      if (!current.superseded_by) break;
+      current = await this.decisionStore.get(current.superseded_by);
+      if (current) hops++;
+    }
+    return { ...head, chain_length: hops };
   }
 
   /** Full-detail drill-down for explicitly requested decision ids (#41). */

@@ -412,6 +412,28 @@ export class SqliteGraphStore implements IGraphStore {
     const sourceEntity = resolveEntity(input.source);
     const targetEntity = resolveEntity(input.target);
 
+    // Upsert by (source, target, type), mirroring addEntity's name+type
+    // upsert (wave C): relations were append-only in both backends, so
+    // re-recording a decision duplicated every decided_by edge and no
+    // derivation pass could ever be idempotent. Properties merge last-wins,
+    // matching entity semantics.
+    const existing = this.getRelationsSync().find(
+      (r) =>
+        r.source === sourceEntity.id &&
+        r.target === targetEntity.id &&
+        r.type === input.type,
+    );
+    if (existing) {
+      const merged: Relation = {
+        ...existing,
+        properties: { ...existing.properties, ...(input.properties ?? {}) },
+      };
+      this.db
+        .prepare("UPDATE relations SET data = ? WHERE id = ?")
+        .run(JSON.stringify(merged), merged.id);
+      return merged;
+    }
+
     const relation: Relation = {
       id: generateId(),
       source: sourceEntity.id,
@@ -426,6 +448,13 @@ export class SqliteGraphStore implements IGraphStore {
       )
       .run(relation.id, relation.source, relation.target, JSON.stringify(relation));
     return relation;
+  }
+
+  private getRelationsSync(): Relation[] {
+    return this.db
+      .prepare("SELECT data FROM relations ORDER BY seq")
+      .all()
+      .map((r) => JSON.parse(r.data as string) as Relation);
   }
 
   async getEntities(): Promise<Entity[]> {
