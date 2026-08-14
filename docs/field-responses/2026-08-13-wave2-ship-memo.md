@@ -1,6 +1,6 @@
-# Twining → field memo: the wave-2 fixes have shipped (2.8.0–2.11.0)
+# Twining → field memo: the wave-2 fixes have shipped (2.8.0–2.12.0)
 
-**STATUS: LIVE** — archive when your store runs server ≥2.11 / plugin ≥1.29
+**STATUS: LIVE** — archive when your store runs server ≥2.12 / plugin ≥1.30
 and the CLAUDE.md retirements below are applied. Companion to the full
 disposition (`2026-08-12-wave2-response.md`, including its measurements-back
 addendum); this memo is only what you need to *act*.
@@ -22,8 +22,9 @@ code — the fix set below includes those.
 | 2.9.0 | 1.27.0 | **Wave A (D9/D10/D12)**: honest `total_matched` + `returned`; retired-status ordering de-boost; `superseded_excluded` on `why` + `superseded_excluded_count` on assemble; `supersedes` fan-out guard + `supersedes_dangling`; scopeless-handoff leak closed in BOTH backends; continue-work age stamps (`[BLOCKED Nd]`); entry scope-proximity dampening + semantic-admission noise floor |
 | 2.10.0 | 1.28.0 | **Wave B (D11 + D12 remainder)**: `twining_amend` (full surface) — append-only `affected_files`/`affected_symbols` repair with in-record `amendments[]` provenance and audit finding; self-authored warnings marked `[this session]` by posted-id membership |
 | 2.11.0 | 1.29.0 | **Wave C (D13 asks 3+4, plus graph defects)**: relation `origin` marker (`declared`/`derived`, absent = legacy) with downgrade protection; `lineage: true` on `twining_why` (chain head via `superseded_by`); graph relations upsert instead of duplicating; populator per-step isolation; the dead `relates_to` write path removed |
+| 2.12.0 | 1.30.0 | **Amend-candidates reporter (re-scoped D13 ask 1)**: `twining_housekeeping({amend_candidates: true})` proposes candidate files for empty-list decisions — report-only by construction, root-contained, all caps reported |
 
-Upgrade: `twining-mcp@latest` (2.11.0) + plugin 1.29.0. Releases are
+Upgrade: `twining-mcp@latest` (2.12.0) + plugin 1.30.0. Releases are
 cumulative — one jump gets everything.
 
 ## CLAUDE.md retirements (the reason to upgrade promptly)
@@ -76,11 +77,14 @@ repairs reach every consumer at once: the drift check, staleness signal 2,
 graph `decided_by` edges, and file-scoped retrieval.
 
 Per your measurements, commit-derivation is dead and the confirmation
-workflow is the accepted shape: candidates proposed, `twining_amend`
-writing the confirmed ones. The addendum accepted the candidate ranking as
-ours to build; we have since descoped the server-side reporter to
-optional — say the word and it returns to the backlog with priority.
-Nothing stops your agents from proposing candidates by hand meanwhile.
+workflow is the accepted shape — and both halves now ship:
+`twining_housekeeping({amend_candidates: true})` proposes candidates
+(bounded scope-tree walk ranked by term overlap; report-only by
+construction — `execute` has no effect; never walks outside the project
+root; every cap and skip is counted, including `scope_outside_root` for
+your `../`-style legacy scope strings), and `twining_amend` writes the
+ones you confirm. Provisional records are scanned too — your ratification
+queue gets candidates alongside active records.
 
 ## Behavior changes to encode before tooling trips on them
 
@@ -112,8 +116,7 @@ Nothing stops your agents from proposing candidates by hand meanwhile.
 ## Our open follow-ups (so you know what is coming vs. not)
 
 Legacy duplicate-relation dedup pass + UNIQUE `(source,target,type)`
-backstop; a sqlite relation-lookup index (writes scan O(N) today); the
-optional amend-candidates reporter; **per-decision `supersedes` on the
+backstop; a sqlite relation-lookup index (writes scan O(N) today); **per-decision `supersedes` on the
 structured object** (the D10(a) substitute — only the fan-out guard has
 shipped); **the D13 ask-2 neighbors work in its accepted reduced form**
 (edge-complete output, hop depth, lifecycle awareness — today an edge from
