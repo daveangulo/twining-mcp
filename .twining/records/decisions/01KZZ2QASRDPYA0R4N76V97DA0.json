@@ -1,0 +1,34 @@
+{
+  "affected_files": [
+    "docs/field-responses/2026-08-13-wave2-ship-memo.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "shipping them pre-send or staying silent",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Field memo fact-checked and corrected: code lens found zero errors; field-vantage lens caught 6 (three silently-dropped commitments now in the follow-ups list, our-store edge count unhitched, sibling full-surface caveat, descope ownership). Committing.",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01KZZ2QASRDPYA0R4N76V97DA0",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "c94b77c66f663ca5be0af128ea3885b2796fed86",
+    "recorded_at": "2026-08-14T02:48:22.566Z"
+  },
+  "rationale": "the field's culture treats silently-dropped commitments as defects; the memo now states 'none silently dropped' and earns it",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/field-responses/",
+  "status": "active",
+  "summary": "Chose to disclose the three unshipped commitments (per-decision supersedes, D13 ask-2 neighbors reduced form, record-time diff capture) in the memo's follow-ups list rather than shipping them pre-send or staying silent",
+  "timestamp": "2026-08-14T02:48:22.584Z"
+}

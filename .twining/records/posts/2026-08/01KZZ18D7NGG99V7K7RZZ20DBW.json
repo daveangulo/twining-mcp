@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Drafted the wave-2 field ship memo (docs/field-responses/2026-08-13-wave2-ship-memo.md, uncommitted): release table 2.8.0-2.11.0, CLAUDE.md retirements, behavior changes, follow-ups, verification request back. Two-lens fact-check workflow in flight.\nDecisions: Chose to structure the memo as an ACTION cover letter (retirements, behavior changes, request-back) referencing the disposition doc rather than restating it — the field's own docs punish stated literals that go stale, so the memo carries only claims tied to shipped versions; used their measured 574 (not our 540 estimate) for the backlog figure",
+  "entry_type": "status",
+  "id": "01KZZ18D7NGG99V7K7RZZ20DBW",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "c94b77c66f663ca5be0af128ea3885b2796fed86",
+    "recorded_at": "2026-08-14T02:22:44.957Z"
+  },
+  "scope": "docs/field-responses/",
+  "summary": "Drafted the wave-2 field ship memo (docs/field-responses/2026-08-13-wave2-ship-memo.md, uncommitted): release table 2.8.0-2.11.0, CLAUDE.md retirements, behavior changes, follow-ups, verification r…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-14T02:22:44.981Z"
+}

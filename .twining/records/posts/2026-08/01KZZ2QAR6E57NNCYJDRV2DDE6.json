@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Field memo fact-checked and corrected: code lens found zero errors; field-vantage lens caught 6 (three silently-dropped commitments now in the follow-ups list, our-store edge count unhitched, sibling full-surface caveat, descope ownership). Committing.\nDecisions: Chose to disclose the three unshipped commitments (per-decision supersedes, D13 ask-2 neighbors reduced form, record-time diff capture) in the memo's follow-ups list rather than shipping them pre-send or staying silent — the field's culture treats silently-dropped commitments as defects; the memo now states 'none silently dropped' and earns it\nFindings: The two-lens fact-check split exactly as designed: the code lens verified every version/field/semantic claim clean, while ONLY the field-vantage lens (reading the promise trail in the response doc + addendum) caught the dropped commitments and the our-store-number leak — fact-checking a cross-repo memo requires the recipient's ledger, not just the sender's code",
+  "entry_type": "status",
+  "id": "01KZZ2QAR6E57NNCYJDRV2DDE6",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "c94b77c66f663ca5be0af128ea3885b2796fed86",
+    "recorded_at": "2026-08-14T02:48:22.501Z"
+  },
+  "scope": "docs/field-responses/",
+  "summary": "Field memo fact-checked and corrected: code lens found zero errors; field-vantage lens caught 6 (three silently-dropped commitments now in the follow-ups list, our-store edge count unhitched, sibli…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-14T02:48:22.534Z"
+}
