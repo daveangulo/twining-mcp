@@ -12055,6 +12055,20 @@ var init_decision_store = __esm({
   }
 });
 
+// src/utils/relation-properties.ts
+function mergeRelationProperties(existing, incoming) {
+  const merged = { ...existing, ...incoming ?? {} };
+  if (existing.origin === "declared" && incoming?.origin === "derived") {
+    merged.origin = "declared";
+  }
+  return merged;
+}
+var init_relation_properties = __esm({
+  "src/utils/relation-properties.ts"() {
+    "use strict";
+  }
+});
+
 // src/utils/entity-properties.ts
 function splitSetProperty(value) {
   if (!value) return [];
@@ -12107,6 +12121,7 @@ var init_graph_store = __esm({
     import_proper_lockfile3 = __toESM(require_proper_lockfile(), 1);
     init_file_store();
     init_ids();
+    init_relation_properties();
     init_entity_properties();
     init_errors();
     GraphStore = class {
@@ -12208,6 +12223,20 @@ var init_graph_store = __esm({
           const relations = JSON.parse(
             fs6.readFileSync(this.relationsPath, "utf-8")
           );
+          const existing = relations.find(
+            (r) => r.source === sourceEntity.id && r.target === targetEntity.id && r.type === input.type
+          );
+          if (existing) {
+            existing.properties = mergeRelationProperties(
+              existing.properties,
+              input.properties
+            );
+            atomicWriteFileSync(
+              this.relationsPath,
+              JSON.stringify(relations, null, 2)
+            );
+            return existing;
+          }
           const relation = {
             id: generateId(),
             source: sourceEntity.id,
@@ -12552,6 +12581,7 @@ var init_sqlite_stores = __esm({
     init_entity_properties();
     init_tags();
     init_scope();
+    init_relation_properties();
     init_errors();
     init_file_store();
     init_db();
@@ -12827,18 +12857,34 @@ var init_sqlite_stores = __esm({
         };
         const sourceEntity = resolveEntity(input.source);
         const targetEntity = resolveEntity(input.target);
-        const relation = {
-          id: generateId(),
-          source: sourceEntity.id,
-          target: targetEntity.id,
-          type: input.type,
-          properties: input.properties ?? {},
-          created_at: (/* @__PURE__ */ new Date()).toISOString()
-        };
-        this.db.prepare(
-          "INSERT INTO relations (id, source, target, data) VALUES (?, ?, ?, ?)"
-        ).run(relation.id, relation.source, relation.target, JSON.stringify(relation));
-        return relation;
+        return withWriteTxn(this.db, () => {
+          const existing = this.getRelationsSync().find(
+            (r) => r.source === sourceEntity.id && r.target === targetEntity.id && r.type === input.type
+          );
+          if (existing) {
+            const merged = {
+              ...existing,
+              properties: mergeRelationProperties(existing.properties, input.properties)
+            };
+            this.db.prepare("UPDATE relations SET data = ? WHERE id = ?").run(JSON.stringify(merged), merged.id);
+            return merged;
+          }
+          const relation = {
+            id: generateId(),
+            source: sourceEntity.id,
+            target: targetEntity.id,
+            type: input.type,
+            properties: input.properties ?? {},
+            created_at: (/* @__PURE__ */ new Date()).toISOString()
+          };
+          this.db.prepare(
+            "INSERT INTO relations (id, source, target, data) VALUES (?, ?, ?, ?)"
+          ).run(relation.id, relation.source, relation.target, JSON.stringify(relation));
+          return relation;
+        });
+      }
+      getRelationsSync() {
+        return this.db.prepare("SELECT data FROM relations ORDER BY seq").all().map((r) => JSON.parse(r.data));
       }
       async getEntities() {
         return this.allEntities();
@@ -29386,10 +29432,10 @@ var GraphAutoPopulator = class {
           properties: { scope: input.scope }
         });
         await this.graphEngine.addRelation({
-          source: entity.name,
-          target: decisionEntity.name,
+          source: entity.id,
+          target: decisionEntity.id,
           type: "decided_by",
-          properties: { decision_summary: input.summary }
+          properties: { origin: "derived", decision_summary: input.summary }
         });
       }
       for (const symbol of input.affected_symbols ?? []) {
@@ -29399,37 +29445,52 @@ var GraphAutoPopulator = class {
           properties: { scope: input.scope }
         });
         await this.graphEngine.addRelation({
-          source: entity.name,
-          target: decisionEntity.name,
+          source: entity.id,
+          target: decisionEntity.id,
           type: "decided_by",
-          properties: { decision_summary: input.summary }
+          properties: { origin: "derived", decision_summary: input.summary }
         });
       }
       for (const depId of input.depends_on ?? []) {
-        await this.graphEngine.addRelation({
-          source: decisionId,
-          target: depId,
-          type: "depends_on"
-        });
+        try {
+          await this.graphEngine.addRelation({
+            source: decisionId,
+            target: depId,
+            type: "depends_on",
+            properties: { origin: "derived" }
+          });
+        } catch (error2) {
+          console.error("[twining] onDecide depends_on edge failed (non-fatal):", error2);
+        }
       }
       if (input.supersedes) {
-        await this.graphEngine.addRelation({
-          source: decisionId,
-          target: input.supersedes,
-          type: "supersedes"
-        });
+        try {
+          await this.graphEngine.addRelation({
+            source: decisionId,
+            target: input.supersedes,
+            type: "supersedes",
+            properties: { origin: "derived" }
+          });
+        } catch (error2) {
+          console.error("[twining] onDecide supersedes edge failed (non-fatal):", error2);
+        }
       }
       if (input.commit_hash) {
-        await this.graphEngine.addEntity({
-          name: input.commit_hash,
-          type: "commit",
-          properties: { decision: decisionId }
-        });
-        await this.graphEngine.addRelation({
-          source: input.commit_hash,
-          target: decisionId,
-          type: "decided_by"
-        });
+        try {
+          await this.graphEngine.addEntity({
+            name: input.commit_hash,
+            type: "commit",
+            properties: { decision: decisionId }
+          });
+          await this.graphEngine.addRelation({
+            source: input.commit_hash,
+            target: decisionId,
+            type: "decided_by",
+            properties: { origin: "derived" }
+          });
+        } catch (error2) {
+          console.error("[twining] onDecide commit edge failed (non-fatal):", error2);
+        }
       }
     } catch (error2) {
       console.error("[twining] GraphAutoPopulator.onDecide failed (non-fatal):", error2);
@@ -29460,7 +29521,7 @@ var GraphAutoPopulator = class {
           source: entity.id,
           target: decisionEntity.id,
           type: "decided_by",
-          properties: { decision_summary: input.summary }
+          properties: { origin: "derived", decision_summary: input.summary }
         });
       }
       for (const symbol of input.added_symbols) {
@@ -29473,7 +29534,7 @@ var GraphAutoPopulator = class {
           source: entity.id,
           target: decisionEntity.id,
           type: "decided_by",
-          properties: { decision_summary: input.summary }
+          properties: { origin: "derived", decision_summary: input.summary }
         });
       }
     } catch (error2) {
@@ -29482,8 +29543,8 @@ var GraphAutoPopulator = class {
   }
   /**
    * Auto-populate from twining_post.
-   * Creates scope entities (file or module), relates_to relations,
-   * affects relations for warnings and findings.
+   * Creates scope entities (file or module) and affects relations for
+   * warnings and findings.
    */
   async onPost(entry) {
     try {
@@ -29514,18 +29575,8 @@ var GraphAutoPopulator = class {
           source: conceptEntity.name,
           target: scopeEntity.name,
           type: "affects",
-          properties: { summary: entry.summary }
+          properties: { origin: "derived", summary: entry.summary }
         });
-      }
-      if (entry.relates_to && entry.relates_to.length > 0) {
-        for (const relatedId of entry.relates_to) {
-          await this.graphEngine.addRelation({
-            source: scopeEntity.name,
-            target: relatedId,
-            type: "related_to",
-            properties: { via: entry.id }
-          });
-        }
       }
     } catch (error2) {
       console.error("[twining] GraphAutoPopulator.onPost failed (non-fatal):", error2);
@@ -29551,7 +29602,7 @@ var GraphAutoPopulator = class {
           source: sourceEntity.name,
           target: targetEntity.name,
           type: "related_to",
-          properties: { type: "handoff" }
+          properties: { origin: "derived", type: "handoff" }
         });
       }
       if (input.results) {
@@ -29565,7 +29616,8 @@ var GraphAutoPopulator = class {
             await this.graphEngine.addRelation({
               source: input.source_agent,
               target: artifact,
-              type: "produces"
+              type: "produces",
+              properties: { origin: "derived" }
             });
           }
         }
@@ -29583,7 +29635,7 @@ var GraphAutoPopulator = class {
           source: input.source_agent,
           target: scopeEntity.name,
           type: "affects",
-          properties: { via: "handoff" }
+          properties: { origin: "derived", via: "handoff" }
         });
       }
     } catch (error2) {
@@ -29604,7 +29656,8 @@ var GraphAutoPopulator = class {
       await this.graphEngine.addRelation({
         source: commitHash,
         target: decisionId,
-        type: "decided_by"
+        type: "decided_by",
+        properties: { origin: "derived" }
       });
     } catch (error2) {
       console.error("[twining] GraphAutoPopulator.onLinkCommit failed (non-fatal):", error2);
@@ -29646,7 +29699,7 @@ var GraphAutoPopulator = class {
         source: agentId,
         target: decisionId,
         type: "challenged",
-        properties: { action }
+        properties: { origin: "derived", action }
       });
     } catch (error2) {
       console.error("[twining] GraphAutoPopulator.onChallenge failed (non-fatal):", error2);
@@ -30010,11 +30063,17 @@ ${conflictDetails}`,
       (d) => d.status === "superseded" || d.status === "overridden"
     ).length;
     const matches = options?.include_superseded ? all : all.filter((d) => !WHY_RETIRED_STATUSES.has(d.status));
-    const superseded_excluded = options?.include_superseded ? [] : all.filter((d) => d.status === "superseded" || d.status === "overridden").slice(0, 20).map((d) => ({
-      id: d.id,
-      summary: d.summary,
-      ...d.superseded_by ? { superseded_by: d.superseded_by } : {}
-    }));
+    const supersededRecords = options?.include_superseded ? [] : all.filter((d) => d.status === "superseded" || d.status === "overridden").slice(0, 20);
+    const superseded_excluded = await Promise.all(
+      supersededRecords.map(async (d) => ({
+        id: d.id,
+        summary: d.summary,
+        ...d.superseded_by ? { superseded_by: d.superseded_by } : {},
+        ...options?.lineage && d.superseded_by ? {
+          lineage_head: await this.resolveLineageHead(d.superseded_by)
+        } : {}
+      }))
+    );
     const ranked = [...matches].sort(
       (a, b) => whySpecificity(b, scope) - whySpecificity(a, scope) || (WHY_STATUS_RANK[b.status] ?? 0) - (WHY_STATUS_RANK[a.status] ?? 0) || b.timestamp.localeCompare(a.timestamp) || b.id.localeCompare(a.id)
     );
@@ -30069,6 +30128,28 @@ ${conflictDetails}`,
       provisional_count,
       token_estimate: tokensUsed
     };
+  }
+  /**
+   * Walk superseded_by to the terminal record of a supersession chain
+   * (field D13 ask 3). Cycle-guarded and depth-capped; on a cycle or a
+   * dangling link the last reachable record is the reported head.
+   */
+  async resolveLineageHead(firstSuccessorId) {
+    const visited = /* @__PURE__ */ new Set();
+    let current = await this.decisionStore.get(firstSuccessorId);
+    let head = {
+      id: firstSuccessorId,
+      summary: current?.summary ?? "(unresolved successor)"
+    };
+    let hops = 1;
+    while (current && !visited.has(current.id) && hops < 50) {
+      visited.add(current.id);
+      head = { id: current.id, summary: current.summary };
+      if (!current.superseded_by) break;
+      current = await this.decisionStore.get(current.superseded_by);
+      if (current) hops++;
+    }
+    return { ...head, chain_length: hops };
   }
   /** Full-detail drill-down for explicitly requested decision ids (#41). */
   async whyByIds(ids) {
@@ -31935,7 +32016,8 @@ var VerifyEngine = class _VerifyEngine {
                 await this.graphEngine.addRelation({
                   source: sourceEntity.name,
                   target: testEntity.name,
-                  type: "tested_by"
+                  type: "tested_by",
+                  properties: { origin: "derived" }
                 });
               }
             }
@@ -32775,6 +32857,9 @@ function registerDecisionTools(server, engine, twiningDir, options = {}) {
           "Token budget for the full-detail tier (default 4000)"
         ),
         include_superseded: external_exports.boolean().optional().describe("Include superseded decisions (excluded by default)"),
+        lineage: external_exports.boolean().optional().describe(
+          "Resolve each excluded superseded/overridden record's lineage HEAD (walks superseded_by to the current answer). Off by default."
+        ),
         ids: external_exports.array(external_exports.string()).optional().describe(
           "Return full detail (rationale, context, alternatives) for exactly these decision ids"
         )
@@ -32791,6 +32876,7 @@ function registerDecisionTools(server, engine, twiningDir, options = {}) {
         const result = await engine.why(args.scope ?? "", {
           max_tokens: args.max_tokens,
           include_superseded: args.include_superseded,
+          lineage: args.lineage,
           ids: args.ids
         });
         const response = { ...result };
@@ -33814,7 +33900,7 @@ function registerGraphTools(server, engine) {
   server.registerTool(
     "twining_add_relation",
     {
-      description: "Add a relation between two knowledge graph entities. Source and target can be entity IDs or names. Returns an error for ambiguous name matches.",
+      description: 'Add a relation between two knowledge graph entities. Source and target can be entity IDs or names. Returns an error for ambiguous name matches. Upsert semantics: re-adding the same (source, target, type) merges properties instead of duplicating the edge. Relations are provenance-marked: agent-typed edges get properties.origin "declared", auto-populated edges "derived", absent means legacy/unknown.',
       inputSchema: {
         source: external_exports.string().describe("Source entity ID or name"),
         target: external_exports.string().describe("Target entity ID or name"),
@@ -33833,7 +33919,7 @@ function registerGraphTools(server, engine) {
           source: args.source,
           target: args.target,
           type: args.type,
-          properties: args.properties
+          properties: { origin: "declared", ...args.properties ?? {} }
         });
         return toolResult({ id: relation.id });
       } catch (e) {
