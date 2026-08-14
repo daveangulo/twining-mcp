@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: 2.12.0 shipped to npm latest with plugin 1.30.0 (registry confirmed); pins updated both scopes. Amend-candidates reporter live — the wave-2 backlog now has both halves: candidates via housekeeping, writes via twining_amend.\nFindings: Ship state: v2.12.0 tag -> npm latest 2.12.0 confirmed -> pins 1.30.0 both scopes (restart applies). Remaining backlog unchanged: graph legacy-dup dedup + UNIQUE backstop, sqlite relation index, per-decision supersedes, D13 ask-2 neighbors reduced form, record-time diff capture, cycle chain_length; plus SENDING the memo (update its reporter line: it shipped in 2.12.0, no longer descoped)",
+  "entry_type": "status",
+  "id": "01KZZ7CMANZ320MYK6CCENF1AD",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "44f3a374cb2e16cf55004ff417ab4cb3ce4393cd",
+    "recorded_at": "2026-08-14T04:09:54.754Z"
+  },
+  "scope": "src/",
+  "summary": "2.12.0 shipped to npm latest with plugin 1.30.0 (registry confirmed); pins updated both scopes. Amend-candidates reporter live — the wave-2 backlog now has both halves: candidates via housekeeping,…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-14T04:09:54.773Z"
+}
