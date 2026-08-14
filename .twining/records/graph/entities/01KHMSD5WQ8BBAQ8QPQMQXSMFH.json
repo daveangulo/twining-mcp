@@ -5,8 +5,8 @@
   "properties": {
     "description": "Entities and relations JSON persistence",
     "layer": "storage",
-    "scope": "src/"
+    "scope": "src/,src/engine/relation-dedup.ts"
   },
   "type": "file",
-  "updated_at": "2026-08-13T23:30:20.171Z"
+  "updated_at": "2026-08-14T04:37:46.430Z"
 }

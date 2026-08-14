@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-14T04:37:46.374Z",
+  "id": "01KZZ8ZMR6MZ1JBXD2B4HERY7B",
+  "name": "01KZZ8ZMQR5YC69KZEX5A6JQYN",
+  "properties": {
+    "scope": "src/engine/relation-dedup.ts",
+    "summary": "Chose to route survivor property-folding through addRelation's own upsert rather than a direct property write"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-14T04:37:46.374Z"
+}

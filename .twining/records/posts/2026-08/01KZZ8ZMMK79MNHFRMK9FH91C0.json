@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Built the legacy relation-dedup pass (TDD): housekeeping dedup_relations flag, oldest-edge survivor, origin-precedence property folding, removeRelations across all three store layers with mirror unlink. 1615 green, build clean. Committed unreleased.\nDecisions: Chose oldest-edge-survives for dedup, matching the upsert's first-by-seq merge target — any other survivor would leave the live upsert and the cleanup disagreeing about which edge is canonical; properties fold in insertion order through the shared mergeRelationProperties so declared origin survives cleanup exactly as it survives live writes; Chose to route survivor property-folding through addRelation's own upsert rather than a direct property write — one merge code path, and the mirror re-export comes free from the ExportingGraphStore wrapper; removals go through a new IGraphStore.removeRelations whose interface addition forces the wrapper's mirror-unlink delegation via tsc, same self-enforcing pattern as amendMetadata; Deferred the UNIQUE(source,target,type) sqlite index backstop again — schema migration risk under critical context; the dedup pass plus txn-wrapped upsert close the practical hole (decision-not-taken, still on the backlog)\nFindings: need: before releasing the dedup pass — adversarial review round (standing practice, four-for-four on catching majors), changelog entry, then the 2.13.0 train; unreleased on main at HEAD",
+  "entry_type": "status",
+  "id": "01KZZ8ZMMK79MNHFRMK9FH91C0",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "e064648954b40cf92550a1018a5d3fdca64d8d5d",
+    "recorded_at": "2026-08-14T04:37:46.240Z"
+  },
+  "scope": "src/engine/relation-dedup.ts",
+  "summary": "Built the legacy relation-dedup pass (TDD): housekeeping dedup_relations flag, oldest-edge survivor, origin-precedence property folding, removeRelations across all three store layers with mirror un…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-14T04:37:46.259Z"
+}

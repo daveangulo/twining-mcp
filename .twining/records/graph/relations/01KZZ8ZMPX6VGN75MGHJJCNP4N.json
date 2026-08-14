@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-14T04:37:46.333Z",
+  "id": "01KZZ8ZMPX6VGN75MGHJJCNP4N",
+  "properties": {
+    "decision_summary": "Chose oldest-edge-survives for dedup, matching the upsert's first-by-seq merge target"
+  },
+  "source": "01KY87YQ5TPSFXYW0T6TYGK85P",
+  "target": "01KZZ8ZMPT6ANYNCAVG6X9VBCX",
+  "type": "decided_by"
+}

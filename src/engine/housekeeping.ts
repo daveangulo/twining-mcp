@@ -7,6 +7,7 @@
  */
 import fs from "node:fs";
 import { reportAmendCandidates, type AmendCandidateReport } from "./amend-candidates.js";
+import { dedupRelations, type RelationDedupReport } from "./relation-dedup.js";
 import path from "node:path";
 import type { Archiver } from "./archiver.js";
 import { NO_AGE_CUTOFF } from "./archiver.js";
@@ -54,6 +55,8 @@ export interface HousekeepingResult {
   amend_candidates?: AmendCandidateReport;
   /** Set when amend_candidates was requested but could not run — never a silent no-op. */
   amend_candidates_error?: string;
+  /** Legacy duplicate-relation dedup (wave-2 follow-up); preview unless execute. */
+  relation_dedup?: RelationDedupReport;
   archived: { count: number; file: string; kept_open: number };
   deduplicated: { removed: number };
   stale_provisionals: { count: number; items: StaleProvisional[] };
@@ -118,6 +121,13 @@ export class HousekeepingEngine {
      * no effect; confirm per record with twining_amend.
      */
     amend_candidates?: boolean;
+    /**
+     * Dedup legacy duplicate (source, target, type) graph relations —
+     * survivor is the oldest edge (the one live upserts already merge
+     * into); properties fold in under origin precedence. Preview unless
+     * execute is set.
+     */
+    dedup_relations?: boolean;
     compact_archives?: boolean;
     /**
      * Recompute graph entity scopes from their decided_by relations, undoing
@@ -141,6 +151,7 @@ export class HousekeepingEngine {
     const stalenessReview = options?.staleness_review ?? false;
     const mergeSweep = options?.merge_sweep ?? false;
     const amendCandidatesOpt = options?.amend_candidates ?? false;
+    const dedupRelationsOpt = options?.dedup_relations ?? false;
     const compactArchivesOpt = options?.compact_archives ?? false;
     const repairEntityScopesOpt = options?.repair_entity_scopes ?? false;
     const archiveEnabled = options?.archive ?? false;
@@ -355,6 +366,17 @@ export class HousekeepingEngine {
     }
 
     // 8. Merge sweep — opt-in (branch-watcher diff vs last housekeeping snapshot).
+    if (dedupRelationsOpt && this.graphEngine) {
+      try {
+        result.relation_dedup = await dedupRelations(
+          this.graphEngine.graphStore,
+          execute,
+        );
+      } catch (error) {
+        console.error("[twining] relation dedup failed (non-fatal):", error);
+      }
+    }
+
     if (amendCandidatesOpt) {
       if (this.projectRoot) {
         try {

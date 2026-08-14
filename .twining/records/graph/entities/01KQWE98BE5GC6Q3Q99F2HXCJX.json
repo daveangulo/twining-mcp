@@ -3,8 +3,8 @@
   "id": "01KQWE98BE5GC6Q3Q99F2HXCJX",
   "name": "src/engine/housekeeping.ts",
   "properties": {
-    "scope": "src/,src/engine/,src/engine/amend-candidates.ts"
+    "scope": "src/,src/engine/,src/engine/amend-candidates.ts,src/engine/relation-dedup.ts"
   },
   "type": "file",
-  "updated_at": "2026-08-14T03:39:08.477Z"
+  "updated_at": "2026-08-14T04:37:46.433Z"
 }

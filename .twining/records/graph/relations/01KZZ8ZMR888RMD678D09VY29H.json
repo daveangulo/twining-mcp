@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-14T04:37:46.376Z",
+  "id": "01KZZ8ZMR888RMD678D09VY29H",
+  "properties": {
+    "decision_summary": "Chose to route survivor property-folding through addRelation's own upsert rather than a direct property write"
+  },
+  "source": "01KZZ8ZMPT6ANYNCAVG6X9VBCY",
+  "target": "01KZZ8ZMR6MZ1JBXD2B4HERY7B",
+  "type": "decided_by"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-14T04:37:46.425Z",
+  "id": "01KZZ8ZMSTXSADHVDSWAC5EGSQ",
+  "name": "01KZZ8ZMSD618YP9YAK4GNC18X",
+  "properties": {
+    "scope": "src/engine/relation-dedup.ts",
+    "summary": "Deferred the UNIQUE(source,target,type) sqlite index backstop again"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-14T04:37:46.425Z"
+}

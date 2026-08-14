@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "need",
+  "id": "01KZZ8ZMTQGFF6Y47EK4ZKXW9J",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "e064648954b40cf92550a1018a5d3fdca64d8d5d",
+    "recorded_at": "2026-08-14T04:37:46.436Z"
+  },
+  "scope": "src/engine/relation-dedup.ts",
+  "summary": "before releasing the dedup pass — adversarial review round (standing practice, four-for-four on catching majors), changelog entry, then the 2.13.0 train; unreleased on main at HEAD",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-08-14T04:37:46.455Z"
+}

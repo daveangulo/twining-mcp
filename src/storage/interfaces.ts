@@ -114,6 +114,8 @@ export interface IGraphStore {
   removeEntities(
     entityIds: Set<string>,
   ): Promise<{ removedEntities: number; removedRelations: number }>;
+  /** Remove relations by id (wave-2 dedup pass). Unknown ids are ignored. */
+  removeRelations(relationIds: Set<string>): Promise<{ removed: number }>;
 }
 
 /** Agent registry persistence (agents/registry.json today). */

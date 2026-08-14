@@ -37,6 +37,12 @@ export function registerHousekeepingTools(
           .boolean()
           .optional()
           .describe("Set to true to auto-promote stale provisional decisions to active. Default is false (report only)."),
+        dedup_relations: z
+          .boolean()
+          .optional()
+          .describe(
+            "Dedup legacy duplicate (source, target, type) graph relations left from before the 2.11 upsert. Survivor is the oldest edge; later duplicates fold their properties in under origin precedence (derived never downgrades declared) and are removed. Preview by default; execute applies.",
+          ),
         amend_candidates: z
           .boolean()
           .optional()
@@ -90,6 +96,7 @@ export function registerHousekeepingTools(
           promote_provisionals: args.promote_provisionals,
           staleness_review: args.staleness_review,
           amend_candidates: args.amend_candidates,
+          dedup_relations: args.dedup_relations,
           merge_sweep: args.merge_sweep,
           compact_archives: args.compact_archives,
           archive: args.archive,

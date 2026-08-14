@@ -16,6 +16,25 @@ import { TwiningError } from "../utils/errors.js";
 import type { IGraphStore } from "./interfaces.js";
 
 export class GraphStore implements IGraphStore {
+  /** Remove relations by id (wave-2 dedup pass). Unknown ids are ignored. */
+  async removeRelations(relationIds: Set<string>): Promise<{ removed: number }> {
+    this.ensureFiles();
+    const release = await lockfile.lock(this.relationsPath, LOCK_OPTIONS);
+    try {
+      const relations = JSON.parse(
+        fs.readFileSync(this.relationsPath, "utf-8"),
+      ) as Relation[];
+      const kept = relations.filter((r) => !relationIds.has(r.id));
+      const removed = relations.length - kept.length;
+      if (removed > 0) {
+        atomicWriteFileSync(this.relationsPath, JSON.stringify(kept, null, 2));
+      }
+      return { removed };
+    } finally {
+      await release();
+    }
+  }
+
   private readonly entitiesPath: string;
   private readonly relationsPath: string;
   private readonly graphDir: string;

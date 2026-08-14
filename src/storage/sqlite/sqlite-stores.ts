@@ -334,6 +334,20 @@ export class SqliteDecisionStore implements IDecisionStore {
 }
 
 export class SqliteGraphStore implements IGraphStore {
+  /** Remove relations by id (wave-2 dedup pass). Unknown ids are ignored. */
+  async removeRelations(relationIds: Set<string>): Promise<{ removed: number }> {
+    assertWritable();
+    return withWriteTxn(this.db, () => {
+      let removed = 0;
+      const stmt = this.db.prepare("DELETE FROM relations WHERE id = ?");
+      for (const id of relationIds) {
+        const { changes } = stmt.run(id);
+        removed += Number(changes);
+      }
+      return { removed };
+    });
+  }
+
   constructor(private readonly db: SqliteDatabase) {}
 
   private allEntities(): Entity[] {

@@ -287,6 +287,14 @@ class ExportingGraphStore implements IGraphStore {
     for (const r of doomedRelations) this.exporter.removeRelation(r.id);
     return result;
   }
+
+  // Mirror invariant: a dedup that removed relations only in the db would be
+  // resurrected by the next file-wins ingest.
+  async removeRelations(relationIds: Set<string>): Promise<{ removed: number }> {
+    const result = await this.inner.removeRelations(relationIds);
+    for (const id of relationIds) this.exporter.removeRelation(id);
+    return result;
+  }
 }
 
 class ExportingHandoffStore implements IHandoffStore {
