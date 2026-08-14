@@ -16,6 +16,9 @@ import { DecisionStore } from "../src/storage/decision-store.js";
 import { BlackboardEngine } from "../src/engine/blackboard.js";
 import { Archiver } from "../src/engine/archiver.js";
 import { HousekeepingEngine } from "../src/engine/housekeeping.js";
+import { GraphEngine } from "../src/engine/graph.js";
+import { GraphStore } from "../src/storage/graph-store.js";
+import type { IGraphStore } from "../src/storage/interfaces.js";
 import type { BlackboardEntry } from "../src/utils/types.js";
 
 let tmpDir: string;
@@ -140,5 +143,53 @@ describe("housekeeping preview/execute parity (#39)", () => {
     const types = entries.map((e) => e.entry_type).sort();
     expect(types).toContain("need");
     expect(types).toContain("warning");
+  });
+});
+
+describe("relation dedup wiring — never a silent no-op", () => {
+  function buildEngine(graphEngine: GraphEngine | null): HousekeepingEngine {
+    const decisionStore = new DecisionStore(tmpDir);
+    const blackboardEngine = new BlackboardEngine(blackboardStore);
+    const archiver = new Archiver(tmpDir, blackboardStore, blackboardEngine, null);
+    return new HousekeepingEngine(
+      tmpDir,
+      blackboardStore,
+      decisionStore,
+      archiver,
+      graphEngine,
+    );
+  }
+
+  it("reports relation_dedup_error when no graph engine is configured", async () => {
+    const result = await engine.run({ dedup_relations: true });
+    expect(result.relation_dedup).toBeUndefined();
+    expect(result.relation_dedup_error).toMatch(/no graph engine/);
+  });
+
+  it("reports relation_dedup_error when the pass crashes", async () => {
+    const exploding = {
+      getRelations: async () => {
+        throw new Error("graph store exploded");
+      },
+    } as unknown as IGraphStore;
+    const hk = buildEngine(new GraphEngine(exploding));
+    const result = await hk.run({ dedup_relations: true });
+    expect(result.relation_dedup).toBeUndefined();
+    expect(result.relation_dedup_error).toBe("graph store exploded");
+  });
+
+  it("attaches the report when a graph engine exists", async () => {
+    const hk = buildEngine(new GraphEngine(new GraphStore(tmpDir)));
+    const result = await hk.run({ dedup_relations: true });
+    expect(result.relation_dedup_error).toBeUndefined();
+    expect(result.relation_dedup).toEqual({
+      duplicate_groups: 0,
+      duplicate_relations: 0,
+      removed: 0,
+      skipped_id_collisions: 0,
+      failed_groups: 0,
+      errors: [],
+      by_type: {},
+    });
   });
 });

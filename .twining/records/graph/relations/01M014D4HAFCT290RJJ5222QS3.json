@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-14T21:56:14.506Z",
+  "id": "01M014D4HAFCT290RJJ5222QS3",
+  "properties": {
+    "decision_summary": "Chose per-group try/catch around the addRelation property fold, counting failed_groups and capping errors at 5",
+    "origin": "derived"
+  },
+  "source": "01KY15ZABZ2GR2EKDF6GBZ6QSJ",
+  "target": "01M014D4GMFB3N8AWYPH9KWKC6",
+  "type": "decided_by"
+}

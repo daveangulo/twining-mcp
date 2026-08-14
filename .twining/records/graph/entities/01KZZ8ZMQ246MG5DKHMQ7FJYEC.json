@@ -3,8 +3,8 @@
   "id": "01KZZ8ZMQ246MG5DKHMQ7FJYEC",
   "name": "test/relation-dedup.test.ts",
   "properties": {
-    "scope": "src/engine/relation-dedup.ts"
+    "scope": "src/engine/,src/engine/relation-dedup.ts"
   },
   "type": "file",
-  "updated_at": "2026-08-14T04:37:46.435Z"
+  "updated_at": "2026-08-14T21:56:14.882Z"
 }

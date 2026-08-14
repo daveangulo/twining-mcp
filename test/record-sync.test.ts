@@ -179,6 +179,27 @@ describe.skipIf(!HAS_SQLITE)("record export tree", () => {
     ).toBe(false);
   });
 
+  it("removeRelations unlinks the relation mirror but never a not-yet-ingested file", async () => {
+    fs.mkdirSync(path.join(dirA, ".twining"), { recursive: true });
+    const stores = createStores(path.join(dirA, ".twining"), sqliteConfig());
+    const { relation } = await seed(stores);
+    const rec = path.join(dirA, ".twining", "records");
+    const relFile = path.join(rec, "graph", "relations", `${relation.id}.json`);
+    expect(fs.existsSync(relFile)).toBe(true);
+
+    // A record file for an id the store does not hold (exported by another
+    // machine, ingest pending) must survive a removal that names its id.
+    const foreignFile = path.join(rec, "graph", "relations", "foreign-rel.json");
+    fs.writeFileSync(foreignFile, JSON.stringify({ id: "foreign-rel" }));
+
+    const res = await stores.graphStore.removeRelations(
+      new Set([relation.id, "foreign-rel", "missing"]),
+    );
+    expect(res.removed).toBe(1);
+    expect(fs.existsSync(relFile)).toBe(false);
+    expect(fs.existsSync(foreignFile)).toBe(true);
+  });
+
   it("amendMetadata rewrites the decision mirror (field D11 invariant 2)", async () => {
     fs.mkdirSync(path.join(dirA, ".twining"), { recursive: true });
     const stores = createStores(path.join(dirA, ".twining"), sqliteConfig());

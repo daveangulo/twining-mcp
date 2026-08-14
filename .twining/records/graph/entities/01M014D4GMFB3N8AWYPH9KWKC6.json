@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-14T21:56:14.484Z",
+  "id": "01M014D4GMFB3N8AWYPH9KWKC6",
+  "name": "01M014D4EDZ86NJWHQ7ZD7XM97",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Chose per-group try/catch around the addRelation property fold, counting failed_groups and capping errors at 5"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-14T21:56:14.484Z"
+}

@@ -289,10 +289,16 @@ class ExportingGraphStore implements IGraphStore {
   }
 
   // Mirror invariant: a dedup that removed relations only in the db would be
-  // resurrected by the next file-wins ingest.
+  // resurrected by the next file-wins ingest. Unlink only ids the store
+  // actually held — an unknown id may belong to a not-yet-ingested record
+  // file, which a blind unlink would destroy (same capture-before-delete
+  // pattern as removeEntities above).
   async removeRelations(relationIds: Set<string>): Promise<{ removed: number }> {
+    const present = (await this.inner.getRelations()).filter((r) =>
+      relationIds.has(r.id),
+    );
     const result = await this.inner.removeRelations(relationIds);
-    for (const id of relationIds) this.exporter.removeRelation(id);
+    for (const r of present) this.exporter.removeRelation(r.id);
     return result;
   }
 }

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-14T21:56:14.762Z",
+  "id": "01M014D4SAPX9V3X5AQYDW6ECA",
+  "properties": {
+    "decision_summary": "Chose capture-before-delete in ExportingGraphStore.removeRelations (unlink only ids the store actually held) matching the adjacent removeEntities pattern",
+    "origin": "derived"
+  },
+  "source": "01KWX2CCZQJXRZ8RJJ2CKNYBFS",
+  "target": "01M014D4RJSWGV44AJDWJYJ5X2",
+  "type": "decided_by"
+}

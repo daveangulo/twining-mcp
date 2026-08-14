@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-14T21:56:14.871Z",
+  "id": "01M014D4WQJMM1P250HNCNX6TJ",
+  "name": "01M014D4T0EMGYBZM3B79X233X",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Reworded the dedup survivor doc from oldest edge to the edge live upserts already merge into (seq-first)"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-14T21:56:14.871Z"
+}

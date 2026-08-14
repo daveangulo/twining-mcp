@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-14T21:56:14.385Z",
+  "id": "01M014D4DHBBHJVHYHDBD3F7V8",
+  "properties": {
+    "decision_summary": "Chose a global id-uniqueness guard for dedup removals (skip + count as skipped_id_collisions) over collapsing duplicate-id rows in the store",
+    "origin": "derived"
+  },
+  "source": "01KY15ZABZ2GR2EKDF6GBZ6QSJ",
+  "target": "01M014D4CY35MBQE4G6X2DNFSH",
+  "type": "decided_by"
+}

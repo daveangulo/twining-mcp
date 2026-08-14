@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: file-backend relations.json can hold duplicate relation IDS (not just duplicate keys) after union-style git merges — sqlite has UNIQUE(id) but the JSON store has no constraint; any future by-id mutation must handle non-unique ids",
+  "entry_type": "warning",
+  "id": "01M014D4Y14SJ00G595JFHW3GJ",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "fe37fe64addc4fd2faeb9ca6daf62e6fa01ec19d",
+    "recorded_at": "2026-08-14T21:56:14.893Z"
+  },
+  "scope": "src/engine/",
+  "summary": "file-backend relations.json can hold duplicate relation IDS (not just duplicate keys) after union-style git merges — sqlite has UNIQUE(id) but the JSON store has no constraint; any future by-id mut…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-08-14T21:56:14.913Z"
+}

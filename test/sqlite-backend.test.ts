@@ -339,6 +339,19 @@ describe.skipIf(!HAS_SQLITE)("sqlite backend", () => {
       expect(await store.getEntities()).toHaveLength(1);
       expect(await store.getRelations()).toHaveLength(0);
     });
+
+    it("removeRelations removes by id, ignores unknown ids, and reports the count", async () => {
+      const store = new SqliteGraphStore(db);
+      const a = await store.addEntity({ name: "a", type: "module" });
+      const b = await store.addEntity({ name: "b", type: "module" });
+      const r1 = await store.addRelation({ source: a.id, target: b.id, type: "depends_on" });
+      const r2 = await store.addRelation({ source: b.id, target: a.id, type: "depends_on" });
+      const res = await store.removeRelations(new Set([r1.id, "nope"]));
+      expect(res).toEqual({ removed: 1 });
+      const left = await store.getRelations();
+      expect(left).toHaveLength(1);
+      expect(left[0]!.id).toBe(r2.id);
+    });
   });
 
   describe("SqliteAgentStore", () => {

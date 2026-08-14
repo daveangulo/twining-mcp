@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Pre-ship adversarial review of the 2.13.0 relation-dedup diff confirmed 2 major data-loss defects + silent-failure and coverage gaps; all fixed with TDD (8 new tests, 1623 passing). Dedup now guards id collisions, isolates per-group fold failures, and reports errors.\nDecisions: Chose a global id-uniqueness guard for dedup removals (skip + count as skipped_id_collisions) over collapsing duplicate-id rows in the store — removal is by id in both backends, so any non-unique id (exact-duplicate row from a union git merge, or a cross-key shared id) would over-delete the survivor or an unrelated edge; skipping is lossless and the count keeps preview/execute parity honest. Alternative rejected: rewriting the file store to collapse same-id rows — a store-semantics change too risky for a release-blocking fix.; Chose per-group try/catch around the addRelation property fold, counting failed_groups and capping errors at 5 — keeps the deliberate single-merge-code-path decision intact while one dangling-endpoint group no longer aborts the whole pass with zero removals. Alternative rejected: a store-level property write bypassing entity resolution — would fork the merge code path that decision 01KZZ8ZMQR5YC69KZEX5A6JQYN deliberately unified.; Added relation_dedup_error to HousekeepingResult mirroring amend_candidates_error, set on both crash and null-graphEngine skip — the caller asked and must hear why nothing came back.; Chose capture-before-delete in ExportingGraphStore.removeRelations (unlink only ids the store actually held) matching the adjacent removeEntities pattern — a blind unlink of a caller-supplied unknown id could destroy a not-yet-ingested record file; reproduced in a failing test before the fix.; Reworded the dedup survivor doc from oldest edge to the edge live upserts already merge into (seq-first) — oldest is only guaranteed on the file backend since sqlite ingest order is directory order, and the operative invariant is upsert-target parity.\nFindings: warning: file-backend relations.json can hold duplicate relation IDS (not just duplicate keys) after union-style git merges — sqlite has UNIQUE(id) but the JSON store has no constraint; any future by-id mutation must handle non-unique ids; The overnight review workflow lost its storage-consistency verify stage to machine-sleep API errors; its findings were cross-checked manually — two duplicated confirmed findings, one (mirror unlink of unknown ids) confirmed by a failing test and fixed, one (machine-dependent survivor selection) addressed by the doc reword; Review-of-the-unreleased-diff again caught majors before tag (5th consecutive time): the wave-2 dedup follow-up commit fe37fe6 had NOT gone through the standing adversarial review before landing on main",
+  "entry_type": "status",
+  "id": "01M014D47BG40QXN454EVCMC90",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "fe37fe64addc4fd2faeb9ca6daf62e6fa01ec19d",
+    "recorded_at": "2026-08-14T21:56:14.162Z"
+  },
+  "scope": "src/engine/",
+  "summary": "Pre-ship adversarial review of the 2.13.0 relation-dedup diff confirmed 2 major data-loss defects + silent-failure and coverage gaps; all fixed with TDD (8 new tests, 1623 passing). Dedup now guard…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-14T21:56:14.187Z"
+}

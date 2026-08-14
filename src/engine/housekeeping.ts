@@ -57,6 +57,8 @@ export interface HousekeepingResult {
   amend_candidates_error?: string;
   /** Legacy duplicate-relation dedup (wave-2 follow-up); preview unless execute. */
   relation_dedup?: RelationDedupReport;
+  /** Set when dedup_relations was requested but could not run — never a silent no-op. */
+  relation_dedup_error?: string;
   archived: { count: number; file: string; kept_open: number };
   deduplicated: { removed: number };
   stale_provisionals: { count: number; items: StaleProvisional[] };
@@ -123,8 +125,10 @@ export class HousekeepingEngine {
     amend_candidates?: boolean;
     /**
      * Dedup legacy duplicate (source, target, type) graph relations —
-     * survivor is the oldest edge (the one live upserts already merge
-     * into); properties fold in under origin precedence. Preview unless
+     * survivor is the edge live upserts already merge into (seq-first; the
+     * created-at-oldest on the file backend); properties fold in under
+     * origin precedence. Duplicates with non-unique ids and groups whose
+     * fold fails are skipped and counted in the report. Preview unless
      * execute is set.
      */
     dedup_relations?: boolean;
@@ -365,15 +369,23 @@ export class HousekeepingEngine {
       }
     }
 
-    // 8. Merge sweep — opt-in (branch-watcher diff vs last housekeeping snapshot).
-    if (dedupRelationsOpt && this.graphEngine) {
-      try {
-        result.relation_dedup = await dedupRelations(
-          this.graphEngine.graphStore,
-          execute,
-        );
-      } catch (error) {
-        console.error("[twining] relation dedup failed (non-fatal):", error);
+    // Legacy relation dedup — opt-in (wave-2 follow-up).
+    if (dedupRelationsOpt) {
+      if (this.graphEngine) {
+        try {
+          result.relation_dedup = await dedupRelations(
+            this.graphEngine.graphStore,
+            execute,
+          );
+        } catch (error) {
+          console.error("[twining] relation dedup failed (non-fatal):", error);
+          result.relation_dedup_error =
+            error instanceof Error ? error.message : String(error);
+        }
+      } else {
+        // Never a silent no-op: the caller asked and must hear why nothing
+        // came back.
+        result.relation_dedup_error = "unavailable: no graph engine configured";
       }
     }
 
@@ -396,9 +408,10 @@ export class HousekeepingEngine {
       }
     }
 
-    // Snapshot file is only updated when execute=true; dry-runs compute the
-    // diff against the existing baseline without advancing it, so a preview
-    // can never silently consume deletions before the user acts.
+    // 8. Merge sweep — opt-in (branch-watcher diff vs last housekeeping
+    // snapshot). Snapshot file is only updated when execute=true; dry-runs
+    // compute the diff against the existing baseline without advancing it, so
+    // a preview can never silently consume deletions before the user acts.
     if (mergeSweep && this.projectRoot) {
       try {
         const sweep = detectDeletedBranches(

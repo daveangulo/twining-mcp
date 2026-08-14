@@ -3,8 +3,8 @@
   "id": "01KWX2CCZQJXRZ8RJJ2CKNYBFS",
   "name": "test/sqlite-backend.test.ts",
   "properties": {
-    "scope": "src/storage/"
+    "scope": "src/engine/,src/storage/"
   },
   "type": "file",
-  "updated_at": "2026-07-07T01:16:50.585Z"
+  "updated_at": "2026-08-14T21:56:14.891Z"
 }

@@ -41,7 +41,7 @@ export function registerHousekeepingTools(
           .boolean()
           .optional()
           .describe(
-            "Dedup legacy duplicate (source, target, type) graph relations left from before the 2.11 upsert. Survivor is the oldest edge; later duplicates fold their properties in under origin precedence (derived never downgrades declared) and are removed. Preview by default; execute applies.",
+            "Dedup legacy duplicate (source, target, type) graph relations left from before the 2.11 upsert. Survivor is the edge live upserts already merge into (seq-first; the created-at-oldest on the file backend); later duplicates fold their properties in under origin precedence (derived never downgrades declared) and are removed. Duplicates with non-unique ids and groups that fail to fold (e.g. dangling endpoints) are skipped and counted in the report, never silently dropped. Preview by default; execute applies.",
           ),
         amend_candidates: z
           .boolean()
