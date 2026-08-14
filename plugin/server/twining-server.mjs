@@ -3244,8 +3244,8 @@ var require_utils = __commonJS({
       }
       return ind;
     }
-    function removeDotSegments(path37) {
-      let input = path37;
+    function removeDotSegments(path38) {
+      let input = path38;
       const output = [];
       let nextSlash = -1;
       let len = 0;
@@ -3444,8 +3444,8 @@ var require_schemes = __commonJS({
         wsComponent.secure = void 0;
       }
       if (wsComponent.resourceName) {
-        const [path37, query] = wsComponent.resourceName.split("?");
-        wsComponent.path = path37 && path37 !== "/" ? path37 : void 0;
+        const [path38, query] = wsComponent.resourceName.split("?");
+        wsComponent.path = path38 && path38 !== "/" ? path38 : void 0;
         wsComponent.query = query;
         wsComponent.resourceName = void 0;
       }
@@ -6807,12 +6807,12 @@ var require_dist = __commonJS({
         throw new Error(`Unknown format "${name}"`);
       return f;
     };
-    function addFormats(ajv, list, fs32, exportName) {
+    function addFormats(ajv, list, fs33, exportName) {
       var _a;
       var _b;
       (_a = (_b = ajv.opts.code).formats) !== null && _a !== void 0 ? _a : _b.formats = (0, codegen_1._)`require("ajv-formats/dist/formats").${exportName}`;
       for (const f of list)
-        ajv.addFormat(f, fs32[f]);
+        ajv.addFormat(f, fs33[f]);
     }
     module.exports = exports = formatsPlugin;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -9809,54 +9809,54 @@ var require_polyfills = __commonJS({
     }
     var chdir;
     module.exports = patch;
-    function patch(fs32) {
+    function patch(fs33) {
       if (constants.hasOwnProperty("O_SYMLINK") && process.version.match(/^v0\.6\.[0-2]|^v0\.5\./)) {
-        patchLchmod(fs32);
+        patchLchmod(fs33);
       }
-      if (!fs32.lutimes) {
-        patchLutimes(fs32);
+      if (!fs33.lutimes) {
+        patchLutimes(fs33);
       }
-      fs32.chown = chownFix(fs32.chown);
-      fs32.fchown = chownFix(fs32.fchown);
-      fs32.lchown = chownFix(fs32.lchown);
-      fs32.chmod = chmodFix(fs32.chmod);
-      fs32.fchmod = chmodFix(fs32.fchmod);
-      fs32.lchmod = chmodFix(fs32.lchmod);
-      fs32.chownSync = chownFixSync(fs32.chownSync);
-      fs32.fchownSync = chownFixSync(fs32.fchownSync);
-      fs32.lchownSync = chownFixSync(fs32.lchownSync);
-      fs32.chmodSync = chmodFixSync(fs32.chmodSync);
-      fs32.fchmodSync = chmodFixSync(fs32.fchmodSync);
-      fs32.lchmodSync = chmodFixSync(fs32.lchmodSync);
-      fs32.stat = statFix(fs32.stat);
-      fs32.fstat = statFix(fs32.fstat);
-      fs32.lstat = statFix(fs32.lstat);
-      fs32.statSync = statFixSync(fs32.statSync);
-      fs32.fstatSync = statFixSync(fs32.fstatSync);
-      fs32.lstatSync = statFixSync(fs32.lstatSync);
-      if (fs32.chmod && !fs32.lchmod) {
-        fs32.lchmod = function(path37, mode, cb) {
+      fs33.chown = chownFix(fs33.chown);
+      fs33.fchown = chownFix(fs33.fchown);
+      fs33.lchown = chownFix(fs33.lchown);
+      fs33.chmod = chmodFix(fs33.chmod);
+      fs33.fchmod = chmodFix(fs33.fchmod);
+      fs33.lchmod = chmodFix(fs33.lchmod);
+      fs33.chownSync = chownFixSync(fs33.chownSync);
+      fs33.fchownSync = chownFixSync(fs33.fchownSync);
+      fs33.lchownSync = chownFixSync(fs33.lchownSync);
+      fs33.chmodSync = chmodFixSync(fs33.chmodSync);
+      fs33.fchmodSync = chmodFixSync(fs33.fchmodSync);
+      fs33.lchmodSync = chmodFixSync(fs33.lchmodSync);
+      fs33.stat = statFix(fs33.stat);
+      fs33.fstat = statFix(fs33.fstat);
+      fs33.lstat = statFix(fs33.lstat);
+      fs33.statSync = statFixSync(fs33.statSync);
+      fs33.fstatSync = statFixSync(fs33.fstatSync);
+      fs33.lstatSync = statFixSync(fs33.lstatSync);
+      if (fs33.chmod && !fs33.lchmod) {
+        fs33.lchmod = function(path38, mode, cb) {
           if (cb) process.nextTick(cb);
         };
-        fs32.lchmodSync = function() {
+        fs33.lchmodSync = function() {
         };
       }
-      if (fs32.chown && !fs32.lchown) {
-        fs32.lchown = function(path37, uid, gid, cb) {
+      if (fs33.chown && !fs33.lchown) {
+        fs33.lchown = function(path38, uid, gid, cb) {
           if (cb) process.nextTick(cb);
         };
-        fs32.lchownSync = function() {
+        fs33.lchownSync = function() {
         };
       }
       if (platform === "win32") {
-        fs32.rename = typeof fs32.rename !== "function" ? fs32.rename : (function(fs$rename) {
+        fs33.rename = typeof fs33.rename !== "function" ? fs33.rename : (function(fs$rename) {
           function rename(from, to, cb) {
             var start = Date.now();
             var backoff = 0;
             fs$rename(from, to, function CB(er) {
               if (er && (er.code === "EACCES" || er.code === "EPERM" || er.code === "EBUSY") && Date.now() - start < 6e4) {
                 setTimeout(function() {
-                  fs32.stat(to, function(stater, st) {
+                  fs33.stat(to, function(stater, st) {
                     if (stater && stater.code === "ENOENT")
                       fs$rename(from, to, CB);
                     else
@@ -9872,9 +9872,9 @@ var require_polyfills = __commonJS({
           }
           if (Object.setPrototypeOf) Object.setPrototypeOf(rename, fs$rename);
           return rename;
-        })(fs32.rename);
+        })(fs33.rename);
       }
-      fs32.read = typeof fs32.read !== "function" ? fs32.read : (function(fs$read) {
+      fs33.read = typeof fs33.read !== "function" ? fs33.read : (function(fs$read) {
         function read(fd, buffer, offset, length, position, callback_) {
           var callback;
           if (callback_ && typeof callback_ === "function") {
@@ -9882,22 +9882,22 @@ var require_polyfills = __commonJS({
             callback = function(er, _, __) {
               if (er && er.code === "EAGAIN" && eagCounter < 10) {
                 eagCounter++;
-                return fs$read.call(fs32, fd, buffer, offset, length, position, callback);
+                return fs$read.call(fs33, fd, buffer, offset, length, position, callback);
               }
               callback_.apply(this, arguments);
             };
           }
-          return fs$read.call(fs32, fd, buffer, offset, length, position, callback);
+          return fs$read.call(fs33, fd, buffer, offset, length, position, callback);
         }
         if (Object.setPrototypeOf) Object.setPrototypeOf(read, fs$read);
         return read;
-      })(fs32.read);
-      fs32.readSync = typeof fs32.readSync !== "function" ? fs32.readSync : /* @__PURE__ */ (function(fs$readSync) {
+      })(fs33.read);
+      fs33.readSync = typeof fs33.readSync !== "function" ? fs33.readSync : /* @__PURE__ */ (function(fs$readSync) {
         return function(fd, buffer, offset, length, position) {
           var eagCounter = 0;
           while (true) {
             try {
-              return fs$readSync.call(fs32, fd, buffer, offset, length, position);
+              return fs$readSync.call(fs33, fd, buffer, offset, length, position);
             } catch (er) {
               if (er.code === "EAGAIN" && eagCounter < 10) {
                 eagCounter++;
@@ -9907,11 +9907,11 @@ var require_polyfills = __commonJS({
             }
           }
         };
-      })(fs32.readSync);
-      function patchLchmod(fs33) {
-        fs33.lchmod = function(path37, mode, callback) {
-          fs33.open(
-            path37,
+      })(fs33.readSync);
+      function patchLchmod(fs34) {
+        fs34.lchmod = function(path38, mode, callback) {
+          fs34.open(
+            path38,
             constants.O_WRONLY | constants.O_SYMLINK,
             mode,
             function(err, fd) {
@@ -9919,80 +9919,80 @@ var require_polyfills = __commonJS({
                 if (callback) callback(err);
                 return;
               }
-              fs33.fchmod(fd, mode, function(err2) {
-                fs33.close(fd, function(err22) {
+              fs34.fchmod(fd, mode, function(err2) {
+                fs34.close(fd, function(err22) {
                   if (callback) callback(err2 || err22);
                 });
               });
             }
           );
         };
-        fs33.lchmodSync = function(path37, mode) {
-          var fd = fs33.openSync(path37, constants.O_WRONLY | constants.O_SYMLINK, mode);
+        fs34.lchmodSync = function(path38, mode) {
+          var fd = fs34.openSync(path38, constants.O_WRONLY | constants.O_SYMLINK, mode);
           var threw = true;
           var ret;
           try {
-            ret = fs33.fchmodSync(fd, mode);
+            ret = fs34.fchmodSync(fd, mode);
             threw = false;
           } finally {
             if (threw) {
               try {
-                fs33.closeSync(fd);
+                fs34.closeSync(fd);
               } catch (er) {
               }
             } else {
-              fs33.closeSync(fd);
+              fs34.closeSync(fd);
             }
           }
           return ret;
         };
       }
-      function patchLutimes(fs33) {
-        if (constants.hasOwnProperty("O_SYMLINK") && fs33.futimes) {
-          fs33.lutimes = function(path37, at, mt, cb) {
-            fs33.open(path37, constants.O_SYMLINK, function(er, fd) {
+      function patchLutimes(fs34) {
+        if (constants.hasOwnProperty("O_SYMLINK") && fs34.futimes) {
+          fs34.lutimes = function(path38, at, mt, cb) {
+            fs34.open(path38, constants.O_SYMLINK, function(er, fd) {
               if (er) {
                 if (cb) cb(er);
                 return;
               }
-              fs33.futimes(fd, at, mt, function(er2) {
-                fs33.close(fd, function(er22) {
+              fs34.futimes(fd, at, mt, function(er2) {
+                fs34.close(fd, function(er22) {
                   if (cb) cb(er2 || er22);
                 });
               });
             });
           };
-          fs33.lutimesSync = function(path37, at, mt) {
-            var fd = fs33.openSync(path37, constants.O_SYMLINK);
+          fs34.lutimesSync = function(path38, at, mt) {
+            var fd = fs34.openSync(path38, constants.O_SYMLINK);
             var ret;
             var threw = true;
             try {
-              ret = fs33.futimesSync(fd, at, mt);
+              ret = fs34.futimesSync(fd, at, mt);
               threw = false;
             } finally {
               if (threw) {
                 try {
-                  fs33.closeSync(fd);
+                  fs34.closeSync(fd);
                 } catch (er) {
                 }
               } else {
-                fs33.closeSync(fd);
+                fs34.closeSync(fd);
               }
             }
             return ret;
           };
-        } else if (fs33.futimes) {
-          fs33.lutimes = function(_a, _b, _c, cb) {
+        } else if (fs34.futimes) {
+          fs34.lutimes = function(_a, _b, _c, cb) {
             if (cb) process.nextTick(cb);
           };
-          fs33.lutimesSync = function() {
+          fs34.lutimesSync = function() {
           };
         }
       }
       function chmodFix(orig) {
         if (!orig) return orig;
         return function(target, mode, cb) {
-          return orig.call(fs32, target, mode, function(er) {
+          return orig.call(fs33, target, mode, function(er) {
             if (chownErOk(er)) er = null;
             if (cb) cb.apply(this, arguments);
           });
@@ -10002,7 +10002,7 @@ var require_polyfills = __commonJS({
         if (!orig) return orig;
         return function(target, mode) {
           try {
-            return orig.call(fs32, target, mode);
+            return orig.call(fs33, target, mode);
           } catch (er) {
             if (!chownErOk(er)) throw er;
           }
@@ -10011,7 +10011,7 @@ var require_polyfills = __commonJS({
       function chownFix(orig) {
         if (!orig) return orig;
         return function(target, uid, gid, cb) {
-          return orig.call(fs32, target, uid, gid, function(er) {
+          return orig.call(fs33, target, uid, gid, function(er) {
             if (chownErOk(er)) er = null;
             if (cb) cb.apply(this, arguments);
           });
@@ -10021,7 +10021,7 @@ var require_polyfills = __commonJS({
         if (!orig) return orig;
         return function(target, uid, gid) {
           try {
-            return orig.call(fs32, target, uid, gid);
+            return orig.call(fs33, target, uid, gid);
           } catch (er) {
             if (!chownErOk(er)) throw er;
           }
@@ -10041,13 +10041,13 @@ var require_polyfills = __commonJS({
             }
             if (cb) cb.apply(this, arguments);
           }
-          return options ? orig.call(fs32, target, options, callback) : orig.call(fs32, target, callback);
+          return options ? orig.call(fs33, target, options, callback) : orig.call(fs33, target, callback);
         };
       }
       function statFixSync(orig) {
         if (!orig) return orig;
         return function(target, options) {
-          var stats = options ? orig.call(fs32, target, options) : orig.call(fs32, target);
+          var stats = options ? orig.call(fs33, target, options) : orig.call(fs33, target);
           if (stats) {
             if (stats.uid < 0) stats.uid += 4294967296;
             if (stats.gid < 0) stats.gid += 4294967296;
@@ -10076,16 +10076,16 @@ var require_legacy_streams = __commonJS({
   "node_modules/graceful-fs/legacy-streams.js"(exports, module) {
     var Stream = __require("stream").Stream;
     module.exports = legacy;
-    function legacy(fs32) {
+    function legacy(fs33) {
       return {
         ReadStream,
         WriteStream
       };
-      function ReadStream(path37, options) {
-        if (!(this instanceof ReadStream)) return new ReadStream(path37, options);
+      function ReadStream(path38, options) {
+        if (!(this instanceof ReadStream)) return new ReadStream(path38, options);
         Stream.call(this);
         var self2 = this;
-        this.path = path37;
+        this.path = path38;
         this.fd = null;
         this.readable = true;
         this.paused = false;
@@ -10119,7 +10119,7 @@ var require_legacy_streams = __commonJS({
           });
           return;
         }
-        fs32.open(this.path, this.flags, this.mode, function(err, fd) {
+        fs33.open(this.path, this.flags, this.mode, function(err, fd) {
           if (err) {
             self2.emit("error", err);
             self2.readable = false;
@@ -10130,10 +10130,10 @@ var require_legacy_streams = __commonJS({
           self2._read();
         });
       }
-      function WriteStream(path37, options) {
-        if (!(this instanceof WriteStream)) return new WriteStream(path37, options);
+      function WriteStream(path38, options) {
+        if (!(this instanceof WriteStream)) return new WriteStream(path38, options);
         Stream.call(this);
-        this.path = path37;
+        this.path = path38;
         this.fd = null;
         this.writable = true;
         this.flags = "w";
@@ -10158,7 +10158,7 @@ var require_legacy_streams = __commonJS({
         this.busy = false;
         this._queue = [];
         if (this.fd === null) {
-          this._open = fs32.open;
+          this._open = fs33.open;
           this._queue.push([this._open, this.path, this.flags, this.mode, void 0]);
           this.flush();
         }
@@ -10193,7 +10193,7 @@ var require_clone = __commonJS({
 // node_modules/graceful-fs/graceful-fs.js
 var require_graceful_fs = __commonJS({
   "node_modules/graceful-fs/graceful-fs.js"(exports, module) {
-    var fs32 = __require("fs");
+    var fs33 = __require("fs");
     var polyfills = require_polyfills();
     var legacy = require_legacy_streams();
     var clone2 = require_clone();
@@ -10225,12 +10225,12 @@ var require_graceful_fs = __commonJS({
         m = "GFS4: " + m.split(/\n/).join("\nGFS4: ");
         console.error(m);
       };
-    if (!fs32[gracefulQueue]) {
+    if (!fs33[gracefulQueue]) {
       queue = global[gracefulQueue] || [];
-      publishQueue(fs32, queue);
-      fs32.close = (function(fs$close) {
+      publishQueue(fs33, queue);
+      fs33.close = (function(fs$close) {
         function close(fd, cb) {
-          return fs$close.call(fs32, fd, function(err) {
+          return fs$close.call(fs33, fd, function(err) {
             if (!err) {
               resetQueue();
             }
@@ -10242,48 +10242,48 @@ var require_graceful_fs = __commonJS({
           value: fs$close
         });
         return close;
-      })(fs32.close);
-      fs32.closeSync = (function(fs$closeSync) {
+      })(fs33.close);
+      fs33.closeSync = (function(fs$closeSync) {
         function closeSync(fd) {
-          fs$closeSync.apply(fs32, arguments);
+          fs$closeSync.apply(fs33, arguments);
           resetQueue();
         }
         Object.defineProperty(closeSync, previousSymbol, {
           value: fs$closeSync
         });
         return closeSync;
-      })(fs32.closeSync);
+      })(fs33.closeSync);
       if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || "")) {
         process.on("exit", function() {
-          debug(fs32[gracefulQueue]);
-          __require("assert").equal(fs32[gracefulQueue].length, 0);
+          debug(fs33[gracefulQueue]);
+          __require("assert").equal(fs33[gracefulQueue].length, 0);
         });
       }
     }
     var queue;
     if (!global[gracefulQueue]) {
-      publishQueue(global, fs32[gracefulQueue]);
+      publishQueue(global, fs33[gracefulQueue]);
     }
-    module.exports = patch(clone2(fs32));
-    if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH && !fs32.__patched) {
-      module.exports = patch(fs32);
-      fs32.__patched = true;
+    module.exports = patch(clone2(fs33));
+    if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH && !fs33.__patched) {
+      module.exports = patch(fs33);
+      fs33.__patched = true;
     }
-    function patch(fs33) {
-      polyfills(fs33);
-      fs33.gracefulify = patch;
-      fs33.createReadStream = createReadStream;
-      fs33.createWriteStream = createWriteStream;
-      var fs$readFile = fs33.readFile;
-      fs33.readFile = readFile;
-      function readFile(path37, options, cb) {
+    function patch(fs34) {
+      polyfills(fs34);
+      fs34.gracefulify = patch;
+      fs34.createReadStream = createReadStream;
+      fs34.createWriteStream = createWriteStream;
+      var fs$readFile = fs34.readFile;
+      fs34.readFile = readFile;
+      function readFile(path38, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$readFile(path37, options, cb);
-        function go$readFile(path38, options2, cb2, startTime) {
-          return fs$readFile(path38, options2, function(err) {
+        return go$readFile(path38, options, cb);
+        function go$readFile(path39, options2, cb2, startTime) {
+          return fs$readFile(path39, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$readFile, [path38, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$readFile, [path39, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -10291,16 +10291,16 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$writeFile = fs33.writeFile;
-      fs33.writeFile = writeFile;
-      function writeFile(path37, data, options, cb) {
+      var fs$writeFile = fs34.writeFile;
+      fs34.writeFile = writeFile;
+      function writeFile(path38, data, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$writeFile(path37, data, options, cb);
-        function go$writeFile(path38, data2, options2, cb2, startTime) {
-          return fs$writeFile(path38, data2, options2, function(err) {
+        return go$writeFile(path38, data, options, cb);
+        function go$writeFile(path39, data2, options2, cb2, startTime) {
+          return fs$writeFile(path39, data2, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$writeFile, [path38, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$writeFile, [path39, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -10308,17 +10308,17 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$appendFile = fs33.appendFile;
+      var fs$appendFile = fs34.appendFile;
       if (fs$appendFile)
-        fs33.appendFile = appendFile;
-      function appendFile(path37, data, options, cb) {
+        fs34.appendFile = appendFile;
+      function appendFile(path38, data, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$appendFile(path37, data, options, cb);
-        function go$appendFile(path38, data2, options2, cb2, startTime) {
-          return fs$appendFile(path38, data2, options2, function(err) {
+        return go$appendFile(path38, data, options, cb);
+        function go$appendFile(path39, data2, options2, cb2, startTime) {
+          return fs$appendFile(path39, data2, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$appendFile, [path38, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$appendFile, [path39, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -10326,9 +10326,9 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$copyFile = fs33.copyFile;
+      var fs$copyFile = fs34.copyFile;
       if (fs$copyFile)
-        fs33.copyFile = copyFile;
+        fs34.copyFile = copyFile;
       function copyFile(src, dest, flags, cb) {
         if (typeof flags === "function") {
           cb = flags;
@@ -10346,34 +10346,34 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$readdir = fs33.readdir;
-      fs33.readdir = readdir;
+      var fs$readdir = fs34.readdir;
+      fs34.readdir = readdir;
       var noReaddirOptionVersions = /^v[0-5]\./;
-      function readdir(path37, options, cb) {
+      function readdir(path38, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        var go$readdir = noReaddirOptionVersions.test(process.version) ? function go$readdir2(path38, options2, cb2, startTime) {
-          return fs$readdir(path38, fs$readdirCallback(
-            path38,
+        var go$readdir = noReaddirOptionVersions.test(process.version) ? function go$readdir2(path39, options2, cb2, startTime) {
+          return fs$readdir(path39, fs$readdirCallback(
+            path39,
             options2,
             cb2,
             startTime
           ));
-        } : function go$readdir2(path38, options2, cb2, startTime) {
-          return fs$readdir(path38, options2, fs$readdirCallback(
-            path38,
+        } : function go$readdir2(path39, options2, cb2, startTime) {
+          return fs$readdir(path39, options2, fs$readdirCallback(
+            path39,
             options2,
             cb2,
             startTime
           ));
         };
-        return go$readdir(path37, options, cb);
-        function fs$readdirCallback(path38, options2, cb2, startTime) {
+        return go$readdir(path38, options, cb);
+        function fs$readdirCallback(path39, options2, cb2, startTime) {
           return function(err, files) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
               enqueue([
                 go$readdir,
-                [path38, options2, cb2],
+                [path39, options2, cb2],
                 err,
                 startTime || Date.now(),
                 Date.now()
@@ -10388,21 +10388,21 @@ var require_graceful_fs = __commonJS({
         }
       }
       if (process.version.substr(0, 4) === "v0.8") {
-        var legStreams = legacy(fs33);
+        var legStreams = legacy(fs34);
         ReadStream = legStreams.ReadStream;
         WriteStream = legStreams.WriteStream;
       }
-      var fs$ReadStream = fs33.ReadStream;
+      var fs$ReadStream = fs34.ReadStream;
       if (fs$ReadStream) {
         ReadStream.prototype = Object.create(fs$ReadStream.prototype);
         ReadStream.prototype.open = ReadStream$open;
       }
-      var fs$WriteStream = fs33.WriteStream;
+      var fs$WriteStream = fs34.WriteStream;
       if (fs$WriteStream) {
         WriteStream.prototype = Object.create(fs$WriteStream.prototype);
         WriteStream.prototype.open = WriteStream$open;
       }
-      Object.defineProperty(fs33, "ReadStream", {
+      Object.defineProperty(fs34, "ReadStream", {
         get: function() {
           return ReadStream;
         },
@@ -10412,7 +10412,7 @@ var require_graceful_fs = __commonJS({
         enumerable: true,
         configurable: true
       });
-      Object.defineProperty(fs33, "WriteStream", {
+      Object.defineProperty(fs34, "WriteStream", {
         get: function() {
           return WriteStream;
         },
@@ -10423,7 +10423,7 @@ var require_graceful_fs = __commonJS({
         configurable: true
       });
       var FileReadStream = ReadStream;
-      Object.defineProperty(fs33, "FileReadStream", {
+      Object.defineProperty(fs34, "FileReadStream", {
         get: function() {
           return FileReadStream;
         },
@@ -10434,7 +10434,7 @@ var require_graceful_fs = __commonJS({
         configurable: true
       });
       var FileWriteStream = WriteStream;
-      Object.defineProperty(fs33, "FileWriteStream", {
+      Object.defineProperty(fs34, "FileWriteStream", {
         get: function() {
           return FileWriteStream;
         },
@@ -10444,7 +10444,7 @@ var require_graceful_fs = __commonJS({
         enumerable: true,
         configurable: true
       });
-      function ReadStream(path37, options) {
+      function ReadStream(path38, options) {
         if (this instanceof ReadStream)
           return fs$ReadStream.apply(this, arguments), this;
         else
@@ -10464,7 +10464,7 @@ var require_graceful_fs = __commonJS({
           }
         });
       }
-      function WriteStream(path37, options) {
+      function WriteStream(path38, options) {
         if (this instanceof WriteStream)
           return fs$WriteStream.apply(this, arguments), this;
         else
@@ -10482,22 +10482,22 @@ var require_graceful_fs = __commonJS({
           }
         });
       }
-      function createReadStream(path37, options) {
-        return new fs33.ReadStream(path37, options);
+      function createReadStream(path38, options) {
+        return new fs34.ReadStream(path38, options);
       }
-      function createWriteStream(path37, options) {
-        return new fs33.WriteStream(path37, options);
+      function createWriteStream(path38, options) {
+        return new fs34.WriteStream(path38, options);
       }
-      var fs$open = fs33.open;
-      fs33.open = open;
-      function open(path37, flags, mode, cb) {
+      var fs$open = fs34.open;
+      fs34.open = open;
+      function open(path38, flags, mode, cb) {
         if (typeof mode === "function")
           cb = mode, mode = null;
-        return go$open(path37, flags, mode, cb);
-        function go$open(path38, flags2, mode2, cb2, startTime) {
-          return fs$open(path38, flags2, mode2, function(err, fd) {
+        return go$open(path38, flags, mode, cb);
+        function go$open(path39, flags2, mode2, cb2, startTime) {
+          return fs$open(path39, flags2, mode2, function(err, fd) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$open, [path38, flags2, mode2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$open, [path39, flags2, mode2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -10505,20 +10505,20 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      return fs33;
+      return fs34;
     }
     function enqueue(elem) {
       debug("ENQUEUE", elem[0].name, elem[1]);
-      fs32[gracefulQueue].push(elem);
+      fs33[gracefulQueue].push(elem);
       retry();
     }
     var retryTimer;
     function resetQueue() {
       var now = Date.now();
-      for (var i2 = 0; i2 < fs32[gracefulQueue].length; ++i2) {
-        if (fs32[gracefulQueue][i2].length > 2) {
-          fs32[gracefulQueue][i2][3] = now;
-          fs32[gracefulQueue][i2][4] = now;
+      for (var i2 = 0; i2 < fs33[gracefulQueue].length; ++i2) {
+        if (fs33[gracefulQueue][i2].length > 2) {
+          fs33[gracefulQueue][i2][3] = now;
+          fs33[gracefulQueue][i2][4] = now;
         }
       }
       retry();
@@ -10526,9 +10526,9 @@ var require_graceful_fs = __commonJS({
     function retry() {
       clearTimeout(retryTimer);
       retryTimer = void 0;
-      if (fs32[gracefulQueue].length === 0)
+      if (fs33[gracefulQueue].length === 0)
         return;
-      var elem = fs32[gracefulQueue].shift();
+      var elem = fs33[gracefulQueue].shift();
       var fn = elem[0];
       var args = elem[1];
       var err = elem[2];
@@ -10550,7 +10550,7 @@ var require_graceful_fs = __commonJS({
           debug("RETRY", fn.name, args);
           fn.apply(null, args.concat([startTime]));
         } else {
-          fs32[gracefulQueue].push(elem);
+          fs33[gracefulQueue].push(elem);
         }
       }
       if (retryTimer === void 0) {
@@ -10985,10 +10985,10 @@ var require_mtime_precision = __commonJS({
   "node_modules/proper-lockfile/lib/mtime-precision.js"(exports, module) {
     "use strict";
     var cacheSymbol = /* @__PURE__ */ Symbol();
-    function probe(file, fs32, callback) {
-      const cachedPrecision = fs32[cacheSymbol];
+    function probe(file, fs33, callback) {
+      const cachedPrecision = fs33[cacheSymbol];
       if (cachedPrecision) {
-        return fs32.stat(file, (err, stat) => {
+        return fs33.stat(file, (err, stat) => {
           if (err) {
             return callback(err);
           }
@@ -10996,16 +10996,16 @@ var require_mtime_precision = __commonJS({
         });
       }
       const mtime = new Date(Math.ceil(Date.now() / 1e3) * 1e3 + 5);
-      fs32.utimes(file, mtime, mtime, (err) => {
+      fs33.utimes(file, mtime, mtime, (err) => {
         if (err) {
           return callback(err);
         }
-        fs32.stat(file, (err2, stat) => {
+        fs33.stat(file, (err2, stat) => {
           if (err2) {
             return callback(err2);
           }
           const precision = stat.mtime.getTime() % 1e3 === 0 ? "s" : "ms";
-          Object.defineProperty(fs32, cacheSymbol, { value: precision });
+          Object.defineProperty(fs33, cacheSymbol, { value: precision });
           callback(null, stat.mtime, precision);
         });
       });
@@ -11026,8 +11026,8 @@ var require_mtime_precision = __commonJS({
 var require_lockfile = __commonJS({
   "node_modules/proper-lockfile/lib/lockfile.js"(exports, module) {
     "use strict";
-    var path37 = __require("path");
-    var fs32 = require_graceful_fs();
+    var path38 = __require("path");
+    var fs33 = require_graceful_fs();
     var retry = require_retry2();
     var onExit = require_signal_exit();
     var mtimePrecision = require_mtime_precision();
@@ -11037,7 +11037,7 @@ var require_lockfile = __commonJS({
     }
     function resolveCanonicalPath(file, options, callback) {
       if (!options.realpath) {
-        return callback(null, path37.resolve(file));
+        return callback(null, path38.resolve(file));
       }
       options.fs.realpath(file, callback);
     }
@@ -11158,7 +11158,7 @@ var require_lockfile = __commonJS({
         update: null,
         realpath: true,
         retries: 0,
-        fs: fs32,
+        fs: fs33,
         onCompromised: (err) => {
           throw err;
         },
@@ -11202,7 +11202,7 @@ var require_lockfile = __commonJS({
     }
     function unlock(file, options, callback) {
       options = {
-        fs: fs32,
+        fs: fs33,
         realpath: true,
         ...options
       };
@@ -11224,7 +11224,7 @@ var require_lockfile = __commonJS({
       options = {
         stale: 1e4,
         realpath: true,
-        fs: fs32,
+        fs: fs33,
         ...options
       };
       options.stale = Math.max(options.stale || 0, 2e3);
@@ -11263,16 +11263,16 @@ var require_lockfile = __commonJS({
 var require_adapter = __commonJS({
   "node_modules/proper-lockfile/lib/adapter.js"(exports, module) {
     "use strict";
-    var fs32 = require_graceful_fs();
-    function createSyncFs(fs33) {
+    var fs33 = require_graceful_fs();
+    function createSyncFs(fs34) {
       const methods = ["mkdir", "realpath", "stat", "rmdir", "utimes"];
-      const newFs = { ...fs33 };
+      const newFs = { ...fs34 };
       methods.forEach((method) => {
         newFs[method] = (...args) => {
           const callback = args.pop();
           let ret;
           try {
-            ret = fs33[`${method}Sync`](...args);
+            ret = fs34[`${method}Sync`](...args);
           } catch (err) {
             return callback(err);
           }
@@ -11310,7 +11310,7 @@ var require_adapter = __commonJS({
     }
     function toSyncOptions(options) {
       options = { ...options };
-      options.fs = createSyncFs(options.fs || fs32);
+      options.fs = createSyncFs(options.fs || fs33);
       if (typeof options.retries === "number" && options.retries > 0 || options.retries && typeof options.retries.retries === "number" && options.retries.retries > 0) {
         throw Object.assign(new Error("Cannot use retries with the sync api"), { code: "ESYNC" });
       }
@@ -13492,23 +13492,23 @@ var init_record_ingest = __esm({
 });
 
 // src/utils/project-root.ts
-import fs27 from "node:fs";
-import path32 from "node:path";
+import fs28 from "node:fs";
+import path33 from "node:path";
 function resolveWorktreeMain(dir) {
   try {
-    const dotGit = path32.join(dir, ".git");
-    if (!fs27.statSync(dotGit).isFile()) return null;
-    const firstLine = fs27.readFileSync(dotGit, "utf8").split("\n")[0] ?? "";
+    const dotGit = path33.join(dir, ".git");
+    if (!fs28.statSync(dotGit).isFile()) return null;
+    const firstLine = fs28.readFileSync(dotGit, "utf8").split("\n")[0] ?? "";
     if (!firstLine.startsWith("gitdir: ")) return null;
     const rawGitdir = firstLine.slice("gitdir: ".length).replace(/\r$/, "");
     if (!rawGitdir) return null;
-    const gitdir = path32.resolve(dir, rawGitdir);
-    const marker = `${path32.sep}.git${path32.sep}worktrees${path32.sep}`;
+    const gitdir = path33.resolve(dir, rawGitdir);
+    const marker = `${path33.sep}.git${path33.sep}worktrees${path33.sep}`;
     const markerIndex = gitdir.lastIndexOf(marker);
     if (markerIndex === -1) return null;
     const mainRoot = gitdir.slice(0, markerIndex);
     if (!mainRoot) return null;
-    if (!fs27.statSync(mainRoot).isDirectory()) return null;
+    if (!fs28.statSync(mainRoot).isDirectory()) return null;
     return mainRoot;
   } catch {
     return null;
@@ -13521,7 +13521,7 @@ function resolveProjectRoot(argv, env, cwd) {
   }
   const fromEnv = env["TWINING_PROJECT"];
   if (fromEnv && fromEnv.trim().length > 0) {
-    return path32.resolve(cwd, fromEnv);
+    return path33.resolve(cwd, fromEnv);
   }
   if (env["TWINING_WORKTREE_LOCAL"] === "true") {
     return cwd;
@@ -13535,21 +13535,21 @@ var init_project_root = __esm({
 });
 
 // src/migrate/config-edit.ts
-import fs28 from "node:fs";
-import path33 from "node:path";
+import fs29 from "node:fs";
+import path34 from "node:path";
 function setStorageBackend(twiningDir, backend, opts) {
-  const configPath = path33.join(twiningDir, "config.yml");
-  if (!fs28.existsSync(configPath)) {
-    fs28.writeFileSync(
+  const configPath = path34.join(twiningDir, "config.yml");
+  if (!fs29.existsSync(configPath)) {
+    fs29.writeFileSync(
       configPath,
       jsYaml.dump({ version: opts?.formatVersion ?? 1, storage: { backend } })
     );
     return { backedUpTo: null, hadComments: false };
   }
-  const raw = fs28.readFileSync(configPath, "utf-8");
+  const raw = fs29.readFileSync(configPath, "utf-8");
   const backupPath = configPath + ".pre-migrate.bak";
-  if (!fs28.existsSync(backupPath)) {
-    fs28.copyFileSync(configPath, backupPath);
+  if (!fs29.existsSync(backupPath)) {
+    fs29.copyFileSync(configPath, backupPath);
   }
   const loaded = jsYaml.load(raw);
   if (loaded !== null && loaded !== void 0 && (typeof loaded !== "object" || Array.isArray(loaded))) {
@@ -13647,25 +13647,25 @@ var forward_exports = {};
 __export(forward_exports, {
   migrateForward: () => migrateForward
 });
-import fs29 from "node:fs";
-import path34 from "node:path";
+import fs30 from "node:fs";
+import path35 from "node:path";
 function ensureDbGitignored(twiningDir) {
-  const gitignorePath = path34.join(twiningDir, ".gitignore");
+  const gitignorePath = path35.join(twiningDir, ".gitignore");
   const wanted = ["twining.db", "twining.db-wal", "twining.db-shm"];
-  const exists = fs29.existsSync(gitignorePath);
-  const raw = exists ? fs29.readFileSync(gitignorePath, "utf-8") : "";
+  const exists = fs30.existsSync(gitignorePath);
+  const raw = exists ? fs30.readFileSync(gitignorePath, "utf-8") : "";
   const present = new Set(raw.split("\n").map((l) => l.trim()));
   const toAdd = wanted.filter((line) => !present.has(line));
   if (toAdd.length === 0) return false;
   const base = raw.length > 0 && !raw.endsWith("\n") ? raw + "\n" : raw;
   const next = base + toAdd.join("\n") + "\n";
   if (exists) atomicWriteFileSync(gitignorePath, next);
-  else fs29.writeFileSync(gitignorePath, next);
+  else fs30.writeFileSync(gitignorePath, next);
   return true;
 }
 async function migrateForward(opts) {
-  const twiningDir = path34.join(opts.projectRoot, ".twining");
-  if (!fs29.existsSync(twiningDir)) {
+  const twiningDir = path35.join(opts.projectRoot, ".twining");
+  if (!fs30.existsSync(twiningDir)) {
     throw new Error(`no .twining/ directory at ${twiningDir} \u2014 nothing to migrate`);
   }
   if (!sqliteAvailable()) {
@@ -13712,7 +13712,7 @@ async function migrateForward(opts) {
       orphans_salvaged: 0
     };
   }
-  if (opts.checkOnly && !fs29.existsSync(path34.join(twiningDir, "twining.db"))) {
+  if (opts.checkOnly && !fs30.existsSync(path35.join(twiningDir, "twining.db"))) {
     const counts = {
       posts: (await legacy.blackboardStore.read()).entries.length,
       decisions: (await legacy.decisionStore.getIndex()).length,
@@ -13746,14 +13746,14 @@ async function migrateForward(opts) {
       const decision = await legacy.decisionStore.get(ix.id);
       if (decision) exporter.decision(decision);
     }
-    const decisionsDir = path34.join(twiningDir, "decisions");
-    if (fs29.existsSync(decisionsDir)) {
-      for (const file of fs29.readdirSync(decisionsDir)) {
+    const decisionsDir = path35.join(twiningDir, "decisions");
+    if (fs30.existsSync(decisionsDir)) {
+      for (const file of fs30.readdirSync(decisionsDir)) {
         if (file === "index.json" || !file.endsWith(".json")) continue;
         const id = file.slice(0, -".json".length);
         if (indexedDecisionIds.has(id)) continue;
         try {
-          const raw = fs29.readFileSync(path34.join(decisionsDir, file), "utf-8");
+          const raw = fs30.readFileSync(path35.join(decisionsDir, file), "utf-8");
           const orphan = JSON.parse(raw);
           exporter.decision(orphan);
           orphansSalvaged++;
@@ -13840,11 +13840,11 @@ var init_forward = __esm({
 });
 
 // src/migrate/reverse.ts
-import fs30 from "node:fs";
-import path35 from "node:path";
+import fs31 from "node:fs";
+import path36 from "node:path";
 async function migrateReverse(opts) {
-  const twiningDir = path35.join(opts.projectRoot, ".twining");
-  if (!fs30.existsSync(twiningDir)) {
+  const twiningDir = path36.join(opts.projectRoot, ".twining");
+  if (!fs31.existsSync(twiningDir)) {
     throw new Error(`no .twining/ directory at ${twiningDir} \u2014 nothing to migrate`);
   }
   if (!sqliteAvailable()) {
@@ -13852,8 +13852,8 @@ async function migrateReverse(opts) {
       "node:sqlite is unavailable (requires Node >= 22.13) \u2014 cannot read the sqlite state to reverse it"
     );
   }
-  const hasDb = fs30.existsSync(path35.join(twiningDir, "twining.db"));
-  const hasTree = fs30.existsSync(path35.join(twiningDir, "records"));
+  const hasDb = fs31.existsSync(path36.join(twiningDir, "twining.db"));
+  const hasTree = fs31.existsSync(path36.join(twiningDir, "records"));
   if (!hasDb && !hasTree) {
     throw new Error(
       "no sqlite state found (neither twining.db nor records/) \u2014 nothing to reverse"
@@ -13917,54 +13917,54 @@ async function migrateReverse(opts) {
         orphans_salvaged: 0
       };
     }
-    const backupDir = path35.join(twiningDir, "pre-reverse-backup");
+    const backupDir = path36.join(twiningDir, "pre-reverse-backup");
     ensureDir(backupDir);
     for (const rel of ["blackboard.jsonl", "decisions", "graph", "handoffs"]) {
-      const src = path35.join(twiningDir, rel);
-      if (fs30.existsSync(src)) {
-        fs30.cpSync(src, path35.join(backupDir, rel), { recursive: true, force: true });
+      const src = path36.join(twiningDir, rel);
+      if (fs31.existsSync(src)) {
+        fs31.cpSync(src, path36.join(backupDir, rel), { recursive: true, force: true });
       }
     }
     atomicWriteFileSync(
-      path35.join(twiningDir, "blackboard.jsonl"),
+      path36.join(twiningDir, "blackboard.jsonl"),
       entries.map((e) => JSON.stringify(e)).join("\n") + (entries.length ? "\n" : "")
     );
-    ensureDir(path35.join(twiningDir, "decisions"));
+    ensureDir(path36.join(twiningDir, "decisions"));
     for (const ix of decisionIndex) {
       const decision = await sqlite.decisionStore.get(ix.id);
       if (decision) {
         atomicWriteFileSync(
-          path35.join(twiningDir, "decisions", `${decision.id}.json`),
+          path36.join(twiningDir, "decisions", `${decision.id}.json`),
           JSON.stringify(decision, null, 2)
         );
       }
     }
     atomicWriteFileSync(
-      path35.join(twiningDir, "decisions", "index.json"),
+      path36.join(twiningDir, "decisions", "index.json"),
       JSON.stringify(decisionIndex, null, 2)
     );
-    ensureDir(path35.join(twiningDir, "graph"));
+    ensureDir(path36.join(twiningDir, "graph"));
     atomicWriteFileSync(
-      path35.join(twiningDir, "graph", "entities.json"),
+      path36.join(twiningDir, "graph", "entities.json"),
       JSON.stringify(entities, null, 2)
     );
     atomicWriteFileSync(
-      path35.join(twiningDir, "graph", "relations.json"),
+      path36.join(twiningDir, "graph", "relations.json"),
       JSON.stringify(relations, null, 2)
     );
-    ensureDir(path35.join(twiningDir, "handoffs"));
+    ensureDir(path36.join(twiningDir, "handoffs"));
     for (const ix of handoffIndex) {
       const record2 = await sqlite.handoffStore.get(ix.id);
       if (record2) {
         atomicWriteFileSync(
-          path35.join(twiningDir, "handoffs", `${record2.id}.json`),
+          path36.join(twiningDir, "handoffs", `${record2.id}.json`),
           JSON.stringify(record2, null, 2)
         );
       }
     }
     const indexRows = db.prepare("SELECT index_data FROM handoffs ORDER BY seq").all().map((r) => r.index_data);
     atomicWriteFileSync(
-      path35.join(twiningDir, "handoffs", "index.jsonl"),
+      path36.join(twiningDir, "handoffs", "index.jsonl"),
       indexRows.join("\n") + (indexRows.length ? "\n" : "")
     );
     const files = {
@@ -14125,11 +14125,11 @@ var auto_exports = {};
 __export(auto_exports, {
   maybeAutoMigrate: () => maybeAutoMigrate
 });
-import fs31 from "node:fs";
-import path36 from "node:path";
+import fs32 from "node:fs";
+import path37 from "node:path";
 async function maybeAutoMigrate(projectRoot) {
-  const twiningDir = path36.join(projectRoot, ".twining");
-  if (!fs31.existsSync(twiningDir)) return;
+  const twiningDir = path37.join(projectRoot, ".twining");
+  if (!fs32.existsSync(twiningDir)) return;
   const config2 = loadConfig(twiningDir);
   const optedIn = process.env.TWINING_AUTO_MIGRATE === "1" || config2.storage?.auto_migrate === true;
   if (!optedIn) return;
@@ -14366,10 +14366,10 @@ function assignProp(target, prop, value) {
     configurable: true
   });
 }
-function getElementAtPath(obj, path37) {
-  if (!path37)
+function getElementAtPath(obj, path38) {
+  if (!path38)
     return obj;
-  return path37.reduce((acc, key) => acc?.[key], obj);
+  return path38.reduce((acc, key) => acc?.[key], obj);
 }
 function promiseAllObject(promisesObj) {
   const keys = Object.keys(promisesObj);
@@ -14689,11 +14689,11 @@ function aborted(x, startIndex = 0) {
   }
   return false;
 }
-function prefixIssues(path37, issues) {
+function prefixIssues(path38, issues) {
   return issues.map((iss) => {
     var _a;
     (_a = iss).path ?? (_a.path = []);
-    iss.path.unshift(path37);
+    iss.path.unshift(path38);
     return iss;
   });
 }
@@ -20754,8 +20754,8 @@ function getErrorMap() {
 
 // node_modules/zod/v3/helpers/parseUtil.js
 var makeIssue = (params) => {
-  const { data, path: path37, errorMaps, issueData } = params;
-  const fullPath = [...path37, ...issueData.path || []];
+  const { data, path: path38, errorMaps, issueData } = params;
+  const fullPath = [...path38, ...issueData.path || []];
   const fullIssue = {
     ...issueData,
     path: fullPath
@@ -20871,11 +20871,11 @@ var errorUtil;
 
 // node_modules/zod/v3/types.js
 var ParseInputLazyPath = class {
-  constructor(parent, value, path37, key) {
+  constructor(parent, value, path38, key) {
     this._cachedPath = [];
     this.parent = parent;
     this.data = value;
-    this._path = path37;
+    this._path = path38;
     this._key = key;
   }
   get path() {
@@ -30969,9 +30969,9 @@ var ContextAssembler = class _ContextAssembler {
           ) : void 0,
           assumptions: d.assumptions
         };
-        const path37 = reachabilityPaths.get(d.id);
-        if (path37) {
-          decisionEntry.relevance_path = path37;
+        const path38 = reachabilityPaths.get(d.id);
+        if (path38) {
+          decisionEntry.relevance_path = path38;
         }
         activeDecisionResults.push(decisionEntry);
       } else {
@@ -34991,12 +34991,155 @@ function registerCoordinationTools(server, agentStore, coordinationEngine, confi
 }
 
 // src/engine/housekeeping.ts
-import fs21 from "node:fs";
-import path25 from "node:path";
+import fs22 from "node:fs";
 
-// src/engine/staleness.ts
+// src/engine/amend-candidates.ts
 import fs18 from "node:fs";
 import path22 from "node:path";
+var MAX_DECISIONS = 50;
+var MAX_FILES_PER_SCOPE = 500;
+var MAX_CANDIDATES = 5;
+var SKIP_DIRS = /* @__PURE__ */ new Set([
+  "node_modules",
+  ".git",
+  ".twining",
+  "dist",
+  "build",
+  "coverage"
+]);
+var STOPWORDS = /* @__PURE__ */ new Set([
+  "the",
+  "and",
+  "for",
+  "with",
+  "over",
+  "into",
+  "from",
+  "that",
+  "this",
+  "not",
+  "are",
+  "was",
+  "use",
+  "chose",
+  "instead"
+]);
+function tokenize(text) {
+  return new Set(
+    text.toLowerCase().split(/[^a-z0-9]+/).filter((t) => t.length >= 3 && !STOPWORDS.has(t))
+  );
+}
+function walkFiles(dir, cap) {
+  const files = [];
+  let truncated = false;
+  const stack = [dir];
+  while (stack.length > 0) {
+    const current = stack.pop();
+    let entries;
+    try {
+      entries = fs18.readdirSync(current, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+    for (const entry of entries) {
+      if (files.length >= cap) {
+        truncated = true;
+        return { files, truncated };
+      }
+      const full = path22.join(current, entry.name);
+      if (entry.isDirectory()) {
+        if (!SKIP_DIRS.has(entry.name)) stack.push(full);
+      } else if (entry.isFile()) {
+        files.push(full);
+      }
+    }
+  }
+  return { files, truncated };
+}
+async function reportAmendCandidates(decisionStore, projectRoot) {
+  const index = await decisionStore.getIndex();
+  const empties = index.filter(
+    (e) => (e.status === "active" || e.status === "provisional") && e.affected_files.length === 0
+  );
+  const report = {
+    decisions_scanned: 0,
+    decisions_truncated: 0,
+    skipped_project_scope: 0,
+    scope_missing: 0,
+    scope_unreadable: 0,
+    scope_outside_root: 0,
+    decisions_with_candidates: [],
+    note: "Report-only: nothing was written. Confirm per record with twining_amend({decision_id, add_affected_files}) \u2014 candidates are term-overlap guesses over the scope tree, not assertions."
+  };
+  const projectScoped = empties.filter((e) => e.scope === "project");
+  report.skipped_project_scope = projectScoped.length;
+  const scannable = empties.filter((e) => e.scope !== "project");
+  const toScan = scannable.slice(0, MAX_DECISIONS);
+  report.decisions_truncated = scannable.length - toScan.length;
+  const resolvedRoot = path22.resolve(projectRoot);
+  for (const entry of toScan) {
+    const scopePath = path22.resolve(path22.join(projectRoot, entry.scope));
+    report.decisions_scanned++;
+    if (scopePath === resolvedRoot) {
+      report.decisions_scanned--;
+      report.skipped_project_scope++;
+      continue;
+    }
+    if (!scopePath.startsWith(resolvedRoot + path22.sep)) {
+      report.scope_outside_root++;
+      continue;
+    }
+    let stat = null;
+    try {
+      stat = fs18.statSync(scopePath);
+    } catch (err) {
+      if (err.code === "ENOENT") {
+        report.scope_missing++;
+      } else {
+        report.scope_unreadable++;
+      }
+      continue;
+    }
+    const decision = await decisionStore.get(entry.id);
+    const decisionTokens = tokenize(
+      `${entry.summary} ${decision?.rationale ?? ""}`
+    );
+    let files;
+    let walkTruncated = false;
+    if (stat.isFile()) {
+      files = [scopePath];
+    } else {
+      const walked = walkFiles(scopePath, MAX_FILES_PER_SCOPE);
+      files = walked.files;
+      walkTruncated = walked.truncated;
+    }
+    const scored = files.map((f) => {
+      const rel = path22.relative(projectRoot, f);
+      const overlap = [...tokenize(rel)].filter(
+        (t) => decisionTokens.has(t)
+      ).length;
+      return { file: rel, overlap };
+    }).filter((c) => c.overlap > 0).sort((a, b) => b.overlap - a.overlap || a.file.localeCompare(b.file)).slice(0, MAX_CANDIDATES);
+    if (scored.length > 0) {
+      report.decisions_with_candidates.push({
+        id: entry.id,
+        summary: entry.summary,
+        scope: entry.scope,
+        status: entry.status,
+        candidates: scored,
+        ...walkTruncated ? { walk_truncated: true } : {}
+      });
+    }
+  }
+  return report;
+}
+
+// src/engine/housekeeping.ts
+import path26 from "node:path";
+
+// src/engine/staleness.ts
+import fs19 from "node:fs";
+import path23 from "node:path";
 import { execFileSync as execFileSync6 } from "node:child_process";
 
 // src/utils/git-branches.ts
@@ -35073,7 +35216,7 @@ function buildProbes(projectRoot) {
       const counts = /* @__PURE__ */ new Map();
       for (const f of out.split("\0")) {
         if (!f) continue;
-        const base = path22.basename(f);
+        const base = path23.basename(f);
         counts.set(base, (counts.get(base) ?? 0) + 1);
       }
       return counts;
@@ -35091,13 +35234,13 @@ function buildProbes(projectRoot) {
       if (pathLike.length === 0) return null;
       return pathLike.some((segment) => {
         const candidate = segment.endsWith("/") ? segment.slice(0, -1) : segment;
-        return fs18.existsSync(path22.join(projectRoot, candidate));
+        return fs19.existsSync(path23.join(projectRoot, candidate));
       });
     },
     fileExists: (file) => {
       if (!file) return true;
-      if (fs18.existsSync(path22.join(projectRoot, file))) return true;
-      return basenameCounts !== null ? basenameCounts.get(path22.basename(file)) === 1 : false;
+      if (fs19.existsSync(path23.join(projectRoot, file))) return true;
+      return basenameCounts !== null ? basenameCounts.get(path23.basename(file)) === 1 : false;
     },
     branchKnown: (branch) => listingFailed ? true : branches.has(branch)
   };
@@ -35147,14 +35290,14 @@ function auditStaleness(decisions, blackboardEntries, options) {
 }
 
 // src/engine/branch-watcher.ts
-import fs19 from "node:fs";
-import path23 from "node:path";
+import fs20 from "node:fs";
+import path24 from "node:path";
 var STATE_FILE = ".last-known-branches.json";
 function readKnownBranches(twiningDir) {
-  const p = path23.join(twiningDir, STATE_FILE);
-  if (!fs19.existsSync(p)) return null;
+  const p = path24.join(twiningDir, STATE_FILE);
+  if (!fs20.existsSync(p)) return null;
   try {
-    const parsed = JSON.parse(fs19.readFileSync(p, "utf-8"));
+    const parsed = JSON.parse(fs20.readFileSync(p, "utf-8"));
     if (!Array.isArray(parsed.branches) || typeof parsed.recorded_at !== "string") {
       return null;
     }
@@ -35168,8 +35311,8 @@ function writeKnownBranches(twiningDir, branches) {
     recorded_at: (/* @__PURE__ */ new Date()).toISOString(),
     branches: [...branches].sort()
   };
-  fs19.writeFileSync(
-    path23.join(twiningDir, STATE_FILE),
+  fs20.writeFileSync(
+    path24.join(twiningDir, STATE_FILE),
     JSON.stringify(state, null, 2),
     "utf-8"
   );
@@ -35209,8 +35352,8 @@ function detectDeletedBranches(twiningDir, projectRoot, commit = true) {
 }
 
 // src/engine/archive-compactor.ts
-import fs20 from "node:fs";
-import path24 from "node:path";
+import fs21 from "node:fs";
+import path25 from "node:path";
 import readline from "node:readline";
 import { once } from "node:events";
 var JUNK_SUMMARY_RE = /^Archive: \d+ entries archived$/;
@@ -35243,9 +35386,9 @@ async function compactArchives(twiningDir, options) {
     total_bytes_reclaimable: 0,
     files_deleted: 0
   };
-  const archiveDir = path24.join(twiningDir, "archive");
-  if (!fs20.existsSync(archiveDir)) return report;
-  const files = fs20.readdirSync(archiveDir, { withFileTypes: true }).filter((d) => d.isFile() && d.name.endsWith(".jsonl")).map((d) => path24.join(archiveDir, d.name)).sort();
+  const archiveDir = path25.join(twiningDir, "archive");
+  if (!fs21.existsSync(archiveDir)) return report;
+  const files = fs21.readdirSync(archiveDir, { withFileTypes: true }).filter((d) => d.isFile() && d.name.endsWith(".jsonl")).map((d) => path25.join(archiveDir, d.name)).sort();
   for (const file of files) {
     const fileReport = await compactFile(file, execute);
     report.files.push(fileReport);
@@ -35268,7 +35411,7 @@ async function compactFile(filePath, execute) {
   let out = null;
   try {
     const rl = readline.createInterface({
-      input: fs20.createReadStream(filePath, { encoding: "utf-8" }),
+      input: fs21.createReadStream(filePath, { encoding: "utf-8" }),
       crlfDelay: Infinity
     });
     for await (const line of rl) {
@@ -35279,7 +35422,7 @@ async function compactFile(filePath, execute) {
       }
       result.survivor_count++;
       if (execute) {
-        out ??= fs20.createWriteStream(tmpPath);
+        out ??= fs21.createWriteStream(tmpPath);
         if (!out.write(line + "\n")) await once(out, "drain");
       }
     }
@@ -35288,20 +35431,20 @@ async function compactFile(filePath, execute) {
       await once(out, "finish");
     }
     if (!execute || result.junk_count === 0) {
-      if (fs20.existsSync(tmpPath)) fs20.unlinkSync(tmpPath);
+      if (fs21.existsSync(tmpPath)) fs21.unlinkSync(tmpPath);
       return result;
     }
     if (result.survivor_count === 0) {
-      if (fs20.existsSync(tmpPath)) fs20.unlinkSync(tmpPath);
-      fs20.unlinkSync(filePath);
+      if (fs21.existsSync(tmpPath)) fs21.unlinkSync(tmpPath);
+      fs21.unlinkSync(filePath);
       result.deleted = true;
       return result;
     }
-    fs20.renameSync(tmpPath, filePath);
+    fs21.renameSync(tmpPath, filePath);
     return result;
   } catch (err) {
     try {
-      if (fs20.existsSync(tmpPath)) fs20.unlinkSync(tmpPath);
+      if (fs21.existsSync(tmpPath)) fs21.unlinkSync(tmpPath);
     } catch {
     }
     throw err;
@@ -35396,6 +35539,7 @@ var HousekeepingEngine = class {
     const promoteProvisionals = options?.promote_provisionals ?? false;
     const stalenessReview = options?.staleness_review ?? false;
     const mergeSweep = options?.merge_sweep ?? false;
+    const amendCandidatesOpt = options?.amend_candidates ?? false;
     const compactArchivesOpt = options?.compact_archives ?? false;
     const repairEntityScopesOpt = options?.repair_entity_scopes ?? false;
     const archiveEnabled = options?.archive ?? false;
@@ -35509,12 +35653,12 @@ var HousekeepingEngine = class {
       }
     }
     try {
-      const metricsPath = path25.join(this.twiningDir, "metrics.jsonl");
-      if (fs21.existsSync(metricsPath)) {
+      const metricsPath = path26.join(this.twiningDir, "metrics.jsonl");
+      if (fs22.existsSync(metricsPath)) {
         const cutoff = new Date(
           now - metricsRetentionDays * 24 * 60 * 60 * 1e3
         ).toISOString();
-        const content = fs21.readFileSync(metricsPath, "utf-8");
+        const content = fs22.readFileSync(metricsPath, "utf-8");
         const lines = content.split("\n").filter((l) => l.trim());
         const kept = [];
         let removed = 0;
@@ -35531,7 +35675,7 @@ var HousekeepingEngine = class {
           }
         }
         if (removed > 0 && execute) {
-          fs21.writeFileSync(metricsPath, kept.join("\n") + (kept.length > 0 ? "\n" : ""));
+          fs22.writeFileSync(metricsPath, kept.join("\n") + (kept.length > 0 ? "\n" : ""));
         }
         result.metrics_rotated.removed = removed;
       }
@@ -35553,6 +35697,21 @@ var HousekeepingEngine = class {
         });
         result.staleness_review = audit;
       } catch {
+      }
+    }
+    if (amendCandidatesOpt) {
+      if (this.projectRoot) {
+        try {
+          result.amend_candidates = await reportAmendCandidates(
+            this.decisionStore,
+            this.projectRoot
+          );
+        } catch (error2) {
+          console.error("[twining] amend-candidates report failed (non-fatal):", error2);
+          result.amend_candidates_error = error2 instanceof Error ? error2.message : String(error2);
+        }
+      } else {
+        result.amend_candidates_error = "unavailable: no project root configured";
       }
     }
     if (mergeSweep && this.projectRoot) {
@@ -35704,6 +35863,9 @@ function registerHousekeepingTools(server, housekeepingEngine, blackboardEngine,
       inputSchema: {
         execute: external_exports.boolean().optional().describe("Set to true to apply changes. Default is false (preview only)."),
         promote_provisionals: external_exports.boolean().optional().describe("Set to true to auto-promote stale provisional decisions to active. Default is false (report only)."),
+        amend_candidates: external_exports.boolean().optional().describe(
+          "Report candidate affected_files for active decisions whose list is empty (scope walk ranked by term overlap). ALWAYS report-only regardless of execute \u2014 confirm per record with twining_amend({decision_id, add_affected_files}). Caps: 50 decisions/run, 500 files/scope, 5 candidates each; truncation is reported, never silent."
+        ),
         staleness_review: external_exports.boolean().optional().describe(
           "Set to true to scan blackboard entries and decisions for staleness \u2014 flags items whose scope path, affected files, or originating branch no longer exist. Returns candidates only; use twining_archive_stale to act on them."
         ),
@@ -35729,6 +35891,7 @@ function registerHousekeepingTools(server, housekeepingEngine, blackboardEngine,
           execute: args.execute,
           promote_provisionals: args.promote_provisionals,
           staleness_review: args.staleness_review,
+          amend_candidates: args.amend_candidates,
           merge_sweep: args.merge_sweep,
           compact_archives: args.compact_archives,
           archive: args.archive,
@@ -35914,12 +36077,12 @@ ${perItemReasons.join("\n")}` : null
 
 // src/analytics/metrics-collector.ts
 init_file_store();
-import path26 from "node:path";
+import path27 from "node:path";
 var MetricsCollector = class {
   metricsPath;
   telemetryClient = null;
   constructor(twiningDir) {
-    this.metricsPath = path26.join(twiningDir, "metrics.jsonl");
+    this.metricsPath = path27.join(twiningDir, "metrics.jsonl");
   }
   /** Set an optional telemetry client to forward sanitized events */
   setTelemetryClient(client) {
@@ -36034,20 +36197,20 @@ Call \`twining_record\` with a summary and any decisions before every \`git comm
 
 // src/analytics/metrics-store.ts
 init_file_store();
-import fs22 from "node:fs";
-import path27 from "node:path";
+import fs23 from "node:fs";
+import path28 from "node:path";
 var MetricsStore = class {
   metricsPath;
   cachedEntries = null;
   cachedMtime = 0;
   constructor(twiningDir) {
-    this.metricsPath = path27.join(twiningDir, "metrics.jsonl");
+    this.metricsPath = path28.join(twiningDir, "metrics.jsonl");
   }
   /** Read all metrics, using mtime cache when possible */
   async readAll() {
     try {
-      if (!fs22.existsSync(this.metricsPath)) return [];
-      const stat = fs22.statSync(this.metricsPath);
+      if (!fs23.existsSync(this.metricsPath)) return [];
+      const stat = fs23.statSync(this.metricsPath);
       if (this.cachedEntries !== null && stat.mtimeMs === this.cachedMtime) {
         return this.cachedEntries;
       }
@@ -36322,8 +36485,8 @@ function createServer(projectRoot) {
 
 // src/dashboard/http-server.ts
 import http from "node:http";
-import fs26 from "node:fs/promises";
-import path31 from "node:path";
+import fs27 from "node:fs/promises";
+import path32 from "node:path";
 import { fileURLToPath } from "node:url";
 
 // src/dashboard/dashboard-config.ts
@@ -36339,8 +36502,8 @@ function getDashboardConfig() {
 init_blackboard_store();
 init_decision_store();
 init_graph_store();
-import fs23 from "node:fs";
-import path28 from "node:path";
+import fs24 from "node:fs";
+import path29 from "node:path";
 init_handoff_store();
 
 // src/analytics/analytics-engine.ts
@@ -36482,7 +36645,7 @@ var EMPTY_TRIAGE_STORES = {
   }
 };
 function createApiHandler(projectRoot, deps) {
-  const twiningDir = path28.join(projectRoot, ".twining");
+  const twiningDir = path29.join(projectRoot, ".twining");
   const blackboardStore = deps?.blackboardStore ?? new BlackboardStore(twiningDir);
   const decisionStore = deps?.decisionStore ?? new DecisionStore(twiningDir);
   const graphStore = deps?.graphStore ?? new GraphStore(twiningDir);
@@ -36546,7 +36709,7 @@ function createApiHandler(projectRoot, deps) {
     const url = req.url || "/";
     if (url.startsWith("/api/search")) {
       try {
-        if (!fs23.existsSync(twiningDir)) {
+        if (!fs24.existsSync(twiningDir)) {
           const parsed2 = new URL(url, "http://localhost");
           sendJSON(res, {
             query: parsed2.searchParams.get("q") || "",
@@ -36664,10 +36827,10 @@ function createApiHandler(projectRoot, deps) {
     }
     if (url === "/api/status") {
       try {
-        if (!fs23.existsSync(twiningDir)) {
+        if (!fs24.existsSync(twiningDir)) {
           sendJSON(res, {
             initialized: false,
-            project_name: path28.basename(path28.resolve(projectRoot)),
+            project_name: path29.basename(path29.resolve(projectRoot)),
             blackboard_entries: 0,
             active_decisions: 0,
             provisional_decisions: 0,
@@ -36724,7 +36887,7 @@ function createApiHandler(projectRoot, deps) {
         const total_handoffs = handoffs.length;
         sendJSON(res, {
           initialized: true,
-          project_name: path28.basename(path28.resolve(projectRoot)),
+          project_name: path29.basename(path29.resolve(projectRoot)),
           blackboard_entries,
           active_decisions,
           provisional_decisions,
@@ -36744,7 +36907,7 @@ function createApiHandler(projectRoot, deps) {
     }
     if (url === "/api/blackboard") {
       try {
-        if (!fs23.existsSync(twiningDir)) {
+        if (!fs24.existsSync(twiningDir)) {
           sendJSON(res, {
             initialized: false,
             entries: [],
@@ -36767,7 +36930,7 @@ function createApiHandler(projectRoot, deps) {
           sendJSON(res, { error: "Decision ID required" }, 400);
           return true;
         }
-        if (!fs23.existsSync(twiningDir)) {
+        if (!fs24.existsSync(twiningDir)) {
           sendJSON(res, { error: "Decision not found" }, 404);
           return true;
         }
@@ -36785,7 +36948,7 @@ function createApiHandler(projectRoot, deps) {
     }
     if (url === "/api/decisions") {
       try {
-        if (!fs23.existsSync(twiningDir)) {
+        if (!fs24.existsSync(twiningDir)) {
           sendJSON(res, {
             initialized: false,
             decisions: [],
@@ -36807,7 +36970,7 @@ function createApiHandler(projectRoot, deps) {
     }
     if (url === "/api/agents") {
       try {
-        if (!fs23.existsSync(twiningDir)) {
+        if (!fs24.existsSync(twiningDir)) {
           sendJSON(res, { initialized: false, agents: [], total: 0 });
           return true;
         }
@@ -36830,7 +36993,7 @@ function createApiHandler(projectRoot, deps) {
     }
     if (url === "/api/delegations") {
       try {
-        if (!fs23.existsSync(twiningDir)) {
+        if (!fs24.existsSync(twiningDir)) {
           sendJSON(res, { initialized: false, delegations: [], total: 0 });
           return true;
         }
@@ -36889,7 +37052,7 @@ function createApiHandler(projectRoot, deps) {
           sendJSON(res, { error: "Handoff ID required" }, 400);
           return true;
         }
-        if (!fs23.existsSync(twiningDir)) {
+        if (!fs24.existsSync(twiningDir)) {
           sendJSON(res, { error: "Handoff not found" }, 404);
           return true;
         }
@@ -36907,7 +37070,7 @@ function createApiHandler(projectRoot, deps) {
     }
     if (url === "/api/handoffs") {
       try {
-        if (!fs23.existsSync(twiningDir)) {
+        if (!fs24.existsSync(twiningDir)) {
           sendJSON(res, { initialized: false, handoffs: [], total: 0 });
           return true;
         }
@@ -36950,7 +37113,7 @@ function createApiHandler(projectRoot, deps) {
           const limit = Number(limitParam);
           if (!Number.isNaN(limit)) input.limit = limit;
         }
-        if (!fs23.existsSync(twiningDir)) {
+        if (!fs24.existsSync(twiningDir)) {
           const zero = await buildTriage(EMPTY_TRIAGE_STORES, input);
           sendJSON(res, { initialized: false, ...zero });
           return true;
@@ -36965,7 +37128,7 @@ function createApiHandler(projectRoot, deps) {
     }
     if (url === "/api/graph") {
       try {
-        if (!fs23.existsSync(twiningDir)) {
+        if (!fs24.existsSync(twiningDir)) {
           sendJSON(res, {
             initialized: false,
             entities: [],
@@ -36992,7 +37155,7 @@ function createApiHandler(projectRoot, deps) {
     }
     if (url === "/api/analytics/value-stats") {
       try {
-        if (!fs23.existsSync(twiningDir)) {
+        if (!fs24.existsSync(twiningDir)) {
           sendJSON(res, {
             blind_decisions_prevented: { total_decisions: 0, assembled_before: 0, prevention_rate: 0 },
             warnings_surfaced: { total: 0, acknowledged: 0, resolved: 0, ignored: 0 },
@@ -37056,31 +37219,31 @@ init_blackboard_store();
 init_decision_store();
 init_graph_store();
 init_handoff_store();
-import fs25 from "node:fs";
-import path30 from "node:path";
+import fs26 from "node:fs";
+import path31 from "node:path";
 import zlib from "node:zlib";
 init_config();
 
 // src/dashboard/raw-path.ts
-import fs24 from "node:fs";
-import path29 from "node:path";
+import fs25 from "node:fs";
+import path30 from "node:path";
 var RAW_FILE_MAX_BYTES = 1e6;
 function resolveRawPath(projectRoot, rel) {
   if (typeof rel !== "string" || rel.length === 0 || rel.length > 1024) return null;
-  if (path29.isAbsolute(rel) || rel.includes("\\") || rel.includes("\0")) return null;
+  if (path30.isAbsolute(rel) || rel.includes("\\") || rel.includes("\0")) return null;
   const segments = rel.split("/");
   if (segments.some((s) => s === "" || s.startsWith("."))) return null;
   let rootReal;
   let real;
   try {
-    rootReal = fs24.realpathSync(projectRoot);
-    real = fs24.realpathSync(path29.resolve(rootReal, rel));
+    rootReal = fs25.realpathSync(projectRoot);
+    real = fs25.realpathSync(path30.resolve(rootReal, rel));
   } catch {
     return null;
   }
-  if (!real.startsWith(rootReal + path29.sep)) return null;
+  if (!real.startsWith(rootReal + path30.sep)) return null;
   try {
-    if (!fs24.statSync(real).isFile()) return null;
+    if (!fs25.statSync(real).isFile()) return null;
   } catch {
     return null;
   }
@@ -37192,7 +37355,7 @@ function sendJSON2(req, res, data, status = 200) {
   }
 }
 function createQueryHandler(projectRoot, deps) {
-  const twiningDir = path30.join(projectRoot, ".twining");
+  const twiningDir = path31.join(projectRoot, ".twining");
   const blackboardStore = deps?.blackboardStore ?? new BlackboardStore(twiningDir);
   const decisionStore = deps?.decisionStore ?? new DecisionStore(twiningDir);
   const graphStore = deps?.graphStore ?? new GraphStore(twiningDir);
@@ -37210,11 +37373,11 @@ function createQueryHandler(projectRoot, deps) {
           sendJSON2(req, res, { error: "Not found" }, 404);
           return true;
         }
-        if (fs25.statSync(abs).size > RAW_FILE_MAX_BYTES) {
+        if (fs26.statSync(abs).size > RAW_FILE_MAX_BYTES) {
           sendJSON2(req, res, { error: "File too large" }, 413);
           return true;
         }
-        const body = fs25.readFileSync(abs);
+        const body = fs26.readFileSync(abs);
         res.writeHead(200, {
           "Content-Type": "text/plain; charset=utf-8",
           "X-Content-Type-Options": "nosniff",
@@ -37247,7 +37410,7 @@ function createQueryHandler(projectRoot, deps) {
           sendJSON2(req, res, { error: "Blackboard entry ID required" }, 400);
           return true;
         }
-        if (!fs25.existsSync(twiningDir)) {
+        if (!fs26.existsSync(twiningDir)) {
           sendJSON2(req, res, { error: "Blackboard entry not found" }, 404);
           return true;
         }
@@ -37266,7 +37429,7 @@ function createQueryHandler(projectRoot, deps) {
     }
     if (route === "/api/index") {
       try {
-        if (!fs25.existsSync(twiningDir)) {
+        if (!fs26.existsSync(twiningDir)) {
           sendJSON2(req, res, { initialized: false, rows: [], total_counts: { blackboard: 0, decisions: { active: 0, provisional: 0, superseded: 0, overridden: 0 } }, generated_at: (/* @__PURE__ */ new Date()).toISOString() });
           return true;
         }
@@ -37312,7 +37475,7 @@ function createQueryHandler(projectRoot, deps) {
     }
     if (route === "/api/graph/summary") {
       try {
-        if (!fs25.existsSync(twiningDir)) {
+        if (!fs26.existsSync(twiningDir)) {
           sendJSON2(req, res, {
             initialized: false,
             groups: [],
@@ -37369,7 +37532,7 @@ function createQueryHandler(projectRoot, deps) {
     }
     if (route === "/api/graph/entities") {
       try {
-        if (!fs25.existsSync(twiningDir)) {
+        if (!fs26.existsSync(twiningDir)) {
           sendJSON2(req, res, { entities: [], total: 0, offset: 0 });
           return true;
         }
@@ -37422,7 +37585,7 @@ function createQueryHandler(projectRoot, deps) {
           sendJSON2(req, res, { error: "id query parameter required" }, 400);
           return true;
         }
-        if (!fs25.existsSync(twiningDir)) {
+        if (!fs26.existsSync(twiningDir)) {
           sendJSON2(req, res, { error: "Entity not found" }, 404);
           return true;
         }
@@ -37557,7 +37720,7 @@ function createQueryHandler(projectRoot, deps) {
     }
     if (route === "/api/health-report") {
       try {
-        if (!fs25.existsSync(twiningDir)) {
+        if (!fs26.existsSync(twiningDir)) {
           sendJSON2(req, res, {
             stale_decisions: [],
             unresolved_warnings: [],
@@ -37662,16 +37825,16 @@ function serveStatic(publicDir) {
     const rawPath = qIndex >= 0 ? rawUrl.slice(0, qIndex) : rawUrl;
     const decodedPath = decodeURIComponent(rawPath);
     const pathname = decodedPath === "/" ? "/index.html" : decodedPath;
-    const filePath = path31.join(publicDir, pathname);
-    const resolved = path31.resolve(filePath);
-    if (!resolved.startsWith(path31.resolve(publicDir))) {
+    const filePath = path32.join(publicDir, pathname);
+    const resolved = path32.resolve(filePath);
+    if (!resolved.startsWith(path32.resolve(publicDir))) {
       res.writeHead(403);
       res.end("Forbidden");
       return;
     }
     try {
-      const data = await fs26.readFile(resolved);
-      const ext = path31.extname(resolved);
+      const data = await fs27.readFile(resolved);
+      const ext = path32.extname(resolved);
       res.writeHead(200, {
         "Content-Type": MIME_TYPES[ext] || "application/octet-stream"
       });
@@ -37713,7 +37876,7 @@ function handleRequest(publicDir, projectRoot, deps) {
   const staticHandler = serveStatic(publicDir);
   const queryHandler = createQueryHandler(projectRoot, deps);
   const apiHandler = createApiHandler(projectRoot, deps);
-  const resolvedProjectRoot = path31.resolve(projectRoot);
+  const resolvedProjectRoot = path32.resolve(projectRoot);
   return (req, res) => {
     queryHandler(req, res).then((queryHandled) => queryHandled ? true : apiHandler(req, res)).then((handled) => {
       if (handled) return;
@@ -37745,7 +37908,7 @@ async function startDashboard(projectRoot, deps) {
   if (!config2.enabled) {
     return null;
   }
-  const resolvedRoot = path31.resolve(projectRoot);
+  const resolvedRoot = path32.resolve(projectRoot);
   if (config2.port !== 0) {
     for (let p = config2.port; p <= config2.port + DASHBOARD_PORT_RETRIES; p++) {
       if (await isExistingDashboard(p, resolvedRoot)) {
@@ -37757,14 +37920,14 @@ async function startDashboard(projectRoot, deps) {
     }
   }
   const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path31.dirname(__filename);
-  const publicDir = path31.join(__dirname, "public");
+  const __dirname = path32.dirname(__filename);
+  const publicDir = path32.join(__dirname, "public");
   const server = http.createServer(handleRequest(publicDir, projectRoot, deps));
   const port = await tryListen(server, config2.port, DASHBOARD_PORT_RETRIES);
   const url = `http://127.0.0.1:${port}`;
   console.error(`[twining] Dashboard: ${url}`);
   if (config2.autoOpen) {
-    const resolvedRoot2 = path31.resolve(projectRoot);
+    const resolvedRoot2 = path32.resolve(projectRoot);
     const skipOpen = port !== config2.port && await isExistingDashboard(config2.port, resolvedRoot2);
     if (skipOpen) {
       console.error(
