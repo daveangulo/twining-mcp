@@ -52,6 +52,8 @@ export interface DanglingWarning {
 export interface HousekeepingResult {
   /** Report-only amend candidates (re-scoped field D13 ask 1); write path is twining_amend. */
   amend_candidates?: AmendCandidateReport;
+  /** Set when amend_candidates was requested but could not run — never a silent no-op. */
+  amend_candidates_error?: string;
   archived: { count: number; file: string; kept_open: number };
   deduplicated: { removed: number };
   stale_provisionals: { count: number; items: StaleProvisional[] };
@@ -353,20 +355,28 @@ export class HousekeepingEngine {
     }
 
     // 8. Merge sweep — opt-in (branch-watcher diff vs last housekeeping snapshot).
-    // Snapshot file is only updated when execute=true; dry-runs compute the
-    // diff against the existing baseline without advancing it, so a preview
-    // can never silently consume deletions before the user acts.
-    if (amendCandidatesOpt && this.projectRoot) {
-      try {
-        result.amend_candidates = await reportAmendCandidates(
-          this.decisionStore,
-          this.projectRoot,
-        );
-      } catch (error) {
-        console.error("[twining] amend-candidates report failed (non-fatal):", error);
+    if (amendCandidatesOpt) {
+      if (this.projectRoot) {
+        try {
+          result.amend_candidates = await reportAmendCandidates(
+            this.decisionStore,
+            this.projectRoot,
+          );
+        } catch (error) {
+          console.error("[twining] amend-candidates report failed (non-fatal):", error);
+          result.amend_candidates_error =
+            error instanceof Error ? error.message : String(error);
+        }
+      } else {
+        // Never a silent no-op (review finding): the caller asked and must
+        // hear why nothing came back.
+        result.amend_candidates_error = "unavailable: no project root configured";
       }
     }
 
+    // Snapshot file is only updated when execute=true; dry-runs compute the
+    // diff against the existing baseline without advancing it, so a preview
+    // can never silently consume deletions before the user acts.
     if (mergeSweep && this.projectRoot) {
       try {
         const sweep = detectDeletedBranches(

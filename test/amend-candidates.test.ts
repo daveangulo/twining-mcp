@@ -93,6 +93,11 @@ describe("reportAmendCandidates", () => {
     expect(
       entry.candidates.some((c) => c.file.includes("node_modules")),
     ).toBe(false);
+    // Mutation-strength (review finding): the overlap>0 filter is the wall-3
+    // guard — a zero-overlap file must never appear as a candidate.
+    expect(
+      entry.candidates.some((c) => c.file.includes("unrelated-widget")),
+    ).toBe(false);
     expect(report.note).toContain("twining_amend");
 
     // Report-only: the store is untouched.
@@ -113,5 +118,42 @@ describe("reportAmendCandidates", () => {
     expect(report.decisions_scanned).toBe(1);
     expect(report.scope_missing).toBe(1);
     expect(report.decisions_with_candidates).toHaveLength(0);
+  });
+
+  it("never walks outside the project root, and root-equivalent scopes join the project skip", async () => {
+    fs.mkdirSync(path.join(path.dirname(projectRoot), "sibling-secret"), {
+      recursive: true,
+    });
+    await store.create({
+      ...base,
+      scope: "../sibling-secret/",
+      summary: "Escape attempt",
+      rationale: "r",
+      affected_files: [],
+    });
+    await store.create({
+      ...base,
+      scope: "./",
+      summary: "Root equivalent",
+      rationale: "r",
+      affected_files: [],
+    });
+    const report = await reportAmendCandidates(store, projectRoot);
+    expect(report.scope_outside_root).toBe(1);
+    expect(report.skipped_project_scope).toBe(1);
+    expect(report.decisions_with_candidates).toHaveLength(0);
+  });
+
+  it("scans provisional decisions too", async () => {
+    await store.create({
+      ...base,
+      scope: "src/gate/",
+      summary: "Provisional alpha cache choice",
+      rationale: "alpha cache",
+      affected_files: [],
+      status: "provisional",
+    });
+    const report = await reportAmendCandidates(store, projectRoot);
+    expect(report.decisions_with_candidates).toHaveLength(1);
   });
 });

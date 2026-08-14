@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-14T03:39:08.476Z",
+  "id": "01KZZ5M99WXNJJHC2XB0N632W5",
+  "name": "01KZZ5M98Q77A5Q8ZRWSJ35Z7P",
+  "properties": {
+    "scope": "src/engine/amend-candidates.ts",
+    "summary": "Chose to include provisional decisions in the scan"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-14T03:39:08.476Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-14T03:39:08.411Z",
+  "id": "01KZZ5M97VZC7G1NZSRDHB4KWX",
+  "name": "01KZZ5M96KHNJG1ZK7J6PNS5DR",
+  "properties": {
+    "scope": "src/engine/amend-candidates.ts",
+    "summary": "Chose resolved-path containment (must start with projectRoot+sep) with a reported scope_outside_root bucket over rejecting ../ scopes at write time"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-14T03:39:08.411Z"
+}

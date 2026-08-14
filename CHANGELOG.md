@@ -2,6 +2,20 @@
 
 All notable changes to Twining MCP are documented here.
 
+## [2.12.0] - 2026-08-13
+
+### Added
+- **Amend-candidates reporter (re-scoped field D13 ask 1).**
+  `twining_housekeeping({amend_candidates: true})` reports candidate
+  `affected_files` for active decisions whose list is empty: a bounded walk
+  of the decision's scope tree ranked by term overlap with its summary and
+  rationale. Report-only by construction — `execute` has no effect; the
+  sole write path is per-record `twining_amend` confirmation, because the
+  field measured populated-but-wrong lists as worse than honest emptiness.
+  Caps (50 decisions/run, 500 files/scope, 5 candidates each) are always
+  reported, never silent; `project`-scoped decisions are skipped with a
+  count.
+
 ## [2.11.0] - 2026-08-13
 
 Wave C of the second field-defect wave — the knowledge-graph half of the

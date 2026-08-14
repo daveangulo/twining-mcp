@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Reporter review round fixed (all 7 confirmed findings): root containment for ../ scopes, root-equivalent skip, ENOENT/unreadable split, provisional inclusion, no-silent-no-op error field, comment restored, mutation-strength pins. 1613 green. Shipping 2.12.0.\nDecisions: Chose resolved-path containment (must start with projectRoot+sep) with a reported scope_outside_root bucket over rejecting ../ scopes at write time — field stores already hold messy scope strings; the reporter must be safe against existing data, and root-equivalent resolutions join the skipped_project_scope bucket the honesty skip exists for; Chose to include provisional decisions in the scan — the field runs provisional as its ratification queue, and an empty-list provisional deserves candidates exactly as much as an active one\nFindings: Fourth consecutive review round with confirmed majors in reviewed code (../ escape walking sibling directories; the wall-3 overlap filter surviving mutation) — the reviewer also mutation-tested in a scratchpad copy without touching the live tree, exactly the worktree-isolation discipline the memory prescribes",
+  "entry_type": "status",
+  "id": "01KZZ5M950XARQHMX4KA1MF625",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "f11be33537bd9b106cd10c6680f827e727f52403",
+    "recorded_at": "2026-08-14T03:39:08.296Z"
+  },
+  "scope": "src/engine/amend-candidates.ts",
+  "summary": "Reporter review round fixed (all 7 confirmed findings): root containment for ../ scopes, root-equivalent skip, ENOENT/unreadable split, provisional inclusion, no-silent-no-op error field, comment r…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-14T03:39:08.320Z"
+}

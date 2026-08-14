@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-14T03:39:08.413Z",
+  "id": "01KZZ5M97XG5TG7H1MWBZM94Q9",
+  "properties": {
+    "decision_summary": "Chose resolved-path containment (must start with projectRoot+sep) with a reported scope_outside_root bucket over rejecting ../ scopes at write time"
+  },
+  "source": "01KQWE98BE5GC6Q3Q99F2HXCJX",
+  "target": "01KZZ5M97VZC7G1NZSRDHB4KWX",
+  "type": "decided_by"
+}

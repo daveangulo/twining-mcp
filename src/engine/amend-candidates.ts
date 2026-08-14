@@ -40,8 +40,12 @@ export interface AmendCandidateReport {
   decisions_truncated: number;
   /** Skipped: scope "project" enumerates the whole repo and cannot be ranked honestly. */
   skipped_project_scope: number;
-  /** Skipped: the scope path does not exist under the project root. */
+  /** Skipped: the scope path does not exist (ENOENT) under the project root. */
   scope_missing: number;
+  /** Skipped: stat failed for a non-ENOENT reason (permissions, symlink loop). */
+  scope_unreadable: number;
+  /** Skipped: the scope resolves OUTSIDE the project root ("../" escapes). */
+  scope_outside_root: number;
   decisions_with_candidates: Array<{
     id: string;
     summary: string;
@@ -101,8 +105,12 @@ export async function reportAmendCandidates(
   projectRoot: string,
 ): Promise<AmendCandidateReport> {
   const index = await decisionStore.getIndex();
+  // Provisional records are the ratification queue in field stores — they
+  // deserve candidates too (review finding).
   const empties = index.filter(
-    (e) => e.status === "active" && e.affected_files.length === 0,
+    (e) =>
+      (e.status === "active" || e.status === "provisional") &&
+      e.affected_files.length === 0,
   );
 
   const report: AmendCandidateReport = {
@@ -110,6 +118,8 @@ export async function reportAmendCandidates(
     decisions_truncated: 0,
     skipped_project_scope: 0,
     scope_missing: 0,
+    scope_unreadable: 0,
+    scope_outside_root: 0,
     decisions_with_candidates: [],
     note:
       "Report-only: nothing was written. Confirm per record with twining_amend({decision_id, add_affected_files}) — candidates are term-overlap guesses over the scope tree, not assertions.",
@@ -121,18 +131,34 @@ export async function reportAmendCandidates(
   const toScan = scannable.slice(0, MAX_DECISIONS);
   report.decisions_truncated = scannable.length - toScan.length;
 
+  const resolvedRoot = path.resolve(projectRoot);
   for (const entry of toScan) {
-    const scopePath = path.join(projectRoot, entry.scope);
+    const scopePath = path.resolve(path.join(projectRoot, entry.scope));
+    report.decisions_scanned++;
+    // Containment (review finding): "../" scopes resolve outside the repo —
+    // never walk or report foreign paths. Root-equivalent scopes (".", "./")
+    // are the whole-repo case the project skip exists for.
+    if (scopePath === resolvedRoot) {
+      report.decisions_scanned--;
+      report.skipped_project_scope++;
+      continue;
+    }
+    if (!scopePath.startsWith(resolvedRoot + path.sep)) {
+      report.scope_outside_root++;
+      continue;
+    }
     // A file-like scope is its own best candidate when it exists.
     let stat: fs.Stats | null = null;
     try {
       stat = fs.statSync(scopePath);
-    } catch {
-      report.scope_missing++;
-      report.decisions_scanned++;
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code === "ENOENT") {
+        report.scope_missing++;
+      } else {
+        report.scope_unreadable++;
+      }
       continue;
     }
-    report.decisions_scanned++;
 
     const decision = await decisionStore.get(entry.id);
     const decisionTokens = tokenize(

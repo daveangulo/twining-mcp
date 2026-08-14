@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-14T03:39:08.479Z",
+  "id": "01KZZ5M99ZZ1KCRSP43H9KSTAY",
+  "properties": {
+    "decision_summary": "Chose to include provisional decisions in the scan"
+  },
+  "source": "01KZZ34D0CNR3TAKJQJDB1KZQE",
+  "target": "01KZZ5M99WXNJJHC2XB0N632W5",
+  "type": "decided_by"
+}
