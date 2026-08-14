@@ -1,0 +1,21 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: 2.13.0 ship complete: CI Publish green, npm latest = 2.13.0, plugin pins 1.31.0 in BOTH user and project scopes (restart applies). Memo covers 2.8.0-2.13.0. Backlog now: UNIQUE backstop, sqlite relation index, per-decision supersedes, neighbors reduced form, diff-capture provenance, chain_length overcount. SEND memo to field still pending.\nFindings: Ship state: v2.13.0 tag -> CI Publish green -> npm latest 2.13.0 confirmed -> pins 1.31.0 both scopes (restart applies). The dedup follow-up is closed; the graph backlog's remaining items are the UNIQUE(source,target,type) sqlite backstop and the relation-lookup index.",
+  "entry_type": "status",
+  "id": "01M01ACTD5MZMKAR5X1B2QN7F6",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "af733351313c96d78481143c387e419b1c2d5161",
+    "recorded_at": "2026-08-14T23:40:55.565Z"
+  },
+  "relates_to": [
+    "01M01A9YG8MCKHQ6A36B2B5X42"
+  ],
+  "scope": "project",
+  "summary": "2.13.0 ship complete: CI Publish green, npm latest = 2.13.0, plugin pins 1.31.0 in BOTH user and project scopes (restart applies). Memo covers 2.8.0-2.13.0. Backlog now: UNIQUE backstop, sqlite rel…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-14T23:40:55.589Z"
+}

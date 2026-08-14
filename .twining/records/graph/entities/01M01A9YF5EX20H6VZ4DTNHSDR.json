@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-14T23:39:21.445Z",
+  "id": "01M01A9YF5EX20H6VZ4DTNHSDR",
+  "name": "01M01A9YCKW3YQKWB607CZSFG6",
+  "properties": {
+    "scope": "project",
+    "summary": "Chose to update the existing wave-2 memo in place (range retitled 2.8.0-2.13.0, dedup row added, relation-upsert retirement bullet now points at the shipped pass, UNIQUE backstop stays on the follow-up list) over drafting a separate 2.13.0 memo"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-14T23:39:21.445Z"
+}

@@ -3,8 +3,8 @@
   "id": "01KZ6WHR7D5643DJHAA4ZA6QQF",
   "name": "plugin/server/twining-server.mjs",
   "properties": {
-    "scope": "plugin/"
+    "scope": "plugin/,project"
   },
   "type": "file",
-  "updated_at": "2026-08-04T17:18:42.274Z"
+  "updated_at": "2026-08-14T23:39:21.455Z"
 }

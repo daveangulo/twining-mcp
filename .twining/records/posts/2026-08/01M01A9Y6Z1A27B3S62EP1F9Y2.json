@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Shipped 2.13.0 (relation-dedup hardening) / plugin 1.31.0: fix commit 161515b reviewed clean by two adversarial verifiers, tag v2.13.0 pushed, CI Publish running. Field memo updated to the 2.8.0-2.13.0 range with the dedup row and follow-up list trimmed.\nDecisions: Chose minor bumps (server 2.13.0, plugin 1.31.0) for the dedup hardening release — the pass gained new report fields (skipped_id_collisions, failed_groups, errors, relation_dedup_error), an additive surface change, matching the 2.11/2.12 minor-per-feature pattern.; Chose to update the existing wave-2 memo in place (range retitled 2.8.0-2.13.0, dedup row added, relation-upsert retirement bullet now points at the shipped pass, UNIQUE backstop stays on the follow-up list) over drafting a separate 2.13.0 memo — the memo's STATUS gate is version-based and the field has not yet acted on it, so one cumulative memo is one upgrade action.\nFindings: 2.13.0 ship state mid-flight: tag pushed, CI Publish watch running in background; still pending after publish confirms — plugin pin update in BOTH user and project scopes (stale project pin shadows user scope), ship-state + memo commit, push",
+  "entry_type": "status",
+  "id": "01M01A9Y6Z1A27B3S62EP1F9Y2",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "af733351313c96d78481143c387e419b1c2d5161",
+    "recorded_at": "2026-08-14T23:39:21.164Z"
+  },
+  "scope": "project",
+  "summary": "Shipped 2.13.0 (relation-dedup hardening) / plugin 1.31.0: fix commit 161515b reviewed clean by two adversarial verifiers, tag v2.13.0 pushed, CI Publish running. Field memo updated to the 2.8.0-2.…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-14T23:39:21.183Z"
+}

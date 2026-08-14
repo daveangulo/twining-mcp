@@ -1,6 +1,6 @@
-# Twining → field memo: the wave-2 fixes have shipped (2.8.0–2.12.0)
+# Twining → field memo: the wave-2 fixes have shipped (2.8.0–2.13.0)
 
-**STATUS: LIVE** — archive when your store runs server ≥2.12 / plugin ≥1.30
+**STATUS: LIVE** — archive when your store runs server ≥2.13 / plugin ≥1.31
 and the CLAUDE.md retirements below are applied. Companion to the full
 disposition (`2026-08-12-wave2-response.md`, including its measurements-back
 addendum); this memo is only what you need to *act*.
@@ -23,8 +23,9 @@ code — the fix set below includes those.
 | 2.10.0 | 1.28.0 | **Wave B (D11 + D12 remainder)**: `twining_amend` (full surface) — append-only `affected_files`/`affected_symbols` repair with in-record `amendments[]` provenance and audit finding; self-authored warnings marked `[this session]` by posted-id membership |
 | 2.11.0 | 1.29.0 | **Wave C (D13 asks 3+4, plus graph defects)**: relation `origin` marker (`declared`/`derived`, absent = legacy) with downgrade protection; `lineage: true` on `twining_why` (chain head via `superseded_by`); graph relations upsert instead of duplicating; populator per-step isolation; the dead `relates_to` write path removed |
 | 2.12.0 | 1.30.0 | **Amend-candidates reporter (re-scoped D13 ask 1)**: `twining_housekeeping({amend_candidates: true})` proposes candidate files for empty-list decisions — report-only by construction, root-contained, all caps reported |
+| 2.13.0 | 1.31.0 | **Legacy relation-dedup pass**: `twining_housekeeping({dedup_relations: true})` removes your pre-2.11 duplicate `(source, target, type)` edges — survivor is the edge live upserts already merge into (seq-first), properties fold in under origin precedence. Hardened pre-ship by its own review round: duplicates with non-unique ids are skipped and counted (`skipped_id_collisions`, never over-deletes), a dangling-endpoint group is skipped and counted (`failed_groups`/`errors`) instead of aborting the pass, and a requested pass that cannot run reports `relation_dedup_error` — never a silent no-op. Preview by default; execute applies |
 
-Upgrade: `twining-mcp@latest` (2.12.0) + plugin 1.30.0. Releases are
+Upgrade: `twining-mcp@latest` (2.13.0) + plugin 1.31.0. Releases are
 cumulative — one jump gets everything.
 
 ## CLAUDE.md retirements (the reason to upgrade promptly)
@@ -99,9 +100,10 @@ queue gets candidates alongside active records.
   in *our* measured store; yours will differ). A machine (`derived`) write
   can never downgrade an agent (`declared`) origin.
 - **Relation upsert**: re-adding the same `(source, target, type)` merges
-  properties instead of duplicating. Your existing duplicate edges remain
-  until a dedup pass ships (on our follow-up backlog, with a UNIQUE-index
-  backstop); until then an upsert merges into the oldest duplicate.
+  properties instead of duplicating. Your existing duplicate edges are now
+  removable: run `twining_housekeeping({dedup_relations: true})` (preview),
+  then again with `execute: true` (shipped 2.13.0). The UNIQUE-index
+  backstop remains on the follow-up backlog.
 - **`onPost`'s `relates_to` graph edges are gone** — the path targeted
   blackboard entry ids that are never graph entities and essentially never
   worked (your review nearly built on it). Post-to-post linking remains the
@@ -115,8 +117,8 @@ queue gets candidates alongside active records.
 
 ## Our open follow-ups (so you know what is coming vs. not)
 
-Legacy duplicate-relation dedup pass + UNIQUE `(source,target,type)`
-backstop; a sqlite relation-lookup index (writes scan O(N) today); **per-decision `supersedes` on the
+The UNIQUE `(source,target,type)` sqlite backstop (the dedup pass itself
+shipped in 2.13.0); a sqlite relation-lookup index (writes scan O(N) today); **per-decision `supersedes` on the
 structured object** (the D10(a) substitute — only the fan-out guard has
 shipped); **the D13 ask-2 neighbors work in its accepted reduced form**
 (edge-complete output, hop depth, lifecycle awareness — today an edge from
