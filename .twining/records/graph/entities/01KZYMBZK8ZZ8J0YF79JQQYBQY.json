@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-13T22:37:30.600Z",
+  "id": "01KZYMBZK8ZZ8J0YF79JQQYBQY",
+  "name": "01KZYMBZJP7EQGWXEZY9GRT3BG",
+  "properties": {
+    "scope": "CHANGELOG.md",
+    "summary": "Chose to descope the amend-candidates housekeeping reporter from 2.11.0"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-13T22:37:30.600Z"
+}

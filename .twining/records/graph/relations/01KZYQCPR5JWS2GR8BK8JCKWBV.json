@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T23:30:20.037Z",
+  "id": "01KZYQCPR5JWS2GR8BK8JCKWBV",
+  "properties": {
+    "decision_summary": "Wrapped the sqlite relation upsert's find+write in withWriteTxn matching addEntity"
+  },
+  "source": "01KHMSD5WQ8BBAQ8QPQMQXSMFH",
+  "target": "01KZYQCPR0XJJNH8D3DWBAQ0MA",
+  "type": "decided_by"
+}

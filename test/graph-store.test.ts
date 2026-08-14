@@ -296,20 +296,50 @@ describe("GraphStore.addRelation — upsert semantics (wave C)", () => {
       type: "decided_by",
       properties: { decision_summary: "original" },
     });
+    // Second write carries ONLY origin — a replace (not merge) would lose
+    // decision_summary (mutation-strength: review finding).
     const second = await store.addRelation({
       source: source.id,
       target: target.id,
       type: "decided_by",
-      properties: { decision_summary: "updated", origin: "derived" },
+      properties: { origin: "derived" },
     });
 
     expect(second.id).toBe(first.id);
     const relations = await store.getRelations();
     expect(relations).toHaveLength(1);
     expect(relations[0]!.properties).toEqual({
-      decision_summary: "updated",
+      decision_summary: "original",
       origin: "derived",
     });
+  });
+
+  it("a derived re-upsert never downgrades a declared origin; declared upgrades derived", async () => {
+    const s = await store.addEntity({ name: "s", type: "file" });
+    const t = await store.addEntity({ name: "t", type: "concept" });
+    await store.addRelation({
+      source: s.id, target: t.id, type: "decided_by",
+      properties: { origin: "declared" },
+    });
+    await store.addRelation({
+      source: s.id, target: t.id, type: "decided_by",
+      properties: { origin: "derived", decision_summary: "machine pass" },
+    });
+    let rel = (await store.getRelations())[0]!;
+    expect(rel.properties.origin).toBe("declared");
+    expect(rel.properties.decision_summary).toBe("machine pass");
+
+    const s2 = await store.addEntity({ name: "s2", type: "file" });
+    await store.addRelation({
+      source: s2.id, target: t.id, type: "decided_by",
+      properties: { origin: "derived" },
+    });
+    await store.addRelation({
+      source: s2.id, target: t.id, type: "decided_by",
+      properties: { origin: "declared" },
+    });
+    rel = (await store.getRelations()).find((r) => r.source === s2.id)!;
+    expect(rel.properties.origin).toBe("declared");
   });
 
   it("different type between the same entities is a distinct relation", async () => {

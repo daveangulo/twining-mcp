@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: follow-up backlog for the graph — legacy duplicate-relation dedup housekeeping pass + UNIQUE index backstop, sqlite relation-lookup index (O(N) per write today), amend-candidates reporter (descoped from 2.11.0), cycle chain_length overcount",
+  "entry_type": "need",
+  "id": "01KZYQCPY69N9795M48J1V92VJ",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d2ce93874c048637d4e0848fc660570329881c7d",
+    "recorded_at": "2026-08-13T23:30:20.211Z"
+  },
+  "scope": "src/",
+  "summary": "follow-up backlog for the graph — legacy duplicate-relation dedup housekeeping pass + UNIQUE index backstop, sqlite relation-lookup index (O(N) per write today), amend-candidates reporter (descoped…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-08-13T23:30:20.230Z"
+}

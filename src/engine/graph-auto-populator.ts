@@ -53,8 +53,8 @@ export class GraphAutoPopulator {
           properties: { scope: input.scope },
         });
         await this.graphEngine.addRelation({
-          source: entity.name,
-          target: decisionEntity.name,
+          source: entity.id,
+          target: decisionEntity.id,
           type: "decided_by",
           properties: { origin: "derived", decision_summary: input.summary },
         });
@@ -68,8 +68,8 @@ export class GraphAutoPopulator {
           properties: { scope: input.scope },
         });
         await this.graphEngine.addRelation({
-          source: entity.name,
-          target: decisionEntity.name,
+          source: entity.id,
+          target: decisionEntity.id,
           type: "decided_by",
           properties: { origin: "derived", decision_summary: input.summary },
         });

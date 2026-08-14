@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T23:30:20.178Z",
+  "id": "01KZYQCPWJZZ7RZ1QWNGY0CFT0",
+  "properties": {
+    "decision_summary": "Accepted three review findings as recorded follow-ups rather than 2.11.0 blockers: legacy duplicate-relation dedup pass (upsert merges into first-by-seq until cleaned), O(N) sqlite relation scan per write, and the cycle-only lineage chain_length overcount"
+  },
+  "source": "01KQV9J8B49121D9ZY3ZNPCK77",
+  "target": "01KZYQCPW9V5Q76EJYYB3RW5VD",
+  "type": "decided_by"
+}

@@ -2,6 +2,42 @@
 
 All notable changes to Twining MCP are documented here.
 
+## [2.11.0] - 2026-08-13
+
+Wave C of the second field-defect wave — the knowledge-graph half of the
+D13 asks, plus two graph defects the investigation surfaced. Full
+disposition: `docs/field-responses/2026-08-12-wave2-response.md`.
+
+### Added
+- **Relation provenance marker (D13 ask 4).** Every graph relation now
+  carries `properties.origin`: `"declared"` for agent-typed edges
+  (`twining_add_relation`; a caller-supplied origin wins), `"derived"` for
+  all auto-populated edges, absent means legacy/unknown — the same
+  absence semantics as `rationale_source` and blackboard `origin`.
+  Sequenced before any future derivation pass so inferred edges can never
+  masquerade as declared ones.
+- **`lineage: true` on `twining_why` (D13 ask 3).** Excluded superseded/
+  overridden records gain `lineage_head` `{id, summary, chain_length}` by
+  walking `superseded_by` to the terminal record — "what is the current
+  answer", not "what ranks highest". Cycle-guarded and depth-capped;
+  off by default.
+
+### Fixed
+- **Graph relations upsert instead of appending (both backends).**
+  Re-adding the same `(source, target, type)` now merges properties and
+  returns the existing edge — re-recording a decision duplicated every
+  `decided_by` edge, and no derivation or repair pass could ever be
+  idempotent. Existing duplicates in field stores are unaffected (a
+  cleanup pass is a candidate follow-up).
+- **One failed edge no longer aborts the rest of graph population.**
+  `onDecide`'s depends_on/supersedes/commit edge groups are individually
+  isolated — a `NOT_FOUND` on a pre-graph or pruned concept previously
+  killed every subsequent edge in the call. `onPost`'s speculative
+  `relates_to` loop is removed outright: it targeted blackboard entry ids
+  that are never graph entities (1 coincidental edge across 2,352 in the
+  measured store), and post-to-post linking is the blackboard
+  `relates_to` field's job.
+
 ## [2.10.0] - 2026-08-13
 
 Wave B of the second field-defect wave (D11, D12 remainder) — the

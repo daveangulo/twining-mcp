@@ -466,7 +466,7 @@ Add or update a knowledge graph entity. Uses upsert semantics: if an entity with
 <!-- tier: 1 -->
 
 #### Context
-Add a relation between two knowledge graph entities. Source and target can be entity IDs or names. Returns an error for ambiguous name matches. Use to capture dependencies, implementations, test coverage, and other structural relationships.
+Add a relation between two knowledge graph entities. Source and target can be entity IDs or names. Returns an error for ambiguous name matches. Use to capture dependencies, implementations, test coverage, and other structural relationships. Upsert semantics (server >=2.11): re-adding the same (source, target, type) merges properties instead of duplicating the edge. Relations carry a provenance marker: agent-typed edges get properties.origin "declared", auto-populated edges "derived", absent means legacy — a derived write never downgrades a declared origin.
 
 #### Rules
 | ID | Level | Rule |

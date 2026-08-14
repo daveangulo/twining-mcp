@@ -13,6 +13,7 @@ import { generateId } from "../../utils/ids.js";
 import { mergeEntityProperties } from "../../utils/entity-properties.js";
 import { normalizeTags } from "../../utils/tags.js";
 import { scopeMatches } from "../../utils/scope.js";
+import { mergeRelationProperties } from "../../utils/relation-properties.js";
 import { TwiningError } from "../../utils/errors.js";
 import { isReadOnly } from "../file-store.js";
 import type {
@@ -413,10 +414,11 @@ export class SqliteGraphStore implements IGraphStore {
     const targetEntity = resolveEntity(input.target);
 
     // Upsert by (source, target, type), mirroring addEntity's name+type
-    // upsert (wave C): relations were append-only in both backends, so
-    // re-recording a decision duplicated every decided_by edge and no
-    // derivation pass could ever be idempotent. Properties merge last-wins,
-    // matching entity semantics.
+    // upsert (wave C). The find+write pair runs inside a write transaction —
+    // WAL serializes statements, not statement PAIRS, so an unwrapped
+    // check-then-act lets two processes both miss and both insert,
+    // recreating the duplicate-edge defect this upsert exists to fix.
+    return withWriteTxn(this.db, () => {
     const existing = this.getRelationsSync().find(
       (r) =>
         r.source === sourceEntity.id &&
@@ -426,7 +428,7 @@ export class SqliteGraphStore implements IGraphStore {
     if (existing) {
       const merged: Relation = {
         ...existing,
-        properties: { ...existing.properties, ...(input.properties ?? {}) },
+        properties: mergeRelationProperties(existing.properties, input.properties),
       };
       this.db
         .prepare("UPDATE relations SET data = ? WHERE id = ?")
@@ -448,6 +450,7 @@ export class SqliteGraphStore implements IGraphStore {
       )
       .run(relation.id, relation.source, relation.target, JSON.stringify(relation));
     return relation;
+    });
   }
 
   private getRelationsSync(): Relation[] {

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-13T23:30:19.912Z",
+  "id": "01KZYQCPM8TD8W49Z5GGYVZVYR",
+  "properties": {
+    "decision_summary": "Chose a shared utils/relation-properties.ts merge with origin precedence (derived never overwrites declared; declared upgrades derived) consumed by both backends"
+  },
+  "source": "01KHMSD5WQ8BBAQ8QPQMQXSMFH",
+  "target": "01KZYQCPM5ZGJ83WDTQSFNM45B",
+  "type": "decided_by"
+}

@@ -187,6 +187,7 @@ export class VerifyEngine {
                   source: sourceEntity.name,
                   target: testEntity.name,
                   type: "tested_by",
+                  properties: { origin: "derived" },
                 });
               }
             }

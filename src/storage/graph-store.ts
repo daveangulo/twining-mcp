@@ -8,6 +8,7 @@ import path from "node:path";
 import lockfile from "proper-lockfile";
 import { LOCK_OPTIONS, atomicWriteFileSync, ensureFileExists } from "./file-store.js";
 import { generateId } from "../utils/ids.js";
+import { mergeRelationProperties } from "../utils/relation-properties.js";
 import { mergeEntityProperties } from "../utils/entity-properties.js";
 import type { Entity, Relation } from "../utils/types.js";
 
@@ -153,10 +154,10 @@ export class GraphStore implements IGraphStore {
           r.type === input.type,
       );
       if (existing) {
-        existing.properties = {
-          ...existing.properties,
-          ...(input.properties ?? {}),
-        };
+        existing.properties = mergeRelationProperties(
+          existing.properties,
+          input.properties,
+        );
         atomicWriteFileSync(
           this.relationsPath,
           JSON.stringify(relations, null, 2),

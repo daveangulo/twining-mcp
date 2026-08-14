@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Wave C review round fixed: sqlite upsert wrapped in write txn, shared origin-precedence merge (derived never downgrades declared), verify.ts tested_by stamped, onDecide id addressing, mutation-strength test pins. 1609 green. Shipping 2.11.0.\nDecisions: Chose a shared utils/relation-properties.ts merge with origin precedence (derived never overwrites declared; declared upgrades derived) consumed by both backends — the entity-properties precedent, after review confirmed routine onLinkCommit/onHandoff/onRegister re-upserts would silently corrupt declared provenance under plain last-wins; Wrapped the sqlite relation upsert's find+write in withWriteTxn matching addEntity — WAL serializes statements not statement pairs, so the unwrapped check-then-act let two processes both miss and both insert, recreating the duplicate-edge defect in a supported multi-process mode; deferred the UNIQUE(source,target,type) index backstop (schema migration) to the legacy-dedup follow-up; Accepted three review findings as recorded follow-ups rather than 2.11.0 blockers: legacy duplicate-relation dedup pass (upsert merges into first-by-seq until cleaned), O(N) sqlite relation scan per write, and the cycle-only lineage chain_length overcount\nFindings: Third consecutive release where adversarial review caught majors in reviewed code: sqlite txn gap, origin-downgrade corruption, and the verify.ts tested_by site missed by the all-relation-writes invariant sweep — the review-of-fixes pattern is now standing practice, not optional; need: follow-up backlog for the graph — legacy duplicate-relation dedup housekeeping pass + UNIQUE index backstop, sqlite relation-lookup index (O(N) per write today), amend-candidates reporter (descoped from 2.11.0), cycle chain_length overcount",
+  "entry_type": "status",
+  "id": "01KZYQCPESXJDP1FNNDSG96GTZ",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d2ce93874c048637d4e0848fc660570329881c7d",
+    "recorded_at": "2026-08-13T23:30:19.716Z"
+  },
+  "scope": "src/",
+  "summary": "Wave C review round fixed: sqlite upsert wrapped in write txn, shared origin-precedence merge (derived never downgrades declared), verify.ts tested_by stamped, onDecide id addressing, mutation-stre…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-13T23:30:19.737Z"
+}
