@@ -37,6 +37,12 @@ export function registerHousekeepingTools(
           .boolean()
           .optional()
           .describe("Set to true to auto-promote stale provisional decisions to active. Default is false (report only)."),
+        amend_candidates: z
+          .boolean()
+          .optional()
+          .describe(
+            "Report candidate affected_files for active decisions whose list is empty (scope walk ranked by term overlap). ALWAYS report-only regardless of execute — confirm per record with twining_amend({decision_id, add_affected_files}). Caps: 50 decisions/run, 500 files/scope, 5 candidates each; truncation is reported, never silent.",
+          ),
         staleness_review: z
           .boolean()
           .optional()
@@ -83,6 +89,7 @@ export function registerHousekeepingTools(
           execute: args.execute,
           promote_provisionals: args.promote_provisionals,
           staleness_review: args.staleness_review,
+          amend_candidates: args.amend_candidates,
           merge_sweep: args.merge_sweep,
           compact_archives: args.compact_archives,
           archive: args.archive,

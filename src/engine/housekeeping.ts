@@ -6,6 +6,7 @@
  * Dry-run by default — preview before executing.
  */
 import fs from "node:fs";
+import { reportAmendCandidates, type AmendCandidateReport } from "./amend-candidates.js";
 import path from "node:path";
 import type { Archiver } from "./archiver.js";
 import { NO_AGE_CUTOFF } from "./archiver.js";
@@ -49,6 +50,8 @@ export interface DanglingWarning {
 }
 
 export interface HousekeepingResult {
+  /** Report-only amend candidates (re-scoped field D13 ask 1); write path is twining_amend. */
+  amend_candidates?: AmendCandidateReport;
   archived: { count: number; file: string; kept_open: number };
   deduplicated: { removed: number };
   stale_provisionals: { count: number; items: StaleProvisional[] };
@@ -107,6 +110,12 @@ export class HousekeepingEngine {
     promote_provisionals?: boolean;
     staleness_review?: boolean;
     merge_sweep?: boolean;
+    /**
+     * Report candidate affected_files for active decisions with empty
+     * lists (scope walk + term overlap). ALWAYS report-only — execute has
+     * no effect; confirm per record with twining_amend.
+     */
+    amend_candidates?: boolean;
     compact_archives?: boolean;
     /**
      * Recompute graph entity scopes from their decided_by relations, undoing
@@ -129,6 +138,7 @@ export class HousekeepingEngine {
     const promoteProvisionals = options?.promote_provisionals ?? false;
     const stalenessReview = options?.staleness_review ?? false;
     const mergeSweep = options?.merge_sweep ?? false;
+    const amendCandidatesOpt = options?.amend_candidates ?? false;
     const compactArchivesOpt = options?.compact_archives ?? false;
     const repairEntityScopesOpt = options?.repair_entity_scopes ?? false;
     const archiveEnabled = options?.archive ?? false;
@@ -346,6 +356,17 @@ export class HousekeepingEngine {
     // Snapshot file is only updated when execute=true; dry-runs compute the
     // diff against the existing baseline without advancing it, so a preview
     // can never silently consume deletions before the user acts.
+    if (amendCandidatesOpt && this.projectRoot) {
+      try {
+        result.amend_candidates = await reportAmendCandidates(
+          this.decisionStore,
+          this.projectRoot,
+        );
+      } catch (error) {
+        console.error("[twining] amend-candidates report failed (non-fatal):", error);
+      }
+    }
+
     if (mergeSweep && this.projectRoot) {
       try {
         const sweep = detectDeletedBranches(

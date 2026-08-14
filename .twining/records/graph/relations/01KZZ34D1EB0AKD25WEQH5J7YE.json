@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-14T02:55:30.862Z",
+  "id": "01KZZ34D1EB0AKD25WEQH5J7YE",
+  "properties": {
+    "decision_summary": "Chose to skip project-scoped empty-list decisions with an explicit skipped_project_scope count"
+  },
+  "source": "01KZZ34D09H63EXRBBAAQJ4FMK",
+  "target": "01KZZ34D1DJNK0F190M57RYK6J",
+  "type": "decided_by"
+}

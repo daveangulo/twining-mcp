@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-14T02:55:30.829Z",
+  "id": "01KZZ34D0DSGEGSMPCPBKQDKHY",
+  "properties": {
+    "decision_summary": "Chose report-only-by-construction for the reporter (no execute mode at all)"
+  },
+  "source": "01KZZ34D0CNR3TAKJQJDB1KZQE",
+  "target": "01KZZ34D08FGYV9WXPGKP2RYMC",
+  "type": "decided_by"
+}

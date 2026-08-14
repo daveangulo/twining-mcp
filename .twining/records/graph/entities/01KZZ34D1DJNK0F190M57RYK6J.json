@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-14T02:55:30.861Z",
+  "id": "01KZZ34D1DJNK0F190M57RYK6J",
+  "name": "01KZZ34D13CNHZEB2YA47XPAXE",
+  "properties": {
+    "scope": "src/engine/amend-candidates.ts",
+    "summary": "Chose to skip project-scoped empty-list decisions with an explicit skipped_project_scope count"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-14T02:55:30.861Z"
+}

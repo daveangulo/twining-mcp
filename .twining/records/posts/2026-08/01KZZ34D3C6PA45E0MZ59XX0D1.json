@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: before releasing the reporter as 2.12.0 — run the adversarial review round on the amend-candidates diff (every prior wave's review caught majors), write the changelog entry, and consider telling the field it returned to the backlog (their memo says 'say the word'; Dave requested it himself)",
+  "entry_type": "need",
+  "id": "01KZZ34D3C6PA45E0MZ59XX0D1",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "bc29510d821a4998d2d505caf7698cb917f3db72",
+    "recorded_at": "2026-08-14T02:55:30.904Z"
+  },
+  "scope": "src/engine/amend-candidates.ts",
+  "summary": "before releasing the reporter as 2.12.0 — run the adversarial review round on the amend-candidates diff (every prior wave's review caught majors), write the changelog entry, and consider telling th…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-08-14T02:55:30.924Z"
+}

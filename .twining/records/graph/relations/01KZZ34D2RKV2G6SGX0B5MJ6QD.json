@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-08-14T02:55:30.904Z",
+  "id": "01KZZ34D2RKV2G6SGX0B5MJ6QD",
+  "properties": {
+    "decision_summary": "Chose to commit the reporter WITHOUT releasing"
+  },
+  "source": "01KZZ34D0CNR3TAKJQJDB1KZQE",
+  "target": "01KZZ34D2J55Q5CKM4PKWGGXRG",
+  "type": "decided_by"
+}

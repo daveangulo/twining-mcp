@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Built the amend-candidates reporter (TDD): housekeeping amend_candidates flag -> report-only scope-walk + term-overlap candidates for empty-affected_files decisions, twining_amend as sole write path. 1611 tests green, build clean. Committed unreleased.\nDecisions: Chose report-only-by-construction for the reporter (no execute mode at all) — stricter than the entity-scope-repair precedent, because the field's wall-3 measurement showed populated-but-wrong lists are worse than honest emptiness; the sole write path is per-record twining_amend confirmation; Chose to skip project-scoped empty-list decisions with an explicit skipped_project_scope count — a whole-repo walk cannot be ranked honestly against one decision's terms; all caps (50 decisions, 500 files/scope, 5 candidates) are reported, never silent; Chose to commit the reporter WITHOUT releasing — the user asked to build; the standing review-of-fixes practice applies to releases, and the session is near context exhaustion; the 2.12.0 train (adversarial review, changelog, plugin 1.30.0, publish, pins) is the recorded next step\nFindings: need: before releasing the reporter as 2.12.0 — run the adversarial review round on the amend-candidates diff (every prior wave's review caught majors), write the changelog entry, and consider telling the field it returned to the backlog (their memo says 'say the word'; Dave requested it himself)",
+  "entry_type": "status",
+  "id": "01KZZ34CY0F5Z915KBSTA89X5Z",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "bc29510d821a4998d2d505caf7698cb917f3db72",
+    "recorded_at": "2026-08-14T02:55:30.733Z"
+  },
+  "scope": "src/engine/amend-candidates.ts",
+  "summary": "Built the amend-candidates reporter (TDD): housekeeping amend_candidates flag -> report-only scope-walk + term-overlap candidates for empty-affected_files decisions, twining_amend as sole write pat…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-14T02:55:30.752Z"
+}
