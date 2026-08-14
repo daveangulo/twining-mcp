@@ -1,0 +1,18 @@
+{
+  "agent_id": "workflow-subagent",
+  "detail": "",
+  "entry_type": "status",
+  "id": "01M015YJQH1RC3HFRR1RK7SZHJ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "161515b718c6a2896e2580419460c5be3b6e1525",
+    "recorded_at": "2026-08-14T22:23:14.630Z"
+  },
+  "scope": "project",
+  "summary": "Subagent completed: workflow-subagent",
+  "tags": [
+    "subagent-stop",
+    "hook-generated"
+  ],
+  "timestamp": "2026-08-14T22:23:14.673Z"
+}

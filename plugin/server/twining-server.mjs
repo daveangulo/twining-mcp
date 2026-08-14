@@ -12125,6 +12125,24 @@ var init_graph_store = __esm({
     init_entity_properties();
     init_errors();
     GraphStore = class {
+      /** Remove relations by id (wave-2 dedup pass). Unknown ids are ignored. */
+      async removeRelations(relationIds) {
+        this.ensureFiles();
+        const release = await import_proper_lockfile3.default.lock(this.relationsPath, LOCK_OPTIONS);
+        try {
+          const relations = JSON.parse(
+            fs6.readFileSync(this.relationsPath, "utf-8")
+          );
+          const kept = relations.filter((r) => !relationIds.has(r.id));
+          const removed = relations.length - kept.length;
+          if (removed > 0) {
+            atomicWriteFileSync(this.relationsPath, JSON.stringify(kept, null, 2));
+          }
+          return { removed };
+        } finally {
+          await release();
+        }
+      }
       entitiesPath;
       relationsPath;
       graphDir;
@@ -12806,6 +12824,19 @@ var init_sqlite_stores = __esm({
         this.db = db;
       }
       db;
+      /** Remove relations by id (wave-2 dedup pass). Unknown ids are ignored. */
+      async removeRelations(relationIds) {
+        assertWritable2();
+        return withWriteTxn(this.db, () => {
+          let removed = 0;
+          const stmt = this.db.prepare("DELETE FROM relations WHERE id = ?");
+          for (const id of relationIds) {
+            const { changes } = stmt.run(id);
+            removed += Number(changes);
+          }
+          return { removed };
+        });
+      }
       allEntities() {
         return this.db.prepare("SELECT data FROM entities ORDER BY rowid").all().map((r) => JSON.parse(r.data));
       }
@@ -13324,6 +13355,19 @@ var init_record_export = __esm({
         const result = await this.inner.removeEntities(entityIds);
         for (const id of entityIds) this.exporter.removeEntity(id);
         for (const r of doomedRelations) this.exporter.removeRelation(r.id);
+        return result;
+      }
+      // Mirror invariant: a dedup that removed relations only in the db would be
+      // resurrected by the next file-wins ingest. Unlink only ids the store
+      // actually held — an unknown id may belong to a not-yet-ingested record
+      // file, which a blind unlink would destroy (same capture-before-delete
+      // pattern as removeEntities above).
+      async removeRelations(relationIds) {
+        const present = (await this.inner.getRelations()).filter(
+          (r) => relationIds.has(r.id)
+        );
+        const result = await this.inner.removeRelations(relationIds);
+        for (const r of present) this.exporter.removeRelation(r.id);
         return result;
       }
     };
@@ -35134,6 +35178,71 @@ async function reportAmendCandidates(decisionStore, projectRoot) {
   return report;
 }
 
+// src/engine/relation-dedup.ts
+init_relation_properties();
+async function dedupRelations(graphStore, execute) {
+  const relations = await graphStore.getRelations();
+  const idCount = /* @__PURE__ */ new Map();
+  const groups = /* @__PURE__ */ new Map();
+  for (const r of relations) {
+    idCount.set(r.id, (idCount.get(r.id) ?? 0) + 1);
+    const key = `${r.source}\0${r.target}\0${r.type}`;
+    const list = groups.get(key);
+    if (list) list.push(r);
+    else groups.set(key, [r]);
+  }
+  const report = {
+    duplicate_groups: 0,
+    duplicate_relations: 0,
+    removed: 0,
+    skipped_id_collisions: 0,
+    failed_groups: 0,
+    errors: [],
+    by_type: {}
+  };
+  const doomed = /* @__PURE__ */ new Set();
+  for (const list of groups.values()) {
+    if (list.length < 2) continue;
+    report.duplicate_groups++;
+    report.duplicate_relations += list.length - 1;
+    const survivor = list[0];
+    report.by_type[survivor.type] = (report.by_type[survivor.type] ?? 0) + list.length - 1;
+    let merged = survivor.properties;
+    const removable = [];
+    for (const dup of list.slice(1)) {
+      merged = mergeRelationProperties(merged, dup.properties);
+      if (dup.id !== survivor.id && idCount.get(dup.id) === 1) {
+        removable.push(dup.id);
+      } else {
+        report.skipped_id_collisions++;
+      }
+    }
+    if (!execute) continue;
+    try {
+      await graphStore.addRelation({
+        source: survivor.source,
+        target: survivor.target,
+        type: survivor.type,
+        properties: merged
+      });
+    } catch (error2) {
+      report.failed_groups++;
+      if (report.errors.length < 5) {
+        report.errors.push(
+          error2 instanceof Error ? error2.message : String(error2)
+        );
+      }
+      continue;
+    }
+    for (const id of removable) doomed.add(id);
+  }
+  if (execute && doomed.size > 0) {
+    const { removed } = await graphStore.removeRelations(doomed);
+    report.removed = removed;
+  }
+  return report;
+}
+
 // src/engine/housekeeping.ts
 import path26 from "node:path";
 
@@ -35540,6 +35649,7 @@ var HousekeepingEngine = class {
     const stalenessReview = options?.staleness_review ?? false;
     const mergeSweep = options?.merge_sweep ?? false;
     const amendCandidatesOpt = options?.amend_candidates ?? false;
+    const dedupRelationsOpt = options?.dedup_relations ?? false;
     const compactArchivesOpt = options?.compact_archives ?? false;
     const repairEntityScopesOpt = options?.repair_entity_scopes ?? false;
     const archiveEnabled = options?.archive ?? false;
@@ -35697,6 +35807,21 @@ var HousekeepingEngine = class {
         });
         result.staleness_review = audit;
       } catch {
+      }
+    }
+    if (dedupRelationsOpt) {
+      if (this.graphEngine) {
+        try {
+          result.relation_dedup = await dedupRelations(
+            this.graphEngine.graphStore,
+            execute
+          );
+        } catch (error2) {
+          console.error("[twining] relation dedup failed (non-fatal):", error2);
+          result.relation_dedup_error = error2 instanceof Error ? error2.message : String(error2);
+        }
+      } else {
+        result.relation_dedup_error = "unavailable: no graph engine configured";
       }
     }
     if (amendCandidatesOpt) {
@@ -35863,6 +35988,9 @@ function registerHousekeepingTools(server, housekeepingEngine, blackboardEngine,
       inputSchema: {
         execute: external_exports.boolean().optional().describe("Set to true to apply changes. Default is false (preview only)."),
         promote_provisionals: external_exports.boolean().optional().describe("Set to true to auto-promote stale provisional decisions to active. Default is false (report only)."),
+        dedup_relations: external_exports.boolean().optional().describe(
+          "Dedup legacy duplicate (source, target, type) graph relations left from before the 2.11 upsert. Survivor is the edge live upserts already merge into (seq-first; the created-at-oldest on the file backend); later duplicates fold their properties in under origin precedence (derived never downgrades declared) and are removed. Duplicates with non-unique ids and groups that fail to fold (e.g. dangling endpoints) are skipped and counted in the report, never silently dropped. Preview by default; execute applies."
+        ),
         amend_candidates: external_exports.boolean().optional().describe(
           "Report candidate affected_files for active decisions whose list is empty (scope walk ranked by term overlap). ALWAYS report-only regardless of execute \u2014 confirm per record with twining_amend({decision_id, add_affected_files}). Caps: 50 decisions/run, 500 files/scope, 5 candidates each; truncation is reported, never silent."
         ),
@@ -35892,6 +36020,7 @@ function registerHousekeepingTools(server, housekeepingEngine, blackboardEngine,
           promote_provisionals: args.promote_provisionals,
           staleness_review: args.staleness_review,
           amend_candidates: args.amend_candidates,
+          dedup_relations: args.dedup_relations,
           merge_sweep: args.merge_sweep,
           compact_archives: args.compact_archives,
           archive: args.archive,
