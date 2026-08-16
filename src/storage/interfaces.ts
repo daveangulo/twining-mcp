@@ -67,11 +67,16 @@ export interface IDecisionStore {
   ): Promise<Decision>;
   get(id: string): Promise<Decision | null>;
   getByScope(scope: string): Promise<Decision[]>;
+  /**
+   * Returns whether the target existed and the write persisted — a missing
+   * id is reported, never a silent no-op (field D14 fail-loud). Callers
+   * whose contract requires the write MUST check `persisted`.
+   */
   updateStatus(
     id: string,
     status: DecisionStatus,
     extra?: Partial<Decision>,
-  ): Promise<void>;
+  ): Promise<{ persisted: boolean }>;
   getIndex(): Promise<DecisionIndexEntry[]>;
   linkCommit(id: string, commitHash: string): Promise<void>;
   getByCommitHash(commitHash: string): Promise<Decision[]>;

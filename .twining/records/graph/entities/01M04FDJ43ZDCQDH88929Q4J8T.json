@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T05:06:26.051Z",
+  "id": "01M04FDJ43ZDCQDH88929Q4J8T",
+  "name": "01M04FDJ1C510F7Z08ZDB2NY54",
+  "properties": {
+    "scope": "src/",
+    "summary": "Chose read-back verification in override() (post-state echoed in the result, PERSIST_FAILED thrown on a lost write)"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-16T05:06:26.051Z"
+}

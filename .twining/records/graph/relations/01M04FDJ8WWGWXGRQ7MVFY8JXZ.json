@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T05:06:26.204Z",
+  "id": "01M04FDJ8WWGWXGRQ7MVFY8JXZ",
+  "properties": {
+    "decision_summary": "Chose a rank-based lifecycle-revert detector in the file-wins ingest branch (provisional < active < retired; downgrade increments lifecycle_reverts + per-record console.error)",
+    "origin": "derived"
+  },
+  "source": "01KKNE77ZAW1943XPGMREM997R",
+  "target": "01M04FDJ8BPW680JYPCFK1YAXD",
+  "type": "decided_by"
+}

@@ -266,8 +266,44 @@ describe.skipIf(!HAS_SQLITE)("record ingest", () => {
     await seed(stores);
     const db = openDatabase(twA);
     const stats = ingestRecords(db, twA);
-    expect(stats).toEqual({ inserted: 0, updated: 0, deleted: 0, skipped: 0 });
+    expect(stats).toEqual({
+      inserted: 0,
+      updated: 0,
+      deleted: 0,
+      skipped: 0,
+      lifecycle_reverts: 0,
+    });
     db.close();
+  });
+
+  it("counts lifecycle reverts when file-wins downgrades a decision's status (D14)", async () => {
+    const twA = path.join(dirA, ".twining");
+    fs.mkdirSync(twA, { recursive: true });
+    const stores = createStores(twA, sqliteConfig());
+    const { decision } = await seed(stores);
+    await stores.decisionStore.updateStatus(decision.id, "overridden", {
+      overridden_by: "the-author",
+      override_reason: "withdrawn",
+    });
+
+    // Simulate a git operation restoring the committed pre-override bytes of
+    // the mirror record (the D14 field mechanism).
+    const file = path.join(twA, "records", "decisions", `${decision.id}.json`);
+    const reverted = JSON.parse(fs.readFileSync(file, "utf-8")) as Record<string, unknown>;
+    reverted.status = "provisional";
+    delete reverted.overridden_by;
+    delete reverted.override_reason;
+    fs.writeFileSync(file, JSON.stringify(reverted));
+
+    const db = openDatabase(twA);
+    const stats = ingestRecords(db, twA);
+    // File-wins still applies (the W2.3 invariant is untouched) — but the
+    // downgrade is counted instead of silent.
+    expect(stats.lifecycle_reverts).toBe(1);
+    expect(stats.updated).toBe(1);
+    db.close();
+    const after = await stores.decisionStore.get(decision.id);
+    expect(after!.status).toBe("provisional");
   });
 
   it("union-merges two branches' trees (design D2)", async () => {
@@ -357,6 +393,7 @@ describe.skipIf(!HAS_SQLITE)("record ingest", () => {
       updated: 0,
       deleted: 0,
       skipped: 0,
+      lifecycle_reverts: 0,
     });
 
     // records/ exists but a single kind dir is missing → that kind untouched.

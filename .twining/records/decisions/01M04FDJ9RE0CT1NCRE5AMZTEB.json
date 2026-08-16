@@ -1,0 +1,35 @@
+{
+  "affected_files": [
+    "src/storage/interfaces.ts",
+    "src/storage/decision-store.ts",
+    "src/storage/sqlite/sqlite-stores.ts",
+    "src/storage/sync/record-export.ts",
+    "src/storage/sync/record-ingest.ts",
+    "src/engine/decisions.ts",
+    "src/tools/decision-tools.ts",
+    "plugin/BEHAVIORS.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "D14 dispositioned (double-verified: field misdiagnosis — override-on-provisional has always worked; real defect is file-wins ingest silently reverting uncommitted lifecycle writes) and fixed TDD: updateStatus reports persisted, override reads back post-state and fails loudly, ingest counts lifecycle_reverts. 1634 tests green.",
+  "depends_on": [],
+  "domain": "security",
+  "id": "01M04FDJ9RE0CT1NCRE5AMZTEB",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "471ed736dd55fddaa33ec4b3e4fe4a9f90cae50d",
+    "recorded_at": "2026-08-16T05:06:26.213Z"
+  },
+  "rationale": "override with overridden_by:<author> IS author-withdrawal, works on provisionals (verified on HEAD and at the field's version), and prior decisions 01KY89JXV839CDZ941JWQDEDEQ / 01KY89JXQRD577QGMWMNXG3XTF deliberately keep promote/override as the only provisional drain verbs; documented the veto path in the tool description and OVERRIDE-03 instead.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Rejected the field's twining_withdraw ask",
+  "timestamp": "2026-08-16T05:06:26.232Z"
+}

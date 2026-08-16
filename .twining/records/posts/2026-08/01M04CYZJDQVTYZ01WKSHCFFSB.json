@@ -1,0 +1,19 @@
+{
+  "agent_id": "main",
+  "detail": "No file edits since the last record — the commit itself and background D14 investigation worktree activity triggered the gate. State: D15-derived fixes (promote attribution, unarchive assumption reporting) are on main unreleased; D14 investigation workflow (wf_b0d07f6e-778 resume) still running; when it completes, disposition D14, then release the accumulated diff as 2.14.0 with plugin bump and adversarial pre-tag review.",
+  "entry_type": "status",
+  "id": "01M04CYZJDQVTYZ01WKSHCFFSB",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "471ed736dd55fddaa33ec4b3e4fe4a9f90cae50d",
+    "recorded_at": "2026-08-16T04:23:31.131Z"
+  },
+  "scope": "project",
+  "summary": "D15 fixes committed and pushed (471ed73): promote attribution + already_active_detail, unarchive assumed_active + warning post. Unreleased pending D14; next release bumps plugin + pre-tag review.",
+  "tags": [
+    "ship-state",
+    "D14",
+    "D15"
+  ],
+  "timestamp": "2026-08-16T04:23:31.149Z"
+}

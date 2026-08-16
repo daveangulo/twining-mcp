@@ -103,9 +103,9 @@ export class DecisionStore implements IDecisionStore {
     id: string,
     status: DecisionStatus,
     extra?: Partial<Decision>,
-  ): Promise<void> {
+  ): Promise<{ persisted: boolean }> {
     const filePath = path.join(this.decisionsDir, `${id}.json`);
-    if (!fs.existsSync(filePath)) return;
+    if (!fs.existsSync(filePath)) return { persisted: false };
 
     // Lock index for the full atomic update of both file and index
     const release = await lockfile.lock(this.indexPath, LOCK_OPTIONS);
@@ -133,6 +133,7 @@ export class DecisionStore implements IDecisionStore {
       await release();
     }
     this.cachedIndex = null; // Invalidate index cache
+    return { persisted: true };
   }
 
   /**

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T05:06:26.348Z",
+  "id": "01M04FDJDC9E5KPK6JF45R189A",
+  "properties": {
+    "decision_summary": "Rejected the field's twining_withdraw ask",
+    "origin": "derived"
+  },
+  "source": "01KHMSDM44AFAD0VVEK8T9N3TK",
+  "target": "01M04FDJCKNQ131R5N17KXSVZ7",
+  "type": "decided_by"
+}

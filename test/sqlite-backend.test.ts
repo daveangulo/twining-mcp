@@ -183,6 +183,17 @@ describe.skipIf(!HAS_SQLITE)("sqlite backend", () => {
       reversible: true,
     });
 
+    it("updateStatus reports persisted honestly (D14 fail-loud)", async () => {
+      const store = new SqliteDecisionStore(db);
+      const d = await store.create(decisionInput("persist check") as never);
+      expect(await store.updateStatus(d.id, "provisional")).toEqual({
+        persisted: true,
+      });
+      expect(await store.updateStatus("missing-id", "active")).toEqual({
+        persisted: false,
+      });
+    });
+
     it("creates with active status and empty commit_hashes; get returns null when missing", async () => {
       const store = new SqliteDecisionStore(db);
       const d = await store.create(decisionInput("choose X"));
@@ -207,14 +218,16 @@ describe.skipIf(!HAS_SQLITE)("sqlite backend", () => {
       });
     });
 
-    it("updateStatus applies status and extras, silently no-ops on missing id", async () => {
+    it("updateStatus applies status and extras, reports missing ids as persisted:false", async () => {
       const store = new SqliteDecisionStore(db);
       const d = await store.create(decisionInput("mutate me"));
       await store.updateStatus(d.id, "superseded", { superseded_by: "Z" });
       const updated = await store.get(d.id);
       expect(updated?.status).toBe("superseded");
       expect(updated?.superseded_by).toBe("Z");
-      await expect(store.updateStatus("missing", "active")).resolves.toBeUndefined();
+      await expect(store.updateStatus("missing", "active")).resolves.toEqual({
+        persisted: false,
+      });
     });
 
     it("DecisionEngine.decide over sqlite writes the superseded_by back-link (#31)", async () => {

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T05:06:26.072Z",
+  "id": "01M04FDJ4RCBM7QPZTWQ3ZZA5H",
+  "properties": {
+    "decision_summary": "Chose read-back verification in override() (post-state echoed in the result, PERSIST_FAILED thrown on a lost write)",
+    "origin": "derived"
+  },
+  "source": "01KHMSDM44AFAD0VVEK8T9N3TK",
+  "target": "01M04FDJ43ZDCQDH88929Q4J8T",
+  "type": "decided_by"
+}

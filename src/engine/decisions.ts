@@ -1050,6 +1050,9 @@ export class DecisionEngine {
   ): Promise<{
     overridden: boolean;
     old_summary: string;
+    /** Post-write read-back — success claims are self-verifying (field D14). */
+    status: "overridden";
+    overridden_by: string;
     new_decision_id?: string;
   }> {
     const decision = await this.decisionStore.get(decisionId);
@@ -1060,11 +1063,31 @@ export class DecisionEngine {
       );
     }
 
-    // Set status to overridden with extra fields
-    await this.decisionStore.updateStatus(decisionId, "overridden", {
-      overridden_by: overriddenBy ?? "human",
-      override_reason: reason,
-    });
+    // Set status to overridden with extra fields. Works on ANY live status —
+    // vetoing a provisional is the sanctioned author-withdrawal path.
+    const write = await this.decisionStore.updateStatus(
+      decisionId,
+      "overridden",
+      {
+        overridden_by: overriddenBy ?? "human",
+        override_reason: reason,
+      },
+    );
+
+    // Fail loudly instead of returning an affirmative on a lost write (D14:
+    // an affirmative boolean on a no-op is the most expensive response shape
+    // this store has).
+    const after = await this.decisionStore.get(decisionId);
+    if (!write.persisted || after?.status !== "overridden") {
+      throw new TwiningError(
+        `Override of ${decisionId} did not persist — ${
+          after
+            ? `the record still has status "${after.status}"`
+            : "the record vanished mid-write"
+        }. Nothing was recorded; retry or inspect the store.`,
+        "PERSIST_FAILED",
+      );
+    }
 
     // No blackboard cross-post (issue #30): the override outcome lives in the
     // decision store (status "overridden", overridden_by, override_reason).
@@ -1077,10 +1100,14 @@ export class DecisionEngine {
     const result: {
       overridden: boolean;
       old_summary: string;
+      status: "overridden";
+      overridden_by: string;
       new_decision_id?: string;
     } = {
       overridden: true,
       old_summary: decision.summary,
+      status: "overridden",
+      overridden_by: after.overridden_by ?? overriddenBy ?? "human",
     };
 
     // If a replacement decision is provided, create it via decide()

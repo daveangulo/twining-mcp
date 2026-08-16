@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T05:06:25.941Z",
+  "id": "01M04FDJ0NVVB53MFEEFKQXAJQ",
+  "properties": {
+    "decision_summary": "Chose to change IDecisionStore.updateStatus to return {persisted: boolean} rather than throw NOT_FOUND on missing targets",
+    "origin": "derived"
+  },
+  "source": "01KJQ647P1MGGRERHA1JH2BE8T",
+  "target": "01M04FDHZPBCPZG6JRF4PG57WW",
+  "type": "decided_by"
+}

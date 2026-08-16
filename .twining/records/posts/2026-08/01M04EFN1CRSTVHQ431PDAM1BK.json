@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "The stop-hook demand was triggered by background workflow agent writes, not session edits. Ship plan for 2.14.0 (user-directed): disposition D14 → fix whatever it turns up test-first → standing adversarial review of the full unreleased diff (D15 fixes 471ed73 + D14 fixes) → bump-plugin-version.sh minor (BEHAVIORS.md changed: PROMOTE-02, UNARCH-02) → npm version minor → push main + v2.14.0 tag → CI watch → pins both scopes → memo + memory updates.",
+  "entry_type": "status",
+  "id": "01M04EFN1CRSTVHQ431PDAM1BK",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "471ed736dd55fddaa33ec4b3e4fe4a9f90cae50d",
+    "recorded_at": "2026-08-16T04:50:05.966Z"
+  },
+  "scope": "project",
+  "summary": "Holding for the D14 agent (alive, mid-investigation); on completion: fix findings TDD, pre-tag review, plugin bump, ship 2.14.0. No session file edits since last record.",
+  "tags": [
+    "ship-state",
+    "D14"
+  ],
+  "timestamp": "2026-08-16T04:50:05.996Z"
+}

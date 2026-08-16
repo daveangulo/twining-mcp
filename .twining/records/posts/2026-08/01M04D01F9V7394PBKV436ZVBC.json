@@ -1,0 +1,18 @@
+{
+  "agent_id": "Root-cause field defects D14 (override silent no-op on provisional) and D15 (promote buckets misreport) on current HEAD",
+  "detail": "",
+  "entry_type": "status",
+  "id": "01M04D01F9V7394PBKV436ZVBC",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "471ed736dd55fddaa33ec4b3e4fe4a9f90cae50d",
+    "recorded_at": "2026-08-16T04:24:05.845Z"
+  },
+  "scope": "project",
+  "summary": "Subagent completed: Root-cause field defects D14 (override silent no-op on provisional) and D15 (promote buckets misreport) on current HEAD",
+  "tags": [
+    "subagent-stop",
+    "hook-generated"
+  ],
+  "timestamp": "2026-08-16T04:24:05.865Z"
+}

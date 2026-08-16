@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T05:06:25.910Z",
+  "id": "01M04FDHZPBCPZG6JRF4PG57WW",
+  "name": "01M04FDHWSBZ1TTKSSJPVK7AFA",
+  "properties": {
+    "scope": "src/",
+    "summary": "Chose to change IDecisionStore.updateStatus to return {persisted: boolean} rather than throw NOT_FOUND on missing targets"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-16T05:06:25.910Z"
+}

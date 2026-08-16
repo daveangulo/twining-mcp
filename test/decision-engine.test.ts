@@ -1948,3 +1948,48 @@ describe("DecisionEngine.amend — append-only metadata repair (field D11)", () 
     );
   });
 });
+
+describe("DecisionEngine.override on provisionals (D14 veto path)", () => {
+  it("retires a provisional with attribution intact and post-state in the result", async () => {
+    const d = await decisionEngine.decide(validDecisionInput());
+    await decisionStore.updateStatus(d.id, "provisional");
+
+    const result = await decisionEngine.override(
+      d.id,
+      "author self-withdrawal",
+      undefined,
+      "the-author",
+    );
+    expect(result.overridden).toBe(true);
+    expect(result.status).toBe("overridden");
+    expect(result.overridden_by).toBe("the-author");
+
+    const after = await decisionStore.get(d.id);
+    expect(after!.status).toBe("overridden");
+    expect(after!.overridden_by).toBe("the-author");
+    expect(after!.override_reason).toBe("author self-withdrawal");
+  });
+
+  it("fails loudly with PERSIST_FAILED when the write does not persist", async () => {
+    const d = await decisionEngine.decide(validDecisionInput());
+    // A store that accepts the read but loses the write — the D14 family's
+    // exact hazard: an affirmative response on a no-op.
+    const lossy = Object.create(decisionStore) as typeof decisionStore;
+    lossy.updateStatus = async () => ({ persisted: false });
+    const engine = new DecisionEngine(lossy, blackboardEngine);
+
+    await expect(engine.override(d.id, "reason")).rejects.toMatchObject({
+      code: "PERSIST_FAILED",
+    });
+  });
+
+  it("file-backend updateStatus reports persisted honestly", async () => {
+    const d = await decisionEngine.decide(validDecisionInput());
+    expect(await decisionStore.updateStatus(d.id, "provisional")).toEqual({
+      persisted: true,
+    });
+    expect(await decisionStore.updateStatus("missing-id", "active")).toEqual({
+      persisted: false,
+    });
+  });
+});

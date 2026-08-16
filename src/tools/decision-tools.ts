@@ -257,7 +257,7 @@ export function registerDecisionTools(
     "twining_override",
     {
       description:
-        "Override a decision with a reason. Sets the decision to overridden status, records who overrode it and why, and optionally creates a replacement decision automatically.",
+        "Override a decision with a reason. Sets the decision to overridden status, records who overrode it and why, and optionally creates a replacement decision automatically. Works on any live status — vetoing/withdrawing a PROVISIONAL is the sanctioned author-withdrawal path. The write is verified: the result echoes post-state (status, overridden_by), and a write that did not persist errors with PERSIST_FAILED instead of returning an affirmative.",
       inputSchema: {
         decision_id: z.string().describe("ID of the decision to override"),
         reason: z.string().describe("Reason for the override"),

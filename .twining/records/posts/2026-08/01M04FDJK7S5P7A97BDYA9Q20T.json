@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: the file-wins precedence question (should a db row with newer lifecycle state survive ingest?) is now a named open design decision — lifecycle_reverts makes losses visible but does not prevent them; do not patch precedence opportunistically",
+  "entry_type": "warning",
+  "id": "01M04FDJK7S5P7A97BDYA9Q20T",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "471ed736dd55fddaa33ec4b3e4fe4a9f90cae50d",
+    "recorded_at": "2026-08-16T05:06:26.516Z"
+  },
+  "scope": "src/",
+  "summary": "the file-wins precedence question (should a db row with newer lifecycle state survive ingest?) is now a named open design decision — lifecycle_reverts makes losses visible but does not prevent them…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-08-16T05:06:26.535Z"
+}

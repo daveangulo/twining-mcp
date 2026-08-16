@@ -37,7 +37,18 @@ export interface IngestStats {
   updated: number;
   deleted: number;
   skipped: number;
+  /** File-wins updates that DOWNGRADED a decision's lifecycle status (e.g. overridden → provisional) — usually an uncommitted status write discarded by a git operation (field D14). */
+  lifecycle_reverts: number;
 }
+
+/** provisional < active < retired; a file-wins move to a lower rank is a revert. */
+const LIFECYCLE_RANK: Record<string, number> = {
+  provisional: 0,
+  active: 1,
+  superseded: 2,
+  overridden: 2,
+  archived: 2,
+};
 
 function* jsonFiles(dir: string): Generator<string> {
   if (!fs.existsSync(dir)) return;
@@ -93,7 +104,13 @@ export function ingestRecords(
   db: SqliteDatabase,
   twiningDir: string,
 ): IngestStats {
-  const stats: IngestStats = { inserted: 0, updated: 0, deleted: 0, skipped: 0 };
+  const stats: IngestStats = {
+    inserted: 0,
+    updated: 0,
+    deleted: 0,
+    skipped: 0,
+    lifecycle_reverts: 0,
+  };
   const recordsDir = path.join(twiningDir, "records");
   if (!fs.existsSync(recordsDir)) return stats;
 
@@ -214,6 +231,30 @@ export function ingestRecords(
           stableStringify(JSON.parse(existing)) !== stableStringify(record)
         ) {
           // File wins: the export tree is the committed truth at ingest time.
+          // But a file-wins DOWNGRADE of a decision's lifecycle usually means
+          // a not-yet-committed status write (override/supersede/archive/
+          // promote) was discarded by a git operation on the records tree
+          // (field D14) — count it and name the record so the loss is
+          // visible instead of silent. Precedence itself is unchanged.
+          if (kind.table === "decisions") {
+            const dbStatus = (JSON.parse(existing) as { status?: string })
+              .status;
+            const fileStatus = (record as { status?: string }).status;
+            const dbRank = dbStatus ? LIFECYCLE_RANK[dbStatus] : undefined;
+            const fileRank = fileStatus
+              ? LIFECYCLE_RANK[fileStatus]
+              : undefined;
+            if (
+              dbRank !== undefined &&
+              fileRank !== undefined &&
+              fileRank < dbRank
+            ) {
+              stats.lifecycle_reverts++;
+              console.error(
+                `[twining] ingest file-wins reverted decision ${record.id} from "${dbStatus}" to "${fileStatus}" — a not-yet-committed lifecycle write was likely discarded by a git operation on the records tree`,
+              );
+            }
+          }
           kind.update(db, record as never);
           stats.updated++;
         }

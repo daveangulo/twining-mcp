@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T05:06:26.470Z",
+  "id": "01M04FDJH6VAQS82AN1PEYP2BN",
+  "properties": {
+    "decision_summary": "Chose SHOULD over MUST for OVERRIDE-03 (commit .twining promptly after lifecycle writes)",
+    "origin": "derived"
+  },
+  "source": "01KYWX78E81VT9AVZ9FVP8E18Q",
+  "target": "01M04FDJGT3WQ09D4TYDGX8GNX",
+  "type": "decided_by"
+}

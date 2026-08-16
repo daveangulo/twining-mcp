@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: D14 dispositioned (double-verified: field misdiagnosis — override-on-provisional has always worked; real defect is file-wins ingest silently reverting uncommitted lifecycle writes) and fixed TDD: updateStatus reports persisted, override reads back post-state and fails loudly, ingest counts lifecycle_reverts. 1634 tests green.\nDecisions: Chose to change IDecisionStore.updateStatus to return {persisted: boolean} rather than throw NOT_FOUND on missing targets — throwing would break callers that legitimately tolerate absence (housekeeping backfill skips dangling records by design); the return value eliminates the silent no-op at the contract level while leaving tolerant callers untouched, and tsc forces every implementation and the Exporting wrapper through the change.; Chose read-back verification in override() (post-state echoed in the result, PERSIST_FAILED thrown on a lost write) — implements the field's fail-loudly ask at the engine layer; additive result fields only, so field automation parsing {overridden, old_summary} keeps working.; Chose a rank-based lifecycle-revert detector in the file-wins ingest branch (provisional < active < retired; downgrade increments lifecycle_reverts + per-record console.error) — visibility without touching the W2.3 file-wins precedence invariant, which stays load-bearing for multi-machine convergence; changing precedence is deferred to its own design decision.; Rejected the field's twining_withdraw ask — override with overridden_by:<author> IS author-withdrawal, works on provisionals (verified on HEAD and at the field's version), and prior decisions 01KY89JXV839CDZ941JWQDEDEQ / 01KY89JXQRD577QGMWMNXG3XTF deliberately keep promote/override as the only provisional drain verbs; documented the veto path in the tool description and OVERRIDE-03 instead.; Chose SHOULD over MUST for OVERRIDE-03 (commit .twining promptly after lifecycle writes) — the BEHAVIORS MUST budget (8-16, test-enforced) exists to keep MUSTs scarce, and CLAUDE.md already mandates committing .twining alongside changes.\nFindings: D14 disposition evidence (double-verified, 13/13 + 7/7 independent repros): override never had a status gate at any version; the field's symptom reproduces ONLY by restoring committed provisional mirror bytes and re-ingesting — file-wins clobbers the db row, discarding overridden_by and the reason. maybeResync probes on every tool dispatch (5s TTL), so any HEAD move triggers it.; warning: the file-wins precedence question (should a db row with newer lifecycle state survive ingest?) is now a named open design decision — lifecycle_reverts makes losses visible but does not prevent them; do not patch precedence opportunistically; need: ask the field two verification questions — (1) D14: did the id twining_why displayed match the id they overrode (duplicate-twin alternative), and which git operation touched records/ in that window; (2) D15: check for the predicted 'Promoted 1 provisional decision(s) to active' blackboard status post between their pre-promote commit and the reported call",
+  "entry_type": "status",
+  "id": "01M04FDHTCTFJZ8PHY08G90E00",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "471ed736dd55fddaa33ec4b3e4fe4a9f90cae50d",
+    "recorded_at": "2026-08-16T05:06:25.716Z"
+  },
+  "scope": "src/",
+  "summary": "D14 dispositioned (double-verified: field misdiagnosis — override-on-provisional has always worked; real defect is file-wins ingest silently reverting uncommitted lifecycle writes) and fixed TDD: u…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-16T05:06:25.740Z"
+}

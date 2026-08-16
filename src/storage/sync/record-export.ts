@@ -222,10 +222,11 @@ class ExportingDecisionStore implements IDecisionStore {
     id: string,
     status: Parameters<IDecisionStore["updateStatus"]>[1],
     extra?: Parameters<IDecisionStore["updateStatus"]>[2],
-  ): Promise<void> {
-    await this.inner.updateStatus(id, status, extra);
+  ): Promise<{ persisted: boolean }> {
+    const result = await this.inner.updateStatus(id, status, extra);
     const updated = await this.inner.get(id);
     if (updated) this.exporter.decision(updated);
+    return result;
   }
 
   async linkCommit(id: string, commitHash: string): Promise<void> {

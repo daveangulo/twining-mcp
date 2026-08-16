@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: ask the field two verification questions — (1) D14: did the id twining_why displayed match the id they overrode (duplicate-twin alternative), and which git operation touched records/ in that window; (2) D15: check for the predicted 'Promoted 1 provisional decision(s) to active' blackboard status post between their pre-promote commit and the reported call",
+  "entry_type": "need",
+  "id": "01M04FDJM4RRD96XPKMHX6X1DA",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "471ed736dd55fddaa33ec4b3e4fe4a9f90cae50d",
+    "recorded_at": "2026-08-16T05:06:26.545Z"
+  },
+  "scope": "src/",
+  "summary": "ask the field two verification questions — (1) D14: did the id twining_why displayed match the id they overrode (duplicate-twin alternative), and which git operation touched records/ in that window…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-08-16T05:06:26.564Z"
+}

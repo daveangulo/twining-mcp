@@ -233,14 +233,15 @@ export class SqliteDecisionStore implements IDecisionStore {
     id: string,
     status: DecisionStatus,
     extra?: Partial<Decision>,
-  ): Promise<void> {
+  ): Promise<{ persisted: boolean }> {
     assertWritable();
-    withWriteTxn(this.db, () => {
+    return withWriteTxn(this.db, () => {
       const decision = this.load(id);
-      if (!decision) return; // file backend: silently no-op when file missing
+      if (!decision) return { persisted: false }; // missing target is reported, not swallowed (D14)
       decision.status = status;
       if (extra) Object.assign(decision, extra);
       this.save(decision);
+      return { persisted: true };
     });
   }
 
