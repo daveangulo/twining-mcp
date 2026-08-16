@@ -11898,7 +11898,7 @@ var init_decision_store = __esm({
       /** Update a decision's status (and optionally other fields). */
       async updateStatus(id, status, extra) {
         const filePath = path6.join(this.decisionsDir, `${id}.json`);
-        if (!fs5.existsSync(filePath)) return;
+        if (!fs5.existsSync(filePath)) return { persisted: false };
         const release = await import_proper_lockfile2.default.lock(this.indexPath, LOCK_OPTIONS);
         try {
           const decision = JSON.parse(
@@ -11921,6 +11921,7 @@ var init_decision_store = __esm({
           await release();
         }
         this.cachedIndex = null;
+        return { persisted: true };
       }
       /**
        * Persist an append-only metadata amendment (field D11). Unlike
@@ -12737,12 +12738,13 @@ var init_sqlite_stores = __esm({
       }
       async updateStatus(id, status, extra) {
         assertWritable2();
-        withWriteTxn(this.db, () => {
+        return withWriteTxn(this.db, () => {
           const decision = this.load(id);
-          if (!decision) return;
+          if (!decision) return { persisted: false };
           decision.status = status;
           if (extra) Object.assign(decision, extra);
           this.save(decision);
+          return { persisted: true };
         });
       }
       /**
@@ -13310,9 +13312,10 @@ var init_record_export = __esm({
       getIndex = () => this.inner.getIndex();
       getByCommitHash = (h) => this.inner.getByCommitHash(h);
       async updateStatus(id, status, extra) {
-        await this.inner.updateStatus(id, status, extra);
+        const result = await this.inner.updateStatus(id, status, extra);
         const updated = await this.inner.get(id);
         if (updated) this.exporter.decision(updated);
+        return result;
       }
       async linkCommit(id, commitHash) {
         await this.inner.linkCommit(id, commitHash);
@@ -13434,7 +13437,13 @@ function handoffIndexEntry(record2) {
   };
 }
 function ingestRecords(db, twiningDir) {
-  const stats = { inserted: 0, updated: 0, deleted: 0, skipped: 0 };
+  const stats = {
+    inserted: 0,
+    updated: 0,
+    deleted: 0,
+    skipped: 0,
+    lifecycle_reverts: 0
+  };
   const recordsDir = path13.join(twiningDir, "records");
   if (!fs11.existsSync(recordsDir)) return stats;
   const kinds = [
@@ -13513,6 +13522,18 @@ function ingestRecords(db, twiningDir) {
           kind.insert(db, record2);
           stats.inserted++;
         } else if (stableStringify(JSON.parse(existing)) !== stableStringify(record2)) {
+          if (kind.table === "decisions") {
+            const dbStatus = JSON.parse(existing).status;
+            const fileStatus = record2.status;
+            const dbRank = dbStatus ? LIFECYCLE_RANK[dbStatus] : void 0;
+            const fileRank = fileStatus ? LIFECYCLE_RANK[fileStatus] : void 0;
+            if (dbStatus !== void 0 && REVERT_WATCHED.has(dbStatus) && dbRank !== void 0 && fileRank !== void 0 && fileRank < dbRank) {
+              stats.lifecycle_reverts++;
+              console.error(
+                `[twining] ingest file-wins downgraded decision ${record2.id} from "${dbStatus}" to "${fileStatus}" \u2014 either a not-yet-committed lifecycle write was discarded by a git operation on the records tree, or branches/history legitimately diverge here`
+              );
+            }
+          }
           kind.update(db, record2);
           stats.updated++;
         }
@@ -13527,11 +13548,20 @@ function ingestRecords(db, twiningDir) {
   }
   return stats;
 }
+var LIFECYCLE_RANK, REVERT_WATCHED;
 var init_record_ingest = __esm({
   "src/storage/sync/record-ingest.ts"() {
     "use strict";
     init_record_export();
     init_db();
+    LIFECYCLE_RANK = {
+      provisional: 0,
+      active: 1,
+      superseded: 2,
+      overridden: 2,
+      archived: 2
+    };
+    REVERT_WATCHED = /* @__PURE__ */ new Set(["overridden", "superseded"]);
   }
 });
 
@@ -28704,7 +28734,7 @@ var RecordSyncManager = class {
       const stats = ingestRecords(this.db, this.twiningDir);
       if (stats.inserted || stats.updated || stats.deleted) {
         console.error(
-          `[twining] HEAD moved \u2014 re-ingested records: +${stats.inserted} ~${stats.updated} -${stats.deleted}` + (stats.skipped ? ` (${stats.skipped} unparseable skipped)` : "")
+          `[twining] HEAD moved \u2014 re-ingested records: +${stats.inserted} ~${stats.updated} -${stats.deleted}` + (stats.skipped ? ` (${stats.skipped} unparseable skipped)` : "") + (stats.lifecycle_reverts ? ` (${stats.lifecycle_reverts} lifecycle revert(s) \u2014 see preceding lines)` : "")
         );
         this.scheduleReconcile();
       }
@@ -28803,7 +28833,7 @@ function createStores(twiningDir, config2) {
           const stats = ingestRecords(db, twiningDir);
           if (stats.inserted || stats.updated || stats.deleted) {
             console.error(
-              `[twining] Ingested records: +${stats.inserted} ~${stats.updated} -${stats.deleted}` + (stats.skipped ? ` (${stats.skipped} unparseable skipped)` : "")
+              `[twining] Ingested records: +${stats.inserted} ~${stats.updated} -${stats.deleted}` + (stats.skipped ? ` (${stats.skipped} unparseable skipped)` : "") + (stats.lifecycle_reverts ? ` (${stats.lifecycle_reverts} lifecycle revert(s) \u2014 see preceding lines)` : "")
             );
           }
         } catch (err) {
@@ -29919,9 +29949,12 @@ var DecisionEngine = class {
     if (input.supersedes) {
       const target = await this.decisionStore.get(input.supersedes);
       if (target) {
-        await this.decisionStore.updateStatus(input.supersedes, "superseded", {
-          superseded_by: decision.id
-        });
+        const flip = await this.decisionStore.updateStatus(
+          input.supersedes,
+          "superseded",
+          { superseded_by: decision.id }
+        );
+        if (!flip.persisted) supersededDangling = input.supersedes;
       } else {
         supersededDangling = input.supersedes;
       }
@@ -30366,7 +30399,10 @@ ${conflictDetails}`,
     }
     let flagged = false;
     if (decision.status === "active") {
-      await this.decisionStore.updateStatus(decisionId, "provisional");
+      await this.decisionStore.updateStatus(decisionId, "provisional", {
+        promoted_by: void 0,
+        promoted_at: void 0
+      });
       flagged = true;
     }
     const index = await this.decisionStore.getIndex();
@@ -30406,16 +30442,29 @@ Note: ${downstreamIds.length} downstream decisions may be affected: ${downstream
         "NOT_FOUND"
       );
     }
-    await this.decisionStore.updateStatus(decisionId, "overridden", {
-      overridden_by: overriddenBy ?? "human",
-      override_reason: reason
-    });
+    const write = await this.decisionStore.updateStatus(
+      decisionId,
+      "overridden",
+      {
+        overridden_by: overriddenBy ?? "human",
+        override_reason: reason
+      }
+    );
+    const after = await this.decisionStore.get(decisionId);
+    if (!write.persisted || !after) {
+      throw new TwiningError(
+        `Override of ${decisionId} did not persist \u2014 the store no longer holds the record. Nothing was recorded; retry or inspect the store.`,
+        "PERSIST_FAILED"
+      );
+    }
     if (this.graphPopulator) {
       await this.graphPopulator.onChallenge(overriddenBy ?? "human", decisionId, "override");
     }
     const result = {
       overridden: true,
-      old_summary: decision.summary
+      old_summary: decision.summary,
+      status: after.status,
+      overridden_by: after.overridden_by ?? overriddenBy ?? "human"
     };
     if (newDecision) {
       const newResult = await this.decide({
@@ -30439,6 +30488,7 @@ Note: ${downstreamIds.length} downstream decisions may be affected: ${downstream
     const result = {
       promoted: [],
       already_active: [],
+      already_active_detail: [],
       not_found: [],
       wrong_status: []
     };
@@ -30450,13 +30500,29 @@ Note: ${downstreamIds.length} downstream decisions may be affected: ${downstream
       }
       if (decision.status === "active") {
         result.already_active.push(id);
+        result.already_active_detail.push({
+          id,
+          ...decision.promoted_by !== void 0 && {
+            promoted_by: decision.promoted_by
+          },
+          ...decision.promoted_at !== void 0 && {
+            promoted_at: decision.promoted_at
+          }
+        });
         continue;
       }
       if (decision.status !== "provisional") {
         result.wrong_status.push({ id, status: decision.status });
         continue;
       }
-      await this.decisionStore.updateStatus(id, "active");
+      const write = await this.decisionStore.updateStatus(id, "active", {
+        promoted_by: promotedBy ?? "main",
+        promoted_at: (/* @__PURE__ */ new Date()).toISOString()
+      });
+      if (!write.persisted) {
+        result.not_found.push(id);
+        continue;
+      }
       result.promoted.push(id);
     }
     if (result.promoted.length > 0) {
@@ -32992,7 +33058,7 @@ function registerDecisionTools(server, engine, twiningDir, options = {}) {
   if (options.fullSurface) server.registerTool(
     "twining_override",
     {
-      description: "Override a decision with a reason. Sets the decision to overridden status, records who overrode it and why, and optionally creates a replacement decision automatically.",
+      description: "Override a decision with a reason. Sets the decision to overridden status, records who overrode it and why, and optionally creates a replacement decision automatically. Works on any status \u2014 vetoing/withdrawing a PROVISIONAL is the sanctioned author-withdrawal path; re-overriding an already-retired decision replaces the prior overridden_by/override_reason attribution. The write is verified: the result echoes post-state (status, overridden_by \u2014 status may differ from overridden if a concurrent writer moved the record on), and a write that did not persist errors with PERSIST_FAILED instead of returning an affirmative.",
       inputSchema: {
         decision_id: external_exports.string().describe("ID of the decision to override"),
         reason: external_exports.string().describe("Reason for the override"),
@@ -33023,7 +33089,7 @@ function registerDecisionTools(server, engine, twiningDir, options = {}) {
   if (options.fullSurface) server.registerTool(
     "twining_promote",
     {
-      description: "Promote one or more provisional decisions to active status. Use this to confirm provisional decisions that have been validated through implementation and testing.",
+      description: "Promote one or more provisional decisions to active status. Use this to confirm provisional decisions that have been validated through implementation and testing. Promotions are attributed (promoted_by/promoted_at stamped on the record); ids already active come back in already_active with already_active_detail carrying any prior promotion's attribution \u2014 so a repeat or concurrent promote is distinguishable from a decision that was never provisional.",
       inputSchema: {
         decision_ids: external_exports.array(external_exports.string()).min(1).describe("IDs of provisional decisions to promote to active"),
         promoted_by: external_exports.string().optional().describe('Who is promoting (default: "main")')
@@ -35747,11 +35813,16 @@ var HousekeepingEngine = class {
       result.stale_provisionals.items.sort((a, b) => b.age_days - a.age_days);
       result.stale_provisionals.count = staleProvisionals.length;
       if (promoteProvisionals && execute && staleProvisionals.length > 0) {
+        const promotedIds = [];
         for (const entry of staleProvisionals) {
-          await this.decisionStore.updateStatus(entry.id, "active");
+          const write = await this.decisionStore.updateStatus(entry.id, "active", {
+            promoted_by: "housekeeping-promote_provisionals",
+            promoted_at: (/* @__PURE__ */ new Date()).toISOString()
+          });
+          if (write.persisted) promotedIds.push(entry.id);
         }
-        result.promoted_provisionals.count = staleProvisionals.length;
-        result.promoted_provisionals.ids = staleProvisionals.map((e) => e.id);
+        result.promoted_provisionals.count = promotedIds.length;
+        result.promoted_provisionals.ids = promotedIds;
       }
     } catch {
     }
@@ -36085,12 +36156,13 @@ function registerHousekeepingTools(server, housekeepingEngine, blackboardEngine,
           if (decisionIds.has(id)) {
             try {
               const prior = statusById.get(id);
-              await decisionStore.updateStatus(
+              const write = await decisionStore.updateStatus(
                 id,
                 "archived",
                 prior && prior !== "archived" ? { archived_from: prior } : void 0
               );
-              archivedDecisions.push(id);
+              if (write.persisted) archivedDecisions.push(id);
+              else notFound.push(id);
             } catch {
               notFound.push(id);
             }
@@ -36151,15 +36223,16 @@ ${perItemReasons.join("\n")}` : null
   server.registerTool(
     "twining_unarchive",
     {
-      description: 'Restore archived decisions \u2014 the undo for twining_archive_stale. Each decision returns to its PRE-ARCHIVE status (archived_from): a provisional goes back to the ratification queue, a superseded decision stays retired, and only previously-active decisions become authoritative again. Archived decisions are excluded from assemble/why (assemble reports them as archived_excluded_count). Only decisions currently in status "archived" are restored; other IDs are reported back untouched.',
+      description: 'Restore archived decisions \u2014 the undo for twining_archive_stale. Each decision returns to its PRE-ARCHIVE status (archived_from): a provisional goes back to the ratification queue, a superseded decision stays retired, and only previously-active decisions become authoritative again. Records archived by a pre-2.7 server carry no archived_from marker \u2014 those restore to "active" as an ASSUMPTION, reported per-id in assumed_active and via a warning post (if one was provisional, that restore ratified it; re-check with twining_reconsider). Archived decisions are excluded from assemble/why (assemble reports them as archived_excluded_count). Only decisions currently in status "archived" are restored; other IDs are reported back untouched.',
       inputSchema: {
-        ids: external_exports.array(external_exports.string()).min(1).describe("Decision IDs to restore to active status"),
+        ids: external_exports.array(external_exports.string()).min(1).describe("Decision IDs to restore to their pre-archive status"),
         reason: external_exports.string().optional().describe("Why these decisions are being restored \u2014 recorded in the audit-trail finding")
       }
     },
     async (args) => {
       try {
         const restored = [];
+        const assumedActive = [];
         const notArchived = [];
         const notFound = [];
         for (const id of args.ids) {
@@ -36169,21 +36242,30 @@ ${perItemReasons.join("\n")}` : null
           } else if (decision.status !== "archived") {
             notArchived.push(id);
           } else {
-            await decisionStore.updateStatus(
+            const write = await decisionStore.updateStatus(
               id,
               decision.archived_from ?? "active",
               { archived_from: void 0 }
             );
-            restored.push(id);
+            if (!write.persisted) {
+              notFound.push(id);
+            } else {
+              if (decision.archived_from === void 0) assumedActive.push(id);
+              restored.push(id);
+            }
           }
         }
         if (restored.length > 0) {
           await blackboardEngine.post({
-            entry_type: "finding",
+            // Warning-typed when any restore was an assumption, so the
+            // possible silent ratification surfaces in assemble's warning
+            // lane instead of scrolling by as routine housekeeping.
+            entry_type: assumedActive.length > 0 ? "warning" : "finding",
             summary: `Unarchived ${restored.length} decision(s) \u2014 restored to their pre-archive status`,
             detail: [
               args.reason ? `Reason: ${args.reason}` : null,
-              `Decisions: ${restored.join(", ")}`
+              `Decisions: ${restored.join(", ")}`,
+              assumedActive.length > 0 ? `Assumed active (archived by a pre-2.7 server, original status unknown \u2014 if one was provisional this ratified it; re-check with twining_reconsider if in doubt): ${assumedActive.join(", ")}` : null
             ].filter(Boolean).join("\n"),
             tags: ["housekeeping", "unarchive"],
             scope: "project"
@@ -36191,6 +36273,7 @@ ${perItemReasons.join("\n")}` : null
         }
         return toolResult({
           restored,
+          assumed_active: assumedActive,
           not_archived: notArchived,
           not_found: notFound
         });
