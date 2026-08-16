@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Built the two D15-derived fixes TDD: promote attribution (promoted_by/promoted_at stamped on ratification, additive already_active_detail on the result) and unarchive assumption reporting (assumed_active + warning-typed post for marker-less pre-2.7 archives). 1629 tests green. D14 investigation still running.\nDecisions: Chose an ADDITIVE already_active_detail field over the field's proposed rebucketing for D15 — reclassifying previously-promoted ids under 'promoted' would claim a call ratified what it did not touch, falsifying the audit trail; detail carries promoted_by/promoted_at so a prior ratification is distinguishable from active-since-creation, and existing consumers of already_active keep their contract (PROMOTE-02 added to BEHAVIORS).; Chose to stamp promoted_by/promoted_at as updateStatus extras following the overridden_by/override_reason precedent — extras flow through both backends' Object.assign and the ExportingDecisionStore re-export with zero new plumbing; the housekeeping bulk path stamps promoted_by 'housekeeping-promote_provisionals' so bulk ratifications are attributable; a repeat promote never overwrites the original attribution (guarded by the pre-state bucket).; Chose to KEEP unarchive's archived_from ?? 'active' default but make the guess loud (assumed_active response field + warning-typed post naming the ratification hazard) — refines rather than supersedes compat decision 01KZW3VSHWMXAA7BZX0KWA5WGM; defaulting unknown to provisional was rejected because pre-2.7 archives are overwhelmingly ex-active decisions and demoting them all into the ratify queue trades a rare silent ratification for wholesale queue noise.; Chose warning-typed single post (finding-typed when no assumption occurred) over a separate always-warning — the assumption surfaces in assemble's warning lane exactly when one was made, without double-posting routine restores.\nFindings: plugin/BEHAVIORS.md changed (PROMOTE-02, UNARCH-02) — next release must bump the plugin version per the standing rule; The full suite transiently reported 10 failures once (lock contention under parallel load — 'amend audit post failed: lock contention' in output); clean re-runs show only real failures. Worth watching if it recurs in CI",
+  "entry_type": "status",
+  "id": "01M04AD2EANQNBX6AW6DJ1SA8P",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "2bb4f40b9e3024286f2ff66d5e03ab9729daee2b",
+    "recorded_at": "2026-08-16T03:38:47.089Z"
+  },
+  "scope": "src/engine/",
+  "summary": "Built the two D15-derived fixes TDD: promote attribution (promoted_by/promoted_at stamped on ratification, additive already_active_detail on the result) and unarchive assumption reporting (assumed_…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-16T03:38:47.114Z"
+}

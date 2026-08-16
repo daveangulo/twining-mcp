@@ -1375,6 +1375,46 @@ describe("DecisionEngine.promote", () => {
     expect(result.promoted).toEqual([]);
   });
 
+  it("stamps promoted_by and promoted_at on the promoted record (D15 attribution)", async () => {
+    const d = await decisionEngine.decide(validDecisionInput());
+    await decisionStore.updateStatus(d.id, "provisional");
+
+    await decisionEngine.promote([d.id], "ratifier");
+    const after = await decisionStore.get(d.id);
+    expect(after!.promoted_by).toBe("ratifier");
+    expect(after!.promoted_at).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+  });
+
+  it("defaults promoted_by to main", async () => {
+    const d = await decisionEngine.decide(validDecisionInput());
+    await decisionStore.updateStatus(d.id, "provisional");
+    await decisionEngine.promote([d.id]);
+    expect((await decisionStore.get(d.id))!.promoted_by).toBe("main");
+  });
+
+  it("already_active_detail carries the prior promotion's attribution (D15)", async () => {
+    const d = await decisionEngine.decide(validDecisionInput());
+    await decisionStore.updateStatus(d.id, "provisional");
+    await decisionEngine.promote([d.id], "first-agent");
+
+    // The MCP-retry / concurrent-session shape: a second promote must be
+    // distinguishable from "was never provisional".
+    const again = await decisionEngine.promote([d.id], "second-agent");
+    expect(again.promoted).toEqual([]);
+    expect(again.already_active).toEqual([d.id]);
+    expect(again.already_active_detail).toEqual([
+      { id: d.id, promoted_by: "first-agent", promoted_at: expect.any(String) },
+    ]);
+    // The second call must not overwrite the original attribution.
+    expect((await decisionStore.get(d.id))!.promoted_by).toBe("first-agent");
+  });
+
+  it("already_active_detail has bare ids for decisions active since creation", async () => {
+    const d = await decisionEngine.decide(validDecisionInput());
+    const result = await decisionEngine.promote([d.id]);
+    expect(result.already_active_detail).toEqual([{ id: d.id }]);
+  });
+
   it("returns not_found for missing IDs", async () => {
     const result = await decisionEngine.promote(["nonexistent"]);
     expect(result.not_found).toEqual(["nonexistent"]);

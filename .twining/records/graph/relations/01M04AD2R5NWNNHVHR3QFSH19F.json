@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T03:38:47.429Z",
+  "id": "01M04AD2R5NWNNHVHR3QFSH19F",
+  "properties": {
+    "decision_summary": "Chose to stamp promoted_by/promoted_at as updateStatus extras following the overridden_by/override_reason precedent",
+    "origin": "derived"
+  },
+  "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+  "target": "01M04AD2R2SG0RYZ2ADWDZYAW7",
+  "type": "decided_by"
+}

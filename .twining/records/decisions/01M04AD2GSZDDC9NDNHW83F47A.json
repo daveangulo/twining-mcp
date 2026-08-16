@@ -1,0 +1,42 @@
+{
+  "affected_files": [
+    "src/utils/types.ts",
+    "src/engine/decisions.ts",
+    "src/engine/housekeeping.ts",
+    "src/tools/decision-tools.ts",
+    "src/tools/housekeeping-tools.ts",
+    "plugin/BEHAVIORS.md",
+    "test/decision-engine.test.ts",
+    "test/housekeeping-preview.test.ts",
+    "test/integration/tools/housekeeping-tools.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "the field's proposed rebucketing for D15",
+      "pros": []
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Built the two D15-derived fixes TDD: promote attribution (promoted_by/promoted_at stamped on ratification, additive already_active_detail on the result) and unarchive assumption reporting (assumed_active + warning-typed post for marker-less pre-2.7 archives). 1629 tests green. D14 investigation still running.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M04AD2GSZDDC9NDNHW83F47A",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "2bb4f40b9e3024286f2ff66d5e03ab9729daee2b",
+    "recorded_at": "2026-08-16T03:38:47.173Z"
+  },
+  "rationale": "reclassifying previously-promoted ids under 'promoted' would claim a call ratified what it did not touch, falsifying the audit trail; detail carries promoted_by/promoted_at so a prior ratification is distinguishable from active-since-creation, and existing consumers of already_active keep their contract (PROMOTE-02 added to BEHAVIORS).",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/engine/",
+  "status": "active",
+  "summary": "Chose an ADDITIVE already_active_detail field over the field's proposed rebucketing for D15",
+  "timestamp": "2026-08-16T03:38:47.193Z"
+}

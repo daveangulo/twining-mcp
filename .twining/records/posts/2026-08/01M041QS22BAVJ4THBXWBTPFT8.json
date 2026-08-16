@@ -1,0 +1,21 @@
+{
+  "agent_id": "main",
+  "detail": "D14: override returned {\"overridden\": true} on a provisional and persisted nothing — the tool description on HEAD promises provisionals can be \"vetoed (twining_override)\", so this is a contract violation if it reproduces. Engine code on HEAD looks unconditional (decisions.ts:1064); both backends' updateStatus have silent no-op paths only when the record is missing. Field asks: fail loudly, accept provisional targets, ideally a first-class twining_withdraw, at minimum document active-supersession as the only retirement path. D15: promote returned promoted:[] / already_active:[id] for a decision that was provisional pre-call (git archaeology proven) — but HEAD's promote() buckets by PRE-state, so either the defect was version-bound (field ran pre-2.9.0) or something else flipped the provisional to active before the call, which would be a worse defect (auto-activating the ratify queue). Investigation agents are reproducing both on HEAD in isolated worktrees; results pending (first attempt died on a usage limit, resumed). Both defects are the D7/D11 family: writes whose failure is invisible at the call site. Field's generalizable ask: any twining_* write that does not persist what it was handed must say so in its return value.",
+  "entry_type": "status",
+  "id": "01M041QS22BAVJ4THBXWBTPFT8",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "2bb4f40b9e3024286f2ff66d5e03ab9729daee2b",
+    "recorded_at": "2026-08-16T01:07:20.746Z"
+  },
+  "scope": "src/engine/decisions.ts",
+  "summary": "Field D14 (override silent no-op on provisional) and D15 (promote misreports promoted as already_active) received; dual investigation + cross-verify running on HEAD before backlog dispositions.",
+  "tags": [
+    "field-defects",
+    "wave-2",
+    "D14",
+    "D15",
+    "lifecycle"
+  ],
+  "timestamp": "2026-08-16T01:07:20.773Z"
+}

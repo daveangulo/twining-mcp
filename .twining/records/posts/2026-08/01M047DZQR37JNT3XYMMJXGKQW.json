@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: promote attribution backlog item — stamp promoted_by/promoted_at extras in DecisionEngine.promote's updateStatus (decisions.ts:1145, following override's overridden_by precedent) and housekeeping's bulk path; ADDITIVELY extend the result with already_active_detail [{id, promoted_by?, promoted_at?}] so a prior ratification is distinguishable from a no-op; result-shape change requires plugin bump (PROMOTE-01 in BEHAVIORS.md)",
+  "entry_type": "need",
+  "id": "01M047DZQR37JNT3XYMMJXGKQW",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "2bb4f40b9e3024286f2ff66d5e03ab9729daee2b",
+    "recorded_at": "2026-08-16T02:46:51.364Z"
+  },
+  "scope": "src/engine/decisions.ts",
+  "summary": "promote attribution backlog item — stamp promoted_by/promoted_at extras in DecisionEngine.promote's updateStatus (decisions.ts:1145, following override's overridden_by precedent) and housekeeping's…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-08-16T02:46:51.384Z"
+}

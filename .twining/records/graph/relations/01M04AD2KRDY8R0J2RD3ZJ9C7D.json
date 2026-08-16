@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T03:38:47.288Z",
+  "id": "01M04AD2KRDY8R0J2RD3ZJ9C7D",
+  "properties": {
+    "decision_summary": "Chose an ADDITIVE already_active_detail field over the field's proposed rebucketing for D15",
+    "origin": "derived"
+  },
+  "source": "01KHMSDQY0T6VGYV2VXV2E6MRB",
+  "target": "01M04AD2KM2M16V8K8Q6Q4VY2V",
+  "type": "decided_by"
+}

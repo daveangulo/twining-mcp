@@ -282,7 +282,7 @@ export function registerHousekeepingTools(
     "twining_unarchive",
     {
       description:
-        "Restore archived decisions — the undo for twining_archive_stale. Each decision returns to its PRE-ARCHIVE status (archived_from): a provisional goes back to the ratification queue, a superseded decision stays retired, and only previously-active decisions become authoritative again. Archived decisions are excluded from assemble/why (assemble reports them as archived_excluded_count). Only decisions currently in status \"archived\" are restored; other IDs are reported back untouched.",
+        "Restore archived decisions — the undo for twining_archive_stale. Each decision returns to its PRE-ARCHIVE status (archived_from): a provisional goes back to the ratification queue, a superseded decision stays retired, and only previously-active decisions become authoritative again. Records archived by a pre-2.7 server carry no archived_from marker — those restore to \"active\" as an ASSUMPTION, reported per-id in assumed_active and via a warning post (if one was provisional, that restore ratified it; re-check with twining_reconsider). Archived decisions are excluded from assemble/why (assemble reports them as archived_excluded_count). Only decisions currently in status \"archived\" are restored; other IDs are reported back untouched.",
       inputSchema: {
         ids: z
           .array(z.string())
@@ -297,6 +297,7 @@ export function registerHousekeepingTools(
     async (args) => {
       try {
         const restored: string[] = [];
+        const assumedActive: string[] = [];
         const notArchived: string[] = [];
         const notFound: string[] = [];
 
@@ -310,6 +311,10 @@ export function registerHousekeepingTools(
             // Restore the pre-archive status (absent on pre-2.7 archives →
             // "active", the only restore that existed then) and clear the
             // marker — Object.assign with undefined drops it on serialize.
+            // A marker-less restore is a GUESS: if the row was a provisional
+            // archived by a pre-2.7 server, defaulting to active silently
+            // ratifies it — so the assumption is reported, never silent.
+            if (decision.archived_from === undefined) assumedActive.push(id);
             await decisionStore.updateStatus(
               id,
               decision.archived_from ?? "active",
@@ -321,11 +326,17 @@ export function registerHousekeepingTools(
 
         if (restored.length > 0) {
           await blackboardEngine.post({
-            entry_type: "finding",
+            // Warning-typed when any restore was an assumption, so the
+            // possible silent ratification surfaces in assemble's warning
+            // lane instead of scrolling by as routine housekeeping.
+            entry_type: assumedActive.length > 0 ? "warning" : "finding",
             summary: `Unarchived ${restored.length} decision(s) — restored to their pre-archive status`,
             detail: [
               args.reason ? `Reason: ${args.reason}` : null,
               `Decisions: ${restored.join(", ")}`,
+              assumedActive.length > 0
+                ? `Assumed active (archived by a pre-2.7 server, original status unknown — if one was provisional this ratified it; re-check with twining_reconsider if in doubt): ${assumedActive.join(", ")}`
+                : null,
             ]
               .filter(Boolean)
               .join("\n"),
@@ -336,6 +347,7 @@ export function registerHousekeepingTools(
 
         return toolResult({
           restored,
+          assumed_active: assumedActive,
           not_archived: notArchived,
           not_found: notFound,
         });

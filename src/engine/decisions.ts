@@ -1110,17 +1110,29 @@ export class DecisionEngine {
   ): Promise<{
     promoted: string[];
     already_active: string[];
+    /** Attribution for already_active ids — a prior ratification (promoted_by/promoted_at present) is distinguishable from active-since-creation (field D15). */
+    already_active_detail: Array<{
+      id: string;
+      promoted_by?: string;
+      promoted_at?: string;
+    }>;
     not_found: string[];
     wrong_status: Array<{ id: string; status: string }>;
   }> {
     const result: {
       promoted: string[];
       already_active: string[];
+      already_active_detail: Array<{
+        id: string;
+        promoted_by?: string;
+        promoted_at?: string;
+      }>;
       not_found: string[];
       wrong_status: Array<{ id: string; status: string }>;
     } = {
       promoted: [],
       already_active: [],
+      already_active_detail: [],
       not_found: [],
       wrong_status: [],
     };
@@ -1134,6 +1146,15 @@ export class DecisionEngine {
 
       if (decision.status === "active") {
         result.already_active.push(id);
+        result.already_active_detail.push({
+          id,
+          ...(decision.promoted_by !== undefined && {
+            promoted_by: decision.promoted_by,
+          }),
+          ...(decision.promoted_at !== undefined && {
+            promoted_at: decision.promoted_at,
+          }),
+        });
         continue;
       }
 
@@ -1142,7 +1163,10 @@ export class DecisionEngine {
         continue;
       }
 
-      await this.decisionStore.updateStatus(id, "active");
+      await this.decisionStore.updateStatus(id, "active", {
+        promoted_by: promotedBy ?? "main",
+        promoted_at: new Date().toISOString(),
+      });
       result.promoted.push(id);
     }
 

@@ -1,0 +1,42 @@
+{
+  "affected_files": [
+    "src/utils/types.ts",
+    "src/engine/decisions.ts",
+    "src/engine/housekeeping.ts",
+    "src/tools/decision-tools.ts",
+    "src/tools/housekeeping-tools.ts",
+    "plugin/BEHAVIORS.md",
+    "test/decision-engine.test.ts",
+    "test/housekeeping-preview.test.ts",
+    "test/integration/tools/housekeeping-tools.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "a separate always-warning",
+      "pros": []
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Built the two D15-derived fixes TDD: promote attribution (promoted_by/promoted_at stamped on ratification, additive already_active_detail on the result) and unarchive assumption reporting (assumed_active + warning-typed post for marker-less pre-2.7 archives). 1629 tests green. D14 investigation still running.",
+  "depends_on": [],
+  "domain": "api-design",
+  "id": "01M04AD2XZRKX6HF2KWHSY7E48",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "2bb4f40b9e3024286f2ff66d5e03ab9729daee2b",
+    "recorded_at": "2026-08-16T03:38:47.595Z"
+  },
+  "rationale": "the assumption surfaces in assemble's warning lane exactly when one was made, without double-posting routine restores.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/engine/",
+  "status": "active",
+  "summary": "Chose warning-typed single post (finding-typed when no assumption occurred) over a separate always-warning",
+  "timestamp": "2026-08-16T03:38:47.615Z"
+}

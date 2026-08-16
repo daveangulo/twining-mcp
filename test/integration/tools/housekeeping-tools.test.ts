@@ -331,6 +331,66 @@ describe("twining_unarchive + archive visibility (D3 recovery)", () => {
     expect(again.not_archived).toEqual([decisionId]);
   });
 
+  it("reports assumed_active and posts a warning for marker-less pre-2.7 archives (D15 adjacent)", async () => {
+    gitInit(tmpDir);
+    server = createTestServer(tmpDir);
+
+    const rec = parseToolResponse(
+      await callTool(server, "twining_record", {
+        summary: "Two decisions that will be archived",
+        decisions: [
+          { summary: "Chose P over Q in the legacy area", rationale: "old reasoning" },
+          { summary: "Chose R over S in the legacy area", rationale: "newer reasoning" },
+        ],
+        scope: "src/legacy/",
+      }),
+    ) as { decisions_created: Array<{ id: string }> };
+    const [markerless, marked] = rec.decisions_created.map((d) => d.id);
+
+    await callTool(server, "twining_archive_stale", { ids: [markerless, marked] });
+
+    // Simulate a pre-2.7 archive: strip the archived_from marker from the
+    // records mirror, then restart-shape a fresh server — file-wins ingest
+    // carries the marker-less record into the live store.
+    const file = path.join(
+      tmpDir,
+      ".twining",
+      "records",
+      "decisions",
+      `${markerless}.json`,
+    );
+    const raw = JSON.parse(fs.readFileSync(file, "utf-8")) as Record<string, unknown>;
+    delete raw.archived_from;
+    fs.writeFileSync(file, JSON.stringify(raw, null, 2));
+    server = createTestServer(tmpDir);
+
+    const restored = parseToolResponse(
+      await callTool(server, "twining_unarchive", { ids: [markerless, marked] }),
+    ) as { restored: string[]; assumed_active: string[] };
+    expect(restored.restored.sort()).toEqual([markerless, marked].sort());
+    // Only the marker-less restore is an assumption — the other had its status remembered.
+    expect(restored.assumed_active).toEqual([markerless]);
+
+    // The assumption is surfaced as a warning, not buried in a finding.
+    const postsDir = path.join(tmpDir, ".twining", "records", "posts");
+    const posts: Array<{ entry_type: string; tags?: string[]; detail?: string }> = [];
+    for (const month of fs.readdirSync(postsDir)) {
+      for (const f of fs.readdirSync(path.join(postsDir, month))) {
+        posts.push(
+          JSON.parse(
+            fs.readFileSync(path.join(postsDir, month, f), "utf-8"),
+          ) as { entry_type: string; tags?: string[]; detail?: string },
+        );
+      }
+    }
+    const post = posts.find(
+      (e) => e.tags?.includes("unarchive") && e.detail?.includes(markerless),
+    );
+    expect(post).toBeDefined();
+    expect(post!.entry_type).toBe("warning");
+    expect(post!.detail).toContain("Assumed active");
+  });
+
   it("assemble and why report archived decisions as archived_excluded_count instead of silence", async () => {
     gitInit(tmpDir);
     server = createTestServer(tmpDir);

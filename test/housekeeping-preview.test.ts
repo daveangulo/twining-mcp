@@ -193,3 +193,58 @@ describe("relation dedup wiring — never a silent no-op", () => {
     });
   });
 });
+
+describe("promote_provisionals attribution (D15)", () => {
+  it("stamps promoted_by/promoted_at on bulk-promoted records", async () => {
+    const id = "stale-prov-1";
+    const record = {
+      id,
+      timestamp: OLD,
+      agent_id: "test",
+      domain: "implementation",
+      scope: "src/x/",
+      summary: "stale provisional awaiting ratification",
+      context: "c",
+      rationale: "r",
+      alternatives: [],
+      depends_on: [],
+      confidence: "medium",
+      status: "provisional",
+      reversible: true,
+      affected_files: [],
+      affected_symbols: [],
+      commit_hashes: [],
+    };
+    fs.writeFileSync(
+      path.join(tmpDir, "decisions", `${id}.json`),
+      JSON.stringify(record, null, 2),
+    );
+    fs.writeFileSync(
+      path.join(tmpDir, "decisions", "index.json"),
+      JSON.stringify([
+        {
+          id,
+          timestamp: OLD,
+          domain: "implementation",
+          scope: "src/x/",
+          summary: record.summary,
+          confidence: "medium",
+          status: "provisional",
+          affected_files: [],
+          affected_symbols: [],
+          commit_hashes: [],
+        },
+      ]),
+    );
+
+    const result = await engine.run({ promote_provisionals: true, execute: true });
+    expect(result.promoted_provisionals.ids).toEqual([id]);
+
+    const after = JSON.parse(
+      fs.readFileSync(path.join(tmpDir, "decisions", `${id}.json`), "utf-8"),
+    );
+    expect(after.status).toBe("active");
+    expect(after.promoted_by).toBe("housekeeping-promote_provisionals");
+    expect(after.promoted_at).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+  });
+});

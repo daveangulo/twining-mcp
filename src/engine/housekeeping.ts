@@ -295,7 +295,10 @@ export class HousekeepingEngine {
       // Only promote if explicitly requested
       if (promoteProvisionals && execute && staleProvisionals.length > 0) {
         for (const entry of staleProvisionals) {
-          await this.decisionStore.updateStatus(entry.id, "active");
+          await this.decisionStore.updateStatus(entry.id, "active", {
+            promoted_by: "housekeeping-promote_provisionals",
+            promoted_at: new Date().toISOString(),
+          });
         }
         result.promoted_provisionals.count = staleProvisionals.length;
         result.promoted_provisionals.ids = staleProvisionals.map((e) => e.id);

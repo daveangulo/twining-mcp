@@ -93,12 +93,13 @@ The everyday exit from the open lane (2.7.0): marks open needs/questions/warning
 <!-- tier: 2 -->
 
 #### Context
-The undo for `twining_archive_stale` (2.7.0): restores archived **decisions** to their pre-archive status (a provisional returns to the ratification queue, not to `active`). Does not restore blackboard entries — those are deleted at archive time with a machine-local tombstone in `.twining/archive/`.
+The undo for `twining_archive_stale` (2.7.0): restores archived **decisions** to their pre-archive status (a provisional returns to the ratification queue, not to `active`). Records archived by a pre-2.7 server have no `archived_from` marker and restore to `active` as an assumption — reported in `assumed_active` and a warning post. Does not restore blackboard entries — those are deleted at archive time with a machine-local tombstone in `.twining/archive/`.
 
 #### Rules
 | ID | Level | Rule |
 |----|-------|------|
 | UNARCH-01 | SHOULD | When assemble/why report a surprising `archived_excluded_count`, review and unarchive before treating the scope as decision-free |
+| UNARCH-02 | SHOULD | When `assumed_active` is non-empty, review those decisions — a pre-2.7-archived provisional restored this way was ratified by assumption, not by a person |
 
 ### twining_archive_stale
 <!-- tier: 2 -->
@@ -340,6 +341,7 @@ Promote one or more provisional decisions to active status. Use to confirm provi
 | ID | Level | Rule |
 |----|-------|------|
 | PROMOTE-01 | SHOULD | Only promote decisions after validation (tests pass, design confirmed) rather than immediately after recording |
+| PROMOTE-02 | SHOULD | Read `already_active_detail` before treating `already_active` as a no-op — `promoted_by`/`promoted_at` there means another agent or session already ratified it |
 
 ### twining_commits
 <!-- tier: 2 -->

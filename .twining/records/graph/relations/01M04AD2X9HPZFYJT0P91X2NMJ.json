@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T03:38:47.593Z",
+  "id": "01M04AD2X9HPZFYJT0P91X2NMJ",
+  "properties": {
+    "decision_summary": "Chose to KEEP unarchive's archived_from ?? 'active' default but make the guess loud (assumed_active response field + warning-typed post naming the ratification hazard)",
+    "origin": "derived"
+  },
+  "source": "01KY1J1N4PQCRED0KFCYC1QACF",
+  "target": "01M04AD2WE7PZDHEZ1GFAJE3CG",
+  "type": "decided_by"
+}

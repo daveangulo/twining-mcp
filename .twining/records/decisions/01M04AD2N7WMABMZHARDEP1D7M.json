@@ -1,0 +1,36 @@
+{
+  "affected_files": [
+    "src/utils/types.ts",
+    "src/engine/decisions.ts",
+    "src/engine/housekeeping.ts",
+    "src/tools/decision-tools.ts",
+    "src/tools/housekeeping-tools.ts",
+    "plugin/BEHAVIORS.md",
+    "test/decision-engine.test.ts",
+    "test/housekeeping-preview.test.ts",
+    "test/integration/tools/housekeeping-tools.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Built the two D15-derived fixes TDD: promote attribution (promoted_by/promoted_at stamped on ratification, additive already_active_detail on the result) and unarchive assumption reporting (assumed_active + warning-typed post for marker-less pre-2.7 archives). 1629 tests green. D14 investigation still running.",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01M04AD2N7WMABMZHARDEP1D7M",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "2bb4f40b9e3024286f2ff66d5e03ab9729daee2b",
+    "recorded_at": "2026-08-16T03:38:47.315Z"
+  },
+  "rationale": "extras flow through both backends' Object.assign and the ExportingDecisionStore re-export with zero new plumbing; the housekeeping bulk path stamps promoted_by 'housekeeping-promote_provisionals' so bulk ratifications are attributable; a repeat promote never overwrites the original attribution (guarded by the pre-state bucket).",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/engine/",
+  "status": "active",
+  "summary": "Chose to stamp promoted_by/promoted_at as updateStatus extras following the overridden_by/override_reason precedent",
+  "timestamp": "2026-08-16T03:38:47.335Z"
+}

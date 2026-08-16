@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T03:38:47.671Z",
+  "id": "01M04AD2ZQFV1VCM9J8M20MCAZ",
+  "properties": {
+    "decision_summary": "Chose warning-typed single post (finding-typed when no assumption occurred) over a separate always-warning",
+    "origin": "derived"
+  },
+  "source": "01KQWE98BE5GC6Q3Q99F2HXCJX",
+  "target": "01M04AD2ZEY5NM2YZGD9AEZC6A",
+  "type": "decided_by"
+}

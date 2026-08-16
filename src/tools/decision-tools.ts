@@ -297,7 +297,7 @@ export function registerDecisionTools(
     "twining_promote",
     {
       description:
-        "Promote one or more provisional decisions to active status. Use this to confirm provisional decisions that have been validated through implementation and testing.",
+        "Promote one or more provisional decisions to active status. Use this to confirm provisional decisions that have been validated through implementation and testing. Promotions are attributed (promoted_by/promoted_at stamped on the record); ids already active come back in already_active with already_active_detail carrying any prior promotion's attribution — so a repeat or concurrent promote is distinguishable from a decision that was never provisional.",
       inputSchema: {
         decision_ids: z
           .array(z.string())

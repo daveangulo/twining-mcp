@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: D15 investigation complete, double-verified: field misdiagnosis — promote() has bucketed by pre-state since v2.5.0 and no auto-activation path exists; the observation matches a second promote of an id a concurrent session already promoted. Real defects: unattributed promotions + unarchive ratification edge. D14 investigation re-running (machine-sleep casualty).\nFindings: need: promote attribution backlog item — stamp promoted_by/promoted_at extras in DecisionEngine.promote's updateStatus (decisions.ts:1145, following override's overridden_by precedent) and housekeeping's bulk path; ADDITIVELY extend the result with already_active_detail [{id, promoted_by?, promoted_at?}] so a prior ratification is distinguishable from a no-op; result-shape change requires plugin bump (PROMOTE-01 in BEHAVIORS.md); need: unarchive silent-ratification edge — housekeeping-tools.ts:315 archived_from ?? 'active' ratifies provisionals archived by pre-2.7 servers; consider a flagged restore state or warning post; touches the recorded compat decision 01KZW3VSHWMXAA7BZX0KWA5WGM, needs its own decision; D15 disposition evidence: exact field timeline reproduced clean on HEAD (sqlite+mirror+restart ingest preserves provisional; promote flips all three representations; only a SECOND promote yields already_active); file-wins ingest reverts db-only flips; verifiable field prediction — a 'Promoted N provisional decision(s) to active' blackboard status post between their pre-promote commit and the reported call identifies the first promoter",
+  "entry_type": "status",
+  "id": "01M047DZNNF508ABVK049DGQ3T",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "2bb4f40b9e3024286f2ff66d5e03ab9729daee2b",
+    "recorded_at": "2026-08-16T02:46:51.292Z"
+  },
+  "scope": "src/engine/decisions.ts",
+  "summary": "D15 investigation complete, double-verified: field misdiagnosis — promote() has bucketed by pre-state since v2.5.0 and no auto-activation path exists; the observation matches a second promote of an…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-16T02:46:51.317Z"
+}

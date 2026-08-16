@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T03:38:47.426Z",
+  "id": "01M04AD2R2SG0RYZ2ADWDZYAW7",
+  "name": "01M04AD2N7WMABMZHARDEP1D7M",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Chose to stamp promoted_by/promoted_at as updateStatus extras following the overridden_by/override_reason precedent"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-16T03:38:47.426Z"
+}

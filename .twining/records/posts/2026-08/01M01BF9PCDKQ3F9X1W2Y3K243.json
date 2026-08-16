@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: The stop hook's edit marker again counted writes OUTSIDE the repo (the ~/.claude auto-memory files) as session edits requiring a record — same class as the known subagent false-positive; harmless but noisy",
+  "entry_type": "finding",
+  "id": "01M01BF9PCDKQ3F9X1W2Y3K243",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "2bb4f40b9e3024286f2ff66d5e03ab9729daee2b",
+    "recorded_at": "2026-08-14T23:59:45.337Z"
+  },
+  "scope": "project",
+  "summary": "The stop hook's edit marker again counted writes OUTSIDE the repo (the ~/.claude auto-memory files) as session edits requiring a record — same class as the known subagent false-positive; harmless b…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-08-14T23:59:45.356Z"
+}

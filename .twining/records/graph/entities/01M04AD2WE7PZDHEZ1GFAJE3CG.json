@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T03:38:47.566Z",
+  "id": "01M04AD2WE7PZDHEZ1GFAJE3CG",
+  "name": "01M04AD2SJTBD7G4CQQK21KG1A",
+  "properties": {
+    "scope": "src/engine/",
+    "summary": "Chose to KEEP unarchive's archived_from ?? 'active' default but make the guess loud (assumed_active response field + warning-typed post naming the ratification hazard)"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-16T03:38:47.566Z"
+}

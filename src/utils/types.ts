@@ -127,6 +127,14 @@ export interface Decision {
   commit_hashes: string[];
   overridden_by?: string;
   override_reason?: string;
+  /**
+   * Who ratified this decision from provisional to active, and when —
+   * absent on decisions active since creation or promoted before
+   * attribution existed. Lets a later promote's already_active answer
+   * "who ratified it?" instead of reading as a silent no-op (field D15).
+   */
+  promoted_by?: string;
+  promoted_at?: string;
   assembled_before?: boolean;
   /** Branch + commit at time of recording; used for staleness detection. */
   provenance?: Provenance;
