@@ -9758,6 +9758,7 @@ CREATE TABLE IF NOT EXISTS relations (
 );
 CREATE INDEX IF NOT EXISTS idx_relations_source ON relations(source);
 CREATE INDEX IF NOT EXISTS idx_relations_target ON relations(target);
+CREATE INDEX IF NOT EXISTS idx_relations_source_target ON relations(source, target);
 
 CREATE TABLE IF NOT EXISTS agents (
   agent_id TEXT PRIMARY KEY,
@@ -12891,9 +12892,9 @@ var init_sqlite_stores = __esm({
         const sourceEntity = resolveEntity(input.source);
         const targetEntity = resolveEntity(input.target);
         return withWriteTxn(this.db, () => {
-          const existing = this.getRelationsSync().find(
-            (r) => r.source === sourceEntity.id && r.target === targetEntity.id && r.type === input.type
-          );
+          const existing = this.db.prepare(
+            "SELECT data FROM relations WHERE source = ? AND target = ? ORDER BY seq"
+          ).all(sourceEntity.id, targetEntity.id).map((r) => JSON.parse(r.data)).find((r) => r.type === input.type);
           if (existing) {
             const merged = {
               ...existing,
@@ -12915,9 +12916,6 @@ var init_sqlite_stores = __esm({
           ).run(relation.id, relation.source, relation.target, JSON.stringify(relation));
           return relation;
         });
-      }
-      getRelationsSync() {
-        return this.db.prepare("SELECT data FROM relations ORDER BY seq").all().map((r) => JSON.parse(r.data));
       }
       async getEntities() {
         return this.allEntities();
@@ -13442,7 +13440,8 @@ function ingestRecords(db, twiningDir) {
     updated: 0,
     deleted: 0,
     skipped: 0,
-    lifecycle_reverts: 0
+    lifecycle_reverts: 0,
+    lifecycle_revert_details: []
   };
   const recordsDir = path13.join(twiningDir, "records");
   if (!fs11.existsSync(recordsDir)) return stats;
@@ -13529,6 +13528,12 @@ function ingestRecords(db, twiningDir) {
             const fileRank = fileStatus ? LIFECYCLE_RANK[fileStatus] : void 0;
             if (dbStatus !== void 0 && REVERT_WATCHED.has(dbStatus) && dbRank !== void 0 && fileRank !== void 0 && fileRank < dbRank) {
               stats.lifecycle_reverts++;
+              stats.lifecycle_revert_details.push({
+                id: record2.id,
+                from: dbStatus,
+                to: fileStatus ?? "(none)",
+                scope: record2.scope ?? "project"
+              });
               console.error(
                 `[twining] ingest file-wins downgraded decision ${record2.id} from "${dbStatus}" to "${fileStatus}" \u2014 either a not-yet-committed lifecycle write was discarded by a git operation on the records tree, or branches/history legitimately diverge here`
               );
@@ -13546,6 +13551,63 @@ function ingestRecords(db, twiningDir) {
       }
     });
   }
+  if (stats.lifecycle_revert_details.length > 0 && !isReadOnly()) {
+    const byScope = /* @__PURE__ */ new Map();
+    for (const d of stats.lifecycle_revert_details) {
+      const list = byScope.get(d.scope);
+      if (list) list.push(d);
+      else byScope.set(d.scope, [d]);
+    }
+    const exporter = new RecordExporter(twiningDir);
+    for (const [scope, details] of byScope) {
+      try {
+        const detail = details.map((r) => `${r.id}: "${r.from}" -> "${r.to}"`).join("\n");
+        const entry = {
+          id: generateId(),
+          timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+          agent_id: "twining-ingest",
+          entry_type: "warning",
+          tags: ["ingest", "lifecycle-revert"],
+          scope,
+          summary: `Ingest reverted ${details.length} decision lifecycle write(s) \u2014 the committed records tree overrode newer db state (discarded uncommitted write or branch divergence)`.slice(
+            0,
+            200
+          ),
+          detail
+        };
+        const inserted = withWriteTxn(db, () => {
+          const duplicate = db.prepare(
+            "SELECT data FROM blackboard WHERE entry_type = 'warning' AND scope = ?"
+          ).all(scope).map((r) => JSON.parse(r.data)).some(
+            (e) => e.tags?.includes("lifecycle-revert") && e.status !== "resolved" && e.detail === detail
+          );
+          if (duplicate) return false;
+          db.prepare(
+            "INSERT INTO blackboard (id, entry_type, scope, timestamp, data) VALUES (?, ?, ?, ?, ?)"
+          ).run(
+            entry.id,
+            entry.entry_type,
+            entry.scope,
+            entry.timestamp,
+            JSON.stringify(entry)
+          );
+          return true;
+        });
+        if (!inserted) continue;
+        try {
+          exporter.post(entry);
+        } catch (err) {
+          db.prepare("DELETE FROM blackboard WHERE id = ?").run(entry.id);
+          throw err;
+        }
+      } catch (err) {
+        console.error(
+          `[twining] lifecycle-revert warning post failed for scope "${scope}" (non-fatal):`,
+          err
+        );
+      }
+    }
+  }
   return stats;
 }
 var LIFECYCLE_RANK, REVERT_WATCHED;
@@ -13553,6 +13615,8 @@ var init_record_ingest = __esm({
   "src/storage/sync/record-ingest.ts"() {
     "use strict";
     init_record_export();
+    init_ids();
+    init_file_store();
     init_db();
     LIFECYCLE_RANK = {
       provisional: 0,
@@ -30224,7 +30288,7 @@ ${conflictDetails}`,
       head = { id: current.id, summary: current.summary };
       if (!current.superseded_by) break;
       current = await this.decisionStore.get(current.superseded_by);
-      if (current) hops++;
+      if (current && !visited.has(current.id)) hops++;
     }
     return { ...head, chain_length: hops };
   }
