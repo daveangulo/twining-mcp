@@ -14,7 +14,7 @@
 set -euo pipefail
 
 PRE_TUNING_BYTES=41735
-CAP=$((PRE_TUNING_BYTES * 120 / 100))  # 36616
+CAP=$((PRE_TUNING_BYTES * 120 / 100))  # 50082 at the 41735 baseline
 
 TOTAL=0
 echo "Plugin Token Budget Report"

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T23:00:31.635Z",
+  "id": "01M06CW98KM6VZ075D8N009J1Q",
+  "properties": {
+    "decision_summary": "Chose one revert warning PER DISTINCT reverted-decision SCOPE over a single project-scoped warning",
+    "origin": "derived"
+  },
+  "source": "01KQV97HBHXC8MNSX8C2949584",
+  "target": "01M06CW97WPVPEX9T3GANANG8T",
+  "type": "decided_by"
+}

@@ -1,0 +1,34 @@
+{
+  "affected_files": [
+    "src/storage/sync/record-ingest.ts",
+    "plugin/hooks/activity-marker-hook.sh",
+    "src/storage/sqlite/sqlite-stores.ts",
+    "scripts/measure-plugin-tokens.sh",
+    "docs/field-responses/2026-08-16-memo-send.md",
+    "test/record-sync.test.ts",
+    "test/hooks/stop-hook.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "2.15.0 pre-tag review round: all 8 findings confirmed and fixed — revert warnings now post per reverted-decision scope with ping-pong dedupe (the project-scoped warning was invisible to every narrow-scope assemble), hook paths canonicalized through the nearest existing ancestor (symlink roots no longer silently disable Gate-2), worktrees-branch test now pins its branch, dead method/doc fixes. 1643 green. Correctness lens died to network errors — re-running it against fixed HEAD before tagging.",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01M06CW99AQCYM21F6D1328FA9",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "375865509ea37e86a8ac17290c50824639a45df6",
+    "recorded_at": "2026-08-16T23:00:31.638Z"
+  },
+  "rationale": "kills the unbounded ping-pong pile (same id re-reverting each cycle) while distinct id sets still post fresh; limitation accepted and documented: a resolved predecessor with identical detail suppresses a genuinely new identical event.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Chose (scope, detail)-identity dedupe for revert warnings",
+  "timestamp": "2026-08-16T23:00:31.658Z"
+}

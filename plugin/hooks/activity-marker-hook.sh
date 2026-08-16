@@ -102,8 +102,27 @@ if [[ "$HOOK_INPUT" =~ \"file_path\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" ]]; th
 elif [[ "$HOOK_INPUT" =~ \"notebook_path\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" ]]; then
   FILE_PATH="${BASH_REMATCH[1]}"
 fi
+
+# Physical-path canonicalization: resolve through the nearest EXISTING
+# ancestor (the file itself may not exist yet on a Write) and reattach the
+# rest. Without this, a logical/physical form mismatch (e.g. a project under
+# a symlinked root: /var -> /private/var, symlinked homes) makes every
+# in-project edit look out-of-project and silently disables Gate-2 stamping
+# — the opposite of this filter's fail-toward-gate-integrity bias.
+canonpath() {
+  local p="$1" suffix="" resolved
+  while [[ -n "$p" && "$p" == */* && ! -d "$p" ]]; do
+    suffix="/$(basename "$p")$suffix"
+    p="$(dirname "$p")"
+  done
+  resolved=$(cd "$p" 2>/dev/null && pwd -P) || { printf '%s' "$1"; return; }
+  printf '%s%s' "$resolved" "$suffix"
+}
+
 if [[ -n "$FILE_PATH" && -n "$MARKER_SCOPE_ROOT" ]]; then
   [[ "$FILE_PATH" != /* ]] && FILE_PATH="$(pwd)/$FILE_PATH"
+  FILE_PATH="$(canonpath "$FILE_PATH")"
+  MARKER_SCOPE_ROOT="$(canonpath "${MARKER_SCOPE_ROOT%/}")"
   case "$FILE_PATH" in
     "$MARKER_SCOPE_ROOT"/.claude/worktrees/*)
       # A subagent's isolated tree — not this session's recordable work.

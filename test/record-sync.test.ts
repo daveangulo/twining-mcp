@@ -302,7 +302,7 @@ describe.skipIf(!HAS_SQLITE)("record ingest", () => {
     // downgrade is counted instead of silent, with per-record detail.
     expect(stats.lifecycle_reverts).toBe(1);
     expect(stats.lifecycle_revert_details).toEqual([
-      { id: decision.id, from: "overridden", to: "provisional" },
+      { id: decision.id, from: "overridden", to: "provisional", scope: decision.scope },
     ]);
     expect(stats.updated).toBe(1);
     db.close();
@@ -327,13 +327,17 @@ describe.skipIf(!HAS_SQLITE)("record ingest", () => {
     fs.writeFileSync(file, JSON.stringify(reverted));
 
     // Restart-shaped: createStores runs the startup ingest, which reverts
-    // the row and must leave an agent-visible warning behind.
+    // the row and must leave an agent-visible warning behind — scoped to the
+    // REVERTED DECISION's scope, so the narrow-scope assembles the project
+    // mandates actually surface it (review finding: "project" scope matches
+    // no scoped assemble).
     const stores2 = createStores(twA, sqliteConfig());
     const { entries } = await stores2.blackboardStore.read();
     const warning = entries.find(
       (e) => e.entry_type === "warning" && e.tags?.includes("lifecycle-revert"),
     );
     expect(warning).toBeDefined();
+    expect(warning!.scope).toBe(decision.scope);
     expect(warning!.summary).toMatch(/reverted 1 decision lifecycle write/);
     expect(warning!.detail).toContain(decision.id);
     expect(warning!.detail).toContain('"overridden" -> "provisional"');
@@ -357,6 +361,27 @@ describe.skipIf(!HAS_SQLITE)("record ingest", () => {
     const again = await stores2.blackboardStore.read();
     expect(
       again.entries.filter(
+        (e) => e.entry_type === "warning" && e.tags?.includes("lifecycle-revert"),
+      ),
+    ).toHaveLength(1);
+
+    // Ping-pong dedupe: the SAME revert re-occurring (re-override, git
+    // discards it again) must not pile up a second identical open warning.
+    await stores2.decisionStore.updateStatus(decision.id, "overridden", {
+      overridden_by: "the-author",
+      override_reason: "withdrawn again",
+    });
+    const rereverted = JSON.parse(fs.readFileSync(file, "utf-8")) as Record<string, unknown>;
+    rereverted.status = "provisional";
+    delete rereverted.overridden_by;
+    delete rereverted.override_reason;
+    fs.writeFileSync(file, JSON.stringify(rereverted));
+    const db2 = openDatabase(twA);
+    expect(ingestRecords(db2, twA).lifecycle_reverts).toBe(1);
+    db2.close();
+    const afterPingPong = await stores2.blackboardStore.read();
+    expect(
+      afterPingPong.entries.filter(
         (e) => e.entry_type === "warning" && e.tags?.includes("lifecycle-revert"),
       ),
     ).toHaveLength(1);

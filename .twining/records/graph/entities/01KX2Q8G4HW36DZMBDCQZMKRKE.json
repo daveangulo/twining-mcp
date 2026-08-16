@@ -3,8 +3,8 @@
   "id": "01KX2Q8G4HW36DZMBDCQZMKRKE",
   "name": "scripts/measure-plugin-tokens.sh",
   "properties": {
-    "scope": "project,scripts/measure-plugin-tokens.sh"
+    "scope": "project,scripts/measure-plugin-tokens.sh,src/"
   },
   "type": "file",
-  "updated_at": "2026-08-16T20:15:19.070Z"
+  "updated_at": "2026-08-16T23:00:31.901Z"
 }

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T23:00:31.901Z",
+  "id": "01M06CW9GX4K1YXND6NV4CGQ22",
+  "properties": {
+    "decision_summary": "Chose nearest-existing-ancestor canonicalization (cd/pwd -P walk) for both sides of the hook's path filter",
+    "origin": "derived"
+  },
+  "source": "01KY6EEVNYT9CWMATFTKJ1KYGE",
+  "target": "01M06CW9GK44SCXE804JDBR5ZZ",
+  "type": "decided_by"
+}

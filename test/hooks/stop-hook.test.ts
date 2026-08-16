@@ -369,16 +369,16 @@ describe("activity-marker-hook.sh (#43)", () => {
 
   it("stamps for edits inside the project (absolute and relative paths)", () => {
     repo = makeRepo({ initTwining: true });
-    // realpath: the hook compares against its physical $(pwd) (macOS tmpdir
-    // is a /var -> /private/var symlink).
-    const physicalRoot = fs.realpathSync(repo.dir);
+    // Deliberately the LOGICAL tmpdir path while the hook's $(pwd) is
+    // physical (macOS /var -> /private/var symlink) — pins the hook's path
+    // canonicalization: a form mismatch must not silently disable stamping.
     const marker = path.join(repo.dir, ".twining", ".sessions", "sess-abc");
     runHook({
       script: "activity-marker-hook.sh",
       stdin: JSON.stringify({
         session_id: "sess-abc",
         tool_name: "Edit",
-        tool_input: { file_path: path.join(physicalRoot, "src", "a.ts") },
+        tool_input: { file_path: path.join(repo.dir, "src", "a.ts") },
       }),
       cwd: repo.dir,
     });
@@ -449,9 +449,8 @@ describe("activity-marker-hook.sh (#43)", () => {
         stdin: JSON.stringify({
           session_id: "wt-sess",
           tool_name: "Edit",
-          tool_input: {
-            file_path: path.join(fs.realpathSync(fx.wt), "src", "a.ts"),
-          },
+          // Logical form again — canonicalization must bridge it.
+          tool_input: { file_path: path.join(fx.wt, "src", "a.ts") },
         }),
         cwd: fx.wt,
       });

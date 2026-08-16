@@ -474,13 +474,6 @@ export class SqliteGraphStore implements IGraphStore {
     });
   }
 
-  private getRelationsSync(): Relation[] {
-    return this.db
-      .prepare("SELECT data FROM relations ORDER BY seq")
-      .all()
-      .map((r) => JSON.parse(r.data as string) as Relation);
-  }
-
   async getEntities(): Promise<Entity[]> {
     return this.allEntities();
   }

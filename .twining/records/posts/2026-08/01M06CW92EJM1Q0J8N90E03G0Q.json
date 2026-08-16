@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: 2.15.0 pre-tag review round: all 8 findings confirmed and fixed — revert warnings now post per reverted-decision scope with ping-pong dedupe (the project-scoped warning was invisible to every narrow-scope assemble), hook paths canonicalized through the nearest existing ancestor (symlink roots no longer silently disable Gate-2), worktrees-branch test now pins its branch, dead method/doc fixes. 1643 green. Correctness lens died to network errors — re-running it against fixed HEAD before tagging.\nDecisions: Chose one revert warning PER DISTINCT reverted-decision SCOPE over a single project-scoped warning — assemble's bidirectional path-prefix match means project scope surfaces in NO narrow-scope assemble, exactly the visibility gap the feature was built to close; per-scope posting rides the scope lane, and the embedding bypass is documented as acceptable since the scope lane is now the surfacing path.; Chose (scope, detail)-identity dedupe for revert warnings — kills the unbounded ping-pong pile (same id re-reverting each cycle) while distinct id sets still post fresh; limitation accepted and documented: a resolved predecessor with identical detail suppresses a genuinely new identical event.; Chose nearest-existing-ancestor canonicalization (cd/pwd -P walk) for both sides of the hook's path filter — raw prefix comparison inverted the fail-toward-gate-integrity bias under symlinked roots (every in-project edit read as outside, silently disabling the gate); the walk handles not-yet-created Write targets; hook tests now deliberately use logical paths to pin it.\nFindings: 8th consecutive pre-tag review catching real defects — this one caught the fix-for-the-visibility-gap reproducing the visibility gap; the correctness lens was lost to network errors (ENOTFOUND after 3 attempts) and is being re-run against the fixed HEAD rather than skipped",
+  "entry_type": "status",
+  "id": "01M06CW92EJM1Q0J8N90E03G0Q",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "375865509ea37e86a8ac17290c50824639a45df6",
+    "recorded_at": "2026-08-16T23:00:31.420Z"
+  },
+  "scope": "src/",
+  "summary": "2.15.0 pre-tag review round: all 8 findings confirmed and fixed — revert warnings now post per reverted-decision scope with ping-pong dedupe (the project-scoped warning was invisible to every narro…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-16T23:00:31.438Z"
+}

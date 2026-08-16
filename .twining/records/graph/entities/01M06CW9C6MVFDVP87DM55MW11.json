@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T23:00:31.750Z",
+  "id": "01M06CW9C6MVFDVP87DM55MW11",
+  "name": "01M06CW99AQCYM21F6D1328FA9",
+  "properties": {
+    "scope": "src/",
+    "summary": "Chose (scope, detail)-identity dedupe for revert warnings"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-16T23:00:31.750Z"
+}

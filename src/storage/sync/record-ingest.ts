@@ -40,8 +40,13 @@ export interface IngestStats {
   skipped: number;
   /** File-wins updates that DOWNGRADED a decision's lifecycle status (e.g. overridden → provisional) — usually an uncommitted status write discarded by a git operation (field D14). */
   lifecycle_reverts: number;
-  /** Per-record detail for lifecycle_reverts — feeds the blackboard warning ingest posts. */
-  lifecycle_revert_details: Array<{ id: string; from: string; to: string }>;
+  /** Per-record detail for lifecycle_reverts — feeds the blackboard warning ingest posts. scope is the reverted decision's own scope, so the warning surfaces in narrow-scope assembles. */
+  lifecycle_revert_details: Array<{
+    id: string;
+    from: string;
+    to: string;
+    scope: string;
+  }>;
 }
 
 /** provisional < active < retired; a file-wins move to a lower rank is a revert. */
@@ -270,6 +275,8 @@ export function ingestRecords(
                 id: record.id,
                 from: dbStatus,
                 to: fileStatus ?? "(none)",
+                scope:
+                  (record as { scope?: string }).scope ?? "project",
               });
               console.error(
                 `[twining] ingest file-wins downgraded decision ${record.id} from "${dbStatus}" to "${fileStatus}" — either a not-yet-committed lifecycle write was discarded by a git operation on the records tree, or branches/history legitimately diverge here`,
@@ -291,35 +298,64 @@ export function ingestRecords(
 
   // A reverted lifecycle write must reach the AGENT, not just the server
   // log (the D14 visibility follow-up): post a blackboard warning — db row
-  // plus mirror file, so the warning itself survives future ingests and
-  // surfaces in assemble's warning lane. Non-fatal by design.
+  // plus mirror file, so the warning itself survives future ingests. One
+  // warning PER DISTINCT DECISION SCOPE, scoped to the reverted decision's
+  // own scope — assemble's scope lane is bidirectional path-prefix, so a
+  // "project"-scoped warning would never surface in the narrow-scope
+  // assembles the gates mandate (review finding). The direct INSERT skips
+  // embedding; the scope lane, not the semantic lane, is the surfacing
+  // path. Non-fatal by design.
   if (stats.lifecycle_revert_details.length > 0) {
     try {
-      const entry: BlackboardEntry = {
-        id: generateId(),
-        timestamp: new Date().toISOString(),
-        agent_id: "twining-ingest",
-        entry_type: "warning",
-        tags: ["ingest", "lifecycle-revert"],
-        scope: "project",
-        summary: `Ingest reverted ${stats.lifecycle_revert_details.length} decision lifecycle write(s) — the committed records tree overrode newer db state (discarded uncommitted write or branch divergence)`.slice(
-          0,
-          200,
-        ),
-        detail: stats.lifecycle_revert_details
+      const byScope = new Map<string, typeof stats.lifecycle_revert_details>();
+      for (const d of stats.lifecycle_revert_details) {
+        const list = byScope.get(d.scope);
+        if (list) list.push(d);
+        else byScope.set(d.scope, [d]);
+      }
+      const exporter = new RecordExporter(twiningDir);
+      for (const [scope, details] of byScope) {
+        const detail = details
           .map((r) => `${r.id}: "${r.from}" -> "${r.to}"`)
-          .join("\n"),
-      };
-      db.prepare(
-        "INSERT INTO blackboard (id, entry_type, scope, timestamp, data) VALUES (?, ?, ?, ?, ?)",
-      ).run(
-        entry.id,
-        entry.entry_type,
-        entry.scope,
-        entry.timestamp,
-        JSON.stringify(entry),
-      );
-      new RecordExporter(twiningDir).post(entry);
+          .join("\n");
+        // Ping-pong dedupe: the same revert re-occurring (re-override, git
+        // discards it again) must not pile up identical open warnings —
+        // open warnings are archive-exempt, so the pile would be permanent.
+        // Identity is (scope, detail); a different id set posts fresh.
+        const duplicate = db
+          .prepare(
+            "SELECT data FROM blackboard WHERE entry_type = 'warning' AND scope = ?",
+          )
+          .all(scope)
+          .map((r) => JSON.parse(r.data as string) as BlackboardEntry)
+          .some(
+            (e) => e.tags?.includes("lifecycle-revert") && e.detail === detail,
+          );
+        if (duplicate) continue;
+        const entry: BlackboardEntry = {
+          id: generateId(),
+          timestamp: new Date().toISOString(),
+          agent_id: "twining-ingest",
+          entry_type: "warning",
+          tags: ["ingest", "lifecycle-revert"],
+          scope,
+          summary: `Ingest reverted ${details.length} decision lifecycle write(s) — the committed records tree overrode newer db state (discarded uncommitted write or branch divergence)`.slice(
+            0,
+            200,
+          ),
+          detail,
+        };
+        db.prepare(
+          "INSERT INTO blackboard (id, entry_type, scope, timestamp, data) VALUES (?, ?, ?, ?, ?)",
+        ).run(
+          entry.id,
+          entry.entry_type,
+          entry.scope,
+          entry.timestamp,
+          JSON.stringify(entry),
+        );
+        exporter.post(entry);
+      }
     } catch (err) {
       console.error(
         "[twining] lifecycle-revert warning post failed (non-fatal):",

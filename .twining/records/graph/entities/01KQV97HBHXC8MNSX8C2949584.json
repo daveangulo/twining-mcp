@@ -3,8 +3,8 @@
   "id": "01KQV97HBHXC8MNSX8C2949584",
   "name": "test/hooks/stop-hook.test.ts",
   "properties": {
-    "scope": "plugin/hooks/"
+    "scope": "plugin/hooks/,src/"
   },
   "type": "file",
-  "updated_at": "2026-07-21T20:32:20.178Z"
+  "updated_at": "2026-08-16T23:00:31.910Z"
 }
