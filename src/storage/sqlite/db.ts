@@ -68,6 +68,7 @@ CREATE TABLE IF NOT EXISTS relations (
 );
 CREATE INDEX IF NOT EXISTS idx_relations_source ON relations(source);
 CREATE INDEX IF NOT EXISTS idx_relations_target ON relations(target);
+CREATE INDEX IF NOT EXISTS idx_relations_source_target ON relations(source, target);
 
 CREATE TABLE IF NOT EXISTS agents (
   agent_id TEXT PRIMARY KEY,

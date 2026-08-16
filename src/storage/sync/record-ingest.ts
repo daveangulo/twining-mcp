@@ -20,7 +20,8 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import { stableStringify } from "./record-export.js";
+import { RecordExporter, stableStringify } from "./record-export.js";
+import { generateId } from "../../utils/ids.js";
 import type { SqliteDatabase } from "../sqlite/db.js";
 import { withWriteTxn } from "../sqlite/db.js";
 import type {
@@ -39,6 +40,8 @@ export interface IngestStats {
   skipped: number;
   /** File-wins updates that DOWNGRADED a decision's lifecycle status (e.g. overridden → provisional) — usually an uncommitted status write discarded by a git operation (field D14). */
   lifecycle_reverts: number;
+  /** Per-record detail for lifecycle_reverts — feeds the blackboard warning ingest posts. */
+  lifecycle_revert_details: Array<{ id: string; from: string; to: string }>;
 }
 
 /** provisional < active < retired; a file-wins move to a lower rank is a revert. */
@@ -120,6 +123,7 @@ export function ingestRecords(
     deleted: 0,
     skipped: 0,
     lifecycle_reverts: 0,
+    lifecycle_revert_details: [],
   };
   const recordsDir = path.join(twiningDir, "records");
   if (!fs.existsSync(recordsDir)) return stats;
@@ -262,6 +266,11 @@ export function ingestRecords(
               fileRank < dbRank
             ) {
               stats.lifecycle_reverts++;
+              stats.lifecycle_revert_details.push({
+                id: record.id,
+                from: dbStatus,
+                to: fileStatus ?? "(none)",
+              });
               console.error(
                 `[twining] ingest file-wins downgraded decision ${record.id} from "${dbStatus}" to "${fileStatus}" — either a not-yet-committed lifecycle write was discarded by a git operation on the records tree, or branches/history legitimately diverge here`,
               );
@@ -278,6 +287,45 @@ export function ingestRecords(
         }
       }
     });
+  }
+
+  // A reverted lifecycle write must reach the AGENT, not just the server
+  // log (the D14 visibility follow-up): post a blackboard warning — db row
+  // plus mirror file, so the warning itself survives future ingests and
+  // surfaces in assemble's warning lane. Non-fatal by design.
+  if (stats.lifecycle_revert_details.length > 0) {
+    try {
+      const entry: BlackboardEntry = {
+        id: generateId(),
+        timestamp: new Date().toISOString(),
+        agent_id: "twining-ingest",
+        entry_type: "warning",
+        tags: ["ingest", "lifecycle-revert"],
+        scope: "project",
+        summary: `Ingest reverted ${stats.lifecycle_revert_details.length} decision lifecycle write(s) — the committed records tree overrode newer db state (discarded uncommitted write or branch divergence)`.slice(
+          0,
+          200,
+        ),
+        detail: stats.lifecycle_revert_details
+          .map((r) => `${r.id}: "${r.from}" -> "${r.to}"`)
+          .join("\n"),
+      };
+      db.prepare(
+        "INSERT INTO blackboard (id, entry_type, scope, timestamp, data) VALUES (?, ?, ?, ?, ?)",
+      ).run(
+        entry.id,
+        entry.entry_type,
+        entry.scope,
+        entry.timestamp,
+        JSON.stringify(entry),
+      );
+      new RecordExporter(twiningDir).post(entry);
+    } catch (err) {
+      console.error(
+        "[twining] lifecycle-revert warning post failed (non-fatal):",
+        err,
+      );
+    }
   }
 
   return stats;

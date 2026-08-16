@@ -1,0 +1,21 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Built the 2.15.0 batch TDD (1643 green): cap re-baselined to the 2.14.0 snapshot, activity-marker edit-path filter (no stamps for out-of-project or subagent-worktree edits; worktree sessions still stamp), indexed relation upsert lookup, ingest revert warning posted to the blackboard (db row + mirror), cyclic chain_length fix.\nDecisions: Re-baselined the plugin token budget to the 2.14.0 snapshot (41735 bytes, +20% allowance forward) per Dave's call — the growth was shipped feature surface, not drift; the gate now measures future growth instead of staying permanently red.; Chose an edit-path filter in the activity-marker hook (stamp only for paths under the session's scope root; exclude .claude/worktrees/ for non-worktree sessions; missing/unparseable file_path falls through to stamping) — fail-toward-gate-integrity; the shared resolution block gains two marker-scope assignments, noted in its mirror comment so the other four hooks stay verbatim among themselves.; Chose to post the lifecycle-revert warning from INSIDE ingestRecords (db row + RecordExporter mirror file) rather than callbacks from the two call sites — one mechanism covers startup and HEAD-move ingests, the mirror file makes the warning itself ingest-stable, and assemble's warning lane is the store's native agent-visible channel. Resolves the MCP-surface follow-up.; Chose a targeted (source, target) SQL lookup with a new composite index for the relation upsert, filtering type in JS — type lives in the data JSON, so a type column would need a migration; ORDER BY seq preserves the contractual seq-first merge target, pinned by a test with interleaved two-type duplicates.; Fixed cyclic chain_length by counting only will-be-visited nodes — the wrap-around edge to an already-visited record no longer inflates the count; linear chains unchanged.; Kept the memo's STATUS archive gate moving with the latest release (≥2.15/≥1.33) rather than freezing at 2.14 — the field jumps once to latest anyway and a split gate/upgrade-line reads as inconsistency.\nFindings: The ingest warning uses agent_id twining-ingest — a system author; if assemble's self-post marking ever treats unknown agent_ids specially, this is the precedent",
+  "entry_type": "status",
+  "id": "01M063DR7DAZSFA4TVHFRDDCTW",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "1a5bb63b10d5fe9e75485ab379b09e4d8c191f67",
+    "recorded_at": "2026-08-16T20:15:18.235Z"
+  },
+  "relates_to": [
+    "01M04T97MR2PCNTRTEC35FSQHV"
+  ],
+  "scope": "project",
+  "summary": "Built the 2.15.0 batch TDD (1643 green): cap re-baselined to the 2.14.0 snapshot, activity-marker edit-path filter (no stamps for out-of-project or subagent-worktree edits; worktree sessions still …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-16T20:15:18.253Z"
+}

@@ -786,7 +786,10 @@ export class DecisionEngine {
       head = { id: current.id, summary: current.summary };
       if (!current.superseded_by) break;
       current = await this.decisionStore.get(current.superseded_by);
-      if (current) hops++;
+      // Count only records that will actually be visited — on a cycle the
+      // wrap-around edge reaches an already-visited node, which must not
+      // inflate chain_length past the distinct-record count.
+      if (current && !visited.has(current.id)) hops++;
     }
     return { ...head, chain_length: hops };
   }

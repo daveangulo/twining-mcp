@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T20:15:19.073Z",
+  "id": "01M063DS11DGY0HTNRAJCBZPDC",
+  "properties": {
+    "decision_summary": "Kept the memo's STATUS archive gate moving with the latest release (≥2.15/≥1.33) rather than freezing at 2.14",
+    "origin": "derived"
+  },
+  "source": "01KX2Q8G4HW36DZMBDCQZMKRKE",
+  "target": "01M063DS0XJE46GHG78Y24031C",
+  "type": "decided_by"
+}

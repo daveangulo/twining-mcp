@@ -1,0 +1,41 @@
+{
+  "affected_files": [
+    "scripts/measure-plugin-tokens.sh",
+    "plugin/hooks/activity-marker-hook.sh",
+    "src/storage/sqlite/db.ts",
+    "src/storage/sqlite/sqlite-stores.ts",
+    "src/storage/sync/record-ingest.ts",
+    "src/engine/decisions.ts",
+    "plugin/BEHAVIORS.md",
+    "docs/field-responses/2026-08-13-wave2-ship-memo.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "freezing at 2.14",
+      "pros": []
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Built the 2.15.0 batch TDD (1643 green): cap re-baselined to the 2.14.0 snapshot, activity-marker edit-path filter (no stamps for out-of-project or subagent-worktree edits; worktree sessions still stamp), indexed relation upsert lookup, ingest revert warning posted to the blackboard (db row + mirror), cyclic chain_length fix.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01M063DRY3AE3VGN6S9J4ZFCWD",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "1a5bb63b10d5fe9e75485ab379b09e4d8c191f67",
+    "recorded_at": "2026-08-16T20:15:18.959Z"
+  },
+  "rationale": "the field jumps once to latest anyway and a split gate/upgrade-line reads as inconsistency.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Kept the memo's STATUS archive gate moving with the latest release (≥2.15/≥1.33) rather than freezing at 2.14",
+  "timestamp": "2026-08-16T20:15:18.979Z"
+}

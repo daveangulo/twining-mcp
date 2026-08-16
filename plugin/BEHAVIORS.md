@@ -330,7 +330,7 @@ Override a decision with a reason. Sets the decision to overridden status, recor
 |----|-------|------|
 | OVERRIDE-01 | SHOULD | Prefer twining_reconsider over twining_override when the decision might still be valid -- override is for definitive replacement |
 | OVERRIDE-02 | SHOULD | Provide a new_decision summary when overriding to auto-create the replacement decision record |
-| OVERRIDE-03 | SHOULD | Commit `.twining/` promptly after lifecycle writes (override/promote/archive) — the records-tree rewrite is an uncommitted working-tree change until then, and a git operation that discards it makes the next file-wins ingest revert the write (counted per-record in the server log's ingest summary as `lifecycle_reverts`) |
+| OVERRIDE-03 | SHOULD | Commit `.twining/` promptly after lifecycle writes (override/promote/archive) — the records-tree rewrite is an uncommitted working-tree change until then, and a git operation that discards it makes the next file-wins ingest revert the write (surfaced as a blackboard WARNING naming the reverted ids, plus a `lifecycle_reverts` count in the server log) |
 
 ### twining_promote
 <!-- tier: 2 -->

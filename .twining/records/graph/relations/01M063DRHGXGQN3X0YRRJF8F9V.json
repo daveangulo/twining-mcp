@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T20:15:18.576Z",
+  "id": "01M063DRHGXGQN3X0YRRJF8F9V",
+  "properties": {
+    "decision_summary": "Chose an edit-path filter in the activity-marker hook (stamp only for paths under the session's scope root; exclude .claude/worktrees/ for non-worktree sessions; missing/unparseable file_path falls through to stamping)",
+    "origin": "derived"
+  },
+  "source": "01KZZ2QAT67J71WM8F0A70CJ8K",
+  "target": "01M063DRGRD2K7CAR4Z2JDC2FV",
+  "type": "decided_by"
+}

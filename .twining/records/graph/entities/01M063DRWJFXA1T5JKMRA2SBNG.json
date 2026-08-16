@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T20:15:18.930Z",
+  "id": "01M063DRWJFXA1T5JKMRA2SBNG",
+  "name": "01M063DRSVW1HTYZSHHQKQRECV",
+  "properties": {
+    "scope": "project",
+    "summary": "Fixed cyclic chain_length by counting only will-be-visited nodes"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-16T20:15:18.930Z"
+}

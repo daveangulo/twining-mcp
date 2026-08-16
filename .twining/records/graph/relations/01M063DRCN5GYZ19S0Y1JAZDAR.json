@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T20:15:18.421Z",
+  "id": "01M063DRCN5GYZ19S0Y1JAZDAR",
+  "properties": {
+    "decision_summary": "Re-baselined the plugin token budget to the 2.14.0 snapshot (41735 bytes, +20% allowance forward) per Dave's call",
+    "origin": "derived"
+  },
+  "source": "01KWMNHR44GXNT3XZXBRVX8MAA",
+  "target": "01M063DRC391PD1WVEV8YC3W49",
+  "type": "decided_by"
+}

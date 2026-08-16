@@ -29,9 +29,11 @@ while [[ "$SESSION_ID" == .* ]]; do SESSION_ID="${SESSION_ID#.}"; done
 [[ -z "$SESSION_ID" ]] && exit 0
 
 # Only act in twining-managed projects.
-# Resolve the twining store. This block is mirrored VERBATIM across
+# Resolve the twining store. This block is mirrored across
 # session-start-context.sh, pre-commit-hook.sh, stop-hook.sh,
-# activity-marker-hook.sh, and subagent-stop-hook.sh, and matches the
+# activity-marker-hook.sh, and subagent-stop-hook.sh (verbatim there; THIS
+# copy adds only the MARKER_SCOPE_ROOT/MARKER_IN_WORKTREE assignments for
+# the edit-path filter below), and matches the
 # server's resolution (src/utils/project-root.ts): TWINING_PROJECT
 # (explicit targeting; relative paths resolve against cwd) wins and is
 # never worktree-redirected. Otherwise walk up from cwd; when a candidate
@@ -45,10 +47,13 @@ while [[ "$SESSION_ID" == .* ]]; do SESSION_ID="${SESSION_ID#.}"; done
 # present and stop — never walk past the worktree into an ancestor's
 # store, which the server (resolving from cwd) would never bind.
 TWINING_DIR=""
+MARKER_SCOPE_ROOT=""
+MARKER_IN_WORKTREE=false
 if [[ -n "${TWINING_PROJECT:-}" ]]; then
   PROJECT_ROOT="$TWINING_PROJECT"
   [[ "$PROJECT_ROOT" != /* ]] && PROJECT_ROOT="$(pwd)/$PROJECT_ROOT"
   [[ -d "$PROJECT_ROOT/.twining" ]] && TWINING_DIR="$PROJECT_ROOT/.twining"
+  MARKER_SCOPE_ROOT="$PROJECT_ROOT"
 else
   DIR="$(pwd)"
   while [[ "$DIR" != "/" ]]; do
@@ -67,18 +72,51 @@ else
           elif [[ -d "$DIR/.twining" ]]; then
             TWINING_DIR="$DIR/.twining"
           fi
+          MARKER_SCOPE_ROOT="$DIR"
+          MARKER_IN_WORKTREE=true
           break
         fi
       fi
     fi
     if [[ -d "$DIR/.twining" ]]; then
       TWINING_DIR="$DIR/.twining"
+      MARKER_SCOPE_ROOT="$DIR"
       break
     fi
     DIR="$(dirname "$DIR")"
   done
 fi
 [[ -z "$TWINING_DIR" ]] && exit 0
+
+# Edit-path filter (2026-08-16): stamp only for edits that belong to THIS
+# store's project. Without it the marker fired on auto-memory writes under
+# ~/.claude and on in-process subagents editing isolated worktrees under
+# .claude/worktrees/ (both carry the controller's session_id), producing
+# false Gate-2 stop-blocks. A session RUNNING IN a linked worktree stamps
+# for edits under its own worktree root — its work records to the shared
+# store. Absent or unparseable file_path falls through to stamping: fail
+# toward gate integrity; the pre-commit hook still gates commits.
+FILE_PATH=""
+if [[ "$HOOK_INPUT" =~ \"file_path\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" ]]; then
+  FILE_PATH="${BASH_REMATCH[1]}"
+elif [[ "$HOOK_INPUT" =~ \"notebook_path\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" ]]; then
+  FILE_PATH="${BASH_REMATCH[1]}"
+fi
+if [[ -n "$FILE_PATH" && -n "$MARKER_SCOPE_ROOT" ]]; then
+  [[ "$FILE_PATH" != /* ]] && FILE_PATH="$(pwd)/$FILE_PATH"
+  case "$FILE_PATH" in
+    "$MARKER_SCOPE_ROOT"/.claude/worktrees/*)
+      # A subagent's isolated tree — not this session's recordable work.
+      [[ "$MARKER_IN_WORKTREE" == true ]] || exit 0
+      ;;
+    "$MARKER_SCOPE_ROOT"/*)
+      : # inside the project — recordable
+      ;;
+    *)
+      exit 0 # outside the project (auto-memory, scratchpad, other repos)
+      ;;
+  esac
+fi
 
 mkdir -p "$TWINING_DIR/.sessions" 2>/dev/null || exit 0
 date +%s > "$TWINING_DIR/.sessions/$SESSION_ID" 2>/dev/null || true

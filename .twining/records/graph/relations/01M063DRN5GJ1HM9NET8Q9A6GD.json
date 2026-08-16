@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T20:15:18.693Z",
+  "id": "01M063DRN5GJ1HM9NET8Q9A6GD",
+  "properties": {
+    "decision_summary": "Chose to post the lifecycle-revert warning from INSIDE ingestRecords (db row + RecordExporter mirror file) rather than callbacks from the two call sites",
+    "origin": "derived"
+  },
+  "source": "01KX2Q8G4HW36DZMBDCQZMKRKE",
+  "target": "01M063DRN2N7MMAMJ7AKT7C5KF",
+  "type": "decided_by"
+}

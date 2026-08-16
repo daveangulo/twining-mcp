@@ -3,8 +3,8 @@
   "id": "01KY6EEVNYT9CWMATFTKJ1KYGE",
   "name": "src/storage/sqlite/sqlite-stores.ts",
   "properties": {
-    "scope": "src/,src/engine/relation-dedup.ts,src/storage/,src/storage/handoff-store.ts"
+    "scope": "project,src/,src/engine/relation-dedup.ts,src/storage/,src/storage/handoff-store.ts"
   },
   "type": "file",
-  "updated_at": "2026-08-16T05:06:26.465Z"
+  "updated_at": "2026-08-16T20:15:19.080Z"
 }

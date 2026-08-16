@@ -9,7 +9,11 @@
     "commit_sha": "29f864e596567fd5985f2b8a07653778cb539c46",
     "recorded_at": "2026-08-16T08:16:18.560Z"
   },
+  "resolution_note": "Resolved by session record: Built the 2.15.0 batch TDD (1643 green): cap re-baselined to the 2.14.0 snapshot, activity-marker edit-path filter (no stamps for out-of-project or subagent-worktree edits; worktree sessions still …",
+  "resolved_at": "2026-08-16T20:15:18.233Z",
+  "resolved_by": "main",
   "scope": "src/",
+  "status": "resolved",
   "summary": "MCP-visible surface for lifecycle_reverts (status or housekeeping result field) so agents — not just log-tailing humans — see discarded lifecycle writes; log parity shipped in 2.14.0",
   "tags": [
     "session-finding"

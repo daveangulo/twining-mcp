@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T20:15:18.814Z",
+  "id": "01M063DRRYK83GYWCZDQ92KZZB",
+  "properties": {
+    "decision_summary": "Chose a targeted (source, target) SQL lookup with a new composite index for the relation upsert, filtering type in JS",
+    "origin": "derived"
+  },
+  "source": "01KJQ647P1MGGRERHA1JH2BE8T",
+  "target": "01M063DRR2D8A3ZCHWSFEXJB8J",
+  "type": "decided_by"
+}

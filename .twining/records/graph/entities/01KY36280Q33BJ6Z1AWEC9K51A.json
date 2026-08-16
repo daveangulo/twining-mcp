@@ -3,8 +3,8 @@
   "id": "01KY36280Q33BJ6Z1AWEC9K51A",
   "name": "plugin/hooks/activity-marker-hook.sh",
   "properties": {
-    "scope": "plugin/hooks/"
+    "scope": "plugin/hooks/,project"
   },
   "type": "file",
-  "updated_at": "2026-07-21T20:32:20.175Z"
+  "updated_at": "2026-08-16T20:15:19.073Z"
 }

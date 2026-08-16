@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T20:15:18.940Z",
+  "id": "01M063DRWWXFD82FADANYCER0M",
+  "properties": {
+    "decision_summary": "Fixed cyclic chain_length by counting only will-be-visited nodes",
+    "origin": "derived"
+  },
+  "source": "01KWMNHR463F6JEF4SF8BQ84CK",
+  "target": "01M063DRWJFXA1T5JKMRA2SBNG",
+  "type": "decided_by"
+}

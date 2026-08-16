@@ -272,6 +272,7 @@ describe.skipIf(!HAS_SQLITE)("record ingest", () => {
       deleted: 0,
       skipped: 0,
       lifecycle_reverts: 0,
+      lifecycle_revert_details: [],
     });
     db.close();
   });
@@ -298,12 +299,67 @@ describe.skipIf(!HAS_SQLITE)("record ingest", () => {
     const db = openDatabase(twA);
     const stats = ingestRecords(db, twA);
     // File-wins still applies (the W2.3 invariant is untouched) — but the
-    // downgrade is counted instead of silent.
+    // downgrade is counted instead of silent, with per-record detail.
     expect(stats.lifecycle_reverts).toBe(1);
+    expect(stats.lifecycle_revert_details).toEqual([
+      { id: decision.id, from: "overridden", to: "provisional" },
+    ]);
     expect(stats.updated).toBe(1);
     db.close();
     const after = await stores.decisionStore.get(decision.id);
     expect(after!.status).toBe("provisional");
+  });
+
+  it("posts a blackboard warning (db row + mirror file) when ingest reverts a lifecycle write", async () => {
+    const twA = path.join(dirA, ".twining");
+    fs.mkdirSync(twA, { recursive: true });
+    const stores = createStores(twA, sqliteConfig());
+    const { decision } = await seed(stores);
+    await stores.decisionStore.updateStatus(decision.id, "overridden", {
+      overridden_by: "the-author",
+      override_reason: "withdrawn",
+    });
+    const file = path.join(twA, "records", "decisions", `${decision.id}.json`);
+    const reverted = JSON.parse(fs.readFileSync(file, "utf-8")) as Record<string, unknown>;
+    reverted.status = "provisional";
+    delete reverted.overridden_by;
+    delete reverted.override_reason;
+    fs.writeFileSync(file, JSON.stringify(reverted));
+
+    // Restart-shaped: createStores runs the startup ingest, which reverts
+    // the row and must leave an agent-visible warning behind.
+    const stores2 = createStores(twA, sqliteConfig());
+    const { entries } = await stores2.blackboardStore.read();
+    const warning = entries.find(
+      (e) => e.entry_type === "warning" && e.tags?.includes("lifecycle-revert"),
+    );
+    expect(warning).toBeDefined();
+    expect(warning!.summary).toMatch(/reverted 1 decision lifecycle write/);
+    expect(warning!.detail).toContain(decision.id);
+    expect(warning!.detail).toContain('"overridden" -> "provisional"');
+    // Mirror file exists, so the warning survives future ingests.
+    expect(
+      fs.existsSync(
+        path.join(
+          twA,
+          "records",
+          "posts",
+          warning!.timestamp.slice(0, 7),
+          `${warning!.id}.json`,
+        ),
+      ),
+    ).toBe(true);
+    // Re-ingest is converged: no second warning.
+    const db = openDatabase(twA);
+    const stats = ingestRecords(db, twA);
+    expect(stats.lifecycle_reverts).toBe(0);
+    db.close();
+    const again = await stores2.blackboardStore.read();
+    expect(
+      again.entries.filter(
+        (e) => e.entry_type === "warning" && e.tags?.includes("lifecycle-revert"),
+      ),
+    ).toHaveLength(1);
   });
 
   it("does not count sanctioned downgrades (a teammate's reconsider arriving via git)", async () => {
@@ -418,6 +474,7 @@ describe.skipIf(!HAS_SQLITE)("record ingest", () => {
       deleted: 0,
       skipped: 0,
       lifecycle_reverts: 0,
+      lifecycle_revert_details: [],
     });
 
     // records/ exists but a single kind dir is missing → that kind untouched.

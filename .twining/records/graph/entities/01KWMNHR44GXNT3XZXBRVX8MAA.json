@@ -3,8 +3,8 @@
   "id": "01KWMNHR44GXNT3XZXBRVX8MAA",
   "name": "src/storage/sync/record-ingest.ts",
   "properties": {
-    "scope": "docs/FOUNDATION-PLAN.md,src/"
+    "scope": "docs/FOUNDATION-PLAN.md,project,src/"
   },
   "type": "file",
-  "updated_at": "2026-08-16T08:16:18.499Z"
+  "updated_at": "2026-08-16T20:15:19.083Z"
 }

@@ -367,6 +367,104 @@ describe("activity-marker-hook.sh (#43)", () => {
     ).toBe(false);
   });
 
+  it("stamps for edits inside the project (absolute and relative paths)", () => {
+    repo = makeRepo({ initTwining: true });
+    // realpath: the hook compares against its physical $(pwd) (macOS tmpdir
+    // is a /var -> /private/var symlink).
+    const physicalRoot = fs.realpathSync(repo.dir);
+    const marker = path.join(repo.dir, ".twining", ".sessions", "sess-abc");
+    runHook({
+      script: "activity-marker-hook.sh",
+      stdin: JSON.stringify({
+        session_id: "sess-abc",
+        tool_name: "Edit",
+        tool_input: { file_path: path.join(physicalRoot, "src", "a.ts") },
+      }),
+      cwd: repo.dir,
+    });
+    expect(fs.existsSync(marker)).toBe(true);
+    fs.rmSync(marker);
+    runHook({
+      script: "activity-marker-hook.sh",
+      stdin: JSON.stringify({
+        session_id: "sess-abc",
+        tool_name: "Edit",
+        tool_input: { file_path: "src/a.ts" },
+      }),
+      cwd: repo.dir,
+    });
+    expect(fs.existsSync(marker)).toBe(true);
+  });
+
+  it("does not stamp for edits outside the project root (auto-memory, scratchpads)", () => {
+    repo = makeRepo({ initTwining: true });
+    const result = runHook({
+      script: "activity-marker-hook.sh",
+      stdin: JSON.stringify({
+        session_id: "sess-abc",
+        tool_name: "Write",
+        tool_input: {
+          file_path: path.join(os.tmpdir(), "claude-memory", "MEMORY.md"),
+        },
+      }),
+      cwd: repo.dir,
+    });
+    expect(result.exitCode).toBe(0);
+    expect(
+      fs.existsSync(path.join(repo.dir, ".twining", ".sessions", "sess-abc")),
+    ).toBe(false);
+  });
+
+  it("does not stamp for subagent worktree paths under .claude/worktrees/", () => {
+    repo = makeRepo({ initTwining: true });
+    const result = runHook({
+      script: "activity-marker-hook.sh",
+      stdin: JSON.stringify({
+        session_id: "sess-abc",
+        tool_name: "Edit",
+        tool_input: {
+          file_path: path.join(
+            repo.dir,
+            ".claude",
+            "worktrees",
+            "wf_123-4",
+            "src",
+            "a.ts",
+          ),
+        },
+      }),
+      cwd: repo.dir,
+    });
+    expect(result.exitCode).toBe(0);
+    expect(
+      fs.existsSync(path.join(repo.dir, ".twining", ".sessions", "sess-abc")),
+    ).toBe(false);
+  });
+
+  it("a session RUNNING IN a linked worktree still stamps for its own edits", () => {
+    const fx = makeWorktreeFixture("twining-marker-wt-");
+    try {
+      runHook({
+        script: "activity-marker-hook.sh",
+        stdin: JSON.stringify({
+          session_id: "wt-sess",
+          tool_name: "Edit",
+          tool_input: {
+            file_path: path.join(fs.realpathSync(fx.wt), "src", "a.ts"),
+          },
+        }),
+        cwd: fx.wt,
+      });
+      // Marker lands in the SHARED main store — the worktree session's work
+      // is recordable there (cmux worktree store sharing).
+      expect(
+        fs.existsSync(path.join(fx.main, ".twining", ".sessions", "wt-sess")),
+      ).toBe(true);
+    } finally {
+      fx.cleanup();
+    }
+  });
+
   it("no .twining/: writes nothing, exits 0", () => {
     repo = makeRepo({ initTwining: false });
     const result = runHook({

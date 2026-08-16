@@ -434,12 +434,18 @@ export class SqliteGraphStore implements IGraphStore {
     // check-then-act lets two processes both miss and both insert,
     // recreating the duplicate-edge defect this upsert exists to fix.
     return withWriteTxn(this.db, () => {
-    const existing = this.getRelationsSync().find(
-      (r) =>
-        r.source === sourceEntity.id &&
-        r.target === targetEntity.id &&
-        r.type === input.type,
-    );
+    // Targeted (source, target) lookup on the composite index — the full
+    // table scan made every relation write O(N) (field follow-up). ORDER BY
+    // seq preserves the seq-first merge target the dedup pass and live
+    // upserts agree on; the type filter happens in JS since type lives in
+    // the data JSON.
+    const existing = this.db
+      .prepare(
+        "SELECT data FROM relations WHERE source = ? AND target = ? ORDER BY seq",
+      )
+      .all(sourceEntity.id, targetEntity.id)
+      .map((r) => JSON.parse(r.data as string) as Relation)
+      .find((r) => r.type === input.type);
     if (existing) {
       const merged: Relation = {
         ...existing,

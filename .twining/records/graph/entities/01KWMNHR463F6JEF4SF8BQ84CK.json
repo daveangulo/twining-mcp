@@ -3,8 +3,8 @@
   "id": "01KWMNHR463F6JEF4SF8BQ84CK",
   "name": "src/storage/sqlite/db.ts",
   "properties": {
-    "scope": "src/storage/sync/"
+    "scope": "project,src/storage/sync/"
   },
   "type": "file",
-  "updated_at": "2026-07-03T19:59:38.913Z"
+  "updated_at": "2026-08-16T20:15:19.076Z"
 }

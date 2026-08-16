@@ -1649,9 +1649,12 @@ describe("DecisionEngine.why — lineage resolution (field D13 ask 3)", () => {
     await decisionStore.updateStatus(a.id, "superseded", { superseded_by: b.id });
 
     const result = await decisionEngine.why("src/auth/", { lineage: true });
-    // Both are retired; the walker must terminate and report SOME head.
+    // Both are retired; the walker must terminate and report SOME head —
+    // and the cycle's wrap-around edge must not inflate chain_length (the
+    // 2-node cycle has exactly 2 distinct records).
     for (const e of result.superseded_excluded!) {
       expect(e.lineage_head).toBeDefined();
+      expect(e.lineage_head!.chain_length).toBe(2);
     }
   });
 });

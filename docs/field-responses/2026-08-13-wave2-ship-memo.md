@@ -1,6 +1,6 @@
-# Twining → field memo: the wave-2 fixes have shipped (2.8.0–2.14.0)
+# Twining → field memo: the wave-2 fixes have shipped (2.8.0–2.15.0)
 
-**STATUS: LIVE** — archive when your store runs server ≥2.14 / plugin ≥1.32
+**STATUS: LIVE** — archive when your store runs server ≥2.15 / plugin ≥1.33
 and the CLAUDE.md retirements below are applied. Companion to the full
 disposition (`2026-08-12-wave2-response.md`, including its measurements-back
 addendum); this memo is only what you need to *act*.
@@ -25,8 +25,9 @@ code — the fix set below includes those.
 | 2.12.0 | 1.30.0 | **Amend-candidates reporter (re-scoped D13 ask 1)**: `twining_housekeeping({amend_candidates: true})` proposes candidate files for empty-list decisions — report-only by construction, root-contained, all caps reported |
 | 2.13.0 | 1.31.0 | **Legacy relation-dedup pass**: `twining_housekeeping({dedup_relations: true})` removes your pre-2.11 duplicate `(source, target, type)` edges — survivor is the edge live upserts already merge into (seq-first), properties fold in under origin precedence. Hardened pre-ship by its own review round: duplicates with non-unique ids are skipped and counted (`skipped_id_collisions`, never over-deletes), a dangling-endpoint group is skipped and counted (`failed_groups`/`errors`) instead of aborting the pass, and a requested pass that cannot run reports `relation_dedup_error` — never a silent no-op. Preview by default; execute applies |
 | 2.14.0 | 1.32.0 | **D14/D15 addendum dispositions (both investigated on receipt, both `field-misdiagnosis-real-defect-elsewhere` — see the section below)**: promote is now attributed (`promoted_by`/`promoted_at` on the record; additive `already_active_detail` in the result so a repeat/concurrent promote is distinguishable from "never provisional"); `updateStatus` reports `persisted` instead of silently no-opping on a missing target; `twining_override` reads back post-state (additive `status`/`overridden_by` in the result) and errors `PERSIST_FAILED` on a lost write; ingest counts `lifecycle_reverts` when file-wins downgrades an overridden/superseded decision (the statuses with no sanctioned undo verb — reconsider and unarchive arriving via git never fire it); `twining_unarchive` reports `assumed_active` + a warning post for marker-less pre-2.7 archives |
+| 2.15.0 | 1.33.0 | **Revert visibility completed + housekeeping**: an ingest that reverts a lifecycle write now posts a blackboard WARNING naming the reverted ids (it reaches the agent via assemble, not just the server log); relation writes use an indexed `(source, target)` lookup instead of an O(N) scan; cyclic `chain_length` no longer overcounts; the Gate-2 stop hook no longer false-fires on edits outside the project or on subagent worktree writes. No action needed beyond the cumulative upgrade |
 
-Upgrade: `twining-mcp@latest` (2.14.0) + plugin 1.32.0. Releases are
+Upgrade: `twining-mcp@latest` (2.15.0) + plugin 1.33.0. Releases are
 cumulative — one jump gets everything.
 
 ## Your D14/D15 addendum: dispositions and two questions back

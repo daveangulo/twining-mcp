@@ -341,6 +341,52 @@ describe.skipIf(!HAS_SQLITE)("sqlite backend", () => {
       expect(await store.getRelations()).toHaveLength(2);
     });
 
+    it("upsert lookup is indexed and merges into the seq-first row OF THE SAME TYPE", async () => {
+      // The composite index backs the targeted (source, target) lookup that
+      // replaced the O(N) full-table scan.
+      const idx = db
+        .prepare(
+          "SELECT name FROM sqlite_master WHERE type = 'index' AND name = 'idx_relations_source_target'",
+        )
+        .get();
+      expect(idx).toBeTruthy();
+
+      const store = new SqliteGraphStore(db);
+      const a = await store.addEntity({ name: "src/a.ts", type: "file" });
+      const b = await store.addEntity({ name: "D1", type: "concept" });
+      // Manufacture interleaved legacy duplicates of TWO types on one pair —
+      // the upsert must merge into the seq-first row of the MATCHING type,
+      // not the seq-first row overall.
+      const ins = db.prepare(
+        "INSERT INTO relations (id, source, target, data) VALUES (?, ?, ?, ?)",
+      );
+      const mk = (id: string, type: string, properties: Record<string, string>) => {
+        const row = {
+          id,
+          source: a.id,
+          target: b.id,
+          type,
+          properties,
+          created_at: new Date().toISOString(),
+        };
+        ins.run(id, a.id, b.id, JSON.stringify(row));
+      };
+      mk("T1", "tested_by", { t: "first" });
+      mk("D1", "decided_by", { d: "first" });
+      mk("D2", "decided_by", { d: "second" });
+
+      const merged = await store.addRelation({
+        source: a.id,
+        target: b.id,
+        type: "decided_by",
+        properties: { extra: "x" },
+      });
+      expect(merged.id).toBe("D1");
+      expect(merged.properties).toEqual({ d: "first", extra: "x" });
+      // Nothing inserted; the tested_by row untouched.
+      expect(await store.getRelations()).toHaveLength(3);
+    });
+
     it("removeEntities cascades relations and reports counts", async () => {
       const store = new SqliteGraphStore(db);
       const a = await store.addEntity({ name: "a", type: "module" });
