@@ -1,0 +1,31 @@
+{
+  "affected_files": [
+    "plugin/hooks/activity-marker-hook.sh",
+    "src/storage/sync/record-ingest.ts",
+    "test/hooks/stop-hook.test.ts",
+    "test/record-sync.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Correctness-lens round fixed (1644 green): TWINING_PROJECT+worktree sessions stamp again (mini worktree-walk sets a second recordable root), dedupe excludes resolved warnings, check+insert wrapped in one write txn, per-scope isolation with compensating delete on mirror failure, read-only skip. Shipping 2.15.0 now.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M06E7ZB4X7842FMPQFJA85TW",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8eb48f292e5ae67e6dc6d91528d41defd7a04baf",
+    "recorded_at": "2026-08-16T23:24:23.250Z"
+  },
+  "rationale": "the half-write (db row in, mirror refused) would self-delete on the next ingest; counter and log still fire.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Chose isReadOnly() skip for the warning post in FORMAT_VERSION_TOO_NEW mode",
+  "timestamp": "2026-08-16T23:24:23.268Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T23:24:23.110Z",
+  "id": "01M06E7Z666B5B3FGH1D0PY9H2",
+  "properties": {
+    "decision_summary": "Chose a mini linked-worktree walk in the hook's TWINING_PROJECT branch setting MARKER_WT_ROOT as a second recordable root",
+    "origin": "derived"
+  },
+  "source": "01KWMNHR44GXNT3XZXBRVX8MAA",
+  "target": "01M06E7Z5Z9FH4XAEV0Z0BJV98",
+  "type": "decided_by"
+}

@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Correctness-lens round fixed (1644 green): TWINING_PROJECT+worktree sessions stamp again (mini worktree-walk sets a second recordable root), dedupe excludes resolved warnings, check+insert wrapped in one write txn, per-scope isolation with compensating delete on mirror failure, read-only skip. Shipping 2.15.0 now.\nDecisions: Chose a mini linked-worktree walk in the hook's TWINING_PROJECT branch setting MARKER_WT_ROOT as a second recordable root — an explicitly-targeted session hosted in a worktree had every edit classified as a subagent tree, silently disabling Gate-2; the walk reuses the same .git-file parse and the second root is only consulted when the primary match fails.; Chose dedupe-inside-withWriteTxn with resolved-exclusion, per-scope try/catch, and a compensating DELETE when the mirror write fails — txn closes the concurrent-startup double-post; resolved-exclusion stops a resolved warning masking the recurrence the feature exists to surface; the compensating delete keeps db and tree convergent instead of letting deletion propagation silently eat the row. Mirror-first ordering was rejected: a race loser's orphan mirror file would resurrect as a duplicate via file-wins insert.; Chose isReadOnly() skip for the warning post in FORMAT_VERSION_TOO_NEW mode — the half-write (db row in, mirror refused) would self-delete on the next ingest; counter and log still fire.; Chose to ship after two complete review rounds (both lenses, all confirmed findings fixed and test-pinned) rather than recurse a third — the remaining accepted looseness (worktree-hosted sessions stamping for sibling agent trees under the same worktrees dir) was adversarially REFUTED as a defect, and the crash-window between txn-commit and mirror-write is documented, rare, and loudly logged.\nFindings: 9th consecutive productive review round — the correctness lens against the FIXED head caught two majors that were regressions in the previous round's own fixes; reviewing fix-rounds is as load-bearing as reviewing features",
+  "entry_type": "status",
+  "id": "01M06E7Z0QXS5F25832PFCPSMX",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8eb48f292e5ae67e6dc6d91528d41defd7a04baf",
+    "recorded_at": "2026-08-16T23:24:22.917Z"
+  },
+  "scope": "src/",
+  "summary": "Correctness-lens round fixed (1644 green): TWINING_PROJECT+worktree sessions stamp again (mini worktree-walk sets a second recordable root), dedupe excludes resolved warnings, check+insert wrapped …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-16T23:24:22.935Z"
+}

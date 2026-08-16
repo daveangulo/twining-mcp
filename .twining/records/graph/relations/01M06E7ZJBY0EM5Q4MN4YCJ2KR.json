@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T23:24:23.499Z",
+  "id": "01M06E7ZJBY0EM5Q4MN4YCJ2KR",
+  "properties": {
+    "decision_summary": "Chose to ship after two complete review rounds (both lenses, all confirmed findings fixed and test-pinned) rather than recurse a third",
+    "origin": "derived"
+  },
+  "source": "01M014D4DHBBHJVHYHDBD3F7V9",
+  "target": "01M06E7ZHV39CNB2FXZW8H8EAM",
+  "type": "decided_by"
+}

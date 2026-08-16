@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T23:24:23.366Z",
+  "id": "01M06E7ZE6N1PVEHJHBV868B1A",
+  "properties": {
+    "decision_summary": "Chose isReadOnly() skip for the warning post in FORMAT_VERSION_TOO_NEW mode",
+    "origin": "derived"
+  },
+  "source": "01KWMNHR44GXNT3XZXBRVX8MAA",
+  "target": "01M06E7ZDZQE2JKNA2DSRG5KG6",
+  "type": "decided_by"
+}

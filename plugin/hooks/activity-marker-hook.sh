@@ -46,14 +46,51 @@ while [[ "$SESSION_ID" == .* ]]; do SESSION_ID="${SESSION_ID#.}"; done
 # the main checkout has no .twining, bind the worktree's own .twining if
 # present and stop — never walk past the worktree into an ancestor's
 # store, which the server (resolving from cwd) would never bind.
+# Physical-path canonicalization: resolve through the nearest EXISTING
+# ancestor (the file itself may not exist yet on a Write) and reattach the
+# rest. Without this, a logical/physical form mismatch (e.g. a project under
+# a symlinked root: /var -> /private/var, symlinked homes) makes every
+# in-project edit look out-of-project and silently disables Gate-2 stamping
+# — the opposite of this filter's fail-toward-gate-integrity bias.
+canonpath() {
+  local p="$1" suffix="" resolved
+  while [[ -n "$p" && "$p" == */* && ! -d "$p" ]]; do
+    suffix="/$(basename "$p")$suffix"
+    p="$(dirname "$p")"
+  done
+  resolved=$(cd "$p" 2>/dev/null && pwd -P) || { printf '%s' "$1"; return; }
+  printf '%s%s' "$resolved" "$suffix"
+}
+
 TWINING_DIR=""
 MARKER_SCOPE_ROOT=""
+MARKER_WT_ROOT=""
 MARKER_IN_WORKTREE=false
 if [[ -n "${TWINING_PROJECT:-}" ]]; then
   PROJECT_ROOT="$TWINING_PROJECT"
   [[ "$PROJECT_ROOT" != /* ]] && PROJECT_ROOT="$(pwd)/$PROJECT_ROOT"
   [[ -d "$PROJECT_ROOT/.twining" ]] && TWINING_DIR="$PROJECT_ROOT/.twining"
   MARKER_SCOPE_ROOT="$PROJECT_ROOT"
+  # A session may run IN a linked worktree while explicitly targeting the
+  # main store via TWINING_PROJECT (first-class targeting; also the
+  # pre-1.20.0 cmux workaround). Its own edits live under the WORKTREE
+  # root and must still stamp — otherwise Gate-2 is silently off for the
+  # whole session (review finding).
+  WDIR="$(pwd)"
+  while [[ "$WDIR" != "/" ]]; do
+    if [[ -f "$WDIR/.git" ]]; then
+      WGITDIR=""
+      IFS= read -r WGITDIR < "$WDIR/.git" || true
+      WGITDIR="${WGITDIR%$'\r'}"
+      if [[ "$WGITDIR" == "gitdir: "*/.git/worktrees/?* ]]; then
+        MARKER_WT_ROOT="$WDIR"
+        MARKER_IN_WORKTREE=true
+      fi
+      break
+    fi
+    [[ -d "$WDIR/.git" ]] && break
+    WDIR="$(dirname "$WDIR")"
+  done
 else
   DIR="$(pwd)"
   while [[ "$DIR" != "/" ]]; do
@@ -103,38 +140,32 @@ elif [[ "$HOOK_INPUT" =~ \"notebook_path\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" 
   FILE_PATH="${BASH_REMATCH[1]}"
 fi
 
-# Physical-path canonicalization: resolve through the nearest EXISTING
-# ancestor (the file itself may not exist yet on a Write) and reattach the
-# rest. Without this, a logical/physical form mismatch (e.g. a project under
-# a symlinked root: /var -> /private/var, symlinked homes) makes every
-# in-project edit look out-of-project and silently disables Gate-2 stamping
-# — the opposite of this filter's fail-toward-gate-integrity bias.
-canonpath() {
-  local p="$1" suffix="" resolved
-  while [[ -n "$p" && "$p" == */* && ! -d "$p" ]]; do
-    suffix="/$(basename "$p")$suffix"
-    p="$(dirname "$p")"
-  done
-  resolved=$(cd "$p" 2>/dev/null && pwd -P) || { printf '%s' "$1"; return; }
-  printf '%s%s' "$resolved" "$suffix"
-}
-
 if [[ -n "$FILE_PATH" && -n "$MARKER_SCOPE_ROOT" ]]; then
   [[ "$FILE_PATH" != /* ]] && FILE_PATH="$(pwd)/$FILE_PATH"
   FILE_PATH="$(canonpath "$FILE_PATH")"
   MARKER_SCOPE_ROOT="$(canonpath "${MARKER_SCOPE_ROOT%/}")"
+  [[ -n "$MARKER_WT_ROOT" ]] && MARKER_WT_ROOT="$(canonpath "${MARKER_WT_ROOT%/}")"
+  ALLOW=false
   case "$FILE_PATH" in
     "$MARKER_SCOPE_ROOT"/.claude/worktrees/*)
-      # A subagent's isolated tree — not this session's recordable work.
-      [[ "$MARKER_IN_WORKTREE" == true ]] || exit 0
+      # A subagent's isolated tree — not this session's recordable work,
+      # unless this session itself runs in a linked worktree there.
+      [[ "$MARKER_IN_WORKTREE" == true ]] && ALLOW=true
       ;;
     "$MARKER_SCOPE_ROOT"/*)
-      : # inside the project — recordable
-      ;;
-    *)
-      exit 0 # outside the project (auto-memory, scratchpad, other repos)
+      ALLOW=true # inside the project — recordable
       ;;
   esac
+  # TWINING_PROJECT session hosted in a linked worktree: its own tree is a
+  # second recordable root (may live outside the targeted project root).
+  if [[ "$ALLOW" != true && -n "$MARKER_WT_ROOT" ]]; then
+    case "$FILE_PATH" in
+      "$MARKER_WT_ROOT"/*) ALLOW=true ;;
+    esac
+  fi
+  # Everything else is outside the project (auto-memory, scratchpads,
+  # other repos) — not this store's work.
+  [[ "$ALLOW" == true ]] || exit 0
 fi
 
 mkdir -p "$TWINING_DIR/.sessions" 2>/dev/null || exit 0

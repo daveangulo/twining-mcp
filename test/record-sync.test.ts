@@ -385,6 +385,29 @@ describe.skipIf(!HAS_SQLITE)("record ingest", () => {
         (e) => e.entry_type === "warning" && e.tags?.includes("lifecycle-revert"),
       ),
     ).toHaveLength(1);
+
+    // A RESOLVED warning must NOT mask a recurring revert — resolving is the
+    // natural agent response, and the recurrence is exactly what this
+    // feature exists to surface (review finding).
+    await stores2.blackboardStore.resolve([warning!.id], { by: "test" });
+    await stores2.decisionStore.updateStatus(decision.id, "overridden", {
+      overridden_by: "the-author",
+      override_reason: "withdrawn a third time",
+    });
+    const rr = JSON.parse(fs.readFileSync(file, "utf-8")) as Record<string, unknown>;
+    rr.status = "provisional";
+    delete rr.overridden_by;
+    delete rr.override_reason;
+    fs.writeFileSync(file, JSON.stringify(rr));
+    const db3 = openDatabase(twA);
+    expect(ingestRecords(db3, twA).lifecycle_reverts).toBe(1);
+    db3.close();
+    const afterResolve = await stores2.blackboardStore.read();
+    const revertWarnings = afterResolve.entries.filter(
+      (e) => e.entry_type === "warning" && e.tags?.includes("lifecycle-revert"),
+    );
+    expect(revertWarnings).toHaveLength(2);
+    expect(revertWarnings.filter((e) => e.status !== "resolved")).toHaveLength(1);
   });
 
   it("does not count sanctioned downgrades (a teammate's reconsider arriving via git)", async () => {

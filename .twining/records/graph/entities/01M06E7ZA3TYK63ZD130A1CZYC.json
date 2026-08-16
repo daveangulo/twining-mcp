@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T23:24:23.235Z",
+  "id": "01M06E7ZA3TYK63ZD130A1CZYC",
+  "name": "01M06E7Z72152TC2TVE3DGDHG0",
+  "properties": {
+    "scope": "src/",
+    "summary": "Chose dedupe-inside-withWriteTxn with resolved-exclusion, per-scope try/catch, and a compensating DELETE when the mirror write fails"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-16T23:24:23.235Z"
+}

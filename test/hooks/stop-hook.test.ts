@@ -441,6 +441,29 @@ describe("activity-marker-hook.sh (#43)", () => {
     ).toBe(false);
   });
 
+  it("TWINING_PROJECT-targeted session running IN a linked worktree still stamps (Gate-2 not silently off)", () => {
+    const fx = makeWorktreeFixture("twining-marker-tp-wt-");
+    try {
+      runHook({
+        script: "activity-marker-hook.sh",
+        stdin: JSON.stringify({
+          session_id: "tp-wt-sess",
+          tool_name: "Edit",
+          tool_input: { file_path: path.join(fx.wt, "src", "a.ts") },
+        }),
+        env: { TWINING_PROJECT: fx.main },
+        cwd: fx.wt,
+      });
+      expect(
+        fs.existsSync(
+          path.join(fx.main, ".twining", ".sessions", "tp-wt-sess"),
+        ),
+      ).toBe(true);
+    } finally {
+      fx.cleanup();
+    }
+  });
+
   it("a session RUNNING IN a linked worktree still stamps for its own edits", () => {
     const fx = makeWorktreeFixture("twining-marker-wt-");
     try {

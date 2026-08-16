@@ -22,6 +22,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { RecordExporter, stableStringify } from "./record-export.js";
 import { generateId } from "../../utils/ids.js";
+import { isReadOnly } from "../file-store.js";
 import type { SqliteDatabase } from "../sqlite/db.js";
 import { withWriteTxn } from "../sqlite/db.js";
 import type {
@@ -305,33 +306,24 @@ export function ingestRecords(
   // assembles the gates mandate (review finding). The direct INSERT skips
   // embedding; the scope lane, not the semantic lane, is the surfacing
   // path. Non-fatal by design.
-  if (stats.lifecycle_revert_details.length > 0) {
-    try {
-      const byScope = new Map<string, typeof stats.lifecycle_revert_details>();
-      for (const d of stats.lifecycle_revert_details) {
-        const list = byScope.get(d.scope);
-        if (list) list.push(d);
-        else byScope.set(d.scope, [d]);
-      }
-      const exporter = new RecordExporter(twiningDir);
-      for (const [scope, details] of byScope) {
+  // Read-only mode (FORMAT_VERSION_TOO_NEW): the mirror write would be
+  // refused by assertWritable while the direct db INSERT is not — a db-only
+  // row the next ingest's deletion propagation silently removes. Skip the
+  // post entirely; the counter and log lines above still fire.
+  if (stats.lifecycle_revert_details.length > 0 && !isReadOnly()) {
+    const byScope = new Map<string, typeof stats.lifecycle_revert_details>();
+    for (const d of stats.lifecycle_revert_details) {
+      const list = byScope.get(d.scope);
+      if (list) list.push(d);
+      else byScope.set(d.scope, [d]);
+    }
+    const exporter = new RecordExporter(twiningDir);
+    // Per-scope isolation: one scope's failure must not abandon the rest.
+    for (const [scope, details] of byScope) {
+      try {
         const detail = details
           .map((r) => `${r.id}: "${r.from}" -> "${r.to}"`)
           .join("\n");
-        // Ping-pong dedupe: the same revert re-occurring (re-override, git
-        // discards it again) must not pile up identical open warnings —
-        // open warnings are archive-exempt, so the pile would be permanent.
-        // Identity is (scope, detail); a different id set posts fresh.
-        const duplicate = db
-          .prepare(
-            "SELECT data FROM blackboard WHERE entry_type = 'warning' AND scope = ?",
-          )
-          .all(scope)
-          .map((r) => JSON.parse(r.data as string) as BlackboardEntry)
-          .some(
-            (e) => e.tags?.includes("lifecycle-revert") && e.detail === detail,
-          );
-        if (duplicate) continue;
         const entry: BlackboardEntry = {
           id: generateId(),
           timestamp: new Date().toISOString(),
@@ -345,22 +337,53 @@ export function ingestRecords(
           ),
           detail,
         };
-        db.prepare(
-          "INSERT INTO blackboard (id, entry_type, scope, timestamp, data) VALUES (?, ?, ?, ?, ?)",
-        ).run(
-          entry.id,
-          entry.entry_type,
-          entry.scope,
-          entry.timestamp,
-          JSON.stringify(entry),
+        // Ping-pong dedupe INSIDE one write txn — two servers starting
+        // concurrently after the same git operation must not double-post
+        // (the unwrapped check-then-act hazard the relation upsert's own
+        // comment names). Identity is (scope, detail) among UNRESOLVED
+        // warnings: a resolved predecessor must not mask a recurrence —
+        // that recurrence is exactly what this warning exists to surface.
+        const inserted = withWriteTxn(db, () => {
+          const duplicate = db
+            .prepare(
+              "SELECT data FROM blackboard WHERE entry_type = 'warning' AND scope = ?",
+            )
+            .all(scope)
+            .map((r) => JSON.parse(r.data as string) as BlackboardEntry)
+            .some(
+              (e) =>
+                e.tags?.includes("lifecycle-revert") &&
+                e.status !== "resolved" &&
+                e.detail === detail,
+            );
+          if (duplicate) return false;
+          db.prepare(
+            "INSERT INTO blackboard (id, entry_type, scope, timestamp, data) VALUES (?, ?, ?, ?, ?)",
+          ).run(
+            entry.id,
+            entry.entry_type,
+            entry.scope,
+            entry.timestamp,
+            JSON.stringify(entry),
+          );
+          return true;
+        });
+        if (!inserted) continue;
+        try {
+          exporter.post(entry);
+        } catch (err) {
+          // Mirror write failed: a db-only row would be silently deleted by
+          // the next ingest's deletion propagation — remove it now so db
+          // and tree never diverge, and surface the loss loudly.
+          db.prepare("DELETE FROM blackboard WHERE id = ?").run(entry.id);
+          throw err;
+        }
+      } catch (err) {
+        console.error(
+          `[twining] lifecycle-revert warning post failed for scope "${scope}" (non-fatal):`,
+          err,
         );
-        exporter.post(entry);
       }
-    } catch (err) {
-      console.error(
-        "[twining] lifecycle-revert warning post failed (non-fatal):",
-        err,
-      );
     }
   }
 

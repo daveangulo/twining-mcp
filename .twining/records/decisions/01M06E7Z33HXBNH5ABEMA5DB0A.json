@@ -1,0 +1,31 @@
+{
+  "affected_files": [
+    "plugin/hooks/activity-marker-hook.sh",
+    "src/storage/sync/record-ingest.ts",
+    "test/hooks/stop-hook.test.ts",
+    "test/record-sync.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Correctness-lens round fixed (1644 green): TWINING_PROJECT+worktree sessions stamp again (mini worktree-walk sets a second recordable root), dedupe excludes resolved warnings, check+insert wrapped in one write txn, per-scope isolation with compensating delete on mirror failure, read-only skip. Shipping 2.15.0 now.",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01M06E7Z33HXBNH5ABEMA5DB0A",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8eb48f292e5ae67e6dc6d91528d41defd7a04baf",
+    "recorded_at": "2026-08-16T23:24:22.992Z"
+  },
+  "rationale": "an explicitly-targeted session hosted in a worktree had every edit classified as a subagent tree, silently disabling Gate-2; the walk reuses the same .git-file parse and the second root is only consulted when the primary match fails.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Chose a mini linked-worktree walk in the hook's TWINING_PROJECT branch setting MARKER_WT_ROOT as a second recordable root",
+  "timestamp": "2026-08-16T23:24:23.011Z"
+}
