@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T14:03:49.205Z",
+  "id": "01M05E5HJN4KZ5KSCYS1KKFXH2",
+  "properties": {
+    "decision_summary": "Chose a committed send-wrapper doc over an ad-hoc message",
+    "origin": "derived"
+  },
+  "source": "01M05E5HJJBQVENP2Q2M3BW60A",
+  "target": "01M05E5HJJBQVENP2Q2M3BW609",
+  "type": "decided_by"
+}

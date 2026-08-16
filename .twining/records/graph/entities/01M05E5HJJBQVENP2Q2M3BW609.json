@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T14:03:49.201Z",
+  "id": "01M05E5HJJBQVENP2Q2M3BW609",
+  "name": "01M05E5HJ34HEYX1Y7RSEQESWT",
+  "properties": {
+    "scope": "docs/field-responses/",
+    "summary": "Chose a committed send-wrapper doc over an ad-hoc message"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-16T14:03:49.201Z"
+}

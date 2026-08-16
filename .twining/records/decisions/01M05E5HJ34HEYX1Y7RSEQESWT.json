@@ -1,0 +1,34 @@
+{
+  "affected_files": [
+    "docs/field-responses/2026-08-16-memo-send.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "an ad-hoc message",
+      "pros": []
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Drafted the memo send wrapper (docs/field-responses/2026-08-16-memo-send.md): retrieval steps for the field machine, cover note, paste-ready session prompt driving upgrade + retirements + the two D14/D15 verification questions + probe re-runs, and the expected response doc.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M05E5HJ34HEYX1Y7RSEQESWT",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "1c8388ab5de11539bfa2db81c1ad556be6f3a0fe",
+    "recorded_at": "2026-08-16T14:03:49.168Z"
+  },
+  "rationale": "it travels with the repo to the field machine via the same git pull that delivers the memo, and the session prompt pins the exact verification steps so the field lane cannot skip the archaeology. Assumption flagged in the doc: the field repo's memo directory is docs/twining/ — adjust on delivery.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/field-responses/",
+  "status": "active",
+  "summary": "Chose a committed send-wrapper doc over an ad-hoc message",
+  "timestamp": "2026-08-16T14:03:49.187Z"
+}
