@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T08:16:17.955Z",
+  "id": "01M04T97137T2C887VERVJMS8E",
+  "properties": {
+    "decision_summary": "Chose to arm the revert detector only for db-status overridden/superseded (REVERT_WATCHED)",
+    "origin": "derived"
+  },
+  "source": "01KWMS1EJQZX9M5TVYN3SGTWW0",
+  "target": "01M04T970EZV2Y5EX997ZB0NMZ",
+  "type": "decided_by"
+}

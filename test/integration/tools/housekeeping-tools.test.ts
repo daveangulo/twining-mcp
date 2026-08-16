@@ -329,6 +329,25 @@ describe("twining_unarchive + archive visibility (D3 recovery)", () => {
     ) as { restored: string[]; not_archived: string[] };
     expect(again.restored).toEqual([]);
     expect(again.not_archived).toEqual([decisionId]);
+
+    // A normal (marker-carrying) restore posts a FINDING, not a warning —
+    // pins the entry_type discrimination from the other direction.
+    const postsDir = path.join(tmpDir, ".twining", "records", "posts");
+    const posts: Array<{ entry_type: string; tags?: string[]; detail?: string }> = [];
+    for (const month of fs.readdirSync(postsDir)) {
+      for (const f of fs.readdirSync(path.join(postsDir, month))) {
+        posts.push(
+          JSON.parse(
+            fs.readFileSync(path.join(postsDir, month, f), "utf-8"),
+          ) as { entry_type: string; tags?: string[]; detail?: string },
+        );
+      }
+    }
+    const audit = posts.find(
+      (e) => e.tags?.includes("unarchive") && e.detail?.includes(decisionId),
+    );
+    expect(audit).toBeDefined();
+    expect(audit!.entry_type).toBe("finding");
   });
 
   it("reports assumed_active and posts a warning for marker-less pre-2.7 archives (D15 adjacent)", async () => {

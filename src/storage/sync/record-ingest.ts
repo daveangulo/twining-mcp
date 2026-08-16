@@ -50,6 +50,16 @@ const LIFECYCLE_RANK: Record<string, number> = {
   archived: 2,
 };
 
+/**
+ * Only these db-side statuses arm the revert detector: they have no
+ * sanctioned undo verb, so a file-wins downgrade of them is either a
+ * discarded uncommitted write or branch/history divergence — never a
+ * routine lifecycle flow. active→provisional (twining_reconsider) and
+ * archived→anything (twining_unarchive) are first-class transitions that
+ * legitimately arrive via git and must not fire the alarm.
+ */
+const REVERT_WATCHED = new Set(["overridden", "superseded"]);
+
 function* jsonFiles(dir: string): Generator<string> {
   if (!fs.existsSync(dir)) return;
   for (const dirent of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -245,13 +255,15 @@ export function ingestRecords(
               ? LIFECYCLE_RANK[fileStatus]
               : undefined;
             if (
+              dbStatus !== undefined &&
+              REVERT_WATCHED.has(dbStatus) &&
               dbRank !== undefined &&
               fileRank !== undefined &&
               fileRank < dbRank
             ) {
               stats.lifecycle_reverts++;
               console.error(
-                `[twining] ingest file-wins reverted decision ${record.id} from "${dbStatus}" to "${fileStatus}" — a not-yet-committed lifecycle write was likely discarded by a git operation on the records tree`,
+                `[twining] ingest file-wins downgraded decision ${record.id} from "${dbStatus}" to "${fileStatus}" — either a not-yet-committed lifecycle write was discarded by a git operation on the records tree, or branches/history legitimately diverge here`,
               );
             }
           }

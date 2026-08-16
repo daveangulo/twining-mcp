@@ -294,14 +294,18 @@ export class HousekeepingEngine {
 
       // Only promote if explicitly requested
       if (promoteProvisionals && execute && staleProvisionals.length > 0) {
+        const promotedIds: string[] = [];
         for (const entry of staleProvisionals) {
-          await this.decisionStore.updateStatus(entry.id, "active", {
+          const write = await this.decisionStore.updateStatus(entry.id, "active", {
             promoted_by: "housekeeping-promote_provisionals",
             promoted_at: new Date().toISOString(),
           });
+          // Count only writes that persisted (D14 shape) — a stale index
+          // entry whose record is gone must not be reported as promoted.
+          if (write.persisted) promotedIds.push(entry.id);
         }
-        result.promoted_provisionals.count = staleProvisionals.length;
-        result.promoted_provisionals.ids = staleProvisionals.map((e) => e.id);
+        result.promoted_provisionals.count = promotedIds.length;
+        result.promoted_provisionals.ids = promotedIds;
       }
     } catch {
       // Non-fatal

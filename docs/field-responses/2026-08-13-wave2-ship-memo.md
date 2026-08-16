@@ -1,6 +1,6 @@
-# Twining → field memo: the wave-2 fixes have shipped (2.8.0–2.13.0)
+# Twining → field memo: the wave-2 fixes have shipped (2.8.0–2.14.0)
 
-**STATUS: LIVE** — archive when your store runs server ≥2.13 / plugin ≥1.31
+**STATUS: LIVE** — archive when your store runs server ≥2.14 / plugin ≥1.32
 and the CLAUDE.md retirements below are applied. Companion to the full
 disposition (`2026-08-12-wave2-response.md`, including its measurements-back
 addendum); this memo is only what you need to *act*.
@@ -24,9 +24,67 @@ code — the fix set below includes those.
 | 2.11.0 | 1.29.0 | **Wave C (D13 asks 3+4, plus graph defects)**: relation `origin` marker (`declared`/`derived`, absent = legacy) with downgrade protection; `lineage: true` on `twining_why` (chain head via `superseded_by`); graph relations upsert instead of duplicating; populator per-step isolation; the dead `relates_to` write path removed |
 | 2.12.0 | 1.30.0 | **Amend-candidates reporter (re-scoped D13 ask 1)**: `twining_housekeeping({amend_candidates: true})` proposes candidate files for empty-list decisions — report-only by construction, root-contained, all caps reported |
 | 2.13.0 | 1.31.0 | **Legacy relation-dedup pass**: `twining_housekeeping({dedup_relations: true})` removes your pre-2.11 duplicate `(source, target, type)` edges — survivor is the edge live upserts already merge into (seq-first), properties fold in under origin precedence. Hardened pre-ship by its own review round: duplicates with non-unique ids are skipped and counted (`skipped_id_collisions`, never over-deletes), a dangling-endpoint group is skipped and counted (`failed_groups`/`errors`) instead of aborting the pass, and a requested pass that cannot run reports `relation_dedup_error` — never a silent no-op. Preview by default; execute applies |
+| 2.14.0 | 1.32.0 | **D14/D15 addendum dispositions (both investigated on receipt, both `field-misdiagnosis-real-defect-elsewhere` — see the section below)**: promote is now attributed (`promoted_by`/`promoted_at` on the record; additive `already_active_detail` in the result so a repeat/concurrent promote is distinguishable from "never provisional"); `updateStatus` reports `persisted` instead of silently no-opping on a missing target; `twining_override` reads back post-state (additive `status`/`overridden_by` in the result) and errors `PERSIST_FAILED` on a lost write; ingest counts `lifecycle_reverts` when file-wins downgrades an overridden/superseded decision (the statuses with no sanctioned undo verb — reconsider and unarchive arriving via git never fire it); `twining_unarchive` reports `assumed_active` + a warning post for marker-less pre-2.7 archives |
 
-Upgrade: `twining-mcp@latest` (2.13.0) + plugin 1.31.0. Releases are
+Upgrade: `twining-mcp@latest` (2.14.0) + plugin 1.32.0. Releases are
 cumulative — one jump gets everything.
+
+## Your D14/D15 addendum: dispositions and two questions back
+
+Both reports were investigated same-day (dual independent passes +
+adversarial cross-verification, reproduction attempted on HEAD and your
+version). Both dispositions: **the mechanism you named does not exist,
+and a real defect sat next to it** — now fixed in 2.14.0.
+
+**D14 (override silent no-op on a provisional):** `twining_override` has
+NEVER gated on status — vetoing/withdrawing a provisional works at your
+version and at HEAD (verified byte-identical v2.5.0→HEAD, reproduced
+13/13 + 7/7 in two independent runs, both backends plus your exact
+sqlite + records-mirror composition). Your ask (4) documentation claim
+("provisionals retire only via active-supersession") is wrong — override
+IS the sanctioned withdrawal path, and your workaround was unnecessary.
+What CAN produce your exact readback: the override's records-mirror
+rewrite is an **uncommitted working-tree change** until your next
+commit; any git operation that restores the committed (still-provisional)
+bytes of `records/decisions/<id>.json` makes the next file-wins ingest
+(probed on every tool dispatch after a HEAD move) silently revert the db
+row, discarding `overridden_by` and your ~2KB reason. 2.14.0 makes that
+loss visible (`lifecycle_reverts` + a per-record log line) and makes
+override self-verifying (post-state in the result, `PERSIST_FAILED` on a
+lost write). Your ask (3) `twining_withdraw` is declined: author
+withdrawal is `override` with `overridden_by: <author>` — your own
+lifecycle decisions deliberately keep promote/override as the only
+provisional drain verbs. **Question back:** in the incident window, (a)
+did the id `twining_why` displayed match the id you overrode (rule out a
+duplicate twin), and (b) what git operation touched `records/` between
+the override and the readback? `git log -p` on that mirror file will
+show the reverting commit.
+
+**D15 (promote reports promoted as already_active):** the buckets have
+been computed from PRE-state since promote's introduction — a promoted
+id cannot land in `already_active` in any shipped version (verified
+v2.5.0→HEAD, and your exact timeline — provisional in the pre-promote
+commit, sqlite + mirror + restart-shaped ingest — reproduces CLEAN).
+The only single-session path to your observation is a SECOND promote of
+an id already promoted; in your shared-store cmux setup a concurrent
+session or subagent promoting first is the likely mechanism, and the
+flip stays invisible in git until the next Gate-2 commit, which is fully
+consistent with your archaeology. Your proposed rebucketing is declined
+— a call that changed nothing must not claim it ratified. The real gap
+was attribution, fixed in 2.14.0 as above. **Question back:** check your
+blackboard (or archive) for a status post "Promoted 1 provisional
+decision(s) to active" naming your id, timestamped between the
+pre-promote commit and your call — every real promote writes one. If it
+does not exist AND no housekeeping/unarchive/merge-ingest trace fits,
+escalate with your `twining.db` and mirror history.
+
+Your generalizable ask — every write that does not persist what it was
+handed must say so — is accepted and partially shipped (updateStatus
+`persisted`, override read-back, `assumed_active`, `relation_dedup_error`
+in 2.13.0). The remaining piece, file-wins ingest precedence for
+db-newer lifecycle state, is a named open design decision (it touches
+the W2.3 convergence invariant) — visibility shipped now, precedence
+deliberately unchanged.
 
 ## CLAUDE.md retirements (the reason to upgrade promptly)
 
@@ -117,7 +175,10 @@ queue gets candidates alongside active records.
 
 ## Our open follow-ups (so you know what is coming vs. not)
 
-The UNIQUE `(source,target,type)` sqlite backstop (the dedup pass itself
+**File-wins ingest precedence for db-newer lifecycle state** (the D14
+substantive question — visibility shipped in 2.14.0 as `lifecycle_reverts`,
+precedence itself is an open design decision touching the W2.3 convergence
+invariant); the UNIQUE `(source,target,type)` sqlite backstop (the dedup pass itself
 shipped in 2.13.0); a sqlite relation-lookup index (writes scan O(N) today); **per-decision `supersedes` on the
 structured object** (the D10(a) substitute — only the fan-out guard has
 shipped); **the D13 ask-2 neighbors work in its accepted reduced form**

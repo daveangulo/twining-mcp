@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T08:16:18.214Z",
+  "id": "01M04T97962D57P5MXE9VMZK68",
+  "properties": {
+    "decision_summary": "Chose to check {persisted} at all five remaining updateStatus call sites (promote→not_found, decide supersedes flip→supersedes_dangling, archive_stale→not_found, unarchive→not_found, housekeeping bulk promote→counted only when persisted)",
+    "origin": "derived"
+  },
+  "source": "01KKNE77ZAW1943XPGMREM997R",
+  "target": "01M04T978ZB1S9GZBPVPYR6737",
+  "type": "decided_by"
+}

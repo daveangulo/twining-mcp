@@ -1993,3 +1993,38 @@ describe("DecisionEngine.override on provisionals (D14 veto path)", () => {
     });
   });
 });
+
+describe("override read-back under concurrency + reconsider stamp clearing (2.14.0 review round)", () => {
+  it("does not throw when a concurrent writer moves the record on after a persisted override", async () => {
+    const d = await decisionEngine.decide(validDecisionInput());
+    // Write persists; a concurrent supersession lands before the read-back.
+    const racy = Object.create(decisionStore) as typeof decisionStore;
+    racy.updateStatus = async (id, status, extra) => {
+      const r = await decisionStore.updateStatus(id, status, extra);
+      await decisionStore.updateStatus(id, "superseded", { superseded_by: "racer" });
+      return r;
+    };
+    const engine = new DecisionEngine(racy, blackboardEngine);
+
+    const result = await engine.override(d.id, "veto", undefined, "author");
+    // The override DID persist — no PERSIST_FAILED; the result echoes the
+    // raced post-state honestly instead of claiming status "overridden".
+    expect(result.overridden).toBe(true);
+    expect(result.status).toBe("superseded");
+    expect(result.overridden_by).toBe("author");
+    expect((await decisionStore.get(d.id))!.override_reason).toBe("veto");
+  });
+
+  it("reconsider clears ratification attribution on demotion", async () => {
+    const d = await decisionEngine.decide(validDecisionInput());
+    await decisionStore.updateStatus(d.id, "provisional");
+    await decisionEngine.promote([d.id], "ratifier");
+    expect((await decisionStore.get(d.id))!.promoted_by).toBe("ratifier");
+
+    await decisionEngine.reconsider(d.id, "new evidence");
+    const after = await decisionStore.get(d.id);
+    expect(after!.status).toBe("provisional");
+    expect(after!.promoted_by).toBeUndefined();
+    expect(after!.promoted_at).toBeUndefined();
+  });
+});

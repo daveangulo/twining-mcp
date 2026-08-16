@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T08:16:18.353Z",
+  "id": "01M04T97DHQ79VRWVETMZA2S7N",
+  "name": "01M04T97AJ7FXM3H4RQA2R96EW",
+  "properties": {
+    "scope": "src/",
+    "summary": "Chose reconsider clearing promoted_by/promoted_at on demotion while override/supersede KEEP them"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-16T08:16:18.353Z"
+}

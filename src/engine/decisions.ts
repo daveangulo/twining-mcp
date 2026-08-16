@@ -415,9 +415,14 @@ export class DecisionEngine {
     if (input.supersedes) {
       const target = await this.decisionStore.get(input.supersedes);
       if (target) {
-        await this.decisionStore.updateStatus(input.supersedes, "superseded", {
-          superseded_by: decision.id,
-        });
+        const flip = await this.decisionStore.updateStatus(
+          input.supersedes,
+          "superseded",
+          { superseded_by: decision.id },
+        );
+        // Raced away between the read and the write — dangling is the honest
+        // lane; never report an unpersisted flip as a completed supersession.
+        if (!flip.persisted) supersededDangling = input.supersedes;
       } else {
         supersededDangling = input.supersedes;
       }
@@ -1002,7 +1007,13 @@ export class DecisionEngine {
 
     let flagged = false;
     if (decision.status === "active") {
-      await this.decisionStore.updateStatus(decisionId, "provisional");
+      // Demotion clears ratification attribution — a provisional awaiting
+      // re-ratification must not carry a promoted_by stamp (review finding on
+      // the D15 attribution work). undefined drops the keys on serialize.
+      await this.decisionStore.updateStatus(decisionId, "provisional", {
+        promoted_by: undefined,
+        promoted_at: undefined,
+      });
       flagged = true;
     }
 
@@ -1050,8 +1061,8 @@ export class DecisionEngine {
   ): Promise<{
     overridden: boolean;
     old_summary: string;
-    /** Post-write read-back — success claims are self-verifying (field D14). */
-    status: "overridden";
+    /** Post-write read-back — success claims are self-verifying (field D14). Usually "overridden"; a concurrent writer may have already moved the record on. */
+    status: DecisionStatus;
     overridden_by: string;
     new_decision_id?: string;
   }> {
@@ -1076,15 +1087,13 @@ export class DecisionEngine {
 
     // Fail loudly instead of returning an affirmative on a lost write (D14:
     // an affirmative boolean on a no-op is the most expensive response shape
-    // this store has).
+    // this store has). A read-back status OTHER than "overridden" is not a
+    // failure — the write persisted and a concurrent writer (supersede,
+    // archive sweep) moved the record on; the result echoes that honestly.
     const after = await this.decisionStore.get(decisionId);
-    if (!write.persisted || after?.status !== "overridden") {
+    if (!write.persisted || !after) {
       throw new TwiningError(
-        `Override of ${decisionId} did not persist — ${
-          after
-            ? `the record still has status "${after.status}"`
-            : "the record vanished mid-write"
-        }. Nothing was recorded; retry or inspect the store.`,
+        `Override of ${decisionId} did not persist — the store no longer holds the record. Nothing was recorded; retry or inspect the store.`,
         "PERSIST_FAILED",
       );
     }
@@ -1100,13 +1109,13 @@ export class DecisionEngine {
     const result: {
       overridden: boolean;
       old_summary: string;
-      status: "overridden";
+      status: DecisionStatus;
       overridden_by: string;
       new_decision_id?: string;
     } = {
       overridden: true,
       old_summary: decision.summary,
-      status: "overridden",
+      status: after.status,
       overridden_by: after.overridden_by ?? overriddenBy ?? "human",
     };
 
@@ -1190,10 +1199,16 @@ export class DecisionEngine {
         continue;
       }
 
-      await this.decisionStore.updateStatus(id, "active", {
+      const write = await this.decisionStore.updateStatus(id, "active", {
         promoted_by: promotedBy ?? "main",
         promoted_at: new Date().toISOString(),
       });
+      // Vanished between the read and the write — never report an
+      // unpersisted promote as promoted (D14 shape).
+      if (!write.persisted) {
+        result.not_found.push(id);
+        continue;
+      }
       result.promoted.push(id);
     }
 

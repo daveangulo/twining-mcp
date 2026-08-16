@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T08:16:18.088Z",
+  "id": "01M04T97582VX66HMHG8BA435J",
+  "properties": {
+    "decision_summary": "Chose to make override's read-back race-tolerant: PERSIST_FAILED only when the write did not persist or the record is gone; a concurrent status flip after a persisted write is echoed honestly in result.status (type widened to DecisionStatus)",
+    "origin": "derived"
+  },
+  "source": "01KWMS1EJY7VZ185A0WNT7D11E",
+  "target": "01M04T974N3RQP5G2A5Y51E0H8",
+  "type": "decided_by"
+}

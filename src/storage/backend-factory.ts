@@ -105,7 +105,10 @@ export function createStores(
           if (stats.inserted || stats.updated || stats.deleted) {
             console.error(
               `[twining] Ingested records: +${stats.inserted} ~${stats.updated} -${stats.deleted}` +
-                (stats.skipped ? ` (${stats.skipped} unparseable skipped)` : ""),
+                (stats.skipped ? ` (${stats.skipped} unparseable skipped)` : "") +
+                (stats.lifecycle_reverts
+                  ? ` (${stats.lifecycle_reverts} lifecycle revert(s) — see preceding lines)`
+                  : ""),
             );
           }
         } catch (err) {

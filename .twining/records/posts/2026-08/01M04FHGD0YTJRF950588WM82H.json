@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Memo edits uncommitted in working tree — will commit BEFORE npm version (npm version requires a clean tree; the memo describing 2.14.0 riding inside the tag is fine). Remaining sequence: review verdict → fix any confirmed findings → commit memo → bump-plugin-version.sh minor (1.32.0) → npm version minor (2.14.0, tagged) → push main + tag → CI watch → pins both scopes → memory update → final record.",
+  "entry_type": "status",
+  "id": "01M04FHGD0YTJRF950588WM82H",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "29f864e596567fd5985f2b8a07653778cb539c46",
+    "recorded_at": "2026-08-16T05:08:35.341Z"
+  },
+  "scope": "docs/field-responses/",
+  "summary": "Memo updated for 2.14.0 (D14/D15 dispositions, two questions back, file-wins precedence in follow-ups). Pre-tag review of v2.13.0..HEAD running; ship fires on its verdict.",
+  "tags": [
+    "ship-state",
+    "2.14.0"
+  ],
+  "timestamp": "2026-08-16T05:08:35.360Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T08:16:18.506Z",
+  "id": "01M04T97JAXWW3ZYW4DBVYGDJD",
+  "properties": {
+    "decision_summary": "Chose log-surface only for lifecycle_reverts this release (both ingest summaries now include the count; OVERRIDE-03 reworded to say server log)",
+    "origin": "derived"
+  },
+  "source": "01KKNE77ZAW1943XPGMREM997R",
+  "target": "01M04T97J3AK0F1CKWHS3PS4DW",
+  "type": "decided_by"
+}

@@ -306,6 +306,27 @@ describe.skipIf(!HAS_SQLITE)("record ingest", () => {
     expect(after!.status).toBe("provisional");
   });
 
+  it("does not count sanctioned downgrades (a teammate's reconsider arriving via git)", async () => {
+    const twA = path.join(dirA, ".twining");
+    fs.mkdirSync(twA, { recursive: true });
+    const stores = createStores(twA, sqliteConfig());
+    const { decision } = await seed(stores);
+
+    // db has the decision active; the pulled mirror carries a committed
+    // active→provisional reconsider from another machine — a first-class
+    // flow, not a discarded write. Must NOT fire the revert alarm.
+    const file = path.join(twA, "records", "decisions", `${decision.id}.json`);
+    const pulled = JSON.parse(fs.readFileSync(file, "utf-8")) as Record<string, unknown>;
+    pulled.status = "provisional";
+    fs.writeFileSync(file, JSON.stringify(pulled));
+
+    const db = openDatabase(twA);
+    const stats = ingestRecords(db, twA);
+    expect(stats.updated).toBe(1);
+    expect(stats.lifecycle_reverts).toBe(0);
+    db.close();
+  });
+
   it("union-merges two branches' trees (design D2)", async () => {
     const twA = path.join(dirA, ".twining");
     const twB = path.join(dirB, ".twining");
@@ -367,6 +388,9 @@ describe.skipIf(!HAS_SQLITE)("record ingest", () => {
     const stats = ingestRecords(db, twA);
     expect(stats.updated).toBe(1);
     expect(stats.deleted).toBe(1);
+    // A file-wins UPGRADE (active → overridden) is never a revert — pins the
+    // detector's direction (mutation `<` → `!==` must fail here).
+    expect(stats.lifecycle_reverts).toBe(0);
     db.close();
 
     const after = createStores(twA, sqliteConfig());

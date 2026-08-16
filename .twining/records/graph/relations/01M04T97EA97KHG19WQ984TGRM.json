@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-16T08:16:18.378Z",
+  "id": "01M04T97EA97KHG19WQ984TGRM",
+  "properties": {
+    "decision_summary": "Chose reconsider clearing promoted_by/promoted_at on demotion while override/supersede KEEP them",
+    "origin": "derived"
+  },
+  "source": "01KWMS1EJQZX9M5TVYN3SGTWW0",
+  "target": "01M04T97DHQ79VRWVETMZA2S7N",
+  "type": "decided_by"
+}

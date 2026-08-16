@@ -193,14 +193,18 @@ export function registerHousekeepingTools(
               // (review finding: forcing "active" on restore silently
               // ratified provisionals and resurrected superseded decisions).
               const prior = statusById.get(id);
-              await decisionStore.updateStatus(
+              const write = await decisionStore.updateStatus(
                 id,
                 "archived",
                 prior && prior !== "archived"
                   ? { archived_from: prior as Decision["status"] }
                   : undefined,
               );
-              archivedDecisions.push(id);
+              // updateStatus never throws for a missing record — it reports
+              // persisted:false, which must land in the not_found lane, not
+              // be echoed as archived (D14 shape).
+              if (write.persisted) archivedDecisions.push(id);
+              else notFound.push(id);
             } catch {
               notFound.push(id);
             }
@@ -287,7 +291,7 @@ export function registerHousekeepingTools(
         ids: z
           .array(z.string())
           .min(1)
-          .describe("Decision IDs to restore to active status"),
+          .describe("Decision IDs to restore to their pre-archive status"),
         reason: z
           .string()
           .optional()
@@ -314,13 +318,18 @@ export function registerHousekeepingTools(
             // A marker-less restore is a GUESS: if the row was a provisional
             // archived by a pre-2.7 server, defaulting to active silently
             // ratifies it — so the assumption is reported, never silent.
-            if (decision.archived_from === undefined) assumedActive.push(id);
-            await decisionStore.updateStatus(
+            const write = await decisionStore.updateStatus(
               id,
               decision.archived_from ?? "active",
               { archived_from: undefined },
             );
-            restored.push(id);
+            if (!write.persisted) {
+              // Vanished between the read and the write (D14 shape).
+              notFound.push(id);
+            } else {
+              if (decision.archived_from === undefined) assumedActive.push(id);
+              restored.push(id);
+            }
           }
         }
 
