@@ -9,7 +9,11 @@
     "commit_sha": "2bb4f40b9e3024286f2ff66d5e03ab9729daee2b",
     "recorded_at": "2026-08-16T02:46:51.364Z"
   },
+  "resolution_note": "Resolved by session record: 2.14.0 ship complete: CI Publish green, npm latest = 2.14.0, plugin pins 1.32.0 in BOTH user and project scopes (restart applies). D14/D15 fully dispositioned and shipped; memo covers 2.8.0-2.14.0 …",
+  "resolved_at": "2026-08-16T14:02:13.372Z",
+  "resolved_by": "main",
   "scope": "src/engine/decisions.ts",
+  "status": "resolved",
   "summary": "promote attribution backlog item — stamp promoted_by/promoted_at extras in DecisionEngine.promote's updateStatus (decisions.ts:1145, following override's overridden_by precedent) and housekeeping's…",
   "tags": [
     "session-finding"

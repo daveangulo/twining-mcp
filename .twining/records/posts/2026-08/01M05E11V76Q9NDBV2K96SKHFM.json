@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Gate triggered by auto-memory file edits outside the repo plus release commits. Release train state: fix commit 4b69863 (review round, 8 findings closed) -> plugin bump 5421c51 (1.32.0) -> version commit ae4fac8 (tagged v2.14.0) -> pushed. CI watch task bkdmci0d2 will notify; then claude plugin update in user AND project scopes, and the final ship-state record.",
+  "entry_type": "status",
+  "id": "01M05E11V76Q9NDBV2K96SKHFM",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "ae4fac8a684f318e089a728ebd24f543f9e2966d",
+    "recorded_at": "2026-08-16T14:01:22.005Z"
+  },
+  "scope": "project",
+  "summary": "2.14.0 tagged and pushed (ae4fac8), plugin 1.32.0 bumped, CI Publish watch running in background. Memory updated (D9-D15 line). Pending: CI confirm, pins both scopes, final ship-state record.",
+  "tags": [
+    "ship-state",
+    "2.14.0"
+  ],
+  "timestamp": "2026-08-16T14:01:22.023Z"
+}

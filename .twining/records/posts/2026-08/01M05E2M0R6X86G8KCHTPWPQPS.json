@@ -1,0 +1,22 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: 2.14.0 ship complete: CI Publish green, npm latest = 2.14.0, plugin pins 1.32.0 in BOTH user and project scopes (restart applies). D14/D15 fully dispositioned and shipped; memo covers 2.8.0-2.14.0 with two verification questions, still unsent to the field.\nFindings: Ship state: v2.14.0 tag -> CI Publish green -> npm latest 2.14.0 confirmed -> pins 1.32.0 both scopes (restart applies). Remaining backlog: SEND memo to field (top priority — now carries 2 verification questions they can answer), lifecycle_reverts MCP surface, file-wins precedence design decision, UNIQUE backstop, sqlite relation index, per-decision supersedes, neighbors reduced form, cycle chain_length",
+  "entry_type": "status",
+  "id": "01M05E2M0R6X86G8KCHTPWPQPS",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "ae4fac8a684f318e089a728ebd24f543f9e2966d",
+    "recorded_at": "2026-08-16T14:02:13.375Z"
+  },
+  "relates_to": [
+    "01M047DZQR37JNT3XYMMJXGKQW",
+    "01M047DZRW1B8252YPP9HV5SC0"
+  ],
+  "scope": "project",
+  "summary": "2.14.0 ship complete: CI Publish green, npm latest = 2.14.0, plugin pins 1.32.0 in BOTH user and project scopes (restart applies). D14/D15 fully dispositioned and shipped; memo covers 2.8.0-2.14.0 …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-16T14:02:13.400Z"
+}
