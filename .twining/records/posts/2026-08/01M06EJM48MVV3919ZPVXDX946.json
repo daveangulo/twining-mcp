@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: 2.15.0 ship complete: CI Publish green, npm latest = 2.15.0, plugin pins 1.33.0 both scopes (restart applies). Batch: revert blackboard warning (scoped/deduped/txn-wrapped), indexed relation upsert, hook edit-path filter, chain_length fix, budget re-baseline. Memo covers 2.8.0-2.15.0, SEND still pending.\nFindings: Ship state: v2.15.0 tag -> CI green -> npm latest 2.15.0 -> pins 1.33.0 both scopes. Backlog after this release: SEND memo (top priority), file-wins precedence design decision, UNIQUE backstop (sequenced after field runs dedup), per-decision supersedes, neighbors reduced form, diff capture. Process note: never pipe bump-plugin-version.sh through head — SIGPIPE under pipefail kills it mid-run (bundle rebuilt, version files untouched)",
+  "entry_type": "status",
+  "id": "01M06EJM48MVV3919ZPVXDX946",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "f92fced74a195d9449926c445820646bc5d39550",
+    "recorded_at": "2026-08-16T23:30:12.214Z"
+  },
+  "scope": "project",
+  "summary": "2.15.0 ship complete: CI Publish green, npm latest = 2.15.0, plugin pins 1.33.0 both scopes (restart applies). Batch: revert blackboard warning (scoped/deduped/txn-wrapped), indexed relation upsert…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-16T23:30:12.232Z"
+}
