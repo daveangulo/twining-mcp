@@ -347,6 +347,17 @@ export class VerifyEngine {
     const stale: DriftCheck["stale"] = [];
     let decisionsChecked = 0;
 
+    // Perf (2026-08-15 field audit S2-C): the scope population is loop-
+    // invariant and one git-log per affected_file dominated wall time (the
+    // control store measured ~45ms/spawn across 5,465 entries, and the
+    // per-stale-file getByScope made cost O(stale × population)). Fetch the
+    // population once, lazily, and memoize git lookups per distinct file —
+    // no writes happen during iteration, so the snapshots are exact.
+    let scopePopulation: Awaited<
+      ReturnType<typeof this.decisionStore.getByScope>
+    > | null = null;
+    const gitFileInfo = new Map<string, string | null>();
+
     for (const decision of decisions) {
       if (!decision.affected_files || decision.affected_files.length === 0) {
         continue;
@@ -354,7 +365,11 @@ export class VerifyEngine {
       decisionsChecked++;
 
       for (const file of decision.affected_files) {
-        const logOutput = this.execGit(["log", "--format=%aI %H", "-1", "--", file]);
+        let logOutput = gitFileInfo.get(file);
+        if (logOutput === undefined) {
+          logOutput = this.execGit(["log", "--format=%aI %H", "-1", "--", file]);
+          gitFileInfo.set(file, logOutput);
+        }
         if (!logOutput) continue;
 
         const spaceIdx = logOutput.indexOf(" ");
@@ -366,7 +381,10 @@ export class VerifyEngine {
         // Compare: if file was modified after the decision was made
         if (new Date(fileDate) > new Date(decision.timestamp)) {
           // Check for superseding decisions — a newer active decision in same domain+scope
-          const allDecisions = await this.decisionStore.getByScope(scope);
+          if (scopePopulation === null) {
+            scopePopulation = await this.decisionStore.getByScope(scope);
+          }
+          const allDecisions = scopePopulation;
           const superseded = allDecisions.some(
             (d) =>
               d.id !== decision.id &&

@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Wave 1 T5: verify drift perf shipped — scope population fetched lazily once per checkDrift (was per stale file, O(stale × population)) and git log memoized per distinct affected file (was one spawn per entry). Call counts pinned by test: 1 git-log per distinct file, 2 getByScope total per drift verify.",
+  "entry_type": "status",
+  "id": "01M0902SPNM1V5G1873CW0XVKR",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "2df514c4c9a2899035279633d8fdbff22916345f",
+    "recorded_at": "2026-08-17T23:14:36.868Z"
+  },
+  "scope": "src/engine/",
+  "summary": "Wave 1 T5: verify drift perf shipped — scope population fetched lazily once per checkDrift (was per stale file, O(stale × population)) and git log memoized per distinct affected file (was one spawn…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-17T23:14:36.885Z"
+}

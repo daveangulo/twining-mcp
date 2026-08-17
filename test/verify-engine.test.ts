@@ -323,6 +323,31 @@ describe("drift check", () => {
     expect(result.checks.drift?.stale[0]!.modifying_commit).toBe("def456");
   });
 
+  // S2-C perf (2026-08-15 field audit): the field measured verify at 5-8
+  // minutes — one git spawn per affected_file entry (no dedup) plus a
+  // loop-invariant getByScope inside the per-stale-file loop. Pin the fixed
+  // call counts: one git log per DISTINCT file, one getByScope in verify()'s
+  // body plus at most one in checkDrift regardless of stale volume.
+  it("memoizes git lookups per distinct file and fetches the scope population once", async () => {
+    await decisionStore.create(validDecision({ summary: "Perf one" }));
+    await decisionStore.create(validDecision({ summary: "Perf two" }));
+    const futureDate = new Date(Date.now() + 86400000).toISOString();
+    mockExecFileSync.mockImplementation((_cmd: string, args?: readonly string[]) => {
+      if (args && args.includes("rev-parse")) return "true\n";
+      if (args && args.includes("log")) return `${futureDate} abc123\n`;
+      return "";
+    });
+    mockExecFileSync.mockClear();
+    const getByScopeSpy = vi.spyOn(decisionStore, "getByScope");
+    await verifyEngine.verify({ scope: "project", checks: ["drift"] });
+    const gitLogCalls = mockExecFileSync.mock.calls.filter(
+      (c) => Array.isArray(c[1]) && (c[1] as string[]).includes("log"),
+    ).length;
+    expect(gitLogCalls).toBe(1); // both decisions share one affected file
+    expect(getByScopeSpy).toHaveBeenCalledTimes(2); // verify() body + one lazy drift fetch
+    getByScopeSpy.mockRestore();
+  });
+
   it("returns pass when file modified but superseding decision exists", async () => {
     // Create first decision
     await decisionStore.create(validDecision({ summary: "Old decision" }));
