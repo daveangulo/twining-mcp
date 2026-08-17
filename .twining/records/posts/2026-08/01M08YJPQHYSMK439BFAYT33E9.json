@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Wave 1 T1: S0 amnesia guard shipped — hasSqliteState now requires nonzero size + SQLite magic header; rewrote the two tests that enshrined the 0-byte-db→sqlite behavior; added 4 regressions (amnesia arm, crash-artifact-alone, garbage-db, records-rehydration arm). 19/19 green.\nDecisions: Chose header check (16-byte SQLite magic) over size>0 alone for the S0 guard — a garbage-header db beside legacy content must also land on files per the module's ambiguity rule; a size>0 corrupt db beside nothing still resolves fresh→sqlite where openDatabase's failure hits the factory's existing files-fallback catch, so no new unsafe path opens.",
+  "entry_type": "status",
+  "id": "01M08YJPQHYSMK439BFAYT33E9",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "775b8515db042f286ce3573f31d72dd8698d02a3",
+    "recorded_at": "2026-08-17T22:48:20.958Z"
+  },
+  "scope": "src/storage/",
+  "summary": "Wave 1 T1: S0 amnesia guard shipped — hasSqliteState now requires nonzero size + SQLite magic header; rewrote the two tests that enshrined the 0-byte-db→sqlite behavior; added 4 regressions (amnesi…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-17T22:48:20.977Z"
+}

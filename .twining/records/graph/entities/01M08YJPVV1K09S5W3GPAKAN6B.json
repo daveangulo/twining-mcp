@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-17T22:48:21.115Z",
+  "id": "01M08YJPVV1K09S5W3GPAKAN6B",
+  "name": "01M08YJPS0PCCVB0AE690STMYM",
+  "properties": {
+    "scope": "src/storage/",
+    "summary": "Chose header check (16-byte SQLite magic) over size>0 alone for the S0 guard"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-17T22:48:21.115Z"
+}
