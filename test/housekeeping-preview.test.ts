@@ -248,3 +248,74 @@ describe("promote_provisionals attribution (D15)", () => {
     expect(after.promoted_at).toMatch(/^\d{4}-\d{2}-\d{2}T/);
   });
 });
+
+// S0-index-desync (2026-08-15 field audit): runtime repair for decision files
+// missing from decisions/index.json — the migrate CLI's orphan salvage, made
+// available without migrating.
+describe("repair_index pass", () => {
+  function seedOrphanDecision(id: string): void {
+    fs.writeFileSync(
+      path.join(tmpDir, "decisions", `${id}.json`),
+      JSON.stringify({
+        id,
+        timestamp: OLD,
+        agent_id: "main",
+        domain: "architecture",
+        scope: "src/",
+        summary: "orphaned ruling",
+        context: "",
+        rationale: "r",
+        constraints: [],
+        alternatives: [],
+        depends_on: [],
+        confidence: "high",
+        reversible: true,
+        status: "active",
+        affected_files: [],
+        affected_symbols: [],
+        commit_hashes: [],
+      }),
+    );
+  }
+
+  it("preview reports orphans without writing the index", async () => {
+    seedOrphanDecision("01HKORPHAN00000000000000A1");
+    const result = await engine.run({ repair_index: true });
+    expect(result.index_repair).toEqual({
+      orphans_found: 1,
+      orphan_ids: ["01HKORPHAN00000000000000A1"],
+      repaired: 0,
+    });
+    expect(result.summary).toContain("index desync");
+    const index = JSON.parse(
+      fs.readFileSync(path.join(tmpDir, "decisions", "index.json"), "utf-8"),
+    ) as unknown[];
+    expect(index).toHaveLength(0);
+  });
+
+  it("execute salvages orphans into the index", async () => {
+    seedOrphanDecision("01HKORPHAN00000000000000A2");
+    const result = await engine.run({ repair_index: true, execute: true });
+    expect(result.index_repair?.repaired).toBe(1);
+    const index = JSON.parse(
+      fs.readFileSync(path.join(tmpDir, "decisions", "index.json"), "utf-8"),
+    ) as Array<{ id: string }>;
+    expect(index.map((e) => e.id)).toContain("01HKORPHAN00000000000000A2");
+  });
+
+  it("reports index_repair_error when the store has no files index (never a silent no-op)", async () => {
+    const blackboardEngine = new BlackboardEngine(blackboardStore);
+    const archiver = new Archiver(tmpDir, blackboardStore, blackboardEngine, null);
+    const stub = { getIndex: async () => [] };
+    const e2 = new HousekeepingEngine(
+      tmpDir,
+      blackboardStore,
+      stub as never,
+      archiver,
+      null,
+    );
+    const result = await e2.run({ repair_index: true });
+    expect(result.index_repair).toBeUndefined();
+    expect(result.index_repair_error).toContain("files-backend");
+  });
+});

@@ -123,6 +123,28 @@ export function registerLifecycleTools(
           );
         }
 
+        // Files-backend index desync (S0-index-desync): decision files on
+        // disk that the index — and therefore every read path — cannot see.
+        if (identity.backend !== "sqlite") {
+          const ds = decisionStore as Partial<{
+            repairIndexDesync: (
+              execute: boolean,
+            ) => Promise<{ orphan_ids: string[]; repaired: number }>;
+          }>;
+          if (typeof ds.repairIndexDesync === "function") {
+            try {
+              const desync = await ds.repairIndexDesync(false);
+              if (desync.orphan_ids.length > 0) {
+                warnings.push(
+                  `${desync.orphan_ids.length} decision file(s) on disk are missing from decisions/index.json (index desync) — they are invisible to every read path. Run twining_housekeeping({repair_index: true, execute: true}) or npx twining-mcp migrate.`,
+                );
+              }
+            } catch {
+              // Detection is advisory — never fail status over it.
+            }
+          }
+        }
+
         // Stale provisionals: older than 7 days
         const sevenDaysAgo = new Date(
           Date.now() - 7 * 24 * 60 * 60 * 1000,

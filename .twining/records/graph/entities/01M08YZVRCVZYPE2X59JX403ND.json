@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-17T22:55:32.108Z",
+  "id": "01M08YZVRCVZYPE2X59JX403ND",
+  "name": "01M08YZVQ5A5Q4KEHG7ZM2DR3A",
+  "properties": {
+    "scope": "src/storage/",
+    "summary": "Chose to treat a missing/unreadable index.json as empty during desync detection (all decision files count as orphans) rather than failing"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-17T22:55:32.108Z"
+}

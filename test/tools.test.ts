@@ -272,6 +272,36 @@ describe("twining_status tool", () => {
     expect(data.backend_reason).toBe("explicit");
   });
 
+  it("warns when decision files are missing from the index (files backend)", async () => {
+    fs.writeFileSync(
+      path.join(tmpDir, "decisions", "01STATUSORPHAN0000000000AA.json"),
+      JSON.stringify({
+        id: "01STATUSORPHAN0000000000AA",
+        timestamp: "2026-01-01T00:00:00.000Z",
+        agent_id: "main",
+        domain: "architecture",
+        scope: "src/",
+        summary: "orphaned",
+        context: "",
+        rationale: "r",
+        constraints: [],
+        alternatives: [],
+        depends_on: [],
+        confidence: "high",
+        reversible: true,
+        status: "active",
+        affected_files: [],
+        affected_symbols: [],
+        commit_hashes: [],
+      }),
+    );
+    const response = await callTool("twining_status", {});
+    const data = parseToolResponse(response) as { warnings: string[] };
+    expect(
+      data.warnings.some((w) => w.includes("index desync") && w.includes("repair_index")),
+    ).toBe(true);
+  });
+
   it("warns loudly when sqlite is empty beside unread legacy content", async () => {
     const s2 = new McpServer({ name: "test2", version: "0.0.0" });
     registerLifecycleTools(s2, tmpDir, bbStore, dcsnStore, graphStore, archiver, DEFAULT_CONFIG, agentStore, {

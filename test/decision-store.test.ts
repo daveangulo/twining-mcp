@@ -287,3 +287,61 @@ describe("DecisionStore.getIndex", () => {
     expect(index).toHaveLength(5);
   });
 });
+
+// S0-index-desync (2026-08-15 field audit): the files backend is index-driven,
+// so a decision file missing from index.json is invisible to every read path
+// (4/770 measured in one field store). Detection + repair must exist at
+// runtime, not only in the offline migrate CLI.
+describe("DecisionStore.repairIndexDesync", () => {
+  it("reports orphan decision files without writing in preview mode", async () => {
+    const created = await store.create(makeDecisionInput());
+    const orphan = { ...created, id: "01ORPHAN0000000000000000A1" };
+    fs.writeFileSync(
+      path.join(tmpDir, "decisions", `${orphan.id}.json`),
+      JSON.stringify(orphan, null, 2),
+    );
+    const report = await store.repairIndexDesync(false);
+    expect(report.orphan_ids).toEqual([orphan.id]);
+    expect(report.repaired).toBe(0);
+    const index = await store.getIndex();
+    expect(index.map((e) => e.id)).toEqual([created.id]);
+  });
+
+  it("appends salvaged entries to the index on execute", async () => {
+    const created = await store.create(makeDecisionInput());
+    const orphan = { ...created, id: "01ORPHAN0000000000000000A2", summary: "Orphaned ruling" };
+    fs.writeFileSync(
+      path.join(tmpDir, "decisions", `${orphan.id}.json`),
+      JSON.stringify(orphan, null, 2),
+    );
+    const report = await store.repairIndexDesync(true);
+    expect(report.repaired).toBe(1);
+    const index = await store.getIndex();
+    const ids = index.map((e) => e.id);
+    expect(ids).toContain(created.id);
+    expect(ids).toContain(orphan.id);
+    const entry = index.find((e) => e.id === orphan.id)!;
+    expect(entry.summary).toBe("Orphaned ruling");
+    expect(entry.status).toBe(orphan.status);
+  });
+
+  it("leaves unparseable orphan files on disk and unrepaired", async () => {
+    fs.writeFileSync(
+      path.join(tmpDir, "decisions", "01BROKEN00000000000000000B.json"),
+      "{not json",
+    );
+    const report = await store.repairIndexDesync(true);
+    expect(report.orphan_ids).toEqual(["01BROKEN00000000000000000B"]);
+    expect(report.repaired).toBe(0);
+    expect(
+      fs.existsSync(path.join(tmpDir, "decisions", "01BROKEN00000000000000000B.json")),
+    ).toBe(true);
+  });
+
+  it("returns clean report when index and disk agree", async () => {
+    await store.create(makeDecisionInput());
+    const report = await store.repairIndexDesync(false);
+    expect(report.orphan_ids).toEqual([]);
+    expect(report.repaired).toBe(0);
+  });
+});

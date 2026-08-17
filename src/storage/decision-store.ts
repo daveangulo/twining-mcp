@@ -189,6 +189,69 @@ export class DecisionStore implements IDecisionStore {
     this.cachedIndex = null; // Invalidate index cache
   }
 
+  /**
+   * Index-desync detection + repair (S0-index-desync, 2026-08-15 field
+   * audit): every read path is index-driven, so a decision file missing
+   * from index.json is silently invisible — the runtime twin of the
+   * migrate CLI's orphan salvage. Preview reports orphan ids; execute
+   * appends salvaged entries under the index lock. Unparseable files are
+   * counted as orphans but never repaired, modified, or deleted — legacy
+   * files are their own backup.
+   */
+  async repairIndexDesync(
+    execute: boolean,
+  ): Promise<{ orphan_ids: string[]; repaired: number }> {
+    if (!fs.existsSync(this.decisionsDir)) {
+      return { orphan_ids: [], repaired: 0 };
+    }
+    // A missing/unreadable index with decision files on disk is the extreme
+    // form of the desync — treat it as empty rather than failing detection.
+    const indexed = await this.getIndex().catch(() => [] as DecisionIndexEntry[]);
+    const known = new Set(indexed.map((e) => e.id));
+    const orphan_ids: string[] = [];
+    for (const file of fs.readdirSync(this.decisionsDir)) {
+      if (file === "index.json" || !file.endsWith(".json")) continue;
+      const id = file.slice(0, -".json".length);
+      if (!known.has(id)) orphan_ids.push(id);
+    }
+    if (!execute || orphan_ids.length === 0) {
+      return { orphan_ids, repaired: 0 };
+    }
+
+    let repaired = 0;
+    const release = await lockfile.lock(this.indexPath, LOCK_OPTIONS);
+    try {
+      let index: DecisionIndexEntry[];
+      try {
+        index = JSON.parse(
+          fs.readFileSync(this.indexPath, "utf-8"),
+        ) as DecisionIndexEntry[];
+      } catch {
+        index = [];
+      }
+      const liveIds = new Set(index.map((e) => e.id));
+      for (const id of orphan_ids) {
+        if (liveIds.has(id)) continue; // raced in by a concurrent writer
+        try {
+          const decision = JSON.parse(
+            fs.readFileSync(path.join(this.decisionsDir, `${id}.json`), "utf-8"),
+          ) as Decision;
+          index.push(this.toIndexEntry(decision));
+          repaired++;
+        } catch {
+          // Skip, never delete — matches migrate's salvage rule.
+        }
+      }
+      if (repaired > 0) {
+        atomicWriteFileSync(this.indexPath, JSON.stringify(index, null, 2));
+      }
+    } finally {
+      await release();
+    }
+    this.cachedIndex = null;
+    return { orphan_ids, repaired };
+  }
+
   /** Get the full decision index, with mtime-based caching. */
   async getIndex(): Promise<DecisionIndexEntry[]> {
     try {

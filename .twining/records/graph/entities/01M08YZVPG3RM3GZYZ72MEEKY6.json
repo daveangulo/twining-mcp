@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-17T22:55:32.048Z",
+  "id": "01M08YZVPG3RM3GZYZ72MEEKY6",
+  "name": "01M08YZVNYH3AWCNZS3M4ZNE6G",
+  "properties": {
+    "scope": "src/storage/",
+    "summary": "Chose duck-typing repairIndexDesync on the concrete DecisionStore over widening IDecisionStore"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-17T22:55:32.048Z"
+}

@@ -61,6 +61,12 @@ export function registerHousekeepingTools(
           .describe(
             "Set to true to detect branches deleted since the last housekeeping run (typically post-merge cleanup) and flag entries provenance-stamped with those branches. First call records the initial branch snapshot and returns no candidates. The branch snapshot is advanced only when execute=true; preview passes leave the baseline untouched so deletions stay visible across multiple previews. Returns candidates only; use twining_archive_stale to act on them. When run alongside staleness_review, branch-gone duplicates are removed from staleness_review (merge_sweep is the more specific signal).",
           ),
+        repair_index: z
+          .boolean()
+          .optional()
+          .describe(
+            "Files backend only: detect decision files on disk that are missing from decisions/index.json (index desync — such decisions are invisible to every read path). Preview reports orphan ids; with execute: true, parseable orphans are appended to the index under the index lock. Unparseable files are reported but never modified or deleted. On the sqlite backend this reports index_repair_error instead of silently succeeding.",
+          ),
         compact_archives: z
           .boolean()
           .optional()
@@ -97,6 +103,7 @@ export function registerHousekeepingTools(
           staleness_review: args.staleness_review,
           amend_candidates: args.amend_candidates,
           dedup_relations: args.dedup_relations,
+          repair_index: args.repair_index,
           merge_sweep: args.merge_sweep,
           compact_archives: args.compact_archives,
           archive: args.archive,

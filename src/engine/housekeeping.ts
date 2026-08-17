@@ -59,6 +59,10 @@ export interface HousekeepingResult {
   relation_dedup?: RelationDedupReport;
   /** Set when dedup_relations was requested but could not run — never a silent no-op. */
   relation_dedup_error?: string;
+  /** Files-backend index-desync repair (S0-index-desync); preview unless execute. */
+  index_repair?: { orphans_found: number; orphan_ids: string[]; repaired: number };
+  /** Set when repair_index was requested but could not run — never a silent no-op. */
+  index_repair_error?: string;
   archived: { count: number; file: string; kept_open: number };
   deduplicated: { removed: number };
   stale_provisionals: { count: number; items: StaleProvisional[] };
@@ -132,6 +136,12 @@ export class HousekeepingEngine {
      * execute is set.
      */
     dedup_relations?: boolean;
+    /**
+     * Files-backend only: detect decision files on disk missing from
+     * decisions/index.json (they are invisible to every index-driven read
+     * path) and, with execute, append salvaged entries to the index.
+     */
+    repair_index?: boolean;
     compact_archives?: boolean;
     /**
      * Recompute graph entity scopes from their decided_by relations, undoing
@@ -562,6 +572,35 @@ export class HousekeepingEngine {
         result.staleness_review.candidates.filter((c) => !sweepIds.has(c.id));
     }
 
+    // Files-backend index-desync repair (S0-index-desync, 2026-08-15 field
+    // audit). Duck-typed rather than widening IDecisionStore: the sqlite
+    // backend has no decisions/index.json, and forcing a no-op onto it
+    // would turn "cannot run" into a silent success.
+    if (options?.repair_index) {
+      const store = this.decisionStore as Partial<{
+        repairIndexDesync: (
+          execute: boolean,
+        ) => Promise<{ orphan_ids: string[]; repaired: number }>;
+      }>;
+      if (typeof store.repairIndexDesync === "function") {
+        try {
+          const r = await store.repairIndexDesync(execute);
+          result.index_repair = {
+            orphans_found: r.orphan_ids.length,
+            orphan_ids: r.orphan_ids,
+            repaired: r.repaired,
+          };
+        } catch (err) {
+          result.index_repair_error = `repair_index failed: ${
+            err instanceof Error ? err.message : String(err)
+          }`;
+        }
+      } else {
+        result.index_repair_error =
+          "repair_index is a files-backend pass — this backend has no decisions/index.json to repair (the sqlite backend converges from records/ instead).";
+      }
+    }
+
     // Build summary
     const prefix = execute ? "" : "[preview] ";
     const verb = execute ? "" : "would ";
@@ -584,6 +623,12 @@ export class HousekeepingEngine {
       } else if (result.merge_sweep.deleted_branches.length > 0) {
         parts.push(`merge_sweep: ${result.merge_sweep.deleted_branches.length} deleted branch(es), ${result.merge_sweep.candidates.length} entries from them`);
       }
+    }
+    if (result.index_repair && result.index_repair.orphans_found > 0) {
+      parts.push(
+        `${verb}salvage ${result.index_repair.orphans_found} decision file(s) missing from the index (index desync)` +
+          (execute ? ` — ${result.index_repair.repaired} repaired` : ""),
+      );
     }
     if (result.archive_compaction && result.archive_compaction.total_junk > 0) {
       const ac = result.archive_compaction;
