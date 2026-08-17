@@ -433,3 +433,11 @@ describe("BlackboardEngine registry auto-touch (#32)", () => {
     expect(result.id).toBeTruthy();
   });
 });
+
+describe("BlackboardEngine.query", () => {
+  it("stamps count_semantics even in the no-engine fallback", async () => {
+    const result = await engine.query("anything");
+    expect(result.count_semantics).toBe("pre_page_floored_v2");
+    expect(result.fallback_mode).toBe(true);
+  });
+});

@@ -9,7 +9,7 @@ import { TwiningError } from "../utils/errors.js";
 import { captureProvenance } from "../utils/provenance.js";
 import type { Embedder } from "../embeddings/embedder.js";
 import { blackboardEmbedText, embedContentHash } from "../embeddings/embed-text.js";
-import type { SearchEngine, BlackboardSearchResult } from "../embeddings/search.js";
+import { COUNT_SEMANTICS, type SearchEngine, type BlackboardSearchResult } from "../embeddings/search.js";
 import type { Archiver } from "./archiver.js";
 import { NO_AGE_CUTOFF, partitionArchivable } from "./archiver.js";
 import { computeResolvedIds } from "./resolution.js";
@@ -229,19 +229,27 @@ export class BlackboardEngine {
     results: BlackboardSearchResult[];
     /** Pre-slice count of matches above the noise floor (field D9). */
     total_matched: number;
+    /** Which generation of count semantics this response carries (ask 2). */
+    count_semantics: string;
     fallback_mode: boolean;
   }> {
     if (!this.searchEngine) {
-      return { results: [], total_matched: 0, fallback_mode: true };
+      return {
+        results: [],
+        total_matched: 0,
+        count_semantics: COUNT_SEMANTICS,
+        fallback_mode: true,
+      };
     }
 
     const { entries } = await this.store.read();
     const limit = options?.limit ?? 10;
 
-    return this.searchEngine.searchBlackboard(query, entries, {
+    const searched = await this.searchEngine.searchBlackboard(query, entries, {
       entry_types: options?.entry_types,
       limit,
     });
+    return { ...searched, count_semantics: COUNT_SEMANTICS };
   }
 
   /** Get the N most recent entries, optionally filtered by type. */

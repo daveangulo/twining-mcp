@@ -40,6 +40,16 @@ export interface SearchResults<T> {
  */
 export const SEARCH_NOISE_FLOOR = 0.3;
 
+/**
+ * Version stamp for count fields on search responses (2026-08-15 field
+ * audit, ask 2): total_matched's meaning has changed across builds
+ * (post-slice page length before 2.9.0; floored pre-page count since) and
+ * field docs pinned to different generations coexist. Responses carry this
+ * literal so a caller can tell which semantics it is reading. Bump ONLY
+ * when count semantics actually change.
+ */
+export const COUNT_SEMANTICS = "pre_page_floored_v2";
+
 // Retired decisions stay searchable (their status is in the result row) but a
 // superseded original must not outrank its own amendment on raw similarity —
 // originals state the thing more plainly than corrections do, so without this

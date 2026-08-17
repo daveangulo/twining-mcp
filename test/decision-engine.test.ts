@@ -1191,6 +1191,19 @@ describe("DecisionEngine.searchDecisions", () => {
     expect(result.total_matched).toBe(5);
   });
 
+  // 2026-08-15 field audit S3-A/ask 2: total_matched's meaning has changed
+  // across builds and docs pinned to different generations coexist in field
+  // stores. The response must self-identify which count semantics it carries.
+  it("stamps count_semantics on every response shape", async () => {
+    await decisionEngine.decide(validDecisionInput({ summary: "Semantics probe" }));
+    const hit = await decisionEngine.searchDecisions("semantics");
+    expect(hit.count_semantics).toBe("pre_page_floored_v2");
+    const empty = await decisionEngine.searchDecisions("zz", {
+      status: "superseded",
+    });
+    expect(empty.count_semantics).toBe("pre_page_floored_v2");
+  });
+
   it("de-ranks retired decisions below an identically-matching active one", async () => {
     const first = await decisionEngine.decide(
       validDecisionInput({ summary: "Use Redis cache for sessions" }),

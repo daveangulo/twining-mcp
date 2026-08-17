@@ -23,7 +23,7 @@ import type {
 } from "../utils/types.js";
 import type { Embedder } from "../embeddings/embedder.js";
 import { decisionEmbedText, embedContentHash } from "../embeddings/embed-text.js";
-import { SEARCH_NOISE_FLOOR, type SearchEngine } from "../embeddings/search.js";
+import { COUNT_SEMANTICS, SEARCH_NOISE_FLOOR, type SearchEngine } from "../embeddings/search.js";
 import { GraphAutoPopulator } from "./graph-auto-populator.js";
 import type { IDecisionStore, IIndexManager } from "../storage/interfaces.js";
 
@@ -1269,13 +1269,15 @@ export class DecisionEngine {
     total_matched: number;
     /** Page size actually delivered: results.length. */
     returned: number;
+    /** Which generation of count semantics this response carries (ask 2). */
+    count_semantics: string;
     fallback_mode: boolean;
   }> {
     const maxResults = limit ?? 20;
 
     try {
       if (!query || query.trim().length === 0) {
-        return { results: [], total_matched: 0, returned: 0, fallback_mode: true };
+        return { results: [], total_matched: 0, returned: 0, count_semantics: COUNT_SEMANTICS, fallback_mode: true };
       }
 
       // Load index and apply filters before loading full decision files
@@ -1299,7 +1301,7 @@ export class DecisionEngine {
       }
 
       if (filtered.length === 0) {
-        return { results: [], total_matched: 0, returned: 0, fallback_mode: true };
+        return { results: [], total_matched: 0, returned: 0, count_semantics: COUNT_SEMANTICS, fallback_mode: true };
       }
 
       // Load full Decision objects for filtered entries
@@ -1330,6 +1332,7 @@ export class DecisionEngine {
           })),
           total_matched: searchResults.total_matched,
           returned: searchResults.results.length,
+          count_semantics: COUNT_SEMANTICS,
           fallback_mode: searchResults.fallback_mode,
         };
       }
@@ -1341,7 +1344,7 @@ export class DecisionEngine {
         .filter((t) => t.length > 0);
 
       if (queryTerms.length === 0) {
-        return { results: [], total_matched: 0, returned: 0, fallback_mode: true };
+        return { results: [], total_matched: 0, returned: 0, count_semantics: COUNT_SEMANTICS, fallback_mode: true };
       }
 
       const scored: Array<{
@@ -1396,6 +1399,7 @@ export class DecisionEngine {
         // ordering-only and never affects membership.
         total_matched: scored.length,
         returned: topResults.length,
+        count_semantics: COUNT_SEMANTICS,
         fallback_mode: true,
       };
     } catch (error) {
@@ -1403,7 +1407,7 @@ export class DecisionEngine {
         "[twining] searchDecisions failed (non-fatal):",
         error,
       );
-      return { results: [], total_matched: 0, returned: 0, fallback_mode: true };
+      return { results: [], total_matched: 0, returned: 0, count_semantics: COUNT_SEMANTICS, fallback_mode: true };
     }
   }
 }
