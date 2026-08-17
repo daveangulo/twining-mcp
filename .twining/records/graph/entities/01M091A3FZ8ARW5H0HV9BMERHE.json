@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-17T23:36:04.863Z",
+  "id": "01M091A3FZ8ARW5H0HV9BMERHE",
+  "name": "01M091A3CXN1YWY4YW03434PW6",
+  "properties": {
+    "scope": "src/",
+    "summary": "Relaxed the new twining_commits hash validation from 7-40 to 4-40 hex after the existing link_commit integration test caught the inconsistency"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-17T23:36:04.863Z"
+}

@@ -2,6 +2,122 @@
 
 All notable changes to Twining MCP are documented here.
 
+## [Unreleased] — 2.16.0
+
+Wave 1 of the 2026-08-15 field read-context-quality audit response
+(plan: `docs/plans/2026-08-17-read-audit-remediation-plan.md`).
+
+### Fixed
+- **S0 silent-amnesia guard.** `twining.db` counts as sqlite state only when
+  it is non-empty with the SQLite magic header. A 0-byte or garbage db
+  (crash, disk-full, interrupted migration) no longer boots an empty
+  database beside unread legacy v1 decisions — the field measured 3 stores
+  holding 1,342 decisions reading as empty, with 12 more one zero-length
+  file away.
+- **The amnesia store can no longer report "Healthy".** An empty sqlite
+  decisions table beside legacy v1 content warns loudly at boot (covering
+  explicit `backend: sqlite` too, which the auto resolver never sees) and
+  leads `twining_status` warnings with the migrate instruction.
+- **Assemble double-render.** Truncated-summary warnings rendered the same
+  text twice (preview + `Full summary:` superset); deduped at render time,
+  on-disk lossless format unchanged (S4-1).
+- **Verify drift performance.** Scope population hoisted out of the
+  per-stale-file loop (was O(stale × population)) and `git log` memoized per
+  distinct file (was one spawn per affected_file entry — minutes at field
+  scale). Call counts pinned by test (S2-C).
+
+### Added
+- **Self-identification.** `twining_status` reports `server_version`,
+  `backend`, and `backend_reason` — a session can finally tell which build
+  and which backend serve it (S0-B). Search/query responses carry
+  `count_semantics: "pre_page_floored_v2"` so `total_matched`'s generation
+  is readable off the wire (S3-A ask 2).
+- **Index-desync detection + repair (files backend).** Decision files
+  missing from `decisions/index.json` are invisible to every read path;
+  `twining_status` now warns, and
+  `twining_housekeeping({repair_index: true, execute: true})` salvages
+  parseable orphans under the index lock. On sqlite the pass reports
+  `index_repair_error` instead of silently succeeding.
+- **Metrics cost fields.** `metrics.jsonl` entries gain `response_bytes`,
+  `result_count`, and `scope` — context cost becomes measurable across the
+  install base (S4-4).
+- **WAL checkpoint policy.** Housekeeping execute runs
+  `wal_checkpoint(TRUNCATE)` (reported as `wal_checkpointed`); the server
+  closes the db on exit/SIGINT/SIGTERM so session end checkpoints the WAL
+  (S4-7).
+- **twining_commits disambiguation.** Malformed SHA → `INVALID_INPUT`; empty
+  results carry `commit_exists` (`true | false | "unknown"`) + message, so a
+  typo no longer reads as "no recorded rationale" (S4-12).
+
+### Changed
+- **twining_discover** excludes zero-capability-overlap agents by default and
+  reports `excluded_zero_overlap`; pass `min_score: 0` for the old roster
+  behavior (S4-8).
+- **twining_record**: empty summary rejected with a repairable message;
+  `reason_rejected` on alternatives is now optional, matching engine
+  semantics (S4-2 residue).
+- Tool descriptions: assemble documents the `token_estimate ≈ max_tokens`
+  truncation signature and that `decisions_count` is a briefing selection,
+  not a census; triage documents `counts.open.by_kind.decision` as the
+  scoped ratify count; status declares `provisional_decisions` the canonical
+  store-wide form.
+- `docs/hooks.md` rewritten: it still described the pre-1.16 mtime Stop
+  gate and omitted the activity-marker hook entirely (plausibly the source
+  of the field audit's S2-E misdiagnosis); adds a read-only audit recipe.
+
+## [2.15.0] - 2026-08-16
+
+*(Backfilled 2026-08-17 — 2.13.0–2.15.0 shipped tag-only; the wave-2 ship
+memo table was their only release log until this entry.)*
+
+### Added
+- **Revert-warning surface**: file-wins ingest lifecycle reverts now post a
+  scoped blackboard warning — one per distinct reverted-decision scope,
+  (scope, detail)-deduped with resolved-exclusion, transaction-wrapped with
+  a compensating delete on mirror-write failure.
+- Sqlite relation-lookup index for the (source, target, type) upsert path.
+
+### Fixed
+- **Plugin 1.33.0: activity-marker edit-path filter.** The Gate-2 marker
+  stamps only for edits under the canonicalized project root (or the
+  session's linked worktree) — out-of-tree scratch writes no longer block
+  read-only sessions. Hook paths canonicalized through the nearest existing
+  ancestor; worktree-hosted `TWINING_PROJECT` sessions stamp correctly.
+- Cyclic lineage `chain_length` overcount.
+- Tool-description token-budget re-baseline.
+
+## [2.14.0] - 2026-08-16
+
+Field D14/D15 addendum dispositions (both field-misdiagnosis with a real
+defect elsewhere; see `docs/field-responses/`).
+
+### Added
+- **Promote attribution**: `promoted_by`/`promoted_at` stamped on ratify;
+  `already_active_detail` names the earlier actor on double-promote.
+- **Ingest revert visibility**: `lifecycle_reverts` counter (armed only for
+  overridden/superseded downgrades — sanctioned flows don't false-alarm),
+  per-record server log.
+- Unarchive `assumed_active` + warning when the pre-archive status is
+  unknown.
+
+### Fixed
+- **Persist-honest lifecycle writes**: `updateStatus` returns `{persisted}`,
+  checked at all six call sites — a lost write can no longer report success
+  (D14's affirmative-on-no-op shape).
+- Override read-back is race-tolerant: `PERSIST_FAILED` only when the write
+  did not persist; a concurrent status flip is echoed honestly.
+
+## [2.13.0] - 2026-08-14
+
+### Added
+- **Legacy relation-dedup pass**:
+  `twining_housekeeping({dedup_relations: true})` folds duplicate
+  (source, target, type) graph relations left from before the 2.11 upsert —
+  survivor is the edge live upserts merge into, properties folded under
+  origin precedence. Review round added the id-collision guard
+  (`skipped_id_collisions`), per-group isolation (`failed_groups`/`errors`),
+  `relation_dedup_error`, and capture-before-delete mirror unlink.
+
 ## [2.12.0] - 2026-08-13
 
 ### Added

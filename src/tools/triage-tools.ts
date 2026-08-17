@@ -17,7 +17,7 @@ export function registerTriageTools(
     "twining_triage",
     {
       description:
-        "Project-wide triage read-model: open items awaiting a lifecycle act (provisional decisions; unresolved needs, questions, warnings) and recent activity (newly active decisions, artifact posts) within a time window. Optionally pass for_agent (an agent_id as self-reported to twining_post) to exclude that agent's own outbound posts. Read-only — act via twining_promote / twining_override / twining_reconsider / twining_post.",
+        "Project-wide triage read-model: open items awaiting a lifecycle act (provisional decisions; unresolved needs, questions, warnings) and recent activity (newly active decisions, artifact posts) within a time window. counts.open.by_kind splits the open lane by kind: by_kind.decision is the exact scoped provisional (ratify-queue) count and is unaffected by for_agent — do NOT read counts.open.total as a ratify queue, it counts posts too (store-wide canonical form: twining_status provisional_decisions). Optionally pass for_agent (an agent_id as self-reported to twining_post) to exclude that agent's own outbound posts. Read-only — act via twining_promote / twining_override / twining_reconsider / twining_post.",
       inputSchema: {
         // Numerics are UNCONSTRAINED by design (§4.1): range constraints here
         // would make the tool reject values HTTP silently defaults.

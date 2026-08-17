@@ -1,0 +1,26 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Wave 1 T9 + completion: docs shipped (assemble truncation-signature + census caveat, triage by_kind ratify sentence, docs/hooks.md rewritten off the stale pre-1.16 mtime description with the activity-marker hook + read-only audit recipe, CHANGELOG backfilled for tag-only 2.13.0-2.15.0 plus a full 2.16.0 Unreleased section). Full suite green: 1675 passed / 0 failed. Wave 1 of the read-audit remediation plan is implementation-complete on main, untagged.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01M091A3CXN1YWY4YW03434PW6",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "6d023000f64dbdc115614a5f76f6616d6c3bac21",
+    "recorded_at": "2026-08-17T23:36:04.744Z"
+  },
+  "rationale": "git's legal abbreviation minimum is 4 and the store already accepts short hashes via twining_link_commit; rejecting on read what the write path accepts would strand existing links.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Relaxed the new twining_commits hash validation from 7-40 to 4-40 hex after the existing link_commit integration test caught the inconsistency",
+  "timestamp": "2026-08-17T23:36:04.765Z"
+}

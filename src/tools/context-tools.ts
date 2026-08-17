@@ -17,7 +17,7 @@ export function registerContextTools(
     "twining_assemble",
     {
       description:
-        "Your FIRST call every session. Returns a briefing with decisions to respect, warnings to address, and handoff context from previous agents. Call BEFORE reading code or making changes.",
+        "Your FIRST call every session. Returns a briefing with decisions to respect, warnings to address, and handoff context from previous agents. Call BEFORE reading code or making changes. token_estimate ≈ max_tokens is the signature of budget truncation: the briefing (and decisions_count) was clipped — re-call with a larger max_tokens (e.g. 100000) for complete coverage. decisions_count is the briefing selection, not a scope census; use twining_why total_in_scope for populations.",
       inputSchema: {
         task: z.string().describe("Description of what the agent is about to do"),
         scope: z

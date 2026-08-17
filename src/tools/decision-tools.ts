@@ -339,7 +339,7 @@ export function registerDecisionTools(
       inputSchema: {
         commit_hash: z
           .string()
-          .describe("Git commit hash to look up (7-40 hex chars)"),
+          .describe("Git commit hash to look up (4-40 hex chars, git's abbreviation minimum)"),
       },
     },
     async (args) => {
@@ -349,9 +349,9 @@ export function registerDecisionTools(
         // "does this commit have recorded rationale?" answered "no" for a
         // typo. Validate the shape, then probe existence on empty results.
         const hash = args.commit_hash.trim();
-        if (!/^[0-9a-fA-F]{7,40}$/.test(hash)) {
+        if (!/^[0-9a-fA-F]{4,40}$/.test(hash)) {
           return toolError(
-            `commit_hash must be a 7-40 character hex SHA (got "${args.commit_hash}")`,
+            `commit_hash must be a 4-40 character hex SHA (got "${args.commit_hash}")`,
             "INVALID_INPUT",
           );
         }

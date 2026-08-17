@@ -2,7 +2,7 @@
 
 ## Plugin Hooks (Automatic with Plugin Install)
 
-The Twining plugin includes four hooks that enforce the lifecycle gates. All four share the same guards: they no-op when `TWINING_DISABLED=true` and when the project has no `.twining/` directory, and they **fail open** — a missing sentinel, an unreadable file, or an absent git binary always allows rather than blocks. A coordination tool must never be the reason a commit or session-exit is impossible.
+The Twining plugin includes five hooks that enforce the lifecycle gates. All five share the same guards: they no-op when `TWINING_DISABLED=true` and when the project has no `.twining/` directory, and they **fail open** — a missing sentinel, an unreadable file, or an absent git binary always allows rather than blocks. A coordination tool must never be the reason a commit or session-exit is impossible.
 
 ### SessionStart
 Injects the lifecycle-gate guidance (assemble first, record last, with what a good record contains) into session context via `additionalContext` — including on resume. Since plugin 1.10.0 this is the sole delivery mechanism: the previous `ensure-claude-md-gates.sh` hook, which appended a gates block to the project's `CLAUDE.md` (issue #9), was removed. No user files are ever modified.
@@ -14,11 +14,22 @@ The check compares `.twining/.last-record` (a unix timestamp written synchronous
 
 If no sentinel file exists at all — a fresh clone, or the MCP server never booted (npm outage, broken resolve) — the hook allows the commit with a visible warning instead of denying: the gate would be unsatisfiable, since the record tools aren't reachable. Normal gating resumes after the first successful record.
 
-### Stop
-Blocks session exit when uncommitted changes are newer than the last Twining recording. Transcript-free since plugin 1.10.0: it compares the `.last-record` sentinel against the newest mtime of dirty working-tree files (`git status --porcelain`, with `.twining/` itself excluded). The previous implementation grepped the session transcript for tool-call strings — the same technique the pre-commit hook abandoned after issues #11/#13. Honors `stop_hook_active` so a continuation after a block is never re-blocked, and allows silently when the tree is clean (committed work was already gated by the pre-commit hook), when no sentinel exists, or when git is unavailable.
+### PostToolUse (activity marker, on `Edit`/`Write`/`MultiEdit`/`NotebookEdit`)
+Writes epoch-seconds to `.twining/.sessions/<session_id>` after every successful edit **whose target path belongs to this store's project** — the marker the Stop gate reads. Since plugin 1.33.0 the edit-path filter canonicalizes both sides through the nearest existing ancestor (`pwd -P`), so symlinked roots (`/tmp` → `/private/tmp`, symlinked homes) match correctly, and linked git worktrees of the project also count. Out-of-tree writes — scratch notes in `/tmp`, files in other repos — never stamp the marker, so a read-only session that takes notes elsewhere is never Gate-2 blocked. An absent or unparseable `file_path` stamps anyway (fail toward gate integrity).
+
+### Stop (marker-based since plugin 1.16.0)
+Blocks session exit only when **this session's own activity marker** is newer than `.last-record`. No git scan, no mtime scan — other sessions' activity can never block this one (the 1.10.0–1.15.x dirty-file mtime scan false-blocked recurringly under concurrent agents and was replaced; mtime had already been rejected once in decision 01KQWCCVTV). Fails open on a missing store, missing sentinel, missing session id, or missing marker — a read-only session has no marker and always exits freely. Honors `stop_hook_active` so a continuation after a block is never re-blocked.
 
 ### SubagentStop
 Queues a status entry in `.twining/pending-posts.jsonl` when subagents complete, ensuring the orchestrator has visibility into subagent work. The MCP server drains the queue on next startup and posts each entry through the locked blackboard store — the hook never writes `blackboard.jsonl` directly, since a raw bash append can't take the store's lock and could interleave with a concurrent server write.
+
+## Read-Only Audit Sessions
+
+To audit a Twining store without writing to it:
+
+- **Hooks:** on plugin ≥ 1.33.0 nothing special is needed — out-of-tree notes never trip Gate 2, and a session that edits no project files carries no marker. For belt-and-braces (or older plugins), run the audit session with `TWINING_DISABLED=true`; note this disables **all five** hooks including the pre-commit gate and session-start context, so scope it strictly to no-commit audit sessions.
+- **Server:** connecting the MCP server to a **fresh** checkout still initializes `.twining/` (directories, `config.yml`, `.gitignore` reconciliation) at boot, and any sqlite boot creates WAL files. Against an already-initialized store the mutations are limited to gitignored churn (`metrics.jsonl`, `.sessions/`). A true no-write server mode is a tracked design decision (DD-6, read-audit remediation plan).
+- **Viewing:** the dashboard (`http://localhost:24282`) is the supported read-only viewing surface.
 
 ## Auto-Archive on Git Commit (Optional)
 

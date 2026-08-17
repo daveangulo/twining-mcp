@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: The plugin token-budget CI gate is GREEN at HEAD and measures only plugin/skills + plugin/agents markdown — src/tools description edits never touch it. The stale 'red since 2.6.0' memory note is obsolete (2.15.0's re-baseline fixed it); remediation-plan Assumption 4 discharged.",
+  "entry_type": "finding",
+  "id": "01M091A3M8Z9B8RP7K6JK7GJJ1",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "6d023000f64dbdc115614a5f76f6616d6c3bac21",
+    "recorded_at": "2026-08-17T23:36:04.980Z"
+  },
+  "scope": "src/",
+  "summary": "The plugin token-budget CI gate is GREEN at HEAD and measures only plugin/skills + plugin/agents markdown — src/tools description edits never touch it. The stale 'red since 2.6.0' memory note is ob…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-08-17T23:36:05.000Z"
+}
