@@ -63,6 +63,8 @@ export interface HousekeepingResult {
   index_repair?: { orphans_found: number; orphan_ids: string[]; repaired: number };
   /** Set when repair_index was requested but could not run — never a silent no-op. */
   index_repair_error?: string;
+  /** sqlite only, execute only: whether wal_checkpoint(TRUNCATE) ran (S4-7). */
+  wal_checkpointed?: boolean;
   archived: { count: number; file: string; kept_open: number };
   deduplicated: { removed: number };
   stale_provisionals: { count: number; items: StaleProvisional[] };
@@ -112,6 +114,8 @@ export class HousekeepingEngine {
     private readonly stalenessThreshold: number = DEFAULT_STALENESS_THRESHOLD,
     /** Newest-K retention for the opt-in archive pass (config archive.retain_recent). */
     private readonly archiveRetain: number = 0,
+    /** sqlite only: raw handle for the execute-path WAL checkpoint (S4-7). */
+    private readonly db: import("../storage/sqlite/db.js").SqliteDatabase | null = null,
   ) {}
 
   async run(options?: {
@@ -598,6 +602,19 @@ export class HousekeepingEngine {
       } else {
         result.index_repair_error =
           "repair_index is a files-backend pass — this backend has no decisions/index.json to repair (the sqlite backend converges from records/ instead).";
+      }
+    }
+
+    // WAL checkpoint (S4-7, 2026-08-15 field audit: 9.77MB uncheckpointed
+    // WAL, no checkpoint policy anywhere). Execute-only, non-fatal —
+    // TRUNCATE blocks briefly behind busy_timeout if a reader holds a
+    // snapshot, and a failure must never sink the rest of the run.
+    if (execute && this.db) {
+      try {
+        this.db.exec("PRAGMA wal_checkpoint(TRUNCATE);");
+        result.wal_checkpointed = true;
+      } catch {
+        result.wal_checkpointed = false;
       }
     }
 

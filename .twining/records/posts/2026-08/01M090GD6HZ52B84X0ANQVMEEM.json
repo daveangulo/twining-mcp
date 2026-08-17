@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Wave 1 T7: hygiene batch B shipped — MetricEntry gains response_bytes/result_count/scope captured at the instrumentation seam (S4-4, the audit's highest-value-per-line ask); StoreSet exposes the raw sqlite handle; housekeeping execute runs wal_checkpoint(TRUNCATE) reported as wal_checkpointed; index.ts registers beforeExit/SIGINT/SIGTERM handlers that close the db (close checkpoints the WAL) with explicit conventional exit codes.\nDecisions: Chose beforeExit + once-registered signal handlers in index.ts (the single real entrypoint) over registering in createStores/createServer — factories run many times in tests and would leak process listeners; signal handlers replace node's default termination so they exit explicitly with 130/143.",
+  "entry_type": "status",
+  "id": "01M090GD6HZ52B84X0ANQVMEEM",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "58b4fd5290a39b8fc07efab1af9ca2346e344ee9",
+    "recorded_at": "2026-08-17T23:22:02.816Z"
+  },
+  "scope": "src/analytics/",
+  "summary": "Wave 1 T7: hygiene batch B shipped — MetricEntry gains response_bytes/result_count/scope captured at the instrumentation seam (S4-4, the audit's highest-value-per-line ask); StoreSet exposes the ra…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-17T23:22:02.833Z"
+}

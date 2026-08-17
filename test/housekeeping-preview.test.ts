@@ -319,3 +319,50 @@ describe("repair_index pass", () => {
     expect(result.index_repair_error).toContain("files-backend");
   });
 });
+
+// S4-7 (2026-08-15 field audit): 9.77MB of uncheckpointed WAL with no
+// checkpoint policy anywhere.
+describe("wal checkpoint pass", () => {
+  const HAS_SQLITE = (() => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      require("node:sqlite");
+      return true;
+    } catch {
+      return false;
+    }
+  })();
+
+  it.runIf(HAS_SQLITE)("execute truncates the WAL and reports it", async () => {
+    const { openDatabase } = await import("../src/storage/sqlite/db.js");
+    const db = openDatabase(tmpDir);
+    for (let i = 0; i < 50; i++) {
+      db.prepare(
+        "INSERT INTO blackboard (id, entry_type, scope, timestamp, data) VALUES (?, ?, ?, ?, ?)",
+      ).run(`01WAL${String(i).padStart(21, "0")}`, "finding", "src/", new Date().toISOString(), "{}");
+    }
+    const walPath = path.join(tmpDir, "twining.db-wal");
+    expect(fs.statSync(walPath).size).toBeGreaterThan(0);
+
+    const decisionStore = new DecisionStore(tmpDir);
+    const blackboardEngine = new BlackboardEngine(blackboardStore);
+    const archiver = new Archiver(tmpDir, blackboardStore, blackboardEngine, null);
+    const e2 = new HousekeepingEngine(
+      tmpDir,
+      blackboardStore,
+      decisionStore,
+      archiver,
+      null,
+      null,
+      undefined,
+      0,
+      db,
+    );
+    const preview = await e2.run({});
+    expect(preview.wal_checkpointed).toBeUndefined();
+    const result = await e2.run({ execute: true });
+    expect(result.wal_checkpointed).toBe(true);
+    expect(fs.statSync(walPath).size).toBe(0);
+    db.close();
+  });
+});

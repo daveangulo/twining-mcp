@@ -30,7 +30,7 @@ import { HandoffStore } from "./handoff-store.js";
 import { IndexManager } from "../embeddings/index-manager.js";
 // Safe to import statically on any Node version: node:sqlite is only
 // required inside sqliteAvailable()/openDatabase(), never at module load.
-import { openDatabase, sqliteAvailable } from "./sqlite/db.js";
+import { openDatabase, sqliteAvailable, type SqliteDatabase } from "./sqlite/db.js";
 import { hasLegacyContent, resolveAutoBackend } from "./backend-resolve.js";
 import {
   SqliteAgentStore,
@@ -73,6 +73,9 @@ export interface StoreSet {
    * mid-session, plus embedding reconciliation (W2.3 phase 2).
    */
   recordSync?: RecordSyncManager;
+  /** sqlite only: the raw handle, for maintenance (WAL checkpoint, clean
+   * close on shutdown — S4-7). */
+  db?: SqliteDatabase;
 }
 
 export function createStores(
@@ -171,6 +174,7 @@ export function createStores(
         backend: "sqlite",
         reason,
         legacy_unread: legacyUnread,
+        db,
         blackboardStore: new SqliteBlackboardStore(db),
         decisionStore: new SqliteDecisionStore(db),
         graphStore: new SqliteGraphStore(db),

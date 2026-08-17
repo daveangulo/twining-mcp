@@ -137,3 +137,26 @@ describe("Instrumented Server", () => {
     expect(assembleEntry!.agent_id).toBe("unknown");
   });
 });
+
+// S4-4 (2026-08-15 field audit): metrics.jsonl logged no response size, count,
+// or scope, so context cost was unmeasurable across the install base —
+// "highest value per line of code in this report."
+describe("Instrumented Server — cost fields (wave 1)", () => {
+  it("captures response_bytes, result_count and scope on success", async () => {
+    const { server } = createServer(tmpDir);
+    await callTool(server, "twining_post", {
+      entry_type: "finding",
+      summary: "Sized finding",
+      scope: "src/x/",
+    });
+    await callTool(server, "twining_why", { scope: "src/x/" });
+    await new Promise((r) => setTimeout(r, 200));
+    const metricsPath = path.join(tmpDir, ".twining", "metrics.jsonl");
+    const entries = await readJSONL<MetricEntry>(metricsPath);
+    const why = entries.find((e) => e.tool_name === "twining_why");
+    expect(why).toBeDefined();
+    expect(why!.response_bytes).toBeGreaterThan(0);
+    expect(why!.scope).toBe("src/x/");
+    expect(typeof why!.result_count).toBe("number");
+  });
+});

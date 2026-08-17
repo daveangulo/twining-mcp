@@ -49,9 +49,23 @@ async function main(): Promise<void> {
   const { maybeAutoMigrate } = await import("./migrate/auto.js");
   await maybeAutoMigrate(projectRoot);
 
-  const { server, metricsCollector, config, dashboardDeps } = createServer(projectRoot);
+  const { server, metricsCollector, config, dashboardDeps, closeDb } = createServer(projectRoot);
   const transport = new StdioServerTransport();
   await server.connect(transport);
+
+  // Clean sqlite shutdown (S4-7): closing the handle checkpoints the WAL,
+  // so a session end doesn't leave megabytes of uncheckpointed WAL behind.
+  // Signal handlers replace node's default termination, so they must exit
+  // explicitly with the conventional codes.
+  process.once("beforeExit", closeDb);
+  process.once("SIGINT", () => {
+    closeDb();
+    process.exit(130);
+  });
+  process.once("SIGTERM", () => {
+    closeDb();
+    process.exit(143);
+  });
 
   // Initialize opt-in telemetry (fire-and-forget)
   const telemetry = new TelemetryClient();

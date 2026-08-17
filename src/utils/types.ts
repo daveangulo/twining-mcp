@@ -631,6 +631,12 @@ export interface MetricEntry {
   success: boolean;
   error_code?: string;
   agent_id: string;
+  /** Serialized response size in bytes (S4-4 — context cost measurement). */
+  response_bytes?: number;
+  /** Length of the first top-level array in the response — best-effort. */
+  result_count?: number;
+  /** The call's scope argument, when it was a string. */
+  scope?: string;
 }
 
 /** Aggregated tool usage summary */

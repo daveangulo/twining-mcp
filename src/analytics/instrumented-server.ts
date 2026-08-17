@@ -59,6 +59,10 @@ export function createInstrumentedServer(
           success,
           error_code: errorCode,
           agent_id: agentId,
+          ...measureResponse(result),
+          ...(extractScope(cbArgs) !== undefined
+            ? { scope: extractScope(cbArgs) }
+            : {}),
         }).catch(() => {/* never fail a tool call */});
 
         return result;
@@ -86,6 +90,50 @@ export function createInstrumentedServer(
 }
 
 /** Extract agent_id from tool call arguments */
+/** The call's scope argument, when present and a string. */
+function extractScope(cbArgs: unknown[]): string | undefined {
+  if (cbArgs.length > 0 && cbArgs[0] && typeof cbArgs[0] === "object") {
+    const args = cbArgs[0] as Record<string, unknown>;
+    if (typeof args.scope === "string") return args.scope;
+  }
+  return undefined;
+}
+
+/**
+ * Cost fields from the serialized response (S4-4): size in bytes, plus a
+ * best-effort result count — the length of the first top-level array in the
+ * response JSON (entries, results, decisions, warnings, …).
+ */
+function measureResponse(result: unknown): {
+  response_bytes?: number;
+  result_count?: number;
+} {
+  if (!result || typeof result !== "object" || !("content" in result)) {
+    return {};
+  }
+  const content = (result as { content?: unknown[] }).content;
+  if (!Array.isArray(content) || content.length === 0) return {};
+  const first = content[0] as { text?: string };
+  if (typeof first.text !== "string") return {};
+  const out: { response_bytes?: number; result_count?: number } = {
+    response_bytes: Buffer.byteLength(first.text, "utf-8"),
+  };
+  try {
+    const parsed = JSON.parse(first.text) as Record<string, unknown>;
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      for (const value of Object.values(parsed)) {
+        if (Array.isArray(value)) {
+          out.result_count = value.length;
+          break;
+        }
+      }
+    }
+  } catch {
+    // Non-JSON responses just get a size.
+  }
+  return out;
+}
+
 function extractAgentId(cbArgs: unknown[]): string {
   // MCP tool callbacks receive (args, extra) where args is the parsed tool input
   if (cbArgs.length > 0 && cbArgs[0] && typeof cbArgs[0] === "object") {

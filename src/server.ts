@@ -59,6 +59,9 @@ export interface ServerContext {
   config: import("./utils/types.js").TwiningConfig;
   /** Shared store/engine instances for the dashboard — one stack, not two. */
   dashboardDeps: DashboardDeps;
+  /** Close the sqlite handle (sqlite checkpoints its WAL on close — S4-7).
+   * No-op on the files backend. Registered against process exit in index.ts. */
+  closeDb: () => void;
 }
 
 export function createServer(projectRoot: string): ServerContext {
@@ -88,6 +91,7 @@ export function createServer(projectRoot: string): ServerContext {
     handoffStore,
     indexManager,
     recordSync,
+    db,
   } = createStores(twiningDir, config);
   if (backend !== (config.storage?.backend ?? "files")) {
     // createStores already logged the fallback reason
@@ -203,6 +207,7 @@ export function createServer(projectRoot: string): ServerContext {
     projectRoot,
     config.housekeeping?.staleness_threshold,
     config.archive.retain_recent,
+    db ?? null,
   );
 
   // Create exporter
@@ -321,5 +326,13 @@ export function createServer(projectRoot: string): ServerContext {
     graphEngine,
   };
 
-  return { server, metricsCollector, twiningDir, config, dashboardDeps };
+  const closeDb = (): void => {
+    try {
+      db?.close();
+    } catch {
+      // Already closed or mid-write teardown — nothing useful to do.
+    }
+  };
+
+  return { server, metricsCollector, twiningDir, config, dashboardDeps, closeDb };
 }

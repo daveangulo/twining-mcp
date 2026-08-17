@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-17T23:22:02.896Z",
+  "id": "01M090GD8G2VKS23G61PRMESG6",
+  "name": "01M090GD7XCM78P991NEZK7TDQ",
+  "properties": {
+    "scope": "src/analytics/",
+    "summary": "Chose beforeExit + once-registered signal handlers in index.ts (the single real entrypoint) over registering in createStores/createServer"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-17T23:22:02.896Z"
+}
