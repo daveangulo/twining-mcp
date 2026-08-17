@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-17T22:41:46.274Z",
+  "id": "01M08Y6N924GFZ6JAR17HAASD4",
+  "name": "01M08Y6N78S6MA4TVR4NECECBH",
+  "properties": {
+    "scope": "docs/plans/",
+    "summary": "Explicitly deferred the embedding-model swap (bge-small/EmbeddingGemma class) with recorded reconsideration criteria"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-17T22:41:46.274Z"
+}

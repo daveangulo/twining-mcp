@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Chose to send the wave-2 ship memo first, unchanged except the stale line-183 fix, and answer the audit in a separate disposition doc\" relates to:\n- 01M08AXR6MH1RZZY7D81SXRN41: \"Chose a 4-wave release train (data-safety first, scope-matcher change isolated in its own release) over one mega-release\"\n- 01M08AXR9TS3P35WBJZ1VGBJS5: \"Chose to honor the challenger downgrades: ASM-disclosure treated as fully OPEN (2.7/2.9 exclusion counts are a different disclosure axis than total_in_scope/omitted) and QUAL-lifecycle-rank as PARTIAL (deboost shipped 2.9.0 but the report's two cheaper preferred remedies\"",
+  "entry_type": "finding",
+  "id": "01M08AXRCZD65E32DEBHKZWZKE",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0a0aa89e95bfea113d59b44fc117d56a9a4ddc48",
+    "recorded_at": "2026-08-17T17:04:51.596Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "Related decisions in scope: 2 existing decision(s) overlap",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-08-17T17:04:51.615Z"
+}

@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: docs/hooks.md at HEAD says 'four hooks' and still documents the pre-1.16.0 mtime Stop-gate design; the activity-marker hook is undocumented. Plausibly the source of the audit readers' original S2-E misdiagnosis. Rewrite scheduled in Wave 1.",
+  "entry_type": "finding",
+  "id": "01M08AY954PBXYAN31HV6MC6CG",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0a0aa89e95bfea113d59b44fc117d56a9a4ddc48",
+    "recorded_at": "2026-08-17T17:05:08.754Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "docs/hooks.md at HEAD says 'four hooks' and still documents the pre-1.16.0 mtime Stop-gate design; the activity-marker hook is undocumented. Plausibly the source of the audit readers' original S2-E…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-08-17T17:05:08.772Z"
+}

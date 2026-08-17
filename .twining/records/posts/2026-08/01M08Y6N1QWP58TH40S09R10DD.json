@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Folded the retrieval design discussion into the read-audit remediation plan: exact-match mode as a Wave 2 rider, new DD-10 \"retrieval v2\" (FTS5+BM25 hybrid), embedding-model swap explicitly deferred with criteria.\nDecisions: Chose to add a first-class exact-match mode (mode: semantic|exact on search_decisions/twining_query) as a Wave 2 rider over leaving keyword search as fallback-only — exact mode is honest-by-construction (zero means zero) for ULIDs/identifiers/error strings, the audit's flagged untested class, and the machinery already exists at search.ts:266.; Chose FTS5+BM25 hybrid fusion (new DD-10 'retrieval v2': RRF fusion, sibling-session clustering, record-kind weighting) as THE semantic-matching improvement over an embedding-model swap — FTS5/bm25() verified working in node:sqlite with zero new dependencies (also upgrades the plugin bundle's keyword-only mode, reducing DD-2's stakes), and the measured row-level failures (sibling crowding, authority-below-consequence) are fusion/diversity problems, not model problems. Pattern right-sized from zilliztech/claude-context: hybrid BM25+dense transfers; vector-DB/Merkle/AST infrastructure does not at our 10^3-10^4 record in-memory scale.; Explicitly deferred the embedding-model swap (bge-small/EmbeddingGemma class) with recorded reconsideration criteria — configurable relevance_floor shipped (Wave 2), per-store model tag + re-embed migration designed, benchmark-harness eval showing band-separation gain — because a swap invalidates every field-calibrated threshold (the report's own warning) and forces store-wide re-embedding migrations; recorded as a named deferral so it is not patched opportunistically.\nFindings: Verified: FTS5 with bm25() ranking is available in node:sqlite (tested on node v25.8.1, in-memory CREATE VIRTUAL TABLE ... USING fts5 + bm25() query) — zero new dependencies, which means real ranked keyword search works everywhere including the plugin bundle that cannot ship @huggingface/transformers. Load-bearing for DD-10 and DD-2.; Current keywordSearch (src/embeddings/search.ts:266) is naive substring TF with log dampening — no IDF, no length normalization, no phrase matching — and is reachable only as a fallback, never as a requested mode.",
+  "entry_type": "status",
+  "id": "01M08Y6N1QWP58TH40S09R10DD",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0a0aa89e95bfea113d59b44fc117d56a9a4ddc48",
+    "recorded_at": "2026-08-17T22:41:46.017Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "Folded the retrieval design discussion into the read-audit remediation plan: exact-match mode as a Wave 2 rider, new DD-10 \"retrieval v2\" (FTS5+BM25 hybrid), embedding-model swap explicitly deferre…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-17T22:41:46.039Z"
+}

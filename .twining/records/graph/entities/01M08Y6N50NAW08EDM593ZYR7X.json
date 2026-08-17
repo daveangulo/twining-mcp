@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-17T22:41:46.144Z",
+  "id": "01M08Y6N50NAW08EDM593ZYR7X",
+  "name": "01M08Y6N4FWH2B7V41KMTJTA1B",
+  "properties": {
+    "scope": "docs/plans/",
+    "summary": "Chose to add a first-class exact-match mode (mode: semantic|exact on search_decisions/twining_query) as a Wave 2 rider over leaving keyword search as fallback-only"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-17T22:41:46.144Z"
+}

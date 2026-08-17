@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Findings: CHANGELOG.md's newest entry is 2.12.0 — releases 2.13.0-2.15.0 shipped tag-only with no changelog entries; the wave-2 ship memo table is currently their only release log. Backfill scheduled in Wave 1 of the remediation plan.; test/backend-resolve.test.ts:45-46 and 94-98 actively enshrine the S0 amnesia bug: they write a 0-byte twining.db beside legacy content and assert {backend: sqlite}. The S0 guard fix is a test-visible deliberate behavior change — those tests must be rewritten in the same commit.; src/engine/verify.ts accepts a fail_on input (verify-tools.ts:40) that the engine never reads — dead parameter surface; wire or remove it during the Wave 4 verify honesty pass.; archive-compactor.ts isArchiverLoopJunk's signature exactly matches legitimate post-1.24.0 archive roll-marker findings (finding + 'Archive: N entries archived' + tags [archive] + scope project), so compact_archives deletes real roll history as loop junk — committed rolls still degrade to git archaeology. Fix scheduled in Wave 4.; docs/hooks.md at HEAD says 'four hooks' and still documents the pre-1.16.0 mtime Stop-gate design; the activity-marker hook is undocumented. Plausibly the source of the audit readers' original S2-E misdiagnosis. Rewrite scheduled in Wave 1.; HEAD's hardcoded SEARCH_NOISE_FLOOR (0.3) sits BELOW the audit's measured plausible-absent query class (peaks 0.337), so the floored total_matched still reads nonzero for exactly the absence class that matters — strengthens the configurable-floor + top_relevance ask (Wave 2).; docs/field-responses/2026-08-13-wave2-ship-memo.md line 183 still lists the sqlite relation-lookup index as open although line 28 records it shipped in 2.15.0 — fix before sending; and memo-send.md's verification step references a twining_status version field that does not exist yet (ships as server_version in Wave 1).",
+  "entry_type": "status",
+  "id": "01M08AY8YHSAHF3YK9J3751KHA",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0a0aa89e95bfea113d59b44fc117d56a9a4ddc48",
+    "recorded_at": "2026-08-17T17:05:08.529Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "Discovered needs from the read-audit triage, beyond the report's own findings",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-17T17:05:08.561Z"
+}

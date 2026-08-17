@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: CHANGELOG.md's newest entry is 2.12.0 — releases 2.13.0-2.15.0 shipped tag-only with no changelog entries; the wave-2 ship memo table is currently their only release log. Backfill scheduled in Wave 1 of the remediation plan.",
+  "entry_type": "finding",
+  "id": "01M08AY9158RHZQHXHC71PM11H",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0a0aa89e95bfea113d59b44fc117d56a9a4ddc48",
+    "recorded_at": "2026-08-17T17:05:08.625Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "CHANGELOG.md's newest entry is 2.12.0 — releases 2.13.0-2.15.0 shipped tag-only with no changelog entries; the wave-2 ship memo table is currently their only release log. Backfill scheduled in Wave…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-08-17T17:05:08.645Z"
+}

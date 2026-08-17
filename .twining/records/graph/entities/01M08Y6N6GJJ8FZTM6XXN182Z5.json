@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-17T22:41:46.192Z",
+  "id": "01M08Y6N6GJJ8FZTM6XXN182Z5",
+  "name": "01M08Y6N5RVNYHHJNCXCWBN216",
+  "properties": {
+    "scope": "docs/plans/",
+    "summary": "Chose FTS5+BM25 hybrid fusion (new DD-10 'retrieval v2': RRF fusion, sibling-session clustering, record-kind weighting) as THE semantic-matching improvement over an embedding-model swap"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-17T22:41:46.192Z"
+}

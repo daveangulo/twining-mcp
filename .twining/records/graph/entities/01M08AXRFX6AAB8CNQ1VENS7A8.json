@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-17T17:04:51.709Z",
+  "id": "01M08AXRFX6AAB8CNQ1VENS7A8",
+  "name": "01M08AXRF0271R20DDPFZ5XMPJ",
+  "properties": {
+    "scope": "docs/plans/",
+    "summary": "Chose to keep the named design decisions (file-wins precedence DD-8, verify content-hash DD-1, agent_id model DD-4, bundle embeddings DD-2, PKG_SPEC pin DD-3, record INVALID_INPUT DD-5 pending field error distribution, full read-only mode DD-6, archive retrieval DD-7, assemble floor size DD-9) OUT of the waves as explicit owner calls"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-17T17:04:51.709Z"
+}

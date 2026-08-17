@@ -1,0 +1,19 @@
+{
+  "agent_id": "main",
+  "detail": "The 2026-08-15 read-context-quality report's top distribution ask was \"publish twining-mcp ≥2.13.0 to npm\" on the belief the npm line was pinned behind the plugin bundle. Verified today: npm dist-tags.latest = 2.15.0, matching local package.json. The field machine resolving 2.6.0 via the launcher's npx rung on 2026-08-15 therefore needs a different mechanism — candidates: npx cache staleness for the PKG_SPEC the launcher passes, or publish timing relative to their session launches. Distribution-cluster triage agent (workflow wf_d71c9861-95e) is checking npm publish timestamps (npm view time) and launch-server.sh PKG_SPEC semantics.",
+  "entry_type": "finding",
+  "id": "01M081J8R441NJ0PKK2ZFBNBRP",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0a0aa89e95bfea113d59b44fc117d56a9a4ddc48",
+    "recorded_at": "2026-08-17T14:21:17.934Z"
+  },
+  "scope": "plugin/scripts/",
+  "summary": "Field report Tier-0 ask 0a already satisfied: npm latest is 2.15.0 (= HEAD). Their 2.6.0 reading needs another explanation — npx cache/publish timing under verification.",
+  "tags": [
+    "field-report-2026-08-15",
+    "distribution",
+    "npm"
+  ],
+  "timestamp": "2026-08-17T14:21:17.957Z"
+}

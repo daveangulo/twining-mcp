@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-17T17:04:51.491Z",
+  "id": "01M08AXR932Q0KX6NDN2GN465V",
+  "name": "01M08AXR867FVQ4142J4GZVA6G",
+  "properties": {
+    "scope": "docs/plans/",
+    "summary": "Chose to classify the report's ask 0a (publish >=2.13.0 to npm) as field-environment-only"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-17T17:04:51.491Z"
+}

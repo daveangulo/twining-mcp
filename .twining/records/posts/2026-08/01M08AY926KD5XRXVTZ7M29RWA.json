@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: test/backend-resolve.test.ts:45-46 and 94-98 actively enshrine the S0 amnesia bug: they write a 0-byte twining.db beside legacy content and assert {backend: sqlite}. The S0 guard fix is a test-visible deliberate behavior change — those tests must be rewritten in the same commit.",
+  "entry_type": "finding",
+  "id": "01M08AY926KD5XRXVTZ7M29RWA",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0a0aa89e95bfea113d59b44fc117d56a9a4ddc48",
+    "recorded_at": "2026-08-17T17:05:08.659Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "test/backend-resolve.test.ts:45-46 and 94-98 actively enshrine the S0 amnesia bug: they write a 0-byte twining.db beside legacy content and assert {backend: sqlite}. The S0 guard fix is a test-visi…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-08-17T17:05:08.678Z"
+}

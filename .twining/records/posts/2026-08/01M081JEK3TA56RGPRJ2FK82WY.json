@@ -1,0 +1,20 @@
+{
+  "agent_id": "main",
+  "detail": "hasSqliteState() at src/storage/backend-resolve.ts:36 returns true on fs.existsSync(twining.db) alone. A zero-length twining.db (field observed three of them, all stamped 2026-08-04, likely an interrupted migration pass) selects the sqlite backend, which cannot read the v1 legacy decisions/ tier, so the store reads as empty and twining_status reports \"Healthy.\" Field blast radius: 3 stores / 1,342 decisions in live amnesia, 12 more stores / 702 decisions latent (db absent today, one 0-byte file away). The module's own docblock states ambiguity must land on the files backend. Also confirmed by field: the only backend warning fires on the SAFE path (legacy-content) while the dangerous sqlite-state path is silent. Top-ranked item of the 2026-08-15 field read-context-quality report; remediation plan in progress this session.",
+  "entry_type": "warning",
+  "id": "01M081JEK3TA56RGPRJ2FK82WY",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0a0aa89e95bfea113d59b44fc117d56a9a4ddc48",
+    "recorded_at": "2026-08-17T14:21:23.910Z"
+  },
+  "scope": "src/storage/",
+  "summary": "Field report S0 silent-amnesia CONFIRMED at HEAD: backend-resolve.ts:36 tests twining.db existence not size — 0-byte db boots empty sqlite beside real v1 legacy decisions.",
+  "tags": [
+    "field-report-2026-08-15",
+    "S0",
+    "backend-resolve",
+    "data-loss"
+  ],
+  "timestamp": "2026-08-17T14:21:23.939Z"
+}
