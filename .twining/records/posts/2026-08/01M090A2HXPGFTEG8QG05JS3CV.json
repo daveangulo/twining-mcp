@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Wave 1 T6: hygiene batch A shipped — twining_commits gains hash validation (INVALID_INPUT on malformed) + 3-state commit_exists with disambiguating message via git cat-file; twining_discover default-excludes zero-overlap agents with excluded_zero_overlap count (min_score:0 restores roster); twining_record rejects empty summary with a repairable message and reason_rejected is now optional to match engine semantics.\nDecisions: Chose handler-level validation for record's empty-summary rejection over zod-only — the SDK validates zod at the transport layer, so a handler check works on every path (including direct invocation) and lets us control the repairable message and INVALID_INPUT code.; Chose the commit_exists probe to map only git exit status 1 to false, everything else to 'unknown' — no-repo/ambiguous-short-SHA/git-missing must never read as 'no such commit'; unknown states it plainly. Note: plugin/BEHAVIORS.md DECIDE-02 still asserts mandatory reason_rejected — doc update deferred to the release batch since plugin/ edits force a version bump.",
+  "entry_type": "status",
+  "id": "01M090A2HXPGFTEG8QG05JS3CV",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8809cff85164a999f92d4dcb0d0df67efd2d2cd8",
+    "recorded_at": "2026-08-17T23:18:35.306Z"
+  },
+  "scope": "src/tools/",
+  "summary": "Wave 1 T6: hygiene batch A shipped — twining_commits gains hash validation (INVALID_INPUT on malformed) + 3-state commit_exists with disambiguating message via git cat-file; twining_discover defaul…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-17T23:18:35.325Z"
+}

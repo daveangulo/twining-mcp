@@ -225,7 +225,10 @@ export function registerRecordTools(
                       option: z.string(),
                       pros: z.array(z.string()).optional(),
                       cons: z.array(z.string()).optional(),
-                      reason_rejected: z.string(),
+                      // Optional to match engine semantics (S4-2): requiring
+                      // it here made the schema's strictest nicety a
+                      // whole-call failure cause in the field.
+                      reason_rejected: z.string().optional(),
                     }),
                   )
                   .optional()
@@ -345,6 +348,14 @@ export function registerRecordTools(
     },
     async (args) => {
       try {
+        // Repairable-by-message validation (S4-2): name the field and the
+        // fix instead of surfacing a bare schema error.
+        if (args.summary.trim().length === 0) {
+          return toolError(
+            "summary must be non-empty — one or two sentences of what you did this session.",
+            "INVALID_INPUT",
+          );
+        }
         // Auto-infer scope from git diff if not provided
         const scope = args.scope ?? inferScopeFromGit(projectRoot) ?? "project";
         const agentId = args.agent_id ?? "main";

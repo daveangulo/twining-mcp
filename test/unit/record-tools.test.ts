@@ -861,3 +861,40 @@ describe("twining_record — dangling supersedes surfaces on the default surface
     expect(body.supersedes_dangling).toBeUndefined();
   });
 });
+
+// HYG-record-fail-rate residue (2026-08-15 field audit S4-2): the engine has
+// always accepted alternatives without reason_rejected; the tool schema
+// rejecting them made the strictest field (a nicety) the failure cause. And
+// an empty summary must fail with a repairable message, not a bare zod error.
+describe("twining_record — input ergonomics (wave 1)", () => {
+  it("rejects an empty summary with a named, repairable message", async () => {
+    const response = await callTool("twining_record", { summary: "   " });
+    const data = parseToolResponse(response) as {
+      error: boolean;
+      message: string;
+      code: string;
+    };
+    expect(data.code).toBe("INVALID_INPUT");
+    expect(data.message).toContain("summary");
+    expect(data.message).toContain("non-empty");
+  });
+
+  it("accepts structured alternatives without reason_rejected", async () => {
+    const response = await callTool("twining_record", {
+      summary: "Did the thing",
+      decisions: [
+        {
+          summary: "Chose A over B",
+          rationale: "A is simpler",
+          alternatives: [{ option: "B" }],
+        },
+      ],
+    });
+    const data = parseToolResponse(response) as {
+      decisions_created: Array<{ id: string; summary: string }>;
+      decision_errors?: unknown[];
+    };
+    expect(data.decisions_created).toHaveLength(1);
+    expect(data.decision_errors ?? []).toEqual([]);
+  });
+});

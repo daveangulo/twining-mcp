@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "zod-only",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Wave 1 T6: hygiene batch A shipped — twining_commits gains hash validation (INVALID_INPUT on malformed) + 3-state commit_exists with disambiguating message via git cat-file; twining_discover default-excludes zero-overlap agents with excluded_zero_overlap count (min_score:0 restores roster); twining_record rejects empty summary with a repairable message and reason_rejected is now optional to match engine semantics.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01M090A2KK2S9WN1R2TERM1SDZ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "8809cff85164a999f92d4dcb0d0df67efd2d2cd8",
+    "recorded_at": "2026-08-17T23:18:35.359Z"
+  },
+  "rationale": "the SDK validates zod at the transport layer, so a handler check works on every path (including direct invocation) and lets us control the repairable message and INVALID_INPUT code.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/tools/",
+  "status": "active",
+  "summary": "Chose handler-level validation for record's empty-summary rejection over zod-only",
+  "timestamp": "2026-08-17T23:18:35.379Z"
+}

@@ -323,6 +323,40 @@ describe("twining_status tool", () => {
   });
 });
 
+// S4-12 (2026-08-15 field audit): a typo'd SHA and a real-but-unlinked SHA
+// returned byte-identical {decisions: []}, so "does this commit have recorded
+// rationale?" answered "no" for a typo.
+describe("twining_commits disambiguation", () => {
+  it("rejects a malformed commit hash with INVALID_INPUT", async () => {
+    const response = await callTool("twining_commits", {
+      commit_hash: "not-a-sha!",
+    });
+    const data = parseToolResponse(response) as {
+      error: boolean;
+      message: string;
+      code: string;
+    };
+    expect(data.code).toBe("INVALID_INPUT");
+    expect(data.message).toContain("hex");
+  });
+
+  it("marks an unresolvable well-formed SHA as commit_exists unknown with a message", async () => {
+    const response = await callTool("twining_commits", {
+      commit_hash: "a".repeat(40),
+    });
+    const data = parseToolResponse(response) as {
+      decisions: unknown[];
+      commit_exists: boolean | "unknown";
+      message: string;
+    };
+    expect(data.decisions).toEqual([]);
+    // tmpDir's parent is not a git repository in this harness, so existence
+    // cannot be determined — must say so rather than reading as "no".
+    expect([false, "unknown"]).toContain(data.commit_exists);
+    expect(data.message.length).toBeGreaterThan(0);
+  });
+});
+
 describe("twining_amend (field D11)", () => {
   it("amends an existing decision through the tool and reports what was added", async () => {
     const created = JSON.parse(

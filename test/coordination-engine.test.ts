@@ -185,13 +185,35 @@ describe("CoordinationEngine.discover()", () => {
     await agentStore.upsert({ agent_id: "no-match", capabilities: ["design"] });
 
     const result = await engine.discover({ required_capabilities: ["code", "test"] });
-    expect(result.agents.length).toBe(3);
+    // S4-8 (2026-08-15 field audit): zero-overlap agents are not matches —
+    // excluded by default, counted so absence stays reportable.
+    expect(result.agents.length).toBe(2);
     expect(result.total_registered).toBe(3);
+    expect(result.excluded_zero_overlap).toBe(1);
+    expect(result.agents.map((a) => a.agent_id)).not.toContain("no-match");
 
     // Sorted descending by total_score
     expect(result.agents[0]!.agent_id).toBe("full-match");
     expect(result.agents[0]!.total_score).toBeGreaterThan(result.agents[1]!.total_score);
     expect(result.agents[1]!.agent_id).toBe("partial-match");
+  });
+
+  it("min_score: 0 restores the zero-overlap roster listing", async () => {
+    await agentStore.upsert({ agent_id: "full-match", capabilities: ["code", "test"] });
+    await agentStore.upsert({ agent_id: "no-match", capabilities: ["design"] });
+    const result = await engine.discover({
+      required_capabilities: ["code", "test"],
+      min_score: 0,
+    });
+    expect(result.agents.map((a) => a.agent_id)).toContain("no-match");
+    expect(result.excluded_zero_overlap).toBe(0);
+  });
+
+  it("empty required_capabilities does not exclude anyone (overlap is 0 for all)", async () => {
+    await agentStore.upsert({ agent_id: "anyone", capabilities: ["design"] });
+    const result = await engine.discover({ required_capabilities: [] });
+    expect(result.agents.map((a) => a.agent_id)).toContain("anyone");
+    expect(result.excluded_zero_overlap).toBe(0);
   });
 
   it("include_gone=false filters out gone agents", async () => {

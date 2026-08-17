@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-17T23:18:35.466Z",
+  "id": "01M090A2PA36CWXA0J283M18PY",
+  "name": "01M090A2NRVM1WE6ZXX3A12XAP",
+  "properties": {
+    "scope": "src/tools/",
+    "summary": "Chose the commit_exists probe to map only git exit status 1 to false, everything else to 'unknown'"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-17T23:18:35.466Z"
+}

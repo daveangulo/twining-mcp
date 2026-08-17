@@ -2,6 +2,8 @@
  * MCP tool handlers for decision operations.
  * Registers twining_decide, twining_why, twining_commits, twining_trace, twining_reconsider, twining_override, twining_promote.
  */
+import { execFileSync } from "node:child_process";
+import path from "node:path";
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { DecisionEngine } from "../engine/decisions.js";
@@ -333,17 +335,52 @@ export function registerDecisionTools(
     "twining_commits",
     {
       description:
-        "Query decisions by commit hash. Returns all decisions that were linked to a given commit, enabling traceability from code changes back to decision rationale.",
+        "Query decisions by commit hash. Returns all decisions that were linked to a given commit, enabling traceability from code changes back to decision rationale. When no decisions match, commit_exists (true | false | \"unknown\") plus a message disambiguate 'commit exists but nothing is linked' from 'no such commit — check the hash'.",
       inputSchema: {
         commit_hash: z
           .string()
-          .describe("Git commit hash to look up"),
+          .describe("Git commit hash to look up (7-40 hex chars)"),
       },
     },
     async (args) => {
       try {
-        const result = await engine.getByCommitHash(args.commit_hash);
-        return toolResult(result);
+        // S4-12 (2026-08-15 field audit): a typo'd SHA and an unlinked SHA
+        // returned byte-identical {decisions: []} — the natural question
+        // "does this commit have recorded rationale?" answered "no" for a
+        // typo. Validate the shape, then probe existence on empty results.
+        const hash = args.commit_hash.trim();
+        if (!/^[0-9a-fA-F]{7,40}$/.test(hash)) {
+          return toolError(
+            `commit_hash must be a 7-40 character hex SHA (got "${args.commit_hash}")`,
+            "INVALID_INPUT",
+          );
+        }
+        const result = await engine.getByCommitHash(hash);
+        if (result.decisions.length > 0) {
+          return toolResult(result);
+        }
+        let commit_exists: boolean | "unknown" = "unknown";
+        try {
+          execFileSync("git", ["cat-file", "-e", `${hash}^{commit}`], {
+            cwd: path.dirname(twiningDir),
+            timeout: 3000,
+            stdio: "ignore",
+          });
+          commit_exists = true;
+        } catch (err) {
+          // Exit 1 = valid repo, object genuinely absent. Anything else
+          // (no repo, ambiguous short SHA, git missing) stays "unknown" —
+          // never let a probe failure read as "no such commit".
+          const status = (err as { status?: number | null }).status;
+          commit_exists = status === 1 ? false : "unknown";
+        }
+        const message =
+          commit_exists === true
+            ? "Commit exists but has no linked decisions — twining_link_commit was never called for it."
+            : commit_exists === false
+              ? "No such commit in this repository — check the hash for typos."
+              : "Commit existence could not be determined (not a git repository, ambiguous short SHA, or git unavailable) — an empty result here does not prove the commit is unlinked.";
+        return toolResult({ ...result, commit_exists, message });
       } catch (e) {
         if (e instanceof TwiningError) {
           return toolError(e.message, e.code);

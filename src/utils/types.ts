@@ -495,6 +495,9 @@ export interface AgentScore {
 export interface DiscoverResult {
   agents: AgentScore[];
   total_registered: number;
+  /** Zero-capability-overlap agents excluded by the no-min_score default
+   * (S4-8) — nonzero means "absent from results", not "unregistered". */
+  excluded_zero_overlap: number;
 }
 
 // Delegation types

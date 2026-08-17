@@ -161,9 +161,18 @@ export class CoordinationEngine {
       scores = scores.filter((s) => s.liveness !== "gone");
     }
 
-    // Filter: exclude agents below min_score threshold
+    // Filter: exclude agents below min_score threshold. When the caller sets
+    // no threshold but asked for capabilities, zero-overlap agents are not
+    // matches (S4-8, 2026-08-15 field audit: 95 zero-overlap rows returned as
+    // "matches" — ~3,250 tokens of zero information). Excluded rows are
+    // counted so absence stays reportable; min_score: 0 restores the listing.
+    let excluded_zero_overlap = 0;
     if (input.min_score !== undefined) {
       scores = scores.filter((s) => s.total_score >= input.min_score!);
+    } else if (input.required_capabilities.length > 0) {
+      const before = scores.length;
+      scores = scores.filter((s) => s.capability_overlap > 0);
+      excluded_zero_overlap = before - scores.length;
     }
 
     // Sort by total_score descending
@@ -172,6 +181,7 @@ export class CoordinationEngine {
     return {
       agents: scores,
       total_registered: agents.length,
+      excluded_zero_overlap,
     };
   }
 
