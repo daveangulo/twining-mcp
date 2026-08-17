@@ -38,6 +38,35 @@ interface ScoredItem {
   data: Decision | BlackboardEntry;
 }
 
+/**
+ * Render-time dedupe for the lossless truncation format (S4-1): when a
+ * summary was truncated at write time, its detail begins with
+ * "Full summary: <full text>" where the full text extends the truncated
+ * summary. Rendering both prints the same words twice. Guarded on the
+ * summary actually prefixing the full text, so a caller-authored detail
+ * that merely starts with the marker passes through untouched.
+ */
+function dedupeFullSummary(
+  summary: string,
+  detail: string | undefined,
+): { headline: string; detail: string } {
+  const marker = "Full summary: ";
+  if (!detail || !detail.startsWith(marker)) {
+    return { headline: summary, detail: detail ?? "" };
+  }
+  const stripped = summary.endsWith("…") ? summary.slice(0, -1) : summary;
+  const newlineIdx = detail.indexOf("\n");
+  const firstLine = newlineIdx === -1 ? detail : detail.slice(0, newlineIdx);
+  const fullText = firstLine.slice(marker.length);
+  if (!fullText.startsWith(stripped)) {
+    return { headline: summary, detail };
+  }
+  return {
+    headline: fullText,
+    detail: newlineIdx === -1 ? "" : detail.slice(newlineIdx + 1),
+  };
+}
+
 export class ContextAssembler {
   private readonly blackboardStore: IBlackboardStore;
   private readonly decisionStore: IDecisionStore;
@@ -705,7 +734,12 @@ export class ContextAssembler {
       sections.push("\n### STOP — READ THESE WARNINGS");
       for (const w of ctx.active_warnings) {
         const selfMark = w.self_authored ? " [this session]" : "";
-        sections.push(`- **${w.summary}**${selfMark}${w.detail ? `\n  ${w.detail}` : ""}`);
+        // S4-1: the lossless-write format ("Full summary: <full text>" in
+        // detail behind a truncated summary) rendered the same text twice —
+        // preview line plus its strict superset. Dedupe at render, keeping
+        // the on-disk format intact.
+        const { headline, detail } = dedupeFullSummary(w.summary, w.detail);
+        sections.push(`- **${headline}**${selfMark}${detail ? `\n  ${detail}` : ""}`);
       }
     }
 

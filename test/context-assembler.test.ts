@@ -1680,3 +1680,60 @@ describe("ContextAssembler — self-post marking (field D12, wave B)", () => {
     expect(briefing).not.toContain("[this session]");
   });
 });
+
+// S4-1 (2026-08-15 field audit): every truncated-summary warning rendered
+// twice — the truncated preview line immediately followed by "Full summary:
+// <full text>", a strict superset. Roughly half of a warning-dense briefing
+// conveyed nothing the other half didn't.
+describe("formatForLLM — Full summary dedupe", () => {
+  function makeDedupeDir(): string {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "twining-dedupe-"));
+    fs.writeFileSync(path.join(dir, "blackboard.jsonl"), "");
+    fs.mkdirSync(path.join(dir, "decisions"), { recursive: true });
+    fs.writeFileSync(path.join(dir, "decisions", "index.json"), "[]");
+    return dir;
+  }
+
+  it("renders a truncated-summary warning once, full text as the headline", async () => {
+    const dir = makeDedupeDir();
+    const bbStore = new BlackboardStore(dir);
+    const dStore = new DecisionStore(dir);
+    const longSummary =
+      "The revert warning surface must dedupe by scope and detail identity because " +
+      "otherwise the same reverted decision reposts on every ingest cycle ".repeat(3);
+    const truncated = longSummary.slice(0, 197) + "…";
+    await bbStore.append({
+      agent_id: "t",
+      entry_type: "warning",
+      tags: [],
+      scope: "src/dd/",
+      summary: truncated,
+      detail: `Full summary: ${longSummary}`,
+    });
+    const assembler = new ContextAssembler(bbStore, dStore, null, makeConfig());
+    const result = await assembler.assemble("dedupe check", "src/dd/");
+    const briefing = ContextAssembler.formatForLLM(result);
+    expect(briefing).toContain(longSummary);
+    expect(briefing).not.toContain(truncated);
+    expect(briefing).not.toContain("Full summary:");
+  });
+
+  it("keeps caller-authored details that merely start with the marker", async () => {
+    const dir = makeDedupeDir();
+    const bbStore = new BlackboardStore(dir);
+    const dStore = new DecisionStore(dir);
+    await bbStore.append({
+      agent_id: "t",
+      entry_type: "warning",
+      tags: [],
+      scope: "src/dd/",
+      summary: "Unrelated headline about locking",
+      detail: "Full summary: of an entirely different investigation goes here",
+    });
+    const assembler = new ContextAssembler(bbStore, dStore, null, makeConfig());
+    const result = await assembler.assemble("dedupe check", "src/dd/");
+    const briefing = ContextAssembler.formatForLLM(result);
+    expect(briefing).toContain("Unrelated headline about locking");
+    expect(briefing).toContain("Full summary: of an entirely different investigation goes here");
+  });
+});
