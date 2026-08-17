@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Wave 1 T2: backend + version surfacing shipped — StoreSet carries reason + legacy_unread; empty-sqlite-beside-legacy now warns loudly at boot (auto AND explicit paths) and as the FIRST twining_status warning; status response gains server_version/backend/backend_reason; description declares provisional_decisions the canonical ratify count.\nDecisions: Chose an optional ServerIdentity 9th parameter on registerLifecycleTools with spread-if-present response fields over always-emitting fields with placeholder values — keeps the dashboard/test call sites compiling unchanged while production (server.ts) always supplies full identity; a placeholder 'unknown' version would recreate the exact reads-as-answer failure the audit documents.; Chose the runtime empty-db-beside-legacy check at the factory seam (sync COUNT on the decisions table after ingest) over a resolver-time check — it covers the explicit backend:sqlite path the resolver never sees and the valid-but-empty-db residue the S0 header guard deliberately does not catch; post-migrate repos stay quiet because their table is populated.",
+  "entry_type": "status",
+  "id": "01M08YR4B21M3M8TEYT1MBCVDG",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "ccaa8178f839496230cf5c1dda5cc06ed07d75fd",
+    "recorded_at": "2026-08-17T22:51:18.736Z"
+  },
+  "scope": "src/storage/",
+  "summary": "Wave 1 T2: backend + version surfacing shipped — StoreSet carries reason + legacy_unread; empty-sqlite-beside-legacy now warns loudly at boot (auto AND explicit paths) and as the FIRST twining_stat…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-17T22:51:18.754Z"
+}

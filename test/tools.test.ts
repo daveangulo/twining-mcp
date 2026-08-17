@@ -72,7 +72,12 @@ beforeEach(() => {
   server = new McpServer({ name: "test-server", version: "1.0.0" });
   registerBlackboardTools(server, bbEngine, tmpDir, { fullSurface: true });
   registerDecisionTools(server, dcsnEngine, tmpDir, { fullSurface: true });
-  registerLifecycleTools(server, tmpDir, bbStore, dcsnStore, graphStore, archiver, DEFAULT_CONFIG, agentStore);
+  registerLifecycleTools(server, tmpDir, bbStore, dcsnStore, graphStore, archiver, DEFAULT_CONFIG, agentStore, {
+    serverVersion: "0.0.0-test",
+    backend: "files",
+    backendReason: "explicit",
+    legacyUnread: false,
+  });
 });
 
 afterEach(() => {
@@ -251,6 +256,40 @@ describe("twining_status tool", () => {
     };
     expect(data.registered_agents).toBe(0);
     expect(data.active_agents).toBe(0);
+  });
+
+  // 2026-08-15 field audit S0/S0-B: a session must be able to learn which
+  // build and which backend serve it from the response itself.
+  it("reports server_version, backend and backend_reason", async () => {
+    const response = await callTool("twining_status", {});
+    const data = parseToolResponse(response) as {
+      server_version: string;
+      backend: string;
+      backend_reason: string;
+    };
+    expect(data.server_version).toBe("0.0.0-test");
+    expect(data.backend).toBe("files");
+    expect(data.backend_reason).toBe("explicit");
+  });
+
+  it("warns loudly when sqlite is empty beside unread legacy content", async () => {
+    const s2 = new McpServer({ name: "test2", version: "0.0.0" });
+    registerLifecycleTools(s2, tmpDir, bbStore, dcsnStore, graphStore, archiver, DEFAULT_CONFIG, agentStore, {
+      serverVersion: "0.0.0-test",
+      backend: "sqlite",
+      backendReason: "sqlite-state",
+      legacyUnread: true,
+    });
+    const registeredTools = (s2 as unknown as { _registeredTools: Record<string, { handler: (args: Record<string, unknown>, extra: unknown) => Promise<unknown> }> })._registeredTools;
+    const result = (await registeredTools["twining_status"]!.handler({}, {})) as {
+      content: Array<{ type: string; text: string }>;
+    };
+    const data = JSON.parse(result.content[0]!.text) as {
+      warnings: string[];
+      summary: string;
+    };
+    expect(data.warnings.some((w) => w.includes("UNREAD") && w.includes("migrate"))).toBe(true);
+    expect(data.summary).toContain("Needs attention");
   });
 });
 

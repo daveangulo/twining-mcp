@@ -154,6 +154,45 @@ describe("createStores auto resolution (v2 default flip)", () => {
     expect(stores.backend).toBe("files");
   });
 
+  it.runIf(HAS_SQLITE)("StoreSet carries the resolution reason (fresh)", () => {
+    const stores = createStores(dir, { ...DEFAULT_CONFIG });
+    expect(stores.reason).toBe("fresh");
+    expect(stores.legacy_unread).toBe(false);
+  });
+
+  it("StoreSet carries the resolution reason (legacy-content)", () => {
+    fs.writeFileSync(path.join(dir, "blackboard.jsonl"), '{"id":"01X"}\n');
+    const stores = createStores(dir, { ...DEFAULT_CONFIG });
+    expect(stores.reason).toBe("legacy-content");
+    expect(stores.legacy_unread).toBe(false);
+  });
+
+  it("StoreSet carries reason 'explicit' for a configured backend", () => {
+    const config = {
+      ...DEFAULT_CONFIG,
+      storage: { ...DEFAULT_CONFIG.storage, backend: "files" as const },
+    };
+    const stores = createStores(dir, config);
+    expect(stores.reason).toBe("explicit");
+  });
+
+  // S0-explicit: config backend: sqlite over an empty db beside legacy-only
+  // content must not boot silently — the store would read as empty.
+  it.runIf(HAS_SQLITE)(
+    "explicit sqlite with empty db beside legacy content sets legacy_unread",
+    () => {
+      fs.mkdirSync(path.join(dir, "decisions"));
+      fs.writeFileSync(path.join(dir, "decisions", "index.json"), '[{"id":"01X"}]');
+      const config = {
+        ...DEFAULT_CONFIG,
+        storage: { ...DEFAULT_CONFIG.storage, backend: "sqlite" as const },
+      };
+      const stores = createStores(dir, config);
+      expect(stores.backend).toBe("sqlite");
+      expect(stores.legacy_unread).toBe(true);
+    },
+  );
+
   it("user-set auto_migrate survives config merge (deepMerge target trap)", () => {
     fs.writeFileSync(
       path.join(dir, "config.yml"),

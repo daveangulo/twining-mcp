@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "always-emitting fields with placeholder values",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Wave 1 T2: backend + version surfacing shipped — StoreSet carries reason + legacy_unread; empty-sqlite-beside-legacy now warns loudly at boot (auto AND explicit paths) and as the FIRST twining_status warning; status response gains server_version/backend/backend_reason; description declares provisional_decisions the canonical ratify count.",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01M08YR4CXQPDJ55WPCDBDX5XR",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "ccaa8178f839496230cf5c1dda5cc06ed07d75fd",
+    "recorded_at": "2026-08-17T22:51:18.793Z"
+  },
+  "rationale": "keeps the dashboard/test call sites compiling unchanged while production (server.ts) always supplies full identity; a placeholder 'unknown' version would recreate the exact reads-as-answer failure the audit documents.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/storage/",
+  "status": "active",
+  "summary": "Chose an optional ServerIdentity 9th parameter on registerLifecycleTools with spread-if-present response fields over always-emitting fields with placeholder values",
+  "timestamp": "2026-08-17T22:51:18.813Z"
+}

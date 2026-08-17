@@ -16,6 +16,17 @@ import {
 import { toolResult, toolError, TwiningError } from "../utils/errors.js";
 import type { IAgentStore, IBlackboardStore, IDecisionStore, IGraphStore } from "../storage/interfaces.js";
 
+/** Build/backend identity threaded from createServer so a session can learn
+ * which server build and storage backend serve it from the response itself
+ * (2026-08-15 field audit: two builds served concurrent sessions on one
+ * machine and nothing in any response could tell them apart). */
+export interface ServerIdentity {
+  serverVersion?: string;
+  backend?: "files" | "sqlite";
+  backendReason?: string;
+  legacyUnread?: boolean;
+}
+
 export function registerLifecycleTools(
   server: McpServer,
   twiningDir: string,
@@ -25,13 +36,14 @@ export function registerLifecycleTools(
   archiver: Archiver,
   config: TwiningConfig,
   agentStore: IAgentStore | null = null,
+  identity: ServerIdentity = {},
 ): void {
   // twining_status — Overall health check of the Twining state
   server.registerTool(
     "twining_status",
     {
       description:
-        "Overall health check of the Twining state. Shows blackboard entry count, decision counts, graph entity/relation counts, actionable warnings, and a human-readable summary. Note: twining_assemble now includes a status summary — use this only when you need the full detailed health check.",
+        "Overall health check of the Twining state. Shows blackboard entry count, decision counts, graph entity/relation counts, actionable warnings, the server_version and resolved storage backend, and a human-readable summary. provisional_decisions is the canonical ratify-queue count — a direct index count no query can distort (scoped variant: twining_triage counts.open.by_kind.decision). Note: twining_assemble now includes a status summary — use this only when you need the full detailed health check.",
     },
     async () => {
       try {
@@ -102,6 +114,15 @@ export function registerLifecycleTools(
         // Actionable warnings
         const warnings: string[] = [];
 
+        // Silent-amnesia surface (S0): the one warning that must never be
+        // quiet. First in the list — every other warning is secondary to
+        // "your store is not reading its own state".
+        if (identity.legacyUnread) {
+          warnings.push(
+            "Legacy v1 decisions/blackboard content is present but UNREAD by the sqlite backend — this store reads as empty. Run `npx twining-mcp migrate` to import it (see docs/UPGRADE-v2.md).",
+          );
+        }
+
         // Stale provisionals: older than 7 days
         const sevenDaysAgo = new Date(
           Date.now() - 7 * 24 * 60 * 60 * 1000,
@@ -166,6 +187,13 @@ export function registerLifecycleTools(
 
         return toolResult({
           project,
+          ...(identity.serverVersion
+            ? { server_version: identity.serverVersion }
+            : {}),
+          ...(identity.backend ? { backend: identity.backend } : {}),
+          ...(identity.backendReason
+            ? { backend_reason: identity.backendReason }
+            : {}),
           blackboard_entries,
           active_decisions,
           provisional_decisions,

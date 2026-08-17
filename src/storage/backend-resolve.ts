@@ -78,7 +78,7 @@ function dirHasAnyFile(dir: string): boolean {
   return false;
 }
 
-function hasLegacyContent(twiningDir: string): boolean {
+export function hasLegacyContent(twiningDir: string): boolean {
   const blackboard = path.join(twiningDir, "blackboard.jsonl");
   if (fs.existsSync(blackboard)) {
     try {

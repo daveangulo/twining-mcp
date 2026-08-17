@@ -79,6 +79,8 @@ export function createServer(projectRoot: string): ServerContext {
   // Create stores for the configured backend ("files" default, "sqlite" opt-in)
   const {
     backend,
+    reason: backendReason,
+    legacy_unread: legacyUnread,
     blackboardStore,
     decisionStore,
     graphStore,
@@ -297,6 +299,12 @@ export function createServer(projectRoot: string): ServerContext {
       archiver,
       config,
       agentStore,
+      {
+        serverVersion: PKG_VERSION,
+        backend,
+        backendReason,
+        legacyUnread,
+      },
     );
     registerGraphTools(server, graphEngine);
   }
