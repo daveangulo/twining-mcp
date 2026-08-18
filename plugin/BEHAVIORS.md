@@ -222,7 +222,7 @@ Record a decision with full rationale, alternatives considered, and traceability
 | ID | Level | Rule |
 |----|-------|------|
 | DECIDE-01 | MUST | Provide a specific, non-trivial rationale that explains the reasoning behind the choice -- not just "seemed right" or "best option" |
-| DECIDE-02 | MUST | Include at least one rejected alternative with a reason_rejected explaining why it was not chosen -- even "do nothing" is a valid alternative |
+| DECIDE-02 | MUST | Include at least one rejected alternative -- even "do nothing" is a valid alternative. Give each a reason_rejected explaining why it was not chosen (strongly encouraged; since server 2.16.0 the schema accepts its absence, but an alternative without a reason loses most of its value) |
 | DECIDE-03 | MUST | Use twining_decide for all decisions, never twining_post with entry_type "decision" -- twining_decide provides conflict detection, rationale tracking, and traceability that twining_post lacks |
 | DECIDE-04 | SHOULD | Use the narrowest scope that covers affected code rather than "project" |
 | DECIDE-05 | SHOULD | Set confidence to "low" or "medium" for decisions that need validation through implementation |

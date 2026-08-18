@@ -2,10 +2,12 @@
 
 All notable changes to Twining MCP are documented here.
 
-## [Unreleased] — 2.16.0
+## [2.16.0] - 2026-08-18
 
 Wave 1 of the 2026-08-15 field read-context-quality audit response
-(plan: `docs/plans/2026-08-17-read-audit-remediation-plan.md`).
+(plan: `docs/plans/2026-08-17-read-audit-remediation-plan.md`). Plugin
+1.34.0 (bundle rebuild; BEHAVIORS DECIDE-02 reworded — `reason_rejected`
+strongly encouraged rather than schema-mandatory, matching the server).
 
 ### Fixed
 - **S0 silent-amnesia guard.** `twining.db` counts as sqlite state only when

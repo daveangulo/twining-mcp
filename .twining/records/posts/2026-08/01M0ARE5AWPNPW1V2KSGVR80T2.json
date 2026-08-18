@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: 2.16.0 release prep: BEHAVIORS DECIDE-02 reworded (alternative still MUST; reason_rejected strongly-encouraged, matching the 2.16.0 schema on both record and decide), plugin bumped 1.33.0→1.34.0 with bundle rebuild, CHANGELOG Unreleased section retitled [2.16.0] - 2026-08-18. Next: npm version 2.16.0 (rebuilds bundle again against the final tree), tag push → CI publish.",
+  "entry_type": "status",
+  "id": "01M0ARE5AWPNPW1V2KSGVR80T2",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "c619bed29bd9a54cac43a9ce2e00f349d28f4f32",
+    "recorded_at": "2026-08-18T15:39:29.483Z"
+  },
+  "scope": "plugin/",
+  "summary": "2.16.0 release prep: BEHAVIORS DECIDE-02 reworded (alternative still MUST; reason_rejected strongly-encouraged, matching the 2.16.0 schema on both record and decide), plugin bumped 1.33.0→1.34.0 wi…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-18T15:39:29.500Z"
+}

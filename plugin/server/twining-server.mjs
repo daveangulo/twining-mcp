@@ -3244,8 +3244,8 @@ var require_utils = __commonJS({
       }
       return ind;
     }
-    function removeDotSegments(path38) {
-      let input = path38;
+    function removeDotSegments(path39) {
+      let input = path39;
       const output = [];
       let nextSlash = -1;
       let len = 0;
@@ -3444,8 +3444,8 @@ var require_schemes = __commonJS({
         wsComponent.secure = void 0;
       }
       if (wsComponent.resourceName) {
-        const [path38, query] = wsComponent.resourceName.split("?");
-        wsComponent.path = path38 && path38 !== "/" ? path38 : void 0;
+        const [path39, query] = wsComponent.resourceName.split("?");
+        wsComponent.path = path39 && path39 !== "/" ? path39 : void 0;
         wsComponent.query = query;
         wsComponent.resourceName = void 0;
       }
@@ -9836,14 +9836,14 @@ var require_polyfills = __commonJS({
       fs33.fstatSync = statFixSync(fs33.fstatSync);
       fs33.lstatSync = statFixSync(fs33.lstatSync);
       if (fs33.chmod && !fs33.lchmod) {
-        fs33.lchmod = function(path38, mode, cb) {
+        fs33.lchmod = function(path39, mode, cb) {
           if (cb) process.nextTick(cb);
         };
         fs33.lchmodSync = function() {
         };
       }
       if (fs33.chown && !fs33.lchown) {
-        fs33.lchown = function(path38, uid, gid, cb) {
+        fs33.lchown = function(path39, uid, gid, cb) {
           if (cb) process.nextTick(cb);
         };
         fs33.lchownSync = function() {
@@ -9910,9 +9910,9 @@ var require_polyfills = __commonJS({
         };
       })(fs33.readSync);
       function patchLchmod(fs34) {
-        fs34.lchmod = function(path38, mode, callback) {
+        fs34.lchmod = function(path39, mode, callback) {
           fs34.open(
-            path38,
+            path39,
             constants.O_WRONLY | constants.O_SYMLINK,
             mode,
             function(err, fd) {
@@ -9928,8 +9928,8 @@ var require_polyfills = __commonJS({
             }
           );
         };
-        fs34.lchmodSync = function(path38, mode) {
-          var fd = fs34.openSync(path38, constants.O_WRONLY | constants.O_SYMLINK, mode);
+        fs34.lchmodSync = function(path39, mode) {
+          var fd = fs34.openSync(path39, constants.O_WRONLY | constants.O_SYMLINK, mode);
           var threw = true;
           var ret;
           try {
@@ -9950,8 +9950,8 @@ var require_polyfills = __commonJS({
       }
       function patchLutimes(fs34) {
         if (constants.hasOwnProperty("O_SYMLINK") && fs34.futimes) {
-          fs34.lutimes = function(path38, at, mt, cb) {
-            fs34.open(path38, constants.O_SYMLINK, function(er, fd) {
+          fs34.lutimes = function(path39, at, mt, cb) {
+            fs34.open(path39, constants.O_SYMLINK, function(er, fd) {
               if (er) {
                 if (cb) cb(er);
                 return;
@@ -9963,8 +9963,8 @@ var require_polyfills = __commonJS({
               });
             });
           };
-          fs34.lutimesSync = function(path38, at, mt) {
-            var fd = fs34.openSync(path38, constants.O_SYMLINK);
+          fs34.lutimesSync = function(path39, at, mt) {
+            var fd = fs34.openSync(path39, constants.O_SYMLINK);
             var ret;
             var threw = true;
             try {
@@ -10082,11 +10082,11 @@ var require_legacy_streams = __commonJS({
         ReadStream,
         WriteStream
       };
-      function ReadStream(path38, options) {
-        if (!(this instanceof ReadStream)) return new ReadStream(path38, options);
+      function ReadStream(path39, options) {
+        if (!(this instanceof ReadStream)) return new ReadStream(path39, options);
         Stream.call(this);
         var self2 = this;
-        this.path = path38;
+        this.path = path39;
         this.fd = null;
         this.readable = true;
         this.paused = false;
@@ -10131,10 +10131,10 @@ var require_legacy_streams = __commonJS({
           self2._read();
         });
       }
-      function WriteStream(path38, options) {
-        if (!(this instanceof WriteStream)) return new WriteStream(path38, options);
+      function WriteStream(path39, options) {
+        if (!(this instanceof WriteStream)) return new WriteStream(path39, options);
         Stream.call(this);
-        this.path = path38;
+        this.path = path39;
         this.fd = null;
         this.writable = true;
         this.flags = "w";
@@ -10277,14 +10277,14 @@ var require_graceful_fs = __commonJS({
       fs34.createWriteStream = createWriteStream;
       var fs$readFile = fs34.readFile;
       fs34.readFile = readFile;
-      function readFile(path38, options, cb) {
+      function readFile(path39, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$readFile(path38, options, cb);
-        function go$readFile(path39, options2, cb2, startTime) {
-          return fs$readFile(path39, options2, function(err) {
+        return go$readFile(path39, options, cb);
+        function go$readFile(path40, options2, cb2, startTime) {
+          return fs$readFile(path40, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$readFile, [path39, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$readFile, [path40, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -10294,14 +10294,14 @@ var require_graceful_fs = __commonJS({
       }
       var fs$writeFile = fs34.writeFile;
       fs34.writeFile = writeFile;
-      function writeFile(path38, data, options, cb) {
+      function writeFile(path39, data, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$writeFile(path38, data, options, cb);
-        function go$writeFile(path39, data2, options2, cb2, startTime) {
-          return fs$writeFile(path39, data2, options2, function(err) {
+        return go$writeFile(path39, data, options, cb);
+        function go$writeFile(path40, data2, options2, cb2, startTime) {
+          return fs$writeFile(path40, data2, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$writeFile, [path39, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$writeFile, [path40, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -10312,14 +10312,14 @@ var require_graceful_fs = __commonJS({
       var fs$appendFile = fs34.appendFile;
       if (fs$appendFile)
         fs34.appendFile = appendFile;
-      function appendFile(path38, data, options, cb) {
+      function appendFile(path39, data, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$appendFile(path38, data, options, cb);
-        function go$appendFile(path39, data2, options2, cb2, startTime) {
-          return fs$appendFile(path39, data2, options2, function(err) {
+        return go$appendFile(path39, data, options, cb);
+        function go$appendFile(path40, data2, options2, cb2, startTime) {
+          return fs$appendFile(path40, data2, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$appendFile, [path39, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$appendFile, [path40, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -10350,31 +10350,31 @@ var require_graceful_fs = __commonJS({
       var fs$readdir = fs34.readdir;
       fs34.readdir = readdir;
       var noReaddirOptionVersions = /^v[0-5]\./;
-      function readdir(path38, options, cb) {
+      function readdir(path39, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        var go$readdir = noReaddirOptionVersions.test(process.version) ? function go$readdir2(path39, options2, cb2, startTime) {
-          return fs$readdir(path39, fs$readdirCallback(
-            path39,
+        var go$readdir = noReaddirOptionVersions.test(process.version) ? function go$readdir2(path40, options2, cb2, startTime) {
+          return fs$readdir(path40, fs$readdirCallback(
+            path40,
             options2,
             cb2,
             startTime
           ));
-        } : function go$readdir2(path39, options2, cb2, startTime) {
-          return fs$readdir(path39, options2, fs$readdirCallback(
-            path39,
+        } : function go$readdir2(path40, options2, cb2, startTime) {
+          return fs$readdir(path40, options2, fs$readdirCallback(
+            path40,
             options2,
             cb2,
             startTime
           ));
         };
-        return go$readdir(path38, options, cb);
-        function fs$readdirCallback(path39, options2, cb2, startTime) {
+        return go$readdir(path39, options, cb);
+        function fs$readdirCallback(path40, options2, cb2, startTime) {
           return function(err, files) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
               enqueue([
                 go$readdir,
-                [path39, options2, cb2],
+                [path40, options2, cb2],
                 err,
                 startTime || Date.now(),
                 Date.now()
@@ -10445,7 +10445,7 @@ var require_graceful_fs = __commonJS({
         enumerable: true,
         configurable: true
       });
-      function ReadStream(path38, options) {
+      function ReadStream(path39, options) {
         if (this instanceof ReadStream)
           return fs$ReadStream.apply(this, arguments), this;
         else
@@ -10465,7 +10465,7 @@ var require_graceful_fs = __commonJS({
           }
         });
       }
-      function WriteStream(path38, options) {
+      function WriteStream(path39, options) {
         if (this instanceof WriteStream)
           return fs$WriteStream.apply(this, arguments), this;
         else
@@ -10483,22 +10483,22 @@ var require_graceful_fs = __commonJS({
           }
         });
       }
-      function createReadStream(path38, options) {
-        return new fs34.ReadStream(path38, options);
+      function createReadStream(path39, options) {
+        return new fs34.ReadStream(path39, options);
       }
-      function createWriteStream(path38, options) {
-        return new fs34.WriteStream(path38, options);
+      function createWriteStream(path39, options) {
+        return new fs34.WriteStream(path39, options);
       }
       var fs$open = fs34.open;
       fs34.open = open;
-      function open(path38, flags, mode, cb) {
+      function open(path39, flags, mode, cb) {
         if (typeof mode === "function")
           cb = mode, mode = null;
-        return go$open(path38, flags, mode, cb);
-        function go$open(path39, flags2, mode2, cb2, startTime) {
-          return fs$open(path39, flags2, mode2, function(err, fd) {
+        return go$open(path39, flags, mode, cb);
+        function go$open(path40, flags2, mode2, cb2, startTime) {
+          return fs$open(path40, flags2, mode2, function(err, fd) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$open, [path39, flags2, mode2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$open, [path40, flags2, mode2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -11027,7 +11027,7 @@ var require_mtime_precision = __commonJS({
 var require_lockfile = __commonJS({
   "node_modules/proper-lockfile/lib/lockfile.js"(exports, module) {
     "use strict";
-    var path38 = __require("path");
+    var path39 = __require("path");
     var fs33 = require_graceful_fs();
     var retry = require_retry2();
     var onExit = require_signal_exit();
@@ -11038,7 +11038,7 @@ var require_lockfile = __commonJS({
     }
     function resolveCanonicalPath(file, options, callback) {
       if (!options.realpath) {
-        return callback(null, path38.resolve(file));
+        return callback(null, path39.resolve(file));
       }
       options.fs.realpath(file, callback);
     }
@@ -11830,9 +11830,30 @@ var init_blackboard_store = __esm({
   }
 });
 
+// src/utils/commit-hash.ts
+function commitHashMatches(stored, query) {
+  const h = stored.toLowerCase();
+  const q = query.toLowerCase();
+  if (h === q) return true;
+  if (h.length < 4 || q.length < 4) return false;
+  return h.startsWith(q) || q.startsWith(h);
+}
+var init_commit_hash = __esm({
+  "src/utils/commit-hash.ts"() {
+    "use strict";
+  }
+});
+
 // src/storage/decision-store.ts
 import fs5 from "node:fs";
 import path6 from "node:path";
+function isSalvageableDecision(raw, expectedId) {
+  if (raw === null || typeof raw !== "object" || Array.isArray(raw)) {
+    return false;
+  }
+  const d = raw;
+  return d.id === expectedId && typeof d.scope === "string" && typeof d.summary === "string" && typeof d.timestamp === "string" && typeof d.status === "string";
+}
 var import_proper_lockfile2, DecisionStore;
 var init_decision_store = __esm({
   "src/storage/decision-store.ts"() {
@@ -11841,6 +11862,7 @@ var init_decision_store = __esm({
     init_file_store();
     init_ids();
     init_scope();
+    init_commit_hash();
     DecisionStore = class {
       decisionsDir;
       indexPath;
@@ -11967,6 +11989,74 @@ var init_decision_store = __esm({
         }
         this.cachedIndex = null;
       }
+      /**
+       * Index-desync detection + repair (S0-index-desync, 2026-08-15 field
+       * audit): every read path is index-driven, so a decision file missing
+       * from index.json is silently invisible — the runtime twin of the
+       * migrate CLI's orphan salvage. Preview reports orphan ids; execute
+       * appends salvaged entries under the index lock. Unparseable files are
+       * counted as orphans but never repaired, modified, or deleted — legacy
+       * files are their own backup.
+       */
+      async repairIndexDesync(execute) {
+        if (!fs5.existsSync(this.decisionsDir)) {
+          return { orphan_ids: [], repaired: 0, skipped_invalid: 0 };
+        }
+        const indexed = await this.getIndex().catch(() => []);
+        const known = new Set(indexed.map((e) => e.id));
+        const orphan_ids = [];
+        for (const file of fs5.readdirSync(this.decisionsDir)) {
+          if (file === "index.json" || !file.endsWith(".json")) continue;
+          const id = file.slice(0, -".json".length);
+          if (!known.has(id)) orphan_ids.push(id);
+        }
+        if (!execute || orphan_ids.length === 0) {
+          return { orphan_ids, repaired: 0, skipped_invalid: 0 };
+        }
+        let repaired = 0;
+        let skipped_invalid = 0;
+        ensureFileExists(this.indexPath, "[]");
+        const release = await import_proper_lockfile2.default.lock(this.indexPath, LOCK_OPTIONS);
+        try {
+          let index;
+          try {
+            const parsed = JSON.parse(
+              fs5.readFileSync(this.indexPath, "utf-8")
+            );
+            index = Array.isArray(parsed) ? parsed : [];
+          } catch {
+            index = [];
+          }
+          const liveIds = new Set(index.map((e) => e.id));
+          for (const id of orphan_ids) {
+            if (liveIds.has(id)) continue;
+            try {
+              const raw = JSON.parse(
+                fs5.readFileSync(path6.join(this.decisionsDir, `${id}.json`), "utf-8")
+              );
+              if (!isSalvageableDecision(raw, id)) {
+                skipped_invalid++;
+                continue;
+              }
+              const decision = raw;
+              decision.affected_files = Array.isArray(decision.affected_files) ? decision.affected_files : [];
+              decision.affected_symbols = Array.isArray(decision.affected_symbols) ? decision.affected_symbols : [];
+              index.push(this.toIndexEntry(decision));
+              repaired++;
+            } catch {
+              skipped_invalid++;
+            }
+          }
+          if (repaired > 0) {
+            index.sort((a, b) => a.id.localeCompare(b.id));
+            atomicWriteFileSync(this.indexPath, JSON.stringify(index, null, 2));
+          }
+        } finally {
+          await release();
+        }
+        this.cachedIndex = null;
+        return { orphan_ids, repaired, skipped_invalid };
+      }
       /** Get the full decision index, with mtime-based caching. */
       async getIndex() {
         try {
@@ -12026,7 +12116,7 @@ var init_decision_store = __esm({
       async getByCommitHash(commitHash) {
         const index = await this.getIndex();
         const matching = index.filter(
-          (entry) => entry.commit_hashes && entry.commit_hashes.includes(commitHash)
+          (entry) => entry.commit_hashes && entry.commit_hashes.some((h) => commitHashMatches(h, commitHash))
         );
         const decisions = [];
         for (const entry of matching) {
@@ -12523,10 +12613,25 @@ function resolveAutoBackend(twiningDir) {
   return { backend: "sqlite", reason: "fresh" };
 }
 function hasSqliteState(twiningDir) {
-  if (fs9.existsSync(path11.join(twiningDir, "twining.db"))) return true;
+  if (isRealSqliteDb(path11.join(twiningDir, "twining.db"))) return true;
   const records = path11.join(twiningDir, "records");
   if (!fs9.existsSync(records)) return false;
   return dirHasAnyFile(records);
+}
+function isRealSqliteDb(dbPath) {
+  try {
+    if (fs9.statSync(dbPath).size < SQLITE_MAGIC.length) return false;
+    const fd = fs9.openSync(dbPath, "r");
+    try {
+      const buf = Buffer.alloc(SQLITE_MAGIC.length);
+      fs9.readSync(fd, buf, 0, buf.length, 0);
+      return buf.toString("latin1") === SQLITE_MAGIC;
+    } finally {
+      fs9.closeSync(fd);
+    }
+  } catch {
+    return false;
+  }
 }
 function dirHasAnyFile(dir) {
   for (const entry of fs9.readdirSync(dir, { withFileTypes: true })) {
@@ -12538,12 +12643,24 @@ function dirHasAnyFile(dir) {
   return false;
 }
 function hasLegacyContent(twiningDir) {
+  const tiers = legacyContentTiers(twiningDir);
+  return tiers.decisions || tiers.blackboard || tiers.graph;
+}
+function legacyContentTiers(twiningDir) {
+  const tiers = {
+    decisions: false,
+    blackboard: false,
+    graph: false,
+    decision_ids: null
+  };
   const blackboard = path11.join(twiningDir, "blackboard.jsonl");
   if (fs9.existsSync(blackboard)) {
     try {
-      if (fs9.readFileSync(blackboard, "utf-8").trim().length > 0) return true;
+      if (fs9.readFileSync(blackboard, "utf-8").trim().length > 0) {
+        tiers.blackboard = true;
+      }
     } catch {
-      return true;
+      tiers.blackboard = true;
     }
   }
   const decisionsDir = path11.join(twiningDir, "decisions");
@@ -12554,13 +12671,18 @@ function hasLegacyContent(twiningDir) {
           const parsed = JSON.parse(
             fs9.readFileSync(path11.join(decisionsDir, name), "utf-8")
           );
-          if (Array.isArray(parsed) && parsed.length > 0) return true;
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            tiers.decisions = true;
+            const ids = parsed.map((e) => e.id).filter((id) => typeof id === "string");
+            tiers.decision_ids = ids.length > 0 ? ids : null;
+          }
         } else if (name.endsWith(".json")) {
-          return true;
+          tiers.decisions = true;
         }
       }
     } catch {
-      return true;
+      tiers.decisions = true;
+      tiers.decision_ids = null;
     }
   }
   for (const relPath of [
@@ -12571,16 +12693,27 @@ function hasLegacyContent(twiningDir) {
     if (!fs9.existsSync(file)) continue;
     try {
       const parsed = JSON.parse(fs9.readFileSync(file, "utf-8"));
-      if (Array.isArray(parsed) && parsed.length > 0) return true;
+      if (Array.isArray(parsed) && parsed.length > 0) tiers.graph = true;
     } catch {
-      return true;
+      tiers.graph = true;
     }
   }
-  return false;
+  return tiers;
 }
+function hasRecordsContent(twiningDir) {
+  const records = path11.join(twiningDir, "records");
+  if (!fs9.existsSync(records)) return false;
+  try {
+    return dirHasAnyFile(records);
+  } catch {
+    return false;
+  }
+}
+var SQLITE_MAGIC;
 var init_backend_resolve = __esm({
   "src/storage/backend-resolve.ts"() {
     "use strict";
+    SQLITE_MAGIC = "SQLite format 3\0";
   }
 });
 
@@ -12601,6 +12734,7 @@ var init_sqlite_stores = __esm({
     init_entity_properties();
     init_tags();
     init_scope();
+    init_commit_hash();
     init_relation_properties();
     init_errors();
     init_file_store();
@@ -12809,7 +12943,7 @@ var init_sqlite_stores = __esm({
       async getByCommitHash(commitHash) {
         const index = await this.getIndex();
         const matching = index.filter(
-          (e) => e.commit_hashes && e.commit_hashes.includes(commitHash)
+          (e) => e.commit_hashes && e.commit_hashes.some((h) => commitHashMatches(h, commitHash))
         );
         const decisions = [];
         for (const entry of matching) {
@@ -13631,17 +13765,17 @@ var init_record_ingest = __esm({
 
 // src/utils/project-root.ts
 import fs28 from "node:fs";
-import path33 from "node:path";
+import path34 from "node:path";
 function resolveWorktreeMain(dir) {
   try {
-    const dotGit = path33.join(dir, ".git");
+    const dotGit = path34.join(dir, ".git");
     if (!fs28.statSync(dotGit).isFile()) return null;
     const firstLine = fs28.readFileSync(dotGit, "utf8").split("\n")[0] ?? "";
     if (!firstLine.startsWith("gitdir: ")) return null;
     const rawGitdir = firstLine.slice("gitdir: ".length).replace(/\r$/, "");
     if (!rawGitdir) return null;
-    const gitdir = path33.resolve(dir, rawGitdir);
-    const marker = `${path33.sep}.git${path33.sep}worktrees${path33.sep}`;
+    const gitdir = path34.resolve(dir, rawGitdir);
+    const marker = `${path34.sep}.git${path34.sep}worktrees${path34.sep}`;
     const markerIndex = gitdir.lastIndexOf(marker);
     if (markerIndex === -1) return null;
     const mainRoot = gitdir.slice(0, markerIndex);
@@ -13659,7 +13793,7 @@ function resolveProjectRoot(argv, env, cwd) {
   }
   const fromEnv = env["TWINING_PROJECT"];
   if (fromEnv && fromEnv.trim().length > 0) {
-    return path33.resolve(cwd, fromEnv);
+    return path34.resolve(cwd, fromEnv);
   }
   if (env["TWINING_WORKTREE_LOCAL"] === "true") {
     return cwd;
@@ -13674,9 +13808,9 @@ var init_project_root = __esm({
 
 // src/migrate/config-edit.ts
 import fs29 from "node:fs";
-import path34 from "node:path";
+import path35 from "node:path";
 function setStorageBackend(twiningDir, backend, opts) {
-  const configPath = path34.join(twiningDir, "config.yml");
+  const configPath = path35.join(twiningDir, "config.yml");
   if (!fs29.existsSync(configPath)) {
     fs29.writeFileSync(
       configPath,
@@ -13786,9 +13920,9 @@ __export(forward_exports, {
   migrateForward: () => migrateForward
 });
 import fs30 from "node:fs";
-import path35 from "node:path";
+import path36 from "node:path";
 function ensureDbGitignored(twiningDir) {
-  const gitignorePath = path35.join(twiningDir, ".gitignore");
+  const gitignorePath = path36.join(twiningDir, ".gitignore");
   const wanted = ["twining.db", "twining.db-wal", "twining.db-shm"];
   const exists = fs30.existsSync(gitignorePath);
   const raw = exists ? fs30.readFileSync(gitignorePath, "utf-8") : "";
@@ -13802,7 +13936,7 @@ function ensureDbGitignored(twiningDir) {
   return true;
 }
 async function migrateForward(opts) {
-  const twiningDir = path35.join(opts.projectRoot, ".twining");
+  const twiningDir = path36.join(opts.projectRoot, ".twining");
   if (!fs30.existsSync(twiningDir)) {
     throw new Error(`no .twining/ directory at ${twiningDir} \u2014 nothing to migrate`);
   }
@@ -13850,7 +13984,7 @@ async function migrateForward(opts) {
       orphans_salvaged: 0
     };
   }
-  if (opts.checkOnly && !fs30.existsSync(path35.join(twiningDir, "twining.db"))) {
+  if (opts.checkOnly && !fs30.existsSync(path36.join(twiningDir, "twining.db"))) {
     const counts = {
       posts: (await legacy.blackboardStore.read()).entries.length,
       decisions: (await legacy.decisionStore.getIndex()).length,
@@ -13884,14 +14018,14 @@ async function migrateForward(opts) {
       const decision = await legacy.decisionStore.get(ix.id);
       if (decision) exporter.decision(decision);
     }
-    const decisionsDir = path35.join(twiningDir, "decisions");
+    const decisionsDir = path36.join(twiningDir, "decisions");
     if (fs30.existsSync(decisionsDir)) {
       for (const file of fs30.readdirSync(decisionsDir)) {
         if (file === "index.json" || !file.endsWith(".json")) continue;
         const id = file.slice(0, -".json".length);
         if (indexedDecisionIds.has(id)) continue;
         try {
-          const raw = fs30.readFileSync(path35.join(decisionsDir, file), "utf-8");
+          const raw = fs30.readFileSync(path36.join(decisionsDir, file), "utf-8");
           const orphan = JSON.parse(raw);
           exporter.decision(orphan);
           orphansSalvaged++;
@@ -13979,9 +14113,9 @@ var init_forward = __esm({
 
 // src/migrate/reverse.ts
 import fs31 from "node:fs";
-import path36 from "node:path";
+import path37 from "node:path";
 async function migrateReverse(opts) {
-  const twiningDir = path36.join(opts.projectRoot, ".twining");
+  const twiningDir = path37.join(opts.projectRoot, ".twining");
   if (!fs31.existsSync(twiningDir)) {
     throw new Error(`no .twining/ directory at ${twiningDir} \u2014 nothing to migrate`);
   }
@@ -13990,8 +14124,8 @@ async function migrateReverse(opts) {
       "node:sqlite is unavailable (requires Node >= 22.13) \u2014 cannot read the sqlite state to reverse it"
     );
   }
-  const hasDb = fs31.existsSync(path36.join(twiningDir, "twining.db"));
-  const hasTree = fs31.existsSync(path36.join(twiningDir, "records"));
+  const hasDb = fs31.existsSync(path37.join(twiningDir, "twining.db"));
+  const hasTree = fs31.existsSync(path37.join(twiningDir, "records"));
   if (!hasDb && !hasTree) {
     throw new Error(
       "no sqlite state found (neither twining.db nor records/) \u2014 nothing to reverse"
@@ -14055,54 +14189,54 @@ async function migrateReverse(opts) {
         orphans_salvaged: 0
       };
     }
-    const backupDir = path36.join(twiningDir, "pre-reverse-backup");
+    const backupDir = path37.join(twiningDir, "pre-reverse-backup");
     ensureDir(backupDir);
     for (const rel of ["blackboard.jsonl", "decisions", "graph", "handoffs"]) {
-      const src = path36.join(twiningDir, rel);
+      const src = path37.join(twiningDir, rel);
       if (fs31.existsSync(src)) {
-        fs31.cpSync(src, path36.join(backupDir, rel), { recursive: true, force: true });
+        fs31.cpSync(src, path37.join(backupDir, rel), { recursive: true, force: true });
       }
     }
     atomicWriteFileSync(
-      path36.join(twiningDir, "blackboard.jsonl"),
+      path37.join(twiningDir, "blackboard.jsonl"),
       entries.map((e) => JSON.stringify(e)).join("\n") + (entries.length ? "\n" : "")
     );
-    ensureDir(path36.join(twiningDir, "decisions"));
+    ensureDir(path37.join(twiningDir, "decisions"));
     for (const ix of decisionIndex) {
       const decision = await sqlite.decisionStore.get(ix.id);
       if (decision) {
         atomicWriteFileSync(
-          path36.join(twiningDir, "decisions", `${decision.id}.json`),
+          path37.join(twiningDir, "decisions", `${decision.id}.json`),
           JSON.stringify(decision, null, 2)
         );
       }
     }
     atomicWriteFileSync(
-      path36.join(twiningDir, "decisions", "index.json"),
+      path37.join(twiningDir, "decisions", "index.json"),
       JSON.stringify(decisionIndex, null, 2)
     );
-    ensureDir(path36.join(twiningDir, "graph"));
+    ensureDir(path37.join(twiningDir, "graph"));
     atomicWriteFileSync(
-      path36.join(twiningDir, "graph", "entities.json"),
+      path37.join(twiningDir, "graph", "entities.json"),
       JSON.stringify(entities, null, 2)
     );
     atomicWriteFileSync(
-      path36.join(twiningDir, "graph", "relations.json"),
+      path37.join(twiningDir, "graph", "relations.json"),
       JSON.stringify(relations, null, 2)
     );
-    ensureDir(path36.join(twiningDir, "handoffs"));
+    ensureDir(path37.join(twiningDir, "handoffs"));
     for (const ix of handoffIndex) {
       const record2 = await sqlite.handoffStore.get(ix.id);
       if (record2) {
         atomicWriteFileSync(
-          path36.join(twiningDir, "handoffs", `${record2.id}.json`),
+          path37.join(twiningDir, "handoffs", `${record2.id}.json`),
           JSON.stringify(record2, null, 2)
         );
       }
     }
     const indexRows = db.prepare("SELECT index_data FROM handoffs ORDER BY seq").all().map((r) => r.index_data);
     atomicWriteFileSync(
-      path36.join(twiningDir, "handoffs", "index.jsonl"),
+      path37.join(twiningDir, "handoffs", "index.jsonl"),
       indexRows.join("\n") + (indexRows.length ? "\n" : "")
     );
     const files = {
@@ -14264,9 +14398,9 @@ __export(auto_exports, {
   maybeAutoMigrate: () => maybeAutoMigrate
 });
 import fs32 from "node:fs";
-import path37 from "node:path";
+import path38 from "node:path";
 async function maybeAutoMigrate(projectRoot) {
-  const twiningDir = path37.join(projectRoot, ".twining");
+  const twiningDir = path38.join(projectRoot, ".twining");
   if (!fs32.existsSync(twiningDir)) return;
   const config2 = loadConfig(twiningDir);
   const optedIn = process.env.TWINING_AUTO_MIGRATE === "1" || config2.storage?.auto_migrate === true;
@@ -14504,10 +14638,10 @@ function assignProp(target, prop, value) {
     configurable: true
   });
 }
-function getElementAtPath(obj, path38) {
-  if (!path38)
+function getElementAtPath(obj, path39) {
+  if (!path39)
     return obj;
-  return path38.reduce((acc, key) => acc?.[key], obj);
+  return path39.reduce((acc, key) => acc?.[key], obj);
 }
 function promiseAllObject(promisesObj) {
   const keys = Object.keys(promisesObj);
@@ -14827,11 +14961,11 @@ function aborted(x, startIndex = 0) {
   }
   return false;
 }
-function prefixIssues(path38, issues) {
+function prefixIssues(path39, issues) {
   return issues.map((iss) => {
     var _a;
     (_a = iss).path ?? (_a.path = []);
-    iss.path.unshift(path38);
+    iss.path.unshift(path39);
     return iss;
   });
 }
@@ -20892,8 +21026,8 @@ function getErrorMap() {
 
 // node_modules/zod/v3/helpers/parseUtil.js
 var makeIssue = (params) => {
-  const { data, path: path38, errorMaps, issueData } = params;
-  const fullPath = [...path38, ...issueData.path || []];
+  const { data, path: path39, errorMaps, issueData } = params;
+  const fullPath = [...path39, ...issueData.path || []];
   const fullIssue = {
     ...issueData,
     path: fullPath
@@ -21009,11 +21143,11 @@ var errorUtil;
 
 // node_modules/zod/v3/types.js
 var ParseInputLazyPath = class {
-  constructor(parent, value, path38, key) {
+  constructor(parent, value, path39, key) {
     this._cachedPath = [];
     this.parent = parent;
     this.data = value;
-    this._path = path38;
+    this._path = path39;
     this._key = key;
   }
   get path() {
@@ -28874,9 +29008,11 @@ import path14 from "node:path";
 function createStores(twiningDir, config2) {
   const configured = config2.storage?.backend ?? "auto";
   let requested;
+  let reason;
   if (configured === "auto") {
     const resolution = resolveAutoBackend(twiningDir);
     requested = resolution.backend;
+    reason = resolution.reason;
     if (resolution.reason === "legacy-content") {
       console.error(
         "[twining] Legacy file-backend project detected \u2014 staying on the file backend. Run `npx twining-mcp migrate` to move to the v2 sqlite backend (reversible; see docs/UPGRADE-v2.md)."
@@ -28884,6 +29020,7 @@ function createStores(twiningDir, config2) {
     }
   } else {
     requested = configured;
+    reason = "explicit";
   }
   if (requested === "sqlite") {
     try {
@@ -28911,8 +29048,41 @@ function createStores(twiningDir, config2) {
           "[twining] storage.export_records is false but .twining/records/ exists \u2014 the tree is stale and is NOT being ingested. Re-enabling export_records would overwrite database rows from it."
         );
       }
+      let legacyUnread = false;
+      try {
+        const tiers = legacyContentTiers(twiningDir);
+        if (tiers.decisions || tiers.blackboard || tiers.graph) {
+          const count = (table) => db.prepare(`SELECT COUNT(*) AS c FROM ${table}`).get().c;
+          let decisionsUnread = false;
+          if (tiers.decisions) {
+            if (tiers.decision_ids && tiers.decision_ids.length > 0) {
+              const exists = db.prepare(
+                "SELECT 1 AS x FROM decisions WHERE id = ?"
+              );
+              decisionsUnread = tiers.decision_ids.some(
+                (id) => exists.get(id) === void 0
+              );
+            } else {
+              decisionsUnread = count("decisions") === 0;
+            }
+          }
+          const blackboardUnread = tiers.blackboard && count("blackboard") === 0;
+          const graphUnread = tiers.graph && count("entities") === 0;
+          legacyUnread = decisionsUnread || blackboardUnread || graphUnread;
+          if (legacyUnread) {
+            console.error(
+              "[twining] sqlite backend selected but legacy v1 content (decisions/, blackboard.jsonl, or graph/) is present and UNREAD \u2014 this store reads as (partially) empty. Run `npx twining-mcp migrate` to import it (see docs/UPGRADE-v2.md)."
+            );
+          }
+        }
+      } catch {
+      }
       let set2 = {
         backend: "sqlite",
+        reason,
+        legacy_unread: legacyUnread,
+        records_unread: false,
+        db,
         blackboardStore: new SqliteBlackboardStore(db),
         decisionStore: new SqliteDecisionStore(db),
         graphStore: new SqliteGraphStore(db),
@@ -28939,10 +29109,14 @@ function createStores(twiningDir, config2) {
       console.error(
         `[twining] sqlite backend requested but unavailable (${err instanceof Error ? err.message : String(err)}) \u2014 falling back to the file backend.`
       );
+      reason = "fallback";
     }
   }
   return {
     backend: "files",
+    reason,
+    legacy_unread: false,
+    records_unread: reason === "fallback" && hasRecordsContent(twiningDir),
     blackboardStore: new BlackboardStore(twiningDir),
     decisionStore: new DecisionStore(twiningDir),
     graphStore: new GraphStore(twiningDir),
@@ -28993,6 +29167,199 @@ function safeGit(cwd, args) {
   } catch {
     return void 0;
   }
+}
+
+// src/embeddings/search.ts
+var SEARCH_NOISE_FLOOR = 0.3;
+var COUNT_SEMANTICS = "pre_page_floored_v2";
+var RETIRED_STATUS_DEBOOST = 0.75;
+var RETIRED_STATUSES = /* @__PURE__ */ new Set(["superseded", "overridden", "archived"]);
+var SearchEngine = class {
+  embedder;
+  indexManager;
+  constructor(embedder, indexManager) {
+    this.embedder = embedder;
+    this.indexManager = indexManager;
+  }
+  /** Search blackboard entries by semantic similarity or keyword fallback. */
+  async searchBlackboard(query, entries, options) {
+    const limit = options?.limit ?? 10;
+    let filtered = entries;
+    if (options?.entry_types && options.entry_types.length > 0) {
+      filtered = filtered.filter(
+        (e) => options.entry_types.includes(e.entry_type)
+      );
+    }
+    if (filtered.length === 0) {
+      return {
+        results: [],
+        total_matched: 0,
+        fallback_mode: this.embedder.isFallbackMode()
+      };
+    }
+    if (!this.embedder.isFallbackMode()) {
+      const queryVector = await this.embedder.embed(query);
+      if (queryVector) {
+        const index = await this.indexManager.load("blackboard");
+        const vectorMap = new Map(
+          index.entries.map((e) => [e.id, e.vector])
+        );
+        const scored = [];
+        let matched = 0;
+        for (const entry of filtered) {
+          const entryVector = vectorMap.get(entry.id);
+          if (entryVector) {
+            const relevance = cosineSimilarity(queryVector, entryVector);
+            if (relevance >= SEARCH_NOISE_FLOOR) matched++;
+            scored.push({ entry, relevance });
+          } else {
+            const text = blackboardEmbedText(entry);
+            const kwResults2 = keywordSearch(
+              query,
+              [{ id: entry.id, text }],
+              1
+            );
+            const score = kwResults2[0]?.score ?? 0;
+            if (score > 0) {
+              matched++;
+              scored.push({ entry, relevance: score * 0.5 });
+            }
+          }
+        }
+        scored.sort((a, b) => b.relevance - a.relevance);
+        return {
+          results: scored.slice(0, limit),
+          total_matched: matched,
+          fallback_mode: false
+        };
+      }
+    }
+    const items = filtered.map((e) => ({
+      id: e.id,
+      text: blackboardEmbedText(e)
+    }));
+    const kwResults = keywordSearch(query, items, filtered.length);
+    const idToScore = new Map(kwResults.map((r) => [r.id, r.score]));
+    const results = [];
+    for (const entry of filtered) {
+      const score = idToScore.get(entry.id);
+      if (score !== void 0 && score > 0) {
+        results.push({ entry, relevance: score });
+      }
+    }
+    results.sort((a, b) => b.relevance - a.relevance);
+    return {
+      results: results.slice(0, limit),
+      total_matched: results.length,
+      fallback_mode: true
+    };
+  }
+  /** Search decisions by semantic similarity or keyword fallback. */
+  async searchDecisions(query, decisions, options) {
+    const limit = options?.limit ?? 10;
+    if (decisions.length === 0) {
+      return {
+        results: [],
+        total_matched: 0,
+        fallback_mode: this.embedder.isFallbackMode()
+      };
+    }
+    const deboost = (d, relevance) => RETIRED_STATUSES.has(d.status) && relevance > 0 ? relevance * RETIRED_STATUS_DEBOOST : relevance;
+    if (!this.embedder.isFallbackMode()) {
+      const queryVector = await this.embedder.embed(query);
+      if (queryVector) {
+        const index = await this.indexManager.load("decisions");
+        const vectorMap = new Map(
+          index.entries.map((e) => [e.id, e.vector])
+        );
+        const scored = [];
+        let matched = 0;
+        for (const decision of decisions) {
+          const decisionVector = vectorMap.get(decision.id);
+          if (decisionVector) {
+            const raw = cosineSimilarity(queryVector, decisionVector);
+            if (raw >= SEARCH_NOISE_FLOOR) matched++;
+            scored.push({ decision, relevance: deboost(decision, raw) });
+          } else {
+            const text = decisionEmbedText(decision);
+            const kwResults2 = keywordSearch(
+              query,
+              [{ id: decision.id, text }],
+              1
+            );
+            const score = kwResults2[0]?.score ?? 0;
+            if (score > 0) {
+              matched++;
+              scored.push({
+                decision,
+                relevance: deboost(decision, score * 0.5)
+              });
+            }
+          }
+        }
+        scored.sort((a, b) => b.relevance - a.relevance);
+        return {
+          results: scored.slice(0, limit),
+          total_matched: matched,
+          fallback_mode: false
+        };
+      }
+    }
+    const items = decisions.map((d) => ({
+      id: d.id,
+      text: decisionEmbedText(d)
+    }));
+    const kwResults = keywordSearch(query, items, decisions.length);
+    const idToScore = new Map(kwResults.map((r) => [r.id, r.score]));
+    const results = [];
+    for (const decision of decisions) {
+      const score = idToScore.get(decision.id);
+      if (score !== void 0 && score > 0) {
+        results.push({ decision, relevance: deboost(decision, score) });
+      }
+    }
+    results.sort((a, b) => b.relevance - a.relevance);
+    return {
+      results: results.slice(0, limit),
+      total_matched: results.length,
+      fallback_mode: true
+    };
+  }
+};
+function cosineSimilarity(a, b) {
+  if (a.length !== b.length) {
+    console.error(
+      `[twining] Cosine similarity dimension mismatch: ${a.length} vs ${b.length}. Returning 0.`
+    );
+    return 0;
+  }
+  let sum = 0;
+  for (let i2 = 0; i2 < a.length; i2++) {
+    sum += a[i2] * b[i2];
+  }
+  return sum;
+}
+function keywordSearch(query, items, limit) {
+  const queryTerms = query.toLowerCase().split(/\s+/).filter((t) => t.length > 0);
+  if (queryTerms.length === 0) return [];
+  const results = [];
+  for (const item of items) {
+    const textLower = item.text.toLowerCase();
+    let score = 0;
+    for (const term of queryTerms) {
+      if (textLower.includes(term)) {
+        const parts = textLower.split(term);
+        const matches = parts.length - 1;
+        score += Math.log(1 + matches);
+      }
+    }
+    const normalizedScore = score / queryTerms.length;
+    if (normalizedScore > 0) {
+      results.push({ id: item.id, score: normalizedScore });
+    }
+  }
+  results.sort((a, b) => b.score - a.score);
+  return results.slice(0, limit);
 }
 
 // src/engine/archiver.ts
@@ -29290,14 +29657,20 @@ var BlackboardEngine = class {
   /** Semantic search across blackboard entries. Default limit: 10. */
   async query(query, options) {
     if (!this.searchEngine) {
-      return { results: [], total_matched: 0, fallback_mode: true };
+      return {
+        results: [],
+        total_matched: 0,
+        count_semantics: COUNT_SEMANTICS,
+        fallback_mode: true
+      };
     }
     const { entries } = await this.store.read();
     const limit = options?.limit ?? 10;
-    return this.searchEngine.searchBlackboard(query, entries, {
+    const searched = await this.searchEngine.searchBlackboard(query, entries, {
       entry_types: options?.entry_types,
       limit
     });
+    return { ...searched, count_semantics: COUNT_SEMANTICS };
   }
   /** Get the N most recent entries, optionally filtered by type. */
   async recent(n, entry_types) {
@@ -29344,198 +29717,6 @@ init_errors();
 // src/utils/tokens.ts
 function estimateTokens(text) {
   return Math.ceil(text.length / 4);
-}
-
-// src/embeddings/search.ts
-var SEARCH_NOISE_FLOOR = 0.3;
-var RETIRED_STATUS_DEBOOST = 0.75;
-var RETIRED_STATUSES = /* @__PURE__ */ new Set(["superseded", "overridden", "archived"]);
-var SearchEngine = class {
-  embedder;
-  indexManager;
-  constructor(embedder, indexManager) {
-    this.embedder = embedder;
-    this.indexManager = indexManager;
-  }
-  /** Search blackboard entries by semantic similarity or keyword fallback. */
-  async searchBlackboard(query, entries, options) {
-    const limit = options?.limit ?? 10;
-    let filtered = entries;
-    if (options?.entry_types && options.entry_types.length > 0) {
-      filtered = filtered.filter(
-        (e) => options.entry_types.includes(e.entry_type)
-      );
-    }
-    if (filtered.length === 0) {
-      return {
-        results: [],
-        total_matched: 0,
-        fallback_mode: this.embedder.isFallbackMode()
-      };
-    }
-    if (!this.embedder.isFallbackMode()) {
-      const queryVector = await this.embedder.embed(query);
-      if (queryVector) {
-        const index = await this.indexManager.load("blackboard");
-        const vectorMap = new Map(
-          index.entries.map((e) => [e.id, e.vector])
-        );
-        const scored = [];
-        let matched = 0;
-        for (const entry of filtered) {
-          const entryVector = vectorMap.get(entry.id);
-          if (entryVector) {
-            const relevance = cosineSimilarity(queryVector, entryVector);
-            if (relevance >= SEARCH_NOISE_FLOOR) matched++;
-            scored.push({ entry, relevance });
-          } else {
-            const text = blackboardEmbedText(entry);
-            const kwResults2 = keywordSearch(
-              query,
-              [{ id: entry.id, text }],
-              1
-            );
-            const score = kwResults2[0]?.score ?? 0;
-            if (score > 0) {
-              matched++;
-              scored.push({ entry, relevance: score * 0.5 });
-            }
-          }
-        }
-        scored.sort((a, b) => b.relevance - a.relevance);
-        return {
-          results: scored.slice(0, limit),
-          total_matched: matched,
-          fallback_mode: false
-        };
-      }
-    }
-    const items = filtered.map((e) => ({
-      id: e.id,
-      text: blackboardEmbedText(e)
-    }));
-    const kwResults = keywordSearch(query, items, filtered.length);
-    const idToScore = new Map(kwResults.map((r) => [r.id, r.score]));
-    const results = [];
-    for (const entry of filtered) {
-      const score = idToScore.get(entry.id);
-      if (score !== void 0 && score > 0) {
-        results.push({ entry, relevance: score });
-      }
-    }
-    results.sort((a, b) => b.relevance - a.relevance);
-    return {
-      results: results.slice(0, limit),
-      total_matched: results.length,
-      fallback_mode: true
-    };
-  }
-  /** Search decisions by semantic similarity or keyword fallback. */
-  async searchDecisions(query, decisions, options) {
-    const limit = options?.limit ?? 10;
-    if (decisions.length === 0) {
-      return {
-        results: [],
-        total_matched: 0,
-        fallback_mode: this.embedder.isFallbackMode()
-      };
-    }
-    const deboost = (d, relevance) => RETIRED_STATUSES.has(d.status) && relevance > 0 ? relevance * RETIRED_STATUS_DEBOOST : relevance;
-    if (!this.embedder.isFallbackMode()) {
-      const queryVector = await this.embedder.embed(query);
-      if (queryVector) {
-        const index = await this.indexManager.load("decisions");
-        const vectorMap = new Map(
-          index.entries.map((e) => [e.id, e.vector])
-        );
-        const scored = [];
-        let matched = 0;
-        for (const decision of decisions) {
-          const decisionVector = vectorMap.get(decision.id);
-          if (decisionVector) {
-            const raw = cosineSimilarity(queryVector, decisionVector);
-            if (raw >= SEARCH_NOISE_FLOOR) matched++;
-            scored.push({ decision, relevance: deboost(decision, raw) });
-          } else {
-            const text = decisionEmbedText(decision);
-            const kwResults2 = keywordSearch(
-              query,
-              [{ id: decision.id, text }],
-              1
-            );
-            const score = kwResults2[0]?.score ?? 0;
-            if (score > 0) {
-              matched++;
-              scored.push({
-                decision,
-                relevance: deboost(decision, score * 0.5)
-              });
-            }
-          }
-        }
-        scored.sort((a, b) => b.relevance - a.relevance);
-        return {
-          results: scored.slice(0, limit),
-          total_matched: matched,
-          fallback_mode: false
-        };
-      }
-    }
-    const items = decisions.map((d) => ({
-      id: d.id,
-      text: decisionEmbedText(d)
-    }));
-    const kwResults = keywordSearch(query, items, decisions.length);
-    const idToScore = new Map(kwResults.map((r) => [r.id, r.score]));
-    const results = [];
-    for (const decision of decisions) {
-      const score = idToScore.get(decision.id);
-      if (score !== void 0 && score > 0) {
-        results.push({ decision, relevance: deboost(decision, score) });
-      }
-    }
-    results.sort((a, b) => b.relevance - a.relevance);
-    return {
-      results: results.slice(0, limit),
-      total_matched: results.length,
-      fallback_mode: true
-    };
-  }
-};
-function cosineSimilarity(a, b) {
-  if (a.length !== b.length) {
-    console.error(
-      `[twining] Cosine similarity dimension mismatch: ${a.length} vs ${b.length}. Returning 0.`
-    );
-    return 0;
-  }
-  let sum = 0;
-  for (let i2 = 0; i2 < a.length; i2++) {
-    sum += a[i2] * b[i2];
-  }
-  return sum;
-}
-function keywordSearch(query, items, limit) {
-  const queryTerms = query.toLowerCase().split(/\s+/).filter((t) => t.length > 0);
-  if (queryTerms.length === 0) return [];
-  const results = [];
-  for (const item of items) {
-    const textLower = item.text.toLowerCase();
-    let score = 0;
-    for (const term of queryTerms) {
-      if (textLower.includes(term)) {
-        const parts = textLower.split(term);
-        const matches = parts.length - 1;
-        score += Math.log(1 + matches);
-      }
-    }
-    const normalizedScore = score / queryTerms.length;
-    if (normalizedScore > 0) {
-      results.push({ id: item.id, score: normalizedScore });
-    }
-  }
-  results.sort((a, b) => b.score - a.score);
-  return results.slice(0, limit);
 }
 
 // src/engine/graph-auto-populator.ts
@@ -30612,7 +30793,7 @@ Note: ${downstreamIds.length} downstream decisions may be affected: ${downstream
     const maxResults = limit ?? 20;
     try {
       if (!query || query.trim().length === 0) {
-        return { results: [], total_matched: 0, returned: 0, fallback_mode: true };
+        return { results: [], total_matched: 0, returned: 0, count_semantics: COUNT_SEMANTICS, fallback_mode: true };
       }
       const index = await this.decisionStore.getIndex();
       let filtered = index;
@@ -30632,7 +30813,7 @@ Note: ${downstreamIds.length} downstream decisions may be affected: ${downstream
         );
       }
       if (filtered.length === 0) {
-        return { results: [], total_matched: 0, returned: 0, fallback_mode: true };
+        return { results: [], total_matched: 0, returned: 0, count_semantics: COUNT_SEMANTICS, fallback_mode: true };
       }
       const decisions = [];
       for (const entry of filtered) {
@@ -30659,12 +30840,13 @@ Note: ${downstreamIds.length} downstream decisions may be affected: ${downstream
           })),
           total_matched: searchResults.total_matched,
           returned: searchResults.results.length,
+          count_semantics: COUNT_SEMANTICS,
           fallback_mode: searchResults.fallback_mode
         };
       }
       const queryTerms = query.toLowerCase().split(/\s+/).filter((t) => t.length > 0);
       if (queryTerms.length === 0) {
-        return { results: [], total_matched: 0, returned: 0, fallback_mode: true };
+        return { results: [], total_matched: 0, returned: 0, count_semantics: COUNT_SEMANTICS, fallback_mode: true };
       }
       const scored = [];
       for (const decision of decisions) {
@@ -30702,6 +30884,7 @@ Note: ${downstreamIds.length} downstream decisions may be affected: ${downstream
         // ordering-only and never affects membership.
         total_matched: scored.length,
         returned: topResults.length,
+        count_semantics: COUNT_SEMANTICS,
         fallback_mode: true
       };
     } catch (error2) {
@@ -30709,7 +30892,7 @@ Note: ${downstreamIds.length} downstream decisions may be affected: ${downstream
         "[twining] searchDecisions failed (non-fatal):",
         error2
       );
-      return { results: [], total_matched: 0, returned: 0, fallback_mode: true };
+      return { results: [], total_matched: 0, returned: 0, count_semantics: COUNT_SEMANTICS, fallback_mode: true };
     }
   }
 };
@@ -30918,6 +31101,34 @@ function computeLiveness(lastActive, now = /* @__PURE__ */ new Date(), threshold
 
 // src/engine/context-assembler.ts
 init_tags();
+
+// src/utils/full-summary.ts
+function dedupeFullSummary(summary, detail) {
+  const marker = "Full summary: ";
+  if (!detail || !detail.startsWith(marker)) {
+    return { headline: summary, detail: detail ?? "" };
+  }
+  const stripped = summary.endsWith("\u2026") ? summary.slice(0, -1) : summary;
+  const newlineIdx = detail.indexOf("\n");
+  const firstLine = newlineIdx === -1 ? detail : detail.slice(0, newlineIdx);
+  const fullText = firstLine.slice(marker.length);
+  if (!fullText.startsWith(stripped)) {
+    return { headline: summary, detail };
+  }
+  return {
+    headline: fullText,
+    detail: newlineIdx === -1 ? "" : detail.slice(newlineIdx + 1)
+  };
+}
+function dedupeEntryFullSummary(entry) {
+  const { headline, detail } = dedupeFullSummary(entry.summary, entry.detail);
+  if (headline === entry.summary && detail === (entry.detail ?? "")) {
+    return entry;
+  }
+  return { ...entry, summary: headline, detail };
+}
+
+// src/engine/context-assembler.ts
 var RECENCY_HALF_LIFE = 168;
 var SEMANTIC_ADMISSION_FLOOR = SEARCH_NOISE_FLOOR;
 var ContextAssembler = class _ContextAssembler {
@@ -31073,7 +31284,8 @@ var ContextAssembler = class _ContextAssembler {
       const confidence = 0.5;
       const warningBoost = entry.entry_type === "warning" ? 1 : 0;
       const score = recency * weights.recency * weightScale + relevance * weights.relevance * weightScale + confidence * weights.decision_confidence * weightScale + warningBoost * weights.warning_boost * weightScale;
-      const text = `${entry.summary} ${entry.detail}`;
+      const deduped = dedupeFullSummary(entry.summary, entry.detail);
+      const text = `${deduped.headline} ${deduped.detail}`;
       scoredItems.push({
         type: entry.entry_type,
         id,
@@ -31143,9 +31355,9 @@ var ContextAssembler = class _ContextAssembler {
           ) : void 0,
           assumptions: d.assumptions
         };
-        const path38 = reachabilityPaths.get(d.id);
-        if (path38) {
-          decisionEntry.relevance_path = path38;
+        const path39 = reachabilityPaths.get(d.id);
+        if (path39) {
+          decisionEntry.relevance_path = path39;
         }
         activeDecisionResults.push(decisionEntry);
       } else {
@@ -31380,8 +31592,9 @@ var ContextAssembler = class _ContextAssembler {
       sections.push("\n### STOP \u2014 READ THESE WARNINGS");
       for (const w of ctx.active_warnings) {
         const selfMark = w.self_authored ? " [this session]" : "";
-        sections.push(`- **${w.summary}**${selfMark}${w.detail ? `
-  ${w.detail}` : ""}`);
+        const { headline, detail } = dedupeFullSummary(w.summary, w.detail);
+        sections.push(`- **${headline}**${selfMark}${detail ? `
+  ${detail}` : ""}`);
       }
     }
     if (ctx.recent_handoffs && ctx.recent_handoffs.length > 0) {
@@ -32291,20 +32504,29 @@ var VerifyEngine = class _VerifyEngine {
     }
     const stale = [];
     let decisionsChecked = 0;
+    let scopePopulation = null;
+    const gitFileInfo = /* @__PURE__ */ new Map();
     for (const decision of decisions) {
       if (!decision.affected_files || decision.affected_files.length === 0) {
         continue;
       }
       decisionsChecked++;
       for (const file of decision.affected_files) {
-        const logOutput = this.execGit(["log", "--format=%aI %H", "-1", "--", file]);
+        let logOutput = gitFileInfo.get(file);
+        if (logOutput === void 0) {
+          logOutput = this.execGit(["log", "--format=%aI %H", "-1", "--", file]);
+          gitFileInfo.set(file, logOutput);
+        }
         if (!logOutput) continue;
         const spaceIdx = logOutput.indexOf(" ");
         if (spaceIdx === -1) continue;
         const fileDate = logOutput.substring(0, spaceIdx);
         const commitHash = logOutput.substring(spaceIdx + 1);
         if (new Date(fileDate) > new Date(decision.timestamp)) {
-          const allDecisions = await this.decisionStore.getByScope(scope);
+          if (scopePopulation === null) {
+            scopePopulation = await this.decisionStore.getByScope(scope);
+          }
+          const allDecisions = scopePopulation;
           const superseded = allDecisions.some(
             (d) => d.id !== decision.id && (d.status === "active" || d.status === "provisional") && d.domain === decision.domain && new Date(d.timestamp) > new Date(decision.timestamp) && (d.scope === decision.scope || d.scope.startsWith(decision.scope) || decision.scope.startsWith(d.scope)) && d.affected_files.some((f) => f === file)
           );
@@ -32812,7 +33034,10 @@ function registerBlackboardTools(server, engine, twiningDir, options = {}) {
     async (args) => {
       try {
         const result = await engine.read(args);
-        return toolResult(result);
+        return toolResult({
+          ...result,
+          entries: result.entries.map(dedupeEntryFullSummary)
+        });
       } catch (e) {
         return toolError(
           e instanceof Error ? e.message : "Unknown error",
@@ -32851,7 +33076,14 @@ function registerBlackboardTools(server, engine, twiningDir, options = {}) {
             ...d
           }));
         }
-        return toolResult({ ...result, decisions });
+        return toolResult({
+          ...result,
+          results: result.results.map((r) => ({
+            ...r,
+            entry: dedupeEntryFullSummary(r.entry)
+          })),
+          decisions
+        });
       } catch (e) {
         return toolError(
           e instanceof Error ? e.message : "Unknown error",
@@ -32888,7 +33120,11 @@ function registerBlackboardTools(server, engine, twiningDir, options = {}) {
             confidence: d.confidence
           }));
         }
-        return toolResult({ ...result, decisions });
+        return toolResult({
+          ...result,
+          entries: result.entries.map(dedupeEntryFullSummary),
+          decisions
+        });
       } catch (e) {
         return toolError(
           e instanceof Error ? e.message : "Unknown error",
@@ -32962,6 +33198,8 @@ function registerBlackboardTools(server, engine, twiningDir, options = {}) {
 }
 
 // src/tools/decision-tools.ts
+import { execFileSync as execFileSync4 } from "node:child_process";
+import path21 from "node:path";
 init_errors();
 function registerDecisionTools(server, engine, twiningDir, options = {}) {
   if (options.fullSurface) server.registerTool(
@@ -32982,7 +33220,7 @@ function registerDecisionTools(server, engine, twiningDir, options = {}) {
             option: external_exports.string().describe("Alternative option considered"),
             pros: external_exports.array(external_exports.string()).optional().describe("Advantages of this alternative"),
             cons: external_exports.array(external_exports.string()).optional().describe("Disadvantages of this alternative"),
-            reason_rejected: external_exports.string().describe("Why this alternative was rejected")
+            reason_rejected: external_exports.string().optional().describe("Why this alternative was rejected (strongly encouraged)")
           })
         ).optional().describe("Alternatives that were considered"),
         depends_on: external_exports.array(external_exports.string()).optional().describe("IDs of prerequisite decisions"),
@@ -33180,15 +33418,50 @@ function registerDecisionTools(server, engine, twiningDir, options = {}) {
   if (options.fullSurface) server.registerTool(
     "twining_commits",
     {
-      description: "Query decisions by commit hash. Returns all decisions that were linked to a given commit, enabling traceability from code changes back to decision rationale.",
+      description: `Query decisions by commit hash. Returns all decisions that were linked to a given commit, enabling traceability from code changes back to decision rationale. When no decisions match, commit_exists (true | false | "unknown") plus a message disambiguate 'commit exists but nothing is linked' from 'no such commit \u2014 check the hash'.`,
       inputSchema: {
-        commit_hash: external_exports.string().describe("Git commit hash to look up")
+        commit_hash: external_exports.string().describe("Git commit hash to look up (4-40 hex chars, git's abbreviation minimum)")
       }
     },
     async (args) => {
       try {
-        const result = await engine.getByCommitHash(args.commit_hash);
-        return toolResult(result);
+        const hash = args.commit_hash.trim().toLowerCase();
+        if (!/^[0-9a-f]{4,40}$/.test(hash)) {
+          return toolError(
+            `commit_hash must be a 4-40 character hex SHA (got "${args.commit_hash}")`,
+            "INVALID_INPUT"
+          );
+        }
+        const result = await engine.getByCommitHash(hash);
+        if (result.decisions.length > 0) {
+          return toolResult(result);
+        }
+        let commit_exists = "unknown";
+        let ambiguous = false;
+        try {
+          execFileSync4(
+            "git",
+            ["rev-parse", "--quiet", "--verify", `${hash}^{commit}`],
+            {
+              cwd: path21.dirname(twiningDir),
+              timeout: 3e3,
+              stdio: ["ignore", "pipe", "pipe"],
+              encoding: "utf-8"
+            }
+          );
+          commit_exists = true;
+        } catch (err) {
+          const e = err;
+          const stderrText = (e.stderr ?? "").toString().trim();
+          if (e.status === 1 && stderrText.length === 0) {
+            commit_exists = false;
+          } else {
+            commit_exists = "unknown";
+            ambiguous = /ambiguous/i.test(stderrText);
+          }
+        }
+        const message = commit_exists === true ? "Commit exists but no linked decisions matched this hash (exact and prefix lookups tried)." : commit_exists === false ? "No such commit in this repository \u2014 check the hash for typos." : ambiguous ? "Short hash is ambiguous in this repository \u2014 use more characters. An empty result here does not prove the commit is unlinked." : "Commit existence could not be determined (not a git repository, git unavailable, or the hash may be a typo) \u2014 an empty result here does not prove the commit is unlinked.";
+        return toolResult({ ...result, commit_exists, message });
       } catch (e) {
         if (e instanceof TwiningError) {
           return toolError(e.message, e.code);
@@ -33203,7 +33476,7 @@ function registerDecisionTools(server, engine, twiningDir, options = {}) {
   if (options.fullSurface) server.registerTool(
     "twining_search_decisions",
     {
-      description: "Search for decisions across all scopes by keyword or topic. Use when you need to find a specific past decision without knowing its exact scope. This is a relevance RANKER, not an existence test: ABSENCE IS NOT EXPRESSIBLE \u2014 a nonsense query still returns a confident page (pure noise scores ~0.26-0.28 in semantic mode; treat scores near that floor as noise). To test whether ANY decision governs a path, use twining_why with an explicit scope and read total_in_scope instead. total_matched is a true pre-page match count (semantic mode: raw cosine above the ~0.3 noise floor; keyword mode: any literal term hit) and is never deflated by status de-ranking; `returned` is the delivered page size, which may include sub-floor rows for ranking context. Retired decisions (superseded/overridden/archived) are included but de-ranked \u2014 check `status` and follow superseded_by to the current answer.",
+      description: "Search for decisions across all scopes by keyword or topic. Use when you need to find a specific past decision without knowing its exact scope. This is a relevance RANKER, not an existence test: ABSENCE IS NOT EXPRESSIBLE \u2014 a nonsense query still returns a confident page (pure noise scores ~0.26-0.28 in semantic mode; treat scores near that floor as noise). To test whether ANY decision governs a path, use twining_why with an explicit scope and read total_in_scope instead. total_matched is a true pre-page match count (semantic mode: raw cosine above the ~0.3 noise floor; keyword mode: any literal term hit) and is never deflated by status de-ranking; `returned` is the delivered page size, which may include sub-floor rows for ranking context. `count_semantics` stamps which generation of count meaning the response carries (currently pre_page_floored_v2) \u2014 trust it over any cached doc. Retired decisions (superseded/overridden/archived) are included but de-ranked \u2014 check `status` and follow superseded_by to the current answer.",
       inputSchema: {
         query: external_exports.string().describe(
           "Search query \u2014 keywords or natural language description of what you're looking for"
@@ -33309,7 +33582,7 @@ function registerContextTools(server, contextAssembler, options = {}) {
   server.registerTool(
     "twining_assemble",
     {
-      description: "Your FIRST call every session. Returns a briefing with decisions to respect, warnings to address, and handoff context from previous agents. Call BEFORE reading code or making changes.",
+      description: "Your FIRST call every session. Returns a briefing with decisions to respect, warnings to address, and handoff context from previous agents. Call BEFORE reading code or making changes. token_estimate \u2248 max_tokens is the signature of budget truncation: the briefing (and decisions_count) was clipped \u2014 re-call with a larger max_tokens (e.g. 100000) for complete coverage. decisions_count is the briefing selection, not a scope census; use twining_why total_in_scope for populations.",
       inputSchema: {
         task: external_exports.string().describe("Description of what the agent is about to do"),
         scope: external_exports.string().describe('File path, module, or area of codebase (e.g., "src/auth/" or "project")'),
@@ -33403,7 +33676,7 @@ function registerContextTools(server, contextAssembler, options = {}) {
 }
 
 // src/tools/record-tools.ts
-import { execFileSync as execFileSync4 } from "node:child_process";
+import { execFileSync as execFileSync5 } from "node:child_process";
 
 // src/engine/record-parser.ts
 var EXPLICIT_RATIONALE_MARKERS = /\b(?:Rationale|Why|Reason|Because)\s*:\s*/i;
@@ -33531,7 +33804,7 @@ function truncateSummary(summary) {
 }
 function inferScopeFromGit(projectRoot) {
   try {
-    const output = execFileSync4("git", ["diff", "--name-only", "HEAD"], {
+    const output = execFileSync5("git", ["diff", "--name-only", "HEAD"], {
       cwd: projectRoot,
       encoding: "utf-8",
       timeout: 5e3
@@ -33633,7 +33906,10 @@ function registerRecordTools(server, blackboardEngine, decisionEngine, projectRo
                   option: external_exports.string(),
                   pros: external_exports.array(external_exports.string()).optional(),
                   cons: external_exports.array(external_exports.string()).optional(),
-                  reason_rejected: external_exports.string()
+                  // Optional to match engine semantics (S4-2): requiring
+                  // it here made the schema's strictest nicety a
+                  // whole-call failure cause in the field.
+                  reason_rejected: external_exports.string().optional()
                 })
               ).optional().describe("Alternatives that were considered and rejected"),
               assumptions: external_exports.array(external_exports.string()).optional().describe(
@@ -33689,6 +33965,12 @@ function registerRecordTools(server, blackboardEngine, decisionEngine, projectRo
     },
     async (args) => {
       try {
+        if (args.summary.trim().length === 0) {
+          return toolError(
+            "summary must be non-empty \u2014 one or two sentences of what you did this session.",
+            "INVALID_INPUT"
+          );
+        }
         const scope = args.scope ?? inferScopeFromGit(projectRoot) ?? "project";
         const agentId = args.agent_id ?? "main";
         const createdDecisions = [];
@@ -33880,18 +34162,18 @@ function registerRecordTools(server, blackboardEngine, decisionEngine, projectRo
 }
 
 // src/tools/lifecycle-tools.ts
-import path21 from "node:path";
+import path22 from "node:path";
 init_errors();
-function registerLifecycleTools(server, twiningDir, blackboardStore, decisionStore, graphStore, archiver, config2, agentStore = null) {
+function registerLifecycleTools(server, twiningDir, blackboardStore, decisionStore, graphStore, archiver, config2, agentStore = null, identity = {}) {
   server.registerTool(
     "twining_status",
     {
-      description: "Overall health check of the Twining state. Shows blackboard entry count, decision counts, graph entity/relation counts, actionable warnings, and a human-readable summary. Note: twining_assemble now includes a status summary \u2014 use this only when you need the full detailed health check."
+      description: "Overall health check of the Twining state. Shows blackboard entry count, decision counts, graph entity/relation counts, actionable warnings, the server_version and resolved storage backend, and a human-readable summary. provisional_decisions is the canonical ratify-queue count \u2014 a direct index count no query can distort (scoped variant: twining_triage counts.open.by_kind.decision). Note: twining_assemble now includes a status summary \u2014 use this only when you need the full detailed health check."
     },
     async () => {
       try {
-        const projectRoot = path21.dirname(twiningDir);
-        const project = path21.basename(projectRoot);
+        const projectRoot = path22.dirname(twiningDir);
+        const project = path22.basename(projectRoot);
         const { total_count: blackboard_entries } = await blackboardStore.read();
         const index = await decisionStore.getIndex();
         const active_decisions = index.filter(
@@ -33930,6 +34212,30 @@ function registerLifecycleTools(server, twiningDir, blackboardStore, decisionSto
         ).to_archive.length;
         const needs_archiving = archivableCount >= archiveThreshold;
         const warnings = [];
+        if (identity.legacyUnread) {
+          warnings.push(
+            "Legacy v1 content (decisions/, blackboard.jsonl, or graph/) is present but UNREAD by the sqlite backend \u2014 this store reads as (partially) empty. Run `npx twining-mcp migrate` to import it (see docs/UPGRADE-v2.md)."
+          );
+        }
+        if (identity.recordsUnread) {
+          warnings.push(
+            "The server FELL BACK to the files backend but migrated state exists in .twining/records/ \u2014 this session may be reading stale legacy history. Fix the sqlite prerequisite (Node >= 22.13, openable twining.db) and restart."
+          );
+        }
+        if (identity.backend !== "sqlite") {
+          const ds = decisionStore;
+          if (typeof ds.repairIndexDesync === "function") {
+            try {
+              const desync = await ds.repairIndexDesync(false);
+              if (desync.orphan_ids.length > 0) {
+                warnings.push(
+                  `${desync.orphan_ids.length} decision file(s) on disk are missing from decisions/index.json (index desync) \u2014 they are invisible to every read path. Run twining_housekeeping({repair_index: true, execute: true}) or npx twining-mcp migrate.`
+                );
+              }
+            } catch {
+            }
+          }
+        }
         const sevenDaysAgo = new Date(
           Date.now() - 7 * 24 * 60 * 60 * 1e3
         ).toISOString();
@@ -33979,6 +34285,9 @@ function registerLifecycleTools(server, twiningDir, blackboardStore, decisionSto
         const summary = `${healthStatus}. ${blackboard_entries} blackboard entries, ${active_decisions} active decisions, ${graph_entities} graph entities.${agentSummary}${warningsSummary}`;
         return toolResult({
           project,
+          ...identity.serverVersion ? { server_version: identity.serverVersion } : {},
+          ...identity.backend ? { backend: identity.backend } : {},
+          ...identity.backendReason ? { backend_reason: identity.backendReason } : {},
           blackboard_entries,
           active_decisions,
           provisional_decisions,
@@ -34330,13 +34639,19 @@ var CoordinationEngine = class {
     if (input.include_gone === false) {
       scores = scores.filter((s) => s.liveness !== "gone");
     }
+    let excluded_zero_overlap = 0;
     if (input.min_score !== void 0) {
       scores = scores.filter((s) => s.total_score >= input.min_score);
+    } else if (input.required_capabilities.length > 0) {
+      const before = scores.length;
+      scores = scores.filter((s) => s.capability_overlap > 0);
+      excluded_zero_overlap = before - scores.length;
     }
     scores.sort((a, b) => b.total_score - a.total_score);
     return {
       agents: scores,
-      total_registered: agents.length
+      total_registered: agents.length,
+      excluded_zero_overlap
     };
   }
   /** Post a delegation request to the blackboard. */
@@ -34372,7 +34687,10 @@ var CoordinationEngine = class {
       entry_id: id,
       timestamp: timestamp2,
       expires_at: expiresAt,
-      suggested_agents: discovery.agents
+      suggested_agents: discovery.agents,
+      // Keep discover's zero-overlap exclusion (a suggestion list should be
+      // real candidates) but never let the shrink be silent (review CS-6).
+      excluded_zero_overlap: discovery.excluded_zero_overlap
     };
   }
   /**
@@ -34675,7 +34993,7 @@ function registerTriageTools(server, stores) {
   server.registerTool(
     "twining_triage",
     {
-      description: "Project-wide triage read-model: open items awaiting a lifecycle act (provisional decisions; unresolved needs, questions, warnings) and recent activity (newly active decisions, artifact posts) within a time window. Optionally pass for_agent (an agent_id as self-reported to twining_post) to exclude that agent's own outbound posts. Read-only \u2014 act via twining_promote / twining_override / twining_reconsider / twining_post.",
+      description: "Project-wide triage read-model: open items awaiting a lifecycle act (provisional decisions; unresolved needs, questions, warnings) and recent activity (newly active decisions, artifact posts) within a time window. counts.open.by_kind splits the open lane by kind: by_kind.decision is the exact scoped provisional (ratify-queue) count and is unaffected by for_agent \u2014 do NOT read counts.open.total as a ratify queue, it counts posts too (store-wide canonical form: twining_status provisional_decisions). Optionally pass for_agent (an agent_id as self-reported to twining_post) to exclude that agent's own outbound posts. Read-only \u2014 act via twining_promote / twining_override / twining_reconsider / twining_post.",
       inputSchema: {
         // Numerics are UNCONSTRAINED by design (§4.1): range constraints here
         // would make the tool reject values HTTP silently defaults.
@@ -35019,7 +35337,9 @@ function registerCoordinationTools(server, agentStore, coordinationEngine, confi
       inputSchema: {
         required_capabilities: external_exports.array(external_exports.string()).describe("Capabilities the agent must have (e.g. ['testing', 'typescript'])"),
         include_gone: external_exports.boolean().optional().describe("Whether to include gone agents (default: true)"),
-        min_score: external_exports.number().optional().describe("Minimum total_score threshold (default: 0)")
+        min_score: external_exports.number().optional().describe(
+          "Minimum total_score threshold. When unset (default) and required_capabilities is non-empty, agents with zero capability overlap are excluded and counted in excluded_zero_overlap; pass 0 explicitly to list every registered agent regardless of overlap. With an empty required_capabilities list, nothing is excluded."
+        )
       }
     },
     async (args) => {
@@ -35169,7 +35489,7 @@ import fs22 from "node:fs";
 
 // src/engine/amend-candidates.ts
 import fs18 from "node:fs";
-import path22 from "node:path";
+import path23 from "node:path";
 var MAX_DECISIONS = 50;
 var MAX_FILES_PER_SCOPE = 500;
 var MAX_CANDIDATES = 5;
@@ -35220,7 +35540,7 @@ function walkFiles(dir, cap) {
         truncated = true;
         return { files, truncated };
       }
-      const full = path22.join(current, entry.name);
+      const full = path23.join(current, entry.name);
       if (entry.isDirectory()) {
         if (!SKIP_DIRS.has(entry.name)) stack.push(full);
       } else if (entry.isFile()) {
@@ -35250,16 +35570,16 @@ async function reportAmendCandidates(decisionStore, projectRoot) {
   const scannable = empties.filter((e) => e.scope !== "project");
   const toScan = scannable.slice(0, MAX_DECISIONS);
   report.decisions_truncated = scannable.length - toScan.length;
-  const resolvedRoot = path22.resolve(projectRoot);
+  const resolvedRoot = path23.resolve(projectRoot);
   for (const entry of toScan) {
-    const scopePath = path22.resolve(path22.join(projectRoot, entry.scope));
+    const scopePath = path23.resolve(path23.join(projectRoot, entry.scope));
     report.decisions_scanned++;
     if (scopePath === resolvedRoot) {
       report.decisions_scanned--;
       report.skipped_project_scope++;
       continue;
     }
-    if (!scopePath.startsWith(resolvedRoot + path22.sep)) {
+    if (!scopePath.startsWith(resolvedRoot + path23.sep)) {
       report.scope_outside_root++;
       continue;
     }
@@ -35288,7 +35608,7 @@ async function reportAmendCandidates(decisionStore, projectRoot) {
       walkTruncated = walked.truncated;
     }
     const scored = files.map((f) => {
-      const rel = path22.relative(projectRoot, f);
+      const rel = path23.relative(projectRoot, f);
       const overlap = [...tokenize(rel)].filter(
         (t) => decisionTokens.has(t)
       ).length;
@@ -35374,18 +35694,18 @@ async function dedupRelations(graphStore, execute) {
 }
 
 // src/engine/housekeeping.ts
-import path26 from "node:path";
+import path27 from "node:path";
 
 // src/engine/staleness.ts
 import fs19 from "node:fs";
-import path23 from "node:path";
-import { execFileSync as execFileSync6 } from "node:child_process";
+import path24 from "node:path";
+import { execFileSync as execFileSync7 } from "node:child_process";
 
 // src/utils/git-branches.ts
-import { execFileSync as execFileSync5 } from "node:child_process";
+import { execFileSync as execFileSync6 } from "node:child_process";
 function listLocalBranches(projectRoot) {
   try {
-    const out = execFileSync5(
+    const out = execFileSync6(
       "git",
       ["for-each-ref", "--format=%(refname:short)", "refs/heads"],
       {
@@ -35447,7 +35767,7 @@ function buildProbes(projectRoot) {
   const branches = knownBranches ?? /* @__PURE__ */ new Set();
   const basenameCounts = (() => {
     try {
-      const out = execFileSync6("git", ["ls-files", "-z"], {
+      const out = execFileSync7("git", ["ls-files", "-z"], {
         cwd: projectRoot,
         encoding: "utf-8",
         maxBuffer: 64 * 1024 * 1024
@@ -35455,7 +35775,7 @@ function buildProbes(projectRoot) {
       const counts = /* @__PURE__ */ new Map();
       for (const f of out.split("\0")) {
         if (!f) continue;
-        const base = path23.basename(f);
+        const base = path24.basename(f);
         counts.set(base, (counts.get(base) ?? 0) + 1);
       }
       return counts;
@@ -35473,13 +35793,13 @@ function buildProbes(projectRoot) {
       if (pathLike.length === 0) return null;
       return pathLike.some((segment) => {
         const candidate = segment.endsWith("/") ? segment.slice(0, -1) : segment;
-        return fs19.existsSync(path23.join(projectRoot, candidate));
+        return fs19.existsSync(path24.join(projectRoot, candidate));
       });
     },
     fileExists: (file) => {
       if (!file) return true;
-      if (fs19.existsSync(path23.join(projectRoot, file))) return true;
-      return basenameCounts !== null ? basenameCounts.get(path23.basename(file)) === 1 : false;
+      if (fs19.existsSync(path24.join(projectRoot, file))) return true;
+      return basenameCounts !== null ? basenameCounts.get(path24.basename(file)) === 1 : false;
     },
     branchKnown: (branch) => listingFailed ? true : branches.has(branch)
   };
@@ -35530,10 +35850,10 @@ function auditStaleness(decisions, blackboardEntries, options) {
 
 // src/engine/branch-watcher.ts
 import fs20 from "node:fs";
-import path24 from "node:path";
+import path25 from "node:path";
 var STATE_FILE = ".last-known-branches.json";
 function readKnownBranches(twiningDir) {
-  const p = path24.join(twiningDir, STATE_FILE);
+  const p = path25.join(twiningDir, STATE_FILE);
   if (!fs20.existsSync(p)) return null;
   try {
     const parsed = JSON.parse(fs20.readFileSync(p, "utf-8"));
@@ -35551,7 +35871,7 @@ function writeKnownBranches(twiningDir, branches) {
     branches: [...branches].sort()
   };
   fs20.writeFileSync(
-    path24.join(twiningDir, STATE_FILE),
+    path25.join(twiningDir, STATE_FILE),
     JSON.stringify(state, null, 2),
     "utf-8"
   );
@@ -35592,7 +35912,7 @@ function detectDeletedBranches(twiningDir, projectRoot, commit = true) {
 
 // src/engine/archive-compactor.ts
 import fs21 from "node:fs";
-import path25 from "node:path";
+import path26 from "node:path";
 import readline from "node:readline";
 import { once } from "node:events";
 var JUNK_SUMMARY_RE = /^Archive: \d+ entries archived$/;
@@ -35625,9 +35945,9 @@ async function compactArchives(twiningDir, options) {
     total_bytes_reclaimable: 0,
     files_deleted: 0
   };
-  const archiveDir = path25.join(twiningDir, "archive");
+  const archiveDir = path26.join(twiningDir, "archive");
   if (!fs21.existsSync(archiveDir)) return report;
-  const files = fs21.readdirSync(archiveDir, { withFileTypes: true }).filter((d) => d.isFile() && d.name.endsWith(".jsonl")).map((d) => path25.join(archiveDir, d.name)).sort();
+  const files = fs21.readdirSync(archiveDir, { withFileTypes: true }).filter((d) => d.isFile() && d.name.endsWith(".jsonl")).map((d) => path26.join(archiveDir, d.name)).sort();
   for (const file of files) {
     const fileReport = await compactFile(file, execute);
     report.files.push(fileReport);
@@ -35753,7 +36073,7 @@ var STALE_PROVISIONAL_DAYS = 7;
 var DEFAULT_STALENESS_THRESHOLD = 0.95;
 var METRICS_RETENTION_DAYS = 30;
 var HousekeepingEngine = class {
-  constructor(twiningDir, blackboardStore, decisionStore, archiver, graphEngine, projectRoot = null, stalenessThreshold = DEFAULT_STALENESS_THRESHOLD, archiveRetain = 0) {
+  constructor(twiningDir, blackboardStore, decisionStore, archiver, graphEngine, projectRoot = null, stalenessThreshold = DEFAULT_STALENESS_THRESHOLD, archiveRetain = 0, db = null) {
     this.twiningDir = twiningDir;
     this.blackboardStore = blackboardStore;
     this.decisionStore = decisionStore;
@@ -35762,6 +36082,7 @@ var HousekeepingEngine = class {
     this.projectRoot = projectRoot;
     this.stalenessThreshold = stalenessThreshold;
     this.archiveRetain = archiveRetain;
+    this.db = db;
   }
   twiningDir;
   blackboardStore;
@@ -35771,6 +36092,7 @@ var HousekeepingEngine = class {
   projectRoot;
   stalenessThreshold;
   archiveRetain;
+  db;
   async run(options) {
     const staleDays = options?.stale_days ?? STALE_PROVISIONAL_DAYS;
     const metricsRetentionDays = options?.metrics_retention_days ?? METRICS_RETENTION_DAYS;
@@ -35898,7 +36220,7 @@ var HousekeepingEngine = class {
       }
     }
     try {
-      const metricsPath = path26.join(this.twiningDir, "metrics.jsonl");
+      const metricsPath = path27.join(this.twiningDir, "metrics.jsonl");
       if (fs22.existsSync(metricsPath)) {
         const cutoff = new Date(
           now - metricsRetentionDays * 24 * 60 * 60 * 1e3
@@ -36080,6 +36402,32 @@ var HousekeepingEngine = class {
       const sweepIds = new Set(result.merge_sweep.candidates.map((c) => c.id));
       result.staleness_review.candidates = result.staleness_review.candidates.filter((c) => !sweepIds.has(c.id));
     }
+    if (options?.repair_index) {
+      const store = this.decisionStore;
+      if (typeof store.repairIndexDesync === "function") {
+        try {
+          const r = await store.repairIndexDesync(execute);
+          result.index_repair = {
+            orphans_found: r.orphan_ids.length,
+            orphan_ids: r.orphan_ids,
+            repaired: r.repaired,
+            skipped_invalid: r.skipped_invalid
+          };
+        } catch (err) {
+          result.index_repair_error = `repair_index failed: ${err instanceof Error ? err.message : String(err)}`;
+        }
+      } else {
+        result.index_repair_error = "repair_index is a files-backend pass \u2014 this backend has no decisions/index.json to repair (the sqlite backend converges from records/ instead).";
+      }
+    }
+    if (execute && this.db) {
+      try {
+        this.db.exec("PRAGMA wal_checkpoint(TRUNCATE);");
+        result.wal_checkpointed = true;
+      } catch {
+        result.wal_checkpointed = false;
+      }
+    }
     const prefix = execute ? "" : "[preview] ";
     const verb = execute ? "" : "would ";
     const parts = [];
@@ -36101,6 +36449,11 @@ var HousekeepingEngine = class {
       } else if (result.merge_sweep.deleted_branches.length > 0) {
         parts.push(`merge_sweep: ${result.merge_sweep.deleted_branches.length} deleted branch(es), ${result.merge_sweep.candidates.length} entries from them`);
       }
+    }
+    if (result.index_repair && result.index_repair.orphans_found > 0) {
+      parts.push(
+        `${verb}salvage ${result.index_repair.orphans_found} decision file(s) missing from the index (index desync)` + (execute ? ` \u2014 ${result.index_repair.repaired} repaired` : "")
+      );
     }
     if (result.archive_compaction && result.archive_compaction.total_junk > 0) {
       const ac = result.archive_compaction;
@@ -36135,6 +36488,9 @@ function registerHousekeepingTools(server, housekeepingEngine, blackboardEngine,
         merge_sweep: external_exports.boolean().optional().describe(
           "Set to true to detect branches deleted since the last housekeeping run (typically post-merge cleanup) and flag entries provenance-stamped with those branches. First call records the initial branch snapshot and returns no candidates. The branch snapshot is advanced only when execute=true; preview passes leave the baseline untouched so deletions stay visible across multiple previews. Returns candidates only; use twining_archive_stale to act on them. When run alongside staleness_review, branch-gone duplicates are removed from staleness_review (merge_sweep is the more specific signal)."
         ),
+        repair_index: external_exports.boolean().optional().describe(
+          "Files backend only: detect decision files on disk that are missing from decisions/index.json (index desync \u2014 such decisions are invisible to every read path). Preview reports orphan ids; with execute: true, orphans that are recognizably decisions (id matches filename, core fields present) are appended to the index under the index lock; anything else counts in skipped_invalid and is never modified or deleted. This pass runs last, so other housekeeping passes see salvaged decisions on the NEXT call, not this one. On the sqlite backend this reports index_repair_error instead of silently succeeding."
+        ),
         compact_archives: external_exports.boolean().optional().describe(
           "Set to true to scan .twining/archive/*.jsonl for junk generated by the pre-1.24.0 auto-archive feedback loop ('Archive: N entries archived' summary findings, #35) and report how much is reclaimable. With execute: true, junk lines are dropped (streaming, atomic rewrite), archive files left empty are deleted, and an audit-trail finding is posted. Only entries matching the archiver's exact signature are dropped \u2014 everything else, including unparseable lines, is preserved."
         ),
@@ -36156,6 +36512,7 @@ function registerHousekeepingTools(server, housekeepingEngine, blackboardEngine,
           staleness_review: args.staleness_review,
           amend_candidates: args.amend_candidates,
           dedup_relations: args.dedup_relations,
+          repair_index: args.repair_index,
           merge_sweep: args.merge_sweep,
           compact_archives: args.compact_archives,
           archive: args.archive,
@@ -36353,12 +36710,12 @@ ${perItemReasons.join("\n")}` : null
 
 // src/analytics/metrics-collector.ts
 init_file_store();
-import path27 from "node:path";
+import path28 from "node:path";
 var MetricsCollector = class {
   metricsPath;
   telemetryClient = null;
   constructor(twiningDir) {
-    this.metricsPath = path27.join(twiningDir, "metrics.jsonl");
+    this.metricsPath = path28.join(twiningDir, "metrics.jsonl");
   }
   /** Set an optional telemetry client to forward sanitized events */
   setTelemetryClient(client) {
@@ -36390,31 +36747,42 @@ function createInstrumentedServer(server, collector) {
       let errorCode;
       try {
         const result = await callback(...cbArgs);
+        let responseText;
+        let parsedResponse;
         if (result && typeof result === "object" && "content" in result) {
           const content = result.content;
           if (Array.isArray(content) && content.length > 0) {
             const first = content[0];
-            if (first.text) {
+            if (typeof first.text === "string") {
+              responseText = first.text;
               try {
-                const parsed = JSON.parse(first.text);
-                if (parsed.error === true) {
-                  success = false;
-                  errorCode = parsed.code || "SOFT_ERROR";
-                }
+                parsedResponse = JSON.parse(first.text);
               } catch {
               }
             }
           }
         }
+        if (parsedResponse && typeof parsedResponse === "object") {
+          const p = parsedResponse;
+          if (p.error === true) {
+            success = false;
+            errorCode = p.code || "SOFT_ERROR";
+          }
+        }
         const durationMs = Date.now() - start;
         const agentId = extractAgentId(cbArgs);
+        const scope = extractScope(cbArgs);
+        const resultCount = firstArrayLength(parsedResponse);
         collector.record({
           tool_name: name,
           timestamp: (/* @__PURE__ */ new Date()).toISOString(),
           duration_ms: durationMs,
           success,
           error_code: errorCode,
-          agent_id: agentId
+          agent_id: agentId,
+          ...responseText !== void 0 ? { response_bytes: Buffer.byteLength(responseText, "utf-8") } : {},
+          ...resultCount !== void 0 ? { result_count: resultCount } : {},
+          ...scope !== void 0 ? { scope } : {}
         }).catch(() => {
         });
         return result;
@@ -36436,6 +36804,22 @@ function createInstrumentedServer(server, collector) {
     return originalRegisterTool(name, config2, wrappedCallback);
   };
   return server;
+}
+function extractScope(cbArgs) {
+  if (cbArgs.length > 0 && cbArgs[0] && typeof cbArgs[0] === "object") {
+    const args = cbArgs[0];
+    if (typeof args.scope === "string") return args.scope;
+  }
+  return void 0;
+}
+function firstArrayLength(parsedResponse) {
+  if (!parsedResponse || typeof parsedResponse !== "object" || Array.isArray(parsedResponse)) {
+    return void 0;
+  }
+  for (const value of Object.values(parsedResponse)) {
+    if (Array.isArray(value)) return value.length;
+  }
+  return void 0;
 }
 function extractAgentId(cbArgs) {
   if (cbArgs.length > 0 && cbArgs[0] && typeof cbArgs[0] === "object") {
@@ -36474,13 +36858,13 @@ Call \`twining_record\` with a summary and any decisions before every \`git comm
 // src/analytics/metrics-store.ts
 init_file_store();
 import fs23 from "node:fs";
-import path28 from "node:path";
+import path29 from "node:path";
 var MetricsStore = class {
   metricsPath;
   cachedEntries = null;
   cachedMtime = 0;
   constructor(twiningDir) {
-    this.metricsPath = path28.join(twiningDir, "metrics.jsonl");
+    this.metricsPath = path29.join(twiningDir, "metrics.jsonl");
   }
   /** Read all metrics, using mtime cache when possible */
   async readAll() {
@@ -36585,13 +36969,17 @@ function createServer(projectRoot) {
   }
   const {
     backend,
+    reason: backendReason,
+    legacy_unread: legacyUnread,
+    records_unread: recordsUnread,
     blackboardStore,
     decisionStore,
     graphStore,
     agentStore,
     handoffStore,
     indexManager,
-    recordSync
+    recordSync,
+    db
   } = createStores(twiningDir, config2);
   if (backend !== (config2.storage?.backend ?? "files")) {
   }
@@ -36675,7 +37063,8 @@ function createServer(projectRoot) {
     graphEngine,
     projectRoot,
     config2.housekeeping?.staleness_threshold,
-    config2.archive.retain_recent
+    config2.archive.retain_recent,
+    db ?? null
   );
   const exporter = new Exporter(blackboardStore, decisionStore, graphStore);
   const pendingProcessor = new PendingProcessor(
@@ -36741,7 +37130,14 @@ function createServer(projectRoot) {
       graphStore,
       archiver,
       config2,
-      agentStore
+      agentStore,
+      {
+        serverVersion: PKG_VERSION,
+        backend,
+        backendReason,
+        legacyUnread,
+        recordsUnread
+      }
     );
     registerGraphTools(server, graphEngine);
   }
@@ -36756,13 +37152,19 @@ function createServer(projectRoot) {
     decisionEngine,
     graphEngine
   };
-  return { server, metricsCollector, twiningDir, config: config2, dashboardDeps };
+  const closeDb = () => {
+    try {
+      db?.close();
+    } catch {
+    }
+  };
+  return { server, metricsCollector, twiningDir, config: config2, dashboardDeps, closeDb };
 }
 
 // src/dashboard/http-server.ts
 import http from "node:http";
 import fs27 from "node:fs/promises";
-import path32 from "node:path";
+import path33 from "node:path";
 import { fileURLToPath } from "node:url";
 
 // src/dashboard/dashboard-config.ts
@@ -36779,7 +37181,7 @@ init_blackboard_store();
 init_decision_store();
 init_graph_store();
 import fs24 from "node:fs";
-import path29 from "node:path";
+import path30 from "node:path";
 init_handoff_store();
 
 // src/analytics/analytics-engine.ts
@@ -36921,7 +37323,7 @@ var EMPTY_TRIAGE_STORES = {
   }
 };
 function createApiHandler(projectRoot, deps) {
-  const twiningDir = path29.join(projectRoot, ".twining");
+  const twiningDir = path30.join(projectRoot, ".twining");
   const blackboardStore = deps?.blackboardStore ?? new BlackboardStore(twiningDir);
   const decisionStore = deps?.decisionStore ?? new DecisionStore(twiningDir);
   const graphStore = deps?.graphStore ?? new GraphStore(twiningDir);
@@ -37106,7 +37508,7 @@ function createApiHandler(projectRoot, deps) {
         if (!fs24.existsSync(twiningDir)) {
           sendJSON(res, {
             initialized: false,
-            project_name: path29.basename(path29.resolve(projectRoot)),
+            project_name: path30.basename(path30.resolve(projectRoot)),
             blackboard_entries: 0,
             active_decisions: 0,
             provisional_decisions: 0,
@@ -37163,7 +37565,7 @@ function createApiHandler(projectRoot, deps) {
         const total_handoffs = handoffs.length;
         sendJSON(res, {
           initialized: true,
-          project_name: path29.basename(path29.resolve(projectRoot)),
+          project_name: path30.basename(path30.resolve(projectRoot)),
           blackboard_entries,
           active_decisions,
           provisional_decisions,
@@ -37496,28 +37898,28 @@ init_decision_store();
 init_graph_store();
 init_handoff_store();
 import fs26 from "node:fs";
-import path31 from "node:path";
+import path32 from "node:path";
 import zlib from "node:zlib";
 init_config();
 
 // src/dashboard/raw-path.ts
 import fs25 from "node:fs";
-import path30 from "node:path";
+import path31 from "node:path";
 var RAW_FILE_MAX_BYTES = 1e6;
 function resolveRawPath(projectRoot, rel) {
   if (typeof rel !== "string" || rel.length === 0 || rel.length > 1024) return null;
-  if (path30.isAbsolute(rel) || rel.includes("\\") || rel.includes("\0")) return null;
+  if (path31.isAbsolute(rel) || rel.includes("\\") || rel.includes("\0")) return null;
   const segments = rel.split("/");
   if (segments.some((s) => s === "" || s.startsWith("."))) return null;
   let rootReal;
   let real;
   try {
     rootReal = fs25.realpathSync(projectRoot);
-    real = fs25.realpathSync(path30.resolve(rootReal, rel));
+    real = fs25.realpathSync(path31.resolve(rootReal, rel));
   } catch {
     return null;
   }
-  if (!real.startsWith(rootReal + path30.sep)) return null;
+  if (!real.startsWith(rootReal + path31.sep)) return null;
   try {
     if (!fs25.statSync(real).isFile()) return null;
   } catch {
@@ -37527,7 +37929,7 @@ function resolveRawPath(projectRoot, rel) {
 }
 
 // src/dashboard/repo-info.ts
-import { execFileSync as execFileSync7 } from "node:child_process";
+import { execFileSync as execFileSync8 } from "node:child_process";
 function remoteToWebUrl(remote) {
   if (!remote) return null;
   const ssh = remote.match(/^git@([^:]+):(.+?)(?:\.git)?$/);
@@ -37539,7 +37941,7 @@ function remoteToWebUrl(remote) {
 function computeRepoInfo(projectRoot) {
   const run = (args) => {
     try {
-      const out = execFileSync7("git", args, {
+      const out = execFileSync8("git", args, {
         cwd: projectRoot,
         encoding: "utf8",
         stdio: ["ignore", "pipe", "ignore"],
@@ -37631,7 +38033,7 @@ function sendJSON2(req, res, data, status = 200) {
   }
 }
 function createQueryHandler(projectRoot, deps) {
-  const twiningDir = path31.join(projectRoot, ".twining");
+  const twiningDir = path32.join(projectRoot, ".twining");
   const blackboardStore = deps?.blackboardStore ?? new BlackboardStore(twiningDir);
   const decisionStore = deps?.decisionStore ?? new DecisionStore(twiningDir);
   const graphStore = deps?.graphStore ?? new GraphStore(twiningDir);
@@ -38101,16 +38503,16 @@ function serveStatic(publicDir) {
     const rawPath = qIndex >= 0 ? rawUrl.slice(0, qIndex) : rawUrl;
     const decodedPath = decodeURIComponent(rawPath);
     const pathname = decodedPath === "/" ? "/index.html" : decodedPath;
-    const filePath = path32.join(publicDir, pathname);
-    const resolved = path32.resolve(filePath);
-    if (!resolved.startsWith(path32.resolve(publicDir))) {
+    const filePath = path33.join(publicDir, pathname);
+    const resolved = path33.resolve(filePath);
+    if (!resolved.startsWith(path33.resolve(publicDir))) {
       res.writeHead(403);
       res.end("Forbidden");
       return;
     }
     try {
       const data = await fs27.readFile(resolved);
-      const ext = path32.extname(resolved);
+      const ext = path33.extname(resolved);
       res.writeHead(200, {
         "Content-Type": MIME_TYPES[ext] || "application/octet-stream"
       });
@@ -38152,7 +38554,7 @@ function handleRequest(publicDir, projectRoot, deps) {
   const staticHandler = serveStatic(publicDir);
   const queryHandler = createQueryHandler(projectRoot, deps);
   const apiHandler = createApiHandler(projectRoot, deps);
-  const resolvedProjectRoot = path32.resolve(projectRoot);
+  const resolvedProjectRoot = path33.resolve(projectRoot);
   return (req, res) => {
     queryHandler(req, res).then((queryHandled) => queryHandled ? true : apiHandler(req, res)).then((handled) => {
       if (handled) return;
@@ -38184,7 +38586,7 @@ async function startDashboard(projectRoot, deps) {
   if (!config2.enabled) {
     return null;
   }
-  const resolvedRoot = path32.resolve(projectRoot);
+  const resolvedRoot = path33.resolve(projectRoot);
   if (config2.port !== 0) {
     for (let p = config2.port; p <= config2.port + DASHBOARD_PORT_RETRIES; p++) {
       if (await isExistingDashboard(p, resolvedRoot)) {
@@ -38196,14 +38598,14 @@ async function startDashboard(projectRoot, deps) {
     }
   }
   const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path32.dirname(__filename);
-  const publicDir = path32.join(__dirname, "public");
+  const __dirname = path33.dirname(__filename);
+  const publicDir = path33.join(__dirname, "public");
   const server = http.createServer(handleRequest(publicDir, projectRoot, deps));
   const port = await tryListen(server, config2.port, DASHBOARD_PORT_RETRIES);
   const url = `http://127.0.0.1:${port}`;
   console.error(`[twining] Dashboard: ${url}`);
   if (config2.autoOpen) {
-    const resolvedRoot2 = path32.resolve(projectRoot);
+    const resolvedRoot2 = path33.resolve(projectRoot);
     const skipOpen = port !== config2.port && await isExistingDashboard(config2.port, resolvedRoot2);
     if (skipOpen) {
       console.error(
@@ -38215,20 +38617,6 @@ async function startDashboard(projectRoot, deps) {
     }
   }
   return { server, port };
-}
-function setupDashboardShutdown(httpServer) {
-  const shutdown = () => {
-    httpServer.close(() => {
-    });
-    const timer = setTimeout(() => {
-      process.exit(0);
-    }, 3e3);
-    if (timer.unref) {
-      timer.unref();
-    }
-  };
-  process.on("SIGTERM", shutdown);
-  process.on("SIGINT", shutdown);
 }
 
 // src/analytics/telemetry-client.ts
@@ -38353,9 +38741,30 @@ async function main() {
   );
   const { maybeAutoMigrate: maybeAutoMigrate2 } = await Promise.resolve().then(() => (init_auto(), auto_exports));
   await maybeAutoMigrate2(projectRoot);
-  const { server, metricsCollector, config: config2, dashboardDeps } = createServer(projectRoot);
+  const { server, metricsCollector, config: config2, dashboardDeps, closeDb } = createServer(projectRoot);
   const transport = new StdioServerTransport();
   await server.connect(transport);
+  let dashboardServer = null;
+  let shuttingDown = false;
+  const shutdown = (code) => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    process.exitCode = code;
+    try {
+      dashboardServer?.close(() => {
+      });
+    } catch {
+    }
+    const timer = setTimeout(() => {
+      process.exit(code);
+    }, 3e3);
+    timer.unref();
+  };
+  process.once("exit", () => closeDb());
+  process.once("SIGINT", () => shutdown(130));
+  process.once("SIGTERM", () => shutdown(143));
+  process.stdin.once("end", () => shutdown(0));
+  process.stdin.once("close", () => shutdown(0));
   const telemetry = new TelemetryClient();
   const pkgVersion = server.serverInfo?.version || "unknown";
   telemetry.init(config2.analytics, projectRoot, pkgVersion).then((enabled) => {
@@ -38374,7 +38783,7 @@ async function main() {
   });
   startDashboard(projectRoot, dashboardDeps).then((result) => {
     if (result) {
-      setupDashboardShutdown(result.server);
+      dashboardServer = result.server;
     }
   }).catch((err) => {
     console.error("[twining] Dashboard failed to start (non-fatal):", err.message);
