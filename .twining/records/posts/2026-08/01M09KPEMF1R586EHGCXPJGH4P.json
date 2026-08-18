@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Docs-accuracy review lens (resumed after machine-sleep failure) reconciled: CHANGELOG backfill, five-hook census, marker path, version attributions, and the 01KQWCCVTV decision citation all verified accurate; 3 confirmed defects in the docs/hooks.md rewrite fixed — fail-open umbrella claim corrected (a present-but-unreadable/empty .last-record sentinel deliberately fails TOWARD gating in both gating hooks), read-only audit recipe now warns that boot drains pending-posts/pending-actions into COMMITTED state and may post ingest revert warnings, and the worktree-stamping sentence made session-relative (main-checkout edits into .claude/worktrees/ subagent trees deliberately never stamp). Pre-tag review fully complete: 7/7 lenses, all findings reconciled.",
+  "entry_type": "status",
+  "id": "01M09KPEMF1R586EHGCXPJGH4P",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d831489ec3e9511a9f9ba04a56f5c14434d9c88d",
+    "recorded_at": "2026-08-18T04:57:23.836Z"
+  },
+  "scope": "docs/",
+  "summary": "Docs-accuracy review lens (resumed after machine-sleep failure) reconciled: CHANGELOG backfill, five-hook census, marker path, version attributions, and the 01KQWCCVTV decision citation all verifie…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-18T04:57:23.855Z"
+}
