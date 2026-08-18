@@ -14,13 +14,23 @@ Wave 1 of the 2026-08-15 field read-context-quality audit response
   database beside unread legacy v1 decisions — the field measured 3 stores
   holding 1,342 decisions reading as empty, with 12 more one zero-length
   file away.
-- **The amnesia store can no longer report "Healthy".** An empty sqlite
-  decisions table beside legacy v1 content warns loudly at boot (covering
-  explicit `backend: sqlite` too, which the auto resolver never sees) and
-  leads `twining_status` warnings with the migrate instruction.
-- **Assemble double-render.** Truncated-summary warnings rendered the same
-  text twice (preview + `Full summary:` superset); deduped at render time,
-  on-disk lossless format unchanged (S4-1).
+- **The amnesia store can no longer report "Healthy".** Legacy v1 content
+  the sqlite backend cannot see warns loudly at boot (covering explicit
+  `backend: sqlite` too, which the auto resolver never sees) and leads
+  `twining_status` warnings with the migrate instruction. Pre-tag review
+  round: the check is **tier-matched** (a migrated blackboard-only store's
+  forever-empty decisions table no longer cries amnesia — the trust-critical
+  warning must not train agents to ignore it) and **id-precise** where the
+  legacy decisions index is readable (post-flip decisions no longer mask
+  unread legacy state). The reverse-stranding shape also warns: a
+  sqlite→files FALLBACK boot beside a populated `records/` tree flags
+  `records_unread` — the session may be reading stale legacy history.
+- **Double-render dedupe (both halves).** Truncated-summary entries rendered
+  the same text twice (preview + `Full summary:` superset). Deduped in the
+  assemble briefing AND in twining_read/query/recent responses; the assemble
+  token budget now costs the deduped form, so warnings near the boundary no
+  longer degrade over text that would have fit. On-disk lossless format
+  unchanged (S4-1; review ASC-2/ENG-2).
 - **Verify drift performance.** Scope population hoisted out of the
   per-stale-file loop (was O(stale × population)) and `git log` memoized per
   distinct file (was one spawn per affected_file entry — minutes at field
@@ -36,8 +46,12 @@ Wave 1 of the 2026-08-15 field read-context-quality audit response
   missing from `decisions/index.json` are invisible to every read path;
   `twining_status` now warns, and
   `twining_housekeeping({repair_index: true, execute: true})` salvages
-  parseable orphans under the index lock. On sqlite the pass reports
-  `index_repair_error` instead of silently succeeding.
+  orphans under the index lock. On sqlite the pass reports
+  `index_repair_error` instead of silently succeeding. Pre-tag review round:
+  salvage is shape-gated (only recognizable decisions whose id matches the
+  filename; strays count in `skipped_invalid`, never modified — an
+  unvalidated salvage could poison the index and crash every scope read),
+  survives a fully missing `index.json`, and keeps the index in ULID order.
 - **Metrics cost fields.** `metrics.jsonl` entries gain `response_bytes`,
   `result_count`, and `scope` — context cost becomes measurable across the
   install base (S4-4).
@@ -47,12 +61,29 @@ Wave 1 of the 2026-08-15 field read-context-quality audit response
   (S4-7).
 - **twining_commits disambiguation.** Malformed SHA → `INVALID_INPUT`; empty
   results carry `commit_exists` (`true | false | "unknown"`) + message, so a
-  typo no longer reads as "no recorded rationale" (S4-12).
+  typo no longer reads as "no recorded rationale" (S4-12). Pre-tag review
+  round: lookup is now **prefix-aware in both directions** (links stored as
+  7-char abbreviations vs full-SHA queries and vice versa — the exact-match
+  form let the tool assert "never linked" about a linked commit), the
+  existence probe uses `git rev-parse --quiet --verify` with empirically
+  verified exit codes (the `cat-file -e <hash>^{commit}` form exited 128 for
+  missing objects, making the "no such commit" branch unreachable), and no
+  message asserts more than the lookup actually established.
 
 ### Changed
 - **twining_discover** excludes zero-capability-overlap agents by default and
   reports `excluded_zero_overlap`; pass `min_score: 0` for the old roster
-  behavior (S4-8).
+  behavior (S4-8). `twining_delegate`'s suggested_agents inherits the
+  exclusion and now carries the same `excluded_zero_overlap` count so the
+  shrink is never silent (review CS-6).
+- **Shutdown is one coordinated path** (signals + stdin close): the dashboard
+  stops accepting, in-flight tool steps get the bounded 3s drain the old
+  dashboard-only handler provided, the db closes on `exit` (checkpointing the
+  WAL), and signal exits use conventional codes 130/143 instead of 0
+  (review LS-2/LS-3). Hosts that end sessions by closing stdin no longer
+  leave the process alive serving only the dashboard.
+- `twining_decide` alternatives' `reason_rejected` is optional, matching
+  `twining_record` and the engine (review CS-2).
 - **twining_record**: empty summary rejected with a repairable message;
   `reason_rejected` on alternatives is now optional, matching engine
   semantics (S4-2 residue).

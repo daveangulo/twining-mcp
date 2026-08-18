@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-18T04:21:04.562Z",
+  "id": "01M09HKYDJBV5KPT98KWDN1XHV",
+  "name": "01M09HKYA6EENWWBHMWH2T21HT",
+  "properties": {
+    "scope": "src/",
+    "summary": "Chose one consolidated shutdown path in index.ts (signal → dashboard close + bounded 3s drain → exit 130/143; db close on the 'exit' event so it runs exactly once on every termination path; stdin end/close → shutdown(0)) and stopped calling setupDashboardShutdown"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-18T04:21:04.562Z"
+}

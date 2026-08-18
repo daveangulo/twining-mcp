@@ -65,7 +65,7 @@ export function registerHousekeepingTools(
           .boolean()
           .optional()
           .describe(
-            "Files backend only: detect decision files on disk that are missing from decisions/index.json (index desync — such decisions are invisible to every read path). Preview reports orphan ids; with execute: true, parseable orphans are appended to the index under the index lock. Unparseable files are reported but never modified or deleted. On the sqlite backend this reports index_repair_error instead of silently succeeding.",
+            "Files backend only: detect decision files on disk that are missing from decisions/index.json (index desync — such decisions are invisible to every read path). Preview reports orphan ids; with execute: true, orphans that are recognizably decisions (id matches filename, core fields present) are appended to the index under the index lock; anything else counts in skipped_invalid and is never modified or deleted. This pass runs last, so other housekeeping passes see salvaged decisions on the NEXT call, not this one. On the sqlite backend this reports index_repair_error instead of silently succeeding.",
           ),
         compact_archives: z
           .boolean()

@@ -52,7 +52,8 @@ export function registerDecisionTools(
                 .describe("Disadvantages of this alternative"),
               reason_rejected: z
                 .string()
-                .describe("Why this alternative was rejected"),
+                .optional()
+                .describe("Why this alternative was rejected (strongly encouraged)"),
             }),
           )
           .optional()
@@ -347,9 +348,17 @@ export function registerDecisionTools(
         // S4-12 (2026-08-15 field audit): a typo'd SHA and an unlinked SHA
         // returned byte-identical {decisions: []} — the natural question
         // "does this commit have recorded rationale?" answered "no" for a
-        // typo. Validate the shape, then probe existence on empty results.
-        const hash = args.commit_hash.trim();
-        if (!/^[0-9a-fA-F]{4,40}$/.test(hash)) {
+        // typo. Lookup is prefix-aware in the stores (short link vs full
+        // query and vice versa both match); on empty results, existence is
+        // probed with `git rev-parse --quiet --verify <hash>^{commit}`,
+        // whose exit codes were verified empirically (git 2.50.1): 0 =
+        // exists (stdout carries the canonical full SHA), 1 with empty
+        // stderr = no such object, 1 with stderr = ambiguous short hash,
+        // 128 = not a repository. The old `cat-file -e <hash>^{commit}`
+        // form exits 128 for missing objects too, which made the "no such
+        // commit" branch unreachable (2.16.0 pre-tag review, TC-1).
+        const hash = args.commit_hash.trim().toLowerCase();
+        if (!/^[0-9a-f]{4,40}$/.test(hash)) {
           return toolError(
             `commit_hash must be a 4-40 character hex SHA (got "${args.commit_hash}")`,
             "INVALID_INPUT",
@@ -360,26 +369,39 @@ export function registerDecisionTools(
           return toolResult(result);
         }
         let commit_exists: boolean | "unknown" = "unknown";
+        let ambiguous = false;
         try {
-          execFileSync("git", ["cat-file", "-e", `${hash}^{commit}`], {
-            cwd: path.dirname(twiningDir),
-            timeout: 3000,
-            stdio: "ignore",
-          });
+          execFileSync(
+            "git",
+            ["rev-parse", "--quiet", "--verify", `${hash}^{commit}`],
+            {
+              cwd: path.dirname(twiningDir),
+              timeout: 3000,
+              stdio: ["ignore", "pipe", "pipe"],
+              encoding: "utf-8",
+            },
+          );
           commit_exists = true;
         } catch (err) {
-          // Exit 1 = valid repo, object genuinely absent. Anything else
-          // (no repo, ambiguous short SHA, git missing) stays "unknown" —
-          // never let a probe failure read as "no such commit".
-          const status = (err as { status?: number | null }).status;
-          commit_exists = status === 1 ? false : "unknown";
+          const e = err as { status?: number | null; stderr?: string | Buffer };
+          const stderrText = (e.stderr ?? "").toString().trim();
+          if (e.status === 1 && stderrText.length === 0) {
+            commit_exists = false;
+          } else {
+            // No repo, git unavailable, timeout, or ambiguous short hash —
+            // never let a probe failure read as "no such commit".
+            commit_exists = "unknown";
+            ambiguous = /ambiguous/i.test(stderrText);
+          }
         }
         const message =
           commit_exists === true
-            ? "Commit exists but has no linked decisions — twining_link_commit was never called for it."
+            ? "Commit exists but no linked decisions matched this hash (exact and prefix lookups tried)."
             : commit_exists === false
               ? "No such commit in this repository — check the hash for typos."
-              : "Commit existence could not be determined (not a git repository, ambiguous short SHA, or git unavailable) — an empty result here does not prove the commit is unlinked.";
+              : ambiguous
+                ? "Short hash is ambiguous in this repository — use more characters. An empty result here does not prove the commit is unlinked."
+                : "Commit existence could not be determined (not a git repository, git unavailable, or the hash may be a typo) — an empty result here does not prove the commit is unlinked.";
         return toolResult({ ...result, commit_exists, message });
       } catch (e) {
         if (e instanceof TwiningError) {

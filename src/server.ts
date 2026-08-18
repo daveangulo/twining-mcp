@@ -84,6 +84,7 @@ export function createServer(projectRoot: string): ServerContext {
     backend,
     reason: backendReason,
     legacy_unread: legacyUnread,
+    records_unread: recordsUnread,
     blackboardStore,
     decisionStore,
     graphStore,
@@ -309,6 +310,7 @@ export function createServer(projectRoot: string): ServerContext {
         backend,
         backendReason,
         legacyUnread,
+        recordsUnread,
       },
     );
     registerGraphTools(server, graphEngine);

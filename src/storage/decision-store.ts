@@ -5,9 +5,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import lockfile from "proper-lockfile";
-import { LOCK_OPTIONS, atomicWriteFileSync, readJSON } from "./file-store.js";
+import { LOCK_OPTIONS, atomicWriteFileSync, ensureFileExists, readJSON } from "./file-store.js";
 import { generateId } from "../utils/ids.js";
 import { scopeMatches } from "../utils/scope.js";
+import { commitHashMatches } from "../utils/commit-hash.js";
 import type {
   Decision,
   DecisionAmendment,
@@ -15,6 +16,23 @@ import type {
   DecisionStatus,
 } from "../utils/types.js";
 import type { IDecisionStore } from "./interfaces.js";
+
+/** Salvage shape gate: a plain object whose id matches the filename stem
+ * and whose load-bearing string fields exist. Everything else is a stray
+ * file, not a decision (2.16.0 review SC-1/TC-4). */
+function isSalvageableDecision(raw: unknown, expectedId: string): boolean {
+  if (raw === null || typeof raw !== "object" || Array.isArray(raw)) {
+    return false;
+  }
+  const d = raw as Record<string, unknown>;
+  return (
+    d.id === expectedId &&
+    typeof d.scope === "string" &&
+    typeof d.summary === "string" &&
+    typeof d.timestamp === "string" &&
+    typeof d.status === "string"
+  );
+}
 
 export class DecisionStore implements IDecisionStore {
   private readonly decisionsDir: string;
@@ -200,9 +218,9 @@ export class DecisionStore implements IDecisionStore {
    */
   async repairIndexDesync(
     execute: boolean,
-  ): Promise<{ orphan_ids: string[]; repaired: number }> {
+  ): Promise<{ orphan_ids: string[]; repaired: number; skipped_invalid: number }> {
     if (!fs.existsSync(this.decisionsDir)) {
-      return { orphan_ids: [], repaired: 0 };
+      return { orphan_ids: [], repaired: 0, skipped_invalid: 0 };
     }
     // A missing/unreadable index with decision files on disk is the extreme
     // form of the desync — treat it as empty rather than failing detection.
@@ -215,17 +233,24 @@ export class DecisionStore implements IDecisionStore {
       if (!known.has(id)) orphan_ids.push(id);
     }
     if (!execute || orphan_ids.length === 0) {
-      return { orphan_ids, repaired: 0 };
+      return { orphan_ids, repaired: 0, skipped_invalid: 0 };
     }
 
     let repaired = 0;
+    let skipped_invalid = 0;
+    // proper-lockfile locks by file existence — a store whose index.json was
+    // deleted entirely (the extreme desync) must get one before locking, or
+    // the repair fails with ENOENT in exactly the state it exists to fix
+    // (2.16.0 review SC-2).
+    ensureFileExists(this.indexPath, "[]");
     const release = await lockfile.lock(this.indexPath, LOCK_OPTIONS);
     try {
       let index: DecisionIndexEntry[];
       try {
-        index = JSON.parse(
+        const parsed = JSON.parse(
           fs.readFileSync(this.indexPath, "utf-8"),
-        ) as DecisionIndexEntry[];
+        ) as unknown;
+        index = Array.isArray(parsed) ? (parsed as DecisionIndexEntry[]) : [];
       } catch {
         index = [];
       }
@@ -233,23 +258,44 @@ export class DecisionStore implements IDecisionStore {
       for (const id of orphan_ids) {
         if (liveIds.has(id)) continue; // raced in by a concurrent writer
         try {
-          const decision = JSON.parse(
+          const raw = JSON.parse(
             fs.readFileSync(path.join(this.decisionsDir, `${id}.json`), "utf-8"),
-          ) as Decision;
+          ) as unknown;
+          // Shape gate (2.16.0 review SC-1): only salvage something that is
+          // recognizably a decision whose id matches its filename — a stray
+          // parseable JSON (merge artifact, index backup, hand-edit) pushed
+          // into the index would crash every scope read and re-append on
+          // every repair run. Invalid files are reported, never modified.
+          if (!isSalvageableDecision(raw, id)) {
+            skipped_invalid++;
+            continue;
+          }
+          const decision = raw as Decision;
+          decision.affected_files = Array.isArray(decision.affected_files)
+            ? decision.affected_files
+            : [];
+          decision.affected_symbols = Array.isArray(decision.affected_symbols)
+            ? decision.affected_symbols
+            : [];
           index.push(this.toIndexEntry(decision));
           repaired++;
         } catch {
-          // Skip, never delete — matches migrate's salvage rule.
+          // Unparseable: skip, never delete — matches migrate's salvage rule.
+          skipped_invalid++;
         }
       }
       if (repaired > 0) {
+        // ULIDs sort lexicographically by creation time — keep the index in
+        // its natural chronological order after out-of-order salvage
+        // (2.16.0 review ENG-5).
+        index.sort((a, b) => a.id.localeCompare(b.id));
         atomicWriteFileSync(this.indexPath, JSON.stringify(index, null, 2));
       }
     } finally {
       await release();
     }
     this.cachedIndex = null;
-    return { orphan_ids, repaired };
+    return { orphan_ids, repaired, skipped_invalid };
   }
 
   /** Get the full decision index, with mtime-based caching. */
@@ -318,8 +364,15 @@ export class DecisionStore implements IDecisionStore {
   /** Get decisions linked to a specific commit hash. */
   async getByCommitHash(commitHash: string): Promise<Decision[]> {
     const index = await this.getIndex();
+    // Prefix-aware match (2.16.0 review TC-2/CS-1): links are stored however
+    // the caller wrote them (this repo's own store holds 7-char links; hooks
+    // write full 40-char SHAs), so an exact test made short-vs-full misses
+    // the common case. Bidirectional prefix with a 4-char floor — git's own
+    // abbreviation minimum — so a stray non-hex or tiny link can't sweep.
     const matching = index.filter(
-      (entry) => entry.commit_hashes && entry.commit_hashes.includes(commitHash),
+      (entry) =>
+        entry.commit_hashes &&
+        entry.commit_hashes.some((h) => commitHashMatches(h, commitHash)),
     );
 
     const decisions: Decision[] = [];

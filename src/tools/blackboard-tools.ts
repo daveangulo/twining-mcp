@@ -9,6 +9,7 @@ import type { DecisionEngine } from "../engine/decisions.js";
 import type { IDecisionStore } from "../storage/interfaces.js";
 import { ENTRY_TYPES } from "../utils/types.js";
 import { toolResult, toolError, TwiningError } from "../utils/errors.js";
+import { dedupeEntryFullSummary } from "../utils/full-summary.js";
 import { writeRecordSentinel } from "../utils/record-sentinel.js";
 import { appendDismissalTombstones } from "../engine/tombstones.js";
 
@@ -120,7 +121,12 @@ export function registerBlackboardTools(
     async (args) => {
       try {
         const result = await engine.read(args);
-        return toolResult(result);
+        // S4-1 read half: collapse the lossless "Full summary:" duplication
+        // in the response; on-disk entries are untouched.
+        return toolResult({
+          ...result,
+          entries: result.entries.map(dedupeEntryFullSummary),
+        });
       } catch (e) {
         return toolError(
           e instanceof Error ? e.message : "Unknown error",
@@ -172,7 +178,14 @@ export function registerBlackboardTools(
           }));
         }
 
-        return toolResult({ ...result, decisions });
+        return toolResult({
+          ...result,
+          results: result.results.map((r) => ({
+            ...r,
+            entry: dedupeEntryFullSummary(r.entry),
+          })),
+          decisions,
+        });
       } catch (e) {
         return toolError(
           e instanceof Error ? e.message : "Unknown error",
@@ -226,7 +239,11 @@ export function registerBlackboardTools(
             }));
         }
 
-        return toolResult({ ...result, decisions });
+        return toolResult({
+          ...result,
+          entries: result.entries.map(dedupeEntryFullSummary),
+          decisions,
+        });
       } catch (e) {
         return toolError(
           e instanceof Error ? e.message : "Unknown error",

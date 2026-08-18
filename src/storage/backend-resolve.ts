@@ -79,12 +79,39 @@ function dirHasAnyFile(dir: string): boolean {
 }
 
 export function hasLegacyContent(twiningDir: string): boolean {
+  const tiers = legacyContentTiers(twiningDir);
+  return tiers.decisions || tiers.blackboard || tiers.graph;
+}
+
+/** Per-tier legacy detection (2.16.0 review LS-1/CS-5): the amnesia
+ * warning must compare each legacy tier against ITS database table — a
+ * migrated blackboard-only store has an empty decisions table forever and
+ * must not cry amnesia over it. */
+export interface LegacyContentTiers {
+  decisions: boolean;
+  blackboard: boolean;
+  graph: boolean;
+  /** Ids from decisions/index.json when readable and well-formed;
+   * null when the index is missing, empty, or unparseable. */
+  decision_ids: string[] | null;
+}
+
+export function legacyContentTiers(twiningDir: string): LegacyContentTiers {
+  const tiers: LegacyContentTiers = {
+    decisions: false,
+    blackboard: false,
+    graph: false,
+    decision_ids: null,
+  };
+
   const blackboard = path.join(twiningDir, "blackboard.jsonl");
   if (fs.existsSync(blackboard)) {
     try {
-      if (fs.readFileSync(blackboard, "utf-8").trim().length > 0) return true;
+      if (fs.readFileSync(blackboard, "utf-8").trim().length > 0) {
+        tiers.blackboard = true;
+      }
     } catch {
-      return true;
+      tiers.blackboard = true;
     }
   }
 
@@ -95,16 +122,23 @@ export function hasLegacyContent(twiningDir: string): boolean {
         if (name === "index.json") {
           const parsed = JSON.parse(
             fs.readFileSync(path.join(decisionsDir, name), "utf-8"),
-          );
-          if (Array.isArray(parsed) && parsed.length > 0) return true;
+          ) as unknown;
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            tiers.decisions = true;
+            const ids = parsed
+              .map((e) => (e as { id?: unknown }).id)
+              .filter((id): id is string => typeof id === "string");
+            tiers.decision_ids = ids.length > 0 ? ids : null;
+          }
         } else if (name.endsWith(".json")) {
           // Stray decision files count even when the index is empty —
           // the field-observed index desync must not read as "fresh".
-          return true;
+          tiers.decisions = true;
         }
       }
     } catch {
-      return true;
+      tiers.decisions = true;
+      tiers.decision_ids = null;
     }
   }
 
@@ -115,12 +149,26 @@ export function hasLegacyContent(twiningDir: string): boolean {
     const file = path.join(twiningDir, relPath);
     if (!fs.existsSync(file)) continue;
     try {
-      const parsed = JSON.parse(fs.readFileSync(file, "utf-8"));
-      if (Array.isArray(parsed) && parsed.length > 0) return true;
+      const parsed = JSON.parse(fs.readFileSync(file, "utf-8")) as unknown;
+      if (Array.isArray(parsed) && parsed.length > 0) tiers.graph = true;
     } catch {
-      return true;
+      tiers.graph = true;
     }
   }
 
-  return false;
+  return tiers;
+}
+
+/** Whether the committed records/ export tree holds any file — used to
+ * detect the reverse-stranding shape (2.16.0 review SC-4): a sqlite→files
+ * fallback serving stale legacy history while the migrated truth sits
+ * unreadable in records/ + twining.db. */
+export function hasRecordsContent(twiningDir: string): boolean {
+  const records = path.join(twiningDir, "records");
+  if (!fs.existsSync(records)) return false;
+  try {
+    return dirHasAnyFile(records);
+  } catch {
+    return false;
+  }
 }

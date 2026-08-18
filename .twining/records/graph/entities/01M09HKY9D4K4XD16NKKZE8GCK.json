@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-18T04:21:04.429Z",
+  "id": "01M09HKY9D4K4XD16NKKZE8GCK",
+  "name": "01M09HKY65S0XY3TJQQJPV5P6X",
+  "properties": {
+    "scope": "src/",
+    "summary": "Chose to keep discover's zero-overlap exclusion in twining_delegate (a suggestion list should be real candidates) and thread excluded_zero_overlap into DelegationResult rather than restoring old behavior with min_score:0"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-18T04:21:04.429Z"
+}

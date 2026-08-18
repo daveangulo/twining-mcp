@@ -60,7 +60,14 @@ export interface HousekeepingResult {
   /** Set when dedup_relations was requested but could not run — never a silent no-op. */
   relation_dedup_error?: string;
   /** Files-backend index-desync repair (S0-index-desync); preview unless execute. */
-  index_repair?: { orphans_found: number; orphan_ids: string[]; repaired: number };
+  index_repair?: {
+    orphans_found: number;
+    orphan_ids: string[];
+    repaired: number;
+    /** Orphans not salvaged: unparseable, or parseable but not recognizably
+     * a decision matching its filename (execute only; never modified). */
+    skipped_invalid: number;
+  };
   /** Set when repair_index was requested but could not run — never a silent no-op. */
   index_repair_error?: string;
   /** sqlite only, execute only: whether wal_checkpoint(TRUNCATE) ran (S4-7). */
@@ -584,7 +591,11 @@ export class HousekeepingEngine {
       const store = this.decisionStore as Partial<{
         repairIndexDesync: (
           execute: boolean,
-        ) => Promise<{ orphan_ids: string[]; repaired: number }>;
+        ) => Promise<{
+          orphan_ids: string[];
+          repaired: number;
+          skipped_invalid: number;
+        }>;
       }>;
       if (typeof store.repairIndexDesync === "function") {
         try {
@@ -593,6 +604,7 @@ export class HousekeepingEngine {
             orphans_found: r.orphan_ids.length,
             orphan_ids: r.orphan_ids,
             repaired: r.repaired,
+            skipped_invalid: r.skipped_invalid,
           };
         } catch (err) {
           result.index_repair_error = `repair_index failed: ${

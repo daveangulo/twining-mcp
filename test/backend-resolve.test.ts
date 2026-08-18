@@ -202,3 +202,89 @@ describe("createStores auto resolution (v2 default flip)", () => {
     expect(config.storage?.auto_migrate).toBe(true);
   });
 });
+
+// 2.16.0 pre-tag review LS-1/CS-5/SC-3: the amnesia warning must be
+// tier-matched (a migrated blackboard-only store must not cry wolf forever)
+// and id-precise for the decisions tier (post-flip decisions must not mask
+// unread legacy state).
+describe("legacy_unread tier matching", () => {
+  it.runIf(HAS_SQLITE)(
+    "migrated blackboard-only store goes quiet once posts are in the db",
+    async () => {
+      fs.writeFileSync(path.join(dir, "blackboard.jsonl"), '{"id":"01X"}\n');
+      const config = {
+        ...DEFAULT_CONFIG,
+        storage: { ...DEFAULT_CONFIG.storage, backend: "sqlite" as const },
+      };
+      const boot1 = createStores(dir, config);
+      // Legacy posts not yet imported — the blackboard tier IS unread.
+      expect(boot1.legacy_unread).toBe(true);
+      await boot1.blackboardStore.append({
+        agent_id: "t",
+        entry_type: "finding",
+        tags: [],
+        scope: "src/",
+        summary: "imported",
+        detail: "",
+      });
+      const boot2 = createStores(dir, config);
+      // Posts tier populated; empty decisions table must NOT trigger the
+      // warning (there is no legacy decisions content to be unread).
+      expect(boot2.legacy_unread).toBe(false);
+    },
+  );
+
+  it.runIf(HAS_SQLITE)(
+    "legacy decision ids absent from the db flag unread state even beside post-flip decisions",
+    async () => {
+      const config = {
+        ...DEFAULT_CONFIG,
+        storage: { ...DEFAULT_CONFIG.storage, backend: "sqlite" as const },
+      };
+      const boot1 = createStores(dir, config);
+      await boot1.decisionStore.create({
+        agent_id: "t",
+        domain: "architecture",
+        scope: "src/",
+        summary: "post-flip ruling",
+        context: "",
+        rationale: "r",
+        constraints: [],
+        alternatives: [],
+        depends_on: [],
+        confidence: "high",
+        reversible: true,
+        affected_files: [],
+        affected_symbols: [],
+      });
+      // Legacy index appears afterwards (e.g. git checkout of an old branch)
+      // with an id the db has never seen.
+      fs.mkdirSync(path.join(dir, "decisions"), { recursive: true });
+      fs.writeFileSync(
+        path.join(dir, "decisions", "index.json"),
+        '[{"id":"01LEGACYUNSEEN00000000000X"}]',
+      );
+      const boot2 = createStores(dir, config);
+      expect(boot2.legacy_unread).toBe(true);
+    },
+  );
+});
+
+// 2.16.0 pre-tag review SC-4: the reverse-stranding shape — sqlite→files
+// fallback serving stale legacy history while migrated truth sits in records/.
+describe("records_unread on sqlite fallback", () => {
+  it("flags a fallback boot when records/ holds migrated state", () => {
+    // A directory at twining.db makes openDatabase throw → files fallback.
+    fs.mkdirSync(path.join(dir, "twining.db"));
+    fs.mkdirSync(path.join(dir, "records", "decisions"), { recursive: true });
+    fs.writeFileSync(path.join(dir, "records", "decisions", "01ABC.json"), "{}");
+    const config = {
+      ...DEFAULT_CONFIG,
+      storage: { ...DEFAULT_CONFIG.storage, backend: "sqlite" as const },
+    };
+    const stores = createStores(dir, config);
+    expect(stores.backend).toBe("files");
+    expect(stores.reason).toBe("fallback");
+    expect(stores.records_unread).toBe(true);
+  });
+});

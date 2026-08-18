@@ -345,3 +345,93 @@ describe("DecisionStore.repairIndexDesync", () => {
     expect(report.repaired).toBe(0);
   });
 });
+
+// 2.16.0 pre-tag review TC-2/CS-1: links are stored however the caller wrote
+// them (full 40-char from hooks, 7-char from humans), so lookup must be
+// prefix-aware in both directions.
+describe("DecisionStore.getByCommitHash prefix matching", () => {
+  it("matches a short query against a stored full hash and vice versa", async () => {
+    const full = "f92fced4a1b2c3d4e5f60718293a4b5c6d7e8f90";
+    const d1 = await store.create(makeDecisionInput());
+    await store.linkCommit(d1.id, full);
+    const d2 = await store.create(makeDecisionInput({ summary: "Short-linked" }));
+    await store.linkCommit(d2.id, "abc1234");
+
+    const byShortQuery = await store.getByCommitHash("f92fced");
+    expect(byShortQuery.map((d) => d.id)).toContain(d1.id);
+
+    const byFullQuery = await store.getByCommitHash(
+      "abc1234000000000000000000000000000000000",
+    );
+    expect(byFullQuery.map((d) => d.id)).toContain(d2.id);
+  });
+
+  it("never prefix-matches below git's 4-char abbreviation floor", async () => {
+    const d = await store.create(makeDecisionInput());
+    await store.linkCommit(d.id, "abc1234");
+    expect(await store.getByCommitHash("abc")).toEqual([]);
+    const exact = await store.getByCommitHash("abc1234");
+    expect(exact.map((x) => x.id)).toContain(d.id);
+  });
+});
+
+// 2.16.0 pre-tag review SC-1/TC-4/SC-2/ENG-5: the salvage must not poison
+// the index with stray non-decision JSON, must survive a missing index.json,
+// and must keep the index in ULID order.
+describe("DecisionStore.repairIndexDesync hardening", () => {
+  it("skips a stray parseable non-decision file and keeps scope reads working", async () => {
+    const created = await store.create(makeDecisionInput());
+    fs.writeFileSync(
+      path.join(tmpDir, "decisions", "index_BACKUP_1234.json"),
+      JSON.stringify([{ id: created.id }]),
+    );
+    const report = await store.repairIndexDesync(true);
+    expect(report.repaired).toBe(0);
+    expect(report.skipped_invalid).toBe(1);
+    // The stray file is reported, never repaired, never deleted.
+    expect(report.orphan_ids).toEqual(["index_BACKUP_1234"]);
+    expect(
+      fs.existsSync(path.join(tmpDir, "decisions", "index_BACKUP_1234.json")),
+    ).toBe(true);
+    // Scope reads still work — the poisoned-index outage must be impossible.
+    const byScope = await store.getByScope("src/auth/");
+    expect(byScope.map((d) => d.id)).toContain(created.id);
+  });
+
+  it("skips an orphan whose embedded id does not match its filename", async () => {
+    const created = await store.create(makeDecisionInput());
+    const impostor = { ...created, id: "01DIFFERENTID000000000000X" };
+    fs.writeFileSync(
+      path.join(tmpDir, "decisions", "01FILESTEM000000000000000X.json"),
+      JSON.stringify(impostor),
+    );
+    const report = await store.repairIndexDesync(true);
+    expect(report.repaired).toBe(0);
+    expect(report.skipped_invalid).toBe(1);
+  });
+
+  it("rebuilds a missing index.json on execute (the extreme desync)", async () => {
+    const created = await store.create(makeDecisionInput());
+    fs.rmSync(path.join(tmpDir, "decisions", "index.json"));
+    const report = await store.repairIndexDesync(true);
+    expect(report.repaired).toBe(1);
+    const index = await store.getIndex();
+    expect(index.map((e) => e.id)).toEqual([created.id]);
+  });
+
+  it("keeps the index in ULID (chronological) order after salvage", async () => {
+    const older = await store.create(makeDecisionInput({ summary: "older" }));
+    const newer = await store.create(makeDecisionInput({ summary: "newer" }));
+    // Orphan an id that sorts BETWEEN the two by prefixing below 'newer'.
+    const midId = older.id < newer.id ? older.id.slice(0, -1) + "Z" : newer.id;
+    const orphan = { ...older, id: midId };
+    fs.writeFileSync(
+      path.join(tmpDir, "decisions", `${midId}.json`),
+      JSON.stringify(orphan),
+    );
+    await store.repairIndexDesync(true);
+    const ids = (await store.getIndex()).map((e) => e.id);
+    const sorted = [...ids].sort((a, b) => a.localeCompare(b));
+    expect(ids).toEqual(sorted);
+  });
+});

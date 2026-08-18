@@ -285,6 +285,7 @@ describe("repair_index pass", () => {
       orphans_found: 1,
       orphan_ids: ["01HKORPHAN00000000000000A1"],
       repaired: 0,
+      skipped_invalid: 0,
     });
     expect(result.summary).toContain("index desync");
     const index = JSON.parse(

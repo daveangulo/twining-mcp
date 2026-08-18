@@ -25,6 +25,7 @@ export interface ServerIdentity {
   backend?: "files" | "sqlite";
   backendReason?: string;
   legacyUnread?: boolean;
+  recordsUnread?: boolean;
 }
 
 export function registerLifecycleTools(
@@ -119,7 +120,14 @@ export function registerLifecycleTools(
         // "your store is not reading its own state".
         if (identity.legacyUnread) {
           warnings.push(
-            "Legacy v1 decisions/blackboard content is present but UNREAD by the sqlite backend — this store reads as empty. Run `npx twining-mcp migrate` to import it (see docs/UPGRADE-v2.md).",
+            "Legacy v1 content (decisions/, blackboard.jsonl, or graph/) is present but UNREAD by the sqlite backend — this store reads as (partially) empty. Run `npx twining-mcp migrate` to import it (see docs/UPGRADE-v2.md).",
+          );
+        }
+        // Reverse stranding (review SC-4): sqlite→files fallback serving
+        // stale legacy history while the migrated truth sits in records/.
+        if (identity.recordsUnread) {
+          warnings.push(
+            "The server FELL BACK to the files backend but migrated state exists in .twining/records/ — this session may be reading stale legacy history. Fix the sqlite prerequisite (Node >= 22.13, openable twining.db) and restart.",
           );
         }
 

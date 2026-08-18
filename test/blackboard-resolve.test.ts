@@ -257,6 +257,9 @@ describe("ExportingBlackboardStore — resolve re-exports the mutated record", (
     try {
       const stores: StoreSet = {
         backend: "files",
+        reason: "explicit",
+        legacy_unread: false,
+        records_unread: false,
         blackboardStore: new BlackboardStore(dir),
         decisionStore: new DecisionStore(dir),
         graphStore: new GraphStore(dir),

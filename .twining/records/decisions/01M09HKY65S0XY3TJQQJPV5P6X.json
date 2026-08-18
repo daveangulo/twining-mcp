@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "restoring old behavior with min_score:0",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "2.16.0 pre-tag review round applied — 8th consecutive review that caught majors. Fixed: commits probe rebuilt on empirically-verified git exit codes (cat-file -e ^{commit} exits 128 for missing objects — the false branch was dead code) with bidirectional prefix-aware hash lookup in both backends (exact-match let the tool assert 'never linked' about linked commits); repairIndexDesync shape-gated (stray JSON could poison the index and crash every scope read), survives missing index.json, keeps ULID order; legacy_unread tier-matched + id-precise (migrated blackboard-only stores no longer cry amnesia forever; post-flip decisions no longer mask unread legacy); records_unread reverse-stranding warning; read/query/recent dedupe half shipped (plan had committed it); budget costs deduped text; shutdown consolidated (bounded drain restored, stdin-close handled, single exit path); single-parse instrumentation; delegate excluded_zero_overlap; decide reason_rejected optional; CS-4 test literal. Suite 1688 green.",
+  "depends_on": [],
+  "domain": "api-design",
+  "id": "01M09HKY65S0XY3TJQQJPV5P6X",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "fc92ace0c2fa51e1de2c0ff07675423a3415fbdc",
+    "recorded_at": "2026-08-18T04:21:04.303Z"
+  },
+  "rationale": "the review's objection was the silence, not the exclusion.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Chose to keep discover's zero-overlap exclusion in twining_delegate (a suggestion list should be real candidates) and thread excluded_zero_overlap into DelegationResult rather than restoring old behavior with min_score:0",
+  "timestamp": "2026-08-18T04:21:04.325Z"
+}

@@ -29,27 +29,39 @@ export function createInstrumentedServer(
       try {
         const result = await callback(...cbArgs);
 
-        // Detect soft errors by inspecting toolError() response format
+        // Single parse shared by the soft-error check and the cost fields
+        // (2.16.0 review LS-4): the response is on the hot path, and export-
+        // scale payloads made a second full JSON.parse measurable.
+        let responseText: string | undefined;
+        let parsedResponse: unknown;
         if (result && typeof result === "object" && "content" in (result as Record<string, unknown>)) {
           const content = (result as { content?: unknown[] }).content;
           if (Array.isArray(content) && content.length > 0) {
             const first = content[0] as { text?: string };
-            if (first.text) {
+            if (typeof first.text === "string") {
+              responseText = first.text;
               try {
-                const parsed = JSON.parse(first.text) as { error?: boolean; code?: string };
-                if (parsed.error === true) {
-                  success = false;
-                  errorCode = parsed.code || "SOFT_ERROR";
-                }
+                parsedResponse = JSON.parse(first.text);
               } catch {
-                // Not JSON or not error format — that's fine
+                // Not JSON — size still measurable, count is not.
               }
             }
           }
         }
 
+        // Detect soft errors by inspecting toolError() response format
+        if (parsedResponse && typeof parsedResponse === "object") {
+          const p = parsedResponse as { error?: boolean; code?: string };
+          if (p.error === true) {
+            success = false;
+            errorCode = p.code || "SOFT_ERROR";
+          }
+        }
+
         const durationMs = Date.now() - start;
         const agentId = extractAgentId(cbArgs);
+        const scope = extractScope(cbArgs);
+        const resultCount = firstArrayLength(parsedResponse);
 
         // Fire-and-forget metric recording
         collector.record({
@@ -59,10 +71,11 @@ export function createInstrumentedServer(
           success,
           error_code: errorCode,
           agent_id: agentId,
-          ...measureResponse(result),
-          ...(extractScope(cbArgs) !== undefined
-            ? { scope: extractScope(cbArgs) }
+          ...(responseText !== undefined
+            ? { response_bytes: Buffer.byteLength(responseText, "utf-8") }
             : {}),
+          ...(resultCount !== undefined ? { result_count: resultCount } : {}),
+          ...(scope !== undefined ? { scope } : {}),
         }).catch(() => {/* never fail a tool call */});
 
         return result;
@@ -100,38 +113,24 @@ function extractScope(cbArgs: unknown[]): string | undefined {
 }
 
 /**
- * Cost fields from the serialized response (S4-4): size in bytes, plus a
- * best-effort result count — the length of the first top-level array in the
- * response JSON (entries, results, decisions, warnings, …).
+ * Best-effort result count (S4-4): the length of the first top-level array
+ * in the already-parsed response (entries, results, decisions, warnings, …).
+ * Best-effort by design — for tools whose first array is not their primary
+ * payload (e.g. status's warnings) it counts that array; document, don't
+ * trust it per-tool (review LS-5).
  */
-function measureResponse(result: unknown): {
-  response_bytes?: number;
-  result_count?: number;
-} {
-  if (!result || typeof result !== "object" || !("content" in result)) {
-    return {};
+function firstArrayLength(parsedResponse: unknown): number | undefined {
+  if (
+    !parsedResponse ||
+    typeof parsedResponse !== "object" ||
+    Array.isArray(parsedResponse)
+  ) {
+    return undefined;
   }
-  const content = (result as { content?: unknown[] }).content;
-  if (!Array.isArray(content) || content.length === 0) return {};
-  const first = content[0] as { text?: string };
-  if (typeof first.text !== "string") return {};
-  const out: { response_bytes?: number; result_count?: number } = {
-    response_bytes: Buffer.byteLength(first.text, "utf-8"),
-  };
-  try {
-    const parsed = JSON.parse(first.text) as Record<string, unknown>;
-    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
-      for (const value of Object.values(parsed)) {
-        if (Array.isArray(value)) {
-          out.result_count = value.length;
-          break;
-        }
-      }
-    }
-  } catch {
-    // Non-JSON responses just get a size.
+  for (const value of Object.values(parsedResponse as Record<string, unknown>)) {
+    if (Array.isArray(value)) return value.length;
   }
-  return out;
+  return undefined;
 }
 
 function extractAgentId(cbArgs: unknown[]): string {

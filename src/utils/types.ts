@@ -475,7 +475,10 @@ export interface HandoffIndexEntry {
 export interface DiscoverInput {
   required_capabilities: string[];
   include_gone?: boolean; // Include gone agents (default: true)
-  min_score?: number; // Minimum total_score threshold (default: 0)
+  // Minimum total_score threshold. Unset ≠ 0 since 2.16.0: unset excludes
+  // zero-capability-overlap agents (when capabilities were requested);
+  // an explicit 0 lists every registered agent.
+  min_score?: number;
 }
 
 /** Scored agent result from discovery */
@@ -531,6 +534,10 @@ export interface DelegationResult {
   timestamp: string;
   expires_at: string;
   suggested_agents: AgentScore[];
+  /** Zero-overlap agents excluded from suggestions by discover's default
+   * (2.16.0 review CS-6) — nonzero means agents exist but none advertise
+   * the requested capabilities. */
+  excluded_zero_overlap?: number;
 }
 
 /** Input for creating a handoff between agents */

@@ -1,0 +1,26 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "2.16.0 pre-tag review round applied — 8th consecutive review that caught majors. Fixed: commits probe rebuilt on empirically-verified git exit codes (cat-file -e ^{commit} exits 128 for missing objects — the false branch was dead code) with bidirectional prefix-aware hash lookup in both backends (exact-match let the tool assert 'never linked' about linked commits); repairIndexDesync shape-gated (stray JSON could poison the index and crash every scope read), survives missing index.json, keeps ULID order; legacy_unread tier-matched + id-precise (migrated blackboard-only stores no longer cry amnesia forever; post-flip decisions no longer mask unread legacy); records_unread reverse-stranding warning; read/query/recent dedupe half shipped (plan had committed it); budget costs deduped text; shutdown consolidated (bounded drain restored, stdin-close handled, single exit path); single-parse instrumentation; delegate excluded_zero_overlap; decide reason_rejected optional; CS-4 test literal. Suite 1688 green.",
+  "depends_on": [],
+  "domain": "performance",
+  "id": "01M09HKYA6EENWWBHMWH2T21HT",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "fc92ace0c2fa51e1de2c0ff07675423a3415fbdc",
+    "recorded_at": "2026-08-18T04:21:04.431Z"
+  },
+  "rationale": "two competing signal handlers meant the first exit() truncated the other's drain, and its exit(0) hid signals from supervisors.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Chose one consolidated shutdown path in index.ts (signal → dashboard close + bounded 3s drain → exit 130/143; db close on the 'exit' event so it runs exactly once on every termination path; stdin end/close → shutdown(0)) and stopped calling setupDashboardShutdown",
+  "timestamp": "2026-08-18T04:21:04.454Z"
+}

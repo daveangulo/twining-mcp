@@ -237,6 +237,9 @@ export class CoordinationEngine {
       timestamp,
       expires_at: expiresAt,
       suggested_agents: discovery.agents,
+      // Keep discover's zero-overlap exclusion (a suggestion list should be
+      // real candidates) but never let the shrink be silent (review CS-6).
+      excluded_zero_overlap: discovery.excluded_zero_overlap,
     };
   }
 

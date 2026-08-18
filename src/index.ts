@@ -6,7 +6,7 @@
 import { createRequire } from "node:module";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { createServer } from "./server.js";
-import { startDashboard, setupDashboardShutdown } from "./dashboard/http-server.js";
+import { startDashboard } from "./dashboard/http-server.js";
 import { TelemetryClient } from "./analytics/telemetry-client.js";
 import { resolveProjectRoot } from "./utils/project-root.js";
 
@@ -53,19 +53,37 @@ async function main(): Promise<void> {
   const transport = new StdioServerTransport();
   await server.connect(transport);
 
-  // Clean sqlite shutdown (S4-7): closing the handle checkpoints the WAL,
-  // so a session end doesn't leave megabytes of uncheckpointed WAL behind.
-  // Signal handlers replace node's default termination, so they must exit
-  // explicitly with the conventional codes.
-  process.once("beforeExit", closeDb);
-  process.once("SIGINT", () => {
-    closeDb();
-    process.exit(130);
-  });
-  process.once("SIGTERM", () => {
-    closeDb();
-    process.exit(143);
-  });
+  // Coordinated shutdown (S4-7 + 2.16.0 review LS-2/LS-3): one path for
+  // signals and stdin close. On a signal: stop accepting dashboard
+  // connections, give in-flight tool steps the same bounded 3s drain the
+  // previous dashboard-only handler provided (an immediate exit truncated
+  // multi-step writes mid-await), then exit with the conventional signal
+  // code. Closing the db lives on 'exit' so it runs exactly once on every
+  // termination path node can observe — close checkpoints the WAL.
+  let dashboardServer: import("node:http").Server | null = null;
+  let shuttingDown = false;
+  const shutdown = (code: number): void => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    process.exitCode = code;
+    try {
+      dashboardServer?.close(() => {});
+    } catch {
+      // Already closed — nothing to drain.
+    }
+    const timer = setTimeout(() => {
+      process.exit(code);
+    }, 3000);
+    timer.unref();
+  };
+  process.once("exit", () => closeDb());
+  process.once("SIGINT", () => shutdown(130));
+  process.once("SIGTERM", () => shutdown(143));
+  // Stdio hosts that end the session by closing stdin never send a signal —
+  // without this, the dashboard's ref'd socket keeps the process alive
+  // serving nothing, and the WAL stays uncheckpointed (review LS-2).
+  process.stdin.once("end", () => shutdown(0));
+  process.stdin.once("close", () => shutdown(0));
 
   // Initialize opt-in telemetry (fire-and-forget)
   const telemetry = new TelemetryClient();
@@ -96,7 +114,11 @@ async function main(): Promise<void> {
   // same caches and embedder instead of wiring a parallel stack.
   startDashboard(projectRoot, dashboardDeps).then((result) => {
     if (result) {
-      setupDashboardShutdown(result.server);
+      // Handed to the unified shutdown above — setupDashboardShutdown's own
+      // signal handlers are superseded by it (2.16.0 review LS-3): two
+      // competing handlers meant the first exit() truncated the other's
+      // drain, and its exit(0) hid the signal from supervisors.
+      dashboardServer = result.server;
     }
   }).catch((err) => {
     console.error("[twining] Dashboard failed to start (non-fatal):", (err as Error).message);

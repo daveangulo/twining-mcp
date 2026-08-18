@@ -13,6 +13,7 @@ import { generateId } from "../../utils/ids.js";
 import { mergeEntityProperties } from "../../utils/entity-properties.js";
 import { normalizeTags } from "../../utils/tags.js";
 import { scopeMatches } from "../../utils/scope.js";
+import { commitHashMatches } from "../../utils/commit-hash.js";
 import { mergeRelationProperties } from "../../utils/relation-properties.js";
 import { TwiningError } from "../../utils/errors.js";
 import { isReadOnly } from "../file-store.js";
@@ -318,8 +319,12 @@ export class SqliteDecisionStore implements IDecisionStore {
 
   async getByCommitHash(commitHash: string): Promise<Decision[]> {
     const index = await this.getIndex();
+    // Prefix-aware match — must stay identical to the files backend
+    // (decision-store.ts getByCommitHash); see commitHashMatches.
     const matching = index.filter(
-      (e) => e.commit_hashes && e.commit_hashes.includes(commitHash),
+      (e) =>
+        e.commit_hashes &&
+        e.commit_hashes.some((h) => commitHashMatches(h, commitHash)),
     );
     const decisions: Decision[] = [];
     for (const entry of matching) {

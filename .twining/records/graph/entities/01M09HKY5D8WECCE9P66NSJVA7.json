@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-18T04:21:04.301Z",
+  "id": "01M09HKY5D8WECCE9P66NSJVA7",
+  "name": "01M09HKY23GS4BWA4N0QKAN6TQ",
+  "properties": {
+    "scope": "src/",
+    "summary": "Chose bidirectional prefix matching with a 4-char floor in BOTH backends' getByCommitHash over tool-layer canonical-SHA retry alone"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-18T04:21:04.301Z"
+}

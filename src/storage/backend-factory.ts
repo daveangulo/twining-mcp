@@ -31,7 +31,11 @@ import { IndexManager } from "../embeddings/index-manager.js";
 // Safe to import statically on any Node version: node:sqlite is only
 // required inside sqliteAvailable()/openDatabase(), never at module load.
 import { openDatabase, sqliteAvailable, type SqliteDatabase } from "./sqlite/db.js";
-import { hasLegacyContent, resolveAutoBackend } from "./backend-resolve.js";
+import {
+  hasRecordsContent,
+  legacyContentTiers,
+  resolveAutoBackend,
+} from "./backend-resolve.js";
 import {
   SqliteAgentStore,
   SqliteBlackboardStore,
@@ -59,9 +63,14 @@ export type BackendReason =
 export interface StoreSet {
   backend: "files" | "sqlite";
   reason: BackendReason;
-  /** sqlite selected while its decisions table is empty and legacy v1
-   * content sits unread beside it — the silent-amnesia shape. */
+  /** sqlite selected while a legacy v1 tier has content its matching table
+   * lacks — the silent-amnesia shape (tier-matched, id-precise where the
+   * legacy index is readable). */
   legacy_unread: boolean;
+  /** files backend serving via sqlite-unavailable FALLBACK while migrated
+   * state exists in records/ — the session may be reading stale legacy
+   * history (reverse-stranding, review SC-4). */
+  records_unread: boolean;
   blackboardStore: IBlackboardStore;
   decisionStore: IDecisionStore;
   graphStore: IGraphStore;
@@ -146,34 +155,59 @@ export function createStores(
       }
 
       // Silent-amnesia runtime check (S0-explicit / S0-warning-inverted,
-      // 2026-08-15 field audit): an empty decisions table beside legacy v1
-      // content means the store will READ AS EMPTY while real state sits
-      // unread — the sqlite backend cannot see the legacy tier. Covers both
-      // the auto path (post-guard residue, e.g. a valid-but-empty db) and an
-      // explicit `backend: sqlite` stamp. Post-migrate repos keep legacy
-      // files as history but have a populated table, so they stay quiet.
+      // 2026-08-15 field audit): legacy v1 content that the sqlite backend
+      // cannot see means the store reads as (partially) empty. Tier-matched
+      // (2.16.0 review LS-1/CS-5): each legacy tier is compared against ITS
+      // table, so a migrated blackboard-only store (decisions table empty
+      // forever, posts imported fine) never cries amnesia. When the legacy
+      // decisions index is readable, the check is id-precise (review SC-3):
+      // any legacy id absent from the db flags unread state even after
+      // post-flip decisions accumulated — the long-lived amnesia variant.
       let legacyUnread = false;
       try {
-        const row = db
-          .prepare("SELECT COUNT(*) AS c FROM decisions")
-          .get() as { c: number };
-        if (row.c === 0 && hasLegacyContent(twiningDir)) {
-          legacyUnread = true;
-          console.error(
-            "[twining] sqlite backend selected but legacy v1 content " +
-              "(decisions/ or blackboard.jsonl) is present and UNREAD — this " +
-              "store reads as empty. Run `npx twining-mcp migrate` to import " +
-              "it (see docs/UPGRADE-v2.md).",
-          );
+        const tiers = legacyContentTiers(twiningDir);
+        if (tiers.decisions || tiers.blackboard || tiers.graph) {
+          const count = (table: string): number =>
+            (
+              db.prepare(`SELECT COUNT(*) AS c FROM ${table}`).get() as {
+                c: number;
+              }
+            ).c;
+          let decisionsUnread = false;
+          if (tiers.decisions) {
+            if (tiers.decision_ids && tiers.decision_ids.length > 0) {
+              const exists = db.prepare(
+                "SELECT 1 AS x FROM decisions WHERE id = ?",
+              );
+              decisionsUnread = tiers.decision_ids.some(
+                (id) => exists.get(id) === undefined,
+              );
+            } else {
+              decisionsUnread = count("decisions") === 0;
+            }
+          }
+          const blackboardUnread =
+            tiers.blackboard && count("blackboard") === 0;
+          const graphUnread = tiers.graph && count("entities") === 0;
+          legacyUnread = decisionsUnread || blackboardUnread || graphUnread;
+          if (legacyUnread) {
+            console.error(
+              "[twining] sqlite backend selected but legacy v1 content " +
+                "(decisions/, blackboard.jsonl, or graph/) is present and " +
+                "UNREAD — this store reads as (partially) empty. Run " +
+                "`npx twining-mcp migrate` to import it (see docs/UPGRADE-v2.md).",
+            );
+          }
         }
       } catch {
-        // Advisory only — a failed count must never block boot.
+        // Advisory only — a failed check must never block boot.
       }
 
       let set: StoreSet = {
         backend: "sqlite",
         reason,
         legacy_unread: legacyUnread,
+        records_unread: false,
         db,
         blackboardStore: new SqliteBlackboardStore(db),
         decisionStore: new SqliteDecisionStore(db),
@@ -215,6 +249,7 @@ export function createStores(
     backend: "files",
     reason,
     legacy_unread: false,
+    records_unread: reason === "fallback" && hasRecordsContent(twiningDir),
     blackboardStore: new BlackboardStore(twiningDir),
     decisionStore: new DecisionStore(twiningDir),
     graphStore: new GraphStore(twiningDir),

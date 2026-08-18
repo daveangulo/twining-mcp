@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: 2.16.0 pre-tag review round applied — 8th consecutive review that caught majors. Fixed: commits probe rebuilt on empirically-verified git exit codes (cat-file -e ^{commit} exits 128 for missing objects — the false branch was dead code) with bidirectional prefix-aware hash lookup in both backends (exact-match let the tool assert 'never linked' about linked commits); repairIndexDesync shape-gated (stray JSON could poison the index and crash every scope read), survives missing index.json, keeps ULID order; legacy_unread tier-matched + id-precise (migrated blackboard-only stores no longer cry amnesia forever; post-flip decisions no longer mask unread legacy); records_unread reverse-stranding warning; read/query/recent dedupe half shipped (plan had committed it); budget costs deduped text; shutdown consolidated (bounded drain restored, stdin-close handled, single exit path); single-parse instrumentation; delegate excluded_zero_overlap; decide reason_rejected optional; CS-4 test literal. Suite 1688 green.\nDecisions: Chose git rev-parse --quiet --verify <hash>^{commit} as the existence probe with empirically verified exit codes (0=exists+prints canonical full SHA, 1+empty-stderr=missing, 1+stderr=ambiguous, 128=no repo) over patching the cat-file exit mapping — the review proved cat-file -e with the ^{commit} peel exits 128 for missing objects on git 2.50.1, making any false branch dead code.; Chose bidirectional prefix matching with a 4-char floor in BOTH backends' getByCommitHash over tool-layer canonical-SHA retry alone — this repo's own store links 7-char abbreviations while hooks write full SHAs, so short-vs-full misses were the common case in both directions; the floor prevents an empty or tiny stored string from matching everything.; Chose to keep discover's zero-overlap exclusion in twining_delegate (a suggestion list should be real candidates) and thread excluded_zero_overlap into DelegationResult rather than restoring old behavior with min_score:0 — the review's objection was the silence, not the exclusion.; Chose one consolidated shutdown path in index.ts (signal → dashboard close + bounded 3s drain → exit 130/143; db close on the 'exit' event so it runs exactly once on every termination path; stdin end/close → shutdown(0)) and stopped calling setupDashboardShutdown — two competing signal handlers meant the first exit() truncated the other's drain, and its exit(0) hid signals from supervisors.\nFindings: Empirical (git 2.50.1): `git cat-file -e <sha>^{commit}` exits 128 for a missing object (the peel fails before existence is tested); bare `cat-file -e <sha>` exits 1; `rev-parse --quiet --verify <sha>^{commit}` exits 1 with empty stderr for missing full AND short hashes, 0 printing the canonical full SHA for existing ones, 128 outside a repo. Any exit-code-1 assumption on the peeled cat-file form is dead code.; The resumed docs-accuracy review lens is still running against the working tree and may report findings about pre-fix text — reconcile its results against current HEAD before acting on them.",
+  "entry_type": "status",
+  "id": "01M09HKXVFXHY94ARA3CX187B0",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "fc92ace0c2fa51e1de2c0ff07675423a3415fbdc",
+    "recorded_at": "2026-08-18T04:21:03.964Z"
+  },
+  "scope": "src/",
+  "summary": "2.16.0 pre-tag review round applied — 8th consecutive review that caught majors. Fixed: commits probe rebuilt on empirically-verified git exit codes (cat-file -e ^{commit} exits 128 for missing obj…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-18T04:21:03.983Z"
+}

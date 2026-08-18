@@ -19,6 +19,7 @@ import { computeLiveness } from "../utils/liveness.js";
 import { computeResolvedIds } from "./resolution.js";
 import { normalizeTags } from "../utils/tags.js";
 import { estimateTokens } from "../utils/tokens.js";
+import { dedupeFullSummary } from "../utils/full-summary.js";
 import type { IAgentStore, IBlackboardStore, IDecisionStore, IHandoffStore } from "../storage/interfaces.js";
 
 /** Half-life for recency decay in hours (one week). */
@@ -36,35 +37,6 @@ interface ScoredItem {
   score: number;
   tokenCost: number;
   data: Decision | BlackboardEntry;
-}
-
-/**
- * Render-time dedupe for the lossless truncation format (S4-1): when a
- * summary was truncated at write time, its detail begins with
- * "Full summary: <full text>" where the full text extends the truncated
- * summary. Rendering both prints the same words twice. Guarded on the
- * summary actually prefixing the full text, so a caller-authored detail
- * that merely starts with the marker passes through untouched.
- */
-function dedupeFullSummary(
-  summary: string,
-  detail: string | undefined,
-): { headline: string; detail: string } {
-  const marker = "Full summary: ";
-  if (!detail || !detail.startsWith(marker)) {
-    return { headline: summary, detail: detail ?? "" };
-  }
-  const stripped = summary.endsWith("…") ? summary.slice(0, -1) : summary;
-  const newlineIdx = detail.indexOf("\n");
-  const firstLine = newlineIdx === -1 ? detail : detail.slice(0, newlineIdx);
-  const fullText = firstLine.slice(marker.length);
-  if (!fullText.startsWith(stripped)) {
-    return { headline: summary, detail };
-  }
-  return {
-    headline: fullText,
-    detail: newlineIdx === -1 ? "" : detail.slice(newlineIdx + 1),
-  };
 }
 
 export class ContextAssembler {
@@ -319,7 +291,11 @@ export class ContextAssembler {
         relevance * weights.relevance * weightScale +
         confidence * weights.decision_confidence * weightScale +
         warningBoost * weights.warning_boost * weightScale;
-      const text = `${entry.summary} ${entry.detail}`;
+      // Cost what will actually render (2.16.0 review ENG-2): charging the
+      // un-deduped double text made warnings near the budget boundary
+      // degrade or drop even though the deduped form fits.
+      const deduped = dedupeFullSummary(entry.summary, entry.detail);
+      const text = `${deduped.headline} ${deduped.detail}`;
       scoredItems.push({
         type: entry.entry_type as ScoredItem["type"],
         id,

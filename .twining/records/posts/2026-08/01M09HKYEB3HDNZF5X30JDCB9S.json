@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Empirical (git 2.50.1): `git cat-file -e <sha>^{commit}` exits 128 for a missing object (the peel fails before existence is tested); bare `cat-file -e <sha>` exits 1; `rev-parse --quiet --verify <sha>^{commit}` exits 1 with empty stderr for missing full AND short hashes, 0 printing the canonical full SHA for existing ones, 128 outside a repo. Any exit-code-1 assumption on the peeled cat-file form is dead code.",
+  "entry_type": "finding",
+  "id": "01M09HKYEB3HDNZF5X30JDCB9S",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "fc92ace0c2fa51e1de2c0ff07675423a3415fbdc",
+    "recorded_at": "2026-08-18T04:21:04.562Z"
+  },
+  "scope": "src/",
+  "summary": "Empirical (git 2.50.1): `git cat-file -e <sha>^{commit}` exits 128 for a missing object (the peel fails before existence is tested); bare `cat-file -e <sha>` exits 1; `rev-parse --quiet --verify <s…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-08-18T04:21:04.587Z"
+}

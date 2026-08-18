@@ -149,7 +149,7 @@ export function registerCoordinationTools(
           .number()
           .optional()
           .describe(
-            "Minimum total_score threshold. When unset (default) agents with zero capability overlap are excluded and counted in excluded_zero_overlap; pass 0 explicitly to list every registered agent regardless of overlap.",
+            "Minimum total_score threshold. When unset (default) and required_capabilities is non-empty, agents with zero capability overlap are excluded and counted in excluded_zero_overlap; pass 0 explicitly to list every registered agent regardless of overlap. With an empty required_capabilities list, nothing is excluded.",
           ),
       },
     },

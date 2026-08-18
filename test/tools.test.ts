@@ -404,3 +404,107 @@ describe("twining_amend (field D11)", () => {
     expect(registered["twining_amend"]).toBeUndefined();
   });
 });
+
+// 2.16.0 pre-tag review TC-1/TC-2/ASC-3: the probe's exit-code mapping and
+// prefix lookup verified against a REAL git repository — the earlier harness
+// could not fail on the audited scenario.
+describe("twining_commits against a real repository", () => {
+  let projRoot: string;
+  let twining2: string;
+  let server2: McpServer;
+  let realSha: string;
+
+  async function callTool2(
+    name: string,
+    args: Record<string, unknown>,
+  ): Promise<unknown> {
+    const registered = (server2 as unknown as {
+      _registeredTools: Record<string, { handler: (a: Record<string, unknown>, e: unknown) => Promise<unknown> }>;
+    })._registeredTools;
+    const result = (await registered[name]!.handler(args, {})) as {
+      content: Array<{ type: string; text: string }>;
+    };
+    return JSON.parse(result.content[0]!.text);
+  }
+
+  beforeEach(() => {
+    projRoot = fs.mkdtempSync(path.join(os.tmpdir(), "twining-gitrepo-"));
+    const { execFileSync } = require("node:child_process") as typeof import("node:child_process");
+    execFileSync("git", ["init", "-q"], { cwd: projRoot });
+    execFileSync("git", ["-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "--allow-empty", "-m", "x"], { cwd: projRoot });
+    realSha = execFileSync("git", ["rev-parse", "HEAD"], { cwd: projRoot, encoding: "utf-8" }).trim();
+
+    twining2 = path.join(projRoot, ".twining");
+    fs.mkdirSync(path.join(twining2, "decisions"), { recursive: true });
+    fs.writeFileSync(path.join(twining2, "decisions", "index.json"), "[]");
+    fs.writeFileSync(path.join(twining2, "blackboard.jsonl"), "");
+    const store2 = new DecisionStore(twining2);
+    const bb2 = new BlackboardEngine(new BlackboardStore(twining2));
+    const engine2 = new DecisionEngine(store2, bb2);
+    server2 = new McpServer({ name: "t2", version: "0.0.0" });
+    registerDecisionTools(server2, engine2, twining2, { fullSurface: true });
+  });
+
+  afterEach(() => {
+    fs.rmSync(projRoot, { recursive: true, force: true });
+  });
+
+  it("typo'd full SHA → commit_exists false with the check-the-hash message", async () => {
+    const data = (await callTool2("twining_commits", {
+      commit_hash: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+    })) as { decisions: unknown[]; commit_exists: boolean | string; message: string };
+    expect(data.decisions).toEqual([]);
+    expect(data.commit_exists).toBe(false);
+    expect(data.message).toContain("No such commit");
+  });
+
+  it("real unlinked SHA → commit_exists true, no false 'never linked' claim of certainty", async () => {
+    const data = (await callTool2("twining_commits", {
+      commit_hash: realSha,
+    })) as { commit_exists: boolean | string; message: string };
+    expect(data.commit_exists).toBe(true);
+    expect(data.message).not.toContain("never called");
+  });
+
+  it("commit linked with full SHA is found by its short form", async () => {
+    const decide = (await callTool2("twining_decide", {
+      domain: "architecture",
+      scope: "src/",
+      summary: "Linked ruling",
+      context: "c",
+      rationale: "r",
+    })) as { id: string };
+    await callTool2("twining_link_commit", {
+      decision_id: decide.id,
+      commit_hash: realSha,
+    });
+    const data = (await callTool2("twining_commits", {
+      commit_hash: realSha.slice(0, 7),
+    })) as { decisions: Array<{ id: string }> };
+    expect(data.decisions.map((d) => d.id)).toContain(decide.id);
+  });
+});
+
+// 2.16.0 pre-tag review ASC-2: the S4-1 read half — the lossless
+// "Full summary:" duplication is collapsed in read responses too.
+describe("twining_read Full summary dedupe", () => {
+  it("returns the full text once with the duplicate line stripped from detail", async () => {
+    const longSummary = "S4-1 read half regression pin: " + "y".repeat(220);
+    const truncated = longSummary.slice(0, 197) + "\u2026";
+    await bbStore.append({
+      agent_id: "t",
+      entry_type: "finding",
+      tags: [],
+      scope: "src/dd/",
+      summary: truncated,
+      detail: `Full summary: ${longSummary}`,
+    });
+    const response = await callTool("twining_read", { scope: "src/dd/" });
+    const data = parseToolResponse(response) as {
+      entries: Array<{ summary: string; detail: string }>;
+    };
+    expect(data.entries).toHaveLength(1);
+    expect(data.entries[0]!.summary).toBe(longSummary);
+    expect(data.entries[0]!.detail).not.toContain("Full summary:");
+  });
+});
