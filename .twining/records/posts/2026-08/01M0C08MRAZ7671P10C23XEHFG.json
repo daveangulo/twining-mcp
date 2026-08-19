@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: 2.16.0 SHIPPED (2026-08-18): tag v2.16.0 pushed, Publish + CI workflows green (~1m12s), npm latest = 2.16.0 verified, plugin 1.34.0 pinned in BOTH user and project scopes (applies on restart). Read-audit Wave 1 is live: S0 amnesia guard, backend/version/count self-identification, index-desync repair, verify perf, hygiene batches, double-render dedupe both halves, coordinated shutdown, plus the full pre-tag review round. Next plan items: F1 memo caveat + send, F2 audit response doc (docs/field-responses/2026-08-17-read-audit-response.md), then Wave 2 (2.17.0 read-path honesty).",
+  "entry_type": "status",
+  "id": "01M0C08MRAZ7671P10C23XEHFG",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "6a7728d29a06e98fb48cb757a84336d2ec83ea79",
+    "recorded_at": "2026-08-19T03:15:31.699Z"
+  },
+  "scope": "project",
+  "summary": "2.16.0 SHIPPED (2026-08-18): tag v2.16.0 pushed, Publish + CI workflows green (~1m12s), npm latest = 2.16.0 verified, plugin 1.34.0 pinned in BOTH user and project scopes (applies on restart). Read…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-19T03:15:31.722Z"
+}
