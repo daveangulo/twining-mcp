@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Drafted the F2 read-audit response doc (docs/field-responses/2026-08-18-read-audit-response.md): immediate field actions (de-arm 3 amnesia stores now via migrate or 0-byte-db delete, sweep 12 latent, commit the report, upgrade with the npx-rung caveat, verify via server_version), build-provenance untangling (npm never behind; S3-A regression theory dispelled; per-build verdicts), full disposition table for every finding, corrections we owe (S2-D both-builds resolution, fill-order model, our own dead-branch S4-12 first fix), source confirmations of their unconfirmable hypotheses, §7 CLAUDE.md verdicts, DD table, corrections to the already-sent memo (stale line, version-check now real, missing caveat), and verification questions #3-#5. Delivery is Dave's call via the same channel as the memo.",
+  "entry_type": "status",
+  "id": "01M0C8A3VQH76AH6KT54RGPY16",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "4765a429fb003d48a9104591fa809c26178f6c94",
+    "recorded_at": "2026-08-19T05:36:08.548Z"
+  },
+  "scope": "docs/field-responses/",
+  "summary": "Drafted the F2 read-audit response doc (docs/field-responses/2026-08-18-read-audit-response.md): immediate field actions (de-arm 3 amnesia stores now via migrate or 0-byte-db delete, sweep 12 laten…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-19T05:36:08.567Z"
+}
