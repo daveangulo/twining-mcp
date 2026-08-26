@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-26T05:07:20.351Z",
+  "id": "01M0Y7ED4ZMQWEEZD32AM2WXDV",
+  "properties": {
+    "decision_summary": "Store-side write policy (field P4) becomes named design decision DD-11, design-doc-first, decided jointly with DD-6 and DD-4; no code before the design; TWINING_ROLE ships in W3 as an observability echo only; enforcement no earlier than W5",
+    "origin": "derived"
+  },
+  "source": "01M0XGQGYXN2TB98J4VDMG8TKX",
+  "target": "01M0Y7ED4TZZJ3GJH4AKR1Y9FC",
+  "type": "decided_by"
+}

@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Decisions: Chose to treat routing proposal 1 (relative TWINING_PROJECT resolves against cwd) as a supersession request against a named decision rather than as a new bug — issue #46 explicitly considered and declined the exact hardening in its Alternatives section, and decision 01KY68QN70W0RRWCNMWH57WNEW records --project/TWINING_PROJECT as never redirected; the alternative of treating it as unexamined was rejected because any response must engage #46's stated rationale to be credible. Invalidated if #46's rationale turns out to rest on facts the field's worktree/subdir evidence contradicts.; Chose to rule read-audit item S1-E out as coverage for routing proposal 2 — both use the word 'ancestor' but S1-E is scope-string prefix matching inside an already-bound store while proposal 2 concerns the filesystem walk that decides which store binds at all; recorded because a keyword search makes them look like one item and would produce a false 'already addressed' verdict.; Chose to report the audit findings without remediating — the user asked which docs we had already handled, not for fixes; the forward-only lineage defect is live in HEAD at src/engine/decisions.ts:695-700 and 773-795, but acting on it is a scope decision the user has not made. Alternative of fixing opportunistically was rejected because it is a behavior change to a shipped read path, not cheap adjacent debt.",
+  "entry_type": "status",
+  "id": "01M0NJ7ZYDQMWNHQA516JMEDPS",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-22T20:22:54.648Z"
+  },
+  "scope": "project",
+  "summary": "Inbound-doc audit: disambiguation and scope decisions for the two unanswered field docs.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-22T20:22:54.669Z"
+}

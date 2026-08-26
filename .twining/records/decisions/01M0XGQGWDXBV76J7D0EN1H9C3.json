@@ -1,0 +1,28 @@
+{
+  "affected_files": [
+    "docs/plans/2026-08-23-field-response-plan.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Started executing Workstream A of the field-response plan: plan doc moved DRAFT→EXECUTING with the five §7 rulings resolved by conservative defaults; drafting workflow wf_18cac4fa-422 (Doc 2, Doc 3, prepared issues, wrapper+errata) running.",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01M0XGQGWDXBV76J7D0EN1H9C3",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-25T22:30:21.815Z"
+  },
+  "rationale": "the plan marks filing owner-gated and outward-facing; the physical send of the docs likewise stays Dave's action",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/field-responses/",
+  "status": "active",
+  "summary": "Chose to prepare the four routing GitHub issues (bodies, maintainer comments, gh commands in docs/field-responses/2026-08-23-routing-issues-prepared.md) but NOT file them under the 'execute plan' instruction",
+  "timestamp": "2026-08-25T22:30:21.837Z"
+}

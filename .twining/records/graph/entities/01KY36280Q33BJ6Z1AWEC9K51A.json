@@ -3,8 +3,8 @@
   "id": "01KY36280Q33BJ6Z1AWEC9K51A",
   "name": "plugin/hooks/activity-marker-hook.sh",
   "properties": {
-    "scope": "plugin/hooks/,project,src/"
+    "scope": "docs/field-responses/,plugin/hooks/,project,src/"
   },
   "type": "file",
-  "updated_at": "2026-08-16T23:24:23.483Z"
+  "updated_at": "2026-08-26T05:07:20.221Z"
 }

@@ -3,8 +3,8 @@
   "id": "01KJJAZET2V22WEVQPJAYE9EQZ",
   "name": "plugin/hooks/stop-hook.sh",
   "properties": {
-    "scope": "plugin/hooks/"
+    "scope": "docs/field-responses/,plugin/hooks/"
   },
   "type": "file",
-  "updated_at": "2026-07-21T20:32:20.174Z"
+  "updated_at": "2026-08-26T05:07:20.223Z"
 }

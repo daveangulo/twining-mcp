@@ -1,0 +1,18 @@
+{
+  "agent_id": "routing-design-subagent",
+  "detail": "Full summary: Read-only design analysis (subagent): merged routing proposals 2+3 with read-audit S1-F into one W3/2.18.0 store-identity design (resolution trace on status, ancestor/out-of-repo warning, expect_project on assemble, store_id stamped in config.yml, toolResult store echo). Key discovered fact: the SERVER has no ancestor walk — resolveProjectRoot (src/utils/project-root.ts:66-92) is argv>env>worktree-redirect>cwd only; the ancestor walk exists solely in the five hook copies (activity-marker-hook.sh else-branch), whose comment claims it 'matches the server's resolution' but does not — hooks walk past cwd into ancestor stores the server would never bind, and the server silently CREATES cwd/.twining where hooks would bind an ancestor (split-brain risk). Also: live store config.yml has project_name '.' (from --project . verbatim passthrough) — concrete proof of basename-identity ambiguity that store_id fixes. No code changed.\nDecisions: Chose to scope the merged routing design to server-side detection only (trace + warnings + expect_project + store_id), leaving hook-walk/server divergence as a documented residual and Issue 1's relative-TWINING_PROJECT semantics change out — the server cannot observe hook-side binds, and changing binding semantics is the field's own flagged breaking change; warn-first matches proposal 2's explicit non-breaking ask.",
+  "entry_type": "status",
+  "id": "01M0PFK55Y8447TKS5T023N2D6",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-23T04:55:49.148Z"
+  },
+  "scope": "project",
+  "summary": "Read-only design analysis (subagent): merged routing proposals 2+3 with read-audit S1-F into one W3/2.18.0 store-identity design (resolution trace on status, ancestor/out-of-repo warning, expect_pr…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-23T04:55:49.182Z"
+}

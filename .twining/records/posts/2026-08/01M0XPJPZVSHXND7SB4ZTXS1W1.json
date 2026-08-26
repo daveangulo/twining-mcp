@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Resumed drafting workflow wf_18cac4fa-422 for the three sleep-killed lanes (Doc 2, Doc 3, prepared issues); wrapper lane complete — errata appends verified append-only and line-accurate, wrapper reviewed by controller.\nFindings: Ship memo line cites in the plan were slightly off: the D15 instrument phrase is at memo :78 (plan said :79) with the question-back spanning :75-80; the memo-send git-log-p instruction is :67-68 (not :67-69) and its D15 criterion :86-89. Errata blocks carry the corrected numbers.; The wrapper cites Doc 3 sections (§0, §1.2, §5.1–§5.4) and Doc 2 by topic; Doc 3 is being redrafted — cross-reference check required before commit.",
+  "entry_type": "status",
+  "id": "01M0XPJPZVSHXND7SB4ZTXS1W1",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-26T00:12:35.684Z"
+  },
+  "scope": "docs/field-responses/",
+  "summary": "Resumed drafting workflow wf_18cac4fa-422 for the three sleep-killed lanes (Doc 2, Doc 3, prepared issues); wrapper lane complete — errata appends verified append-only and line-accurate, wrapper re…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-26T00:12:35.707Z"
+}

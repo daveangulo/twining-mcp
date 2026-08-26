@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Our own .twining/config.yml project_name: '.' was stamped at creation on 2026-02-18 (5cb0049) from a project root passed as '.', not by the plugin's later --project . launch — do not attribute it to the plugin.",
+  "entry_type": "finding",
+  "id": "01M0XYQZY26YEWC6W4YY46FQS9",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-26T02:35:17.295Z"
+  },
+  "scope": "docs/field-responses/",
+  "summary": "Our own .twining/config.yml project_name: '.' was stamped at creation on 2026-02-18 (5cb0049) from a project root passed as '.', not by the plugin's later --project . launch — do not attribute it t…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-08-26T02:35:17.314Z"
+}

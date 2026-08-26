@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Per-call project parameter on twining_record/post/decide re-declined with the field's architectural argument as the primary ground (the caller must not be the authority on what it may write to; a per-call target converts a structural boundary into a convention) and store lifecycle/locking cost as secondary\" relates to:\n- 01M0Y7ECSFEH1HJA1EK21PV4WG: \"DD-8 (file-wins ingest precedence) evidence folded, precedence unchanged: field-confirmed record-level revert; the one-sided supersession link as its durable residue; the same-turn readback explicitly UNEXPLAINED by the mechanism and not banked; the promote-time mirror-throw window resolves by a silent reverted promote that lifecycle_reverts does not arm for\"",
+  "entry_type": "finding",
+  "id": "01M0Y7ECVJTV2GVWWM1Z473S84",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-26T05:07:20.030Z"
+  },
+  "scope": "docs/field-responses/",
+  "summary": "Related decisions in scope: 1 existing decision(s) overlap",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-08-26T05:07:20.050Z"
+}

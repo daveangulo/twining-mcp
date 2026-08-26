@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-26T05:07:20.007Z",
+  "id": "01M0Y7ECT70FS2ZB50B42NKBVC",
+  "properties": {
+    "decision_summary": "DD-8 (file-wins ingest precedence) evidence folded, precedence unchanged: field-confirmed record-level revert; the one-sided supersession link as its durable residue; the same-turn readback explicitly UNEXPLAINED by the mechanism and not banked; the promote-time mirror-throw window resolves by a silent reverted promote that lifecycle_reverts does not arm for",
+    "origin": "derived"
+  },
+  "source": "01KWMNHR44GXNT3XZXBRVX8MAA",
+  "target": "01M0Y7ECT69JVFF40A1MEV3QMA",
+  "type": "decided_by"
+}

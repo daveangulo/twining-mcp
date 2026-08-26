@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Drafted Doc 2 (2026-08-23-wave2-verification-response.md, 355 lines) directly in the controller after four sleep-killed workflow attempts; two read-only reviewer agents running on it. Wrapper now enumerates Doc 2 questions #6–#8; memory files updated.\nDecisions: Chose to draft Doc 2 in the controller session (Bash heredoc from the plan's verified §1 findings + fresh HEAD cites) over a fifth workflow resume — machine sleep killed the Doc 2 drafting lane four times (three sleep-mid-response, one 6× stall); controller drafting is retry-safe and the adversarial review still runs as two parallel read-only Agent lanes\nFindings: Doc 2 numbers the continuing verification questions #6 (D15 discriminators a–e), #7 (twining_verify re-measure on ≥2.16.0), #8 (superseded_backfill preview/execute + post-commit why lineage row); #3 and #5 restated from F2. The wrapper references these numbers — keep them stable if Doc 2 is edited.; twining_housekeeping promote_provisionals+execute at HEAD stamps promoted_by 'housekeeping-promote_provisionals' and writes NO status post (housekeeping.ts:314-329) — the one fully silent promote lane, cited in Doc 2 §2.5.",
+  "entry_type": "status",
+  "id": "01M0Y695QTSVZQTMSQJEVAJNMS",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-26T04:47:00.319Z"
+  },
+  "scope": "docs/field-responses/",
+  "summary": "Drafted Doc 2 (2026-08-23-wave2-verification-response.md, 355 lines) directly in the controller after four sleep-killed workflow attempts; two read-only reviewer agents running on it. Wrapper now e…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-26T04:47:00.346Z"
+}

@@ -1,0 +1,49 @@
+{
+  "affected_files": [
+    "src/utils/project-root.ts",
+    "plugin/hooks/activity-marker-hook.sh",
+    "plugin/hooks/stop-hook.sh",
+    "plugin/hooks/pre-commit-hook.sh",
+    "plugin/hooks/session-start-context.sh",
+    "plugin/hooks/subagent-stop-hook.sh"
+  ],
+  "affected_symbols": [
+    "resolveProjectRoot",
+    "resolveWorktreeMain"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Their composition resolveWorktreeMain(cwd) ?? gitRootOf(cwd) ?? cwd",
+      "pros": [],
+      "reason_rejected": "returns the worktree root, not the main checkout, from a subdirectory of a linked worktree"
+    },
+    {
+      "cons": [],
+      "option": "Decline (keep cwd-relative as the header comment says)",
+      "pros": [],
+      "reason_rejected": "the recorded decision behind the comment decided document placement, not resolution semantics — no reasoned prior art exists"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Field-response A-batch complete: Doc 2 (wave-2 verification response), Doc 3 (routing-upstream response), prepared GitHub issues (NOT filed), send wrapper, memo/memo-send errata appends — all adversarially reviewed and controller-verified; committing.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01M0Y7ECXNPE3TS4EGC64HPWVC",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-26T05:07:20.097Z"
+  },
+  "rationale": "The field's diagnosis verifies at HEAD; their composition mis-handles a subdirectory of a linked worktree because resolveWorktreeMain does not walk up (project-root.ts:33-34); gitRootOf does not exist and must be written. #46's 'absolute paths for multi-machine' advice cannot be right on two machines. The server creates the store unconditionally at spawn (init.ts:75-81), so a misresolved value fabricates a spurious store that every later hook binds too — a coherent silent misroute.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/field-responses/",
+  "status": "active",
+  "summary": "P1 accepted as a NEW design decision: a relative TWINING_PROJECT will resolve against the declaring repo root, preferring the main checkout (root = gitRootOf(cwd) ?? cwd; base = resolveWorktreeMain(root) ?? root), shipped as a W3 warn phase (dual-base notice, identical policy in TS and all five hooks) then a W5 default flip; the neither-store-exists case is unruled (conservative default: keep cwd semantics until the flip). Supersedes the project-root.ts:15-17 header claim and #46's maintainer-note premises, NOT decision 01KY68QN70W0RRWCNMWH57WNEW (doc-placement only)",
+  "timestamp": "2026-08-26T05:07:20.117Z"
+}

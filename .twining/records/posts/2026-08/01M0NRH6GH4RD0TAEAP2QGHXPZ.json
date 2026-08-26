@@ -1,0 +1,21 @@
+{
+  "agent_id": "main",
+  "detail": "Answering \"does twining delete tracked blackboard posts from disk as part of normal operations\" — yes, and the largest deletions are unattended, not operator-invoked.\n\nMECHANISM (sqlite backend + export_records, the default):\n- blackboard.ts:181-202 — every twining_post recomputes partitionArchivable(before=NO_AGE_CUTOFF, retain=archive.retain_recent). When to_archive.length >= archive.max_blackboard_entries_before_archive (default 500), it fires archiver.archive() fire-and-forget.\n- archiver.ts:191 appends the entries to .twining/archive/YYYY-MM-DD-blackboard.jsonl, then archiver.ts:195 calls blackboardStore.dismiss(ids).\n- That store is ExportingBlackboardStore (backend-factory.ts:234 withRecordExport). record-export.ts:186-198 dismiss() -> exporter.removePost(entry) -> fs.rmSync on .twining/records/posts/<yyyy-mm>/<ulid>.json.\n- .twining/records/ is git-TRACKED. .twining/archive/ is GITIGNORED (.twining/.gitignore line 2). So the archive copy is machine-local and does not ride git.\n- Files backend: same outcome via a different shape — blackboard-store.ts:116-158 rewrites tracked .twining/blackboard.jsonl minus the dismissed lines.\n\nEMPIRICAL (this repo): git log --diff-filter=D over .twining/records/posts/ = 1,553 deleted record files in 6 commits. Three of them are ordinary feature/docs commits, each carrying an added post whose summary is literally \"Archive: 501 entries archived\" / \"Archive: 91 entries archived\" — the auto-archive signature, i.e. the sweep fired mid-session and the next commit swept up the deletions. Only 3 of 6 were operator-invoked housekeeping/archive_stale.\n\nOTHER DELETION PATHS to tracked post files: twining_dismiss (blackboard-tools.ts:328, full-surface only), twining_archive_stale (housekeeping-tools.ts:233), housekeeping dedup (housekeeping.ts:273), and housekeeping archive:true pass (housekeeping.ts:214). All tombstone into the same gitignored archive/.\n\nSECOND-ORDER: record-ingest.ts:291-296 propagates deletions — a committed post-file deletion DELETEs the corresponding db row on every other clone at next ingest. So one machine's auto-archive erases the post from every collaborator's board on pull.\n\nExempt from archiving (never deleted this way): decision entries, unresolved need/warning/question entries, and the newest retain_recent (200) archivable entries.\n\nNOT A BUG REPORT — this is documented, deliberate design (LIFE-01..03, D4 retention). The finding worth surfacing is the git-visibility asymmetry: the delete is committable, the preserved copy is not.</detail>\n<parameter name=\"scope\">src/engine/",
+  "entry_type": "finding",
+  "id": "01M0NRH6GH4RD0TAEAP2QGHXPZ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-22T22:12:47.734Z"
+  },
+  "scope": "project",
+  "summary": "Auto-archive DELETES git-tracked post records unattended: 1,553 .twining/records/posts/*.json deleted across 6 commits here; only surviving copy is gitignored .twining/archive/",
+  "tags": [
+    "archive",
+    "lifecycle",
+    "records",
+    "git",
+    "data-retention"
+  ],
+  "timestamp": "2026-08-22T22:12:47.762Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-23T13:06:05.368Z",
+  "id": "01M0QBMVXRE3TD0CYFKXNCPBYW",
+  "name": "01M0QBMVTDG2E43KRCP56JS6R5",
+  "properties": {
+    "scope": "project",
+    "summary": "Chose to leave the plan doc uncommitted pending Dave's review (precedent: the read-audit plan) and published the review artifact instead"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-23T13:06:05.368Z"
+}

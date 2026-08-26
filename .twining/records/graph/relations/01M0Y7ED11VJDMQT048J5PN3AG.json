@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-26T05:07:20.225Z",
+  "id": "01M0Y7ED11VJDMQT048J5PN3AG",
+  "properties": {
+    "decision_summary": "P1 accepted as a NEW design decision: a relative TWINING_PROJECT will resolve against the declaring repo root, preferring the main checkout (root = gitRootOf(cwd) ?? cwd; base = resolveWorktreeMain(root) ?? root), shipped as a W3 warn phase (dual-base notice, identical policy in TS and all five hooks) then a W5 default flip; the neither-store-exists case is unruled (conservative default: keep cwd semantics until the flip). Supersedes the project-root.ts:15-17 header claim and #46's maintainer-note premises, NOT decision 01KY68QN70W0RRWCNMWH57WNEW (doc-placement only)",
+    "origin": "derived"
+  },
+  "source": "01KJJAZET2V22WEVQPJAYE9EQZ",
+  "target": "01M0Y7ED0KVSRJ6T2T059EXBEH",
+  "type": "decided_by"
+}

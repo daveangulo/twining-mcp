@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-23T13:06:04.708Z",
+  "id": "01M0QBMV945SZQR4E467GJ0ZJW",
+  "name": "01M0QBMV5QFH8KJNJ34GCMESE8",
+  "properties": {
+    "scope": "project",
+    "summary": "Chose to slot the lineage reverse-scan fix into W2/2.17.0 and ship the field's ask 3 as a write-time createSuperseding transaction that explicitly does NOT defend against ingest reverts"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-23T13:06:04.708Z"
+}

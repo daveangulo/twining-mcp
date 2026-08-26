@@ -1,0 +1,15 @@
+{
+  "agent_id": "main",
+  "detail": "2026-08-13-wave2-ship-memo.md:61-62 says \"git log -p on that mirror file will show the reverting commit\", and 2026-08-16-memo-send.md:70-72 propagates it into the field session prompt. The field's 2026-08-17 verification doc §2(b) shows this cannot work on our OWN stated mechanism: the operations that restore committed bytes (git checkout -- pathspec, git restore, a branch switch in the main checkout) create no commit and no reflog entry. So an absent reverting commit is fully consistent with the mechanism having fired and must NOT be read as refuting it. Any future field report using this instruction will hit the same wall and may draw the wrong conclusion. Correct the instruction before the memo is sent again. Related, also unrecorded: the field flags that file-wins ingest does not explain D14's same-turn readback (no HEAD move in the gap) — \"stated so you do not bank it\" — and our DD-8 file-wins standing decision has no note of that limitation.",
+  "entry_type": "warning",
+  "id": "01M0NH8H8Y7HFMHFRN9F54S5KR",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-22T20:05:43.810Z"
+  },
+  "scope": "docs/field-responses/",
+  "summary": "Two documents we are actively shipping to the field carry a diagnostic instruction the field has proven structurally unusable",
+  "tags": [],
+  "timestamp": "2026-08-22T20:05:43.838Z"
+}

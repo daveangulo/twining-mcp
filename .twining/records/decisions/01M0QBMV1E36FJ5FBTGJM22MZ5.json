@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "accept the field's reopening",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Developed the field-response plan (docs/plans/2026-08-23-field-response-plan.md, uncommitted, review artifact published) via three ultracode workflows: 10-lane investigation with live probes of published builds 2.6.0/2.13.0/2.15.0 plus worktree-built HEAD, 6-lane adversarial verification, plus the earlier response-state audit. Headline: D15 flips from concession to correction — the field's reopening rests on our memo's ambiguous promote-post invariant (post fires only when promoted.length>0, so one post is exactly the two-call prediction), and their creation-time mirror/db divergence hypothesis is refuted by measurement on four builds, byte-identical sync-layer code, and their own found post's detail field. Plan slots all surviving asks into W2/W3/W4 plus a new W5 and DD-11; five rulings requested from Dave before execution.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01M0QBMV1E36FJ5FBTGJM22MZ5",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-23T13:06:04.442Z"
+  },
+  "rationale": "the memo's invariant phrasing and mis-specified escalation criterion are conceded as our fault, but the corrected invariant (verified by measurement on 2.6.0/2.13.0/2.15.0/HEAD and source at all four) makes their one-post evidence confirm the two-call disposition; the earlier drafted retraction language accepting the reopen is SUPERSEDED by this — invalidated if the field's original promote response payload turns out to show promoted:[id] alongside already_active:[id], which would select the duplicate-id single-call mechanism instead (dispositions unchanged either way).",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Chose to answer D15 as refuted-with-concession rather than accept the field's reopening",
+  "timestamp": "2026-08-23T13:06:04.462Z"
+}

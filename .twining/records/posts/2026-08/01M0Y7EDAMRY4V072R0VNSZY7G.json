@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: MetricEntry (src/utils/types.ts:633-647) carries tool_name/timestamp/duration/success/error_code/agent_id (+response_bytes/result_count/scope from 2.16.0) but never a decision id — metrics can show two twining_promote calls in a window and their actors, not which id they touched.",
+  "entry_type": "finding",
+  "id": "01M0Y7EDAMRY4V072R0VNSZY7G",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-26T05:07:20.509Z"
+  },
+  "scope": "docs/field-responses/",
+  "summary": "MetricEntry (src/utils/types.ts:633-647) carries tool_name/timestamp/duration/success/error_code/agent_id (+response_bytes/result_count/scope from 2.16.0) but never a decision id — metrics can show…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-08-26T05:07:20.532Z"
+}

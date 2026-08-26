@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-26T05:07:19.846Z",
+  "id": "01M0Y7ECN6VEYTQ6AWM82J4JJT",
+  "properties": {
+    "decision_summary": "D14 closed as field-confirmed (2026-08-17 reply): the field accepts the file-wins record-level revert mechanism and withdraws its override-no-op causal story; our git-log-p diagnostic instruction is conceded as structurally unusable and the ship memo carries a dated Errata block instead of a body rewrite",
+    "origin": "derived"
+  },
+  "source": "01M0Y695VJM2PTXKZZFZS171RA",
+  "target": "01M0Y7ECN21VB7W2WPY7DKTM5A",
+  "type": "decided_by"
+}

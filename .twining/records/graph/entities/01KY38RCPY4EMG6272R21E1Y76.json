@@ -3,8 +3,8 @@
   "id": "01KY38RCPY4EMG6272R21E1Y76",
   "name": "src/utils/project-root.ts",
   "properties": {
-    "scope": "src/utils/"
+    "scope": "docs/field-responses/,src/utils/"
   },
   "type": "file",
-  "updated_at": "2026-08-05T18:50:34.571Z"
+  "updated_at": "2026-08-26T05:07:20.211Z"
 }

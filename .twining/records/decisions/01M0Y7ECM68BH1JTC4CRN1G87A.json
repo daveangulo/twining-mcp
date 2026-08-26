@@ -1,0 +1,36 @@
+{
+  "affected_files": [
+    "docs/field-responses/2026-08-13-wave2-ship-memo.md",
+    "docs/field-responses/2026-08-23-wave2-verification-response.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Rewrite the memo body in place",
+      "pros": [],
+      "reason_rejected": "the memo was already sent; a rewritten body is history rewriting and the field's own standard treats it as a stale literal"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Field-response A-batch complete: Doc 2 (wave-2 verification response), Doc 3 (routing-upstream response), prepared GitHub issues (NOT filed), send wrapper, memo/memo-send errata appends — all adversarially reviewed and controller-verified; committing.",
+  "depends_on": [],
+  "domain": "field-response",
+  "id": "01M0Y7ECM68BH1JTC4CRN1G87A",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-26T05:07:19.789Z"
+  },
+  "rationale": "Pathspec restores create no commit and move no HEAD, and mid-session ingest re-ingests only on HEAD movement (sync-manager.ts:64-91), so the revert lands at the next ingest after a later HEAD move — git log -p can never show it. Append-only errata keeps the sent memo's body byte-stable (the field retrieves it by curl from main).",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/field-responses/",
+  "status": "active",
+  "summary": "D14 closed as field-confirmed (2026-08-17 reply): the field accepts the file-wins record-level revert mechanism and withdraws its override-no-op causal story; our git-log-p diagnostic instruction is conceded as structurally unusable and the ship memo carries a dated Errata block instead of a body rewrite",
+  "timestamp": "2026-08-26T05:07:19.814Z"
+}

@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Decisions: Chose to classify the twining_verify cost ask as partially addressed rather than addressed — the runtime half shipped in 2.16.0 via 8809cff but came through the different 2026-08-15 read audit as S2-C and predates the field's own measurement run, while the ~198K-token payload and 120s budget half remain deferred to unshipped W4; calling it addressed was considered and rejected because the field has not been told and half the ask is open",
+  "entry_type": "status",
+  "id": "01M0NJ7JWMJ5VXQTZE86MNNEYE",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-22T20:22:41.279Z"
+  },
+  "scope": "project",
+  "summary": "Inbound-doc audit: confirmed both the 2026-08-17 wave-2 verification reply and TWINING-ROUTING-UPSTREAM are unanswered by this repo.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-22T20:22:41.300Z"
+}

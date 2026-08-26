@@ -199,3 +199,60 @@ see an honest `total_matched` (likely 0) alongside the ranked page; (ii) a
 them listed with successors instead of a bare count. If either still
 misleads an agent in your setting, that is a wave-3 defect and we want the
 trace.
+
+---
+
+## Errata (2026-08-25) — appended post-send; the body above is unchanged
+
+Five corrections to this memo, each carried in full by a later doc. The
+memo went out 2026-08-16 as written; nothing above this line has been
+edited.
+
+1. **The D14 diagnostic instruction (lines 61–62, "`git log -p` on that
+   mirror file will show the reverting commit") is structurally unusable.**
+   The operations that restore committed bytes — `git checkout -- <pathspec>`,
+   `git restore` — create no commit and move no HEAD, and because
+   mid-session ingest triggers only on HEAD movement the revert lands at the
+   NEXT ingest after a later HEAD move, so an absent reverting commit is
+   consistent with the mechanism having fired. What can see the class:
+   `lifecycle_reverts` (2.14.0 counter; 2.15.0 scoped blackboard warning
+   naming the ids — honest bound: it arms only for overridden/superseded
+   downgrades at ingest time, a reverted PROMOTE is deliberately silent);
+   a mirror-vs-db comparison of the record (retroactive; the field's own
+   method, sanctioned); contemporaneous session evidence of an
+   add/restore. Detail and the DD-8 limitation note (file-wins does not
+   explain a same-turn readback): `2026-08-23-wave2-verification-response.md`,
+   D14 section.
+2. **The D15 instrument sentence (line 78, "every real promote writes one")
+   is ambiguous, and the operational reading is false.** A status post is
+   written only by a call that flips at least one id — the post is guarded
+   by `if (result.promoted.length > 0)` (`src/engine/decisions.ts` :918 at
+   2.6.0, :1150 at 2.13.0, :1219 at 2.15.0/HEAD) — so a call landing wholly
+   in `already_active` writes NO post at any shipped version, and one post
+   beside an `already_active` readback is what a flip-then-silent-repeat
+   sequence predicts. Corrected escalation criterion (replaces the
+   question-back at lines 75–80): escalate when the record is db-active AND no promote post names
+   it AND no `housekeeping({promote_provisionals: true, execute: true})`,
+   unarchive or merge-ingest trace fits — and bring the original promote
+   response payload verbatim, since its `promoted` contents and any
+   duplicate in `decision_ids` are the discriminators. A present post is
+   never grounds to escalate. Detail, the three-way refutation of the
+   creation-time-divergence hypothesis, and the input-dedupe defect this
+   exposed on our side: `2026-08-23-wave2-verification-response.md`, D15
+   section.
+3. **The open-follow-ups list (line 183) shows the sqlite relation-lookup
+   index as open — it shipped in 2.15.0**, as this memo's own changelog row
+   (line 28) says. Ignore the stale line. (Read-audit response §10.1.)
+4. **The session prompt you were handed with this memo
+   (`2026-08-16-memo-send.md`, step 1) told you to confirm the version via
+   `twining_status` — no version field existed at 2.15.0.** From 2.16.0
+   `twining_status` returns `server_version` (plus `backend` and
+   `backend_reason`; `src/tools/lifecycle-tools.ts:221`); its absence now
+   means "<2.16.0". (Read-audit response §10.2.)
+5. **The upgrade line (line 30) lacks the npx-rung caveat**: a plugin
+   upgrade alone does not move a session that resolves the server through
+   the registry rung — a registry age-policy or cached packument that
+   pinned a session to an old build keeps doing so until that window
+   passes, regardless of the plugin version. Self-test until then:
+   `twining_amend` present → 2.13-class; from 2.16.0, `server_version`.
+   (Read-audit response §1.4 and §10.3.)

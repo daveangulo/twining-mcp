@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "as a new bug",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Inbound-doc audit: disambiguation and scope decisions for the two unanswered field docs.",
+  "depends_on": [],
+  "domain": "api-design",
+  "id": "01M0NJ80068XRZZS2SVK4CG90F",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-22T20:22:54.707Z"
+  },
+  "rationale": "issue #46 explicitly considered and declined the exact hardening in its Alternatives section, and decision 01KY68QN70W0RRWCNMWH57WNEW records --project/TWINING_PROJECT as never redirected; the alternative of treating it as unexamined was rejected because any response must engage #46's stated rationale to be credible. Invalidated if #46's rationale turns out to rest on facts the field's worktree/subdir evidence contradicts.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Chose to treat routing proposal 1 (relative TWINING_PROJECT resolves against cwd) as a supersession request against a named decision rather than as a new bug",
+  "timestamp": "2026-08-22T20:22:54.726Z"
+}

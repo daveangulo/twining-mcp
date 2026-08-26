@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-23T04:55:49.430Z",
+  "id": "01M0PFK5DP7CDJZF8R04TV6B3Q",
+  "name": "01M0PFK5A8KCD3NFGBZ37YG025",
+  "properties": {
+    "scope": "project",
+    "summary": "Chose to scope the merged routing design to server-side detection only (trace + warnings + expect_project + store_id), leaving hook-walk/server divergence as a documented residual and Issue 1's relative-TWINING_PROJECT semantics change out"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-23T04:55:49.430Z"
+}

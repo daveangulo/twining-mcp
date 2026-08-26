@@ -1,0 +1,17 @@
+{
+  "agent_id": "routing-design-subagent",
+  "detail": "New decision \"Chose to scope the merged routing design to server-side detection only (trace + warnings + expect_project + store_id), leaving hook-walk/server divergence as a documented residual and Issue 1's relative-TWINING_PROJECT semantics change out\" relates to:\n- 01KQV9B7WR6J71JFGHN5EDCA3E: \"Added opt-out flag check that exits silently if $PROJECT_ROOT/.twining/.no-claude-md-gates exists, giving projects explicit control\"\n- 01KQV9B7XSEREAPTSG3Y67N0BV: \"Replaced single-file marker check with broad search across 4 locations (project CLAUDE.md, CLAUDE.local.md, .claude/CLAUDE.local.md, global $HOME/.claude/CLAUDE.md) before deciding to append, avoiding duplicate markers\"\n- 01KWMM6G8NXVHJA6TPEYG7X9ZE: \"Folded the stray hook-generated blackboard entry (subagent-stop noise from the CI watch task) into the release commit rather than discarding it\"\n- 01KWWX3P1JBAHKXFE8KSG664FX: \"Chose to close #19 (Serena port fight) as already-implemented\"\n- 01KY0S6HQP1K239S69BAD8DYX5: \"Chose NOT to run twining_archive_stale on the 161 staleness candidates (score ≥0.95)\"\n- 01KY663T6060R8NAPCVAHVD1JB: \"Chose the npm version lifecycle hook (build:plugin + git add plugin/server) to prevent the release-flow trap where a package.json version bump strands a stale committed bundle\"\n- 01KY663TBYB3RYSS1BGBW3GAT4: \"Chose to deliver the cmux worktree store-divergence fix as a recommendation rather than implement it now\"\n- 01KY68QMYKYNJ9BMJ3QZ8NVSQ3: \"Chose hook fail-open (no walk-up fallback) when TWINING_PROJECT points at a store that doesn't exist\"\n- 01KY699KF9K788WBMRPR2T27NP: \"Chose a plugin patch bump (1.20.1) for the bundle refresh\"\n- 01KZW3Z8K32QR8T4DC783A7PCQ: \"Chose plugin minor bump 1.25.0 alongside server 2.7.0 in the same version commit\"\n- 01M0NJ805WV76013NBXSGKZE79: \"Chose to report the audit findings without remediating\"",
+  "entry_type": "finding",
+  "id": "01M0PFK5AVV2X3KFKYFTNGQ703",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-23T04:55:49.320Z"
+  },
+  "scope": "project",
+  "summary": "Related decisions in scope: 11 existing decision(s) overlap",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-08-23T04:55:49.339Z"
+}

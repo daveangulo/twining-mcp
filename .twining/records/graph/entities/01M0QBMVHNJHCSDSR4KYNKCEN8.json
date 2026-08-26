@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-23T13:06:04.980Z",
+  "id": "01M0QBMVHNJHCSDSR4KYNKCEN8",
+  "name": "01M0QBMVE5FMVSQT4QWJDR8ADA",
+  "properties": {
+    "scope": "project",
+    "summary": "Chose to merge routing proposals 2+3 with the planned S1-F item into one W3 'store identity + routing honesty' bundle (resolution trace, created flag, out-of-repo warning reworded to the real creation-at-cwd rule, store_id in config.yml, expect_project with created:true refusal, echo through both toolResult AND toolError) with a pre-agreed 2.18.1 relief valve"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-23T13:06:04.980Z"
+}

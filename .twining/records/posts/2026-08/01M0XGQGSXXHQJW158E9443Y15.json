@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Started executing Workstream A of the field-response plan: plan doc moved DRAFT→EXECUTING with the five §7 rulings resolved by conservative defaults; drafting workflow wf_18cac4fa-422 (Doc 2, Doc 3, prepared issues, wrapper+errata) running.\nDecisions: Chose to prepare the four routing GitHub issues (bodies, maintainer comments, gh commands in docs/field-responses/2026-08-23-routing-issues-prepared.md) but NOT file them under the 'execute plan' instruction — the plan marks filing owner-gated and outward-facing; the physical send of the docs likewise stays Dave's action; Chose to append the memo errata (the plan's recommended option) with a fifth item — the D15 'every real promote writes one' instrument phrasing — over the plan's four, because it is the batch's headline correction and the memo is the file the field re-reads; also appending a two-line errata pointer to the 2026-08-16 memo-send wrapper whose session prompt repeats the unusable git-log-p instruction (cheap, append-only); Left the P1 neither-store-exists case and the W3 bundle split unruled — the §6.3 conservative default (preserve cwd semantics until the general flip) stands and Doc 3 tells the field the recommendation is pending an owner ruling; both must be ruled before the W3 breakdown\nFindings: Workstream B (W2–W5 code) is NOT started in this session — per plan §6.4 each wave gets a fresh-session TDD breakdown; next step after the A-batch commit is the W2/2.17.0 breakdown (existing read-audit W2 scope + lineage reverse-scan bundle + promote input dedupe + createSuperseding txn)",
+  "entry_type": "status",
+  "id": "01M0XGQGSXXHQJW158E9443Y15",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-25T22:30:21.730Z"
+  },
+  "scope": "docs/field-responses/",
+  "summary": "Started executing Workstream A of the field-response plan: plan doc moved DRAFT→EXECUTING with the five §7 rulings resolved by conservative defaults; drafting workflow wf_18cac4fa-422 (Doc 2, Doc 3…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-25T22:30:21.758Z"
+}

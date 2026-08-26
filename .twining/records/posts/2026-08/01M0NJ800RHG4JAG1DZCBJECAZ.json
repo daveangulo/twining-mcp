@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Chose to treat routing proposal 1 (relative TWINING_PROJECT resolves against cwd) as a supersession request against a named decision rather than as a new bug\" relates to:\n- 01KY584J5NBHG8KG3807PH7PAW: \"Chose a TWINING_LAUNCH_NO_LOGIN_PATH env guard for tests over retry-only-on-failure PATH recovery\"\n- 01KYB826M9DMCTBM78NKNEAM7P: \"Chose to amend the review artifact in place with a Field validation section that supersedes the capture-first framing, rather than rewriting the original verdict\"",
+  "entry_type": "finding",
+  "id": "01M0NJ800RHG4JAG1DZCBJECAZ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-22T20:22:54.726Z"
+  },
+  "scope": "project",
+  "summary": "Related decisions in scope: 2 existing decision(s) overlap",
+  "tags": [
+    "api-design"
+  ],
+  "timestamp": "2026-08-22T20:22:54.744Z"
+}

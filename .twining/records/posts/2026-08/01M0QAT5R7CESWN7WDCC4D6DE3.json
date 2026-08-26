@@ -1,0 +1,15 @@
+{
+  "agent_id": "main",
+  "detail": "Found by the D15 archaeology lane, confirmed in source at v2.6.0, v2.13.0, and HEAD (0f65ef0): neither the tool layer (decision-tools.ts passes args.decision_ids straight through) nor the engine loop dedupes ids, and the loop re-reads the store per iteration — so iteration 1 flips X, iteration 2 reads the committed flip and pushes already_active. Result: promoted:['X'], already_active:['X'], one post. Code-read only, not yet executed. Planned fix (W2/2.17.0): order-preserving Set dedupe at the top of DecisionEngine.promote plus a duplicate_input bucket so one call can never emit the same id in two buckets. Related hardening deferred to W4: post-throw-after-flip leaves a flip with no post; housekeeping promote_provisionals+execute is a fully silent promote lane; ExportingDecisionStore.updateStatus has a promote-time mirror-throw window (db=active/mirror=provisional until next ingest self-heals). See docs/plans/2026-08-23-field-response-plan.md §1.1.",
+  "entry_type": "finding",
+  "id": "01M0QAT5R7CESWN7WDCC4D6DE3",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-23T12:51:30.674Z"
+  },
+  "scope": "src/engine/decisions.ts",
+  "summary": "Promote input is never deduped: promote(['X','X']) emits the id in BOTH promoted and already_active buckets with exactly one status post — a single-call reproduction of the field's D15 shape",
+  "tags": [],
+  "timestamp": "2026-08-23T12:51:30.695Z"
+}

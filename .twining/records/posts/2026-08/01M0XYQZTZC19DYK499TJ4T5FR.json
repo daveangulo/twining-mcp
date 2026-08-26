@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Controller-reviewed Doc 3 + prepared-issues doc (bodies byte-identical to DOC B; cites verified); patched five maintainer-comment spots the Doc 3 reviewers had corrected but the issues lane never saw. Doc 2 lane still running.\nFindings: The routing 'server creates at cwd vs hooks bind the ancestor' split is NOT durable: the server creates the spurious store at spawn (src/index.ts:52 before connect), and every hook fired afterwards finds it (env branch -d check activity-marker-hook.sh:72; walk checks $DIR/.twining at cwd first, :118) and binds it too — a coherent silent misroute, which is why the field's incident produced no signal. Plan §1.5 P2 wording ('hooks walk, server creates') is right but incomplete; Doc 3 §1.1/§2 and the issue comments now say coherent misroute.; Our own .twining/config.yml project_name: '.' was stamped at creation on 2026-02-18 (5cb0049) from a project root passed as '.', not by the plugin's later --project . launch — do not attribute it to the plugin.",
+  "entry_type": "status",
+  "id": "01M0XYQZTZC19DYK499TJ4T5FR",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-26T02:35:17.193Z"
+  },
+  "scope": "docs/field-responses/",
+  "summary": "Controller-reviewed Doc 3 + prepared-issues doc (bodies byte-identical to DOC B; cites verified); patched five maintainer-comment spots the Doc 3 reviewers had corrected but the issues lane never s…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-26T02:35:17.215Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-26T05:07:20.396Z",
+  "id": "01M0Y7ED6C84MAQXY71KF4VXWA",
+  "properties": {
+    "decision_summary": "Chose PREPARED-not-filed for the four routing GitHub issues: bodies byte-identical to the field's text plus one attribution line, maintainer comments define wave names inline, a gh recipe with placeholder substitution; filing waits for Dave's explicit go",
+    "origin": "derived"
+  },
+  "source": "01M0Y7ED6B39S9SFYAZSW0J111",
+  "target": "01M0Y7ED6B39S9SFYAZSW0J110",
+  "type": "decided_by"
+}

@@ -3,8 +3,8 @@
   "id": "01KJJSJTRGK3ZA5R8N3WXVT6YS",
   "name": "plugin/hooks/subagent-stop-hook.sh",
   "properties": {
-    "scope": "plugin/hooks"
+    "scope": "docs/field-responses/,plugin/hooks"
   },
   "type": "file",
-  "updated_at": "2026-05-05T05:19:32.807Z"
+  "updated_at": "2026-08-26T05:07:20.228Z"
 }

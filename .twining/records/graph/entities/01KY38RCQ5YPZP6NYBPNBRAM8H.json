@@ -3,8 +3,8 @@
   "id": "01KY38RCQ5YPZP6NYBPNBRAM8H",
   "name": "resolveProjectRoot",
   "properties": {
-    "scope": "src/utils/"
+    "scope": "docs/field-responses/,src/utils/"
   },
   "type": "function",
-  "updated_at": "2026-08-05T18:50:34.573Z"
+  "updated_at": "2026-08-26T05:07:20.230Z"
 }

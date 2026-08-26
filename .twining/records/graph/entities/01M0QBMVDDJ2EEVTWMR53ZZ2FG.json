@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-23T13:06:04.845Z",
+  "id": "01M0QBMVDDJ2EEVTWMR53ZZ2FG",
+  "name": "01M0QBMV9VAWV3JFK6J4F20E0D",
+  "properties": {
+    "scope": "project",
+    "summary": "Chose accept-with-migration for routing proposal 1 using the corrected composition root=gitRootOf(cwd)??cwd then base=resolveWorktreeMain(root)??root"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-23T13:06:04.845Z"
+}

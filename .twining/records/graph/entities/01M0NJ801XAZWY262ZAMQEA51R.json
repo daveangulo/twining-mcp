@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-22T20:22:54.781Z",
+  "id": "01M0NJ801XAZWY262ZAMQEA51R",
+  "name": "01M0NJ80068XRZZS2SVK4CG90F",
+  "properties": {
+    "scope": "project",
+    "summary": "Chose to treat routing proposal 1 (relative TWINING_PROJECT resolves against cwd) as a supersession request against a named decision rather than as a new bug"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-22T20:22:54.781Z"
+}

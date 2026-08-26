@@ -3,8 +3,8 @@
   "id": "01KJD595N6WRYRMGP4T88TPC67",
   "name": "src/analytics/instrumented-server.ts",
   "properties": {
-    "scope": "src/analytics/"
+    "scope": "docs/field-responses/,src/analytics/"
   },
   "type": "file",
-  "updated_at": "2026-02-26T14:22:40.806Z"
+  "updated_at": "2026-08-26T05:07:20.348Z"
 }

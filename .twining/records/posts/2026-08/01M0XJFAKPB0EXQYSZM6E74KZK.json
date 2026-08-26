@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: the A-batch docs on disk (wrapper, errata appends, Doc 3 draft) are UNREVIEWED workflow output as of this record — do not send or commit them until the review/fix lanes finish and the controller diff-reviews every file (Doc 2 and the prepared-issues doc do not exist yet)",
+  "entry_type": "warning",
+  "id": "01M0XJFAKPB0EXQYSZM6E74KZK",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-25T23:00:50.402Z"
+  },
+  "scope": "docs/field-responses/",
+  "summary": "the A-batch docs on disk (wrapper, errata appends, Doc 3 draft) are UNREVIEWED workflow output as of this record — do not send or commit them until the review/fix lanes finish and the controller di…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-08-25T23:00:50.422Z"
+}

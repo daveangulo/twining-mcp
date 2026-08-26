@@ -1,0 +1,36 @@
+{
+  "affected_files": [
+    "src/tools/record-tools.ts",
+    "docs/field-responses/2026-08-23-routing-upstream-response.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Keep the cost-only decline from the read-audit response S1-F row",
+      "pros": [],
+      "reason_rejected": "a cost-reducing refactor could reopen it; the field's argument closes it on principle"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Field-response A-batch complete: Doc 2 (wave-2 verification response), Doc 3 (routing-upstream response), prepared GitHub issues (NOT filed), send wrapper, memo/memo-send errata appends — all adversarially reviewed and controller-verified; committing.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01M0Y7ECTYCPQDY5TPYX3AZD83",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-26T05:07:20.009Z"
+  },
+  "rationale": "Cost arguments erode when the cost drops; the architectural one is durable. Recorded in Doc 3 §4 and the Issue 4 maintainer comment.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/field-responses/",
+  "status": "active",
+  "summary": "Per-call project parameter on twining_record/post/decide re-declined with the field's architectural argument as the primary ground (the caller must not be the authority on what it may write to; a per-call target converts a structural boundary into a convention) and store lifecycle/locking cost as secondary",
+  "timestamp": "2026-08-26T05:07:20.030Z"
+}

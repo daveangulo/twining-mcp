@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Field-response A-batch complete: Doc 2 (wave-2 verification response), Doc 3 (routing-upstream response), prepared GitHub issues (NOT filed), send wrapper, memo/memo-send errata appends — all adversarially reviewed and controller-verified; committing.\nDecisions: [object Object]; [object Object]; [object Object]; [object Object]; [object Object]; [object Object]; [object Object]\nFindings: The field's own 2026-08-15 read audit corrected its sibling-store counts to 775/417 (file counts had included index.json); DOC A §1 repeats the stale 776/418. Expected post-migrate active_decisions: 770 / 417 / 150. Do not quote 776/418 as current.; 5,465 is the read audit's CONTROL-store affected_files entry count (764 decisions, agentic-platform-code copy), not the design store's specs/ scope — the plan §A2.4 had conflated them; Doc 2 and the plan are corrected. Their specs/ verify run: 1,747 decisions checked, 1,721 stale entries, 273 distinct files.; warning: memo-send.md line cites differ across our docs by one line depending on whether the sentence start or the git-log-p phrase is counted: the git log -p instruction is :68-69 (line 67 is the D14 id question); Doc 2, the memo-send Errata and the plan now all say :68-69.; MetricEntry (src/utils/types.ts:633-647) carries tool_name/timestamp/duration/success/error_code/agent_id (+response_bytes/result_count/scope from 2.16.0) but never a decision id — metrics can show two twining_promote calls in a window and their actors, not which id they touched.",
+  "entry_type": "status",
+  "id": "01M0Y78FV283KF14M1EK5QK30N",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-26T05:04:06.469Z"
+  },
+  "scope": "docs/field-responses/",
+  "summary": "Field-response A-batch complete: Doc 2 (wave-2 verification response), Doc 3 (routing-upstream response), prepared GitHub issues (NOT filed), send wrapper, memo/memo-send errata appends — all adver…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-26T05:04:06.498Z"
+}

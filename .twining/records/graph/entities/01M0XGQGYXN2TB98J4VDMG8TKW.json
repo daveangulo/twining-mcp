@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-08-25T22:30:21.917Z",
+  "id": "01M0XGQGYXN2TB98J4VDMG8TKW",
+  "name": "01M0XGQGWDXBV76J7D0EN1H9C3",
+  "properties": {
+    "scope": "docs/field-responses/",
+    "summary": "Chose to prepare the four routing GitHub issues (bodies, maintainer comments, gh commands in docs/field-responses/2026-08-23-routing-issues-prepared.md) but NOT file them under the 'execute plan' instruction"
+  },
+  "type": "concept",
+  "updated_at": "2026-08-25T22:30:21.917Z"
+}

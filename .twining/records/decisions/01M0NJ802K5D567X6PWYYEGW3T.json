@@ -1,0 +1,26 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Inbound-doc audit: disambiguation and scope decisions for the two unanswered field docs.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01M0NJ802K5D567X6PWYYEGW3T",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0f65ef071612cdd458562b28f783483348999a51",
+    "recorded_at": "2026-08-22T20:22:54.784Z"
+  },
+  "rationale": "both use the word 'ancestor' but S1-E is scope-string prefix matching inside an already-bound store while proposal 2 concerns the filesystem walk that decides which store binds at all; recorded because a keyword search makes them look like one item and would produce a false 'already addressed' verdict.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "project",
+  "status": "active",
+  "summary": "Chose to rule read-audit item S1-E out as coverage for routing proposal 2",
+  "timestamp": "2026-08-22T20:22:54.803Z"
+}

@@ -3,8 +3,8 @@
   "id": "01KQV9EH92VV4MD0D9FHCB94FB",
   "name": "plugin/hooks/session-start-context.sh",
   "properties": {
-    "scope": "plugin/"
+    "scope": "docs/field-responses/,plugin/"
   },
   "type": "file",
-  "updated_at": "2026-08-04T17:18:42.267Z"
+  "updated_at": "2026-08-26T05:07:20.227Z"
 }
