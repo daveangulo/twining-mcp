@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "finding",
+  "id": "01M1FDVCBFS56VVJM6A60J46WB",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3543dc6926935445c621026a55c88843f720a1cf",
+    "recorded_at": "2026-09-01T21:26:22.297Z"
+  },
+  "scope": "docs/",
+  "summary": "GitHub Pages is not enabled on the repo (gh api 404, checked 2026-08-27) — deploy workflow needs Dave to flip Settings → Pages → source: GitHub Actions.",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-01T21:26:22.319Z"
+}

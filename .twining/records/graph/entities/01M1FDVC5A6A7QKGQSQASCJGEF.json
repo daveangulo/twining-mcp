@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-01T21:26:22.122Z",
+  "id": "01M1FDVC5A6A7QKGQSQASCJGEF",
+  "name": "01M1FDVC1RVM1STENGGGMS9CFH",
+  "properties": {
+    "scope": "docs/",
+    "summary": "Chose to copy the 15-file research corpus into gitignored .planning/docs-site-research/ rather than committing it or leaving it in the session scratchpad"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-01T21:26:22.122Z"
+}

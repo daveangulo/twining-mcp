@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: on the FILES backend a missing decisions/index.json breaks create/updateStatus/linkCommit (proper-lockfile lstat ENOENT) as well as every index read; only repair_index execute or migrate recovers it — any advice to gitignore v1 files must be backend-conditional",
+  "entry_type": "warning",
+  "id": "01M1045NN7JBRSJMNPJG61QGV4",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3543dc6926935445c621026a55c88843f720a1cf",
+    "recorded_at": "2026-08-26T22:48:37.268Z"
+  },
+  "scope": "src/storage/",
+  "summary": "on the FILES backend a missing decisions/index.json breaks create/updateStatus/linkCommit (proper-lockfile lstat ENOENT) as well as every index read; only repair_index execute or migrate recovers i…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-08-26T22:48:37.287Z"
+}

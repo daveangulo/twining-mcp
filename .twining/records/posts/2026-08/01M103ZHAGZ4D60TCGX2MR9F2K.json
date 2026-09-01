@@ -1,0 +1,21 @@
+{
+  "agent_id": "main",
+  "detail": "Probe (scratchpad gitignore-probe.mjs against a tsc build of HEAD 3543dc6, Node 25.8.1): FILES backend — after removing decisions/index.json, graph/entities.json, graph/relations.json but keeping decisions/<id>.json: get(id) OK; getByScope/getIndex THROW ENOENT (readJSON rethrows non-SyntaxError); create/updateStatus THROW ENOENT from proper-lockfile lstat on the missing index; getEntities/getRelations return [] and the first addEntity recreates empty graph files (private divergent graph, new ULIDs). repairIndexDesync(true) reported orphan_ids=[id], repaired=1, after which getByScope and create work. SQLITE backend — the scaffold writes the three v1 files as [] and the sqlite write path never touches them (still [] after decision+entity+relation writes; no decisions/<id>.json legacy file written); after deleting the three files and twining.db* but keeping records/, resolveAutoBackend → sqlite/sqlite-state, createStores → legacy_unread=false, records_unread=false, getByScope returns the decision, entities=2, relations=1, create works, and the three files are NOT recreated. Context: Dave asked whether a project gitignoring those three files would have issues; answer branches on backend.",
+  "entry_type": "finding",
+  "id": "01M103ZHAGZ4D60TCGX2MR9F2K",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3543dc6926935445c621026a55c88843f720a1cf",
+    "recorded_at": "2026-08-26T22:45:16.215Z"
+  },
+  "scope": "src/storage/",
+  "summary": "Verified: FILES backend clone missing decisions/index.json throws ENOENT on every index read AND on create/updateStatus; repair_index rebuilds it losslessly. On SQLITE the three v1 files are inert.",
+  "tags": [
+    "gitignore",
+    "files-backend",
+    "sqlite-backend",
+    "index-desync",
+    "verified"
+  ],
+  "timestamp": "2026-08-26T22:45:16.241Z"
+}

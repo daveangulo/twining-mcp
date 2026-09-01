@@ -1,0 +1,21 @@
+{
+  "agent_id": "main",
+  "detail": "Found while answering whether a fully-migrated v2 project can gitignore decisions/index.json, graph/entities.json, graph/relations.json. src/migrate/forward.ts calls legacy.decisionStore.getIndex() at the dry-run branch, the check-only branch, and the forward export loop — all before the decisions/*.json directory scan that salvages orphans — and src/migrate/verify.ts:67 does the same; DecisionStore.getIndex() rethrows ENOENT when index.json is missing (readJSON only retries SyntaxError), so cli.ts catches and exits 2. Consequence: on any clone where index.json is gitignored/absent, `npx twining-mcp migrate --check` and a forward re-run (the documented remedy for straggler writes from an old-Node files-fallback teammate, docs/UPGRADE-v2.md) cannot run. At runtime the sqlite backend is unaffected (verified by probe). Fix shape if wanted: treat a missing index as [] in the migrate/verify read paths (mirror repairIndexDesync's getIndex().catch(() => [])) and let the directory scan carry the salvage. Also noted by the adversarial verify pass: with index.json absent the startup amnesia check falls from the 2.16.0 id-precise branch to COUNT(*)===0 (backend-factory.ts:176-188), and `migrate --reverse` writes index.json locally but it never reaches git.",
+  "entry_type": "warning",
+  "id": "01M104D3FY1ZCEHANQTB1D0PJ2",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3543dc6926935445c621026a55c88843f720a1cf",
+    "recorded_at": "2026-08-26T22:52:40.806Z"
+  },
+  "scope": "src/migrate/",
+  "summary": "migrate --dry-run/--check/forward re-run exit 2 (ENOENT) when decisions/index.json is absent — legacy getIndex runs unguarded before the orphan scan, so salvage only heals PARTIAL desync",
+  "tags": [
+    "migrate",
+    "index-desync",
+    "gitignore",
+    "latent-defect",
+    "verified"
+  ],
+  "timestamp": "2026-08-26T22:52:40.830Z"
+}

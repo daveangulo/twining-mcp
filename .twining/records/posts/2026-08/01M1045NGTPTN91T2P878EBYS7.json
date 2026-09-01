@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Answered Dave's question on gitignoring decisions/index.json + graph/entities.json + graph/relations.json: inert on a fully-migrated sqlite project (empirically probed), load-bearing on the files backend. No code changed.\nFindings: On the sqlite backend the v1 files decisions/index.json, graph/entities.json, graph/relations.json are never read or written after initTwiningDir scaffolds them as [] — only legacyContentTiers (advisory amnesia check) and src/migrate touch them; a clone lacking them boots from records/ with legacy_unread=false (probe: scratchpad gitignore-probe.mjs, HEAD 3543dc6); initTwiningDir still scaffolds the three empty v1 files for sqlite-backend projects (src/storage/init.ts:99-112) — harmless noise, but it is why fresh v2 projects commit empty index.json/entities.json/relations.json; warning: on the FILES backend a missing decisions/index.json breaks create/updateStatus/linkCommit (proper-lockfile lstat ENOENT) as well as every index read; only repair_index execute or migrate recovers it — any advice to gitignore v1 files must be backend-conditional",
+  "entry_type": "status",
+  "id": "01M1045NGTPTN91T2P878EBYS7",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3543dc6926935445c621026a55c88843f720a1cf",
+    "recorded_at": "2026-08-26T22:48:37.125Z"
+  },
+  "scope": "src/storage/",
+  "summary": "Answered Dave's question on gitignoring decisions/index.json + graph/entities.json + graph/relations.json: inert on a fully-migrated sqlite project (empirically probed), load-bearing on the files b…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-08-26T22:48:37.146Z"
+}

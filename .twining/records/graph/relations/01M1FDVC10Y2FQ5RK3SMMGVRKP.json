@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-01T21:26:21.984Z",
+  "id": "01M1FDVC10Y2FQ5RK3SMMGVRKP",
+  "properties": {
+    "decision_summary": "Chose to generate the site's tool reference from the server registry via the stub-server pattern (extract-tools.mjs → tools.json, CI freshness diff) rather than hand-write tables guarded by extending plugin-tool-references.test.ts",
+    "origin": "derived"
+  },
+  "source": "01M1FDVBW3Y4FN82EHT7HKAP4Z",
+  "target": "01M1FDVC0Y2S9GCJ8WWVNWQNAW",
+  "type": "decided_by"
+}

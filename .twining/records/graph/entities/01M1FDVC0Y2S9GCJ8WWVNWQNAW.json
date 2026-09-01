@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-01T21:26:21.982Z",
+  "id": "01M1FDVC0Y2S9GCJ8WWVNWQNAW",
+  "name": "01M1FDVBX25N39YJNPP97H2EX1",
+  "properties": {
+    "scope": "docs/",
+    "summary": "Chose to generate the site's tool reference from the server registry via the stub-server pattern (extract-tools.mjs → tools.json, CI freshness diff) rather than hand-write tables guarded by extending plugin-tool-references.test.ts"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-01T21:26:21.982Z"
+}

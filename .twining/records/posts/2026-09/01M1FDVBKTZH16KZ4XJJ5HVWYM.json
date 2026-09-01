@@ -1,0 +1,21 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Wrote the docs-site design spec (docs/superpowers/specs/2026-09-01-docs-site-design.md): VitePress site under docs/site/, ~29 pages, generated tool tables, candid evolution chapter, stale-docs fix wave.\nDecisions: [object Object]; [object Object]; [object Object]\nFindings: Research corpus for the docs site lives at .planning/docs-site-research/ (15 files, cites at HEAD 3543dc6): per-lane notes + _critic.md arbitrating 10 cross-lane contradictions. Canonical counts: 39 registered tools, 15 default, 24 full-surface-gated, 8 lite; no v1.9.0 or v2.3.0 git tag exists.; warning: twining_verify declares fail_on in its schema (src/tools/verify-tools.ts:40-55) but VerifyEngine never reads it — dead parameter at HEAD; also schema says checks default 'all' while engine default is ['warnings','assembly','drift'] (src/engine/verify.ts:28-29). Docs fix wave aligns the text; the dead param itself needs a code decision.; warning: the dashboard Insights Tool Usage table calls an undefined formatTime() (src/dashboard/public/app.js:1970, never defined since the 6950e26 analytics commit) — statically cannot render rows, error silently swallowed. Docs site will not claim that table works; needs a code fix.; upstream anthropics/claude-code#11927 (project settings.json env not delivered to plugin MCP servers) still OPEN, repro 2026-08-19 on CC 2.1.235 — docs must teach exported-env TWINING_PROJECT placement, not the settings.json snippet at README.md:230.; GitHub Pages is not enabled on the repo (gh api 404, checked 2026-08-27) — deploy workflow needs Dave to flip Settings → Pages → source: GitHub Actions.",
+  "entry_type": "status",
+  "id": "01M1FDVBKTZH16KZ4XJJ5HVWYM",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3543dc6926935445c621026a55c88843f720a1cf",
+    "recorded_at": "2026-09-01T21:26:21.540Z"
+  },
+  "relates_to": [
+    "01M11XB7AGN1KAJ47A3E9WDWV1"
+  ],
+  "scope": "docs/",
+  "summary": "Wrote the docs-site design spec (docs/superpowers/specs/2026-09-01-docs-site-design.md): VitePress site under docs/site/, ~29 pages, generated tool tables, candid evolution chapter, stale-docs fix …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-01T21:26:21.562Z"
+}

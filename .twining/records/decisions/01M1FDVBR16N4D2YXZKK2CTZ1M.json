@@ -1,0 +1,41 @@
+{
+  "affected_files": [
+    "docs/superpowers/specs/2026-09-01-docs-site-design.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "B: exhaustive per-tool pages (39)",
+      "pros": [],
+      "reason_rejected": "doubles hand-written surface; per-tool schema detail already carried by generated tables; revisit trigger recorded in spec §12"
+    },
+    {
+      "cons": [],
+      "option": "C: slim 8-10 page guide",
+      "pros": [],
+      "reason_rejected": "fails the 'what the tool surface actually does' requirement — exactly the gap the existing reference leaves"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Wrote the docs-site design spec (docs/superpowers/specs/2026-09-01-docs-site-design.md): VitePress site under docs/site/, ~29 pages, generated tool tables, candid evolution chapter, stale-docs fix wave.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M1FDVBR16N4D2YXZKK2CTZ1M",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3543dc6926935445c621026a55c88843f720a1cf",
+    "recorded_at": "2026-09-01T21:26:21.676Z"
+  },
+  "rationale": "Mechanism-level prose clusters by concept, not by tool atom — record's NL parser, assemble's scoring pipeline read better grouped; generated tables kill the table-rot class that produced three stale tool counts in the repo. B doubles hand-written rot surface to restate what generated tables carry; C fails the explicit requirement to explain what tools actually do. Dave approved 2026-08-31 with the stale-docs fix wave included.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/",
+  "status": "active",
+  "summary": "Chose approach A (curated ~29-page narrative site with build-time-generated tool tables) over B (39 per-tool pages) and C (slim guide)",
+  "timestamp": "2026-09-01T21:26:21.698Z"
+}

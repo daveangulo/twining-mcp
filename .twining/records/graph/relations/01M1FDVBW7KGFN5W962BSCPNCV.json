@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-01T21:26:21.831Z",
+  "id": "01M1FDVBW7KGFN5W962BSCPNCV",
+  "properties": {
+    "decision_summary": "Chose approach A (curated ~29-page narrative site with build-time-generated tool tables) over B (39 per-tool pages) and C (slim guide)",
+    "origin": "derived"
+  },
+  "source": "01M1FDVBW3Y4FN82EHT7HKAP4Z",
+  "target": "01M1FDVBW3Y4FN82EHT7HKAP4Y",
+  "type": "decided_by"
+}

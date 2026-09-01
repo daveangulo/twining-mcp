@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: twining_verify declares fail_on in its schema (src/tools/verify-tools.ts:40-55) but VerifyEngine never reads it — dead parameter at HEAD; also schema says checks default 'all' while engine default is ['warnings','assembly','drift'] (src/engine/verify.ts:28-29). Docs fix wave aligns the text; the dead param itself needs a code decision.",
+  "entry_type": "warning",
+  "id": "01M1FDVC7FCCH519QZDZGQQY5M",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3543dc6926935445c621026a55c88843f720a1cf",
+    "recorded_at": "2026-09-01T21:26:22.170Z"
+  },
+  "scope": "docs/",
+  "summary": "twining_verify declares fail_on in its schema (src/tools/verify-tools.ts:40-55) but VerifyEngine never reads it — dead parameter at HEAD; also schema says checks default 'all' while engine default …",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-01T21:26:22.191Z"
+}

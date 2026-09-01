@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: the dashboard Insights Tool Usage table calls an undefined formatTime() (src/dashboard/public/app.js:1970, never defined since the 6950e26 analytics commit) — statically cannot render rows, error silently swallowed. Docs site will not claim that table works; needs a code fix.",
+  "entry_type": "warning",
+  "id": "01M1FDVC8XPTK7ZZ5GA9GWXGTB",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "3543dc6926935445c621026a55c88843f720a1cf",
+    "recorded_at": "2026-09-01T21:26:22.216Z"
+  },
+  "scope": "docs/",
+  "summary": "the dashboard Insights Tool Usage table calls an undefined formatTime() (src/dashboard/public/app.js:1970, never defined since the 6950e26 analytics commit) — statically cannot render rows, error s…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-01T21:26:22.237Z"
+}
