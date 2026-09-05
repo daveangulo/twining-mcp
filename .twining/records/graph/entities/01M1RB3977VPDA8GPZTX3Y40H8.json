@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-05T08:31:25.415Z",
+  "id": "01M1RB3977VPDA8GPZTX3Y40H8",
+  "name": "01M1RB394QDXR9WD9CK4D30W05",
+  "properties": {
+    "scope": "docs/plans/",
+    "summary": "Any git working-tree probe runs as `git --no-optional-locks status`, TTL-cached by projectRoot with the upstream sha in the key, invoked only from twining_status and the assemble path — never from the per-dispatch wrapper"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-05T08:31:25.415Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-05T08:31:25.416Z",
+  "id": "01M1RB3978CPC9N45RZZG604G5",
+  "properties": {
+    "decision_summary": "Any git working-tree probe runs as `git --no-optional-locks status`, TTL-cached by projectRoot with the upstream sha in the key, invoked only from twining_status and the assemble path — never from the per-dispatch wrapper",
+    "origin": "derived"
+  },
+  "source": "01M1RB38WRV76D1H7BQ8H440EF",
+  "target": "01M1RB3977VPDA8GPZTX3Y40H8",
+  "type": "decided_by"
+}

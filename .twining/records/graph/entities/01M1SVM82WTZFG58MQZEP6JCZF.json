@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-05T22:39:32.956Z",
+  "id": "01M1SVM82WTZFG58MQZEP6JCZF",
+  "name": "01M1SVM808QG0MK16436P4SW7B",
+  "properties": {
+    "scope": "docs/",
+    "summary": "Published AUTO-SAFE class stays add/add only; the disjoint-key row now states the adjacency condition (a new key that sorts last rewrites the previous line's trailing comma and conflicts) instead of 'usually merges cleanly'"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-05T22:39:32.956Z"
+}

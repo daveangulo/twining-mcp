@@ -1,0 +1,58 @@
+{
+  "affected_files": [
+    "docs/plans/2026-09-05-cross-host-sync-plan.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Auto-stage .twining/records in the PreToolUse git-commit hook",
+      "pros": [],
+      "reason_rejected": "exit 128 from worktrees; 5 s hook timeout vs thousand-file stages; welds records into the commit they describe"
+    },
+    {
+      "cons": [],
+      "option": "twining-mcp drain --commit as a wave rider",
+      "pros": [],
+      "reason_rejected": "Boundary decision (DD-13), not a rider; failure is topology, which a CLI on the same host does not change"
+    },
+    {
+      "cons": [],
+      "option": "Fetch inside the sync probe so behind is real",
+      "pros": [],
+      "reason_rejected": "Network and credentials inside a tool call; assemble hangs on a dead remote"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "Only items #3 and #4 of the field's 2026-09-04 document are addressed to us",
+    "Both field stores are sqlite-era (records/ present); the chassis store's backend is unknown and asked",
+    "The read-audit release train W2→W5 remains the train of record; the A-batch send is still pending",
+    "The field runs the plugin; their launcher rung is unknown, so whether a server release reaches them automatically is unknown"
+  ],
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [
+    "Named design decisions (DD-6, DD-8, DD-11) are never patched inside waves",
+    "The owner-approved warn-and-fallback on old Node (01KWT0FEW6ETY4GD1G3C273Z3Y) forbids a fail-closed default",
+    "Git is the transport (01KWK9KTZGR2V148HJJ2CGY3ZY) — the server never commits; any committing path is a decision",
+    "Pre-tag adversarial review before every tag; every response field additive and optional-spread"
+  ],
+  "context": "Planned the response to field report 2026-09-04 items #3/#4 (cross-host sync, merge conflicts, old-Node ENOENT): docs/plans/2026-09-05-cross-host-sync-plan.md — DRAFT awaiting Dave's rulings; nothing implemented or sent",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01M1RB38Z75MBP18284TEB6F4K",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d649ec450e01028174ebaebcbe2defa9190cb41c",
+    "recorded_at": "2026-09-05T08:31:25.139Z"
+  },
+  "rationale": "V6 EXECUTED: hook auto-staging is structurally impossible from a linked worktree (git add of the main-checkout path → exit 128 'outside repository'); server-side commits race the agent's index and double-commit with two servers; a committing CLI is unprecedented and needs credentials Twining does not hold — so the transport boundary is minted as DD-13 rather than built. Disclosure is also the precondition for the field to verify that drain-on-every-host closes the window.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/plans/",
+  "status": "active",
+  "summary": "Chose disclosure-first for #3 (sync block on twining_status + one-line assemble caveat, local-only git state) over any mechanism that commits or stages records for the operator",
+  "timestamp": "2026-09-05T08:31:25.159Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-05T08:31:25.789Z",
+  "id": "01M1RB39JXM5X5N3ZPTHBV0S44",
+  "properties": {
+    "decision_summary": "Amend the W2 lineage bundle before it ships: lineage_unresolved only for status superseded (or archived_from superseded) with no pointer either way; a claimant-less overridden record is a resolved veto and gets no lineage flag; overridden_by/override_reason projected wherever superseded_by is",
+    "origin": "derived"
+  },
+  "source": "01M1RB38WRV76D1H7BQ8H440EF",
+  "target": "01M1RB39JV7T2Z0655H9QEPHNQ",
+  "type": "decided_by"
+}

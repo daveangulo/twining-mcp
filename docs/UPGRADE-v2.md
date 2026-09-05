@@ -64,10 +64,57 @@ Default is **off**: auto-running would surprise-mutate a tracked `config.yml` an
 
 ## Contract change: read-time contradiction surfacing
 
-v2's sync model is set-union by construction: records are immutable ULID-named files, and a git merge is "both sets of files land," conflict-free. The consequence (FOUNDATION-PLAN D3): **contradictory decisions from two branches now coexist**, labeled by provenance, instead of colliding at merge time.
+v2's sync model is set-union by construction for record **creates**: every record is a ULID-named file, so two branches that add records merge as "both sets of files land" with no conflict. Mutations are **not** conflict-free — a status change, supersede, link_commit, amend, resolve, acknowledge, or entity upsert rewrites the same ULID file in place, so two hosts that mutate the same record between syncs can produce a textual conflict on that file (see "Merging `.twining`" below). The consequence (FOUNDATION-PLAN D3): **contradictory decisions from two branches now coexist**, labeled by provenance, instead of colliding at merge time.
 
 - `twining_assemble` and housekeeping surface cross-branch contradictions; the staleness/reconsider flow archives the losers.
 - This is correct blackboard semantics — both decisions *were* made. What changes is where you deal with it: at read time, guided by the tools, not in a git conflict marker.
+
+## Working across machines
+
+Git is the only channel between hosts. A decision recorded on host A exists only in A's `twining.db` and A's `.twining/records/` mirror until that mirror is **committed and pushed**. Host B sees it after a `git pull` that moves HEAD — the server re-ingests within 5 seconds of the next tool call — or on its next server start. `git fetch` alone changes nothing. Until then, `twining_assemble` and `twining_why` on host B return an **empty** result for that decision, not an error: from B's point of view the decision does not exist yet.
+
+The server never commits or pushes. Every host that writes must commit its mirror, from the **main checkout** (a session in a linked git worktree writes its records into the main checkout's tree, unless `TWINING_WORKTREE_LOCAL=true` or an explicit `--project` / `TWINING_PROJECT` points elsewhere):
+
+```sh
+ROOT=$(cd "$(git rev-parse --git-common-dir)/.." && pwd)   # the main checkout, even when run from a linked worktree
+git -C "$ROOT" pull --ff-only || exit 1                    # non-fast-forward, no upstream, or fetch failure: do not drain
+git -C "$ROOT" rev-parse -q --verify MERGE_HEAD >/dev/null && exit 1
+git -C "$ROOT" add -- .twining/records ':(exclude).twining/records/*.tmp'
+for f in .twining/config.yml .twining/.gitignore; do if [ -f "$ROOT/$f" ]; then git -C "$ROOT" add -- "$f"; fi; done
+git -C "$ROOT" diff --cached --quiet || git -C "$ROOT" commit -qm 'twining: records mirror'
+git -C "$ROOT" push
+```
+
+Add only those paths — not `git add -A .twining`. Keep the `*.tmp` exclude anchored to the directory exactly as written: a bare `:(exclude)*.tmp` makes `git add` skip every untracked file (measured on git 2.50), so new records would never be committed. The exclude exists because the server writes each record atomically through a `<file>.<pid>.<rand>.tmp` sibling; older servers do not gitignore that sibling, so a commit racing a write can stage it — the exclude makes the recipe safe on every version.
+
+To see what this host holds that no other host can see yet:
+
+```sh
+git --no-optional-locks status --porcelain --untracked-files=all -- .twining/records | wc -l   # unshared records
+git rev-list --left-right --count HEAD...@{u} 2>/dev/null || echo 'no upstream'   # unpushed / unpulled, as of the last fetch
+```
+
+Do not substitute `git diff-index --quiet HEAD` for the first line: it reports every file whose mtime changed as modified, even when the content did not.
+
+## Merging `.twining`
+
+What git can and cannot merge inside `.twining/`, measured with two clones on git 2.50:
+
+| Situation | Result | Class |
+|---|---|---|
+| Two hosts each ADD records (distinct ULID files) | clean merge, both land | auto-safe |
+| Two hosts mutate the SAME record, non-overlapping keys | merges cleanly into valid JSON only when the edited lines are not adjacent (keys are sorted, one per line); a new key that sorts last rewrites the previous line's trailing comma and conflicts | treat as human until verified per verb pair |
+| Two hosts mutate the SAME record, overlapping keys (both change `status`) | conflict markers; the file no longer parses | human |
+| One host deletes a record (dismiss, prune), the other edits it | modify/delete conflict | human |
+| Any conflict in `decisions/index.json`, `graph/entities.json`, `graph/relations.json`, `agents/registry.json`, `handoffs/index.jsonl`, `blackboard.jsonl`, `config.yml` | no safe textual merge exists | human, or untrack (below) |
+
+Rules that follow:
+
+- **Never apply `merge=union` to any JSON file.** On a per-record file it produces invalid JSON; on an array aggregate it produces output that PARSES with a duplicate key and silently drops an entry — worse than a conflict. `-X ours` / `-X theirs` drops one side without a trace.
+- **Never leave conflict markers in a record file.** A record file the server cannot parse must be repaired before any server ingests the tree; a record file that is absent is treated as deleted. When an automated merge queue evicts a conflicted entry, resolve the path (`git checkout --ours -- <path> && git add <path>`) or abort the merge — a bare `checkout --ours` leaves the path unmerged and blocks the next commit.
+- **Optional, for pipelines that cannot guarantee marker-free eviction:** add `records/**/*.json -merge` to `.twining/.gitattributes`. Git then keeps "ours" as valid JSON and flags the path as unmerged instead of writing markers — at the cost of also refusing the non-overlapping edits it would otherwise merge cleanly. Twining does not set this by default.
+- **The shipped `blackboard.jsonl merge=union` attribute is for file-backend stores.** On a sqlite-era store `blackboard.jsonl` is frozen and the line is inert; leave it.
+- **Frozen v1 aggregates on a sqlite-era store only conflict.** After `twining-mcp migrate`, the sqlite backend never writes `decisions/index.json`, `graph/entities.json`, `graph/relations.json`, `agents/registry.json`, `blackboard.jsonl`, or `handoffs/index.jsonl` again; the only writers that can move them are a host that fell back to the file backend (Node older than 22.13) and an explicit `twining-mcp migrate --reverse`. Once **every** host serving the store runs Node >= 22.13, you may untrack them: `git rm --cached` the ones that are tracked and commit. Do this earlier and a host that falls back to the file backend fails on every decision tool, because that backend requires `decisions/index.json`, and a plain `git pull` on a clean clone removes the working-tree copy of any file the pulled commit untracked.
 
 ## Deprecated in v2.0: `twining_handoff` / `twining_acknowledge`
 

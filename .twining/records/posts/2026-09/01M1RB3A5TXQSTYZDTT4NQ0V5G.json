@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: The W2 lineage wording already committed to the field (docs/field-responses/2026-08-23-wave2-verification-response.md:266 'rows where neither pointer resolves carry lineage_unresolved: true') would label every pure veto a lineage hole in 2.17.0; our Doc 2 :50 also wrote 'superseded_by: null' though nothing writes null (V4)",
+  "entry_type": "finding",
+  "id": "01M1RB3A5TXQSTYZDTT4NQ0V5G",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d649ec450e01028174ebaebcbe2defa9190cb41c",
+    "recorded_at": "2026-09-05T08:31:26.367Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "The W2 lineage wording already committed to the field (docs/field-responses/2026-08-23-wave2-verification-response.md:266 'rows where neither pointer resolves carry lineage_unresolved: true') would…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-05T08:31:26.394Z"
+}

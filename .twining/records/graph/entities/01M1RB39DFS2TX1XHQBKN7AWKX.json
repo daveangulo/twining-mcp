@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-05T08:31:25.615Z",
+  "id": "01M1RB39DFS2TX1XHQBKN7AWKX",
+  "name": "01M1RB39AVFHTPZ39Z0NCG2WCF",
+  "properties": {
+    "scope": "docs/plans/",
+    "summary": "Minted three design decisions without building: DD-12 (mutation & conflict model for records/**: status quo vs event-sourced per FOUNDATION-PLAN D2 vs revision stamp + resolver), DD-13 (transport boundary — server process never commits; CLI only on explicit flag), and a DD-6/DD-11 joint question (fallback policy on old Node: refuse knob vs read-only records view)"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-05T08:31:25.615Z"
+}

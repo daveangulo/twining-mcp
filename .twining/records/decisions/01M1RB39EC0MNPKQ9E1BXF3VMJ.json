@@ -1,0 +1,52 @@
+{
+  "affected_files": [
+    "docs/plans/2026-09-05-cross-host-sync-plan.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "-merge as the shipped default with a gitattributes reconcile",
+      "pros": [],
+      "reason_rejected": "Regresses legitimately clean merges to buy protection ingest retention already provides"
+    },
+    {
+      "cons": [],
+      "option": "Publish the deterministic-resolver rule table now",
+      "pros": [],
+      "reason_rejected": "Partial by construction (no mutation timestamp, rank-2 ties, provisional/active after reconsider) — input to DD-12 only"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "Only items #3 and #4 of the field's 2026-09-04 document are addressed to us",
+    "Both field stores are sqlite-era (records/ present); the chassis store's backend is unknown and asked",
+    "The read-audit release train W2→W5 remains the train of record; the A-batch send is still pending",
+    "The field runs the plugin; their launcher rung is unknown, so whether a server release reaches them automatically is unknown"
+  ],
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [
+    "Named design decisions (DD-6, DD-8, DD-11) are never patched inside waves",
+    "The owner-approved warn-and-fallback on old Node (01KWT0FEW6ETY4GD1G3C273Z3Y) forbids a fail-closed default",
+    "Git is the transport (01KWK9KTZGR2V148HJJ2CGY3ZY) — the server never commits; any committing path is a decision",
+    "Pre-tag adversarial review before every tag; every response field additive and optional-spread"
+  ],
+  "context": "Planned the response to field report 2026-09-04 items #3/#4 (cross-host sync, merge conflicts, old-Node ENOENT): docs/plans/2026-09-05-cross-host-sync-plan.md — DRAFT awaiting Dave's rulings; nothing implemented or sent",
+  "depends_on": [],
+  "domain": "documentation",
+  "id": "01M1RB39EC0MNPKQ9E1BXF3VMJ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d649ec450e01028174ebaebcbe2defa9190cb41c",
+    "recorded_at": "2026-09-05T08:31:25.621Z"
+  },
+  "rationale": "EXECUTED matrix: default git auto-merges disjoint-key same-record edits into valid JSON (one verb pair verified), overlapping keys conflict, union corrupts a record and silently drops an aggregate entry, -X drops a side, -merge regresses clean disjoint merges to human conflicts. Publishing 'any clean merge is safe' on one executed pair would invite the field to widen tier-A on an unverified claim.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/plans/",
+  "status": "active",
+  "summary": "Conflict-class contract for the field's autonomous merge tier: AUTO-SAFE = add/add of distinct ULID files only, until a semantic merge-matrix test lands; `records/**/*.json -merge` offered as an opt-in recipe, never a Twining default; merge=union never extended to any JSON",
+  "timestamp": "2026-09-05T08:31:25.644Z"
+}

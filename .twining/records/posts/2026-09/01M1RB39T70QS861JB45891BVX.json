@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: repairIndexDesync cannot recreate decisions/index.json when there are zero legacy decision files (early returns at src/storage/decision-store.ts:222-237 precede the ensureFileExists at :245), and `twining-mcp migrate` itself ENOENTs on such a store (src/migrate/forward.ts:127/168) — a pure sqlite-era clone on old Node is unrecoverable from inside Twining (V1 EXECUTED)",
+  "entry_type": "finding",
+  "id": "01M1RB39T70QS861JB45891BVX",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d649ec450e01028174ebaebcbe2defa9190cb41c",
+    "recorded_at": "2026-09-05T08:31:25.995Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "repairIndexDesync cannot recreate decisions/index.json when there are zero legacy decision files (early returns at src/storage/decision-store.ts:222-237 precede the ensureFileExists at :245), and `…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-05T08:31:26.023Z"
+}

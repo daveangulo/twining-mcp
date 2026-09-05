@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-05T08:31:25.905Z",
+  "id": "01M1RB39PH2Q12ZKKRAN2QA6ZV",
+  "name": "01M1RB39KS651HNKH4H72EHNKV",
+  "properties": {
+    "scope": "docs/plans/",
+    "summary": "Ingest retention is recorded as a narrow, named exception to DD-8: an unreadable or mis-keyed record file is not a file and cannot 'win'; precedence for parseable files is unchanged"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-05T08:31:25.905Z"
+}

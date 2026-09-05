@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-05T08:31:25.079Z",
+  "id": "01M1RB38WQ798VZ2F7XX0GNPKJ",
+  "name": "01M1RB38V2SEW1010VBZY6EDG3",
+  "properties": {
+    "scope": "docs/plans/",
+    "summary": "Treat field items #3 and #4 as two distinct failure shapes (transport lag → EMPTY sqlite read; old-Node fallback → LOUD ENOENT) and answer them separately rather than under the report's single 'fix is Node' framing"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-05T08:31:25.079Z"
+}

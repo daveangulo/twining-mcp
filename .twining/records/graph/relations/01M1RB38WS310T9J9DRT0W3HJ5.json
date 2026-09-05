@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-05T08:31:25.081Z",
+  "id": "01M1RB38WS310T9J9DRT0W3HJ5",
+  "properties": {
+    "decision_summary": "Treat field items #3 and #4 as two distinct failure shapes (transport lag → EMPTY sqlite read; old-Node fallback → LOUD ENOENT) and answer them separately rather than under the report's single 'fix is Node' framing",
+    "origin": "derived"
+  },
+  "source": "01M1RB38WRV76D1H7BQ8H440EF",
+  "target": "01M1RB38WQ798VZ2F7XX0GNPKJ",
+  "type": "decided_by"
+}

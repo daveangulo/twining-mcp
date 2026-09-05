@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-05T08:31:25.669Z",
+  "id": "01M1RB39F5ZH2NFN4DSJXWEXHA",
+  "properties": {
+    "decision_summary": "Conflict-class contract for the field's autonomous merge tier: AUTO-SAFE = add/add of distinct ULID files only, until a semantic merge-matrix test lands; `records/**/*.json -merge` offered as an opt-in recipe, never a Twining default; merge=union never extended to any JSON",
+    "origin": "derived"
+  },
+  "source": "01M1RB38WRV76D1H7BQ8H440EF",
+  "target": "01M1RB39F385E62J5M1REZ1M4Y",
+  "type": "decided_by"
+}

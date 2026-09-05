@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Ingest retention is recorded as a narrow, named exception to DD-8: an unreadable or mis-keyed record file is not a file and cannot 'win'; precedence for parseable files is unchanged\" relates to:\n- 01M08Y6N5RVNYHHJNCXCWBN216: \"Chose FTS5+BM25 hybrid fusion (new DD-10 'retrieval v2': RRF fusion, sibling-session clustering, record-kind weighting) as THE semantic-matching improvement over an embedding-model swap\"\n- 01M1RB38V2SEW1010VBZY6EDG3: \"Treat field items #3 and #4 as two distinct failure shapes (transport lag → EMPTY sqlite read; old-Node fallback → LOUD ENOENT) and answer them separately rather than under the report's single 'fix is Node' framing\"\n- 01M1RB38Z75MBP18284TEB6F4K: \"Chose disclosure-first for #3 (sync block on twining_status + one-line assemble caveat, local-only git state) over any mechanism that commits or stages records for the operator\"\n- 01M1RB39AVFHTPZ39Z0NCG2WCF: \"Minted three design decisions without building: DD-12 (mutation & conflict model for records/**: status quo vs event-sourced per FOUNDATION-PLAN D2 vs revision stamp + resolver), DD-13 (transport boundary — server process never commits; CLI only on explicit flag), and a DD-6/DD-11 joint question (fallback policy on old Node: refuse knob vs read-only records view)\"",
+  "entry_type": "finding",
+  "id": "01M1RB39MJ3PZ7NRSQ7ZFFXM22",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d649ec450e01028174ebaebcbe2defa9190cb41c",
+    "recorded_at": "2026-09-05T08:31:25.818Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "Related decisions in scope: 4 existing decision(s) overlap",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-09-05T08:31:25.842Z"
+}

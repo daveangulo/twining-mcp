@@ -343,6 +343,8 @@ Guidance from measuring real projects, including one with 2,300+ decisions. Thes
 
 All state lives in `.twining/` as plain, committable files. Everything is `jq`-queryable, `grep`-able, and git-diffable. No cloud. No accounts. Since v2, new projects default to the local SQLite backend — the database itself is a gitignored derived cache; the committed truth is a per-record JSON export tree (`.twining/records/`). Existing file-backend projects keep the JSONL/JSON layout and change nothing until you run `twining-mcp migrate` (see "Migrating to the SQLite Backend" below).
 
+**Across machines, git is the only channel.** A decision recorded on one host exists only in that host's `twining.db` and its `.twining/records/` mirror until the mirror is committed and pushed. Another host sees it after a `git pull` that moves HEAD (the server re-ingests within 5 seconds of the next tool call) or on its next server start; `git fetch` alone changes nothing. Until then `twining_assemble` and `twining_why` on the other host return an empty result for that decision, not an error. The server never commits or pushes — commit `.twining/records/` on every host that writes; the exact recipe, the merge rules for `.twining/`, and what can and cannot conflict are in [docs/UPGRADE-v2.md](docs/UPGRADE-v2.md#working-across-machines). In a linked git worktree the mirror is written into the main checkout's tree, unless `TWINING_WORKTREE_LOCAL=true` or an explicit `--project` / `TWINING_PROJECT` points elsewhere (see "Git Worktrees & Agent Teams" above).
+
 **Architecture layers:**
 
 - **Storage** — File-backed stores with locking for concurrent access

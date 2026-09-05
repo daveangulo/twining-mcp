@@ -1,0 +1,52 @@
+{
+  "affected_files": [
+    "docs/plans/2026-09-05-cross-host-sync-plan.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Tolerant read + desync warning in status",
+      "pros": [],
+      "reason_rejected": "Only helps if the agent calls status; Gate 1 is assemble"
+    },
+    {
+      "cons": [],
+      "option": "Recreate index.json at boot for existing stores",
+      "pros": [],
+      "reason_rejected": "Contradicts init.ts:68-72; writes into a deliberately untracked tree; same amnesia shape"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "Only items #3 and #4 of the field's 2026-09-04 document are addressed to us",
+    "Both field stores are sqlite-era (records/ present); the chassis store's backend is unknown and asked",
+    "The read-audit release train W2→W5 remains the train of record; the A-batch send is still pending",
+    "The field runs the plugin; their launcher rung is unknown, so whether a server release reaches them automatically is unknown"
+  ],
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [
+    "Named design decisions (DD-6, DD-8, DD-11) are never patched inside waves",
+    "The owner-approved warn-and-fallback on old Node (01KWT0FEW6ETY4GD1G3C273Z3Y) forbids a fail-closed default",
+    "Git is the transport (01KWK9KTZGR2V148HJJ2CGY3ZY) — the server never commits; any committing path is a decision",
+    "Pre-tag adversarial review before every tag; every response field additive and optional-spread"
+  ],
+  "context": "Planned the response to field report 2026-09-04 items #3/#4 (cross-host sync, merge conflicts, old-Node ENOENT): docs/plans/2026-09-05-cross-host-sync-plan.md — DRAFT awaiting Dave's rulings; nothing implemented or sent",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M1RB391WHBV81QGHT4KVJT5F",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d649ec450e01028174ebaebcbe2defa9190cb41c",
+    "recorded_at": "2026-09-05T08:31:25.224Z"
+  },
+  "rationale": "Converts a LOUD failure on 16 tools into a quiet EMPTY — the fail-toward-quiet class the read audit indicted and the 2.16.0 S0 guard exists to prevent; V1 EXECUTED control with index '[]' rendered 'No active decisions' beside hundreds of records. The error translation must live inside DecisionStore (or a member-forwarding Proxy) so the duck-typed repairIndexDesync used by housekeeping and status is not hidden.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/plans/",
+  "status": "active",
+  "summary": "Rejected a tolerant index read (DecisionStore.getIndex returning [] when decisions/index.json is absent); the fallback host gets a named STORE_UNSERVABLE error with an explicit STOP directive instead",
+  "timestamp": "2026-09-05T08:31:25.244Z"
+}

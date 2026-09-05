@@ -3,8 +3,8 @@
   "id": "01KWMNHR416F2FYJZAX7X9Y6ZT",
   "name": "docs/FOUNDATION-PLAN.md",
   "properties": {
-    "scope": "src/migrate/"
+    "scope": "docs/,src/migrate/"
   },
   "type": "file",
-  "updated_at": "2026-07-03T21:41:40.260Z"
+  "updated_at": "2026-09-05T22:39:33.046Z"
 }

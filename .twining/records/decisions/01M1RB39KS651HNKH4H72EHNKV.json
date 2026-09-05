@@ -1,0 +1,39 @@
+{
+  "affected_files": [
+    "docs/plans/2026-09-05-cross-host-sync-plan.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "assumptions": [
+    "Only items #3 and #4 of the field's 2026-09-04 document are addressed to us",
+    "Both field stores are sqlite-era (records/ present); the chassis store's backend is unknown and asked",
+    "The read-audit release train W2→W5 remains the train of record; the A-batch send is still pending",
+    "The field runs the plugin; their launcher rung is unknown, so whether a server release reaches them automatically is unknown"
+  ],
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [
+    "Named design decisions (DD-6, DD-8, DD-11) are never patched inside waves",
+    "The owner-approved warn-and-fallback on old Node (01KWT0FEW6ETY4GD1G3C273Z3Y) forbids a fail-closed default",
+    "Git is the transport (01KWK9KTZGR2V148HJJ2CGY3ZY) — the server never commits; any committing path is a decision",
+    "Pre-tag adversarial review before every tag; every response field additive and optional-spread"
+  ],
+  "context": "Planned the response to field report 2026-09-04 items #3/#4 (cross-host sync, merge conflicts, old-Node ENOENT): docs/plans/2026-09-05-cross-host-sync-plan.md — DRAFT awaiting Dave's rulings; nothing implemented or sent",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01M1RB39KS651HNKH4H72EHNKV",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d649ec450e01028174ebaebcbe2defa9190cb41c",
+    "recorded_at": "2026-09-05T08:31:25.792Z"
+  },
+  "rationale": "Retaining the db row for a file that exists but cannot be read or whose id ≠ stem means db wins for that ULID until the file is repaired — a real if narrow exception to file-wins, so it is an evidence fold into the DD-8 decision, not a code comment. Absence still deletes, so deliberate removals (dismiss/removeEntities unlink the file) propagate unchanged.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/plans/",
+  "status": "active",
+  "summary": "Ingest retention is recorded as a narrow, named exception to DD-8: an unreadable or mis-keyed record file is not a file and cannot 'win'; precedence for parseable files is unchanged",
+  "timestamp": "2026-09-05T08:31:25.817Z"
+}

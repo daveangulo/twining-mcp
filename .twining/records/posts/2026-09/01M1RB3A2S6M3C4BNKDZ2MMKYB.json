@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: A 2.x point release is a plugin change by construction: `npm version` rebuilds plugin/server (package.json:21), the launcher execs the committed bundle first (plugin/scripts/launch-server.sh:7-13), CI requires a bump in both version files for any plugin/ diff (.github/workflows/ci.yml:14-49). No 2.x point release exists; v1.21.1/v1.24.1 are the precedents. scripts/measure-plugin-tokens.sh:24 counts only skills/agents — tool-description growth is unmeasured",
+  "entry_type": "finding",
+  "id": "01M1RB3A2S6M3C4BNKDZ2MMKYB",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d649ec450e01028174ebaebcbe2defa9190cb41c",
+    "recorded_at": "2026-09-05T08:31:26.268Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "A 2.x point release is a plugin change by construction: `npm version` rebuilds plugin/server (package.json:21), the launcher execs the committed bundle first (plugin/scripts/launch-server.sh:7-13),…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-05T08:31:26.297Z"
+}

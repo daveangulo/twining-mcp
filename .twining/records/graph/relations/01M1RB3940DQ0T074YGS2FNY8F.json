@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-05T08:31:25.312Z",
+  "id": "01M1RB3940DQ0T074YGS2FNY8F",
+  "properties": {
+    "decision_summary": "Rejected a tolerant index read (DecisionStore.getIndex returning [] when decisions/index.json is absent); the fallback host gets a named STORE_UNSERVABLE error with an explicit STOP directive instead",
+    "origin": "derived"
+  },
+  "source": "01M1RB38WRV76D1H7BQ8H440EF",
+  "target": "01M1RB393ZE0PB18DFZBD3T6SZ",
+  "type": "decided_by"
+}

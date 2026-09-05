@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: on a fallback host twining_record WITH decisions returns OK, writes the status post and the .last-record sentinel, and persists ZERO decisions — only decision_errors names it (src/tools/record-tools.ts:478-484); a session passes Gate 2 while losing every decision. housekeeping({}) returns fully green and search_decisions returns empty with fallback_mode:true in the same state",
+  "entry_type": "warning",
+  "id": "01M1RB39RVNTS9EVWP0455008Q",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d649ec450e01028174ebaebcbe2defa9190cb41c",
+    "recorded_at": "2026-09-05T08:31:25.951Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "on a fallback host twining_record WITH decisions returns OK, writes the status post and the .last-record sentinel, and persists ZERO decisions — only decision_errors names it (src/tools/record-tool…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-05T08:31:25.979Z"
+}

@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Docs batch for field #3/#4 written and review-fixed: Doc 4 response, UPGRADE-v2 multi-host + merging sections, README paragraph, FOUNDATION-PLAN D2/D5 annotations, Doc 2 errata; 3-lens read-only review applied\nDecisions: [object Object]; [object Object]; [object Object]; [object Object]\nFindings: warning: a bare `:(exclude)*.tmp` pathspec makes `git add <dir>` skip every UNTRACKED file under <dir> on git 2.50.1 while still staging modified tracked files, exit 0, no message (EXECUTED 2026-09-05, scratchpad/verify-pathspec-and-argv.sh). Any recipe or script using an unanchored exclude with git add silently drops new files. Anchor excludes to a directory prefix.; `node dist/index.js drain` (any non-flag word other than `migrate` as argv[2]) boots the full stdio server and creates a `.twining/` at the resolved project root — EXECUTED 2026-09-05 against a scratch TWINING_PROJECT (dashboard line on stderr, .twining created). The argv guard in 2.16.1 closes this.; Docs review (3 read-only lenses, 60 cites checked): 56 exact; 4 wrong or misattributed at first draft — housekeeping.ts:293-295 was the blackboard catch (decision-index reads are :302/:512 swallowed at :331-333/:544-546), decision-store.ts:65 is create() not the four lstat tools (:129/:175/:330), UPGRADE-v2 'conflict-free' sentence is :67 not :66, 'one line before the warnings array' was 56 lines off (:116). All fixed before commit.; Same verb pair (override on A + commit_hashes on B) both CONFLICTED (V5 gitexp3, tiny record) and merged cleanly (judge nomerge-attr.sh, different key placement) — the deciding variable is line adjacency under sorted-key one-per-line serialization: a new key that sorts LAST rewrites the previous line's trailing comma. 'Disjoint keys merge cleanly' is therefore false as a rule; the docs now state the adjacency condition and keep AUTO-SAFE at add/add only.; `git rev-parse --git-common-dir` resolves the main checkout from a linked worktree; `--show-toplevel` does not — any 'run from the main checkout' recipe must use the former (EXECUTED).; Verification-question numbering: Doc 2 ended at #8; Doc 4 uses #9 (a)(b)(c) and #10–#16 — the letter-suffix form `#9c` was replaced everywhere after the reviewer flagged it as unexplained.",
+  "entry_type": "status",
+  "id": "01M1SVM7QHR58TF61X4XRK0M6S",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d649ec450e01028174ebaebcbe2defa9190cb41c",
+    "recorded_at": "2026-09-05T22:39:32.566Z"
+  },
+  "scope": "docs/",
+  "summary": "Docs batch for field #3/#4 written and review-fixed: Doc 4 response, UPGRADE-v2 multi-host + merging sections, README paragraph, FOUNDATION-PLAN D2/D5 annotations, Doc 2 errata; 3-lens read-only re…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-05T22:39:32.593Z"
+}

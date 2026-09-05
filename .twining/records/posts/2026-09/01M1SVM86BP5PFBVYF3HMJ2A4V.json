@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: a bare `:(exclude)*.tmp` pathspec makes `git add <dir>` skip every UNTRACKED file under <dir> on git 2.50.1 while still staging modified tracked files, exit 0, no message (EXECUTED 2026-09-05, scratchpad/verify-pathspec-and-argv.sh). Any recipe or script using an unanchored exclude with git add silently drops new files. Anchor excludes to a directory prefix.",
+  "entry_type": "warning",
+  "id": "01M1SVM86BP5PFBVYF3HMJ2A4V",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d649ec450e01028174ebaebcbe2defa9190cb41c",
+    "recorded_at": "2026-09-05T22:39:33.049Z"
+  },
+  "scope": "docs/",
+  "summary": "a bare `:(exclude)*.tmp` pathspec makes `git add <dir>` skip every UNTRACKED file under <dir> on git 2.50.1 while still staging modified tracked files, exit 0, no message (EXECUTED 2026-09-05, scra…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-05T22:39:33.067Z"
+}

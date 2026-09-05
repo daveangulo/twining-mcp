@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-05T22:39:32.845Z",
+  "id": "01M1SVM7ZDCCQCWEKXBZMJTCSY",
+  "properties": {
+    "decision_summary": "Drain recipe resolves ROOT via `cd \"$(git rev-parse --git-common-dir)/..\"` and probes MERGE_HEAD with `git rev-parse -q --verify MERGE_HEAD`, not `--show-toplevel` / `test -f .git/MERGE_HEAD`",
+    "origin": "derived"
+  },
+  "source": "01M1SVM7W2Z75Q2S55HC4Z4665",
+  "target": "01M1SVM7ZB9F07Y6YRVN7PVFDS",
+  "type": "decided_by"
+}

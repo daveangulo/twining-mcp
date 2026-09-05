@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Dave's §7 rulings (2.16.1 go/no-go + validator in/out; W2/2.17.1 split; DD-13 open/close; DD-6/11 routing; Doc 4 send timing; conservative AUTO-SAFE wording) before Workstream A or any breakdown starts",
+  "entry_type": "need",
+  "id": "01M1RB3A8JN6F0YGSH15W66PXT",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d649ec450e01028174ebaebcbe2defa9190cb41c",
+    "recorded_at": "2026-09-05T08:31:26.455Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "Dave's §7 rulings (2.16.1 go/no-go + validator in/out; W2/2.17.1 split; DD-13 open/close; DD-6/11 routing; Doc 4 send timing; conservative AUTO-SAFE wording) before Workstream A or any breakdown st…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-05T08:31:26.482Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-05T22:39:32.746Z",
+  "id": "01M1SVM7WATKXWQ13W89DTTYWT",
+  "properties": {
+    "decision_summary": "The drain recipe's *.tmp exclude is anchored to the directory (`:(exclude).twining/records/*.tmp`), never a bare `:(exclude)*.tmp`",
+    "origin": "derived"
+  },
+  "source": "01M1RB38WRV76D1H7BQ8H440EF",
+  "target": "01M1SVM7W1HYWGQGRVY0Z0HAC2",
+  "type": "decided_by"
+}

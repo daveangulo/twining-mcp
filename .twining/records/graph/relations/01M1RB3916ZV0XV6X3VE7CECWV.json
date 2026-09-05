@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-05T08:31:25.222Z",
+  "id": "01M1RB3916ZV0XV6X3VE7CECWV",
+  "properties": {
+    "decision_summary": "Chose disclosure-first for #3 (sync block on twining_status + one-line assemble caveat, local-only git state) over any mechanism that commits or stages records for the operator",
+    "origin": "derived"
+  },
+  "source": "01M1RB38WRV76D1H7BQ8H440EF",
+  "target": "01M1RB3914FSJDTAR3WYMSA9WE",
+  "type": "decided_by"
+}

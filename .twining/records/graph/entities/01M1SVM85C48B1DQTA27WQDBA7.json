@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-05T22:39:33.036Z",
+  "id": "01M1SVM85C48B1DQTA27WQDBA7",
+  "name": "01M1SVM83SSJSCN1VACTSWKZDD",
+  "properties": {
+    "scope": "docs/",
+    "summary": "Chose an all-or-nothing exact-match edit script (assert each anchor matches exactly once, abort before writing on any miss) over hand edits for the 30-item review fix pass"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-05T22:39:33.036Z"
+}

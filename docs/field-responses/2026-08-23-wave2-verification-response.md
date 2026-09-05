@@ -384,3 +384,22 @@ true unless `TWINING_WORKTREE_LOCAL=true` is set, which opts a worktree into its
 
 Reading order for this batch is in the send wrapper (`2026-08-23-response-send.md`): F2, this
 doc, then the routing response for the wfos lane.
+
+## Errata (2026-09-05) — appended; the body above is unchanged
+
+Two corrections, each carried in full by the 2026-09-05 cross-host response
+(`2026-09-05-cross-host-sync-response.md`, "Doc 4").
+
+1. **§1's "`superseded_by: null`" should read "`superseded_by` ABSENT".** Nothing in Twining
+   writes `null` there — `JSON.stringify` drops undefined keys and the mirror's
+   `stableStringify` writes absent keys as absent. A reader that renders a missing key as
+   `null`/`None` is describing its own default, not the record. The distinction matters:
+   absence is the DESIGNED shape of `twining_override` without a replacement (Doc 4 §3).
+2. **§3.2 "Rows where neither pointer resolves carry `lineage_unresolved: true`" is amended
+   before it ships.** As written it would label every pure veto (`twining_override` without
+   `new_decision`, which by design writes `overridden_by` + `override_reason` and no
+   `superseded_by`) a lineage hole. 2.17.0 gates `lineage_unresolved` on
+   `status: superseded` (or `archived` from `superseded`) with no pointer either way; an
+   overridden record WITH a reverse claimant still gets `superseded_by_inferred`; an overridden
+   record with no claimant gets no lineage flag, and its `override_reason` is projected where
+   `superseded_by` would be. Rationale and evidence: Doc 4 §3.

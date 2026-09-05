@@ -1,0 +1,33 @@
+{
+  "affected_files": [
+    "docs/field-responses/2026-09-05-cross-host-sync-response.md",
+    "docs/UPGRADE-v2.md",
+    "README.md",
+    "docs/FOUNDATION-PLAN.md",
+    "docs/field-responses/2026-08-23-wave2-verification-response.md",
+    "docs/plans/2026-09-05-cross-host-sync-plan.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Docs batch for field #3/#4 written and review-fixed: Doc 4 response, UPGRADE-v2 multi-host + merging sections, README paragraph, FOUNDATION-PLAN D2/D5 annotations, Doc 2 errata; 3-lens read-only review applied",
+  "depends_on": [],
+  "domain": "documentation",
+  "id": "01M1SVM7WZ32T3HASTV434Q2DB",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d649ec450e01028174ebaebcbe2defa9190cb41c",
+    "recorded_at": "2026-09-05T22:39:32.748Z"
+  },
+  "rationale": "EXECUTED: --show-toplevel returns the WORKTREE root from a linked worktree, so a drain run there would commit the worktree's tracked copy and never the freshly exported records (which land in the main checkout); in a worktree `.git` is a file so the file test is vacuous. The common-dir form resolved to the main checkout from both the main checkout and a linked worktree; the rev-parse probe exits 1 when no merge is in progress. Optional files (config.yml, .gitignore) are added through an `if [ -f ]` loop because `git add` of an absent pathspec is fatal (exit 128, nothing staged).",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/",
+  "status": "active",
+  "summary": "Drain recipe resolves ROOT via `cd \"$(git rev-parse --git-common-dir)/..\"` and probes MERGE_HEAD with `git rev-parse -q --verify MERGE_HEAD`, not `--show-toplevel` / `test -f .git/MERGE_HEAD`",
+  "timestamp": "2026-09-05T22:39:32.767Z"
+}

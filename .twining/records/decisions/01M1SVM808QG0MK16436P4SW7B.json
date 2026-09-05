@@ -1,0 +1,33 @@
+{
+  "affected_files": [
+    "docs/field-responses/2026-09-05-cross-host-sync-response.md",
+    "docs/UPGRADE-v2.md",
+    "README.md",
+    "docs/FOUNDATION-PLAN.md",
+    "docs/field-responses/2026-08-23-wave2-verification-response.md",
+    "docs/plans/2026-09-05-cross-host-sync-plan.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Docs batch for field #3/#4 written and review-fixed: Doc 4 response, UPGRADE-v2 multi-host + merging sections, README paragraph, FOUNDATION-PLAN D2/D5 annotations, Doc 2 errata; 3-lens read-only review applied",
+  "depends_on": [],
+  "domain": "documentation",
+  "id": "01M1SVM808QG0MK16436P4SW7B",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d649ec450e01028174ebaebcbe2defa9190cb41c",
+    "recorded_at": "2026-09-05T22:39:32.852Z"
+  },
+  "rationale": "The claim-vs-evidence reviewer showed V5's gitexp3 and the judge's nomerge-attr.sh executed the SAME verb pair (override + commit_hashes) with opposite outcomes — CONFLICT on a tiny record vs clean when the new key was not last — so 'disjoint keys merge cleanly' was stated more strongly than measured. Doc 4 §4.1, UPGRADE-v2 table and the FOUNDATION-PLAN D2 annotation now agree.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/",
+  "status": "active",
+  "summary": "Published AUTO-SAFE class stays add/add only; the disjoint-key row now states the adjacency condition (a new key that sorts last rewrites the previous line's trailing comma and conflicts) instead of 'usually merges cleanly'",
+  "timestamp": "2026-09-05T22:39:32.872Z"
+}

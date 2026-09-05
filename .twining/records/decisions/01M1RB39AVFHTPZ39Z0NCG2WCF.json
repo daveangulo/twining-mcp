@@ -1,0 +1,52 @@
+{
+  "affected_files": [
+    "docs/plans/2026-09-05-cross-host-sync-plan.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Implement event-sourced mutations now",
+      "pros": [],
+      "reason_rejected": "L effort, re-opens DD-8, forks the release train, addresses no observed failure"
+    },
+    {
+      "cons": [],
+      "option": "Ship storage.on_sqlite_unavailable: refuse as a W4 rider",
+      "pros": [],
+      "reason_rejected": "Boot/write policy that pins the Gate-2 commit gate closed — a decision, not a rider"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "Only items #3 and #4 of the field's 2026-09-04 document are addressed to us",
+    "Both field stores are sqlite-era (records/ present); the chassis store's backend is unknown and asked",
+    "The read-audit release train W2→W5 remains the train of record; the A-batch send is still pending",
+    "The field runs the plugin; their launcher rung is unknown, so whether a server release reaches them automatically is unknown"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [
+    "Named design decisions (DD-6, DD-8, DD-11) are never patched inside waves",
+    "The owner-approved warn-and-fallback on old Node (01KWT0FEW6ETY4GD1G3C273Z3Y) forbids a fail-closed default",
+    "Git is the transport (01KWK9KTZGR2V148HJJ2CGY3ZY) — the server never commits; any committing path is a decision",
+    "Pre-tag adversarial review before every tag; every response field additive and optional-spread"
+  ],
+  "context": "Planned the response to field report 2026-09-04 items #3/#4 (cross-host sync, merge conflicts, old-Node ENOENT): docs/plans/2026-09-05-cross-host-sync-plan.md — DRAFT awaiting Dave's rulings; nothing implemented or sent",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01M1RB39AVFHTPZ39Z0NCG2WCF",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d649ec450e01028174ebaebcbe2defa9190cb41c",
+    "recorded_at": "2026-09-05T08:31:25.508Z"
+  },
+  "rationale": "D2 is verifiably unimplemented (record-export.ts:20-21 states in-place rewrite as the contract) but neither field failure is caused by it; event sourcing re-opens DD-8 by construction and touches export/ingest/sync/migrate/backfill; a refuse default violates the owner-approved warn-and-fallback decision; a committing CLI is unprecedented but not contra-decision. All three need field inputs (conflict census, drain topology, fleet preference) that are now asked as verification questions #9–#16.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/plans/",
+  "status": "active",
+  "summary": "Minted three design decisions without building: DD-12 (mutation & conflict model for records/**: status quo vs event-sourced per FOUNDATION-PLAN D2 vs revision stamp + resolver), DD-13 (transport boundary — server process never commits; CLI only on explicit flag), and a DD-6/DD-11 joint question (fallback policy on old Node: refuse knob vs read-only records view)",
+  "timestamp": "2026-09-05T08:31:25.531Z"
+}
