@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-06T14:50:39.341Z",
+  "id": "01M1VK6CVD4BTC0V160503ZK9K",
+  "properties": {
+    "decision_summary": "CLI dispatch is extracted into src/cli/dispatch.ts (classifyArgv) so the unknown-subcommand guard is unit-testable; only a non-flag argv[2] that is not a known subcommand is refused",
+    "origin": "derived"
+  },
+  "source": "01M1VK6CQQ2ASR42BBQF5ZZXY6",
+  "target": "01M1VK6CVCY9KYE8CQ3KDZVCVW",
+  "type": "decided_by"
+}

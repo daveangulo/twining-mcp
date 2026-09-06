@@ -1,0 +1,28 @@
+{
+  "affected_files": [
+    "docs/plans/2026-09-05-2.16.1-implementation.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Wrote the 2.16.1 / plugin 1.34.1 TDD breakdown (docs/plans/2026-09-05-2.16.1-implementation.md): 7 tasks with full test and implementation code; execution deferred to a fresh session per the per-release convention (context at 81%)",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M1VK6CRE9DY8W667NXX24J25",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "6bae64daa43696c5471bb4ebc4b448bde91e6373",
+    "recorded_at": "2026-09-06T14:50:39.226Z"
+  },
+  "rationale": "resolveProjectRoot reads only --project (src/utils/project-root.ts:66-95) and every launcher exec line passes flags, so no supported invocation places a bare word at argv[2]; refusing exactly that class cannot break a real launch, while `twining-mcp drain` from launchd stops booting a server (EXECUTED 2026-09-05).",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/plans/",
+  "status": "active",
+  "summary": "CLI dispatch is extracted into src/cli/dispatch.ts (classifyArgv) so the unknown-subcommand guard is unit-testable; only a non-flag argv[2] that is not a known subcommand is refused",
+  "timestamp": "2026-09-06T14:50:39.246Z"
+}

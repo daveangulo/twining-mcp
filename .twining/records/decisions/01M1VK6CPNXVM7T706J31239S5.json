@@ -1,0 +1,35 @@
+{
+  "affected_files": [
+    "docs/plans/2026-09-05-2.16.1-implementation.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Implement Task 1 (retention) now and leave the rest",
+      "pros": [],
+      "reason_rejected": "A half-shipped point release with no review is worse than a complete breakdown; the deletion defect has been live since 2.x and one more session does not change the field's exposure materially"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Wrote the 2.16.1 / plugin 1.34.1 TDD breakdown (docs/plans/2026-09-05-2.16.1-implementation.md): 7 tasks with full test and implementation code; execution deferred to a fresh session per the per-release convention (context at 81%)",
+  "depends_on": [],
+  "domain": "process",
+  "id": "01M1VK6CPNXVM7T706J31239S5",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "6bae64daa43696c5471bb4ebc4b448bde91e6373",
+    "recorded_at": "2026-09-06T14:50:39.169Z"
+  },
+  "rationale": "The plan's own convention is one fresh session per release breakdown; the breakdown carries complete test and implementation code (ingest retention keyed on the filename stem for every file, records/**/*.tmp gitignore entry, argv dispatch extracted to src/cli/dispatch.ts with an unknown-word exit-2 guard, validate-records as a pure validateRecordsTree + CLI wrapper), the release steps at true cost (bump-plugin-version.sh patch → 1.34.1, npm version 2.16.1, pre-tag review in worktree isolation, tag push, both-scope plugin update), and the repro tests are preserved under the gitignored .planning/2.16.1-repro-tests/ so the executing session re-derives from executed evidence, not prose.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/plans/",
+  "status": "active",
+  "summary": "Deferred 2.16.1 implementation to a fresh session and shipped its full TDD breakdown instead, rather than starting the code in this session at 81% context",
+  "timestamp": "2026-09-06T14:50:39.190Z"
+}

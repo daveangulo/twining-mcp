@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-06T14:50:39.222Z",
+  "id": "01M1VK6CQPZZDQT07TW2B1RPNQ",
+  "name": "01M1VK6CPNXVM7T706J31239S5",
+  "properties": {
+    "scope": "docs/plans/",
+    "summary": "Deferred 2.16.1 implementation to a fresh session and shipped its full TDD breakdown instead, rather than starting the code in this session at 81% context"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-06T14:50:39.222Z"
+}

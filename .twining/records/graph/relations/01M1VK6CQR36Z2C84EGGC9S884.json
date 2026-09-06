@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-06T14:50:39.224Z",
+  "id": "01M1VK6CQR36Z2C84EGGC9S884",
+  "properties": {
+    "decision_summary": "Deferred 2.16.1 implementation to a fresh session and shipped its full TDD breakdown instead, rather than starting the code in this session at 81% context",
+    "origin": "derived"
+  },
+  "source": "01M1VK6CQQ2ASR42BBQF5ZZXY6",
+  "target": "01M1VK6CQPZZDQT07TW2B1RPNQ",
+  "type": "decided_by"
+}
