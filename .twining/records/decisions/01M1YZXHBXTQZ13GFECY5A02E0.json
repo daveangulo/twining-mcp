@@ -1,0 +1,33 @@
+{
+  "affected_files": [
+    "src/cli/validate-records.ts",
+    "test/cli/validate-records.test.ts"
+  ],
+  "affected_symbols": [
+    "validateRecordsTree",
+    "runValidateRecordsCli",
+    "FROZEN_AGGREGATES"
+  ],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "2.16.1 Task 4 (module): validateRecordsTree + runValidateRecordsCli in src/cli/validate-records.ts — read-only records-mirror preflight; index.ts wiring lands with the Task 3 dispatch commit",
+  "depends_on": [],
+  "domain": "performance",
+  "id": "01M1YZXHBXTQZ13GFECY5A02E0",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "986191922ee0b1d1c8aa28a9ce6e40899333e608",
+    "recorded_at": "2026-09-07T22:30:43.817Z"
+  },
+  "rationale": "untracking those aggregates is only safe once EVERY host serving the store runs Node >= 22.13 (a files-fallback host needs decisions/index.json), so the tool must not push operators toward it; the validator never writes and runs under TWINING_DISABLED so cron/launchd preflights are safe",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/cli/",
+  "status": "active",
+  "summary": "Chose a read-only validator whose exit code fails only on record-file findings and tracked *.tmp / twining.db* (frozen v1 aggregates tracked on a sqlite-era store are informational)",
+  "timestamp": "2026-09-07T22:30:43.837Z"
+}

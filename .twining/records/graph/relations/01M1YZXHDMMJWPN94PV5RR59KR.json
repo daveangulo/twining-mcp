@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-07T22:30:43.892Z",
+  "id": "01M1YZXHDMMJWPN94PV5RR59KR",
+  "properties": {
+    "decision_summary": "Chose a read-only validator whose exit code fails only on record-file findings and tracked *.tmp / twining.db* (frozen v1 aggregates tracked on a sqlite-era store are informational)",
+    "origin": "derived"
+  },
+  "source": "01M1YZXHB53RANVQ9ZYNTSEBVM",
+  "target": "01M1YZXHDFFWNYFENK6PK9G16C",
+  "type": "decided_by"
+}

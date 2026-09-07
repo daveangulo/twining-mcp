@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-07T22:30:43.813Z",
+  "id": "01M1YZXHB53RANVQ9ZYNTSEBVM",
+  "name": "runValidateRecordsCli",
+  "properties": {
+    "scope": "src/cli/"
+  },
+  "type": "function",
+  "updated_at": "2026-09-07T22:30:43.891Z"
+}

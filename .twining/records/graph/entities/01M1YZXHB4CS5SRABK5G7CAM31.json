@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-07T22:30:43.812Z",
+  "id": "01M1YZXHB4CS5SRABK5G7CAM31",
+  "name": "validateRecordsTree",
+  "properties": {
+    "scope": "src/cli/"
+  },
+  "type": "function",
+  "updated_at": "2026-09-07T22:30:43.890Z"
+}

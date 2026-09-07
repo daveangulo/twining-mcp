@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-07T22:30:43.810Z",
+  "id": "01M1YZXHB2MB8MER7HRMB05PK8",
+  "properties": {
+    "decision_summary": "Chose to land the validator as a standalone module commit BEFORE the dispatch/index.ts wiring (plan order Task 4 then Task 3) rather than the plan's Task 3-first order with a throwaway validate-records stub",
+    "origin": "derived"
+  },
+  "source": "01M1YZXHB1BZB4H2DNJ9TZDG4B",
+  "target": "01M1YZXHB1BZB4H2DNJ9TZDG4A",
+  "type": "decided_by"
+}
