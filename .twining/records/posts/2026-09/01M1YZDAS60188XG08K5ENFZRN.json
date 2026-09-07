@@ -1,0 +1,19 @@
+{
+  "agent_id": "main",
+  "detail": "Plan: docs/plans/2026-09-05-2.16.1-implementation.md\nAssumptions: A1 work on main (plan Task 7 pushes main; each task = own commit, reset to task boundary is the recovery). A2 tag push authorized by the approved plan; origin/main == HEAD at start so nothing else rides along. A3 rebuilding dist mid-run does not affect the already-running server process. A4 Node 25.8.1 has node:sqlite so all guarded blocks run. A5 no concurrent vitest.\nDecisions: D1 Tasks 1-5 inline rather than a Workflow — the never-overlap-vitest constraint forbids parallel implementers and the plan carries exact code; Task 6 adversarial review runs as a Workflow with isolation:worktree. D2 no separate plan-critique workflow — the plan came out of wf_daceaa5d-eee and every premise (loop head :242-245, index.ts :25-31, GITIGNORE_ENTRIES :20-33, record-sync :539-553, exporter names every kind <ulid>.json, esbuild bundle:true inlines the dynamic import, vitest include test/**) was re-checked this session.\nDiscovered: N1 memory claim \"push of main pending\" is stale — origin/main == HEAD.",
+  "entry_type": "status",
+  "id": "01M1YZDAS60188XG08K5ENFZRN",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0059f4558c9e7201617c5fedbba85f969d9a3347",
+    "recorded_at": "2026-09-07T22:21:52.778Z"
+  },
+  "scope": "src/storage/sync/",
+  "summary": "2.16.1 execution started — plan premises re-verified at HEAD 0059f45; on main, Tasks 1-5 inline TDD, Task 6 review as worktree-isolated Workflow",
+  "tags": [
+    "2.16.1",
+    "execution",
+    "run-log"
+  ],
+  "timestamp": "2026-09-07T22:21:52.807Z"
+}

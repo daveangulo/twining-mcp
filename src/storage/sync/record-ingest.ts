@@ -2,21 +2,23 @@
  * Record ingest (FOUNDATION-PLAN W2.3): converge the sqlite database to the
  * committed export tree under .twining/records/.
  *
- * Runs on server startup — the common flow is `git pull` (or branch switch /
- * merge) followed by a new session, so startup is where another user's or
- * branch's records arrive. Idempotent by construction: upsert-by-ULID,
- * update only when serialized content differs (file wins — the tree is the
- * committed truth), delete rows whose file is gone. Because two branches'
- * export trees union-merge in git with no conflicts (distinct ULID
- * filenames), ingest after a merge yields the union of both branches'
- * records — the multi-user model from the plan's D2.
+ * Runs on server startup and whenever HEAD moves mid-session (sync-manager):
+ * that is where another user's or branch's records arrive. Idempotent by
+ * construction: upsert-by-ULID, update only when serialized content differs
+ * (file wins — the tree is the committed truth), delete rows whose file is
+ * gone. Record CREATES union-merge in git (distinct ULID filenames);
+ * MUTATIONS rewrite the same file in place and can conflict when two hosts
+ * touch one record between syncs — see docs/UPGRADE-v2.md "Merging .twining".
  *
  * Safety guards:
  * - No records/ directory at all → skip entirely (file backend, or a team
  *   that gitignores the export tree). Never treat "no tree" as "delete all".
  * - Deletion propagation applies per kind, and only when that kind's
  *   directory exists.
- * - Unparseable files are skipped with a warning, never deleted.
+ * - A file that exists but cannot be read or identified (conflict markers,
+ *   0 bytes, I/O error, non-string id, id ≠ filename) is skipped with a
+ *   warning and its existing row is RETAINED — only an absent file deletes
+ *   (2.16.1; the pre-2.16.1 deletion pass removed those rows).
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -240,8 +242,31 @@ export function ingestRecords(
     const fileIds = new Set<string>();
     withWriteTxn(db, () => {
       for (const filePath of jsonFiles(kind.dir)) {
-        const record = readRecord<{ id: string }>(filePath, stats);
-        if (!record || typeof record.id !== "string") continue;
+        const stem = path.basename(filePath, ".json");
+        // Retention (2.16.1, field 2026-09-04): a file that EXISTS but cannot
+        // be read or identified is not "absent" — it must never let the
+        // deletion pass below remove its row. Keyed on the filename stem for
+        // EVERY file before parsing, so conflict markers, 0-byte files,
+        // read errors, non-string ids and id≠stem bodies all retain. DD-8
+        // boundary: precedence for parseable, correctly named files is
+        // unchanged (file still wins on content); an ABSENT file still deletes.
+        if (dbRows.has(stem)) fileIds.add(stem);
+        const record = readRecord<{ id: unknown }>(filePath, stats);
+        if (!record) continue;
+        if (typeof record.id !== "string") {
+          console.error(
+            `[twining] Skipping record file with a missing or non-string id: ${path.basename(filePath)}`,
+          );
+          stats.skipped++;
+          continue;
+        }
+        if (record.id !== stem) {
+          console.error(
+            `[twining] Skipping record file whose id "${record.id}" does not match its filename: ${path.basename(filePath)}`,
+          );
+          stats.skipped++;
+          continue;
+        }
         fileIds.add(record.id);
         const existing = dbRows.get(record.id);
         if (existing === undefined) {

@@ -8,7 +8,11 @@
     "commit_sha": "d649ec450e01028174ebaebcbe2defa9190cb41c",
     "recorded_at": "2026-09-05T08:23:41.294Z"
   },
+  "resolution_note": "Resolved by session record: 2.16.1 Task 1: ingest retention keyed on the filename stem — a record file that exists but cannot be read or identified never deletes its sqlite row; non-string id now counted+warned; id≠stem refused",
+  "resolved_at": "2026-09-07T22:27:08.051Z",
+  "resolved_by": "main",
   "scope": "src/storage/sync/record-ingest.ts",
+  "status": "resolved",
   "summary": "Ingest DELETES the sqlite row for any record file it cannot parse or identify (conflict markers, 0-byte, non-string id, id≠stem) while the file stays on disk — docblock :19 promises the opposite",
   "tags": [
     "data-loss",

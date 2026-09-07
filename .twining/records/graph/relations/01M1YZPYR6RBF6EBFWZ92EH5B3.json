@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-07T22:27:08.166Z",
+  "id": "01M1YZPYR6RBF6EBFWZ92EH5B3",
+  "properties": {
+    "decision_summary": "Ingest retention keyed on the filename stem for every file BEFORE parsing — a narrow, named exception to DD-8 (file-wins): an unreadable or mis-keyed file is not a file and cannot win; parseable correctly-named precedence unchanged; an absent file still deletes its row",
+    "origin": "derived"
+  },
+  "source": "01M1YZPYR5R3XWA7QKCVD961MP",
+  "target": "01M1YZPYR207SBH6RDE24J75A3",
+  "type": "decided_by"
+}

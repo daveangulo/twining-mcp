@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "warning",
+  "id": "01M1YZPYSVJDWFC7HZ9H0KGFT0",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0059f4558c9e7201617c5fedbba85f969d9a3347",
+    "recorded_at": "2026-09-07T22:27:08.201Z"
+  },
+  "scope": "src/storage/sync/",
+  "summary": "the 'typeof record.id !== string' branch was fully silent before 2.16.1 (no warning, no skipped++) — any field ingest summary before 2.16.1 under-reported skipped files of that class",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-07T22:27:08.219Z"
+}

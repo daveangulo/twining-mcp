@@ -536,20 +536,30 @@ describe.skipIf(!HAS_SQLITE)("record ingest", () => {
     db.close();
   });
 
-  it("skips unparseable record files without deleting them", async () => {
+  it("skips unparseable record files without deleting their rows", async () => {
     const twA = path.join(dirA, ".twining");
+    const id = "01ABCDEFGHJKMNPQRSTVWXYZ01";
     fs.mkdirSync(path.join(twA, "records", "decisions"), { recursive: true });
-    fs.writeFileSync(
-      path.join(twA, "records", "decisions", "corrupt.json"),
-      "{not json",
-    );
     const db = openDatabase(twA);
+    db.prepare(
+      "INSERT INTO decisions (id, status, timestamp, data) VALUES (?, ?, ?, ?)",
+    ).run(
+      id,
+      "active",
+      "2026-09-01T00:00:00.000Z",
+      JSON.stringify({ id, status: "active" }),
+    );
+    const corrupt = path.join(twA, "records", "decisions", `${id}.json`);
+    fs.writeFileSync(corrupt, "{not json");
     const stats = ingestRecords(db, twA);
     expect(stats.skipped).toBe(1);
     expect(stats.inserted).toBe(0);
-    expect(
-      fs.existsSync(path.join(twA, "records", "decisions", "corrupt.json")),
-    ).toBe(true);
+    expect(stats.deleted).toBe(0); // 2.16.1: the row survives an unreadable file
+    expect(fs.existsSync(corrupt)).toBe(true);
+    const n = db
+      .prepare("SELECT COUNT(*) AS n FROM decisions WHERE id = ?")
+      .get(id) as { n: number | bigint };
+    expect(Number(n.n)).toBe(1);
     db.close();
   });
 });

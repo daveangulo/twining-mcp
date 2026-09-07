@@ -1,0 +1,21 @@
+{
+  "agent_id": "main",
+  "detail": "Decisions: [object Object]\nFindings: record-ingest.ts header no longer claims conflict-free union merges: record CREATES union-merge, MUTATIONS rewrite the same ULID file and can conflict (docs/UPGRADE-v2.md Merging .twining); warning: the 'typeof record.id !== string' branch was fully silent before 2.16.1 (no warning, no skipped++) — any field ingest summary before 2.16.1 under-reported skipped files of that class",
+  "entry_type": "status",
+  "id": "01M1YZPYNF1SNP865QJPZMRRWB",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "0059f4558c9e7201617c5fedbba85f969d9a3347",
+    "recorded_at": "2026-09-07T22:27:08.055Z"
+  },
+  "relates_to": [
+    "01M1RAN4056N1JW24B6NKDHRGG"
+  ],
+  "scope": "src/storage/sync/",
+  "summary": "2.16.1 Task 1: ingest retention keyed on the filename stem — a record file that exists but cannot be read or identified never deletes its sqlite row; non-string id now counted+warned; id≠stem refused",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-07T22:27:08.079Z"
+}
