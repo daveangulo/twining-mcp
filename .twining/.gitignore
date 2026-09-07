@@ -10,3 +10,4 @@ twining.db
 twining.db-wal
 twining.db-shm
 .sessions/
+records/**/*.tmp

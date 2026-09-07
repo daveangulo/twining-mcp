@@ -2,6 +2,18 @@
 
 All notable changes to Twining MCP are documented here.
 
+## [2.16.1] - 2026-09-07
+
+Point release for the 2026-09-04 field report (plan: `docs/plans/2026-09-05-cross-host-sync-plan.md`; response: `docs/field-responses/2026-09-05-cross-host-sync-response.md`). Plugin 1.34.1 (bundle rebuild).
+
+### Fixed
+- **Ingest never deletes a row for a record file it cannot read or identify.** A file under `.twining/records/` holding conflict markers, 0 bytes, an unreadable body, a non-string `id`, or an `id` that does not match its filename used to be skipped AND its database row deleted by the deletion pass (the docblock promised the opposite; the regression test never seeded a row). Retention is keyed on the filename stem for every file before parsing. This is a narrow, recorded exception to file-wins: an unreadable file is not a file and cannot win. Parseable, correctly named files behave exactly as before, and an absent file still deletes its row. The silent non-string-id branch is now counted in `skipped` and warned; a mismatched `id` is refused instead of inserted under the wrong key.
+- **`twining-mcp <unknown word>` exits 2 with usage** instead of booting a full stdio server (a cron/launchd footgun). Flags and known subcommands are unaffected.
+- **`records/**/*.tmp` joins the canonical `.twining/.gitignore`** (reconciled onto existing stores at boot): the atomic-write sibling a commit could stage when racing an export.
+
+### Added
+- **`twining-mcp validate-records [--project <dir>] [--json]`** — read-only preflight for the records mirror: every record file parses, is non-empty, carries no conflict markers, and has `id` equal to its filename; in a git repository, tracked `*.tmp` and `twining.db*` fail, and frozen v1 aggregates still tracked on a sqlite-era store are listed with the Node >= 22.13 untrack guard. Exit 0 / 1 / 2. Runs under `TWINING_DISABLED`.
+
 ## [2.16.0] - 2026-08-18
 
 Wave 1 of the 2026-08-15 field read-context-quality audit response
