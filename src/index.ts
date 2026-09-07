@@ -9,6 +9,7 @@ import { createServer } from "./server.js";
 import { startDashboard } from "./dashboard/http-server.js";
 import { TelemetryClient } from "./analytics/telemetry-client.js";
 import { resolveProjectRoot } from "./utils/project-root.js";
+import { classifyArgv, CLI_USAGE } from "./cli/dispatch.js";
 
 // Handle --version / -v before starting the MCP server.
 // __TWINING_VERSION__ is baked in by the bundle build (relocation-safe);
@@ -22,12 +23,22 @@ if (process.argv.includes("--version") || process.argv.includes("-v")) {
   process.exit(0);
 }
 
-// Explicit CLI subcommand — exits before the MCP stdio transport starts, so
-// console.log is safe on this path. Runs even under TWINING_DISABLED:
-// migration is a deliberate act.
-if (process.argv[2] === "migrate") {
+// Explicit CLI subcommands — exit before the MCP stdio transport starts, so
+// console.log is safe on this path. They run even under TWINING_DISABLED:
+// migration and validation are deliberate acts. An unknown non-flag word is
+// refused (exit 2) instead of falling through to the server (2.16.1).
+const dispatch = classifyArgv(process.argv);
+if (dispatch.kind === "unknown") {
+  console.error(`twining-mcp: unknown subcommand "${dispatch.word}"\n${CLI_USAGE}`);
+  process.exit(2);
+}
+if (dispatch.kind === "subcommand" && dispatch.name === "migrate") {
   const { runMigrateCli } = await import("./migrate/cli.js");
-  process.exit(await runMigrateCli(process.argv.slice(3)));
+  process.exit(await runMigrateCli(dispatch.args));
+}
+if (dispatch.kind === "subcommand" && dispatch.name === "validate-records") {
+  const { runValidateRecordsCli } = await import("./cli/validate-records.js");
+  process.exit(await runValidateRecordsCli(dispatch.args));
 }
 
 async function main(): Promise<void> {

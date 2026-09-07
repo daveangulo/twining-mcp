@@ -3,8 +3,8 @@
   "id": "01KQV935Y6BSXE7V7HN5Z2KRM7",
   "name": "test/server-startup.test.ts",
   "properties": {
-    "scope": "test/"
+    "scope": "src/cli/,test/"
   },
   "type": "file",
-  "updated_at": "2026-05-05T14:05:42.780Z"
+  "updated_at": "2026-09-07T22:44:51.515Z"
 }

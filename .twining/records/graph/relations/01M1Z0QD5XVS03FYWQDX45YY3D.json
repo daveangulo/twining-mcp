@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-07T22:44:51.517Z",
+  "id": "01M1Z0QD5XVS03FYWQDX45YY3D",
+  "properties": {
+    "decision_summary": "Chose to classify only argv[2] (undefined or flag-first = server; known word = subcommand with argv.slice(3); any other word = refused exit 2) over a full argv parser",
+    "origin": "derived"
+  },
+  "source": "01KJGX8KNRTGKE7PVC2GH1QSTE",
+  "target": "01M1Z0QD5QY84MF2389DE8449T",
+  "type": "decided_by"
+}

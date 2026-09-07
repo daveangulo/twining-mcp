@@ -3,8 +3,8 @@
   "id": "01KJGX8KNRTGKE7PVC2GH1QSTE",
   "name": "README.md",
   "properties": {
-    "scope": "docs/,plugin/,src/,src/engine/,src/storage/"
+    "scope": "docs/,plugin/,src/,src/cli/,src/engine/,src/storage/"
   },
   "type": "file",
-  "updated_at": "2026-09-05T22:39:33.045Z"
+  "updated_at": "2026-09-07T22:44:51.516Z"
 }

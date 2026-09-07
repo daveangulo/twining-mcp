@@ -73,6 +73,8 @@ v2's sync model is set-union by construction for record **creates**: every recor
 
 Git is the only channel between hosts. A decision recorded on host A exists only in A's `twining.db` and A's `.twining/records/` mirror until that mirror is **committed and pushed**. Host B sees it after a `git pull` that moves HEAD — the server re-ingests within 5 seconds of the next tool call — or on its next server start. `git fetch` alone changes nothing. Until then, `twining_assemble` and `twining_why` on host B return an **empty** result for that decision, not an error: from B's point of view the decision does not exist yet.
 
+Run `npx twining-mcp validate-records` first (2.16.1+); a non-zero exit means the tree must be repaired before it is committed.
+
 The server never commits or pushes. Every host that writes must commit its mirror, from the **main checkout** (a session in a linked git worktree writes its records into the main checkout's tree, unless `TWINING_WORKTREE_LOCAL=true` or an explicit `--project` / `TWINING_PROJECT` points elsewhere):
 
 ```sh

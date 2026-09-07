@@ -53,4 +53,17 @@ describe("MCP server startup gate", () => {
     expect(result.status).toBe(0);
     expect(result.stderr).toContain("[twining]");
   });
+
+  it("exits 2 with usage for an unknown subcommand instead of booting the server (2.16.1)", () => {
+    const result = spawnSync("node", [ENTRY, "drain"], {
+      env: process.env,
+      input: "",
+      encoding: "utf8",
+      timeout: 5000,
+    });
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain('unknown subcommand "drain"');
+    expect(result.stderr).toContain("validate-records");
+    expect(result.stderr).not.toContain("Dashboard");
+  });
 });

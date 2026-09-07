@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-07T22:44:51.514Z",
+  "id": "01M1Z0QD5TVMHXMBN1EQ8NTKR5",
+  "name": "test/cli/dispatch.test.ts",
+  "properties": {
+    "scope": "src/cli/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-07T22:44:51.514Z"
+}

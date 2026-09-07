@@ -364,6 +364,7 @@ npx twining-mcp migrate --dry-run   # preview what would change, writes nothing
 npx twining-mcp migrate             # migrate to sqlite, then verify
 npx twining-mcp migrate --check     # re-verify a previously migrated project at any time
 npx twining-mcp migrate --reverse   # convert back to the file backend
+npx twining-mcp validate-records    # read-only preflight for .twining/records: parse, id == filename, no markers, no tracked *.tmp / twining.db
 ```
 
 - Stop any running twining sessions before migrating.

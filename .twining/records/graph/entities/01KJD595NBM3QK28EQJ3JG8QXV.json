@@ -3,8 +3,8 @@
   "id": "01KJD595NBM3QK28EQJ3JG8QXV",
   "name": "src/index.ts",
   "properties": {
-    "scope": "src/utils/"
+    "scope": "src/cli/,src/utils/"
   },
   "type": "file",
-  "updated_at": "2026-08-05T18:50:34.570Z"
+  "updated_at": "2026-09-07T22:44:51.513Z"
 }
