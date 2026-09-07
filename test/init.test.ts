@@ -89,6 +89,31 @@ describe("initTwiningDir", () => {
     expect(fs.readFileSync(gitignorePath, "utf-8")).toBe(first);
   });
 
+  it("fresh init gitignores atomic-write temp files under records/ (2.16.1)", () => {
+    initTwiningDir(tmpDir);
+    const gitignore = fs.readFileSync(
+      path.join(tmpDir, ".twining", ".gitignore"),
+      "utf-8",
+    );
+    expect(gitignore).toContain("records/**/*.tmp");
+  });
+
+  it("reconciles records/**/*.tmp onto an existing store's .gitignore (2.16.1)", () => {
+    const twiningDir = path.join(tmpDir, ".twining");
+    fs.mkdirSync(twiningDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(twiningDir, ".gitignore"),
+      "twining.db\ntwining.db-wal\ntwining.db-shm\n",
+    );
+    ensureInitialized(tmpDir);
+    const gitignore = fs.readFileSync(
+      path.join(twiningDir, ".gitignore"),
+      "utf-8",
+    );
+    expect(gitignore).toContain("records/**/*.tmp");
+    expect(gitignore.match(/^twining\.db$/gm)).toHaveLength(1);
+  });
+
   it("creates .twining/agents/ directory", () => {
     initTwiningDir(tmpDir);
     const agentsDir = path.join(tmpDir, ".twining", "agents");

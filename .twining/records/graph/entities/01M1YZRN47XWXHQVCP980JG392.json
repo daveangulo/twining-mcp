@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-07T22:28:03.847Z",
+  "id": "01M1YZRN47XWXHQVCP980JG392",
+  "name": "01M1YZRN3MMNY2D06MZA917ZJK",
+  "properties": {
+    "scope": "src/storage/init.ts",
+    "summary": "Chose a gitignore entry (records/**/*.tmp) over changing atomicWriteFileSync's temp naming or location"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-07T22:28:03.847Z"
+}

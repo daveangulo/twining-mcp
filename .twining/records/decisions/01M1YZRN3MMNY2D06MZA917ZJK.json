@@ -1,0 +1,40 @@
+{
+  "affected_files": [
+    "src/storage/init.ts",
+    "test/init.test.ts"
+  ],
+  "affected_symbols": [
+    "GITIGNORE_ENTRIES",
+    "reconcileGitignore"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "changing atomicWriteFileSync's temp naming or location",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "2.16.1 Task 2: records/**/*.tmp added to the canonical .twining/.gitignore list (fresh init + additive reconcile onto existing stores at boot)",
+  "depends_on": [
+    "01KY3628447CAQ1NBDWDDZ6VRJ"
+  ],
+  "domain": "testing",
+  "id": "01M1YZRN3MMNY2D06MZA917ZJK",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "f8e68b640373aaf0c80a46985261cf550ca55d3d",
+    "recorded_at": "2026-09-07T22:28:03.808Z"
+  },
+  "rationale": "the .tmp sibling must live in the same directory for rename atomicity, and the existing #44 additive reconcile delivers the entry to every existing store on its next boot with no user action; the field's drain recipe keeps its anchored :(exclude).twining/records/*.tmp pathspec as belt-and-braces for stores that have not rebooted",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/storage/init.ts",
+  "status": "active",
+  "summary": "Chose a gitignore entry (records/**/*.tmp) over changing atomicWriteFileSync's temp naming or location",
+  "timestamp": "2026-09-07T22:28:03.828Z"
+}

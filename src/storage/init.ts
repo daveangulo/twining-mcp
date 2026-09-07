@@ -30,6 +30,9 @@ const GITIGNORE_ENTRIES = [
   "twining.db",
   "twining.db-wal",
   "twining.db-shm",
+  // atomic-write siblings (file-store.ts atomicWriteFileSync); a commit racing
+  // an export must never stage them (2.16.1)
+  "records/**/*.tmp",
 ];
 
 /**

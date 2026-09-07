@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-07T22:28:03.850Z",
+  "id": "01M1YZRN4A01MVYG5TMGM4XM53",
+  "properties": {
+    "decision_summary": "Chose a gitignore entry (records/**/*.tmp) over changing atomicWriteFileSync's temp naming or location",
+    "origin": "derived"
+  },
+  "source": "01KY36280Y4HQH0DM96EABPSKB",
+  "target": "01M1YZRN47XWXHQVCP980JG392",
+  "type": "decided_by"
+}
