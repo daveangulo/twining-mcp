@@ -37177,7 +37177,7 @@ var MetricsStore = class {
 };
 
 // src/server.ts
-var PKG_VERSION = true ? "2.16.0" : createRequire(import.meta.url)("../package.json").version;
+var PKG_VERSION = true ? "2.16.1" : createRequire(import.meta.url)("../package.json").version;
 function createServer(projectRoot) {
   const twiningDir = ensureInitialized(projectRoot);
   const config2 = loadConfig(twiningDir);
@@ -38955,7 +38955,7 @@ function classifyArgv(argv) {
 
 // src/index.ts
 if (process.argv.includes("--version") || process.argv.includes("-v")) {
-  const version2 = true ? "2.16.0" : createRequire(import.meta.url)("../package.json").version;
+  const version2 = true ? "2.16.1" : createRequire(import.meta.url)("../package.json").version;
   console.log(`twining-mcp ${version2}`);
   process.exit(0);
 }
