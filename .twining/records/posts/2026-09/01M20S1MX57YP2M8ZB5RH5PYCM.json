@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Doc 4 §6 promise matched the shipped behavior in substance; the review round added strict extras (falsy-scalar bodies counted, validator 'unreadable' kind, files-backend never sqlite-era) already described in CHANGELOG 2.16.1 — no §7 delta note appended",
+  "entry_type": "finding",
+  "id": "01M20S1MX57YP2M8ZB5RH5PYCM",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "242eb529861ff1b373b3e316c760080a7d527695",
+    "recorded_at": "2026-09-08T15:09:07.346Z"
+  },
+  "scope": "project",
+  "summary": "Doc 4 §6 promise matched the shipped behavior in substance; the review round added strict extras (falsy-scalar bodies counted, validator 'unreadable' kind, files-backend never sqlite-era) already d…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-08T15:09:07.365Z"
+}

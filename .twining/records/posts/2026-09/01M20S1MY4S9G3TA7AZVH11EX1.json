@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "need",
+  "id": "01M20S1MY4S9G3TA7AZVH11EX1",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "242eb529861ff1b373b3e316c760080a7d527695",
+    "recorded_at": "2026-09-08T15:09:07.378Z"
+  },
+  "scope": "project",
+  "summary": "this machine's running twining servers (npm-linked to this repo's dist/) serve 2.16.1 only after a session restart; dist/ was rebuilt at HEAD source before the version commit",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-08T15:09:07.396Z"
+}

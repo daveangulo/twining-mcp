@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: 2.16.1 release train on main since v2.16.0: f8e68b6 ingest retention, 9861919 tmp gitignore, 30dd58d validator module, 2467ecf dispatch + wiring + docs, 651ac93 CHANGELOG, cfa1fd0 review round (4 fixes), f4487e7 plugin 1.34.1; full suite green alone twice (1706 then 1712 tests)",
+  "entry_type": "finding",
+  "id": "01M20RD12Y4J2F01E0GFX5WYMK",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "f4487e78db7be0ea7852ae740da5b4df66403543",
+    "recorded_at": "2026-09-08T14:57:51.691Z"
+  },
+  "scope": "package.json",
+  "summary": "2.16.1 release train on main since v2.16.0: f8e68b6 ingest retention, 9861919 tmp gitignore, 30dd58d validator module, 2467ecf dispatch + wiring + docs, 651ac93 CHANGELOG, cfa1fd0 review round (4 f…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-08T14:57:51.710Z"
+}
