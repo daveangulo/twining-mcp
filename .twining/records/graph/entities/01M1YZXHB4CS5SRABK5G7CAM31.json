@@ -3,8 +3,8 @@
   "id": "01M1YZXHB4CS5SRABK5G7CAM31",
   "name": "validateRecordsTree",
   "properties": {
-    "scope": "src/cli/"
+    "scope": "src/,src/cli/"
   },
   "type": "function",
-  "updated_at": "2026-09-07T22:30:43.890Z"
+  "updated_at": "2026-09-08T14:36:16.022Z"
 }

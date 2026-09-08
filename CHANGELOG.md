@@ -12,7 +12,7 @@ Point release for the 2026-09-04 field report (plan: `docs/plans/2026-09-05-cros
 - **`records/**/*.tmp` joins the canonical `.twining/.gitignore`** (reconciled onto existing stores at boot): the atomic-write sibling a commit could stage when racing an export.
 
 ### Added
-- **`twining-mcp validate-records [--project <dir>] [--json]`** — read-only preflight for the records mirror: every record file parses, is non-empty, carries no conflict markers, and has `id` equal to its filename; in a git repository, tracked `*.tmp` and `twining.db*` fail, and frozen v1 aggregates still tracked on a sqlite-era store are listed with the Node >= 22.13 untrack guard. Exit 0 / 1 / 2. Runs under `TWINING_DISABLED`.
+- **`twining-mcp validate-records [--project <dir>] [--json]`** — read-only preflight for the records mirror: every record file parses, is non-empty, carries no conflict markers, and has `id` equal to its filename (an unreadable file or directory is a finding, never fatal); in a git repository, tracked `*.tmp` and `twining.db*` fail, and frozen v1 aggregates still tracked on a sqlite-era store are listed with the Node >= 22.13 untrack guard (a store whose `config.yml` pins `storage.backend: files` is never reported as sqlite-era). Exit 0 / 1 / 2. Runs under `TWINING_DISABLED`.
 
 ## [2.16.0] - 2026-08-18
 

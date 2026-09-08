@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: ingest's own jsonFiles walker (unchanged by 2.16.1) still throws on an unreadable subdirectory — withWriteTxn rolls that kind back and backend-factory's non-fatal catch skips the rest of the ingest; pre-existing, not in this release's scope, worth a follow-up alongside the validator's new 'unreadable' handling",
+  "entry_type": "warning",
+  "id": "01M20Q5FTPN072B44GWZK890QH",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "651ac934d6968701d06cc836b1d4f9eca8603b3a",
+    "recorded_at": "2026-09-08T14:36:16.066Z"
+  },
+  "scope": "src/",
+  "summary": "ingest's own jsonFiles walker (unchanged by 2.16.1) still throws on an unreadable subdirectory — withWriteTxn rolls that kind back and backend-factory's non-fatal catch skips the rest of the ingest…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-08T14:36:16.086Z"
+}

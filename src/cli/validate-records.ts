@@ -4,23 +4,29 @@
  *
  *   twining-mcp validate-records [--project <dir>] [--json]
  *
- * Checks every *.json under .twining/records/: non-empty, no conflict
- * markers, parses, `id` is a string equal to the filename stem. In a git
+ * Checks every *.json under .twining/records/: readable, non-empty, no
+ * conflict markers, parses, `id` is a string equal to the filename stem. An
+ * unreadable file or directory is a finding, never fatal. In a git
  * repository also reports tracked hygiene: *.tmp under .twining/, twining.db*
  * tracked (both fail), and — on a sqlite-era store — which frozen v1
  * aggregates are still tracked (informational; untrack only once every host
- * runs Node >= 22.13). Exit 0 clean · 1 findings or tracked tmp/db · 2 usage
- * or environment error. Never writes. Runs under TWINING_DISABLED.
+ * runs Node >= 22.13). A store whose config.yml pins storage.backend: files
+ * (e.g. after `migrate --reverse`, which leaves a frozen records/ tree) is
+ * never reported as sqlite-era: its file backend NEEDS those aggregates.
+ * Exit 0 clean · 1 findings or tracked tmp/db · 2 usage or environment
+ * error. Never writes. Runs under TWINING_DISABLED.
  */
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
+import yaml from "js-yaml";
 import { resolveProjectRoot } from "../utils/project-root.js";
 import { hasRecordsContent } from "../storage/backend-resolve.js";
 
 export type RecordFindingKind =
   | "empty"
   | "conflict_markers"
+  | "unreadable"
   | "unparseable"
   | "non_string_id"
   | "id_mismatch";
@@ -57,14 +63,40 @@ export const FROZEN_AGGREGATES = [
 const CONFLICT_MARKER = /^(<{7}|={7}|>{7})( |$)/m;
 const USAGE = "usage: twining-mcp validate-records [--project <dir>] [--json]";
 
-function* jsonFiles(dir: string): Generator<string> {
+function* jsonFiles(
+  dir: string,
+  onDirError: (dir: string, err: unknown) => void,
+): Generator<string> {
   if (!fs.existsSync(dir)) return;
-  for (const dirent of fs.readdirSync(dir, { withFileTypes: true })) {
+  let entries: fs.Dirent[];
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true });
+  } catch (err) {
+    onDirError(dir, err);
+    return;
+  }
+  for (const dirent of entries) {
     const p = path.join(dir, dirent.name);
-    if (dirent.isDirectory()) yield* jsonFiles(p);
+    if (dirent.isDirectory()) yield* jsonFiles(p, onDirError);
     else if (dirent.name.endsWith(".json")) yield p;
   }
 }
+
+/** storage.backend from config.yml, or undefined when absent/unreadable. */
+function configuredBackend(twiningDir: string): string | undefined {
+  try {
+    const parsed = yaml.load(
+      fs.readFileSync(path.join(twiningDir, "config.yml"), "utf-8"),
+    ) as { storage?: { backend?: unknown } } | null;
+    const backend = parsed?.storage?.backend;
+    return typeof backend === "string" ? backend : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+const errMessage = (err: unknown): string =>
+  err instanceof Error ? err.message : String(err);
 
 export function validateRecordsTree(projectRoot: string): ValidationReport {
   const twiningDir = path.join(projectRoot, ".twining");
@@ -73,7 +105,13 @@ export function validateRecordsTree(projectRoot: string): ValidationReport {
   let filesChecked = 0;
   const present = fs.existsSync(recordsDir);
   if (present) {
-    for (const filePath of jsonFiles(recordsDir)) {
+    const onDirError = (dir: string, err: unknown) =>
+      findings.push({
+        path: path.relative(projectRoot, dir),
+        kind: "unreadable",
+        detail: errMessage(err),
+      });
+    for (const filePath of jsonFiles(recordsDir, onDirError)) {
       filesChecked++;
       const rel = path.relative(projectRoot, filePath);
       const stem = path.basename(filePath, ".json");
@@ -81,11 +119,7 @@ export function validateRecordsTree(projectRoot: string): ValidationReport {
       try {
         text = fs.readFileSync(filePath, "utf-8");
       } catch (err) {
-        findings.push({
-          path: rel,
-          kind: "unparseable",
-          detail: err instanceof Error ? err.message : String(err),
-        });
+        findings.push({ path: rel, kind: "unreadable", detail: errMessage(err) });
         continue;
       }
       if (text.length === 0) {
@@ -100,11 +134,7 @@ export function validateRecordsTree(projectRoot: string): ValidationReport {
       try {
         parsed = JSON.parse(text);
       } catch (err) {
-        findings.push({
-          path: rel,
-          kind: "unparseable",
-          detail: err instanceof Error ? err.message : String(err),
-        });
+        findings.push({ path: rel, kind: "unparseable", detail: errMessage(err) });
         continue;
       }
       const id =
@@ -124,7 +154,12 @@ export function validateRecordsTree(projectRoot: string): ValidationReport {
       }
     }
   }
-  const sqliteEra = present && hasRecordsContent(twiningDir);
+  // An explicit files backend (post-reverse shape: frozen records/ tree left
+  // beside a live file backend) must never be told its aggregates are frozen.
+  const sqliteEra =
+    present &&
+    hasRecordsContent(twiningDir) &&
+    configuredBackend(twiningDir) !== "files";
   const tracked = trackedHygiene(projectRoot, sqliteEra);
   const ok =
     findings.length === 0 &&

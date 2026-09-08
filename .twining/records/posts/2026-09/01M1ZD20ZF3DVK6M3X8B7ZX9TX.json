@@ -1,0 +1,21 @@
+{
+  "agent_id": "main",
+  "detail": "Every transcript ends with \"[Request interrupted by user]\" (the harness kill), including agent a346ae88092acda08 killed with ZERO tool uses after one line of text, and a789a7cb62c2d3542 killed while already cleaning up its scratch test after 26 tool uses. So this is not vitest lock contention (the 08-13 warning 01KZD9DEJ6J86PT530X0EPF4FZ was the same symptom): the stall detector fires while an agent is in a long think or a long tool call. All four lanes used effort:'high' with long adversarial prompts — suspect long thinking > 180s reads as \"no progress\". Mitigations for next time: omit effort (inherit), split each lens into 2-3 small focused agents with short prompts, and never rely on a single workflow run for a release gate — keep the inline review path ready. Live tree was NOT mutated by the agents this time (only node_modules symlinks in their worktrees; all four removed). Salvage: agents' tool calls/results extracted to the session scratchpad review-salvage/ and mined for evidence; the review itself completed inline by the controller.",
+  "entry_type": "warning",
+  "id": "01M1ZD20ZF3DVK6M3X8B7ZX9TX",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "651ac934d6968701d06cc836b1d4f9eca8603b3a",
+    "recorded_at": "2026-09-08T02:20:22.360Z"
+  },
+  "scope": "project",
+  "summary": "Review workflow wf_c5b6e26a-65e: ALL 24 agent attempts (4 lenses x 6 retries) killed by the harness stall detector (\"no progress for 180000ms\") — 2.27M tokens, 2.9h, zero structured results",
+  "tags": [
+    "workflow",
+    "review",
+    "stall",
+    "2.16.1",
+    "infrastructure"
+  ],
+  "timestamp": "2026-09-08T02:20:22.383Z"
+}

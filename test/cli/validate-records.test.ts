@@ -139,3 +139,59 @@ describe("runValidateRecordsCli (2.16.1)", () => {
     expect(await runValidateRecordsCli(["--project", path.join(root, "nope")])).toBe(2);
   });
 });
+
+// Review round (2.16.1 pre-tag): backend-aware sqlite_era and unreadable paths.
+const CAN_DENY =
+  process.platform !== "win32" &&
+  typeof process.getuid === "function" &&
+  process.getuid() !== 0;
+
+describe("validateRecordsTree — review round (2.16.1)", () => {
+  it("an explicit storage.backend: files store with a leftover records/ tree is NOT sqlite-era (post --reverse shape)", () => {
+    write(rec("decisions", `${GOOD}.json`), JSON.stringify({ id: GOOD }));
+    write(path.join(root, ".twining", "config.yml"), "version: 1\nstorage:\n  backend: files\n");
+    write(path.join(root, ".twining", "decisions", "index.json"), "[]");
+    git("init", "-q");
+    git("add", "-A");
+    git("commit", "-qm", "init");
+    const r = validateRecordsTree(root);
+    expect(r.sqlite_era).toBe(false);
+    expect(r.tracked?.frozen_aggregates_tracked).toEqual([]);
+    expect(r.ok).toBe(true);
+    // explicit sqlite and absent config keep the records-based heuristic
+    write(path.join(root, ".twining", "config.yml"), "version: 2\nstorage:\n  backend: sqlite\n");
+    expect(validateRecordsTree(root).sqlite_era).toBe(true);
+    fs.rmSync(path.join(root, ".twining", "config.yml"));
+    expect(validateRecordsTree(root).sqlite_era).toBe(true);
+  });
+
+  it.skipIf(!CAN_DENY)("an unreadable subdirectory is an 'unreadable' finding and does not abort the scan", () => {
+    write(rec("decisions", `${GOOD}.json`), JSON.stringify({ id: GOOD }));
+    write(rec("posts", "2026-09", `${POST}.json`), JSON.stringify({ id: POST }));
+    const shard = rec("posts", "2026-09");
+    fs.chmodSync(shard, 0o000);
+    try {
+      const r = validateRecordsTree(root);
+      expect(r.files_checked).toBe(1);
+      expect(r.findings).toEqual([
+        { path: path.relative(root, shard), kind: "unreadable", detail: expect.stringContaining("EACCES") },
+      ]);
+      expect(r.ok).toBe(false);
+    } finally {
+      fs.chmodSync(shard, 0o755);
+    }
+  });
+
+  it.skipIf(!CAN_DENY)("an unreadable file is an 'unreadable' finding (distinct from unparseable)", () => {
+    const file = rec("decisions", `${GOOD}.json`);
+    write(file, JSON.stringify({ id: GOOD }));
+    fs.chmodSync(file, 0o000);
+    try {
+      const r = validateRecordsTree(root);
+      expect(r.findings.map((f) => f.kind)).toEqual(["unreadable"]);
+      expect(r.files_checked).toBe(1);
+    } finally {
+      fs.chmodSync(file, 0o644);
+    }
+  });
+});

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-08T14:36:15.760Z",
+  "id": "01M20Q5FGGJZE8GFWW497A4DHC",
+  "properties": {
+    "decision_summary": "Chose to treat a JSON body that parses to a falsy scalar (null/false/0/\"\") as a missing-id file in ingest (counted in skipped + warned, row retained) rather than leaving it silently skipped",
+    "origin": "derived"
+  },
+  "source": "01M20Q5FC8S34JZ5BVN7M3C9EG",
+  "target": "01M20Q5FG3FETJC5GHBR1V5W25",
+  "type": "decided_by"
+}

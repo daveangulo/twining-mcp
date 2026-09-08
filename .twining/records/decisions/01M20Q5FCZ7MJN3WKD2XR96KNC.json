@@ -1,0 +1,46 @@
+{
+  "affected_files": [
+    "src/storage/sync/record-ingest.ts",
+    "src/cli/validate-records.ts",
+    "src/storage/backend-factory.ts",
+    "src/storage/sync/sync-manager.ts",
+    "test/record-ingest-retention.test.ts",
+    "test/cli/validate-records.test.ts",
+    "CHANGELOG.md"
+  ],
+  "affected_symbols": [
+    "readRecord",
+    "ingestRecords",
+    "validateRecordsTree",
+    "jsonFiles",
+    "configuredBackend"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "leaving it silently skipped",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "2.16.1 pre-tag review round: workflow stalled on all 24 attempts, review completed inline from salvaged executed evidence + own attack list; 4 findings fixed with tests (falsy-scalar bodies counted, validator backend-aware + unreadable paths, log wording)",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M20Q5FCZ7MJN3WKD2XR96KNC",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "651ac934d6968701d06cc836b1d4f9eca8603b3a",
+    "recorded_at": "2026-09-08T14:36:15.627Z"
+  },
+  "rationale": "readRecord now returns undefined only on read/parse failure so the caller can distinguish 'parsed to null' from 'unparseable'; this makes ingest agree with validate-records, which already classified those bodies as non_string_id, and makes the CHANGELOG's 'silent branch is now counted and warned' claim true for every class",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Chose to treat a JSON body that parses to a falsy scalar (null/false/0/\"\") as a missing-id file in ingest (counted in skipped + warned, row retained) rather than leaving it silently skipped",
+  "timestamp": "2026-09-08T14:36:15.647Z"
+}

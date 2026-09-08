@@ -80,15 +80,23 @@ function* jsonFiles(dir: string): Generator<string> {
   }
 }
 
-function readRecord<T>(filePath: string, stats: IngestStats): T | null {
+/**
+ * Read + parse one record file. Returns `undefined` (never null) on a read
+ * or parse failure, which is counted and warned here; a successful parse
+ * returns the parsed value verbatim — including falsy JSON scalars
+ * (`null`, `false`, `0`, `""`), which the caller classifies as a
+ * missing id (review finding 2.16.1: a `!record` check swallowed them
+ * silently — no count, no warning).
+ */
+function readRecord(filePath: string, stats: IngestStats): unknown {
   try {
-    return JSON.parse(fs.readFileSync(filePath, "utf-8")) as T;
+    return JSON.parse(fs.readFileSync(filePath, "utf-8")) as unknown;
   } catch {
     console.error(
       `[twining] Skipping unparseable record file: ${path.basename(filePath)}`,
     );
     stats.skipped++;
-    return null;
+    return undefined;
   }
 }
 
@@ -251,15 +259,20 @@ export function ingestRecords(
         // boundary: precedence for parseable, correctly named files is
         // unchanged (file still wins on content); an ABSENT file still deletes.
         if (dbRows.has(stem)) fileIds.add(stem);
-        const record = readRecord<{ id: unknown }>(filePath, stats);
-        if (!record) continue;
-        if (typeof record.id !== "string") {
+        const parsed = readRecord(filePath, stats);
+        if (parsed === undefined) continue; // unreadable/unparseable: counted above
+        if (
+          parsed === null ||
+          typeof parsed !== "object" ||
+          typeof (parsed as { id?: unknown }).id !== "string"
+        ) {
           console.error(
             `[twining] Skipping record file with a missing or non-string id: ${path.basename(filePath)}`,
           );
           stats.skipped++;
           continue;
         }
+        const record = parsed as { id: string };
         if (record.id !== stem) {
           console.error(
             `[twining] Skipping record file whose id "${record.id}" does not match its filename: ${path.basename(filePath)}`,

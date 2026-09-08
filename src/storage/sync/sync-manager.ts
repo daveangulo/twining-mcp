@@ -75,7 +75,7 @@ export class RecordSyncManager {
       if (stats.inserted || stats.updated || stats.deleted) {
         console.error(
           `[twining] HEAD moved — re-ingested records: +${stats.inserted} ~${stats.updated} -${stats.deleted}` +
-            (stats.skipped ? ` (${stats.skipped} unparseable skipped)` : "") +
+            (stats.skipped ? ` (${stats.skipped} unreadable or mis-keyed file(s) skipped)` : "") +
             (stats.lifecycle_reverts
               ? ` (${stats.lifecycle_reverts} lifecycle revert(s) — see preceding lines)`
               : ""),

@@ -3,8 +3,8 @@
   "id": "01M1YZXHB1BZB4H2DNJ9TZDG4B",
   "name": "src/cli/validate-records.ts",
   "properties": {
-    "scope": "src/cli/"
+    "scope": "src/,src/cli/"
   },
   "type": "file",
-  "updated_at": "2026-09-07T22:30:43.888Z"
+  "updated_at": "2026-09-08T14:36:16.013Z"
 }

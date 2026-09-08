@@ -1,0 +1,46 @@
+{
+  "affected_files": [
+    "src/storage/sync/record-ingest.ts",
+    "src/cli/validate-records.ts",
+    "src/storage/backend-factory.ts",
+    "src/storage/sync/sync-manager.ts",
+    "test/record-ingest-retention.test.ts",
+    "test/cli/validate-records.test.ts",
+    "CHANGELOG.md"
+  ],
+  "affected_symbols": [
+    "readRecord",
+    "ingestRecords",
+    "validateRecordsTree",
+    "jsonFiles",
+    "configuredBackend"
+  ],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "dropping the frozen-aggregates note entirely",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "2.16.1 pre-tag review round: workflow stalled on all 24 attempts, review completed inline from salvaged executed evidence + own attack list; 4 findings fixed with tests (falsy-scalar bodies counted, validator backend-aware + unreadable paths, log wording)",
+  "depends_on": [],
+  "domain": "performance",
+  "id": "01M20Q5FH7A4NN2BQX2M3VEPHW",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "651ac934d6968701d06cc836b1d4f9eca8603b3a",
+    "recorded_at": "2026-09-08T14:36:15.763Z"
+  },
+  "rationale": "the post-reverse store shape is exactly the one where 'untrack decisions/index.json once every host runs Node >= 22.13' would break the live file backend, while the note stays valuable on genuine sqlite-era stores; config.yml is read directly via js-yaml with try/catch so the CLI stays write-free and warning-free",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Chose to make validate-records backend-aware (an explicit storage.backend: files in config.yml is never sqlite-era even with a leftover records/ tree) over dropping the frozen-aggregates note entirely",
+  "timestamp": "2026-09-08T14:36:15.783Z"
+}

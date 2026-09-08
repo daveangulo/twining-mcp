@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-08T14:36:15.625Z",
+  "id": "01M20Q5FC9HZB8T4XEZ8ZPCXKA",
+  "properties": {
+    "decision_summary": "Completed the 2.16.1 pre-tag adversarial review INLINE (controller-executed) after workflow wf_c5b6e26a-65e lost all 24 agent attempts to the stall detector, salvaging the agents' executed evidence from their transcripts rather than re-running the workflow",
+    "origin": "derived"
+  },
+  "source": "01M20Q5FC8S34JZ5BVN7M3C9EG",
+  "target": "01M20Q5FBS6JG235J14VZEK3TB",
+  "type": "decided_by"
+}

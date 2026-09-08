@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: 2.16.1 pre-tag review round: workflow stalled on all 24 attempts, review completed inline from salvaged executed evidence + own attack list; 4 findings fixed with tests (falsy-scalar bodies counted, validator backend-aware + unreadable paths, log wording)\nDecisions: [object Object]; Chose to treat a JSON body that parses to a falsy scalar (null/false/0/\"\") as a missing-id file in ingest (counted in skipped + warned, row retained) rather than leaving it silently skipped — readRecord now returns undefined only on read/parse failure so the caller can distinguish 'parsed to null' from 'unparseable'; this makes ingest agree with validate-records, which already classified those bodies as non_string_id, and makes the CHANGELOG's 'silent branch is now counted and warned' claim true for every class; Chose to make validate-records backend-aware (an explicit storage.backend: files in config.yml is never sqlite-era even with a leftover records/ tree) over dropping the frozen-aggregates note entirely — the post-reverse store shape is exactly the one where 'untrack decisions/index.json once every host runs Node >= 22.13' would break the live file backend, while the note stays valuable on genuine sqlite-era stores; config.yml is read directly via js-yaml with try/catch so the CLI stays write-free and warning-free; Chose a distinct 'unreadable' finding kind for I/O failures on files AND directories in validate-records (scan continues) over letting readdir errors propagate — an EACCES shard directory previously aborted the whole scan with a stack trace; 'unparseable' now means JSON parse failure only\nFindings: Executed by the review lenses before they were killed (banked from tool output): esbuild bundle inlines classifyArgv/runMigrateCli/validateRecordsTree/runValidateRecordsCli with no runtime import(\"./cli/...\") left; npm pack --dry-run ships dist/cli/*.js + dist/server.bundle.mjs; bundle `drain` exit 2, `--version` 2.16.0, validate-records 0/1/2 on fixtures and under TWINING_DISABLED; no plugin/ doc references CLI subcommands, so the plugin needs only the bundle rebuild; warning: ingest's own jsonFiles walker (unchanged by 2.16.1) still throws on an unreadable subdirectory — withWriteTxn rolls that kind back and backend-factory's non-fatal catch skips the rest of the ingest; pre-existing, not in this release's scope, worth a follow-up alongside the validator's new 'unreadable' handling; Review coverage confirmed clean by executed tests this round: retention + absence semantics for all five kinds (posts, decisions, entities, relations, handoffs); a retained decision keeps its embedding through reconcileEmbeddings (deleted 0); CRLF conflict markers still match ($ matches before \\r under the m flag); every exporter kind names files <ulid>.json so the id≠stem refusal cannot misfire on a legitimate export",
+  "entry_type": "status",
+  "id": "01M20Q5F8CF9JXKVJYKCXPJSHF",
+  "origin": "narration",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "651ac934d6968701d06cc836b1d4f9eca8603b3a",
+    "recorded_at": "2026-09-08T14:36:15.478Z"
+  },
+  "scope": "src/",
+  "summary": "2.16.1 pre-tag review round: workflow stalled on all 24 attempts, review completed inline from salvaged executed evidence + own attack list; 4 findings fixed with tests (falsy-scalar bodies counted…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-08T14:36:15.500Z"
+}

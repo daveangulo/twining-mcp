@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-08T14:36:15.897Z",
+  "id": "01M20Q5FMSB1MJN6RV9QPA2KC8",
+  "properties": {
+    "decision_summary": "Chose to make validate-records backend-aware (an explicit storage.backend: files in config.yml is never sqlite-era even with a leftover records/ tree) over dropping the frozen-aggregates note entirely",
+    "origin": "derived"
+  },
+  "source": "01M20Q5FC8S34JZ5BVN7M3C9EG",
+  "target": "01M20Q5FM58J20J06HEZHJZ3CC",
+  "type": "decided_by"
+}

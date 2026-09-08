@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-08T14:36:16.015Z",
+  "id": "01M20Q5FRFS6A4NXWSY4WHE8NM",
+  "properties": {
+    "decision_summary": "Chose a distinct 'unreadable' finding kind for I/O failures on files AND directories in validate-records (scan continues) over letting readdir errors propagate",
+    "origin": "derived"
+  },
+  "source": "01KWMS1EJY7VZ185A0WNT7D11E",
+  "target": "01M20Q5FRBNHEWPVE15R55XSEY",
+  "type": "decided_by"
+}
