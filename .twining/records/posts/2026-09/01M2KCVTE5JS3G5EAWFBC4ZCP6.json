@@ -1,0 +1,16 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "finding",
+  "id": "01M2KCVTE5JS3G5EAWFBC4ZCP6",
+  "origin": "discovery",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:41:47.595Z"
+  },
+  "scope": "docs/",
+  "summary": "The Stop hook fired for this session's own docs commits (expected, not the subagent false-positive class) — the record above covers them.",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-15T20:41:47.717Z"
+}

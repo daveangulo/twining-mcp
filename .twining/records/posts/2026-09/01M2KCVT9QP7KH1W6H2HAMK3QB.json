@@ -1,0 +1,16 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Matrix status as of Stage 0 (docs/reports/2026-09-foundation-matrix.md): no requirement is passed yet; R01/R02/R03/R06/R17/R18 partial via contracts; R10/R12/R13/R15/R16 baseline-evidence; C15 and C28 unavailable until real-host and second-computer runs; everything else not-tested. This is the honest starting line, not a claim.",
+  "entry_type": "finding",
+  "id": "01M2KCVT9QP7KH1W6H2HAMK3QB",
+  "origin": "discovery",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:41:47.454Z"
+  },
+  "scope": "docs/",
+  "summary": "Matrix status as of Stage 0 (docs/reports/2026-09-foundation-matrix.md): no requirement is passed yet; R01/R02/R03/R06/R17/R18 partial via contracts; R10/R12/R13/R15/R16 baseline-evidence; C15 and …",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-15T20:41:47.575Z"
+}

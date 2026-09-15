@@ -1,0 +1,18 @@
+{
+  "agent_id": "cli-2.17-lane",
+  "detail": "Delivered on feat/cli-2.17 (uncommitted — controller commits).\n\nNew: src/core/command-def.ts, src/core/commands.ts, src/core/commands/{record,housekeeping,blackboard,decisions,context,verify,coordination,export,triage,lifecycle,graph}.ts, src/core/context.ts, src/version.ts, src/cli/twining.ts, test/core/command-registry.test.ts, test/cli/twining.test.ts, docs/CLI.md.\nModified: all 11 src/tools/*.ts (now registration loops, signatures unchanged), src/server.ts (composes createTwiningContext), src/cli/dispatch.ts (+classifyCliArgv/TWINING_CLI_USAGE, classifyArgv untouched), src/embeddings/embedder.ts (+offline option), package.json (bin twining, dep zod-to-json-schema), package-lock.json (root dep entry only), README.md, CHANGELOG.md.\n\nGreen here: command-registry 8, cli/twining 19, tools 19/22, plugin-tool-references 20, context/graph/coordination-tools 45, dashboard 167, integration 75/90, deep-review-regressions 8, housekeeping-preview 12, triage-engine 70, record unit + blackboard-resolve + analytics 100, embedder/search/sqlite/record-sync 76, plugin-bundle 4, server-startup 4, cli/dispatch 4.\nEnvironmental failures ONLY (git unusable in this sandbox): tools.test.ts 3, integration/tools/housekeeping-tools.test.ts 15, cli/validate-records.test.ts 2 — all die at `git init` before any Twining code runs.\n\nExtra evidence executed: normalized comparison of all 39 registry descriptions (12,435 chars) and every schema key against the COMMITTED 2.16.1 bundle plugin/server/twining-server.mjs — exact match, which is the strongest available proof of description/schema neutrality given git cannot diff here. esbuild bundles both src/index.ts and src/cli/twining.ts with 0 errors / 0 warnings (probe output only; plugin/server/ untouched).\n\nOpen for the lead: (1) the plugin ships the MCP server bundle, not the CLI — a plugin-installed Twining has no `twining` bin; the CLI bundles to ~766 KB if we want to ship it. (2) twining_record's once-per-process quality nudge can fire on every CLI invocation. (3) the CLI dispatches full-surface commands regardless of tools.full_surface (deliberate; capabilities reports `surface`).",
+  "entry_type": "status",
+  "id": "01M2KDEC873ETHETKQ7NXEWHRJ",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:51:55.674Z"
+  },
+  "scope": "src/cli/",
+  "summary": "CLI lane COMPLETE in worktree cli-2.17: twining bin + shared command core + tests + docs; all 39 descriptions verified byte-identical to the 2.16.1 bundle",
+  "tags": [
+    "2.17.0",
+    "cli",
+    "status",
+    "command-core"
+  ],
+  "timestamp": "2026-09-15T20:51:55.783Z"
+}

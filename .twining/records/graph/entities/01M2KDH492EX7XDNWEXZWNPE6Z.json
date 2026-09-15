@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-15T20:53:25.922Z",
+  "id": "01M2KDH492EX7XDNWEXZWNPE6Z",
+  "name": "src/core/command-def.ts",
+  "properties": {
+    "scope": "src/cli/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-15T20:53:26.244Z"
+}

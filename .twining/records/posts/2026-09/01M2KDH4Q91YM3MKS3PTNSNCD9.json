@@ -1,0 +1,16 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: CLI lane's 20 test failures were all environmental (Apple git license shim, exit 69 at `git init` in beforeEach): re-run in the worktree with PATH=/Library/Developer/CommandLineTools/usr/bin → test/tools.test.ts + test/integration + test/cli/dispatch + validate-records = 19 files, 123 tests, all pass. New: test/core/command-registry.test.ts (8), test/cli/twining.test.ts (19).",
+  "entry_type": "finding",
+  "id": "01M2KDH4Q91YM3MKS3PTNSNCD9",
+  "origin": "discovery",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:53:26.254Z"
+  },
+  "scope": "src/cli/",
+  "summary": "CLI lane's 20 test failures were all environmental (Apple git license shim, exit 69 at `git init` in beforeEach): re-run in the worktree with PATH=/Library/Developer/CommandLineTools/usr/bin → test…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-15T20:53:26.377Z"
+}

@@ -1,0 +1,16 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Committed Stage 0 docs on foundation/v3 (6f18727): ADR §9.1 steelman verdicts + C20 correction, requirements/cases matrix skeleton, lane 02–05 dispatch briefs, programme log; memory updated. Three background lanes in flight (slice, oracle rulings, CLI).\nDecisions: Chose to keep the baseline gap reproductions as characterization tests (green while the gap exists, red when a lane closes it) rather than converting them to xfail-style expectations — each lane must flip its gap tests deliberately and keep the positive controls green, which makes closure an observable event in CI rather than a silent expectation change.; Chose to write dispatch-ready briefs for lanes 02–05 now (docs/plans/2026-09-15-lane-briefs.md) rather than dispatching them — lanes 03 and 04 depend on the slice's EventStore and the CLI core landing, so dispatching early would produce code against an interface that may change once the slice meets its oracles.\nFindings: Matrix status as of Stage 0 (docs/reports/2026-09-foundation-matrix.md): no requirement is passed yet; R01/R02/R03/R06/R17/R18 partial via contracts; R10/R12/R13/R15/R16 baseline-evidence; C15 and C28 unavailable until real-host and second-computer runs; everything else not-tested. This is the honest starting line, not a claim.; The Stop hook fired for this session's own docs commits (expected, not the subagent false-positive class) — the record above covers them.",
+  "entry_type": "status",
+  "id": "01M2KCVSGWEF9SAJ0H5SY7DNYW",
+  "origin": "narration",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:41:46.671Z"
+  },
+  "scope": "docs/",
+  "summary": "Committed Stage 0 docs on foundation/v3 (6f18727): ADR §9.1 steelman verdicts + C20 correction, requirements/cases matrix skeleton, lane 02–05 dispatch briefs, programme log; memory updated. Three …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-15T20:41:46.780Z"
+}

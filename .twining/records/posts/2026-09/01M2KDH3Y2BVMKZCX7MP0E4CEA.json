@@ -1,0 +1,16 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: CLI lane delivered on feat/cli-2.17 (worktree): shared command core (src/core/*, 39 commands moved verbatim, MCP adapter loop), createTwiningContext extracted from createServer, `twining` bin with JSON envelope/exit codes/capabilities/STORE_UNWRITABLE, docs/CLI.md, CHANGELOG unreleased 2.17.0; 123 git-dependent tests pass with working git; tsc clean.\nDecisions: [object Object]; [object Object]\nFindings: CLI lane's 20 test failures were all environmental (Apple git license shim, exit 69 at `git init` in beforeEach): re-run in the worktree with PATH=/Library/Developer/CommandLineTools/usr/bin → test/tools.test.ts + test/integration + test/cli/dispatch + validate-records = 19 files, 123 tests, all pass. New: test/core/command-registry.test.ts (8), test/cli/twining.test.ts (19).; package-lock.json gained one root dependency entry (zod-to-json-schema@^3.25.1) with 0 packages added/removed — verified by the lane; needed for `twining capabilities` JSON Schema output.",
+  "entry_type": "status",
+  "id": "01M2KDH3Y2BVMKZCX7MP0E4CEA",
+  "origin": "narration",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:53:25.456Z"
+  },
+  "scope": "src/cli/",
+  "summary": "CLI lane delivered on feat/cli-2.17 (worktree): shared command core (src/core/*, 39 commands moved verbatim, MCP adapter loop), createTwiningContext extracted from createServer, `twining` bin with …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-15T20:53:25.570Z"
+}

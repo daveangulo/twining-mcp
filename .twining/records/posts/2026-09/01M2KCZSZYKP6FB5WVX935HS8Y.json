@@ -1,0 +1,18 @@
+{
+  "agent_id": "lane-02-records-exchange",
+  "detail": "Reading docs/adr/2026-09-foundation-contracts.md + src/contracts/* against the Stage 0 slice brief, before writing src/events:\n\n1. DELIVERY_TRANSITIONS has no local_persisted -> admitted edge. A producer's OWN event must be projected on its own replica, but the table only allows local_persisted -> exported -> transferred -> received -> admitted. Proposed: add \"admitted\" to DELIVERY_TRANSITIONS.local_persisted, or split the ladder into two axes (local admission vs per-transport transfer). Lane 02 implements two axes: journal.state carries the admission ladder, outbox rows carry exported/transferred per transport; deliveryState() returns both so C10 A11 / C14 A-RCP1 (\"never collapsed\") stay assertable.\n\n2. lifecyclePayloadSchemas.corrected has {target, correction, applies_to, reason} and no successor record id, so a correction is not attributable to a record and cannot participate in cycle detection (the brief asks for cycle detection on supersedes/corrects). Proposed: add optional `by: ulid` to the corrected payload.\n\n3. decisionPart is .strict() {part_id, text} with no scope. C16 needs a narrow-authority human (juno, authority over svc/billing/tax/ only) to supersede ONE part of a record scoped svc/billing/. With no part scope the authority check cannot be evaluated per part. Proposed: add optional `scope` to decisionPart. Interim rule implemented: a partial supersession (payload.parts present) requires the event scope to sit INSIDE the target record's scope (scopeGoverns(targetScope, eventScope)) plus the membership capability in the event scope; a whole-record supersession requires scopeGoverns(eventScope, targetScope).\n\n4. ValidationCode has no CONFLICTING_DUPLICATE, though REJECT_REASONS does. append() has to return a ValidationResult for a same-id/different-digest write. Proposed: add \"CONFLICTING_DUPLICATE\" to ValidationCode.\n\n5. QUARANTINE_REASONS has signature_required/signature_invalid but no signer_unknown; a SIGNER_UNKNOWN import is retryable (the principal record may arrive later) while signature_invalid is permanent. Mapped to signature_required for now; proposed: add \"signer_unknown\".\n\n6. Chain of trust for human keys: humanKeyIds is fed from admitted `principal` records, so an imported principal record can introduce a new human key and thereby mint admissible rulings. The slice bootstraps trust out-of-band through the store constructor (knownKeys) as the brief directs, but the general case is a C12 hole the lead should rule on.",
+  "entry_type": "finding",
+  "id": "01M2KCZSZYKP6FB5WVX935HS8Y",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:43:58.225Z"
+  },
+  "scope": "src/events/",
+  "summary": "Lane 02 slice: 6 contract gaps found reading ADR+contracts before writing code (delivery transition, corrected payload has no successor id, decision parts have no scope)",
+  "tags": [
+    "foundation",
+    "contracts",
+    "lane-02",
+    "stage-0"
+  ],
+  "timestamp": "2026-09-15T20:43:58.334Z"
+}

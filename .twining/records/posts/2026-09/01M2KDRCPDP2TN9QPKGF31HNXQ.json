@@ -1,0 +1,16 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: The rulings pass measured: 54 oracle defaults stand, 12 adjusted with ADR reasons, 7 needed the lead (now ruled); one ADR-internal gap (no automated path could produce a ruling) fixed in §2.3 by stating the signed-import admission path.",
+  "entry_type": "finding",
+  "id": "01M2KDRCPDP2TN9QPKGF31HNXQ",
+  "origin": "discovery",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:57:23.793Z"
+  },
+  "scope": "docs/adr/",
+  "summary": "The rulings pass measured: 54 oracle defaults stand, 12 adjusted with ADR reasons, 7 needed the lead (now ruled); one ADR-internal gap (no automated path could produce a ruling) fixed in §2.3 by st…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-15T20:57:23.917Z"
+}

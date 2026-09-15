@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T20:41:47.454Z",
+  "id": "01M2KCVT5YGNA11WQ9KT6Q802K",
+  "properties": {
+    "decision_summary": "Chose to write dispatch-ready briefs for lanes 02–05 now (docs/plans/2026-09-15-lane-briefs.md) rather than dispatching them",
+    "origin": "derived"
+  },
+  "source": "01M2KAJTXK8739C571ZV120DT4",
+  "target": "01M2KCVT5TEWSKJGG7M9YX4CKX",
+  "type": "decided_by"
+}

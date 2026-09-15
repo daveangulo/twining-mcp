@@ -1,0 +1,16 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Ruled on the oracle-rulings appendix: 7 lead decisions + 7 conflicts resolved; added the `reinstated` lifecycle kind (rule capability, class-ranked) for C14 intentional restoration; ADR §2.3/§4.1/§4.3/§4.4/§12/§13 updated; oracle files gained their missing structured open-question sections.\nDecisions: [object Object]; [object Object]\nFindings: warning: the lead's Stage 0 extraction saved only each oracle's markdown body — the structured invariants and open_questions arrays were printed to the console and never written to the oracle files, so the rulings pass found 6 of 56 question ids in the repo. Fixed by appending both lists from the workflow journal to every *.oracle.md; the 73 ruling rows in appendix B were derived from the oracles' stated defaults and stand.; The rulings pass measured: 54 oracle defaults stand, 12 adjusted with ADR reasons, 7 needed the lead (now ruled); one ADR-internal gap (no automated path could produce a ruling) fixed in §2.3 by stating the signed-import admission path.",
+  "entry_type": "status",
+  "id": "01M2KDRBT1A5TVW9M01JNXQ4VD",
+  "origin": "narration",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:57:22.900Z"
+  },
+  "scope": "docs/adr/",
+  "summary": "Ruled on the oracle-rulings appendix: 7 lead decisions + 7 conflicts resolved; added the `reinstated` lifecycle kind (rule capability, class-ranked) for C14 intentional restoration; ADR §2.3/§4.1/§…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-15T20:57:23.009Z"
+}

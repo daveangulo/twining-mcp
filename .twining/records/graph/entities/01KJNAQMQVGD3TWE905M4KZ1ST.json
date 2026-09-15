@@ -3,8 +3,8 @@
   "id": "01KJNAQMQVGD3TWE905M4KZ1ST",
   "name": "package.json",
   "properties": {
-    "scope": "project"
+    "scope": "project,src/cli/"
   },
   "type": "file",
-  "updated_at": "2026-08-14T23:39:21.458Z"
+  "updated_at": "2026-09-15T20:53:26.252Z"
 }

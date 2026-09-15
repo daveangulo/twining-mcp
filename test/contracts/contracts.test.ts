@@ -85,6 +85,17 @@ describe("validateEvent — positive controls", () => {
     expect(r.ok).toBe(true);
   });
 
+  it("accepts a reinstated event (the only way back from supersession) and tables it as rule-capability, class-ranked", async () => {
+    const { REQUIRED_CAPABILITY, CLASS_RANKED_KINDS } = await import("../../src/contracts/lifecycle.js");
+    const target = mintEventId();
+    const ev = base({ kind: "reinstated", record: { type: "decision", id: target }, payload: { target, reason: "supersession was mistaken" } } as never);
+    expect(validateEvent(ev, { ingress: "cli" }).ok).toBe(true);
+    expect(REQUIRED_CAPABILITY.reinstated).toBe("rule");
+    expect(CLASS_RANKED_KINDS.has("reinstated")).toBe(true);
+    const bad = base({ kind: "reinstated", record: { type: "decision", id: target }, payload: { target } } as never);
+    expect(validateEvent(bad, { ingress: "cli" }).ok).toBe(false); // reason is mandatory
+  });
+
   it("accepts a receipt", () => {
     const ev = base({ kind: "receipt", record: undefined, payload: { stage: "admitted", consumer: AGENT, events: [mintEventId()] } } as never);
     delete (ev as Record<string, unknown>).record;

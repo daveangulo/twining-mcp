@@ -3,8 +3,8 @@
   "id": "01M2KCECD6H1GK7604XZ63DD2P",
   "name": "src/contracts/lifecycle.ts",
   "properties": {
-    "scope": "src/contracts/"
+    "scope": "docs/adr/,src/contracts/"
   },
   "type": "file",
-  "updated_at": "2026-09-15T20:34:28.317Z"
+  "updated_at": "2026-09-15T20:57:23.643Z"
 }

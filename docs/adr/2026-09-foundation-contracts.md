@@ -96,7 +96,7 @@ Rendering preserves the class. `MUST`, `active`, or a heading confers nothing (R
 
 ### 2.3 The ruling ceremony (RB6)
 
-`twining rule --scope <scope> --statement <text> [--cites <event ids>] [--grants …]` runs **only** on a TTY with the human key unlocked; it refuses when stdin is not a TTY, when `TWINING_AGENT_CONTEXT` or a host-adapter environment marker is present, or when invoked through the MCP or CLI command registry. It writes a signed `ruling` event. MCP/CLI ingress can never mint `human_ruling`; the schema validator rejects it from those paths outright, before storage.
+`twining rule --scope <scope> --statement <text> [--cites <event ids>] [--grants …]` runs **only** on a TTY with the human key unlocked; it refuses when stdin is not a TTY, when `TWINING_AGENT_CONTEXT` or a host-adapter environment marker is present, or when invoked through the MCP or CLI command registry. It writes a signed `ruling` event. MCP/CLI ingress can never mint `human_ruling`; the schema validator rejects it from those paths outright, before storage. The ceremony is the only *producer* of a ruling; any other ingress — a second host's import, a relay, a test harness — *admits* one only when it carries a valid signature by a key that a `principal` record of kind `human` declares (`SIGNATURE_REQUIRED` / `SIGNATURE_INVALID` / `SIGNER_UNKNOWN` otherwise). An automated oracle run therefore produces rulings by signing with a fixture human key, never through a TTY.
 
 ### 2.4 What can be checked where
 
@@ -142,6 +142,7 @@ Rendering preserves the class. `MUST`, `active`, or a heading confers nothing (R
 | `contested` | target, by, reason | marks a live contradiction; both visible |
 | `conflict_resolved` | conflict_id, winner, reason | requires authority ≥ both sides (§4.3) |
 | `archived` / `restored` | target | archived ↔ prior status (`archived_from` derived, never guessed) |
+| `reinstated` | target, reason | a superseded or overridden record becomes applicable again — requires `rule` capability and class ≥ the superseding event's class; the only path back from supersession (C14 "intentional restoration") |
 | `resolved` | target (post), note | open → resolved |
 | `acknowledged` | target (handoff) | acknowledged |
 | `amended` | target, add_affected_files/symbols, reason | metadata union (append-only) |
@@ -169,7 +170,7 @@ Rendering preserves the class. `MUST`, `active`, or a heading confers nothing (R
 
 Applied in this order; wall-clock never enters:
 
-1. **Class rank.** A higher-class event prevails over a lower-class one on the same record part; a lower-class successor becomes `contested` and is shown beside the governing record.
+1. **Class rank.** A higher-class event prevails over a lower-class one on the same record part; a lower-class successor is admitted as `contested` — an annotation carried in explain packets and history, never a member of the current applicable view and never a change to the governing record's conflict state.
 2. **Explicit resolution.** A `conflict_resolved` by an authorized principal settles equal-class contradictions.
 3. **Policy rule.** A store `membership` may declare a deterministic rule for equal-class concurrent successors (e.g. `author_wins_for_own_records`). Absent a rule, **both remain applicable and visible as `conflicted`** (R05, C11) — retrieval says so; action qualification refuses.
 4. **Scope.** A correction applies only within its `applies_to`; a broader ruling replaces narrower statements only inside its authorized envelope (R06).
@@ -178,7 +179,7 @@ Causal order comes from `parents`; equal-class concurrent successors with no pat
 
 ### 4.4 Archival is not revocation
 
-`archived` hides from default retrieval; `restored` returns the record to its **remembered** prior status (derived from the event chain, never assumed). A restored provisional stays provisional; a restored superseded stays superseded; a revoked ruling cannot be restored to authority by `restored` (C16).
+`archived` hides from default retrieval; `restored` returns the record to its **remembered** prior status (derived from the event chain, never assumed). A restored provisional stays provisional and restoration never emits or implies `promoted`; a restored superseded stays superseded; a revoked ruling cannot be restored to authority by `restored` (C16). A superseded or overridden record returns to applicability only through `reinstated` (§4.1), never through `restored`.
 
 ---
 
@@ -360,12 +361,14 @@ Two host principals `h_A`, `h_B` with keys; one human principal `p_H` with a rul
 5. Change the source revision (new `head`) for R's cited range → R's `applies_to.revision` no longer covers `head`: current-use claims are refused with `stale_revision`; R remains in history.
 6. Delete `store/twining.db` on both replicas → rebuild from `events/` → projections byte-identical to before.
 
+Oracle conventions (appendix B): event counts in the oracles are evaluated over the case's own record types (principal, membership, observation and receipt events are excluded — R01 keeps them separate records); C14 runs two arms — Arm A rewinds the exchange checkout under the default carrier, Arm B rewinds the working tree that holds the store in source-branch mode; `representations[]` (which commits/paths carried an event) is projection state on the admission log, never a field of the immutable envelope.
+
 ---
 
 ## 13. Unresolved product facts and what would change this ADR
 
 - Whether the field needs sub-minute cross-user propagation (flips the carrier to C).
 - Whether any team requires per-record confidentiality inside one store (flips to C or to store partitioning).
-- Attachment size policy for committed source bytes (default proposal: 256 KiB per attachment, larger by reference with hash only).
+- Attachment size policy — RESOLVED 2026-09-15 (appendix B, X-8): 256 KiB per committed attachment by default; larger sources are recorded by hash, size and URI only (lane 02 documents the reference form).
 - Whether the ruling ceremony's TTY-only rule is workable for the field's coordinator flow (RB6 accepted it; the trial will show the cost).
 - The steelman result for §9.1: if the smallest evolution satisfies C14/C16/C20, this ADR is withdrawn and the plan is superseded.

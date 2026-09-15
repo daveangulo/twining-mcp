@@ -17,6 +17,7 @@ export const LIFECYCLE_KINDS = [
   "conflict_resolved",
   "archived",
   "restored",
+  "reinstated",
   "resolved",
   "acknowledged",
   "amended",
@@ -54,6 +55,8 @@ export const lifecyclePayloadSchemas: Record<LifecycleKind, z.ZodTypeAny> = {
     .strict(),
   archived: z.object({ ...target, ...reason }).strict(),
   restored: z.object({ ...target, ...reason }).strict(),
+  /** The only way back from supersession/override (C14 "intentional restoration"); needs `rule` and class >= the superseding event's class. */
+  reinstated: z.object({ ...target, reason: z.string().min(1) }).strict(),
   resolved: z.object({ ...target, note: z.string().optional() }).strict(),
   acknowledged: z.object({ ...target }).strict(),
   amended: z
@@ -84,6 +87,7 @@ export const REQUIRED_CAPABILITY: Record<Exclude<EventKind, "created" | "receipt
   conflict_resolved: "rule",
   archived: "write",
   restored: "write",
+  reinstated: "rule",
   resolved: "write",
   acknowledged: "write",
   amended: "write",
@@ -94,7 +98,7 @@ export const REQUIRED_CAPABILITY: Record<Exclude<EventKind, "created" | "receipt
 };
 
 /** Kinds whose application is subject to the evidence-class rank rule (ADR §4.3 rule 1). */
-export const CLASS_RANKED_KINDS: ReadonlySet<EventKind> = new Set(["superseded", "overridden", "corrected"]);
+export const CLASS_RANKED_KINDS: ReadonlySet<EventKind> = new Set(["superseded", "overridden", "corrected", "reinstated"]);
 
 export const receiptPayloadSchema = z
   .object({

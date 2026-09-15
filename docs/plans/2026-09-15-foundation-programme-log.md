@@ -58,3 +58,9 @@ Audit trail for `2026-09-15-foundation-programme-plan.md`. Append-only, in the o
 - **D13** — Dispatched lane 02 seed (opus): EventStore over `store/events.db` + `events/<yyyy-mm>/`, fs transport + reference relay, inbox/outbox, slice tests per oracle (C10/C11 first). Owns `src/events/**`, `src/exchange/**`, `test/acceptance/slice/**`.
 - **D14** — Dispatched oracle-rulings pass (opus): appendix B answers all 56 oracle open questions from the ADR, flags LEAD DECISION NEEDED and invariant/ADR conflicts; oracles themselves are never edited.
 - Workflow `wf_f80a3b3b-ac2`: 16 agents, 0 errors, 1.45M tokens, 12.1 min; commit `474dfac`.
+
+## 2026-09-15 — CLI lane (RB1) delivered
+
+- **D15** — CLI lane (opus, 28 min, ~320k tokens) delivered on `feat/cli-2.17`: shared command core (`src/core/*`, 39 handlers moved verbatim, MCP adapter loop), `createTwiningContext` extracted from `createServer`, `twining` bin (JSON envelope, exit 0/1/2, `capabilities`, `STORE_UNWRITABLE`, offline), docs + CHANGELOG. Full suite in the worktree 121 files / 1739 passed with the CLT git. Lane rulings recorded (`01M2KDH436…`, `01M2KDH4D8…`): plugin keeps shipping only the MCP bundle for now; nudge-per-process accepted; full-surface gate not applied in the CLI; real package version; plain-text `--version`.
+- **DN11** — 20 of the lane's test failures were the Xcode git shim (DN7), none real; the lane deliberately kept its new tests git-free.
+- **Next** — adversarial review of `main..feat/cli-2.17` (behavior-neutrality, CLI contract/sandbox safety, refactor quality) before any merge; the branch ships as 2.17.0 only under Dave's tag.

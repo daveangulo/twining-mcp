@@ -3,8 +3,8 @@
   "id": "01KJJAP1393ZRMJY1SRKEQVBVQ",
   "name": "src/embeddings/embedder.ts",
   "properties": {
-    "scope": "docs/FOUNDATION-PLAN.md"
+    "scope": "docs/FOUNDATION-PLAN.md,src/cli/"
   },
   "type": "file",
-  "updated_at": "2026-07-03T18:58:38.492Z"
+  "updated_at": "2026-09-15T20:53:26.251Z"
 }

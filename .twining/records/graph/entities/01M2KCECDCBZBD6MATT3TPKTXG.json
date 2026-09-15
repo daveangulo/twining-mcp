@@ -3,8 +3,8 @@
   "id": "01M2KCECDCBZBD6MATT3TPKTXG",
   "name": "docs/adr/2026-09-foundation-contracts.md",
   "properties": {
-    "scope": "docs/adr/,src/contracts/"
+    "scope": "docs/,docs/adr/,src/contracts/"
   },
   "type": "file",
-  "updated_at": "2026-09-15T20:38:50.910Z"
+  "updated_at": "2026-09-15T20:57:23.649Z"
 }

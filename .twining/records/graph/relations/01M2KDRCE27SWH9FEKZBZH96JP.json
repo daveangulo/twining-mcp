@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T20:57:23.650Z",
+  "id": "01M2KDRCE27SWH9FEKZBZH96JP",
+  "properties": {
+    "decision_summary": "`contested` is an annotation (history and explain packets), never a member of the current applicable view and never a change to the target's conflict state; oracle event counts are evaluated over the case's own record types only (principal/membership/observation/receipt excluded); C14 runs two arms (exchange-ref carrier and source-branch mode); `representations[]` lives on the admission-log projection, not the envelope; the admission log records a reason for every outcome; closed uncertainty windows are retained; attachment default 256 KiB",
+    "origin": "derived"
+  },
+  "source": "01M2KCECDCBZBD6MATT3TPKTXG",
+  "target": "01M2KDRCDTZJYX44VTEFMZPJC5",
+  "type": "decided_by"
+}
