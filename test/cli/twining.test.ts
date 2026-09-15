@@ -6,7 +6,12 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { resolveWorktreeMain } from "../../src/utils/project-root.js";
 
-const ENTRY = path.resolve(__dirname, "..", "..", "dist", "cli", "twining.js");
+// The CLI under test is bundled ONCE per suite from src/ into a cache dir under
+// node_modules (so bare imports still resolve against the repo's packages) —
+// the suite must not depend on a prior `npm run build`, and the main checkout
+// deliberately never builds dist/ (its dist serves every session on this
+// machine through the npm link). Same esbuild recipe as the plugin bundle.
+const ENTRY = path.join(path.resolve(__dirname, "..", ".."), "node_modules", ".cache", "twining-cli-test", "twining.mjs");
 const PKG_VERSION = (
   createRequire(import.meta.url)("../../package.json") as { version: string }
 ).version;
@@ -69,13 +74,24 @@ function envelope(stdout: string): Envelope {
 
 let projectRoot: string;
 
-beforeAll(() => {
-  if (!fs.existsSync(ENTRY)) {
-    throw new Error(
-      `dist/cli/twining.js missing — run \`npm run build\` before this test`,
-    );
-  }
-});
+beforeAll(async () => {
+  const { build } = await import("esbuild");
+  fs.mkdirSync(path.dirname(ENTRY), { recursive: true });
+  await build({
+    entryPoints: [path.resolve(__dirname, "..", "..", "src", "cli", "twining.ts")],
+    outfile: ENTRY,
+    bundle: true,
+    platform: "node",
+    format: "esm",
+    target: "node22",
+    packages: "external",
+    sourcemap: "inline",
+    logLevel: "silent",
+    // Same relocation-safe version injection as scripts/build-plugin-bundle.mjs:
+    // src/version.ts's package.json fallback is only valid at dist/ depth.
+    define: { __TWINING_VERSION__: JSON.stringify(PKG_VERSION) },
+  });
+}, 60_000);
 
 beforeEach(() => {
   projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), "twining-cli-"));
