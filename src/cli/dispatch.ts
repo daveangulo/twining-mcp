@@ -4,7 +4,7 @@
  * (`twining-mcp drain`, `sync-status`) fell through and booted a full stdio
  * server — a footgun for cron/launchd jobs (field report 2026-09-04).
  */
-export const KNOWN_SUBCOMMANDS = ["migrate", "validate-records"] as const;
+export const KNOWN_SUBCOMMANDS = ["migrate", "rollback", "migrate-status", "events", "validate-records"] as const;
 export type Subcommand = (typeof KNOWN_SUBCOMMANDS)[number];
 export type Dispatch =
   | { kind: "server" }
@@ -13,7 +13,10 @@ export type Dispatch =
 
 export const CLI_USAGE =
   "usage: twining-mcp [--project <dir>]                      (start the MCP server)\n" +
-  "       twining-mcp migrate [--project <dir>] [--dry-run] [--check] [--reverse]\n" +
+  "       twining-mcp migrate [--project <dir>] [--dry-run] [--check] [--reverse] [--to 3]\n" +
+  "       twining-mcp rollback --to 2 [--project <dir>] [--dry-run]\n" +
+  "       twining-mcp migrate-status [--project <dir>]\n" +
+  "       twining-mcp events ls|show <id> [--project <dir>]\n" +
   "       twining-mcp validate-records [--project <dir>] [--json]\n" +
   "       twining-mcp --version";
 
@@ -46,7 +49,10 @@ export const TWINING_CLI_USAGE = [
   "usage: twining <command> [--json '<json>' | --input-file <f> | --stdin]",
   "                        [--project <dir>] [--agent-id <id>]",
   "       twining capabilities [--project <dir>]",
-  "       twining migrate [--project <dir>] [--dry-run] [--check] [--reverse]",
+  "       twining migrate [--project <dir>] [--dry-run] [--check] [--reverse] [--to 3]",
+  "       twining rollback --to 2 [--project <dir>] [--dry-run]",
+  "       twining migrate-status [--project <dir>]",
+  "       twining events ls|show <id> [--project <dir>]",
   "       twining validate-records [--project <dir>] [--json]",
   "       twining --version | --help",
   "",

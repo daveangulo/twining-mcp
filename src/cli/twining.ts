@@ -331,6 +331,18 @@ export async function runTwiningCli(argv: string[]): Promise<number> {
       const { runMigrateCli } = await import("../migrate/cli.js");
       return await runMigrateCli(dispatch.args);
     }
+    if (dispatch.name === "rollback") {
+      const { runRollbackCli } = await import("../migrate/cli.js");
+      return await runRollbackCli(dispatch.args);
+    }
+    if (dispatch.name === "migrate-status") {
+      const { runMigrateStatusCli } = await import("../migrate/cli.js");
+      return runMigrateStatusCli(dispatch.args);
+    }
+    if (dispatch.name === "events") {
+      const { runEventsCli } = await import("../migrate/cli.js");
+      return runEventsCli(dispatch.args);
+    }
     const { runValidateRecordsCli } = await import("./validate-records.js");
     return await runValidateRecordsCli(dispatch.args);
   }

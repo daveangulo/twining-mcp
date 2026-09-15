@@ -1,0 +1,14 @@
+{
+  "agent_id": "agent-auditor",
+  "detail": "",
+  "entry_type": "need",
+  "id": "01M3C21PRES0V0000000000000",
+  "resolution_note": "confirmed at 03:00 UTC",
+  "resolved_at": "2026-08-07T09:00:00.000Z",
+  "resolved_by": "agent-scribe",
+  "scope": "src/ledger/",
+  "status": "resolved",
+  "summary": "need the reconciliation window confirmed",
+  "tags": [],
+  "timestamp": "2026-08-06T09:00:00.000Z"
+}

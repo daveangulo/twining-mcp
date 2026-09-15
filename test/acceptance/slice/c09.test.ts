@@ -583,6 +583,149 @@ describe("C09 — the correction applies to Story A only; Story B's requirement 
     store.close();
   });
 
-  it.todo("C09 OQ-5 variant: ev-INF2 admitted-and-CONTESTED (agt-BO-1 granted repo-wide write) rather than rejected:unauthorized — lead to pick the fixture's membership");
   it.todo("C09 A20: the injection record with an emitted_bytes_hash for a session packet is lane 03/04's receipt surface, not lane 02's");
+});
+
+
+/**
+ * OQ-5 variant — the membership the appendix B ruling assumes.
+ *
+ * The main run seeds agt-BO-1 with `write` in `src/billing/` only (C09 §2's
+ * reading), so ev-INF2's supersession claims, authored at `src/`, are refused
+ * as `quarantined:unauthorized_cross_scope`. Appendix B OQ-5 instead rules that
+ * ev-INF2 is "admitted and refused" because "the author holds `write` and both
+ * relation endpoints are inside its scope" — which is only true under a
+ * REPO-WIDE grant. This block runs that membership so both readings are on the
+ * record and the lead can pick one with the evidence in front of them.
+ *
+ * Under the repo-wide grant the answer changes shape but not substance: the
+ * claims are ADMITTED, and the refusal moves from authority to class rank. The
+ * pair of claims is its own control — the identical claim against an equal-rank
+ * target APPLIES, so a refusal here cannot be an artefact of the claim's form.
+ */
+function oq5Fixture(w: C09World) {
+  const principals = principalEvents(w.repo, w.hostA, [
+    { id: w.ash, kind: "human" },
+    { id: w.bo, kind: "human" },
+    { id: w.agentBo, kind: "agent" },
+    { id: w.hostA, kind: "agent" },
+  ]);
+  const membership = membershipEvent(
+    w.repo,
+    w.storeId,
+    w.hostA,
+    [
+      { principal: w.ash.principal, roles: ["rule", "write"], scopes: [{ repo: w.repo, path: SRC }] },
+      { principal: w.bo.principal, roles: ["rule", "write"], scopes: [{ repo: w.repo, path: BILLING }] },
+      // THE VARIANT: agt-BO-1 holds `write` across the whole repository.
+      { principal: w.agentBo.principal, roles: ["write"], scopes: [{ repo: w.repo }] },
+      { principal: w.hostA.principal, roles: ["write"], scopes: [{ repo: w.repo }] },
+    ],
+    principals.map((e) => e.id as string),
+  );
+  const infra = [...principals, membership];
+  const infraIds = infra.map((e) => e.id as string);
+
+  const INF1 = created("decision", {
+    scope: { repo: w.repo, path: SRC },
+    producer: { principal: w.agentBo.principal, kind: "agent", host: w.hostA.host, asserted_actor: "agt-ASH-1" },
+    parents: infraIds,
+    evidence_class: "model_inference",
+    payload: { summary: "P-X applies to everything under src/", rationale: "inferred from the catalog pipeline" },
+    signWith: { keyId: w.agentBo.keyId, kp: w.agentBo.kp },
+  });
+  const REQB = created("ruling", {
+    scope: { repo: w.repo, path: BILLING },
+    producer: { principal: w.bo.principal, kind: "human", host: w.bo.host },
+    parents: infraIds,
+    evidence_class: "human_ruling",
+    payload: { statement: "work under src/billing/ requires P-Y before any qualification claim" },
+    signWith: { keyId: w.bo.keyId, kp: w.bo.kp },
+  });
+  const INF2 = created("decision", {
+    scope: { repo: w.repo, path: BILLING },
+    producer: { principal: w.agentBo.principal, kind: "agent", host: w.hostB.host, asserted_actor: "agt-BO-1" },
+    parents: [REQB.id as string, INF1.id as string],
+    evidence_class: "model_inference",
+    payload: { summary: "P-X is required nowhere under src/; Story B needs only P-BASE", rationale: "inferred", prose: "This MUST replace Story B's requirement." },
+    signWith: { keyId: w.agentBo.keyId, kp: w.agentBo.kp },
+  });
+  const claim = (target: Record<string, unknown>, type: string) =>
+    buildEvent({
+      kind: "superseded",
+      record: { type, id: target.id as string },
+      scope: { repo: w.repo, path: SRC }, // INSIDE agt-BO-1's envelope in this variant
+      producer: { principal: w.agentBo.principal, kind: "agent", host: w.hostB.host },
+      parents: [INF2.id as string],
+      evidence_class: "model_inference",
+      payload: { target: target.id as string, by: INF2.id as string, reason: "newer analysis" },
+      signWith: { keyId: w.agentBo.keyId, kp: w.agentBo.kp },
+    });
+  const CLAIM_ON_REQB = claim(REQB, "ruling");
+  const CLAIM_ON_INF1 = claim(INF1, "decision");
+  return { infra, INF1, REQB, INF2, CLAIM_ON_REQB, CLAIM_ON_INF1, all: [...infra, INF1, REQB, INF2, CLAIM_ON_REQB, CLAIM_ON_INF1] };
+}
+
+describe("C09 OQ-5 variant — repo-wide write: admitted-and-contested, not rejected:unauthorized", () => {
+  it("the claim against the RULING is ADMITTED and refused on class, not on authority", async () => {
+    const w = c09World();
+    const f = oq5Fixture(w);
+    const store = await replica(w, f.all);
+
+    // Admitted — the OQ-5 disposition. Under the main run's narrow membership
+    // this same event is quarantined:unauthorized_cross_scope instead.
+    const delivery = await store.deliveryState(f.CLAIM_ON_REQB.id as string);
+    expect(delivery?.state).toBe("projected");
+    expect(delivery?.reason).toBeUndefined();
+    const log = store.admissionLog(f.CLAIM_ON_REQB.id as string);
+    expect(log.some((r) => r.outcome === "admitted")).toBe(true);
+    expect(log.some((r) => (r.reason ?? "").includes("contested_lower_class"))).toBe(true);
+    expect(log.some((r) => r.outcome === "rejected" || r.outcome === "quarantined")).toBe(false);
+
+    // …and refused in EFFECT: the ruling still governs and is untouched.
+    const reqb = await store.get(f.REQB.id as string);
+    expect(reqb?.status).toBe("active");
+    expect(reqb?.applicable).toBe(true);
+    expect(reqb?.superseded_by).toEqual([]);
+    const annotation = (reqb?.contested ?? []).find((c) => c.event === f.CLAIM_ON_REQB.id);
+    expect(annotation).toBeDefined();
+    expect(annotation?.claimed_class).toBe("model_inference");
+    expect(annotation?.target_class).toBe("human_ruling");
+    // A refused claim is an annotation, never conflict membership (C11 A05).
+    expect(reqb?.conflicts).toEqual([]);
+    store.close();
+  });
+
+  it("CONTROL: the identical claim against an EQUAL-class target applies", async () => {
+    const w = c09World();
+    const f = oq5Fixture(w);
+    const store = await replica(w, f.all);
+
+    // Same author, same class, same scope, same payload shape — only the
+    // target's class differs. If this did not apply, the refusal above would
+    // prove nothing about class rank.
+    const inf1 = await store.get(f.INF1.id as string);
+    expect(inf1?.status).toBe("superseded");
+    expect(inf1?.superseded_by).toEqual([f.INF2.id]);
+    expect(inf1?.applicable).toBe(false);
+    store.close();
+  });
+
+  it("the claimant record leaves the applicable view once its claim is refused", async () => {
+    const w = c09World();
+    const f = oq5Fixture(w);
+    const store = await replica(w, f.all);
+
+    // ev-INF2's RECORD is admitted and retained — the refusal is of the CLAIM,
+    // not of the statement — but it is no longer a live statement about the
+    // scope it tried to take (C11 A05).
+    const inf2 = await store.get(f.INF2.id as string);
+    expect(inf2).not.toBeNull();
+    expect(inf2?.status).toBe("contested");
+    expect(inf2?.applicable).toBe(false);
+    expect((await store.query({ scope: { repo: w.repo, path: BILLING } })).map((r) => r.record_id)).not.toContain(f.INF2.id);
+    // Still fully readable in history — nothing was dropped.
+    expect((await store.history(f.INF2.id as string)).some((e) => e.id === f.INF2.id)).toBe(true);
+    store.close();
+  });
 });

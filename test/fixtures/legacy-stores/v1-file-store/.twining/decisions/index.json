@@ -1,0 +1,101 @@
+[
+  {
+    "confidence": "high",
+    "domain": "architecture",
+    "id": "01M3C21DACT1V0000000000000",
+    "scope": "src/catalog/",
+    "status": "active",
+    "summary": "catalog output publishes from the nightly build",
+    "timestamp": "2026-08-01T09:00:00.000Z"
+  },
+  {
+    "confidence": "low",
+    "domain": "architecture",
+    "id": "01M3C21DPR0V10000000000000",
+    "scope": "src/ledger/",
+    "status": "provisional",
+    "summary": "the ledger probably reconciles at 02:00",
+    "timestamp": "2026-08-01T09:00:00.000Z"
+  },
+  {
+    "confidence": "medium",
+    "domain": "architecture",
+    "id": "01M3C21DSPSW10000000000000",
+    "scope": "src/catalog/",
+    "status": "superseded",
+    "summary": "catalog output stays on publication hold",
+    "timestamp": "2026-08-01T09:00:00.000Z"
+  },
+  {
+    "confidence": "medium",
+    "domain": "architecture",
+    "id": "01M3C21DSPSN10000000000000",
+    "scope": "src/catalog/",
+    "status": "superseded",
+    "summary": "an earlier hold whose successor was never linked",
+    "timestamp": "2026-08-01T09:00:00.000Z"
+  },
+  {
+    "confidence": "medium",
+    "domain": "architecture",
+    "id": "01M3C21DSPS0R0000000000000",
+    "scope": "src/catalog/",
+    "status": "superseded",
+    "summary": "superseded with no recoverable successor",
+    "timestamp": "2026-08-01T09:00:00.000Z"
+  },
+  {
+    "confidence": "medium",
+    "domain": "architecture",
+    "id": "01M3C21DVRDW10000000000000",
+    "scope": "src/catalog/",
+    "status": "overridden",
+    "summary": "weekly invoicing",
+    "timestamp": "2026-08-01T09:00:00.000Z"
+  },
+  {
+    "confidence": "medium",
+    "domain": "architecture",
+    "id": "01M3C21DVRDN10000000000000",
+    "scope": "src/catalog/",
+    "status": "overridden",
+    "summary": "an override with no recorded overrider",
+    "timestamp": "2026-08-01T09:00:00.000Z"
+  },
+  {
+    "confidence": "medium",
+    "domain": "architecture",
+    "id": "01M3C21DARCW10000000000000",
+    "scope": "src/catalog/",
+    "status": "archived",
+    "summary": "end-of-cycle archive of a ratified decision",
+    "timestamp": "2026-08-01T09:00:00.000Z"
+  },
+  {
+    "confidence": "medium",
+    "domain": "architecture",
+    "id": "01M3C21DARCN10000000000000",
+    "scope": "src/catalog/",
+    "status": "archived",
+    "summary": "archived before archived_from existed",
+    "timestamp": "2026-08-01T09:00:00.000Z"
+  },
+  {
+    "confidence": "medium",
+    "domain": "architecture",
+    "id": "01M3C21DAMND10000000000000",
+    "scope": "src/catalog/",
+    "status": "active",
+    "summary": "invoice numbering uses the vendor sequence",
+    "timestamp": "2026-08-01T09:00:00.000Z"
+  },
+  {
+    "confidence": "medium",
+    "domain": "architecture",
+    "id": "01M3C21DDPCT10000000000000",
+    "scope": "src/catalog/",
+    "status": "active",
+    "summary": "the reviewer meant the catalog output only",
+    "timestamp": "2026-08-01T09:00:00.000Z"
+  }
+]

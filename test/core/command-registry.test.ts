@@ -13,6 +13,7 @@ import { registerExportTools } from "../../src/tools/export-tools.js";
 import { registerTriageTools } from "../../src/tools/triage-tools.js";
 import { registerLifecycleTools } from "../../src/tools/lifecycle-tools.js";
 import { registerGraphTools } from "../../src/tools/graph-tools.js";
+import { registerMigrateTools } from "../../src/tools/migrate-tools.js";
 
 /**
  * 2.17.0 moved every tool handler into a transport-agnostic command registry
@@ -59,6 +60,7 @@ function collectTools(
   if (fullSurface) registerVerifyTools(server, n);
   registerCoordinationTools(server, n, n, {} as never, n, opts);
   if (fullSurface) registerExportTools(server, n);
+  if (fullSurface) registerMigrateTools(server, "/tmp/p/.twining");
   if (fullSurface) {
     registerTriageTools(server, { decisionStore: n, blackboardStore: n } as never);
   }
@@ -163,9 +165,9 @@ describe("command registry ↔ MCP tool surface parity", () => {
 
   it("the counts the docs quote are the counts the code has", () => {
     const all = commandRegistry.list();
-    expect(all).toHaveLength(39);
-    // docs/CLI.md + README: full_surface:false hides 24 of 39, leaving 15.
-    expect(all.filter((d) => d.surface === "full")).toHaveLength(24);
+    expect(all).toHaveLength(40);
+    // docs/CLI.md + README: full_surface:false hides 25 of 40, leaving 15.
+    expect(all.filter((d) => d.surface === "full")).toHaveLength(25);
     expect(DEFAULT_SURFACE.size).toBe(15);
     // docs/CLI.md: tools.mode:"lite" hides 7 more.
     expect(all.filter((d) => d.requiresMode === "full")).toHaveLength(7);

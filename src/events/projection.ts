@@ -43,12 +43,50 @@ export const RETIRED_STATUSES = new Set([
  */
 export const ACTIONABLE_RANK = 4;
 
+/**
+ * A projected part of a multi-part record (C16 L1–L4, A3.4).
+ *
+ * `parts` live on `decision` and `ruling` bodies as `{part_id, text, scope?}`.
+ * Everything else here is PROJECTION state derived from the event that last
+ * established the part — the contract deliberately keeps per-part class and
+ * version out of the body, because a part's authority is a property of the
+ * statement that set it, not of a field its author could assert (appendix C,
+ * "per-part evidence class/version projections").
+ *
+ *  - `evidence_class` (L2): the class of the establishing event. Three parts of
+ *    one record can therefore hold three different classes, because each was
+ *    last set by a different event.
+ *  - `version` (L4): the id of that event — per-part version identity, so
+ *    A1.3's `record_version_id` reads off the part rather than the record.
+ *  - `revoked` (L3): part-level revocation. Withdrawn authority never returns,
+ *    per part exactly as per record (ADR §4.4, C16 N6).
+ *  - `scope`: the part's own scope when it narrows the record's.
+ */
 export interface ProjectedPart {
   part_id: string;
   text: string;
   status: string;
+  /** Class of the event that last established this part (L2). */
+  evidence_class: EvidenceClass;
+  /** Event id that last established this part — per-part version (L4). */
+  version: string;
+  /** Present when the part narrows the record's scope. */
+  scope?: Scope;
   superseded_by?: string;
+  overridden_by?: string;
+  /** Authority withdrawn from this part alone (L3). Permanent. */
+  revoked?: boolean;
   authorizing_event?: string;
+  /** The status this part held before it was retired, for `reinstated`. */
+  reinstated_from?: string;
+}
+
+/** Part statuses that are not part of the applicable view. */
+export const RETIRED_PART_STATUSES = new Set(["superseded", "overridden", "revoked"]);
+
+/** The parts of `rec` that still apply. An unparted record yields []. */
+export function applicableParts(rec: { parts?: ProjectedPart[] }): ProjectedPart[] {
+  return (rec.parts ?? []).filter((p) => !RETIRED_PART_STATUSES.has(p.status));
 }
 
 export interface Correction {
@@ -203,6 +241,29 @@ export function correctionFor(record: SliceProjectedRecord, scope: Scope): Corre
   return record.corrections.find((c) => scopeGoverns(c.applies_to, scope));
 }
 
+/**
+ * Roll a part-scoped change up to the record. A multi-part record stays
+ * applicable while ANY part still applies — that is the whole point of
+ * partial supersession (C16 A1.1/A1.2). Only when nothing applicable is left
+ * does the record take the most severe status its parts hold, so a record
+ * whose parts were retired one at a time ends in the same state as one
+ * retired whole.
+ */
+function rollUpParts(rec: { status: string; parts?: ProjectedPart[]; revoked: boolean }): void {
+  const parts = rec.parts;
+  if (!parts || parts.length === 0) return;
+  if (parts.some((p) => !RETIRED_PART_STATUSES.has(p.status))) return;
+  if (parts.some((p) => p.status === "revoked")) {
+    // A record all of whose parts are gone, some by revocation, is revoked
+    // only when EVERY part was revoked; a mix means authority was withdrawn
+    // from part of it and replaced elsewhere — the stronger claim governs.
+    rec.status = parts.every((p) => p.revoked === true) ? "revoked" : "overridden";
+    if (parts.every((p) => p.revoked === true)) rec.revoked = true;
+    return;
+  }
+  rec.status = parts.some((p) => p.status === "overridden") ? "overridden" : "superseded";
+}
+
 export function projectEvents(admitted: EventEnvelope[]): ProjectionResult {
   const ordered = causalOrder(admitted);
   const byId = new Map(ordered.map((e) => [e.id, e]));
@@ -220,7 +281,7 @@ export function projectEvents(admitted: EventEnvelope[]): ProjectionResult {
 
     if (ev.kind === "created") {
       const body = { ...(ev.payload as Record<string, unknown>) };
-      const partsBody = Array.isArray(body.parts) ? (body.parts as Array<{ part_id: string; text: string }>) : undefined;
+      const partsBody = Array.isArray(body.parts) ? (body.parts as Array<{ part_id: string; text: string; scope?: Scope }>) : undefined;
       recs.set(recordId, {
         record_id: recordId,
         record_type: ev.record?.type ?? "decision",
@@ -236,7 +297,16 @@ export function projectEvents(admitted: EventEnvelope[]): ProjectionResult {
         archived: false,
         revoked: false,
         superseded_by: [],
-        parts: partsBody?.map((p) => ({ part_id: p.part_id, text: p.text, status: "applicable" })),
+        // Each part starts at the CREATING event's class and version; later
+        // events move them independently (C16 L2/L4).
+        parts: partsBody?.map((p) => ({
+          part_id: p.part_id,
+          text: p.text,
+          status: "applicable",
+          evidence_class: ev.evidence_class,
+          version: ev.id,
+          ...(p.scope ? { scope: p.scope } : {}),
+        })),
         corrections: [],
         contested: [],
         commits: [],
@@ -257,14 +327,29 @@ export function projectEvents(admitted: EventEnvelope[]): ProjectionResult {
     // record's own (lead ruling C14-D11): undoing a supersession needs at least
     // the authority that made it. The highest-ranked supersession wins that
     // comparison, so a low-class reinstatement cannot unpick a high-class one.
+    //
+    // A PART-SCOPED event is ranked against the named parts' own classes, not
+    // the record's (C16 L2): a record created as `proposal` can hold a part
+    // last established by a `human_ruling`, and a second proposal must not be
+    // able to unpick that part just because the record around it is weaker.
+    // The highest-ranked named part governs, so one strong part protects
+    // itself without freezing its weaker siblings.
+    const namedParts = Array.isArray((ev.payload as Record<string, unknown>).parts)
+      ? ((ev.payload as Record<string, unknown>).parts as string[])
+      : undefined;
     if (CLASS_RANKED_KINDS.has(ev.kind)) {
+      const partClasses = (namedParts ?? [])
+        .map((pid) => rec.parts?.find((x) => x.part_id === pid)?.evidence_class)
+        .filter((c): c is EvidenceClass => c !== undefined)
+        .sort((a, b) => EVIDENCE_RANK[b] - EVIDENCE_RANK[a]);
       const against: EvidenceClass =
-        ev.kind === "reinstated"
+        partClasses[0] ??
+        (ev.kind === "reinstated"
           ? (rec.supersession_events
               .map((e) => byId.get(e)?.evidence_class as EvidenceClass)
               .filter(Boolean)
               .sort((a, b) => EVIDENCE_RANK[b] - EVIDENCE_RANK[a])[0] ?? rec.evidence_class)
-          : rec.evidence_class;
+          : rec.evidence_class);
       if (!successorMayApply(against, ev.evidence_class)) {
         touch(rec, ev);
         const claimant = (p.by as string | undefined) ?? (p.replacement as string | undefined);
@@ -309,14 +394,19 @@ export function projectEvents(admitted: EventEnvelope[]): ProjectionResult {
           for (const partId of parts) {
             const part = rec.parts.find((x) => x.part_id === partId);
             if (!part) continue;
+            if (part.revoked) continue; // withdrawn authority is not supersedable
+            part.reinstated_from = part.status;
             part.status = "superseded";
             part.superseded_by = by;
             part.authorizing_event = ev.id;
+            // The part now carries the SUPERSEDING event's class and id: its
+            // authority and its version identity both come from the statement
+            // that last established it (C16 L2/L4).
+            part.evidence_class = ev.evidence_class;
+            part.version = ev.id;
           }
-          if (rec.parts.every((x) => x.status !== "applicable")) {
-            rec.status = "superseded";
-            rec.superseded_by.push(by);
-          }
+          rollUpParts(rec);
+          if (rec.status === "superseded") rec.superseded_by = [...new Set([...rec.superseded_by, by])];
           break;
         }
         // Whole-record supersession. Two successors with no causal path
@@ -340,6 +430,22 @@ export function projectEvents(admitted: EventEnvelope[]): ProjectionResult {
       }
       case "overridden": {
         touch(rec, ev);
+        const parts = p.parts as string[] | undefined;
+        if (parts && rec.parts) {
+          for (const partId of parts) {
+            const part = rec.parts.find((x) => x.part_id === partId);
+            if (!part || part.revoked) continue;
+            part.reinstated_from = part.status;
+            part.status = "overridden";
+            if (typeof p.replacement === "string") part.overridden_by = p.replacement;
+            part.authorizing_event = ev.id;
+            part.evidence_class = ev.evidence_class;
+            part.version = ev.id;
+          }
+          rollUpParts(rec);
+          if (rec.status === "overridden" && typeof p.replacement === "string") rec.overridden_by = p.replacement;
+          break;
+        }
         rec.status = "overridden";
         if (typeof p.replacement === "string") rec.overridden_by = p.replacement;
         break;
@@ -385,6 +491,32 @@ export function projectEvents(admitted: EventEnvelope[]): ProjectionResult {
             target_class: rec.evidence_class,
           });
           break;
+        }
+        // Per-part reinstatement rules (C16 L3): a superseded or overridden
+        // PART returns to applicable; a REVOKED part never does, and its
+        // refusal is recorded beside the record rather than passed over.
+        if (rec.parts && rec.parts.length > 0) {
+          const revokedParts = rec.parts.filter((x) => x.revoked === true).map((x) => x.part_id);
+          for (const part of rec.parts) {
+            if (part.revoked === true) continue;
+            if (!RETIRED_PART_STATUSES.has(part.status)) continue;
+            part.status = "applicable";
+            delete part.superseded_by;
+            delete part.overridden_by;
+            delete part.reinstated_from;
+            part.authorizing_event = ev.id;
+            part.evidence_class = ev.evidence_class;
+            part.version = ev.id;
+          }
+          if (revokedParts.length > 0) {
+            rec.contested.push({
+              event: ev.id,
+              kind: "reinstated",
+              reason: `withdrawn_authority_cannot_be_reinstated (parts ${revokedParts.join(", ")})`,
+              claimed_class: ev.evidence_class,
+              target_class: rec.evidence_class,
+            });
+          }
         }
         rec.status = "restored_applicable";
         // Its successors are still applicable, so the pair is a live
@@ -466,8 +598,38 @@ export function projectEvents(admitted: EventEnvelope[]): ProjectionResult {
       }
       case "revoked": {
         touch(rec, ev);
+        const parts = p.parts as string[] | undefined;
+        if (parts && rec.parts) {
+          // Part-level revocation (C16 L3/T7). Only the named parts lose
+          // authority; the record itself is revoked only when nothing
+          // applicable is left. Revocation is permanent per part exactly as it
+          // is per record — `reinstated` refuses on a revoked part below.
+          for (const partId of parts) {
+            const part = rec.parts.find((x) => x.part_id === partId);
+            if (!part) continue;
+            part.status = "revoked";
+            part.revoked = true;
+            part.authorizing_event = ev.id;
+            part.evidence_class = ev.evidence_class;
+            part.version = ev.id;
+            delete part.reinstated_from;
+          }
+          rollUpParts(rec);
+          if (rec.parts.every((x) => x.revoked === true)) {
+            rec.status = "revoked";
+            rec.revoked = true;
+          }
+          break;
+        }
         rec.status = "revoked";
         rec.revoked = true; // permanent: no later event returns authority
+        for (const part of rec.parts ?? []) {
+          part.status = "revoked";
+          part.revoked = true;
+          part.authorizing_event = ev.id;
+          part.evidence_class = ev.evidence_class;
+          part.version = ev.id;
+        }
         break;
       }
       case "tombstoned": {
