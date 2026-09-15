@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-09T19:01:12.341Z",
+  "id": "01M23RQAGNX73QX2H6809C5WZ2",
+  "name": "01M23RQAF6V120VGGAERT932Y3",
+  "properties": {
+    "scope": "plugins/twining/",
+    "summary": "Chose npx with inherited project cwd over plugin-root cwd or a custom MCP roots proxy"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-09T19:01:12.341Z"
+}

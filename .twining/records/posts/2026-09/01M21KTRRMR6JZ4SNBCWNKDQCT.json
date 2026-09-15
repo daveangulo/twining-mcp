@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: finding: this repo's validate-records at HEAD d7860e0 reports clean (5459 files, sqlite-era) with the expected informational note that five frozen v1 aggregates are still tracked (blackboard.jsonl, decisions/index.json, graph/entities.json, graph/relations.json, handoffs/index.jsonl); both v1 tiers frozen since the 2026-07-05 migration commit d4cb422. Workflow verifiers left the live tree untouched (checked git status + transcripts: writes only under the session scratchpad, zero twining_* calls).",
+  "entry_type": "finding",
+  "id": "01M21KTRRMR6JZ4SNBCWNKDQCT",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d7860e060ddf79e9cca2cc8a0bd9179985c04eee",
+    "recorded_at": "2026-09-08T22:57:13.472Z"
+  },
+  "scope": ".twining/",
+  "summary": "finding: this repo's validate-records at HEAD d7860e0 reports clean (5459 files, sqlite-era) with the expected informational note that five frozen v1 aggregates are still tracked (blackboard.jsonl,…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-08T22:57:13.492Z"
+}

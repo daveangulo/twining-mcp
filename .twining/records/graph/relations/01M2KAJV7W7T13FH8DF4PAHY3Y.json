@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T20:01:56.476Z",
+  "id": "01M2KAJV7W7T13FH8DF4PAHY3Y",
+  "properties": {
+    "decision_summary": "RB6 ruled: human rulings are produced only by an interactive signed CLI ceremony the model cannot invoke (TTY required, human key outside any repo), and host-attested literal human prompts are captured as human_statement evidence (unverified authority) that only the ceremony can upgrade; a caller-supplied actor field never confers authority",
+    "origin": "derived"
+  },
+  "source": "01M2KAJTXK8739C571ZV120DT4",
+  "target": "01M2KAJV7SDGK4J95RSZE7SVDJ",
+  "type": "decided_by"
+}

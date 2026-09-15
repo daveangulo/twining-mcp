@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: GITIGNORE_ENTRIES (init.ts:20-36) gaps found by the completeness critic: pending-posts.dead.jsonl / pending-actions.dead.jsonl (persistent dead-letter, pending-processor.ts:245-267) unignored; pending-*.jsonl.processing.<pid>.<rand> swap files (pending-processor.ts:207-210, survive a crash mid-drain) unignored; atomicWriteFileSync *.tmp siblings OUTSIDE records/ (blackboard.jsonl, decisions/, graph/, handoffs/, agents/registry.json, embeddings/*.index, config.yml, .gitignore itself — file-store.ts:63-68) unignored while validate-records.ts:195 fails on ANY tracked *.tmp under .twining, so the checker is broader than the ignore rule; pre-reverse-backup/ (reverse.ts:143) unignored so git add -A after migrate --reverse commits the backup; config.yml.pre-migrate.bak is written by config-edit.ts:43-46 on BOTH forward (forward.ts:244) and reverse (reverse.ts:224) and read by nothing.",
+  "entry_type": "warning",
+  "id": "01M21KTRHCMSCEN946CHWR4VH4",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d7860e060ddf79e9cca2cc8a0bd9179985c04eee",
+    "recorded_at": "2026-09-08T22:57:13.240Z"
+  },
+  "scope": ".twining/",
+  "summary": "GITIGNORE_ENTRIES (init.ts:20-36) gaps found by the completeness critic: pending-posts.dead.jsonl / pending-actions.dead.jsonl (persistent dead-letter, pending-processor.ts:245-267) unignored; pend…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-08T22:57:13.260Z"
+}

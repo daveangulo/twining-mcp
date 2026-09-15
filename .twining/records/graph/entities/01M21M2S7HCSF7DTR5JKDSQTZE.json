@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-08T23:01:36.113Z",
+  "id": "01M21M2S7HCSF7DTR5JKDSQTZE",
+  "name": "01M21M2S5Y5P8TS5EY277D597R",
+  "properties": {
+    "scope": "docs/plans/",
+    "summary": "Chose an unconditional short empty-result sync caveat (measured 33 tokens, under the §6.3 ceiling of 40) over an actionable-only line"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-08T23:01:36.113Z"
+}

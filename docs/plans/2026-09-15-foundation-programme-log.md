@@ -1,0 +1,40 @@
+# Foundation programme — execution log
+
+Audit trail for `2026-09-15-foundation-programme-plan.md`. Append-only, in the order things happened. Four registers: **Assumptions** (A), **Discovered needs** (DN), **Decisions** (D), **Supersessions** (S). Twining decision ids are given where a record exists.
+
+## Rulings (2026-09-15, Dave)
+
+| RB | Ruling | Consequence |
+|---|---|---|
+| RB1 | parallel | CLI lane on `feat/cli-2.17` from `main`, shares the command core; ships as 2.17.0 under Dave's tag; `foundation/v3` rebases on it |
+| RB2 | absorb | W2/2.17.0 and 2.17.1 plans superseded as plans of record (S1 below) |
+| RB3 | "I have another computer that can be used" | C28 runs on Dave's other computer from a scripted bundle I prepare (A15) |
+| RB4 | "codex installed locally" | Codex CLI 0.154.0 found via Homebrew (DN1); lane 03 tests the real host |
+| RB5 | "not clear what you're asking … can switch to field machine for expensive runs after confidence" | Interpreted as A14: dev-scale trial here under Max auth; full-scale deferred to Dave's machine; reported as not-yet-run until then |
+| RB6 | recommendation | Signed interactive ceremony + host-attested `human_statement` |
+| RB7 | agreed | `foundation/v3`, 3.0.0-alpha.N, no tags, draft PR early, Codex work parked on `wip/codex-plugin` |
+
+## Assumptions
+
+- **A1–A13** — as listed in the plan §4 (unchanged).
+- **A14** (2026-09-15) — RB5 interpretation: the matched trial runs at development scale on this machine under the Claude Max login (the harness supports it without an API key; cost is flat, limited by usage windows). The full 360-trial run plus corpus tiers is Dave's action on his other machine once the solution has earned it; until then the final report lists it as *not yet run*, never as passed.
+- **A15** (2026-09-15) — RB3 interpretation: the second computer is Dave's other machine; C28 qualification runs from a scripted, self-contained bundle (`scripts/qualify/c28-remote/`) that he executes and whose artifacts he returns; a remote Claude Code session on that machine is an acceptable executor of the same bundle.
+- **A16** (2026-09-15) — Codex host: the Homebrew Codex CLI 0.154.0 is the tested Codex version; it must be invoked through a login shell or absolute path because the non-login PATH does not carry it.
+
+## Discovered needs
+
+- **DN1** (2026-09-15) — Codex CLI 0.154.0 installed at `/opt/homebrew/bin/codex` (symlink dated 12:52 today). Not on the non-login PATH. Same version the package cites for the field's environment.
+- **DN2** (2026-09-15) — The W2/2.17.0 and 2.17.1 plans were never committed (untracked). They commit to `main` as absorbed drafts with a superseded banner (S1).
+- **DN3** (2026-09-15) — The in-flight Codex work is larger than the tracked diff: `AGENTS.md`, `docs/CODEX.md`, `docs/plans/2026-09-09-codex-plugin.md`, `plugins/`, `scripts/build-codex-plugin.mjs`, `scripts/codex-plugin/` are all untracked and belong to the parking commit.
+- **DN4** (2026-09-15) — `git diff` reports `test/plugin-tool-references.test.ts` as binary; to inspect before the parking commit (likely a non-UTF-8 byte in the file).
+- **DN5** (2026-09-15) — `timeout` is not available on this macOS; use the Bash tool's timeout.
+
+## Decisions
+
+- **D1** (2026-09-15, `01M2K97A9FTJR13S7K7QWH5YHY`) — Rulings-gated draft plan before any execution.
+- **D2** (2026-09-15, `01M2K9813SSVCD2B12PXVMW69Q`) — Architecture hypothesis: immutable event log + derived projections; Git-as-protocol default; reference relay behind the same interface. Not committed until Stage 0 shows the failing case (§3.4).
+- **D3–D7** (2026-09-15) — RB1/RB2/RB3-5/RB6/RB7 outcomes recorded as Twining decisions (see the session record after the rulings).
+
+## Supersessions
+
+- **S1** (2026-09-15) — `docs/plans/2026-09-08-2.17.0-w2-implementation.md` and `docs/plans/2026-09-08-2.17.1-implementation.md` are superseded as plans of record by the foundation programme (RB2). Their items are carried by: assemble disclosure / budget order / payload measurement → S3 (R15/R16); sync-state disclosure / createSuperseding / ingest counters / fallback diagnosability → S1 (R07/R08/R19/R20); lineage reverse scan → S1 lifecycle resolver (R05/R06); tool-description byte baseline → S2 CLI/MCP contract measurement. The files stay in the repo with a banner; nothing in them is executed as written.

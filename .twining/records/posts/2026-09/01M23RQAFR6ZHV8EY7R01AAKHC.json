@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Chose npx with inherited project cwd over plugin-root cwd or a custom MCP roots proxy\" relates to:\n- 01M23Q4CTVPWMWNCSEM93YY8XF: \"Chose a generated self-contained plugins/twining package over a hand-maintained fork or a dual-manifest Claude directory\"\n- 01M23Q4CW4TDGY1RVDDAXEQR9T: \"Chose to retain the existing POSIX launcher, full-surface opt-in and hook guardrails\"",
+  "entry_type": "finding",
+  "id": "01M23RQAFR6ZHV8EY7R01AAKHC",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d7860e060ddf79e9cca2cc8a0bd9179985c04eee",
+    "recorded_at": "2026-09-09T19:01:12.294Z"
+  },
+  "scope": "plugins/twining/",
+  "summary": "Related decisions in scope: 2 existing decision(s) overlap",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-09-09T19:01:12.312Z"
+}
