@@ -125,3 +125,122 @@ All four names are present in the 0.154.0 binary. Codex refuses MCP configs that
 - Local binary plugin-trust strings: 'failed to trust materialized plugin hooks', 'skipping materialized plugin hook trust after account changed', '(plugin hook trust update was cancelled:', 'Agent Plugins MCP config resolves outside the plugin root; disabling MCP', 'BYPASS_HOOK_TRUST'
 - Local binary project-trust string: 'config, hooks, and exec policies are disabled in the following folders until the project is trusted, but skills still load.'
 - Local binary config keys: hooks.managed_dir, hooks.windows_managed_dir, allow_managed_hooks_only, and marketplace paths ~/.agents/plugins/marketplace.json and <repo-root>/.agents/plugins/marketplace.json, .codex-plugin/plugin.json
+
+---
+
+# Lane 03 — what the Twining adapter actually does on this host
+
+Added 2026-09-15 by lane 03 (runtime integration). Generated from
+`src/adapters/codex.ts` (`CODEX_MATRIX`) and pinned by
+`test/adapters/host-matrix-docs.test.ts`.
+
+Active only on a **v3-enabled store** (`.twining/store.json` with `"format": 3`).
+
+<!-- BEGIN GENERATED: codex@0.154.0 — source of record is src/adapters/host-capability.ts consumers -->
+
+| Event | Captured fields | Injects? | Channel | Twining events written | Receipt |
+|---|---|---|---|---|---|
+| `SessionStart` | `session_id`, `source`, `cwd`, `model`, `permission_mode`, `transcript_path` | yes | `hookSpecificOutput.additionalContext` | `created(observation)`, `receipt(injected)` | `injected` |
+| `UserPromptSubmit` | `session_id`, `turn_id`, `prompt`, `cwd`, `model`, `agent_id`, `agent_type` | yes | `hookSpecificOutput.additionalContext` | `created(post/human_statement)`, `receipt(injected)` | `injected` |
+| `PreCompact` | `session_id`, `turn_id`, `trigger`, `cwd`, `model` | **no** | — | `created(observation)` | — |
+| `PostCompact` | `session_id`, `turn_id`, `trigger` | **no** | — | `created(observation)` | — |
+| `SubagentStart` | `session_id`, `turn_id`, `agent_id`, `agent_type` | yes | `hookSpecificOutput.additionalContext` | `created(work/assignment)`, `receipt(injected)` | `injected` |
+| `SubagentStop` | `session_id`, `turn_id`, `agent_id`, `agent_type`, `last_assistant_message`, `agent_transcript_path` | **no** | — | `created(post/reported_result)` | — |
+| `PreToolUse` | `tool_name`, `tool_input`, `tool_use_id`, `turn_id` | yes | `hookSpecificOutput.additionalContext` | — | — |
+| `PostToolUse` | `tool_name`, `tool_input`, `tool_response`, `turn_id` | yes | `hookSpecificOutput.additionalContext` | — | — |
+| `Stop` | `session_id`, `turn_id`, `last_assistant_message`, `stop_hook_active` | **no** | — | `receipt(projected)` | `projected` |
+| `SessionEnd` | `session_id`, `reason`, `cwd` | **no** | — | `receipt(projected)` | `projected` |
+| `Interrupt` | `session_id`, `turn_id` | **no** | — | — | — |
+| `PermissionRequest` | — | **no** | — | — | — |
+
+**Captures:** session_start, user_prompt, compaction, dispatch, worker_return, turn_end, session_end
+
+**Injects on:** SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, SubagentStart
+
+**Cannot observe:** 
+- Notification (no such event exists on this host)
+- TurnStart / TurnEnd (no turn-boundary events; turn_id is exposed but never fires an event)
+- dedicated apply_patch / exec_command events (reached only by tool_name matching)
+- SessionEnd structured output (the binary carries session-end.command.input but no .output schema)
+
+**Per-event notes**
+
+- `SessionStart` — source ∈ startup|resume|clear|compact. This is the ONLY post-compaction re-seeding channel on this host.
+- `UserPromptSubmit` — turn_id (not prompt_id) is the turn identity on this host; matchers are accepted but ignored for this event.
+- `PreCompact` — CANNOT INJECT — the output schema has no hookSpecificOutput member. Halt-only (continue:false).
+- `PostCompact` — CANNOT INJECT — same schema shape as PreCompact. Recovery rides SessionStart(resume)/UserPromptSubmit.
+- `SubagentStart` — continue:false parses but is not honored — this hook cannot block a dispatch.
+- `SubagentStop` — CANNOT INJECT — no hookSpecificOutput member. decision:"block" means CONTINUE the subagent, not reject it.
+- `PreToolUse` — the commit gate. tool_name is Bash|apply_patch|<mcp tool>; the binary's internal names are apply_patch/unified_exec.
+- `PostToolUse` — also carries updatedMCPToolOutput, a mutation channel Twining deliberately does not use.
+- `Stop` — CANNOT INJECT — no hookSpecificOutput member. decision:"block" tells Codex to continue, it does not reject the turn.
+- `SessionEnd` — CANNOT INJECT and has NO output schema at all; always synchronous even with async:true, and mcp_tool handlers are unsupported.
+- `Interrupt` — CANNOT INJECT — output is systemMessage only, 1–3 s budget. Twining registers nothing here.
+- `PermissionRequest` — CANNOT INJECT, and updatedInput/updatedPermissions/interrupt FAIL CLOSED if present. Twining registers nothing here.
+
+<!-- END GENERATED -->
+
+## Honest limits on this host
+
+- **Seven of twelve events observe only.** `PermissionRequest`, `PreCompact`,
+  `PostCompact`, `SessionEnd`, `Stop`, `SubagentStop` and `Interrupt` have no
+  `additionalContext` member in their output schemas. The adapter captures on
+  those it is registered for and emits nothing on stdout; it never returns a
+  field the host's own schema would reject and then count the event as covered.
+- **Compaction recovery rides `SessionStart(source=resume|compact)` and the next
+  `UserPromptSubmit`.** Those are the only injecting events after a compaction.
+- **`SessionEnd` has no output schema at all**, is always synchronous even with
+  `async: true`, and does not support `mcp_tool` handlers.
+- **Hooks need separate trust.** Installing the plugin does not trust its hooks:
+  Codex records trust by content hash, and editing a trusted hook re-arms the
+  gate. Changing accounts re-arms plugin hook trust. Until a hook is trusted it
+  does not run, and Twining captures nothing — this is reported as an uncaptured
+  gap, never papered over with another host's evidence.
+- **Verify `tool_name` before relying on a matcher.** The binary's internal tool
+  identifiers are `apply_patch` and `unified_exec`; `Bash`/`Edit`/`Write` are
+  Claude-compatibility names presented at the hook boundary.
+
+## Cross-backend honesty
+
+`codexCoverage().cross_backend_substitution_claims` is always `[]`, and a test
+asserts it. Where this host cannot do something, the gap is reported as a gap.
+Claude Code's ability to do the same thing is never offered as evidence that
+Codex did it.
+
+## Real-host verification status (lane 03, 2026-09-15) — NOT VERIFIED
+
+Stated plainly, because C15 D2 makes substituting evidence a defect rather than
+a rounding error: **Twining's capture has not been observed working on a real
+Codex host.** Claude Code's working capture is not evidence about Codex.
+
+What was actually run (Codex 0.154.0, Homebrew cask, macOS 25.6.0), in a
+temporary synthetic project with `.codex/hooks.json` registering a probe hook
+and a v3-enabled `.twining` store:
+
+```
+zsh -lc "cd <temp project> && codex exec --dangerously-bypass-hook-trust \
+         --skip-git-repo-check 'Reply with OK'"
+```
+
+Observed:
+
+- Codex printed `hook: SessionStart` and `hook: SessionStart Completed`, so the
+  hook was **registered and dispatched**.
+- The hook command produced **no filesystem effect at all** — no log file, no
+  marker file, no Twining events — with the target inside the workspace and
+  again with it outside.
+- `UserPromptSubmit` never appeared in the run output. `codex exec` may not
+  fire it at all in non-interactive mode; that is a second open question.
+
+Most likely explanation, consistent with the strings in the shipped binary
+("Hooks can run outside the sandbox **after you trust them**"):
+`--dangerously-bypass-hook-trust` permits an untrusted hook to RUN but does not
+lift the sandbox, so a capture hook has no writable filesystem. If that is
+right, unattended Codex capture requires either a **managed** hook (system/MDM/
+`requirements.toml`, trusted by policy) or a one-time interactive trust through
+`/hooks` in the TUI — neither of which an automated test can perform.
+
+Next step for whoever picks this up: trust the hook once interactively in a TUI
+session, then re-run `TWINING_REAL_HOST=1 npx vitest run
+test/adapters/real-host.test.ts -t Codex`. The test is written and will pass or
+fail honestly; it currently reports **NOT TESTED** rather than passing vacuously.
