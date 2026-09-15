@@ -405,4 +405,16 @@ the host's response JSON on stdout — **not** a Twining envelope, because stdou
 here is the host's channel. **Always exits 0**: a memory layer that breaks the
 user's turn because its own store was unwritable has made itself the problem.
 
-It does nothing at all unless `.twining/store.json` says `"format": 3`.
+Two honest caveats about what "does nothing" means here:
+
+- **The host key is minted on first invocation regardless of store format.**
+  `openRuntime` calls `ensureHostIdentity` before it checks the format, so the
+  first hook event on any store creates `~/.twining/identity/host/host.json`.
+  Nothing is written to the *project* on a 2.x store, and no events are
+  produced, but the machine-level key file does appear.
+- **`SessionStart` still emits the 2.x gate context on a non-v3 store.** That is
+  deliberate (on 2.x the gates are the whole capture mechanism), but it means
+  the verb is not silent there. It is silent for every other event, and the
+  `plugin/hooks/v3-capture-hook.sh` shim exits before calling the CLI at all
+  unless `.twining/store.json` says `"format": 3` — so in the shipped hook
+  configuration the 2.x path is untouched.

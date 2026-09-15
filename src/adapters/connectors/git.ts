@@ -159,15 +159,11 @@ export type Qualification =
   | { qualified: true; observation: string; observed_at: string; result: Record<string, unknown> }
   | {
       qualified: false;
-      reason: "stale" | "never_observed" | "unreachable" | "changed";
+      reason: "unreachable" | "changed" | "not_recorded";
       detail: string;
-      /** Present for `stale`: how old the last-known answer is. */
-      last_known?: { observed_at: string; age_ms: number; result: Record<string, unknown> };
     };
 
 export interface RequalifyOptions {
-  /** How old an observation may be and still qualify a consequential action. */
-  maxAgeMs?: number;
   /** The value the caller believes is current — a mismatch refuses with `changed`. */
   expect?: Record<string, unknown>;
   now?: () => number;
@@ -176,18 +172,24 @@ export interface RequalifyOptions {
 /**
  * Qualify a consequential action against a live fact.
  *
- * The contract is refusal-by-default. There is no code path here that returns
- * `qualified: true` from a cached value: either a fresh check succeeded inside
- * `maxAgeMs`, or the answer is a refusal with a named reason. That is the
- * difference between "the branch still exists" and "the branch existed when we
- * last looked", and the whole reason the class is called volatile.
+ * The contract is refusal-by-default, and it is enforced structurally: this
+ * function ALWAYS runs the check itself and never consults a cached answer, so
+ * there is no freshness window to configure and no code path that qualifies
+ * from a stored observation. (An earlier version took a `maxAgeMs` that could
+ * not fire — the age of a check that just ran is always zero — which is worse
+ * than no option at all: it read like a staleness policy while enforcing
+ * nothing. Serving a cached observation with its age is a separate, honest
+ * operation and belongs to the retrieval layer, labelled `stale`.)
+ *
+ * The three refusals: `unreachable` (the check could not be completed),
+ * `changed` (the live value is not what the caller believed), `not_recorded`
+ * (the check ran but no durable observation was persisted to cite).
  */
 export async function requalify(
   runtime: V3Runtime,
   check: () => CheckResult,
   opts: RequalifyOptions = {},
 ): Promise<Qualification> {
-  const maxAge = opts.maxAgeMs ?? 5 * 60_000;
   const now = opts.now ?? (() => Date.now());
 
   const result = check();
@@ -216,18 +218,24 @@ export async function requalify(
     }
   }
 
-  const age = 0; // the check just ran
-  if (age > maxAge) {
+  // A qualification cites the observation that justifies it. If the store did
+  // not persist one there is nothing to cite, and returning `qualified: true`
+  // with a placeholder string would hand the caller an unverifiable claim —
+  // exactly the shape of evidence this module exists to refuse.
+  if (!observed) {
     return {
       qualified: false,
-      reason: "stale",
-      detail: `the freshest available observation is ${age} ms old, older than the ${maxAge} ms policy`,
+      reason: "not_recorded",
+      detail:
+        "the live check succeeded but its observation could not be persisted " +
+        "(the store is not v3-enabled, or the append was refused), so there is " +
+        "no durable evidence to qualify a consequential action against",
     };
   }
 
   return {
     qualified: true,
-    observation: observed?.id ?? "(not recorded: store is not v3-enabled)",
+    observation: observed.id,
     observed_at: observedAt,
     result: result.result,
   };

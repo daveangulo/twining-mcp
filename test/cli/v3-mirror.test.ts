@@ -139,8 +139,34 @@ describe("on a v3 store: the twin event appears", () => {
       expect(post!.evidence_class).toBe("proposal");
       // The 2.x scope string became a v3 scope path.
       expect(post!.scope.path).toBe("src/auth");
-      // The producer is the host key; agent_id would be asserted_actor only.
+      // The producer is the host key; agent_id is asserted_actor only.
       expect(post!.producer.principal).toBe(runtime.identity.principal_id);
+    } finally {
+      runtime.close();
+    }
+  }, 90_000);
+
+  it("carries the caller's agent_id into producer.asserted_actor — recorded, never authoritative", async () => {
+    const r = run([
+      "post",
+      "--json",
+      JSON.stringify({ entry_type: "finding", summary: "who said this?", agent_id: "lane-03-runtime" }),
+    ]);
+    expect(r.status).toBe(0);
+
+    const runtime = openRuntime({
+      projectRoot,
+      env: { ...process.env, HOME: root, TWINING_IDENTITY_HOME: identityHome },
+    });
+    try {
+      await runtime.store!.admit();
+      const post = (await runtime.store!.events({})).find((e) => e.record?.type === "post")!;
+      // The label the caller supplied is preserved...
+      expect(post.producer.asserted_actor).toBe("lane-03-runtime");
+      // ...and confers nothing: the authenticated producer is still the host
+      // key, so a caller cannot become another principal by naming one.
+      expect(post.producer.principal).toBe(runtime.identity.principal_id);
+      expect(post.producer.kind).toBe("agent");
     } finally {
       runtime.close();
     }

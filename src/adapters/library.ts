@@ -78,7 +78,13 @@ export class LibraryAdapter {
     return this.runtime.append({
       kind: "created",
       recordType: "work",
-      evidenceClass: "verified_observation",
+      // `reported_result`, not `verified_observation`: this adapter checked
+      // nothing. The coordinator TOLD us it dispatched a worker, and a class
+      // that means "we verified the source ourselves" must be reserved for
+      // events that carry a real `check_method` (ADR §2.2, §2.4). Minting
+      // class-4 evidence for an unchecked assertion is exactly the
+      // authority-laundering the evidence classes exist to prevent.
+      evidenceClass: "reported_result",
       payload: {
         kind: "assignment",
         system: d.system ?? "library",

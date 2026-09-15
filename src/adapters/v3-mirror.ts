@@ -92,6 +92,10 @@ export async function mirrorCommandWrite(
       kind: mapping.kind,
       ...(mapping.recordType ? { recordType: mapping.recordType } : {}),
       ...(spec.recordId ? { recordId: spec.recordId } : {}),
+      // The caller's agent_id reaches producer.asserted_actor. It was being
+      // collected and then dropped, which made every mirrored event look like
+      // it came from an anonymous host.
+      ...(spec.assertedActor ? { assertedActor: spec.assertedActor } : {}),
       scope,
       // The ONLY place the class is chosen, and it never reads spec.payload.
       evidenceClass: classFor(ingress, "default"),

@@ -201,7 +201,9 @@ export async function handleCodexHook(
       notes: [`codex adapter has no handler for ${event}; nothing captured, nothing claimed`],
     };
   }
-  const outcome = await handler(normalise(raw), deps);
+  // Stamp the host BEFORE delegating: the shared handlers write the capture,
+  // and a capture that names the wrong host is unfixable after the fact.
+  const outcome = await handler(normalise(raw), { ...deps, host: "codex" });
 
   if (!CODEX_INJECTING_EVENTS.has(event)) {
     // The capture stands; the injection does not. The note is emitted for

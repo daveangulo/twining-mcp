@@ -81,7 +81,7 @@ fi
 # a v3 payload must not contain (ADR lane 03; oracle C15 A2-NO-PROSE). On a 2.x
 # store nothing below changes.
 if [[ -f "$TWINING_DIR/store.json" ]] &&
-   grep -q '"'"'"format"[[:space:]]*:[[:space:]]*3'"'"' "$TWINING_DIR/store.json" 2>/dev/null; then
+   grep -q '"format"[[:space:]]*:[[:space:]]*3' "$TWINING_DIR/store.json" 2>/dev/null; then
   exit 0
 fi
 

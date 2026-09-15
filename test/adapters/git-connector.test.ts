@@ -133,6 +133,25 @@ describe("requalification refuses by default", () => {
     runtime.close();
   });
 
+  it("refuses with `not_recorded` when the check ran but nothing durable was persisted", async () => {
+    // A 2.x store persists no observation, so there is nothing to cite. The
+    // earlier version returned qualified:true with a placeholder string in the
+    // `observation` field — an unverifiable claim dressed as evidence.
+    const legacy = makeFixture("twining-gitconn-2x-", { v3: false });
+    try {
+      const runtime = runtimeFor(legacy);
+      const q = await requalify(runtime, () => checkRemoteHead(clone, remote, "main"));
+      expect(q.qualified).toBe(false);
+      if (!q.qualified) {
+        expect(q.reason).toBe("not_recorded");
+        expect(q.detail).toMatch(/no durable evidence/);
+      }
+      runtime.close();
+    } finally {
+      legacy.cleanup();
+    }
+  });
+
   it("refuses with `unreachable` rather than serving the last known answer", async () => {
     const runtime = runtimeFor(fx);
     // Observe successfully first, so a cached answer genuinely exists.

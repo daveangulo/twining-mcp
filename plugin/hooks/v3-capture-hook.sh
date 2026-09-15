@@ -100,10 +100,47 @@ if [[ "$HOOK_INPUT" =~ \"(prompt_id|turn_id)\"[[:space:]]*:[[:space:]]*\"([^\"]+
   TURN_ID="${BASH_REMATCH[2]}"
 fi
 
-# `|| true` on the pipeline: a non-zero exit from the CLI must never surface as
-# a hook failure. Stderr is left attached so diagnostics reach the host's debug
-# log without entering the model's context.
-printf '%s' "$HOOK_INPUT" | TWINING_SESSION_ID="$SESSION_ID" TWINING_TURN_ID="$TURN_ID" \
-  sh "$LAUNCHER" hook "$HOST" "$EVENT" --project "$PROJECT_DIR" || true
+# `|| true`: a non-zero exit from the CLI must never surface as a hook failure.
+# Stderr is left attached so diagnostics reach the host's debug log without
+# entering the model's context.
+#
+# The CLI's stdout is CAPTURED rather than forwarded straight through, because
+# this script's stdout IS the host's protocol channel. Anything that reaches it
+# is parsed by the host as a hook response, so a stray warning from a shim, a
+# node deprecation notice, or a CLI envelope printed by a future code path
+# would all become malformed protocol. We therefore emit only what we have
+# checked is a hook response object.
+# Command substitution captures STDOUT only; stderr is deliberately left
+# attached to this script's stderr so the CLI's diagnostics still reach the
+# host's debug log. (An earlier version added 2>/dev/null here and silently
+# swallowed every "cannot inject" / "could not parse" note — the messages that
+# make a non-injecting event legible instead of merely quiet.)
+CLI_OUT="$(printf '%s' "$HOOK_INPUT" | TWINING_SESSION_ID="$SESSION_ID" TWINING_TURN_ID="$TURN_ID" \
+  sh "$LAUNCHER" hook "$HOST" "$EVENT" --project "$PROJECT_DIR" || true)"
+
+[[ -z "${CLI_OUT//[[:space:]]/}" ]] && exit 0
+
+# Validate with node (already a hard dependency of the CLI we just ran): a JSON
+# object carrying at least one field the host actually honours. Anything else
+# is dropped with a stderr note rather than handed to the host.
+if command -v node >/dev/null 2>&1 &&
+   printf '%s' "$CLI_OUT" | node -e '
+     let raw = "";
+     process.stdin.on("data", (c) => { raw += c; });
+     process.stdin.on("end", () => {
+       try {
+         const v = JSON.parse(raw);
+         const ok = v !== null && typeof v === "object" && !Array.isArray(v) &&
+           ("hookSpecificOutput" in v || "decision" in v || "continue" in v ||
+            "systemMessage" in v);
+         process.exit(ok ? 0 : 1);
+       } catch { process.exit(1); }
+     });
+   ' 2>/dev/null; then
+  printf '%s\n' "$CLI_OUT"
+else
+  printf '[twining] dropped %s bytes of unrecognised hook output (not a hook response object)\n' \
+    "${#CLI_OUT}" >&2
+fi
 
 exit 0

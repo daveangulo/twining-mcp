@@ -271,7 +271,10 @@ describe("launch-cli.sh probe contract", () => {
     expect(r.status).toBe(0);
     const lines = (r.stdout ?? "").trim().split("\n");
     expect(lines).toHaveLength(1);
-    expect(lines[0]).toMatch(/^runner=(override|pin|bundled|global|npx|none) node=(v[0-9.]+|none)$/);
+    // No `npx` rung: the published twining-mcp range carries no `twining` bin,
+    // so that rung could only fail over the network on every hook event.
+    expect(lines[0]).toMatch(/^runner=(override|pin|bundled|global|none) node=(v[0-9.]+|none)$/);
+    expect(lines[0]).not.toContain("runner=npx");
   });
 
   it("reports runner=none — not an error — when nothing is resolvable", () => {

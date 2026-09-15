@@ -69,7 +69,18 @@ export async function runHookVerb(
   const raw = opts.stdin ?? readStdin();
   let input: ClaudeHookInput;
   try {
-    input = raw.trim().length > 0 ? (JSON.parse(raw) as ClaudeHookInput) : {};
+    const parsed: unknown = raw.trim().length > 0 ? JSON.parse(raw) : {};
+    // `null`, a bare array and a scalar all parse successfully and would then
+    // flow into the handlers as a hook payload. JSON.parse("null") succeeding
+    // is not the same as receiving an object.
+    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+      return {
+        stdout: "",
+        exitCode: 0,
+        stderr: "twining hook: the host's stdin was valid JSON but not an object; nothing captured\n",
+      };
+    }
+    input = parsed as ClaudeHookInput;
   } catch (e) {
     return {
       stdout: "",

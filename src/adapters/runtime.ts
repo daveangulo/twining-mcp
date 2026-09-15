@@ -48,7 +48,12 @@ export interface V3Runtime {
   source: SourceInfo;
   storeId: string | null;
   append(
-    spec: Omit<BuildEventSpec, "producer" | "source" | "scope"> & { scope?: Scope; ingress?: Ingress },
+    spec: Omit<BuildEventSpec, "producer" | "source" | "scope"> & {
+      scope?: Scope;
+      ingress?: Ingress;
+      /** Per-event caller label; overrides the runtime's own asserted_actor. */
+      assertedActor?: string;
+    },
   ): Promise<EventEnvelope | null>;
   appendRaw(event: EventEnvelope, ingress: Ingress): Promise<EventEnvelope | null>;
   receipt(args: {
@@ -165,10 +170,19 @@ export function openRuntime(opts: RuntimeOptions): V3Runtime {
     async append(spec) {
       const s = ensureStore();
       if (!s) return null;
+      // asserted_actor is PER EVENT, not per runtime: one long-lived server
+      // process serves many callers, and a `twining_post` from agent A must
+      // not be labelled with whichever agent_id happened to open the store.
+      // It is recorded and displayed, never authoritative — producer.principal
+      // stays the host key regardless of what the caller claims to be.
+      const perEventProducer =
+        spec.assertedActor && spec.assertedActor !== producer.asserted_actor
+          ? { ...producer, asserted_actor: spec.assertedActor }
+          : producer;
       const event = buildEvent({
         ...spec,
         scope: spec.scope ?? scope,
-        producer,
+        producer: perEventProducer,
         source,
       } as BuildEventSpec);
       return runtime.appendRaw(event, (spec as { ingress?: Ingress }).ingress ?? "adapter");

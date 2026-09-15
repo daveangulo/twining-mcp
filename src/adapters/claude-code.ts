@@ -185,6 +185,11 @@ function additionalContext(event: string, text: string, extra: Record<string, un
   });
 }
 
+/** The host that produced a capture; defaults to Claude Code for its own hooks. */
+function hostOf(deps: HandlerDeps): "claude-code" | "codex" {
+  return deps.host ?? "claude-code";
+}
+
 /** The scope a hook's events carry: the repo, narrowed by nothing we cannot prove. */
 function hookScope(runtime: V3Runtime, input: ClaudeHookInput): Scope {
   const scope: Scope = { ...runtime.scope };
@@ -216,6 +221,13 @@ async function settle(runtime: V3Runtime): Promise<void> {
 export interface HandlerDeps {
   runtime: V3Runtime;
   ingress: Ingress;
+  /**
+   * Which host this capture came from. The Codex adapter delegates to these
+   * handlers, so without it every Codex capture was stamped "claude-code" —
+   * a record that misnames its own origin is worse than one that omits it,
+   * because a reader has no way to tell it is wrong.
+   */
+  host?: "claude-code" | "codex";
   /** 2.x instruction text, used ONLY when the store is not v3-enabled. */
   legacyGateText?: string;
   budget?: number;
@@ -264,10 +276,10 @@ export async function handleSessionStart(input: ClaudeHookInput, deps: HandlerDe
       source_kind: "other",
       observed_at: new Date().toISOString(),
       volatile: false,
-      check_method: "claude-code SessionStart hook",
+      check_method: `${hostOf(deps)} SessionStart hook`,
       result: {
         kind: "session_start",
-        host: "claude-code",
+        host: hostOf(deps),
         session,
         start_source: input.source ?? "startup",
         cwd: input.cwd ?? null,
@@ -365,7 +377,7 @@ export async function handleUserPromptSubmit(input: ClaudeHookInput, deps: Handl
       entry_type: "status",
       summary: truncate(prompt.replace(/\s+/g, " ").trim(), 200),
       detail: prompt,
-      tags: ["human-statement", "claude-code"],
+      tags: ["human-statement", hostOf(deps)],
     },
     attachments: [
       {
@@ -458,10 +470,12 @@ export async function handlePreCompact(input: ClaudeHookInput, deps: HandlerDeps
       source_kind: "other",
       observed_at: new Date().toISOString(),
       volatile: false,
-      check_method: "claude-code PreCompact hook",
+      check_method: `${hostOf(deps)} ${input.hook_event_name === "PostCompact" ? "PostCompact" : "PreCompact"} hook`,
       result: {
-        kind: "compaction",
-        host: "claude-code",
+        // PostCompact is a different moment from PreCompact and says so; Codex
+        // registers both and conflating them would lose the ordering.
+        kind: input.hook_event_name === "PostCompact" ? "post_compaction" : "compaction",
+        host: hostOf(deps),
         session,
         trigger: input.trigger ?? "auto",
         // The cursors a resumed session needs to pick up where this one left off.
@@ -501,7 +515,7 @@ export async function handleSubagentStart(input: ClaudeHookInput, deps: HandlerD
     scope: hookScope(runtime, input),
     payload: {
       kind: "assignment",
-      system: "claude-code",
+      system: hostOf(deps),
       external_id: agentId,
       owner: session,
       stage: "dispatched",
@@ -577,7 +591,7 @@ export async function handleSubagentStop(input: ClaudeHookInput, deps: HandlerDe
       entry_type: "status",
       summary: truncate(`Worker returned: ${agentType} (${agentId}) — review pending`, 200),
       detail: last,
-      tags: ["worker-return", "claude-code", "reported-result"],
+      tags: ["worker-return", hostOf(deps), "reported-result"],
       // The five distinct identities C06 A2 requires be separately observable.
       finisher: { principal: runtime.identity.principal_id, session, host: runtime.identity.host_id, agent: agentId },
       assignment: agentId,
@@ -638,11 +652,27 @@ export async function handleFlush(input: ClaudeHookInput, deps: HandlerDeps): Pr
   // Bring the local replica's projection up to date with everything appended
   // this turn: cheap, idempotent, and it is what makes the next SessionStart's
   // working set correct.
+  let projected = false;
   try {
     await runtime.store.admit();
     await runtime.store.project();
+    projected = true;
   } catch (e) {
     notes.push(`flush failed (non-fatal): ${e instanceof Error ? e.message : String(e)}`);
+  }
+
+  // A `projected` receipt asserts the projection reached this state. Writing
+  // one after admit/project THREW would be a receipt for something that did
+  // not happen — the precise failure the delivery ladder exists to prevent
+  // (ADR §5: no state is ever reported as later than it actually reached).
+  // A failed flush therefore writes NO receipt; the events stay admitted-
+  // pending and the next flush retries.
+  if (!projected) {
+    notes.push(
+      "no receipt written: the projection did not complete, and a receipt for " +
+        "an unreached state is worse than a missing one",
+    );
+    return { stdout: "", exitCode: 0, events, notes };
   }
 
   const receipt = await runtime.receipt({

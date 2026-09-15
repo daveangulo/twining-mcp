@@ -11,8 +11,14 @@
 #   0b. pin       — ./node_modules/twining-mcp/dist/cli/twining.js (relative to cwd)
 #   1.  bundled   — <script dir>/../server/twining-cli.mjs   (shipped with the plugin)
 #   2.  global    — `twining` on PATH (prior npm install -g)
-#   3.  npx       — npx -y -p twining-mcp@^2.0.0 twining
-#   4.  none      — EXIT 0 SILENTLY
+#   3.  none      — EXIT 0 SILENTLY
+#
+# There is deliberately NO npx rung. `twining-mcp@^2.0.0` is the published
+# range, and no published version in it carries the `twining` bin or the `hook`
+# verb — so an npx rung could only ever fail, after a network round trip, on
+# every single hook event. A rung that cannot succeed is not a fallback, it is
+# a latency tax with a failure attached. Restore it (as
+# `npx -y -p twining-mcp@<version> twining`) once a release ships the CLI.
 #
 # Rung 4 is the whole safety story. A capture hook that cannot find its own
 # binary must behave exactly like a hook that is not installed: no stdout, no
@@ -20,12 +26,11 @@
 # our memory layer could not resolve node is a worse failure than not capturing.
 #
 # "--probe" prints ONE line and exits 0:
-#     runner=<override|pin|bundled|global|npx|none> node=<version|none>
+#     runner=<override|pin|bundled|global|none> node=<version|none>
 
 set -u
 
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd) || SCRIPT_DIR=""
-PKG_SPEC="twining-mcp@^2.0.0"
 MODE=run
 [ "${1:-}" = "--probe" ] && MODE=probe && shift
 
@@ -63,8 +68,6 @@ elif [ -n "$SCRIPT_DIR" ] && [ -f "$SCRIPT_DIR/../server/twining-cli.mjs" ] && [
   ENTRY="$SCRIPT_DIR/../server/twining-cli.mjs"
 elif command -v twining >/dev/null 2>&1; then
   RUNNER=global
-elif command -v npx >/dev/null 2>&1; then
-  RUNNER=npx
 fi
 
 if [ "$MODE" = probe ]; then
@@ -75,6 +78,5 @@ fi
 case "$RUNNER" in
   override|pin|bundled) exec node "$ENTRY" "$@" ;;
   global)               exec twining "$@" ;;
-  npx)                  exec npx -y -p "$PKG_SPEC" twining "$@" ;;
   none)                 exit 0 ;;
 esac

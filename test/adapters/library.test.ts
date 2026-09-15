@@ -28,6 +28,10 @@ describe("LibraryAdapter", () => {
     expect(ev).toBeTruthy();
     const p = ev!.payload as Record<string, unknown>;
     expect(ev!.record!.type).toBe("work");
+    // The adapter checked nothing, so it may not claim a verified observation:
+    // `verified_observation` is reserved for events carrying a real check.
+    expect(ev!.evidence_class).toBe("reported_result");
+    expect(ev!.evidence_class).not.toBe("verified_observation");
     expect(p.kind).toBe("assignment");
     expect(p.external_id).toBe("asg-1");
     // R04: recorded, never granted — and the record says so where a reader sees it.

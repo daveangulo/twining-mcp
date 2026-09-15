@@ -125,8 +125,20 @@ export async function buildWorkingSet(
     included.push(rec.record_id);
   }
 
-  const events = await store.events({ limit: undefined });
-  const cursor = events.length > 0 ? events[events.length - 1]!.id : undefined;
+  // The cursor must describe what was EMITTED, not what was looked at.
+  //
+  // It used to be the newest event in the store, which quietly discarded every
+  // record the budget dropped: the next turn asked for "changes since <newest>"
+  // and the omitted records — the ones explicitly reported as not yet
+  // delivered — could never appear again. An omission that is announced once
+  // and then made unreachable is a loss, not a deferral.
+  //
+  // So the cursor advances only to the newest record actually included, and
+  // only when nothing was omitted. With an omission outstanding it stays where
+  // it was, so the next injection reconsiders the dropped records.
+  const emittedVersions = delta.filter((r) => included.includes(r.record_id)).map((r) => r.version);
+  const highestEmitted = emittedVersions.length > 0 ? emittedVersions.reduce((a, b) => (a > b ? a : b)) : undefined;
+  const cursor = omitted.length === 0 ? highestEmitted ?? opts.sinceEventId : opts.sinceEventId;
 
   if (chunks.length === 0) {
     return { text: "", included, omitted, ...(cursor ? { cursor } : {}), empty: true };
