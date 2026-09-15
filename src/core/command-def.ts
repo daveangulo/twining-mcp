@@ -23,12 +23,14 @@ export type CommandSurface = "default" | "full";
  * How a thrown error becomes a response code.
  *
  * "typed" (the default) maps a TwiningError to its own code — what most
- * pre-2.17 handlers did. "internal-only" reproduces the handlers whose catch
- * block deliberately had no TwiningError branch (twining_why, twining_triage,
- * the blackboard read trio, the housekeeping trio, every coordination tool):
- * for those, everything that escapes the engine becomes INTERNAL_ERROR. The
- * flag exists so the extraction is byte-neutral rather than an opportunistic
- * (if arguably better) widening of those codes.
+ * pre-2.17 handlers did. "internal-only" reproduces the 15 handlers whose
+ * catch block deliberately had no TwiningError branch: twining_why,
+ * twining_triage, twining_status, the blackboard read trio (read / query /
+ * recent), the housekeeping trio (housekeeping / archive_stale / unarchive),
+ * and all six coordination tools (agents / register / discover / delegate /
+ * handoff / acknowledge). For those, everything that escapes the engine
+ * becomes INTERNAL_ERROR. The flag exists so the extraction is byte-neutral
+ * rather than an opportunistic (if arguably better) widening of those codes.
  */
 export type ErrorMode = "typed" | "internal-only";
 
@@ -57,6 +59,14 @@ export interface CommandDef<C = unknown> {
    *  its advertised schema). */
   input?: ZodRawShape;
   surface: CommandSurface;
+  /**
+   * The SECOND registration gate: config `tools.mode`. createServer registers
+   * the lifecycle and graph modules only when mode is "full" (the default), so
+   * a "lite" install has no twining_status / twining_archive / graph tools at
+   * all, whatever `tools.full_surface` says. Absent means the command is
+   * registered in both modes.
+   */
+  requiresMode?: "full";
   errors?: ErrorMode;
   /** Method syntax on purpose: it keeps CommandDef<NarrowCtx> assignable to
    *  CommandDef<TwiningContext> (bivariance), so each module can declare the
@@ -77,6 +87,7 @@ export function commandFactory<C>(): {
     description: string;
     input: S;
     surface: CommandSurface;
+    requiresMode?: "full";
     errors?: ErrorMode;
     handler(ctx: C, input: z.infer<z.ZodObject<S>>): Promise<unknown>;
   }): CommandDef<C>;
@@ -84,6 +95,7 @@ export function commandFactory<C>(): {
     name: string;
     description: string;
     surface: CommandSurface;
+    requiresMode?: "full";
     errors?: ErrorMode;
     handler(ctx: C): Promise<unknown>;
   }): CommandDef<C>;

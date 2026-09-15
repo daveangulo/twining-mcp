@@ -74,6 +74,13 @@ Input is validated against the command's zod schema before it runs — the same
 validation the MCP transport applies — so a payload the server would reject is
 not quietly accepted here.
 
+An unrecognized flag, or a payload passed as a bare positional argument, is
+**refused** (exit 2) rather than ignored. This is not pedantry:
+`twining twining_archive --jsonn '{"retain":200}'` would otherwise drop the
+payload and run an argument-free `twining_archive`, which sweeps the whole
+board. A dropped payload must never look like a successful call. (A flag's
+*value* may start with `-` — only unknown flags are refused.)
+
 ### Output
 
 Exactly one JSON envelope on stdout, newline-terminated, and nothing else.
@@ -81,7 +88,7 @@ Every diagnostic (`[twining] …` store notices, ingest lines, the keyword
 fallback notice) goes to stderr.
 
 ```json
-{"ok":true,"schema_version":"1","server_version":"2.17.0","command":"twining_assemble","result":{"briefing":"…"}}
+{"ok":true,"schema_version":"1","server_version":"2.17.0","command":"twining_assemble","project_root":"/repo","store_dir":"/repo/.twining","result":{"briefing":"…"}}
 ```
 
 ```json
@@ -90,6 +97,12 @@ fallback notice) goes to stderr.
 
 `result` is byte-identical to what the matching MCP tool returns inside its
 `content[0].text`.
+
+Every success envelope also names the store it actually used — `project_root`
+and `store_dir`, always absolute. Check them when a call surprises you: inside
+a linked git worktree a cwd-default call targets the **main** checkout's store
+(see [Store resolution](#store-resolution)), and writing to the wrong store is
+the one failure mode the CLI cannot detect on your behalf.
 
 `--version` and `--help` are the two exceptions: they print plain text, because
 they describe the binary rather than invoking a command. Machine-readable
@@ -147,10 +160,19 @@ run in a read-only tree, which is exactly when `store_writable: false` is the
 answer you need.
 
 `surface` (`"default"` | `"full"`) says which **MCP tool surface** the command
-appears on (config `tools.full_surface`). **The CLI dispatches every command
-regardless of surface** — the surface gate exists to keep an LLM's tool list
-short, and a shell has no tool list. `surface` is reported so you can tell why
-an MCP peer may not see a command you just ran.
+appears on: `"full"` means an MCP peer sees it only with config
+`tools.full_surface: true`, which hides 24 of the 39 commands.
+
+`requires_mode: "full"` is the **second, independent** MCP gate — config
+`tools.mode`. A `"lite"` install registers no lifecycle or graph tools at all,
+whatever `full_surface` says, so `twining_status`, `twining_archive`,
+`twining_add_entity`, `twining_add_relation`, `twining_neighbors`,
+`twining_graph_query` and `twining_prune_graph` are absent there. The field is
+omitted on commands both modes register.
+
+**The CLI dispatches every command regardless of either gate** — they exist to
+keep an LLM's tool list short, and a shell has no tool list. Both fields are
+reported so you can tell why an MCP peer may not see a command you just ran.
 
 ## Store resolution
 
@@ -279,7 +301,7 @@ Small, and all deliberate:
 
 | | MCP server | CLI |
 | --- | --- | --- |
-| tool/command surface | `tools.full_surface` hides 16 commands | every command dispatchable; `surface` reported in `capabilities` |
+| tool/command surface | `tools.full_surface` hides 24 commands; `tools.mode: "lite"` hides 7 more | every command dispatchable; `surface` + `requires_mode` reported in `capabilities` |
 | embedding model | downloads on first use if absent | never downloads; keyword fallback |
 | pending-queue drain | on startup + every 60s | skipped (left to the server) |
 | dashboard, telemetry | started / initialized | never |

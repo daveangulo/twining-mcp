@@ -17,6 +17,8 @@ export const graphCommands: CommandDef<GraphCtx>[] = [
   define({
     name: "twining_add_entity",
     surface: "default",
+    // Registered only when config tools.mode is "full" (the default).
+    requiresMode: "full",
     description:
       "Add or update a knowledge graph entity. Uses upsert semantics: if an entity with the same name and type exists, its properties are merged and updated. Returns the entity ID.",
     input: {
@@ -48,6 +50,8 @@ export const graphCommands: CommandDef<GraphCtx>[] = [
   define({
     name: "twining_add_relation",
     surface: "default",
+    // Registered only when config tools.mode is "full" (the default).
+    requiresMode: "full",
     description:
       "Add a relation between two knowledge graph entities. Source and target can be entity IDs or names. Returns an error for ambiguous name matches. Upsert semantics: re-adding the same (source, target, type) merges properties instead of duplicating the edge. Relations are provenance-marked: agent-typed edges get properties.origin \"declared\", auto-populated edges \"derived\", absent means legacy/unknown.",
     input: {
@@ -87,6 +91,8 @@ export const graphCommands: CommandDef<GraphCtx>[] = [
   define({
     name: "twining_neighbors",
     surface: "default",
+    // Registered only when config tools.mode is "full" (the default).
+    requiresMode: "full",
     description:
       "Traverse the knowledge graph from an entity, returning neighbors up to a given depth (max 3). Supports filtering by relation type. Useful for understanding how entities connect.",
     input: {
@@ -114,6 +120,8 @@ export const graphCommands: CommandDef<GraphCtx>[] = [
   define({
     name: "twining_graph_query",
     surface: "default",
+    // Registered only when config tools.mode is "full" (the default).
+    requiresMode: "full",
     description:
       "Search the knowledge graph for entities by name or property substring match. Case-insensitive. Returns matching entities with their properties.",
     input: {
@@ -139,6 +147,8 @@ export const graphCommands: CommandDef<GraphCtx>[] = [
   define({
     name: "twining_prune_graph",
     surface: "default",
+    // Registered only when config tools.mode is "full" (the default).
+    requiresMode: "full",
     description:
       "Remove orphaned knowledge graph entities that have no relations. Use this to clean up stale or disconnected entities. Optionally filter by entity type to only prune certain kinds.",
     input: {

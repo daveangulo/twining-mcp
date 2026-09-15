@@ -45,17 +45,29 @@ export class Embedder {
    *  Set by the CLI, whose sandboxes (Codex) have no network at all — a
    *  download attempt there is a multi-second hang ending in the same
    *  keyword fallback we can choose up front and say so. */
-  private readonly offline: boolean;
+  private offline: boolean;
 
   constructor(twiningDir: string, options: EmbedderOptions = {}) {
     this.twiningDir = twiningDir;
     this.offline = options.offline ?? false;
   }
 
-  /** Get or create a singleton instance for a given twiningDir. */
+  /**
+   * Get or create a singleton instance for a given twiningDir.
+   *
+   * In practice the CLI always constructs the first instance in its own fresh
+   * process, so `options` is never dropped on a real path. Even so, a cached
+   * instance is UPGRADED to offline when offline is asked for and never
+   * downgraded: offline is the strictly more conservative mode, so silently
+   * honouring the earlier, more permissive flag is the one direction that
+   * could put a request on the network that a caller had ruled out.
+   */
   static getInstance(twiningDir: string, options: EmbedderOptions = {}): Embedder {
     const existing = Embedder.instances.get(twiningDir);
-    if (existing) return existing;
+    if (existing) {
+      if (options.offline) existing.offline = true;
+      return existing;
+    }
     const instance = new Embedder(twiningDir, options);
     Embedder.instances.set(twiningDir, instance);
     return instance;

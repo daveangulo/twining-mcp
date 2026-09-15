@@ -4,6 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { resolveWorktreeMain } from "../../src/utils/project-root.js";
 
 const ENTRY = path.resolve(__dirname, "..", "..", "dist", "cli", "twining.js");
 const PKG_VERSION = (
@@ -15,9 +16,36 @@ interface Envelope {
   schema_version: string;
   server_version: string;
   command: string | null;
+  project_root?: string;
+  store_dir?: string;
   result?: Record<string, unknown>;
   error?: { code: string; message: string };
 }
+
+/**
+ * A real model cache, if this machine has one. `.twining/models/` is
+ * gitignored, so this is always absent on CI and the test that needs it skips.
+ * In a linked worktree the cache lives in the main checkout — the same
+ * redirect the store itself follows.
+ */
+const REPO_ROOT = path.resolve(__dirname, "..", "..");
+function findModelCache(): string | null {
+  const roots = [REPO_ROOT, resolveWorktreeMain(REPO_ROOT)].filter(
+    (r): r is string => typeof r === "string",
+  );
+  for (const root of roots) {
+    const cache = path.join(root, ".twining", "models");
+    if (
+      fs.existsSync(
+        path.join(cache, "Xenova", "all-MiniLM-L6-v2", "onnx", "model.onnx"),
+      )
+    ) {
+      return cache;
+    }
+  }
+  return null;
+}
+const REAL_MODEL_CACHE = findModelCache();
 
 function run(
   args: string[],
@@ -90,6 +118,7 @@ describe("twining capabilities", () => {
       commands: Array<{
         name: string;
         surface: string;
+        requires_mode?: string;
         description: string;
         input_schema: { type: string; properties?: Record<string, unknown> };
       }>;
@@ -113,6 +142,17 @@ describe("twining capabilities", () => {
     expect(
       result.commands.find((c) => c.name === "twining_triage")!.surface,
     ).toBe("full");
+
+    // The SECOND MCP gate (tools.mode) is reported too, and only where it
+    // applies: twining_status is default-surface yet absent in a lite install.
+    const status = result.commands.find((c) => c.name === "twining_status")!;
+    expect(status.surface).toBe("default");
+    expect(status.requires_mode).toBe("full");
+    expect(
+      result.commands.filter((c) => c.requires_mode === "full").map((c) => c.name),
+    ).toHaveLength(7);
+    // Omitted where both modes register the command.
+    expect(assemble.requires_mode).toBeUndefined();
 
     // Listing must never initialize a store.
     expect(fs.existsSync(path.join(projectRoot, ".twining"))).toBe(false);
@@ -385,4 +425,173 @@ describe("twining is offline-safe", () => {
       fs.rmSync(emptyHome, { recursive: true, force: true });
     }
   });
+});
+
+describe("twining reports the store it used", () => {
+  it("every success envelope names project_root and store_dir, absolute", () => {
+    const r = run([
+      "post",
+      "--project",
+      projectRoot,
+      "--json",
+      JSON.stringify({ entry_type: "finding", summary: "which store?" }),
+    ]);
+    expect(r.status).toBe(0);
+    const env = envelope(r.stdout);
+    // path.resolve absolutizes; it deliberately does NOT canonicalize
+    // symlinks, so the reported path is the one the caller named.
+    expect(env.project_root).toBe(path.resolve(projectRoot));
+    expect(env.store_dir).toBe(path.join(path.resolve(projectRoot), ".twining"));
+    expect(path.isAbsolute(env.project_root!)).toBe(true);
+  });
+
+  it("absolutizes a RELATIVE --project for reporting without changing resolution", () => {
+    const parent = path.dirname(projectRoot);
+    const leaf = path.basename(projectRoot);
+    const r = run(["capabilities", "--project", `./${leaf}`], { cwd: parent });
+    expect(r.status).toBe(0);
+    const env = envelope(r.stdout);
+    const result = env.result as { project_root: string; store_dir: string };
+    expect(path.isAbsolute(result.project_root)).toBe(true);
+    expect(result.project_root).not.toContain("./");
+    expect(result.store_dir).toBe(path.join(result.project_root, ".twining"));
+    // Resolution is unchanged: it still described the directory we named.
+    expect(path.basename(result.project_root)).toBe(leaf);
+  });
+});
+
+describe("twining refuses arguments it does not understand", () => {
+  it("a mistyped flag is refused, NOT silently dropped into an argument-free call", () => {
+    // The motivating case: an argument-free twining_archive sweeps the board.
+    const r = run([
+      "twining_archive",
+      "--project",
+      projectRoot,
+      "--jsonn",
+      JSON.stringify({ retain: 200 }),
+    ]);
+    expect(r.status).toBe(2);
+    const env = envelope(r.stdout);
+    expect(env.ok).toBe(false);
+    expect(env.error!.code).toBe("USAGE");
+    expect(env.error!.message).toContain("--jsonn");
+    expect(r.stderr).toContain("--jsonn");
+    // Nothing ran: no store was even created.
+    expect(fs.existsSync(path.join(projectRoot, ".twining"))).toBe(false);
+  });
+
+  it("a payload passed as a bare positional argument is refused", () => {
+    const r = run([
+      "post",
+      "--project",
+      projectRoot,
+      JSON.stringify({ entry_type: "finding", summary: "forgot --json" }),
+    ]);
+    expect(r.status).toBe(2);
+    expect(envelope(r.stdout).error!.code).toBe("USAGE");
+    expect(envelope(r.stdout).error!.message).toContain("--json");
+  });
+
+  it("a flag VALUE may start with a dash", () => {
+    const r = run([
+      "post",
+      "--project",
+      projectRoot,
+      "--agent-id",
+      "-weird-agent",
+      "--json",
+      JSON.stringify({ entry_type: "finding", summary: "dashed agent id" }),
+    ]);
+    expect(r.status).toBe(0);
+    expect(envelope(r.stdout).ok).toBe(true);
+  });
+
+  it("a value flag with no value is refused — a dangling --project must not fall back to the cwd store", () => {
+    const r = run(["status", "--project"]);
+    expect(r.status).toBe(2);
+    const env = envelope(r.stdout);
+    expect(env.error!.code).toBe("USAGE");
+    expect(env.error!.message).toContain("--project");
+    expect(env.error!.message).toContain("needs a value");
+  });
+
+  it("capabilities refuses an unknown flag too", () => {
+    const r = run(["capabilities", "--project", projectRoot, "--verbose"]);
+    expect(r.status).toBe(2);
+    expect(envelope(r.stdout).error!.code).toBe("USAGE");
+    expect(envelope(r.stdout).error!.message).toContain("--verbose");
+  });
+});
+
+describe("twining exits cleanly when the ONNX model is cached", () => {
+  // Regression guard for the 134/SIGABRT blocker: process.exit() raced
+  // onnxruntime-node's thread pool and aborted a call that had ALREADY
+  // succeeded and written its envelope. The CLI now sets process.exitCode and
+  // lets the loop drain.
+  it("takes the cached-model branch (no offline fallback notice) and still exits 0", () => {
+    const modelDir = path.join(
+      projectRoot,
+      ".twining",
+      "models",
+      "Xenova",
+      "all-MiniLM-L6-v2",
+    );
+    fs.mkdirSync(modelDir, { recursive: true });
+    fs.writeFileSync(path.join(modelDir, "config.json"), "{}");
+
+    const env: NodeJS.ProcessEnv = { ...process.env };
+    delete env.VITEST;
+    delete env.VITEST_WORKER_ID;
+    delete env.VITEST_POOL_ID;
+
+    const r = run(
+      [
+        "post",
+        "--project",
+        projectRoot,
+        "--json",
+        JSON.stringify({ entry_type: "finding", summary: "cached model branch" }),
+      ],
+      { env },
+    );
+    expect(r.status).toBe(0);
+    const parsed = envelope(r.stdout);
+    expect(parsed.ok).toBe(true);
+    expect(parsed.command).toBe("twining_post");
+    // A cached model means the pre-check does NOT short-circuit, so the
+    // offline notice must be absent — this is the branch the offline test
+    // above cannot reach.
+    expect(r.stderr).not.toContain("no download attempted");
+  });
+
+  it.skipIf(!REAL_MODEL_CACHE)(
+    "exits 0 with a real model cache (the exact shape that aborted with 134)",
+    () => {
+      // Symlinked, not copied: the cache is ~87 MB.
+      fs.mkdirSync(path.join(projectRoot, ".twining"), { recursive: true });
+      fs.symlinkSync(REAL_MODEL_CACHE!, path.join(projectRoot, ".twining", "models"));
+
+      const env: NodeJS.ProcessEnv = { ...process.env };
+      delete env.VITEST;
+      delete env.VITEST_WORKER_ID;
+      delete env.VITEST_POOL_ID;
+
+      for (let i = 0; i < 3; i++) {
+        const r = run(
+          [
+            "post",
+            "--project",
+            projectRoot,
+            "--json",
+            JSON.stringify({ entry_type: "finding", summary: `real model ${i}` }),
+          ],
+          { env },
+        );
+        // 134 here means process.exit() is back, racing the ONNX thread pool.
+        expect(r.status, `run ${i} stderr: ${r.stderr}`).toBe(0);
+        expect(envelope(r.stdout).ok).toBe(true);
+        expect(r.stderr).not.toContain("mutex lock failed");
+      }
+    },
+  );
 });

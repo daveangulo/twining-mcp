@@ -42,6 +42,13 @@ interface OkEnvelope {
   schema_version: string;
   server_version: string;
   command: string;
+  /** Absolute — which store this call actually read and wrote. Reported on
+   *  every success because the linked-worktree redirect (a cwd-default call
+   *  inside a worktree targets the MAIN checkout's store) is otherwise
+   *  invisible on the happy path, and "wrote to the wrong store" is the one
+   *  failure this CLI cannot detect for you. */
+  project_root: string;
+  store_dir: string;
   result: unknown;
 }
 interface ErrEnvelope {
@@ -60,12 +67,21 @@ function writeStdout(text: string): void {
   }
 }
 
-function emitOk(command: string, result: unknown): void {
+function emitOk(
+  command: string,
+  store: { projectRoot: string; storeDir: string },
+  result: unknown,
+): void {
   const envelope: OkEnvelope = {
     ok: true,
     schema_version: CLI_SCHEMA_VERSION,
     server_version: PKG_VERSION,
     command,
+    // Absolutized for REPORTING only — resolution already happened against the
+    // path the caller gave, and path.resolve here never changes which store is
+    // used, only how it is named back.
+    project_root: path.resolve(store.projectRoot),
+    store_dir: path.resolve(store.storeDir),
     result,
   };
   writeStdout(JSON.stringify(envelope) + "\n");
@@ -95,6 +111,55 @@ function flagValue(args: string[], name: string): string | undefined {
 
 function hasFlag(args: string[], name: string): boolean {
   return args.includes(name);
+}
+
+/** Flags the command front end understands, and whether each takes a value. */
+const COMMAND_FLAGS: Record<string, "value" | "boolean"> = {
+  "--json": "value",
+  "--input-file": "value",
+  "--project": "value",
+  "--agent-id": "value",
+  "--stdin": "boolean",
+};
+
+/**
+ * Reject anything the command front end does not understand.
+ *
+ * Without this, a typo silently changes the call instead of failing it:
+ * `twining twining_archive --jsonn '{"retain":200}'` parsed as an
+ * argument-free archive, and an argument-free archive sweeps the whole board.
+ * A dropped payload must never look like a successful call.
+ *
+ * Positional tokens are refused for the same reason — `twining post '{...}'`
+ * (the `--json` forgotten) would otherwise post nothing and report success.
+ */
+function validateCommandArgs(
+  args: string[],
+  allowed: Record<string, "value" | "boolean"> = COMMAND_FLAGS,
+): string | null {
+  for (let i = 0; i < args.length; i++) {
+    const token = args[i]!;
+    const kind = allowed[token];
+    if (kind === "value") {
+      // The next token is this flag's value, whatever it looks like.
+      if (i + 1 >= args.length) {
+        // A dangling `--project` would otherwise fall through to the cwd
+        // default and write to a DIFFERENT store than the caller named.
+        return `"${token}" needs a value`;
+      }
+      i++;
+      continue;
+    }
+    if (kind === "boolean") continue;
+    if (token.startsWith("-")) {
+      return `unknown option "${token}"`;
+    }
+    return (
+      `unexpected argument "${token}" — pass the payload with ` +
+      `--json '<json>', --input-file <f>, or --stdin`
+    );
+  }
+  return null;
 }
 
 /**
@@ -163,8 +228,11 @@ function buildCapabilities(projectRoot: string): Record<string, unknown> {
     name: "twining",
     server_version: PKG_VERSION,
     schema_version: CLI_SCHEMA_VERSION,
-    project_root: projectRoot,
-    store_dir: probe.storeDir,
+    // Absolutized for REPORTING only: a relative --project still resolves
+    // exactly as it did, it is just not echoed back as a path that means
+    // something different from another directory.
+    project_root: path.resolve(projectRoot),
+    store_dir: path.resolve(probe.storeDir),
     store_exists: probe.exists,
     store_writable: probe.writable,
     // The CLI dispatches every command regardless of surface; `surface` says
@@ -173,6 +241,9 @@ function buildCapabilities(projectRoot: string): Record<string, unknown> {
     commands: commandRegistry.list().map((def) => ({
       name: def.name,
       surface: def.surface,
+      // Second registration gate: absent unless config tools.mode must be
+      // "full" for an MCP peer to have this command at all.
+      ...(def.requiresMode ? { requires_mode: def.requiresMode } : {}),
       description: def.description,
       input_schema: def.input
         ? zodToJsonSchema(z.object(def.input), { $refStrategy: "none" })
@@ -269,10 +340,20 @@ export async function runTwiningCli(argv: string[]): Promise<number> {
   const projectRoot = resolveProjectRoot(argv, process.env, process.cwd());
 
   if (dispatch.kind === "capabilities") {
+    const capsError = validateCommandArgs(dispatch.args, { "--project": "value" });
+    if (capsError) {
+      console.error(`twining: ${capsError}\n${TWINING_CLI_USAGE}`);
+      emitError("capabilities", "USAGE", capsError);
+      return 2;
+    }
     // Deliberately does NOT build a context: listing commands must never
     // create a .twining/ directory, and must work in an unwritable tree so
     // store_writable can report the bad news instead of crashing on it.
-    emitOk("capabilities", buildCapabilities(projectRoot));
+    emitOk(
+      "capabilities",
+      { projectRoot, storeDir: probeStore(projectRoot).storeDir },
+      buildCapabilities(projectRoot),
+    );
     return 0;
   }
 
@@ -282,6 +363,14 @@ export async function runTwiningCli(argv: string[]): Promise<number> {
       `unknown command "${dispatch.name}" — run \`twining capabilities\` for the list`;
     console.error(`twining: ${message}`);
     emitError(null, "UNKNOWN_COMMAND", message);
+    return 2;
+  }
+
+  const argError = validateCommandArgs(dispatch.args);
+  if (argError) {
+    const message = `${argError}\n${TWINING_CLI_USAGE}`;
+    console.error(`twining: ${message}`);
+    emitError(def.name, "USAGE", argError);
     return 2;
   }
 
@@ -333,7 +422,11 @@ export async function runTwiningCli(argv: string[]): Promise<number> {
     // tool call, so a CLI call after a pull sees the pulled records.
     ctx.maybeResync();
     const result = await def.handler(ctx, parsedInput as never);
-    emitOk(def.name, result);
+    emitOk(
+      def.name,
+      { projectRoot: ctx.projectRoot, storeDir: ctx.twiningDir },
+      result,
+    );
     return 0;
   } catch (e) {
     const { message, code } = mapCommandError(e, def.errors);
@@ -362,15 +455,29 @@ const invokedDirectly = ((): boolean => {
   }
 })();
 
+/**
+ * Set the exit code and let the event loop drain — never process.exit().
+ *
+ * When the ONNX model is cached, loading it starts onnxruntime-node's native
+ * thread pool, and process.exit() tears the process down underneath it:
+ * `libc++abi: terminating due to uncaught exception ... mutex lock failed`,
+ * SIGABRT, exit 134 — on a call that SUCCEEDED and already wrote its envelope.
+ * Reproduced 3/3 against a real model cache. The envelope goes out through a
+ * synchronous fs.writeSync(1, …), so nothing is buffered and waiting for the
+ * loop to drain costs only the teardown itself: everything this process opened
+ * (the sqlite handle, the drain timer) is closed in runTwiningCli's finally.
+ */
+function finish(code: number): void {
+  process.exitCode = code;
+}
+
 if (invokedDirectly) {
   runTwiningCli(process.argv)
-    .then((code) => {
-      process.exit(code);
-    })
+    .then(finish)
     .catch((err: unknown) => {
       const message = err instanceof Error ? err.message : String(err);
       console.error(`twining: fatal: ${message}`);
       emitError(null, "INTERNAL_ERROR", message);
-      process.exit(1);
+      finish(1);
     });
 }

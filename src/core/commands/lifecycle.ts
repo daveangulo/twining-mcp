@@ -49,6 +49,8 @@ export const lifecycleCommands: CommandDef<LifecycleCtx>[] = [
   defineNoInput({
     name: "twining_status",
     surface: "default",
+    // Registered only when config tools.mode is "full" (the default).
+    requiresMode: "full",
     errors: "internal-only",
     description:
       "Overall health check of the Twining state. Shows blackboard entry count, decision counts, graph entity/relation counts, actionable warnings, the server_version and resolved storage backend, and a human-readable summary. provisional_decisions is the canonical ratify-queue count — a direct index count no query can distort (scoped variant: twining_triage counts.open.by_kind.decision). Note: twining_assemble now includes a status summary — use this only when you need the full detailed health check.",
@@ -250,6 +252,8 @@ export const lifecycleCommands: CommandDef<LifecycleCtx>[] = [
   define({
     name: "twining_archive",
     surface: "default",
+    // Registered only when config tools.mode is "full" (the default).
+    requiresMode: "full",
     description:
       "Archive old blackboard entries. Moves entries older than a cutoff timestamp to an archive file, preserving decision entries and unresolved need/warning/question entries (#40 — an item counts as resolved when explicitly resolved via twining_resolve or when a later entry references it via relates_to). Optionally posts a summary finding. WARNING: the cutoff defaults to now, so an argument-free call archives everything archivable — pass `before` or `retain` unless a full sweep is intended.",
     input: {

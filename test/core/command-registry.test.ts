@@ -30,7 +30,10 @@ interface Recorded {
   inputSchema?: ZodRawShape;
 }
 
-function collectTools(fullSurface: boolean): Map<string, Recorded> {
+function collectTools(
+  fullSurface: boolean,
+  toolMode: "full" | "lite" = "full",
+): Map<string, Recorded> {
   const recorded = new Map<string, Recorded>();
   const server = {
     registerTool(name: string, config: Recorded) {
@@ -59,15 +62,19 @@ function collectTools(fullSurface: boolean): Map<string, Recorded> {
   if (fullSurface) {
     registerTriageTools(server, { decisionStore: n, blackboardStore: n } as never);
   }
-  // toolMode defaults to "full"
-  registerLifecycleTools(server, "/tmp/p/.twining", n, n, n, n, {} as never, n);
-  registerGraphTools(server, n);
+  // The SECOND gate in createServer: lifecycle + graph register only in
+  // tools.mode "full" (the default).
+  if (toolMode === "full") {
+    registerLifecycleTools(server, "/tmp/p/.twining", n, n, n, n, {} as never, n);
+    registerGraphTools(server, n);
+  }
 
   return recorded;
 }
 
 const DEFAULT_SURFACE = collectTools(false);
 const FULL_SURFACE = collectTools(true);
+const LITE_MODE = collectTools(true, "lite");
 
 describe("command registry ↔ MCP tool surface parity", () => {
   it("registers no command name twice", () => {
@@ -116,11 +123,54 @@ describe("command registry ↔ MCP tool surface parity", () => {
     }
   });
 
+  it("requiresMode marks exactly the commands tools.mode:\"lite\" removes", () => {
+    const removedByLiteMode = [...FULL_SURFACE.keys()]
+      .filter((name) => !LITE_MODE.has(name))
+      .sort();
+    const flagged = commandRegistry
+      .list()
+      .filter((def) => def.requiresMode === "full")
+      .map((def) => def.name)
+      .sort();
+    expect(flagged).toEqual(removedByLiteMode);
+    // Pin the population so a new lifecycle/graph command cannot join the
+    // mode-gated set unnoticed.
+    expect(flagged).toEqual([
+      "twining_add_entity",
+      "twining_add_relation",
+      "twining_archive",
+      "twining_graph_query",
+      "twining_neighbors",
+      "twining_prune_graph",
+      "twining_status",
+    ]);
+  });
+
+  it("the two MCP gates are independent — mode-gated commands are default-surface", () => {
+    for (const def of commandRegistry.list()) {
+      if (def.requiresMode === "full") {
+        expect(def.surface, `${def.name}`).toBe("default");
+      }
+    }
+  });
+
   it("the default surface is a strict subset of the full surface", () => {
     for (const name of DEFAULT_SURFACE.keys()) {
       expect(FULL_SURFACE.has(name), `${name} missing from full surface`).toBe(true);
     }
     expect(DEFAULT_SURFACE.size).toBeLessThan(FULL_SURFACE.size);
+  });
+
+  it("the counts the docs quote are the counts the code has", () => {
+    const all = commandRegistry.list();
+    expect(all).toHaveLength(39);
+    // docs/CLI.md + README: full_surface:false hides 24 of 39, leaving 15.
+    expect(all.filter((d) => d.surface === "full")).toHaveLength(24);
+    expect(DEFAULT_SURFACE.size).toBe(15);
+    // docs/CLI.md: tools.mode:"lite" hides 7 more.
+    expect(all.filter((d) => d.requiresMode === "full")).toHaveLength(7);
+    // CHANGELOG + the ErrorMode doc comment: 15 internal-only handlers.
+    expect(all.filter((d) => d.errors === "internal-only")).toHaveLength(15);
   });
 
   it("the record sentinel is written by the commands, not the MCP layer (Gate 2 works on both fronts)", async () => {

@@ -406,8 +406,12 @@ comes from `--json`, `--input-file <f>`, or `--stdin`. Every command prints
 **one JSON envelope** on stdout and nothing else; diagnostics go to stderr:
 
 ```json
-{"ok":true,"schema_version":"1","server_version":"2.17.0","command":"twining_why","result":{"decisions":[]}}
+{"ok":true,"schema_version":"1","server_version":"2.17.0","command":"twining_why","project_root":"/repo","store_dir":"/repo/.twining","result":{"decisions":[]}}
 ```
+
+Every success envelope names the store it wrote (`project_root`, `store_dir`),
+so the linked-worktree redirect is never silent. Unrecognized flags are
+refused rather than ignored — a dropped payload must not look like success.
 
 Exit codes: `0` success, `1` the command ran and failed, `2` the invocation was
 wrong (usage, unknown command, bad input). `migrate` and `validate-records`
