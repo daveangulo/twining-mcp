@@ -47,6 +47,14 @@ interface IndexEntry {
 
 export class FsTransport implements Transport {
   readonly faults: TransportFaults = {};
+  /**
+   * Named crash points for the C18 fault suite, mirroring the Git carrier's so
+   * the same kill scenarios are reachable on BOTH transports. `export_staged`
+   * fires before any byte is written; `committed` once the bytes are durable on
+   * the carrier; `pushed` once the carrier has them and before the producer has
+   * been told — the response-loss window.
+   */
+  faultHook?: (step: string) => void;
   /** digest → carrier id for the most recent poll, so the inbox can record a representation. */
   readonly lastCarrierIds: Record<string, string> = {};
   private readonly root: string;
@@ -68,6 +76,7 @@ export class FsTransport implements Transport {
   /** Idempotent by id + digest; a conflicting id keeps BOTH sets of bytes. */
   async publish(events: EventEnvelope[]): Promise<PublishReceipt> {
     const carrier_ids: Record<string, string> = {};
+    this.faultHook?.("export_staged");
     for (const ev of events) {
       const shard = ev.occurred_at.slice(0, 7);
       const rel = path.posix.join("events", shard, `${ev.id}.json`);
@@ -90,6 +99,8 @@ export class FsTransport implements Transport {
       this.appendIndex({ id: ev.id, digest: ev.digest, path: rel });
       carrier_ids[ev.digest] = rel;
     }
+    this.faultHook?.("committed");
+    this.faultHook?.("pushed");
     if (this.faults.dropNextPublishReceipt) {
       this.faults.dropNextPublishReceipt = false;
       throw new LostReceiptError(this.id());

@@ -29,6 +29,7 @@
  * admitted-contested variant is kept alive as a todo for the lead.
  */
 import { describe, expect, it, afterAll } from "vitest";
+import { computeEventDigest } from "../../../src/contracts/index.js";
 
 import { correctionFor, currentUseClaim, type SliceProjectedRecord } from "../../../src/events/projection.js";
 import type { EventStore } from "../../../src/events/event-store.js";
@@ -464,15 +465,26 @@ describe("C09 — the correction applies to Story A only; Story B's requirement 
     expect(inf2?.state).toBe("projected");
     expect((await s2.get(f.REQB.id as string))?.superseded_by).toHaveLength(0);
 
-    // TR-14 / A19 — the same id with mutated bytes is rejected, digest unchanged
-    const mutated = { ...(f.INF2 as Record<string, unknown>) };
-    mutated.payload = { ...(f.INF2.payload as Record<string, unknown>), summary: "mutated" };
-    delete mutated.sig;
-    mutated.digest = `sha256:${"e".repeat(64)}`;
+    // TR-14 / A19 — the same id with mutated bytes is rejected, digest unchanged.
+    // The resend carries a CORRECTLY recomputed digest, which is what makes it
+    // an identity reuse rather than merely malformed bytes: a forged digest is
+    // refused one step earlier, on the digest itself (asserted below).
+    const mutatedBody = { ...(f.INF2 as Record<string, unknown>) };
+    mutatedBody.payload = { ...(f.INF2.payload as Record<string, unknown>), summary: "mutated" };
+    delete mutatedBody.sig;
+    delete mutatedBody.digest;
+    const mutated = { ...mutatedBody, digest: computeEventDigest(mutatedBody) };
     const res = s2.receive(mutated, "attacker");
     expect(res.reason).toBe("conflicting_duplicate"); // A19: event_id_reuse_digest_mismatch
     expect((await s2.events({})).find((e) => e.id === f.INF2.id)?.digest).toBe(f.INF2.digest);
     expect((await s2.deliveryState(f.INF2.id as string))?.conflict_rejected).toBe(1);
+
+    // ...and bytes whose DECLARED digest is a fabrication never even reach the
+    // dedup key: keying on a self-declared field would let an attacker suppress
+    // a legitimate event by claiming its id and digest first.
+    const forged = { ...mutatedBody, digest: `sha256:${"e".repeat(64)}` };
+    expect(s2.receive(forged, "attacker").reason).toBe("digest_mismatch");
+    expect((await s2.events({})).find((e) => e.id === f.INF2.id)?.digest).toBe(f.INF2.digest);
     s2.close();
   });
 

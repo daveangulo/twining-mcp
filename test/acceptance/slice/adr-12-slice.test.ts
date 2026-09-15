@@ -18,7 +18,7 @@ import { describe, expect, it, afterAll } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 
-import { mintEventId } from "../../../src/contracts/index.js";
+import { computeEventDigest, mintEventId } from "../../../src/contracts/index.js";
 import { currentUseClaim } from "../../../src/events/projection.js";
 import { FsTransport } from "../../../src/exchange/fs-transport.js";
 import { ReferenceRelay } from "../../../src/exchange/relay.js";
@@ -389,9 +389,13 @@ describe("ADR §12 — vertical slice", () => {
     const forged = { ...(slice.Irec as Record<string, unknown>) };
     forged.payload = { ...(slice.Irec.payload as Record<string, unknown>), summary: "forged" };
     delete forged.sig;
-    forged.digest = mintEventId(); // deliberately not a digest — the store must refuse anyway
-    const res = store.receive({ ...forged, digest: `sha256:${"f".repeat(64)}` }, "attacker");
+    delete forged.digest;
+    // A CORRECTLY digested resend under the same id: the identity-reuse case.
+    const res = store.receive({ ...forged, digest: computeEventDigest(forged) }, "attacker");
     expect(res.reason).toBe("conflicting_duplicate");
+    // Bytes carrying a FABRICATED digest are refused a step earlier, on the
+    // digest itself — otherwise a self-declared field would decide dedup.
+    expect(store.receive({ ...forged, digest: `sha256:${"f".repeat(64)}` }, "attacker").reason).toBe("digest_mismatch");
 
     const after = (await store.events({ record_id: slice.Irec.id as string }))[0]?.digest;
     expect(after).toBe(originalDigest);

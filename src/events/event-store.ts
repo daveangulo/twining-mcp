@@ -24,6 +24,9 @@ import {
   computeEventDigest,
   digestOf,
   eventEnvelopeSchema,
+  sha256Hex,
+  ENVELOPE_V,
+  EVENT_KINDS,
   pathCovers,
   scopeGoverns,
   scopeMatches,
@@ -43,7 +46,8 @@ import {
 import type { AdmissionOutcome, AppendResult, Cursor, EventQuery } from "../contracts/store-api.js";
 import type { DeliveryState } from "../contracts/delivery.js";
 import { openEventsDatabase, dropEventsDatabase, withWriteTxn, type SqliteDatabase } from "./db.js";
-import { causalOrder, projectEvents, type SliceProjectedRecord } from "./projection.js";
+import { exchangeStatus, type ExchangeStatus, type ExchangeStatusOptions } from "../exchange/status.js";
+import { causalOrder, currentUseClaim, projectEvents, type SliceProjectedRecord } from "./projection.js";
 
 /**
  * `conflicting_duplicate` is a REJECT_REASONS value in the delivery contract
@@ -73,6 +77,12 @@ export interface EventStoreOptions {
   knownKeys?: Record<string, KnownKey>;
   /** Injected clock — only ever used for audit stamps, never for ordering. */
   now?: () => string;
+  /**
+   * Named crash points for the C18 fault suite. A hook is allowed never to
+   * return (the child worker calls process.exit inside it), which is how a
+   * kill BETWEEN two durable steps is produced rather than simulated.
+   */
+  faultHook?: (step: string) => void;
 }
 
 export interface TransferView {
@@ -129,6 +139,9 @@ interface JournalRow {
   occurred_at: string;
   parents: string;
   file: string;
+  first_seen: string;
+  /** Exact stored bytes, cached so the projection never depends on the checkout. */
+  envelope: string | null;
   state: DeliveryState;
   reason: string | null;
   pending_on: string | null;
@@ -140,7 +153,7 @@ interface JournalRow {
 
 const ADMITTED_STATES = new Set<DeliveryState>(["admitted", "projected"]);
 /** Quarantine reasons that a later event (a principal record, a membership) can clear. */
-const RETRYABLE_QUARANTINE = new Set(["signature_required", "unauthorized_principal", "attachment_missing"]);
+const RETRYABLE_QUARANTINE = new Set(["signature_required", "unauthorized_principal", "attachment_missing", "signer_unknown", "no_policy_yet"]);
 
 function monthShard(occurredAt: string): string {
   return occurredAt.slice(0, 7); // yyyy-mm
@@ -175,6 +188,7 @@ export class EventStore {
   private readonly hostKey?: HostKey;
   private readonly knownKeys: Record<string, KnownKey>;
   private readonly now: () => string;
+  readonly faultHook?: (step: string) => void;
   private db: SqliteDatabase;
   /** True while rebuild() is replaying the receipt log — suppresses re-logging. */
   private replaying = false;
@@ -187,6 +201,7 @@ export class EventStore {
     this.knownKeys = { ...(opts.knownKeys ?? {}) };
     if (opts.hostKey) this.knownKeys[opts.hostKey.keyId] ??= { publicKeySpkiBase64: opts.hostKey.publicKeySpkiBase64 };
     this.now = opts.now ?? (() => new Date().toISOString());
+    if (opts.faultHook) this.faultHook = opts.faultHook;
     ensureDir(this.eventsDir);
     ensureDir(this.cursorsDir);
     this.db = openEventsDatabase(opts.twiningDir);
@@ -243,8 +258,18 @@ export class EventStore {
       };
     }
 
+    // D1 is ONE durable step with two writes. The event file is fsynced first,
+    // then the journal row; the API returns only after both. A kill between
+    // them leaves a file with no row, which recovery re-journals from the file
+    // — so the caller never held an acknowledgement for a lost event, and
+    // "journaled but not enqueued" is unrepresentable because the outbox is
+    // DERIVED from the journal rather than written separately (C18 §1, B = D1+D2
+    // atomic; the K1-unreachability demonstration).
+    const text = JSON.stringify(envelope, null, 2);
     const file = this.writeEvent(ev, envelope);
-    this.insertJournal(ev, file, "local_persisted", ingress, true);
+    this.faultHook?.("event_file_written");
+    this.insertJournal(ev, file, "local_persisted", ingress, true, undefined, 1, text);
+    this.faultHook?.("journal_row_written");
     this.logAdmission(ev.id, ev.digest, "local_persisted", `appended via ${ingress}`);
     return { event: ev, duplicate: false, state: "local_persisted" };
   }
@@ -257,8 +282,26 @@ export class EventStore {
     if (typeof raw !== "object" || raw === null) return { id: "", state: "rejected", duplicate: false, reason: "schema" };
     const envelope = raw as Record<string, unknown>;
     const id = typeof envelope.id === "string" ? envelope.id : "";
-    const digest = typeof envelope.digest === "string" ? envelope.digest : computeEventDigest(envelope);
     if (!id) return { id: "", state: "rejected", duplicate: false, reason: "schema" };
+
+    /**
+     * The declared digest is VERIFIED before it is used as the dedup key.
+     *
+     * Keying dedup on a self-declared field would let anyone suppress the
+     * delivery of a legitimate event by pre-sending garbage that claims its
+     * id and digest: the real event then arrives, matches an existing row by
+     * (id, digest), and is discarded as a redelivery — a silent loss produced
+     * by an attacker-controlled string. The digest is the one field that can be
+     * checked against the bytes themselves, so it is checked first.
+     */
+    const declared = typeof envelope.digest === "string" ? envelope.digest : undefined;
+    const computed = computeEventDigest(envelope);
+    if (declared !== undefined && declared !== computed) {
+      // Keyed on the COMPUTED digest: the declared one is a claim, and it is
+      // very likely the digest of some OTHER event whose row must not be touched.
+      return this.retainUnapplied(id, computed, envelope, "rejected", "digest_mismatch", `declared ${declared} but the canonical bytes hash to ${computed}`, carrier);
+    }
+    const digest = computed;
 
     if (carrier && carrierId) this.addRepresentation(id, carrier, carrierId);
     const existing = this.rowsForId(id);
@@ -276,25 +319,88 @@ export class EventStore {
       return { id, state: "rejected", duplicate: false, reason: "conflicting_duplicate" };
     }
 
+    // An envelope from a NEWER client, or one naming a kind this build does not
+    // know, is QUARANTINED — not rejected and above all not coerced by dropping
+    // the fields we do not recognise (C17 A8/A9). The prior projection is
+    // untouched: quarantine withholds application, it never rewrites state.
+    if (envelope.v !== ENVELOPE_V) {
+      return this.retainUnapplied(id, digest, envelope, "quarantined", "envelope_version_unsupported", `envelope v=${String(envelope.v)} is not ${ENVELOPE_V}`, carrier);
+    }
+    if (typeof envelope.kind !== "string" || !(EVENT_KINDS as readonly string[]).includes(envelope.kind)) {
+      return this.retainUnapplied(id, digest, envelope, "quarantined", "unknown_kind", `unknown event kind ${JSON.stringify(envelope.kind)}`, carrier);
+    }
+
     const parsed = eventEnvelopeSchema.safeParse(envelope);
     if (!parsed.success) {
-      // Retain the bytes anyway — nothing is ever dropped (ADR §5).
-      const file = path.join("rejected", `${id}.${digest.slice(7, 19)}.json`);
-      durableWrite(path.join(this.eventsDir, file), JSON.stringify(envelope, null, 2));
-      this.db
-        .prepare(
-          `INSERT INTO journal (id,digest,canonical,kind,record_id,record_type,scope,principal,evidence_class,occurred_at,parents,file,state,reason,first_seen)
-           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-        )
-        .run(id, digest, 1, String(envelope.kind ?? "?"), null, null, "{}", "?", "?", String(envelope.occurred_at ?? ""), "[]", file, "rejected", "schema", this.now());
-      this.logAdmission(id, digest, "rejected", "schema");
-      return { id, state: "rejected", duplicate: false, reason: "schema" };
+      const issue = parsed.error.issues[0];
+      return this.retainUnapplied(id, digest, envelope, "rejected", "schema", issue ? `${issue.path.join(".") || "(root)"}: ${issue.message}` : "invalid envelope", carrier);
     }
     const ev = parsed.data;
+    const text = JSON.stringify(envelope, null, 2);
     const file = this.writeEvent(ev, envelope);
-    this.insertJournal(ev, file, "received", "import", true, carrier);
+    this.insertJournal(ev, file, "received", "import", true, carrier, 1, text);
     this.logAdmission(id, digest, "received", carrier ? `received via ${carrier}` : "received");
+    this.faultHook?.("received");
     return { id, state: "received", duplicate: false };
+  }
+
+  /**
+   * Retain bytes that will never be applied, with a reason.
+   *
+   * Quarantine and rejection differ in whether a later event can clear them,
+   * not in whether the bytes survive: nothing is ever dropped (ADR §5), and the
+   * file keeps its ORIGINAL bytes at its original hash — no normalization of
+   * BOMs, line endings or encodings (C17 A16, C24 A-7).
+   */
+  private retainUnapplied(
+    id: string,
+    digest: string,
+    envelope: Record<string, unknown>,
+    state: Extract<DeliveryState, "quarantined" | "rejected">,
+    reason: string,
+    message: string,
+    carrier?: string,
+  ): { id: string; state: DeliveryState; duplicate: boolean; reason?: string } {
+    const dir = state === "quarantined" ? "quarantine" : "rejected";
+    const file = path.join(dir, `${id}.${digest.slice(7, 19)}.json`);
+    const text = JSON.stringify(envelope, null, 2);
+    durableWrite(path.join(this.eventsDir, file), text);
+    // Bytes that are never applied never take ownership of the id: if a
+    // canonical row already holds it, this row is evidence beside it.
+    const canonical = this.rowsForId(id).some((r) => r.canonical === 1) ? 0 : 1;
+    this.db
+      .prepare(
+        `INSERT INTO journal (id,digest,canonical,kind,record_id,record_type,scope,principal,evidence_class,occurred_at,parents,file,envelope,state,reason,first_seen)
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+         ON CONFLICT(id, digest) DO UPDATE SET state = excluded.state, reason = excluded.reason`,
+      )
+      .run(
+        id,
+        digest,
+        canonical,
+        String(envelope.kind ?? "?"),
+        null,
+        null,
+        "{}",
+        String((envelope.producer as { principal?: string } | undefined)?.principal ?? "?"),
+        String(envelope.evidence_class ?? "?"),
+        String(envelope.occurred_at ?? ""),
+        "[]",
+        file,
+        text,
+        state,
+        reason,
+        this.now(),
+      );
+    this.logAdmission(id, digest, state, `${reason}: ${message}`);
+    this.recordIngestAttempt({
+      carrier: carrier ?? "direct",
+      disposition: state === "quarantined" ? "QUARANTINE" : "REFUSE",
+      reason,
+      bytes: text,
+      detail: message,
+    });
+    return { id, state, duplicate: false, reason };
   }
 
   // -------------------------------------------------------------- admission
@@ -310,14 +416,44 @@ export class EventStore {
       const candidates = this.admissionCandidates(ids);
       if (candidates.length === 0) break;
       const view = this.admittedView();
+      /**
+       * The REVOCATION CUT is causal, not arrival-ordered.
+       *
+       * `view.revokedKeys` holds only keys whose revocation this replica has
+       * ALREADY ADMITTED, so an event is denied when either
+       *   (a) the revocation is a causal ancestor of it — the parents rule
+       *       holds the event at `pending_parents` until the revocation is
+       *       admitted, and the next pass then denies it; or
+       *   (b) the revocation was admitted here before the event was offered.
+       * An event that is genuinely CONCURRENT with the revocation is admitted
+       * and flagged `key_revoked_after` (ADR §7: revocation is prospective and
+       * history is not rewritten). Denying concurrent events instead would make
+       * the outcome depend on which batch they arrived in — the arrival-order
+       * authority decision ADR §4.3.1 forbids.
+       */
       let progressed = false;
+      /**
+       * Events admitted EARLIER IN THIS PASS.
+       *
+       * Cycle detection has to see them: three prerequisite edges delivered in
+       * one batch close a ring, and judging each against a view frozen at the
+       * start of the pass admitted all three. Only the cycle check needs this —
+       * the other checks resolve naturally on the next pass, which is what the
+       * loop is for.
+       */
+      const admittedThisPass: EventEnvelope[] = [];
       for (const row of candidates) {
-        const outcome = this.admitOne(row, view);
+        const outcome = this.admitOne(row, view, admittedThisPass);
         outcomes.set(row.id, outcome);
-        if (outcome.state === "admitted") progressed = true;
+        if (outcome.state === "admitted") {
+          progressed = true;
+          const ev = this.envelopeForRow(row);
+          if (ev) admittedThisPass.push(ev);
+        }
       }
       if (!progressed) break;
     }
+    this.faultHook?.("admitted");
     return [...outcomes.values()];
   }
 
@@ -331,14 +467,28 @@ export class EventStore {
     });
   }
 
-  private admitOne(row: JournalRow, view: AdmittedView): AdmissionOutcome {
+  private admitOne(row: JournalRow, view: AdmittedView, admittedThisPass: EventEnvelope[] = []): AdmissionOutcome {
     // 1. Re-validate from the bytes on disk, not from whatever the caller held.
     let raw: unknown;
+    const text = this.readEventFileText(row.file) ?? row.envelope;
+    if (text === null) {
+      return this.settle(row, "quarantined", "attachment_missing", "event file unreadable and no journal copy held");
+    }
     try {
-      raw = JSON.parse(fs.readFileSync(path.join(this.eventsDir, row.file), "utf8"));
+      raw = JSON.parse(text);
     } catch (err) {
       return this.settle(row, "quarantined", "attachment_missing", `event file unreadable: ${(err as Error).message}`);
     }
+    const credential = this.checkCredential(raw, view);
+    if (credential.length > 0) {
+      // C24 C-5: when more than one check fails, EACH is recorded as its own
+      // reason. Collapsing them into one generic denial loses the fact that the
+      // author assertion was refused independently of the scope refusal.
+      for (const c of credential) this.logAdmission(row.id, row.digest, c.state, `${c.reason}: ${c.message}`);
+      const terminal = credential.find((c) => c.state === "rejected") ?? (credential[0] as { state: "rejected" | "quarantined"; reason: string });
+      return this.settle(row, terminal.state, terminal.reason, credential.map((c) => c.reason).join("+"));
+    }
+
     const validation = validateEvent(raw, this.validateOptions("import", view));
     if (!validation.ok) return this.settle(row, ...mapValidationFailure(validation.code), validation.message, validation);
     const ev = validation.event;
@@ -363,7 +513,7 @@ export class EventStore {
     //    admission depend on delivery order (C16 A4.4 plan B, C11 O2).
     const capability = requiredCapability(ev);
     if (capability) {
-      const allowed = this.hasCapability(ev, capability, view);
+      const allowed = this.hasCapability(ev, capability, view, this.ancestorMembership(ev, view, admittedThisPass));
       if (!allowed.ok) {
         return allowed.terminal
           ? this.settle(row, "rejected", "unauthorized", allowed.reason, validation)
@@ -377,7 +527,7 @@ export class EventStore {
     if (!scopeCheck.ok) return this.settle(row, "quarantined", "unauthorized_cross_scope", scopeCheck.reason, validation);
 
     // 6. Cycles in the supersession graph are rejected outright (C22).
-    if (createsCycle(ev, view)) return this.settle(row, "rejected", "cycle", "supersession cycle", validation);
+    if (createsCycle(ev, view, admittedThisPass)) return this.settle(row, "rejected", "cycle", "prerequisite or supersession cycle", validation);
 
     // 7. Class rank: a lower-class successor is ADMITTED, but the reducer
     //    applies it as a contested annotation, never as a supersession (§4.3).
@@ -394,6 +544,50 @@ export class EventStore {
     return this.settle(row, "admitted", undefined, note, validation);
   }
 
+  /**
+   * Credential checks that must not be collapsed into "the signature failed".
+   *
+   * 1. A REVOKED key denies every later event (C24 C-4). Revocation is
+   *    prospective only: events already admitted stay admitted and are flagged
+   *    `key_revoked_after`, because revoking a key does not unsay what was said
+   *    while it was valid (ADR §7).
+   * 2. An ASSERTED AUTHOR that does not match the key's own principal record is
+   *    refused on its own reason (C24 C-5): possession of a valid signature is
+   *    not permission to speak as someone else. A key with no principal record
+   *    is unverifiable rather than false, so the check abstains.
+   * 3. A human-ruling signature by a key that is resolvable but NOT in the
+   *    chain-of-trust closure is QUARANTINED, not rejected: the properly signed
+   *    principal event that would trust it may still be in flight, and refusing
+   *    terminally would make trust depend on delivery order (ADR §7, C12).
+   */
+  private checkCredential(raw: unknown, view: AdmittedView): Array<{ state: "rejected" | "quarantined"; reason: string; message: string }> {
+    const out: Array<{ state: "rejected" | "quarantined"; reason: string; message: string }> = [];
+    const r = raw as { sig?: { key?: string }; producer?: { principal?: string }; evidence_class?: string };
+    const keyId = r.sig?.key;
+    if (typeof keyId !== "string") return out;
+
+    if (view.revokedKeys.has(keyId)) {
+      out.push({ state: "rejected", reason: "credential_revoked", message: `key ${keyId} was revoked; events signed after the revocation cut are denied` });
+    }
+    const bound = view.keyPrincipals.get(keyId);
+    const asserted = r.producer?.principal;
+    if (bound !== undefined && typeof asserted === "string" && bound !== asserted) {
+      out.push({
+        state: "rejected",
+        reason: "author_assertion_not_authenticated",
+        message: `the envelope asserts producer ${asserted} but key ${keyId} belongs to ${bound}; the authenticated principal is ${bound}`,
+      });
+    }
+    if (r.evidence_class === "human_ruling" && !view.humanKeys.has(keyId) && (view.keys.has(keyId) || this.knownKeys[keyId] !== undefined)) {
+      out.push({
+        state: "quarantined",
+        reason: "signer_unknown",
+        message: `key ${keyId} is resolvable but is not a trusted human signer — it was neither bootstrapped nor introduced by an already-trusted human key`,
+      });
+    }
+    return out;
+  }
+
   private settle(
     row: JournalRow,
     state: DeliveryState,
@@ -402,11 +596,15 @@ export class EventStore {
     validation?: ValidationResult,
     pendingOn?: string[],
   ): AdmissionOutcome {
-    const changed = row.state !== state || (row.reason ?? undefined) !== reason;
+    // A deferral whose WAITING SET shrinks is a state change worth recording:
+    // without it the admission log keeps the first, stalest list of missing
+    // prerequisites and an operator reading the trail is told the wrong thing.
+    const pendingJson = pendingOn ? JSON.stringify(pendingOn) : null;
+    const changed = row.state !== state || (row.reason ?? undefined) !== reason || (row.pending_on ?? null) !== pendingJson;
     const admissionsDelta = state === "admitted" && row.state !== "admitted" && row.state !== "projected" ? 1 : 0;
     this.db
       .prepare("UPDATE journal SET state = ?, reason = ?, pending_on = ?, admissions = admissions + ? WHERE id = ? AND canonical = 1")
-      .run(state, reason ?? null, pendingOn ? JSON.stringify(pendingOn) : null, admissionsDelta, row.id);
+      .run(state, reason ?? null, pendingJson, admissionsDelta, row.id);
     if (changed || state === "admitted") this.logAdmission(row.id, row.digest, state, message ?? reason);
     return {
       id: row.id,
@@ -427,6 +625,7 @@ export class EventStore {
       for (const [id, rec] of result.records) ins.run(id, JSON.stringify(rec));
       this.db.prepare("UPDATE journal SET state = 'projected' WHERE state = 'admitted' AND canonical = 1").run();
     });
+    this.faultHook?.("projected");
     return { records: result.records.size, conflicts: result.conflicts };
   }
 
@@ -546,6 +745,7 @@ export class EventStore {
   async setCursor(principal: string, cursor: Cursor): Promise<void> {
     this.db.prepare("INSERT INTO cursors (principal, data) VALUES (?, ?) ON CONFLICT(principal) DO UPDATE SET data = excluded.data").run(principal, JSON.stringify(cursor));
     durableWrite(path.join(this.cursorsDir, `${principal}.json`), JSON.stringify(cursor, null, 2));
+    this.faultHook?.("acked");
   }
 
   /** Two cursors for one principal with diverging positions (ADR §5 `cursor_fork`). */
@@ -654,7 +854,7 @@ export class EventStore {
         return !s || !s.acked;
       })
       .sort((a, b) => (a.id < b.id ? -1 : 1))
-      .map((r) => this.readEnvelope(r.file))
+      .map((r) => this.envelopeForRow(r))
       .filter((e): e is EventEnvelope => e !== null);
   }
 
@@ -695,7 +895,9 @@ export class EventStore {
     return {
       ingress,
       resolveKey: (keyId: string) => this.knownKeys[keyId]?.publicKeySpkiBase64 ?? v.keys.get(keyId),
-      humanKeyIds: new Set([...Object.entries(this.knownKeys).filter(([, k]) => k.human).map(([id]) => id), ...v.humanKeys]),
+      // NOT a union with every admitted human principal: v.humanKeys is already
+      // the chain-of-trust closure over the bootstrapped set (ADR §7).
+      humanKeyIds: v.humanKeys,
     };
   }
 
@@ -706,11 +908,20 @@ export class EventStore {
     return rel;
   }
 
-  private insertJournal(ev: EventEnvelope, file: string, state: DeliveryState, ingress: Ingress, canonical: boolean, carrier?: string, attempts = 1): void {
+  private insertJournal(
+    ev: EventEnvelope,
+    file: string,
+    state: DeliveryState,
+    ingress: Ingress,
+    canonical: boolean,
+    carrier?: string,
+    attempts = 1,
+    envelopeText?: string,
+  ): void {
     this.db
       .prepare(
-        `INSERT INTO journal (id,digest,canonical,kind,record_id,record_type,scope,principal,evidence_class,occurred_at,parents,file,state,reason,first_seen,attempts)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+        `INSERT INTO journal (id,digest,canonical,kind,record_id,record_type,scope,principal,evidence_class,occurred_at,parents,file,envelope,state,reason,first_seen,attempts)
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       )
       .run(
         ev.id,
@@ -725,6 +936,7 @@ export class EventStore {
         ev.occurred_at,
         JSON.stringify(ev.parents ?? []),
         file,
+        envelopeText ?? this.readEventFileText(file),
         state,
         carrier ? `via ${carrier} (${ingress})` : null,
         this.now(),
@@ -809,6 +1021,257 @@ export class EventStore {
     }));
   }
 
+  // --------------------------------------------------- ingest attempts (C17)
+
+  /**
+   * Record one import ATTEMPT of an artifact that is not a well-formed event.
+   *
+   * Keyed on the sha256 of the OBSERVED BYTES, so a byte-identical re-ingest is
+   * the same attempt with a higher retry count rather than a second entry
+   * (C17 A15), and the retained bytes always hash to their ingest hash with no
+   * normalization (A16). A carrier that decoded nothing and moved on would make
+   * both assertions unfalsifiable, which is why transports surface malformed
+   * artifacts instead of returning null.
+   */
+  recordIngestAttempt(a: {
+    carrier: string;
+    carrier_id?: string;
+    disposition: "ADMIT" | "QUARANTINE" | "REFUSE" | "DEFER" | "REPORT_NOT_OBSERVED";
+    reason: string;
+    bytes: string;
+    declared_bytes?: number;
+    completeness?: "COMPLETE" | "INCOMPLETE" | "UNKNOWN";
+    detail?: string;
+  }): string {
+    const artifactId = sha256Hex(Buffer.from(a.bytes, "utf8"));
+    const observed = Buffer.byteLength(a.bytes, "utf8");
+    const existing = this.db.prepare("SELECT artifact_id FROM ingest_attempts WHERE artifact_id = ?").get(artifactId);
+    if (existing) {
+      this.db.prepare("UPDATE ingest_attempts SET retry_count = retry_count + 1, last_seen = ? WHERE artifact_id = ?").run(this.now(), artifactId);
+      this.appendReceiptLog({ k: "ingest_retry", artifact_id: artifactId });
+      return artifactId;
+    }
+    const rel = path.join("quarantine", "artifacts", `${artifactId}.bin`);
+    durableWrite(path.join(this.eventsDir, rel), a.bytes);
+    this.db
+      .prepare(
+        `INSERT INTO ingest_attempts (artifact_id,carrier,carrier_id,disposition,reason,observed_bytes,declared_bytes,completeness,bytes_file,retry_count,first_seen,last_seen,detail)
+         VALUES (?,?,?,?,?,?,?,?,?,1,?,?,?)`,
+      )
+      .run(
+        artifactId,
+        a.carrier,
+        a.carrier_id ?? null,
+        a.disposition,
+        a.reason,
+        observed,
+        a.declared_bytes ?? null,
+        a.completeness ?? (a.declared_bytes !== undefined && a.declared_bytes !== observed ? "INCOMPLETE" : "UNKNOWN"),
+        rel,
+        this.now(),
+        this.now(),
+        a.detail ?? null,
+      );
+    this.appendReceiptLog({ k: "ingest", artifact_id: artifactId, carrier: a.carrier, disposition: a.disposition, reason: a.reason, bytes_file: rel, observed, declared: a.declared_bytes ?? null, detail: a.detail ?? null, carrier_id: a.carrier_id ?? null, completeness: a.completeness ?? null });
+    return artifactId;
+  }
+
+  ingestAttempts(): Array<{
+    artifact_id: string;
+    carrier: string;
+    carrier_id?: string;
+    disposition: string;
+    reason: string;
+    observed_bytes: number;
+    declared_bytes?: number;
+    completeness: string;
+    retry_count: number;
+    detail?: string;
+  }> {
+    return (this.db.prepare("SELECT * FROM ingest_attempts ORDER BY first_seen, artifact_id").all() as Record<string, unknown>[]).map((r) => ({
+      artifact_id: String(r.artifact_id),
+      carrier: String(r.carrier),
+      ...(r.carrier_id ? { carrier_id: String(r.carrier_id) } : {}),
+      disposition: String(r.disposition),
+      reason: String(r.reason),
+      observed_bytes: Number(r.observed_bytes),
+      ...(r.declared_bytes === null || r.declared_bytes === undefined ? {} : { declared_bytes: Number(r.declared_bytes) }),
+      completeness: String(r.completeness ?? "UNKNOWN"),
+      retry_count: Number(r.retry_count),
+      ...(r.detail ? { detail: String(r.detail) } : {}),
+    }));
+  }
+
+  /** The exact bytes of a retained artifact, at its ingest hash. */
+  artifactBytes(artifactId: string): string | null {
+    const row = this.db.prepare("SELECT bytes_file FROM ingest_attempts WHERE artifact_id = ?").get(artifactId) as { bytes_file: string } | undefined;
+    if (!row) return null;
+    try {
+      return fs.readFileSync(path.join(this.eventsDir, row.bytes_file), "utf8");
+    } catch {
+      return null;
+    }
+  }
+
+  // -------------------------------------------------- pending imports (C17)
+
+  /**
+   * Open an unresolved-transfer obligation. While one is open, anything served
+   * from a locally-held version in its scopes carries a fallback marker naming
+   * it and no consequential action qualifies from that version (C17 A12/A13):
+   * the store KNOWS a newer version is in flight, so serving the old one
+   * silently would be the "unreported fallback to an old valid-looking
+   * projection" the case exists to forbid.
+   */
+  openPendingImport(p: { batch_id: string; carrier: string; reason: string; missing: string[]; scopes: Scope[] }): void {
+    this.db
+      .prepare(
+        `INSERT INTO pending_imports (batch_id,carrier,reason,missing,scopes,opened_at) VALUES (?,?,?,?,?,?)
+         ON CONFLICT(batch_id) DO UPDATE SET reason = excluded.reason, missing = excluded.missing, scopes = excluded.scopes, resolved_at = NULL`,
+      )
+      .run(p.batch_id, p.carrier, p.reason, JSON.stringify(p.missing), JSON.stringify(p.scopes), this.now());
+    this.appendReceiptLog({ k: "pending_open", batch_id: p.batch_id, carrier: p.carrier, reason: p.reason, missing: p.missing, scopes: p.scopes });
+  }
+
+  resolvePendingImport(batchId: string): void {
+    this.db.prepare("UPDATE pending_imports SET resolved_at = ? WHERE batch_id = ?").run(this.now(), batchId);
+    this.appendReceiptLog({ k: "pending_resolved", batch_id: batchId });
+  }
+
+  pendingImports(): Array<{ batch_id: string; carrier: string; reason: string; missing: string[]; scopes: Scope[]; opened_at: string }> {
+    return (this.db.prepare("SELECT * FROM pending_imports WHERE resolved_at IS NULL ORDER BY opened_at, batch_id").all() as Record<string, unknown>[]).map((r) => ({
+      batch_id: String(r.batch_id),
+      carrier: String(r.carrier),
+      reason: String(r.reason),
+      missing: JSON.parse(String(r.missing)) as string[],
+      scopes: JSON.parse(String(r.scopes)) as Scope[],
+      opened_at: String(r.opened_at),
+    }));
+  }
+
+  /**
+   * Serve a record WITH the honesty a pending transfer demands (C17 A12/A13).
+   * `fallback_used` is not decoration: the qualification verdict is computed
+   * from it, so a caller cannot read the record without reading the caveat.
+   */
+  async serve(recordId: string, at?: Scope): Promise<{
+    record: SliceProjectedRecord | null;
+    fallback_used: boolean;
+    fallback_source?: string;
+    pending: Array<{ batch_id: string; missing: string[] }>;
+    qualification: { ok: boolean; reason?: string };
+  }> {
+    const record = await this.get(recordId);
+    const pending = this.pendingImports().filter((p) => record === null || p.scopes.some((s) => scopeMatches(s, record.scope)));
+    const base = record && at ? currentUseClaim(record, at) : { ok: false, reason: "no_scope_asked" };
+    if (pending.length === 0) {
+      return { record, fallback_used: false, pending: [], qualification: record && at ? base : { ok: false, reason: record ? "no_scope_asked" : "not_found" } };
+    }
+    return {
+      record,
+      fallback_used: true,
+      fallback_source: `local projection as of ${record?.version ?? "unknown"}`,
+      pending: pending.map((p) => ({ batch_id: p.batch_id, missing: p.missing })),
+      qualification: {
+        ok: false,
+        reason: `pending_unresolved_import:${pending.map((p) => p.batch_id).join(",")}${pending.some((p) => p.missing.length > 0) ? ` missing_events:${pending.flatMap((p) => p.missing).join(",")}` : ""}`,
+      },
+    };
+  }
+
+  // --------------------------------------------------------- deletion (C20)
+
+  /**
+   * Destroy the LOCAL bytes of a tombstoned record and keep the tombstone.
+   *
+   * Only a tombstoned record may be purged: the semantic delete is an admitted
+   * EVENT that propagates, while purge is a local act on local bytes. Nothing
+   * here claims anything about other clones — `erasureReport` says so per
+   * location, in words, because ADR §10.10 forbids the unqualified claim.
+   */
+  async purge(recordId: string): Promise<{ purged: boolean; reason?: string; files_removed: number }> {
+    const rec = await this.get(recordId);
+    if (!rec) return { purged: false, reason: "not_found", files_removed: 0 };
+    if (rec.status !== "tombstoned") return { purged: false, reason: "purge requires an admitted tombstoned event", files_removed: 0 };
+    let removed = 0;
+    for (const row of this.allRows().filter((r) => r.record_id === recordId || r.id === recordId)) {
+      const abs = path.join(this.eventsDir, row.file);
+      if (row.kind === "created" && fs.existsSync(abs)) {
+        // The event stays as a STUB carrying its digest (ADR §10.10): the
+        // identity and the proof of what was there survive; the payload does not.
+        const stub = { purged: true, id: row.id, digest: row.digest, kind: row.kind, purged_at: this.now() };
+        durableWrite(abs, JSON.stringify(stub, null, 2));
+        this.db.prepare("UPDATE journal SET envelope = NULL WHERE id = ? AND digest = ?").run(row.id, row.digest);
+        removed += 1;
+      }
+    }
+    this.db.prepare("INSERT INTO local_erasures (record_id, op, at, detail) VALUES (?,?,?,?) ON CONFLICT DO NOTHING").run(recordId, "purge", this.now(), `${removed} payload file(s) destroyed locally`);
+    this.appendReceiptLog({ k: "purge", id: recordId, files: removed });
+    return { purged: true, files_removed: removed };
+  }
+
+  /**
+   * Drop the local projection row only (`twining forget`). The events stay; a
+   * rebuild brings the record back, which is exactly the difference between
+   * forgetting and deleting and is why the two are separate verbs.
+   */
+  forget(recordId: string): { forgotten: boolean } {
+    const r = this.db.prepare("DELETE FROM projections WHERE record_id = ?").run(recordId);
+    this.db.prepare("INSERT INTO local_erasures (record_id, op, at, detail) VALUES (?,?,?,?) ON CONFLICT DO NOTHING").run(recordId, "forget", this.now(), "projection row removed; events retained");
+    this.appendReceiptLog({ k: "forget", id: recordId });
+    return { forgotten: Number(r.changes) > 0 };
+  }
+
+  localErasures(recordId?: string): Array<{ record_id: string; op: string; at: string; detail?: string }> {
+    const rows = recordId
+      ? (this.db.prepare("SELECT * FROM local_erasures WHERE record_id = ? ORDER BY at").all(recordId) as Record<string, unknown>[])
+      : (this.db.prepare("SELECT * FROM local_erasures ORDER BY at").all() as Record<string, unknown>[]);
+    return rows.map((r) => ({ record_id: String(r.record_id), op: String(r.op), at: String(r.at), ...(r.detail ? { detail: String(r.detail) } : {}) }));
+  }
+
+  /**
+   * What this replica can and cannot say about a deletion, per location.
+   *
+   * Every location this store knows of is enumerated with an honest status.
+   * `uncontrolled` and `not_erased` are first-class answers; there is no code
+   * path that can produce "erased everywhere", which is the point (C20 E1/E2).
+   */
+  async erasureReport(recordId: string, locations: Array<{ id: string; kind: "local_store" | "replica" | "carrier_history" | "backup" | "uncontrolled_clone"; reachable?: boolean }> = []): Promise<{
+    record_id: string;
+    tombstoned: boolean;
+    purged_locally: boolean;
+    locations: Array<{ id: string; kind: string; status: string; note: string }>;
+    global_erasure_claimed: false;
+    statement: string;
+  }> {
+    const rec = await this.get(recordId);
+    const purgedLocally = this.localErasures(recordId).some((e) => e.op === "purge");
+    const rows: Array<{ id: string; kind: string; status: string; note: string }> = [
+      {
+        id: "this replica",
+        kind: "local_store",
+        status: purgedLocally ? "purged" : rec?.status === "tombstoned" ? "tombstoned" : "present",
+        note: purgedLocally ? "local payload bytes destroyed; the event stub and its digest are retained" : "no local purge has run",
+      },
+    ];
+    for (const loc of locations) {
+      if (loc.kind === "uncontrolled_clone") rows.push({ id: loc.id, kind: loc.kind, status: "unknown", note: "outside operator control — never reported as erased or compliant" });
+      else if (loc.kind === "backup") rows.push({ id: loc.id, kind: loc.kind, status: "not_erased", note: "a retained backup still holds the bytes unless it was destroyed and the destruction observed" });
+      else if (loc.kind === "carrier_history") rows.push({ id: loc.id, kind: loc.kind, status: "retention_obligation", note: "git history and every clone of it still carry the bytes; removal is a history-rewrite obligation, not an automatic effect" });
+      else if (loc.reachable === false) rows.push({ id: loc.id, kind: loc.kind, status: "pending", note: "unreachable replica: the obligation stays open with its age, never silently closed" });
+      else rows.push({ id: loc.id, kind: loc.kind, status: rec?.status === "tombstoned" ? "tombstone_delivered" : "unknown", note: "verified only to the extent this replica holds a receipt" });
+    }
+    return {
+      record_id: recordId,
+      tombstoned: rec?.status === "tombstoned",
+      purged_locally: purgedLocally,
+      locations: rows,
+      global_erasure_claimed: false,
+      statement:
+        "Bytes are destroyed only in the locations listed as purged. Remote clones, retained backups and carrier history are NOT erased by any Twining operation and are reported as unknown or not erased.",
+    };
+  }
+
   /** Every journal row, including rejected and quarantined ones (the C10 `quarantine` projection). */
   journalRows(): Array<{
     id: string;
@@ -821,19 +1284,70 @@ export class EventStore {
     evidence_class: string;
     scope: Scope;
     producer: string;
+    first_seen: string;
+    attempts: number;
+    /** Prerequisites this event is still waiting on (machine-readable). */
+    pending_on?: string[];
+    /** The signing key was revoked AFTER this event was admitted (ADR §7). */
+    key_revoked_after?: boolean;
   }> {
-    return this.allRows().map((r) => ({
-      id: r.id,
-      digest: r.digest,
-      canonical: r.canonical === 1,
-      state: r.state,
-      ...(r.reason ? { reason: r.reason } : {}),
-      kind: r.kind,
-      ...(r.record_id ? { record_id: r.record_id } : {}),
-      evidence_class: r.evidence_class,
-      scope: JSON.parse(r.scope) as Scope,
-      producer: r.principal,
+    const view = this.admittedView();
+    return this.allRows().map((r) => {
+      const ev = this.envelopeForRow(r);
+      const revokedAfter = ev?.sig?.key !== undefined && view.revokedKeys.has(ev.sig.key) && ADMITTED_STATES.has(r.state);
+      return {
+        id: r.id,
+        digest: r.digest,
+        canonical: r.canonical === 1,
+        state: r.state,
+        ...(r.reason ? { reason: r.reason } : {}),
+        kind: r.kind,
+        ...(r.record_id ? { record_id: r.record_id } : {}),
+        evidence_class: r.evidence_class,
+        scope: JSON.parse(r.scope) as Scope,
+        producer: r.principal,
+        first_seen: r.first_seen,
+        attempts: r.attempts,
+        ...(r.pending_on ? { pending_on: JSON.parse(r.pending_on) as string[] } : {}),
+        ...(revokedAfter ? { key_revoked_after: true } : {}),
+      };
+    });
+  }
+
+  /** Per-transport transfer rows — the OTHER ladder (R08), never folded into state. */
+  outboxRows(): Array<{ transport: string; event_id: string; state: string; carrier_id?: string; attempts: number; acked: boolean; uncertain: boolean; opened: string[] }> {
+    return (this.db.prepare("SELECT * FROM outbox ORDER BY transport, event_id").all() as Record<string, unknown>[]).map((r) => ({
+      transport: String(r.transport),
+      event_id: String(r.event_id),
+      state: String(r.state),
+      ...(r.carrier_id ? { carrier_id: String(r.carrier_id) } : {}),
+      attempts: Number(r.attempts),
+      acked: Number(r.acked) === 1,
+      uncertain: Number(r.uncertain) === 1,
+      opened: (JSON.parse(String(r.uncertain_windows)) as Array<{ opened: string; closed?: string }>).filter((w) => !w.closed).map((w) => w.opened),
     }));
+  }
+
+  /** Every consumer cursor this replica holds. */
+  allCursors(): Array<{ principal: string; cursor: Cursor }> {
+    return (this.db.prepare("SELECT principal, data FROM cursors ORDER BY principal").all() as Record<string, unknown>[]).map((r) => ({
+      principal: String(r.principal),
+      cursor: JSON.parse(String(r.data)) as Cursor,
+    }));
+  }
+
+  /** The store's audit clock — status surfaces age against it, never against ordering. */
+  nowStamp(): string {
+    return this.now();
+  }
+
+  /**
+   * The R20 observability surface. Implemented in `../exchange/status.js` so
+   * the store keeps the state and the report keeps the presentation; the method
+   * exists here because `store.exchangeStatus()` is what lanes 03 and 04 call.
+   */
+  async exchangeStatus(opts: ExchangeStatusOptions = {}): Promise<ExchangeStatus> {
+    return exchangeStatus(this, opts);
   }
 
   /** Replay the durable receipt log into a freshly rebuilt index. */
@@ -869,6 +1383,49 @@ export class EventStore {
           this.db
             .prepare("INSERT INTO representations (event_id, carrier, carrier_id, reachable, first_seen) VALUES (?,?,?,1,?) ON CONFLICT DO NOTHING")
             .run(id, String(line.carrier ?? ""), String(line.carrier_id ?? ""), String(line.at ?? ""));
+          break;
+        case "ingest": {
+          const artifactId = String(line.artifact_id ?? "");
+          this.db
+            .prepare(
+              `INSERT INTO ingest_attempts (artifact_id,carrier,carrier_id,disposition,reason,observed_bytes,declared_bytes,completeness,bytes_file,retry_count,first_seen,last_seen,detail)
+               VALUES (?,?,?,?,?,?,?,?,?,1,?,?,?) ON CONFLICT DO NOTHING`,
+            )
+            .run(
+              artifactId,
+              String(line.carrier ?? ""),
+              line.carrier_id === null || line.carrier_id === undefined ? null : String(line.carrier_id),
+              String(line.disposition ?? ""),
+              String(line.reason ?? ""),
+              Number(line.observed ?? 0),
+              line.declared === null || line.declared === undefined ? null : Number(line.declared),
+              line.completeness === null || line.completeness === undefined ? "UNKNOWN" : String(line.completeness),
+              String(line.bytes_file ?? ""),
+              String(line.at ?? ""),
+              String(line.at ?? ""),
+              line.detail === null || line.detail === undefined ? null : String(line.detail),
+            );
+          break;
+        }
+        case "ingest_retry":
+          this.db.prepare("UPDATE ingest_attempts SET retry_count = retry_count + 1, last_seen = ? WHERE artifact_id = ?").run(String(line.at ?? ""), String(line.artifact_id ?? ""));
+          break;
+        case "pending_open":
+          this.db
+            .prepare(
+              `INSERT INTO pending_imports (batch_id,carrier,reason,missing,scopes,opened_at) VALUES (?,?,?,?,?,?)
+               ON CONFLICT(batch_id) DO UPDATE SET reason = excluded.reason, missing = excluded.missing, scopes = excluded.scopes, resolved_at = NULL`,
+            )
+            .run(String(line.batch_id ?? ""), String(line.carrier ?? ""), String(line.reason ?? ""), JSON.stringify(line.missing ?? []), JSON.stringify(line.scopes ?? []), String(line.at ?? ""));
+          break;
+        case "pending_resolved":
+          this.db.prepare("UPDATE pending_imports SET resolved_at = ? WHERE batch_id = ?").run(String(line.at ?? ""), String(line.batch_id ?? ""));
+          break;
+        case "purge":
+          this.db.prepare("INSERT INTO local_erasures (record_id, op, at, detail) VALUES (?,?,?,?) ON CONFLICT DO NOTHING").run(id, "purge", String(line.at ?? ""), `${String(line.files ?? 0)} payload file(s) destroyed locally`);
+          break;
+        case "forget":
+          this.db.prepare("INSERT INTO local_erasures (record_id, op, at, detail) VALUES (?,?,?,?) ON CONFLICT DO NOTHING").run(id, "forget", String(line.at ?? ""), "projection row removed; events retained");
           break;
         case "repr_unreachable":
           this.db.prepare("UPDATE representations SET reachable = 0 WHERE carrier_id = ?").run(String(line.carrier_id ?? ""));
@@ -911,35 +1468,104 @@ export class EventStore {
     return (this.db.prepare("SELECT * FROM journal ORDER BY id").all() as Record<string, unknown>[]).map(toRow);
   }
 
-  private readEnvelope(file: string): EventEnvelope | null {
+  private readEventFileText(file: string): string | null {
     try {
-      const parsed = eventEnvelopeSchema.safeParse(JSON.parse(fs.readFileSync(path.join(this.eventsDir, file), "utf8")));
+      return fs.readFileSync(path.join(this.eventsDir, file), "utf8");
+    } catch {
+      return null;
+    }
+  }
+
+  private parseEnvelopeText(text: string | null): EventEnvelope | null {
+    if (text === null) return null;
+    try {
+      const parsed = eventEnvelopeSchema.safeParse(JSON.parse(text));
       return parsed.success ? parsed.data : null;
     } catch {
       return null;
     }
   }
 
+  private readEnvelope(file: string): EventEnvelope | null {
+    return this.parseEnvelopeText(this.readEventFileText(file));
+  }
+
+  /**
+   * The bytes of an admitted event, from the FILE when the checkout still has
+   * it and from the journal's cache when it does not.
+   *
+   * Reading only the file would mean a shallow/sparse checkout, a `reset
+   * --hard` or a force-push silently deleted admitted records at the next
+   * project() — absence read as deletion, the C17 failure. The journal is what
+   * ADR §8.2 says retains the admitted set, so it is what answers here;
+   * `checkoutStatus()` separately reports that the checkout is behind.
+   */
+  private envelopeForRow(row: JournalRow): EventEnvelope | null {
+    return this.readEnvelope(row.file) ?? this.parseEnvelopeText(row.envelope);
+  }
+
   private admittedEnvelopes(): EventEnvelope[] {
     return this.allRows()
       .filter((r) => r.canonical === 1 && ADMITTED_STATES.has(r.state))
-      .map((r) => this.readEnvelope(r.file))
+      .map((r) => this.envelopeForRow(r))
       .filter((e): e is EventEnvelope => e !== null);
   }
 
   /** The admitted set, projected — what admission decisions are made against. */
   private admittedView(): AdmittedView {
     const envelopes = this.admittedEnvelopes();
+    const byId = new Map(envelopes.map((e) => [e.id, e]));
     const { records } = projectEvents(envelopes);
     const keys = new Map<string, string>();
-    const humanKeys = new Set<string>();
+    const keyPrincipals = new Map<string, string>();
+    const revokedKeys = new Set<string>();
+
+    /**
+     * CHAIN OF TRUST FOR HUMAN KEYS (ADR §7, C12).
+     *
+     * Every principal record makes its key RESOLVABLE — that is what lets an
+     * imported event's signature be checked at all, and an unsigned or
+     * agent-signed human principal is admitted as ordinary data.
+     *
+     * Becoming a TRUSTED SIGNER is a different and much stronger thing. A human
+     * key is trusted only when it was bootstrapped out of band at store
+     * creation, or when the `principal` event introducing it is itself signed by
+     * a key already in the trusted set. Before this, any admitted principal
+     * record of kind human minted a ruling signer — so a single imported record
+     * could manufacture authority, which is exactly the hole C12 names.
+     *
+     * The rule is transitive, so it is evaluated to a fixpoint rather than in
+     * one pass: delivery order must not decide who is trusted.
+     */
+    const humanPrincipals: Array<{ keyId: string; event?: EventEnvelope }> = [];
     for (const rec of records.values()) {
       if (rec.record_type !== "principal") continue;
-      const body = rec.body as { key_id?: string; public_key?: string; kind?: string };
-      if (body.key_id && body.public_key) {
-        keys.set(body.key_id, body.public_key);
-        if (body.kind === "human") humanKeys.add(body.key_id);
+      const body = rec.body as { key_id?: string; public_key?: string; kind?: string; principal_id?: string };
+      if (!body.key_id || !body.public_key) continue;
+      keys.set(body.key_id, body.public_key);
+      if (body.principal_id) keyPrincipals.set(body.key_id, body.principal_id);
+      if (rec.revoked || rec.status === "revoked") revokedKeys.add(body.key_id);
+      if (body.kind === "human") {
+        const created = byId.get(rec.record_id);
+        humanPrincipals.push({ keyId: body.key_id, ...(created ? { event: created } : {}) });
       }
+    }
+    const humanKeys = new Set<string>(
+      Object.entries(this.knownKeys)
+        .filter(([, k]) => k.human)
+        .map(([id]) => id),
+    );
+    for (let pass = 0; pass < humanPrincipals.length + 1; pass += 1) {
+      let grew = false;
+      for (const p of humanPrincipals) {
+        if (humanKeys.has(p.keyId)) continue;
+        const signer = p.event?.sig?.key;
+        if (signer !== undefined && humanKeys.has(signer)) {
+          humanKeys.add(p.keyId);
+          grew = true;
+        }
+      }
+      if (!grew) break;
     }
     const memberships = [...records.values()].filter((r) => r.record_type === "membership" && r.applicable).sort((a, b) => (a.version < b.version ? -1 : 1));
     return {
@@ -947,27 +1573,69 @@ export class EventStore {
       records,
       admittedIds: new Set(envelopes.map((e) => e.id)),
       keys,
+      keyPrincipals,
       humanKeys,
-      membership: memberships.at(-1),
+      revokedKeys,
+      ...(memberships.at(-1) ? { membership: memberships.at(-1) as SliceProjectedRecord } : {}),
     };
   }
 
-  private hasCapability(ev: EventEnvelope, capability: Capability, view: AdmittedView): { ok: true } | { ok: false; reason: string; terminal: boolean } {
+  /**
+   * The membership policy an event is judged against: the latest one reachable
+   * through its OWN causal ancestry, never the replica's latest.
+   *
+   * Lead ruling (from a defect lane 02c measured): judging against the latest
+   * admitted policy made admission order-dependent and, worse, made it
+   * RETROACTIVE — a membership added after an event was admitted dropped that
+   * event on the next rebuild (`acknowledged_events_lost: 1`,
+   * `rejected: unauthorized`), because rebuild re-admits from scratch against
+   * the policy as it stands today. Causal ancestry is the only ordering the
+   * store has that does not depend on arrival or on a clock, so a membership
+   * must be a causal ancestor of anything it authorizes (ADR §4.3.1) and an
+   * event is judged against exactly that policy for ever after.
+   */
+  private ancestorMembership(ev: EventEnvelope, view: AdmittedView, extra: EventEnvelope[] = []): SliceProjectedRecord | undefined {
+    const byId = new Map<string, EventEnvelope>();
+    for (const e of [...view.envelopes, ...extra]) byId.set(e.id, e);
+    const seen = new Set<string>();
+    const stack = [...(ev.parents ?? [])];
+    const found: SliceProjectedRecord[] = [];
+    while (stack.length > 0) {
+      const id = stack.pop() as string;
+      if (seen.has(id)) continue;
+      seen.add(id);
+      const rec = view.records.get(id);
+      if (rec?.record_type === "membership" && rec.applicable) found.push(rec);
+      const parent = byId.get(id);
+      if (parent) stack.push(...(parent.parents ?? []));
+    }
+    // Deterministic pick among several ancestor policies: the one whose record
+    // version is highest. Version is an event id, so this is replay-stable.
+    return found.sort((a, b) => (a.version < b.version ? -1 : 1)).at(-1);
+  }
+
+  private hasCapability(
+    ev: EventEnvelope,
+    capability: Capability,
+    view: AdmittedView,
+    membership: SliceProjectedRecord | undefined,
+  ): { ok: true } | { ok: false; reason: string; terminal: boolean } {
     if (capability === "own") {
       const target = ev.record ? view.records.get(ev.record.id) : undefined;
       if (!target) return { ok: false, reason: "retraction target unknown", terminal: false };
       if (target.producer !== ev.producer.principal) return { ok: false, reason: `only ${target.producer} may retract its own statement`, terminal: true };
       return { ok: true };
     }
-    if (!view.membership) {
-      // No policy yet: proposals are allowed, authority-changing kinds are not.
+    if (!membership) {
+      // No policy in this event's ANCESTRY: proposals are allowed, authority-
+      // changing kinds are not.
       // The one exception is the first membership record itself, which has to
       // be creatable or the store could never acquire a policy at all.
       if (capability === "write") return { ok: true };
       if (ev.kind === "created" && ev.record?.type === "membership") return { ok: true };
-      return { ok: false, reason: `no membership policy has been admitted: ${capability} is default-deny until one arrives`, terminal: false };
+      return { ok: false, reason: `no membership policy is a causal ancestor of this event: ${capability} is default-deny until one is`, terminal: false };
     }
-    const body = view.membership.body as { members?: Array<{ principal: string; roles: string[]; scopes: Scope[] }> };
+    const body = membership.body as { members?: Array<{ principal: string; roles: string[]; scopes: Scope[] }> };
     for (const member of body.members ?? []) {
       if (member.principal !== ev.producer.principal) continue;
       const granted = member.roles.some((role) => roleImplies(role, capability));
@@ -1014,8 +1682,14 @@ export interface AdmittedView {
   envelopes: EventEnvelope[];
   records: Map<string, SliceProjectedRecord>;
   admittedIds: Set<string>;
+  /** Every key a principal record makes resolvable (so signatures can be checked). */
   keys: Map<string, string>;
+  /** key id → the principal that key belongs to, per its `principal` record. */
+  keyPrincipals: Map<string, string>;
+  /** Keys TRUSTED to sign rulings — bootstrapped, or introduced by an already-trusted human key. */
   humanKeys: Set<string>;
+  /** Keys whose principal record has been revoked; prospective denial only. */
+  revokedKeys: Set<string>;
   membership?: SliceProjectedRecord;
 }
 
@@ -1033,6 +1707,8 @@ function toRow(r: Record<string, unknown>): JournalRow {
     occurred_at: String(r.occurred_at),
     parents: String(r.parents),
     file: String(r.file),
+    first_seen: String(r.first_seen ?? ""),
+    envelope: r.envelope === null || r.envelope === undefined ? null : String(r.envelope),
     state: String(r.state) as DeliveryState,
     reason: r.reason === null || r.reason === undefined ? null : String(r.reason),
     pending_on: r.pending_on === null || r.pending_on === undefined ? null : String(r.pending_on),
@@ -1064,7 +1740,16 @@ export function requiredCapability(ev: EventEnvelope): Capability | null {
 export function relationEndpoints(ev: EventEnvelope): string[] {
   const p = (ev.payload ?? {}) as Record<string, unknown>;
   const out: string[] = [];
-  if (ev.kind === "created" || ev.kind === "receipt") return out;
+  if (ev.kind === "receipt") return out;
+  if (ev.kind === "created") {
+    // A prerequisite relation whose endpoints are RECORDS must wait for them:
+    // a dangling prerequisite is deferred (visible, retried), never applied and
+    // never invented (C22 A03/N02). Entity-name relations are untouched.
+    if (ev.record?.type === "relation" && PREREQUISITE_RELATION_TYPES.has(String(p.type ?? ""))) {
+      for (const end of [p.source, p.target]) if (isRecordId(end)) out.push(end);
+    }
+    return [...new Set(out)];
+  }
   if (typeof p.target === "string") out.push(p.target);
   if (typeof p.by === "string") out.push(p.by);
   if (typeof p.replacement === "string") out.push(p.replacement);
@@ -1136,13 +1821,13 @@ export function scopeEnvelopeCovers(outer: Scope, inner: Scope): boolean {
 }
 
 /** A supersession edge that closes a loop is rejected outright (C22). */
-export function createsCycle(ev: EventEnvelope, view: AdmittedView): boolean {
+export function createsCycle(ev: EventEnvelope, view: AdmittedView, alsoAdmitted: EventEnvelope[] = []): boolean {
   const edges = new Map<string, Set<string>>();
   const add = (from: string, to: string): void => {
     if (!edges.has(from)) edges.set(from, new Set());
     edges.get(from)?.add(to);
   };
-  for (const e of view.envelopes) addSupersessionEdge(e, add);
+  for (const e of [...view.envelopes, ...alsoAdmitted]) addSupersessionEdge(e, add);
   const candidate: Array<[string, string]> = [];
   addSupersessionEdge(ev, (from, to) => candidate.push([from, to]));
   for (const [from, to] of candidate) {
@@ -1162,12 +1847,41 @@ export function createsCycle(ev: EventEnvelope, view: AdmittedView): boolean {
   return false;
 }
 
+/**
+ * Relation types that carry a PREREQUISITE, and therefore a direction a cycle
+ * can close. `relates_to` is deliberately absent: an advisory cross-reference
+ * cycle is legitimate, and rejecting one would refuse valid data (C22 open
+ * question 4). Only prerequisite-bearing edges are cycle-checked.
+ */
+const PREREQUISITE_RELATION_TYPES = new Set(["requires", "depends_on", "prerequisite", "blocked_by"]);
+
+function isRecordId(v: unknown): v is string {
+  return typeof v === "string" && /^[0-9A-HJKMNP-TV-Z]{26}$/.test(v);
+}
+
+/**
+ * Every edge whose closure would make a record depend on itself.
+ *
+ * Supersession/override/ruling-supersedes are authority edges; `requires`,
+ * `depends_on` and friends are prerequisite edges. C22's cycle is built from
+ * the SECOND kind, so restricting cycle detection to supersession would have
+ * admitted an unsatisfiable prerequisite ring and left every action in the
+ * scope refusable only by accident.
+ */
 function addSupersessionEdge(ev: EventEnvelope, add: (from: string, to: string) => void): void {
   const p = (ev.payload ?? {}) as Record<string, unknown>;
   if (ev.kind === "superseded" && typeof p.target === "string" && typeof p.by === "string") add(p.target, p.by);
   if (ev.kind === "overridden" && typeof p.target === "string" && typeof p.replacement === "string") add(p.target, p.replacement);
   if (ev.kind === "created" && ev.record?.type === "ruling" && ev.record.id) {
     for (const s of ((p.supersedes as string[]) ?? [])) add(s, ev.record.id);
+  }
+  if (ev.kind === "created" && ev.record?.type === "relation") {
+    // Record ids only: relation bodies also carry entity NAMES, which are not
+    // records and cannot participate in a prerequisite ring.
+    if (PREREQUISITE_RELATION_TYPES.has(String(p.type ?? "")) && isRecordId(p.source) && isRecordId(p.target)) add(p.source, p.target);
+  }
+  if (ev.kind === "created" && ev.record?.type === "decision" && ev.record.id) {
+    for (const dep of ((p.depends_on as string[]) ?? [])) if (isRecordId(dep)) add(ev.record.id, dep);
   }
 }
 
