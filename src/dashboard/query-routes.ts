@@ -18,6 +18,14 @@ import { computeRepoInfo, type RepoInfo } from "./repo-info.js";
 import type { DashboardDeps } from "./api-routes.js";
 import type { IBlackboardStore, IDecisionStore, IGraphStore, IHandoffStore } from "../storage/interfaces.js";
 import type { DecisionIndexEntry, Entity, Relation } from "../utils/types.js";
+import { selectCandidates, legacyScope, legacyEnvelope } from "../retrieval/select.js";
+
+/**
+ * Repo identity for the dashboard's scope gate. One dashboard serves one store,
+ * so a constant supplies the repo component; what the gate adds here is
+ * segment-boundary path matching, shared with assemble and why.
+ */
+const DASHBOARD_REPO_SCOPE = "r_dashboardscope000000000000";
 
 const SUMMARY_MAX = 120;
 const HUB_LIMIT = 20;
@@ -218,6 +226,12 @@ export function createQueryHandler(
           return true;
         }
         const since = parsed.searchParams.get("since");
+        // Lane 04 (R13): the dashboard had NO scope parameter — it returned the
+        // whole store, so there was no filter to harden. Rather than leave an
+        // ungated one to be added later, the filter is introduced here already
+        // running the shared pre-ranking gate (`src/retrieval/select.ts`).
+        // Absent the parameter, behaviour is byte-identical to before.
+        const scopeParam = parsed.searchParams.get("scope");
         const [{ entries, total_count }, decIndex] = await Promise.all([
           blackboardStore.read(),
           decisionStore.getIndex(),
@@ -240,8 +254,27 @@ export function createQueryHandler(
           .filter((r) => !since || r.timestamp > since)
           .sort((a, b) => a.timestamp.localeCompare(b.timestamp));
 
+        // Scope, applied BEFORE anything downstream ranks or paginates. Same
+        // predicate the assembler and `why` use, so all three agree on what
+        // "in scope" means — including segment-boundary paths, under which
+        // "src/auth" no longer matches "src/authz".
+        const scopedRows = scopeParam
+          ? selectCandidates(
+              rows,
+              (r) => legacyScope(r.scope, DASHBOARD_REPO_SCOPE),
+              (r) => r.id,
+              {
+                principal: "dashboard",
+                authorized: legacyEnvelope(DASHBOARD_REPO_SCOPE),
+                query: legacyScope(scopeParam, DASHBOARD_REPO_SCOPE),
+                mode: "strict",
+              },
+            ).admitted
+          : rows;
+
         sendJSON(req, res, {
-          initialized: true, rows,
+          initialized: true, rows: scopedRows,
+          ...(scopeParam ? { scope: scopeParam, scope_filtered: rows.length - scopedRows.length } : {}),
           total_counts: { blackboard: total_count, decisions: decCounts },
           generated_at: new Date().toISOString(),
         });

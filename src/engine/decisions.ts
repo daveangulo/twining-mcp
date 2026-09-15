@@ -26,6 +26,19 @@ import { decisionEmbedText, embedContentHash } from "../embeddings/embed-text.js
 import { COUNT_SEMANTICS, SEARCH_NOISE_FLOOR, type SearchEngine } from "../embeddings/search.js";
 import { GraphAutoPopulator } from "./graph-auto-populator.js";
 import type { IDecisionStore, IIndexManager } from "../storage/interfaces.js";
+import { selectCandidates, legacyScope, legacyEnvelope } from "../retrieval/select.js";
+
+/**
+ * The repo identity used by this engine's scope gate.
+ *
+ * A DecisionEngine is constructed per store, and `getByScope` has already read
+ * from that one store, so every record it returns shares a repo by
+ * construction. A single constant therefore gives the gate the repo component
+ * it needs without threading a store path through the engine's constructor —
+ * what the gate contributes here is segment-boundary path matching, not
+ * cross-store isolation (the store boundary already provides that).
+ */
+const WHY_REPO_SCOPE = "r_whyscope000000000000000000";
 
 /** Entry in a dependency trace chain. */
 export interface TraceEntry {
@@ -668,7 +681,27 @@ export class DecisionEngine {
     }
 
     const budget = options?.max_tokens ?? DEFAULT_WHY_MAX_TOKENS;
-    const all = await this.decisionStore.getByScope(scope);
+
+    // Lane 04 (R13/R14): re-gate `getByScope`'s result through the shared
+    // predicate before anything is ranked or counted.
+    //
+    // `getByScope` matches with 2.x's raw bidirectional `startsWith`, under
+    // which "src/auth" matches "src/authz" — two unrelated modules. The
+    // contract's `pathCovers` matches on SEGMENT boundaries, so that pair no
+    // longer matches, and the repo-identity component makes a record ingested
+    // from another repository's records tree unreachable from this one.
+    //
+    // This narrows what `why` returns; it never widens it. A record the old
+    // matcher admitted by a partial-segment collision was never an answer to
+    // the question asked.
+    const repo = WHY_REPO_SCOPE;
+    const fetched = await this.decisionStore.getByScope(scope);
+    const all = selectCandidates(
+      fetched,
+      (d) => legacyScope(d.scope, repo),
+      (d) => d.id,
+      { principal: "why", authorized: legacyEnvelope(repo), query: legacyScope(scope, repo), mode: "strict" },
+    ).admitted;
 
     // Counts superseded + overridden. Archived are counted ONLY by
     // archived_excluded_count — the old widen-everything semantics double-

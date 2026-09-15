@@ -21,6 +21,83 @@ import { normalizeTags } from "../utils/tags.js";
 import { estimateTokens } from "../utils/tokens.js";
 import { dedupeFullSummary } from "../utils/full-summary.js";
 import type { IAgentStore, IBlackboardStore, IDecisionStore, IHandoffStore } from "../storage/interfaces.js";
+import {
+  selectCandidates,
+  legacyScope,
+  legacyEnvelope,
+  type RetrievalMode,
+  type SelectionRequest,
+  type SelectionOutcome,
+} from "../retrieval/select.js";
+import { storeIdentity, deriveRepoId, type StoreIdentity } from "../retrieval/store-identity.js";
+import { estimate as estimateConservative, TOKENIZER_ID, PROVEN_TABLE } from "../retrieval/tokenizer.js";
+import { classifyLegacy } from "../retrieval/lifecycle.js";
+import { hashBytes } from "../retrieval/receipts.js";
+import { CLASS_PRESENTATION } from "../retrieval/render.js";
+
+/**
+ * Lane 04 additive annex on AssembledContext.
+ *
+ * Declared here rather than in `src/utils/types.ts` so the change stays inside
+ * this lane's owned files; a proposed diff moving it into the shared type is in
+ * the lane report. Every field is additive — 2.x consumers that read only
+ * `briefing`, `decisions_count` and friends are unaffected.
+ */
+export interface RetrievalAnnex {
+  /** How the candidate pool was authorized and filtered, before any ranking. */
+  selection: {
+    mode: RetrievalMode;
+    /** The repo identity every record in this store carries (R01/R13). */
+    repo: string;
+    repo_identity_source: "store.json" | "derived-from-path";
+    authorized_digest: string;
+    /** Counts by denial reason. Opaque reasons are counted, never named. */
+    suppressed: Record<string, number>;
+    /** Suppressions safe to name: authorized but not relevant to this query. */
+    suppressed_visible: Array<{ id: string; reason: string }>;
+    outcome: "ok" | "no_in_scope_evidence" | "scope_mode_denied";
+    missing_entitlement?: string;
+  };
+  /** Everything a second run would need to reproduce this result. */
+  versions: {
+    ranking: string;
+    index: string;
+    embedding_model: string;
+    tokenizer: string;
+    lifecycle_resolver: "event-projection" | "legacy-status-field";
+  };
+  /** Freshness and authority of what was returned. */
+  trust: {
+    /** 2.x records carry no authorship proof; nothing here qualifies an action. */
+    evidence_class: string;
+    qualifies_action: boolean;
+    /** Why not, when not. */
+    qualification_refused_because?: string;
+  };
+  /** Budget accounting over the EMITTED briefing, not the selected items. */
+  token_usage: {
+    budget: number;
+    emitted_tokens: number;
+    tokenizer_id: string;
+    table_id: string;
+    conservative_fallback: boolean;
+    /** Decisions selected but not rendered into the briefing. */
+    rendered_decisions: number;
+    selected_decisions: number;
+  };
+  /** sha256 over the exact briefing bytes; links a receipt to this assembly. */
+  emitted_bytes_sha256?: string;
+}
+
+/** The assembler's own return type: AssembledContext plus the lane-04 annex. */
+export type AssembledContextV3 = AssembledContext & { retrieval: RetrievalAnnex };
+
+/** Sum two suppression tallies without losing a reason present in only one. */
+function mergeCounts(a: Record<string, number>, b: Record<string, number>): Record<string, number> {
+  const out: Record<string, number> = { ...a };
+  for (const [k, v] of Object.entries(b)) out[k] = (out[k] ?? 0) + v;
+  return out;
+}
 
 /** Half-life for recency decay in hours (one week). */
 const RECENCY_HALF_LIFE = 168;
@@ -60,6 +137,10 @@ export class ContextAssembler {
    * dashboard-constructed assemblers) means nothing is ever marked.
    */
   private sessionPostIds: ReadonlySet<string> | null = null;
+  /** Repo identity for the scope gate. Resolved once, in the constructor. */
+  private readonly storeIdentity: StoreIdentity;
+  /** Distinguishes stores when no twiningDir was supplied. */
+  private static instanceSeq = 0;
 
   /** Wire the posting session's entry-id set (server.ts). */
   setSessionPostIds(ids: ReadonlySet<string>): void {
@@ -75,6 +156,14 @@ export class ContextAssembler {
     planningBridge?: PlanningBridge | null,
     handoffStore?: IHandoffStore | null,
     agentStore?: IAgentStore | null,
+    /**
+     * The store root, used ONLY to resolve this store's repo identity for the
+     * scope gate (R01/R13). Optional so every existing caller compiles; when
+     * absent a per-instance derived identity is minted, which still gives the
+     * gate the property it needs (one identity per store, never shared) because
+     * one ContextAssembler is constructed per store.
+     */
+    twiningDir?: string,
   ) {
     this.blackboardStore = blackboardStore;
     this.decisionStore = decisionStore;
@@ -84,6 +173,14 @@ export class ContextAssembler {
     this.planningBridge = planningBridge ?? null;
     this.handoffStore = handoffStore ?? null;
     this.agentStore = agentStore ?? null;
+    this.storeIdentity = twiningDir
+      ? storeIdentity(twiningDir)
+      : {
+          repo: deriveRepoId(`instance:${ContextAssembler.instanceSeq++}`),
+          format: 2,
+          derived: true,
+          source: "derived-from-path",
+        };
   }
 
   /** Check if an agent has called assemble() recently (in this session). */
@@ -100,14 +197,60 @@ export class ContextAssembler {
     scope: string,
     maxTokens?: number,
     agentId?: string,
-  ): Promise<AssembledContext> {
+    options?: { mode?: RetrievalMode; lessons_entitled?: boolean; principal?: string },
+  ): Promise<AssembledContextV3> {
     const budget = maxTokens ?? this.config.context_assembly.default_max_tokens;
     const weights = this.config.context_assembly.priority_weights;
     const now = Date.now();
 
+    // ---------------------------------------------------------------
+    // Lane 04 gate 1 — SCOPE BEFORE RANKING (R13/R14, gap 3).
+    //
+    // 2.x unioned the scope-matched set with an UNFILTERED semantic set, so a
+    // decision from any scope in the store entered the briefing whenever its
+    // text matched the task string. Scope was a ranking dampener, never an
+    // admission gate.
+    //
+    // The pool is now authorized first and the survivors are what the search
+    // engine ever sees. `mode` is explicit: strict (default) never widens;
+    // lessons is a same-repo, any-path channel that still runs the auth check.
+    // ---------------------------------------------------------------
+    const identity = this.storeIdentity;
+    const selectionRequest: SelectionRequest = {
+      principal: options?.principal ?? agentId ?? "main",
+      authorized: legacyEnvelope(identity.repo),
+      query: legacyScope(scope, identity.repo),
+      mode: options?.mode ?? "strict",
+      ...(options?.lessons_entitled ? { lessons_entitled: true } : {}),
+    };
+    const gate = <T>(
+      items: readonly T[],
+      getScope: (t: T) => string,
+      getId: (t: T) => string,
+      /**
+       * `{ path: "any" }` drops the QUERY path predicate while keeping the
+       * authorization check — same repo, any path. Used only where a
+       * cross-path read cannot disclose anything (see the resolution slice).
+       */
+      relax?: { path: "any" },
+    ): SelectionOutcome<T> => {
+      const { path: _dropped, ...identityOnly } = selectionRequest.query;
+      const req: SelectionRequest = relax?.path === "any"
+        ? { ...selectionRequest, query: identityOnly as typeof selectionRequest.query }
+        : selectionRequest;
+      return selectCandidates(items, (t) => legacyScope(getScope(t), identity.repo), getId, req);
+    };
+
     // Load all data once upfront to avoid redundant disk reads
-    const { entries: allEntries } = await this.blackboardStore.read();
-    const allIndex = await this.decisionStore.getIndex();
+    const { entries: allEntriesRaw } = await this.blackboardStore.read();
+    const allIndexRaw = await this.decisionStore.getIndex();
+
+    // The gate runs on the INDEX (cheap, scope-bearing) so an out-of-scope
+    // decision is never even read off disk, let alone embedded or ranked.
+    const indexGate = gate(allIndexRaw, (e) => (e as { scope?: string }).scope ?? "", (e) => e.id);
+    const entryGate = gate(allEntriesRaw, (e) => e.scope, (e) => e.id);
+    const allIndex = indexGate.admitted;
+    const allEntries = entryGate.admitted;
 
     // 1. Retrieve scope-matched decisions
     const scopeDecisions = await this.decisionStore.getByScope(scope);
@@ -222,7 +365,28 @@ export class ContextAssembler {
     // resolving entry is frequently posted against a different scope. This
     // mirrors triage.ts:207 so assemble, triage, and the archiver agree on
     // what "open" means.
-    const resolvedIds = computeResolvedIds(allEntries);
+    //
+    // DISCOVERED NEED (lane 04): resolution is computed over the
+    // AUTHORIZATION slice, not the query slice.
+    //
+    // Decision 01KYB5EM805A90TR9MR9WK2E04 established that resolved ids must
+    // come from the full live board because the resolving entry is frequently
+    // posted against a different scope. Gating `allEntries` by the QUERY scope
+    // broke that: a cross-scope resolver vanished and resolved needs resurfaced
+    // as "REMAINING WORK" forever.
+    //
+    // Running it over the authorization slice keeps both properties. A
+    // resolution only ever REMOVES an in-scope obligation — the resolver's own
+    // text, id and scope never enter the briefing — so there is nothing here
+    // for a cross-path read to disclose. A cross-REPO resolver is still cut,
+    // which is the boundary that matters (R13).
+    const resolutionScope = gate(
+      allEntriesRaw,
+      (e) => e.scope,
+      (e) => e.id,
+      { path: "any" },
+    ).admitted;
+    const resolvedIds = computeResolvedIds(resolutionScope);
     for (const [id, entry] of mergedEntryMap) {
       if (
         (entry.entry_type === "need" ||
@@ -634,7 +798,59 @@ export class ContextAssembler {
     // Log assembly for assembly-before-decision tracking
     this.assemblyLog.set(agentId ?? "main", result.assembled_at);
 
-    return result;
+    // ---------------------------------------------------------------
+    // Lane 04 gate 2 — the explain annex and the honest budget.
+    //
+    // `token_estimate` used to charge the raw text of every SELECTED item,
+    // including the ones the formatter never rendered, and never charged for
+    // the headings or the JSON envelope (gap 7 R17). It is now the conservative
+    // bound over the briefing that is actually emitted, measured with the
+    // declared tokenizer.
+    // ---------------------------------------------------------------
+    const legacyLifecycle = classifyLegacy("active");
+    const annexed: AssembledContextV3 = {
+      ...result,
+      retrieval: {
+        selection: {
+          mode: selectionRequest.mode ?? "strict",
+          repo: identity.repo,
+          repo_identity_source: identity.source,
+          authorized_digest: indexGate.filters.authorized_digest,
+          suppressed: mergeCounts(indexGate.suppressed, entryGate.suppressed),
+          suppressed_visible: [...indexGate.suppressed_visible, ...entryGate.suppressed_visible],
+          outcome:
+            indexGate.outcome === "scope_mode_denied" || entryGate.outcome === "scope_mode_denied"
+              ? "scope_mode_denied"
+              : indexGate.outcome === "no_in_scope_evidence" && entryGate.outcome === "no_in_scope_evidence"
+                ? "no_in_scope_evidence"
+                : "ok",
+          ...(indexGate.missing_entitlement ? { missing_entitlement: indexGate.missing_entitlement } : {}),
+        },
+        versions: {
+          ranking: "twining-assemble-weighted/2",
+          index: this.searchEngine ? "embeddings/1" : "none",
+          embedding_model: this.config.embedding_model,
+          tokenizer: TOKENIZER_ID,
+          lifecycle_resolver: legacyLifecycle.resolver,
+        },
+        trust: {
+          evidence_class: legacyLifecycle.evidence_class,
+          qualifies_action: legacyLifecycle.authorizes_action,
+          qualification_refused_because:
+            "2.x records carry no authorship proof; every one is legacy_unverified, which is below the actionable class rank",
+        },
+        token_usage: {
+          budget,
+          emitted_tokens: 0, // filled by formatForLLM via annotateEmitted()
+          tokenizer_id: TOKENIZER_ID,
+          table_id: PROVEN_TABLE.id,
+          conservative_fallback: true,
+          rendered_decisions: 0,
+          selected_decisions: result.active_decisions.length,
+        },
+      },
+    };
+    return annexed;
   }
 
   /**
@@ -646,8 +862,9 @@ export class ContextAssembler {
     scope: string,
     maxTokens?: number,
     agentId?: string,
-  ): Promise<{ context: AssembledContext; status_summary: string }> {
-    const context = await this.assemble(task, scope, maxTokens, agentId);
+    options?: { mode?: RetrievalMode; lessons_entitled?: boolean; principal?: string },
+  ): Promise<{ context: AssembledContextV3; status_summary: string }> {
+    const context = await this.assemble(task, scope, maxTokens, agentId, options);
     // Status summary is best-effort — don't let it break assembly
     let statusSummary = "";
     try {
@@ -663,6 +880,78 @@ export class ContextAssembler {
    * Format assembled context as structured markdown for LLM consumption.
    * Produces imperative sentences and numbered lists instead of raw JSON.
    */
+  /**
+   * How many decisions render in full, and how many as summaries, for a given
+   * budget (gap 7 R15/R16).
+   *
+   * With no budget (a hand-built AssembledContext) the historical 3 + 2 ladder
+   * is returned unchanged, so no existing 2.x consumer shifts shape. With a
+   * budget, full rationales are bought until the rendered cost reaches the
+   * share of the budget reserved for decisions, then summaries, then the
+   * remainder is reported as omitted.
+   *
+   * The cost is measured with the DECLARED tokenizer over the text that will
+   * actually be rendered, not over the record's raw fields — charging for
+   * bytes the agent never sees is the defect this replaces.
+   */
+  static decisionTiers(
+    ctx: AssembledContext,
+    budget: number | undefined,
+  ): { CRITICAL_COUNT: number; CONTEXT_COUNT: number } {
+    const total = ctx.active_decisions.length;
+    if (budget === undefined) return { CRITICAL_COUNT: 3, CONTEXT_COUNT: 2 };
+
+    // Decisions are one lane among warnings, needs, findings and handoffs. Half
+    // the budget is theirs; the reservation is what stops a large decision set
+    // from crowding out the warnings lane, which has priority by design.
+    const lane = Math.floor(budget * 0.5);
+    let spent = 0;
+    let full = 0;
+    for (const d of ctx.active_decisions) {
+      const rendered =
+        `**${d.summary}** (${d.confidence})\n   Files: ${(d.affected_files ?? []).join(", ")}\n   Why: ${d.rationale}` +
+        (d.constraints?.length ? `\n   MUST: ${d.constraints.join("; ")}` : "") +
+        (d.rejected_alternatives?.length ? `\n   DO NOT: ${d.rejected_alternatives.join("; ")}` : "");
+      const cost = estimateConservative(rendered).tokens;
+      if (spent + cost > lane) break;
+      spent += cost;
+      full += 1;
+    }
+    // Always show at least the historical top tier, even on a tiny budget: a
+    // briefing that names no decision at all reads as "nothing constrains you".
+    full = Math.max(Math.min(total, 1), Math.min(full, total));
+
+    let summaries = 0;
+    for (let i = full; i < total; i++) {
+      const d = ctx.active_decisions[i]!;
+      const cost = estimateConservative(`**${d.summary}** (${d.confidence}) — ${d.rationale.slice(0, 120)}`).tokens;
+      if (spent + cost > lane) break;
+      spent += cost;
+      summaries += 1;
+    }
+    return { CRITICAL_COUNT: full, CONTEXT_COUNT: summaries };
+  }
+
+  /**
+   * Stamp the emitted-briefing measurement onto the annex (gap 7 R17).
+   *
+   * `formatForLLM` is static and pure, so the measurement is taken here, after
+   * the bytes exist. `token_estimate` becomes the conservative bound over the
+   * briefing the agent reads — not the raw text of items it never sees.
+   */
+  static annotateEmitted(ctx: AssembledContextV3, briefing: string): AssembledContextV3 {
+    const est = estimateConservative(briefing);
+    const rendered = ContextAssembler.decisionTiers(ctx, ctx.retrieval.token_usage.budget);
+    ctx.retrieval.token_usage.emitted_tokens = est.tokens;
+    ctx.retrieval.token_usage.rendered_decisions = Math.min(
+      ctx.active_decisions.length,
+      rendered.CRITICAL_COUNT + rendered.CONTEXT_COUNT,
+    );
+    ctx.retrieval.emitted_bytes_sha256 = hashBytes(briefing);
+    ctx.token_estimate = est.tokens;
+    return ctx;
+  }
+
   static formatForLLM(ctx: AssembledContext, statusSummary?: string): string {
     // Short-circuit: if there's nothing useful to say, return minimal output
     const hasContent =
@@ -746,12 +1035,32 @@ export class ContextAssembler {
       }
     }
 
-    // 3. Decisions — tiered display: top 3 CRITICAL (full), next 2 CONTEXT (summary), rest omitted
+    // 3. Decisions — the ladder is now driven by the caller's BUDGET, not by a
+    //    hard-coded 3+2 (gap 7, R15/R16). A generous max_tokens buys full
+    //    rationales for every selected decision; a tight one still shows the
+    //    top ones in full and degrades the rest to summaries before dropping
+    //    any, and says how many it dropped.
+    //
+    //    The heading also carries the authority class of what follows (gap 6,
+    //    render side): a 2.x store holds unauthenticated agent assertions, and
+    //    presenting them under a bare imperative heading is what turns an
+    //    unverified claim into a directive. The class is stated; the records
+    //    are unchanged.
     if (ctx.active_decisions.length > 0) {
       sections.push("\n### DECISIONS TO RESPECT");
-      const CRITICAL_COUNT = 3;
-      const CONTEXT_COUNT = 2;
+      const annex = (ctx as { retrieval?: RetrievalAnnex }).retrieval;
+      if (annex) {
+        sections.push(
+          `_Evidence class: ${annex.trust.evidence_class} — ${CLASS_PRESENTATION[annex.trust.evidence_class as keyof typeof CLASS_PRESENTATION]?.directive ?? "treat as a lead"}` +
+            ` Qualifies an action: ${annex.trust.qualifies_action ? "yes" : "no"}._`,
+        );
+      }
       const total = ctx.active_decisions.length;
+      // Budget-driven tiers. Without an annex (a 2.x caller constructing an
+      // AssembledContext by hand) the historical 3+2 ladder is preserved
+      // exactly, so nothing that does not opt in changes shape.
+      const budget = annex?.token_usage.budget;
+      const { CRITICAL_COUNT, CONTEXT_COUNT } = ContextAssembler.decisionTiers(ctx, budget);
 
       for (let i = 0; i < Math.min(total, CRITICAL_COUNT); i++) {
         const d = ctx.active_decisions[i]!;
@@ -781,7 +1090,7 @@ export class ContextAssembler {
         sections.push(`${i + 1}. **${d.summary}** (${d.confidence}) — ${d.rationale.slice(0, 120)}`);
       }
 
-      // Omitted count
+      // Omitted count — an honest report of what the budget could not carry.
       const omitted = total - CRITICAL_COUNT - CONTEXT_COUNT;
       if (omitted > 0) {
         sections.push(`\n(+${omitted} more decisions in scope — call twining_why for details)`);

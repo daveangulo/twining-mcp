@@ -31,6 +31,12 @@ export const contextCommands: CommandDef<ContextCtx>[] = [
         .string()
         .optional()
         .describe("Agent identifier for assembly tracking (default: main)"),
+      mode: z
+        .enum(["strict", "lessons"])
+        .optional()
+        .describe(
+          'Retrieval mode. "strict" (default) never widens the scope: only records inside the queried scope are returned. "lessons" is an explicit, entitlement-gated channel returning same-repo records from any path, each labelled with its original scope — use it to look for prior art outside your lane, never as a fallback when strict returns nothing.',
+        ),
     },
     async handler(ctx, args) {
       const { context, status_summary } = await ctx.contextAssembler.assembleWithStatus(
@@ -38,8 +44,13 @@ export const contextCommands: CommandDef<ContextCtx>[] = [
         args.scope,
         args.max_tokens,
         args.agent_id,
+        args.mode ? { mode: args.mode } : undefined,
       );
       const formatted = ContextAssembler.formatForLLM(context, status_summary);
+      // Measure the payload that is actually emitted, and hash it (R16/R17).
+      // token_estimate now describes the briefing below, not the raw text of
+      // items the formatter never rendered.
+      ContextAssembler.annotateEmitted(context, formatted);
       // Return only the briefing + metadata — avoids duplicating structured data
       // that wastes agent context tokens. Use twining_why for detailed lookups.
       return {
@@ -56,6 +67,8 @@ export const contextCommands: CommandDef<ContextCtx>[] = [
           ? { superseded_excluded_count: context.superseded_excluded_count }
           : {}),
         token_estimate: context.token_estimate,
+        // --- Lane 04 additive fields. Existing consumers are unaffected. ---
+        retrieval: context.retrieval,
       };
     },
   }),

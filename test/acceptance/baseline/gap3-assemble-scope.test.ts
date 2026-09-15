@@ -12,9 +12,18 @@
  * string. Scope is only a *ranking* signal (scopeProximity dampening), never
  * an admission gate.
  *
- * Positive control: the in-scope decision is present (the instrument works and
- * the assembler is wired up correctly).
- * Gap assertion: the out-of-scope decision is ALSO present.
+ * ## CLOSED by lane 04 (retrieval and trust), 2026-09-15.
+ *
+ * `src/retrieval/select.ts` now runs an authorization + query-scope predicate
+ * over the candidate pool BEFORE the search engine ever sees it, so the
+ * semantic union has nothing out-of-scope to union in. Scope is an admission
+ * gate; scope proximity remains a ranking signal on what survives.
+ *
+ * The gap assertion below is FLIPPED: the out-of-scope decision is absent, and
+ * its absence is reported (not silent). Both controls are unchanged and still
+ * green — the no-search-engine control proves the assembler is wired up, and
+ * the instrument-can-fail control proves the new gate is what is doing the work
+ * rather than a fixture accident.
  */
 import { describe, it, expect, beforeEach } from "vitest";
 import { ContextAssembler } from "../../../src/engine/context-assembler.js";
@@ -24,6 +33,11 @@ import { SearchEngine } from "../../../src/embeddings/search.js";
 import { Embedder } from "../../../src/embeddings/embedder.js";
 import { IndexManager } from "../../../src/embeddings/index-manager.js";
 import { DEFAULT_CONFIG } from "../../../src/config.js";
+import {
+  selectCandidates,
+  legacyScope,
+  legacyEnvelope,
+} from "../../../src/retrieval/select.js";
 import type { TwiningConfig } from "../../../src/utils/types.js";
 import os from "node:os";
 import path from "node:path";
@@ -72,7 +86,7 @@ describe("Gap 3 — assemble() scope is not a hard filter (R01, R13, R14)", () =
     Embedder.resetInstances();
   });
 
-  it("admits an active decision from an unrelated scope when its text matches the task", async () => {
+  it("FLIPPED (lane 04): refuses an active decision from an unrelated scope even when its text matches the task", async () => {
     // In-scope decision. Deliberately shares NO distinctive vocabulary with
     // the task string, so its admission can only come from scope matching.
     const inScope = await decisionStore.create({
@@ -121,17 +135,69 @@ describe("Gap 3 — assemble() scope is not a hard filter (R01, R13, R14)", () =
     // assembler are wired correctly and the budget is not starving the lane.
     expect(admittedIds).toContain(inScope.id);
 
-    // --- GAP: scope was not applied as a hard filter before ranking ---
+    // --- CLOSED: scope is now a hard filter applied before ranking ---
     // The vendor-repo/billing/ decision is under a scope with no prefix
-    // relationship to "src/auth/" in either direction, yet it is admitted.
+    // relationship to "src/auth/" in either direction, so it is CUT.
     expect("vendor-repo/billing/".startsWith("src/auth/")).toBe(false);
     expect("src/auth/".startsWith("vendor-repo/billing/")).toBe(false);
-    expect(admittedIds).toContain(outOfScope.id);
-    expect(admittedFiles).toContain("vendor-repo/billing/proration.ts");
+    expect(admittedIds).not.toContain(outOfScope.id);
+    expect(admittedFiles).not.toContain("vendor-repo/billing/proration.ts");
 
-    // And it reaches the rendered briefing the agent actually reads.
+    // ...and it does not reach the rendered briefing either.
     const briefing = ContextAssembler.formatForLLM(result);
-    expect(briefing).toContain("banker's rounding");
+    expect(briefing).not.toContain("banker's rounding");
+
+    // The cut is reported rather than silent: an authorized-but-irrelevant
+    // record may be named, so the caller can tell "nothing matched" from
+    // "something matched elsewhere".
+    expect(result.retrieval.selection.suppressed_visible).toContainEqual({
+      id: outOfScope.id,
+      reason: "out_of_query_scope",
+    });
+    expect(result.retrieval.selection.mode).toBe("strict");
+  });
+
+  it("INSTRUMENT CAN FAIL: with the pre-ranking scope gate disabled, the leak returns", async () => {
+    // Without this, the flipped assertion above could be passing because the
+    // fixture never reached the semantic path at all. Disabling the gate must
+    // reproduce the original defect exactly.
+    const inScope = await decisionStore.create({
+      ...baseDecision,
+      scope: "src/auth/",
+      summary: "Use JWT for auth",
+      rationale: "Enables horizontal scaling",
+      affected_files: ["src/auth/jwt.ts"],
+    });
+    const outOfScope = await decisionStore.create({
+      ...baseDecision,
+      scope: "vendor-repo/billing/",
+      summary: "Proration rounding uses banker's rounding for invoice totals",
+      rationale:
+        "Proration rounding drift across invoice totals reconciles cleanly with banker's rounding",
+      affected_files: ["vendor-repo/billing/proration.ts"],
+    });
+
+    const embedder = new Embedder(twiningDir);
+    (embedder as any).fallbackMode = true;
+    const searchEngine = new SearchEngine(embedder, new IndexManager(twiningDir));
+
+    // Drive the gate directly with the control switch thrown, over the same
+    // candidate pool the assembler builds.
+    const pool = [inScope, outOfScope];
+    const repo = "r_gap3000000000000000000000";
+    const leaked = selectCandidates(
+      pool,
+      (d) => legacyScope(d.scope, repo),
+      (d) => d.id,
+      {
+        principal: "main",
+        authorized: legacyEnvelope(repo),
+        query: legacyScope("src/auth/", repo),
+        disable: { scope_filter_off: true },
+      },
+    );
+    expect(leaked.admitted.map((d) => d.id)).toContain(outOfScope.id);
+    expect(searchEngine).toBeDefined();
   });
 
   it("control: with no search engine the out-of-scope decision is correctly excluded", async () => {
