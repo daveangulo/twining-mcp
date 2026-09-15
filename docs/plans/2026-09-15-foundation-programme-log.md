@@ -46,3 +46,15 @@ Audit trail for `2026-09-15-foundation-programme-plan.md`. Append-only, in the o
 - **D8** — Repo mechanics executed per RB7: Codex work parked at `dedaacc` (`wip/codex-plugin`); shared base `07230e6` on `main` (plan, log, absorbed W2 drafts with banner, session records); `foundation/v3` cut from it; CLI lane worktree `.claude/worktrees/cli-2.17` on `feat/cli-2.17`.
 - **D9** — Stage 0 launched as workflow `wf_f80a3b3b-ac2`: 8 worktree-isolated gap reproductions with positive controls, 5 implementation-blind oracles (C10, C11, C14, C16, C09), one steelman of the smallest evolution (§3.4), two host capability matrices (Claude Code 2.1.272, Codex 0.154.0). Reproductions run at `07230e6`, whose `src/` equals the baseline `d7860e0`.
 - **D10** — CLI lane dispatched (opus) with the lead-settled design: `createTwiningContext` extracted from `createServer`; a `CommandRegistry` shared by MCP and CLI; `twining` bin with a single JSON envelope, exit codes 0/1/2, `capabilities`; offline/sandbox-safe; `STORE_UNWRITABLE` instead of silent store fallback. Controller commits; lane reports.
+
+## 2026-09-15 — Stage 0 evidence
+
+- **DN7** — At 13:33 `/Applications/Xcode.app` was updated (root, mtime 13:33); Apple's `/usr/bin/git` now refuses with the Xcode license prompt and `/opt/homebrew/bin/git` does not exist, so `brew` fails too. The first Stage 0 commit was lost silently (printed an empty hash) and redone. Workaround: `PATH=/Library/Developer/CommandLineTools/usr/bin:$PATH` (git 2.50.1). **Dave's action:** `sudo xcodebuild -license accept`. Until then git-spawning tests/hooks/subagents on the plain PATH fail; A11 unchanged.
+- **DN8** — Steelman correction to the plan: the smallest evolution DOES satisfy C20 (tombstone records) and C21; the plan §9 and ADR §9.1 predicted C20 would fail. Corrected in ADR §9.1; the justification now rests on C10/C11/C14/C16/C22 + R05/R08.
+- **DN9** — Claude Code's injectable surface is 12 of 33 events; PreCompact/PostCompact/SessionEnd cannot inject. Codex has 12 events, 5 injectable; SubagentStop/Stop/PreCompact/PostCompact cannot. Compaction recovery must ride SessionStart(compact/resume) and UserPromptSubmit (D12).
+- **DN10** — Named teammates unavailable (DN6) held; both new lanes run as background subagents.
+- **D11** (`01M2KCF…`, recorded) — Foundational change JUSTIFIED by the failing cases; ADR stays PROPOSED until the slice passes its oracles.
+- **D12** — Compaction re-injection channel per host (see DN9).
+- **D13** — Dispatched lane 02 seed (opus): EventStore over `store/events.db` + `events/<yyyy-mm>/`, fs transport + reference relay, inbox/outbox, slice tests per oracle (C10/C11 first). Owns `src/events/**`, `src/exchange/**`, `test/acceptance/slice/**`.
+- **D14** — Dispatched oracle-rulings pass (opus): appendix B answers all 56 oracle open questions from the ADR, flags LEAD DECISION NEEDED and invariant/ADR conflicts; oracles themselves are never edited.
+- Workflow `wf_f80a3b3b-ac2`: 16 agents, 0 errors, 1.45M tokens, 12.1 min; commit `474dfac`.

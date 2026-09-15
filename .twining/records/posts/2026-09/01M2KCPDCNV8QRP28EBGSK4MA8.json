@@ -1,0 +1,16 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Stage 0 evidence landed at 474dfac on foundation/v3: all 8 supplied gaps reproduced with positive controls, 5 implementation-blind oracles (C09/C10/C11/C14/C16), steelman of the smallest evolution FAILS C10/C11/C14/C16/C22 + R05/R08, host hook matrices for Claude Code 2.1.272 and Codex 0.154.0.\nDecisions: [object Object]; [object Object]\nFindings: Stage 0 workflow wf_f80a3b3b-ac2: 16 agents, 0 errors, 234 tool uses, 1.45M subagent tokens, 12.1 min wall clock — no stall-detector kills this time (short prompts, no effort override, worktree isolation for the 8 code-executing reproductions). All 8 reproduction tests + 21 contract tests pass in the main checkout (47 tests, 378 ms).; warning: git broke mid-session at 13:33 — /Applications/Xcode.app was updated (mtime 13:33, root) so Apple's /usr/bin/git now exits with 'You have not agreed to the Xcode license agreements'; /opt/homebrew/bin/git does not exist; brew itself fails the same way. Workaround in use: prefix PATH with /Library/Developer/CommandLineTools/usr/bin (git 2.50.1 works). Permanent fix is Dave's: `sudo xcodebuild -license accept`. Until then every git-spawning test, hook and subagent that uses the plain PATH fails; the first Stage 0 commit attempt was silently lost this way (exit printed empty hash) and was redone as 474dfac.; Oracle open questions total 56 across C09 (12), C10 (12), C11 (10), C14 (10), C16 (12); most are answered by the ADR (rule table, who may correct, restore semantics, event equality = id AND digest); an oracle-rulings appendix is being produced so the slice and the oracles agree without editing the oracles.; Claude Code 2.1.272 hook surface is far larger than the 5 events the plugin uses: 33 events surveyed, 12 can inject context (SessionStart, UserPromptSubmit, UserPromptExpansion, PreToolUse, PostToolUse, PostToolUseFailure, PostToolBatch, SubagentStart, SubagentStop, Stop, DirectoryAdded, PostModelSwitch); PreCompact/PostCompact/SessionEnd cannot. Codex 0.154.0 has exactly 12 hook events; 5 inject (SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, SubagentStart); no Notification event; resume is SessionStart with source=resume; SessionEnd has no output schema.",
+  "entry_type": "status",
+  "id": "01M2KCPDCNV8QRP28EBGSK4MA8",
+  "origin": "narration",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:38:50.403Z"
+  },
+  "scope": "docs/adr/",
+  "summary": "Stage 0 evidence landed at 474dfac on foundation/v3: all 8 supplied gaps reproduced with positive controls, 5 implementation-blind oracles (C09/C10/C11/C14/C16), steelman of the smallest evolution …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-15T20:38:50.517Z"
+}

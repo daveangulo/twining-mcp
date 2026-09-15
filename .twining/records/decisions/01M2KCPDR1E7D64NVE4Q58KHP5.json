@@ -1,0 +1,31 @@
+{
+  "affected_files": [
+    "docs/adr/2026-09-foundation-contracts.md",
+    "docs/adr/2026-09-foundation-contracts.appendix-a-steelman.md",
+    "test/acceptance/baseline",
+    "test/acceptance/oracles",
+    "docs/operations/hosts-claude-code-capabilities.md",
+    "docs/operations/hosts-codex-capabilities.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Stage 0 evidence landed at 474dfac on foundation/v3: all 8 supplied gaps reproduced with positive controls, 5 implementation-blind oracles (C09/C10/C11/C14/C16), steelman of the smallest evolution FAILS C10/C11/C14/C16/C22 + R05/R08, host hook matrices for Claude Code 2.1.272 and Codex 0.154.0.",
+  "depends_on": [],
+  "domain": "integration",
+  "id": "01M2KCPDR1E7D64NVE4Q58KHP5",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:38:50.754Z"
+  },
+  "rationale": "Stage 0 host matrices (read-only survey of the installed binaries + official docs). The package warned that compaction outcomes are not an injection channel; the matrices confirm it for both hosts and name the supported path. Lane 03 must re-verify each row in the real host before relying on it.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/adr/",
+  "status": "active",
+  "summary": "Compaction recovery rides the hosts' injectable events, not the compaction hooks: on Claude Code 2.1.272 PreCompact/PostCompact are observe-only and re-injection uses SessionStart with the compact source (plus UserPromptSubmit); on Codex 0.154.0 PreCompact/PostCompact/SubagentStop/Stop are observe-only and re-injection uses SessionStart(resume)/UserPromptSubmit; capture-before-loss uses the observe-only pre-compaction event on both",
+  "timestamp": "2026-09-15T20:38:50.881Z"
+}

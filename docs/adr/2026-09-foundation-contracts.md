@@ -288,7 +288,24 @@ Same scenario set for all three: disconnected writers, late revocation, retry af
 
 ### 9.1 A — Evolve per-record export + file-wins ingest (the smallest change)
 
-*Filled from the Stage 0 steelman when it returns; the lead's prior analysis follows and is superseded by the steelman's evidence where they differ.* Additive revision stamps and conflict sidecars keep creates conflict-free and make same-record conflicts *visible*, but the governing statement still has one copy that is rewritten in place: a rewind or a stale-file pull still replaces the newer state (C14), partial supersession has no unit smaller than the file (C16), and a tombstone has nothing to attach to once the file is gone (C20). Receipts as posts give delivery evidence without a cursor model. Verdict expected: fails C14/C16/C20; passes C10 partially; cheapest by far.
+**Steelman result (Stage 0, workflow `wf_f80a3b3b-ac2`, full text in `2026-09-foundation-contracts.appendix-a-steelman.md`).** The strongest one-release evolution — per-record revision chains (real ancestry instead of `LIFECYCLE_RANK` guessing), conflict sidecar files, idempotency keys, tombstone records, prerequisite deferral, receipts as posts — was designed and scored case by case:
+
+| Case | Verdict |
+|---|---|
+| C10 duplicate / reorder / lost ack | fails |
+| C11 disconnected incompatible successors | fails |
+| C14 rewind / force-push / cherry-pick | fails |
+| C16 partial supersession, revoke, archive, restore | fails |
+| C20 delete / retract / reconnect old replica | **satisfies** (tombstone records propagate and survive reconnect) |
+| C21 migrate / interrupt / roll back | satisfies |
+| C22 cycles, dangling, cross-scope, competing corrections | fails |
+| R05 lossless lifecycle | fails |
+| R07 durable writes / retries | unclear |
+| R08 distributed exchange state | fails |
+
+The steelman's own strongest objection is the decisive one: *the record file is at once the current state, its own history and the merge unit, so `git merge` — a text-level rule resolved by a human under time pressure — is the authority, and it executes before any Twining code sees the bytes.* Everything the evolution adds can only detect the collapse afterwards, and only on a host that independently retained the losing side in the derived, gitignored database — so the proof of a loss is neither durable nor replicable (`rm twining.db` and restart erases it).
+
+Correction to the plan of record: the lead predicted C20 would fail under the smallest evolution; the steelman shows tombstone records satisfy it. Recorded as a plan correction, not silently absorbed. The justification for the foundational change therefore rests on C10/C11/C14/C16/C22 and R05/R08 — not on deletion.
 
 ### 9.2 B — Immutable events over Git (proposed)
 
