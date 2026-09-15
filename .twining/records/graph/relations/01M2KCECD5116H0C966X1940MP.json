@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T20:34:27.365Z",
+  "id": "01M2KCECD5116H0C966X1940MP",
+  "properties": {
+    "decision_summary": "Evidence class is decided by the INGRESS that produced the event (ceremony/adapter/connector/mcp/cli/import/migration), validated before storage, never taken from a caller field; human_ruling is producible only by the signing ceremony or an import carrying a valid signature by a known HUMAN key",
+    "origin": "derived"
+  },
+  "source": "01M2KCECD4Z75ZP2FCEFRA8ZKT",
+  "target": "01M2KCECCZKHNMDYZ5Y9HXHXZX",
+  "type": "decided_by"
+}

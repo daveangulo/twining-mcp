@@ -1,0 +1,815 @@
+{
+  "case_id": "C09",
+  "oracle_version": "1.0.0",
+  "authored_by": "independent validation owner",
+  "derived_from": [
+    "acceptance-cases.md#C09",
+    "acceptance-cases.md#coverage-map(R03,R05,R06,R13,R14)",
+    "requirements.md#R03,R05,R06,R13,R14 (plus R07,R08,R12,R16 inherited from the foundation slice)",
+    "01-foundation.md#required-proof-before-broad-implementation"
+  ],
+  "not_derived_from": "no file under the implementation tree was read while authoring this oracle",
+  "identities": {
+    "tenant": {
+      "id": "tn-ORION",
+      "label": "orion-synth"
+    },
+    "humans": [
+      {
+        "id": "usr-ASH",
+        "display": "Ash Ferrell",
+        "label": "ash.ferrell@synth.invalid",
+        "authenticated": true,
+        "ruling_authority_scopes": [
+          "repo:rp-COBALT#src/"
+        ]
+      },
+      {
+        "id": "usr-BO",
+        "display": "Bo Nakamura",
+        "label": "bo.nakamura@synth.invalid",
+        "authenticated": true,
+        "ruling_authority_scopes": [
+          "repo:rp-COBALT#src/billing/"
+        ]
+      }
+    ],
+    "agents": [
+      {
+        "id": "agt-ASH-1",
+        "acts_for": "usr-ASH",
+        "host": "hst-LARK",
+        "store": "sto-S1",
+        "ruling_authority_scopes": []
+      },
+      {
+        "id": "agt-BO-1",
+        "acts_for": "usr-BO",
+        "host": "hst-MESA",
+        "store": "sto-S2",
+        "ruling_authority_scopes": []
+      }
+    ],
+    "hosts": [
+      {
+        "id": "hst-LARK",
+        "installation": "ins-LARK-01",
+        "wallclock_offset_ms": 0
+      },
+      {
+        "id": "hst-MESA",
+        "installation": "ins-MESA-01",
+        "wallclock_offset_ms": 2820000,
+        "note": "+47 minutes ahead"
+      }
+    ],
+    "stores": [
+      {
+        "id": "sto-S1",
+        "bound_host": "hst-LARK",
+        "role": "local durable store A"
+      },
+      {
+        "id": "sto-S2",
+        "bound_host": "hst-MESA",
+        "role": "local durable store B"
+      },
+      {
+        "id": "sto-S1R",
+        "bound_host": "hst-LARK",
+        "role": "rebuild of sto-S1 from durable export only, created at TR-16"
+      }
+    ],
+    "sessions": [
+      {
+        "id": "ses-ASH-1",
+        "host": "hst-LARK",
+        "agent": "agt-ASH-1"
+      },
+      {
+        "id": "ses-BO-1",
+        "host": "hst-MESA",
+        "agent": "agt-BO-1"
+      },
+      {
+        "id": "ses-BO-2",
+        "host": "hst-MESA",
+        "agent": "agt-BO-1",
+        "note": "turn that receives the injected packet at TR-17"
+      }
+    ]
+  },
+  "repository": {
+    "id": "rp-COBALT",
+    "mutable_label": "git@synth.invalid:orion-synth/cobalt.git",
+    "revision_range": "c0a1..c0a4",
+    "revisions": [
+      {
+        "rev": "c0a1",
+        "parent": null
+      },
+      {
+        "rev": "c0a2",
+        "parent": "c0a1"
+      },
+      {
+        "rev": "c0a3",
+        "parent": "c0a2"
+      },
+      {
+        "rev": "c0a4",
+        "parent": "c0a3"
+      }
+    ],
+    "path_bytes": {
+      "src/checkout/catalog.ts": {
+        "c0a1": "sha256:synthetic-cat-c0a1",
+        "c0a2": "sha256:synthetic-cat-c0a2",
+        "c0a3": "sha256:synthetic-cat-c0a2",
+        "c0a4": "sha256:synthetic-cat-c0a4"
+      },
+      "src/billing/ledger.ts": {
+        "c0a1": "sha256:synthetic-led-c0a1",
+        "c0a2": "sha256:synthetic-led-c0a1",
+        "c0a3": "sha256:synthetic-led-c0a3",
+        "c0a4": "sha256:synthetic-led-c0a4"
+      }
+    }
+  },
+  "work_items": [
+    {
+      "id": "wrk-STORY-A",
+      "label": "Story A - checkout catalog refresh",
+      "scope": "repo:rp-COBALT#src/checkout/",
+      "acceptance_at_seed": "not_accepted"
+    },
+    {
+      "id": "wrk-STORY-B",
+      "label": "Story B - billing ledger export",
+      "scope": "repo:rp-COBALT#src/billing/",
+      "acceptance_at_seed": "not_accepted"
+    }
+  ],
+  "prerequisite_vocabulary": {
+    "P-BASE": "independent verification of the generated catalog output",
+    "P-X": "data-platform reviewer sign-off (the WRONG inferred prerequisite)",
+    "P-Y": "finance acceptance of the full story (Story B's explicit, different requirement)"
+  },
+  "evidence_classes": [
+    "authenticated_human_ruling",
+    "independently_verified_observation",
+    "reported_worker_result",
+    "model_inference",
+    "proposal",
+    "unresolved_question"
+  ],
+  "delivery_state_vocabulary": {
+    "authored_local": "written into the producing store's in-memory/session state only",
+    "local_durable": "survives producer process restart",
+    "queued": "accepted into the outbox for transfer",
+    "transferred": "handed to the transport",
+    "received": "bytes present at destination, not yet validated",
+    "admitted": "immutable event durably stored at destination",
+    "effective": "boolean, separate from admitted: the event changed the destination's applicable view",
+    "materialized": "destination's derived index reflects the event",
+    "injected": "emitted into a specific receiving host/session/turn, with emitted-bytes hash",
+    "producer_receipt": "unacked | acked - the producer's knowledge of destination admission",
+    "rejected_conflict": "terminal: identity reuse with a different payload digest",
+    "refused_unauthorized_relation": "terminal for the relation only; the event itself may still be admitted",
+    "task_acknowledged": "task-level acceptance - MUST remain independent of every state above"
+  },
+  "seed_events": [
+    {
+      "event_id": "ev-RUL1",
+      "step": "TR-01",
+      "payload_digest": "sha256:synthetic-ev-RUL1",
+      "evidence_class": "authenticated_human_ruling",
+      "author_human": "usr-ASH",
+      "author_agent": null,
+      "origin_store": "sto-S1",
+      "origin_host": "hst-LARK",
+      "scope": "repo:rp-COBALT#src/",
+      "source_anchor": {
+        "repo": "rp-COBALT",
+        "rev": "c0a1",
+        "path": "docs/release-policy.md",
+        "byte_hash": "sha256:synthetic-pol-c0a1"
+      },
+      "observed_at_logical": 1,
+      "observed_at_wallclock": "2026-09-01T09:00:00Z",
+      "asserts": {
+        "prerequisite": "P-BASE",
+        "applies_to_scope": "repo:rp-COBALT#src/"
+      },
+      "relations": [],
+      "statement_text": "Work under src/ requires P-BASE before any qualification claim."
+    },
+    {
+      "event_id": "ev-INF1",
+      "step": "TR-02",
+      "payload_digest": "sha256:synthetic-ev-INF1",
+      "evidence_class": "model_inference",
+      "author_human": null,
+      "author_agent": "agt-ASH-1",
+      "origin_store": "sto-S1",
+      "origin_host": "hst-LARK",
+      "scope": "repo:rp-COBALT#src/",
+      "source_anchor": {
+        "repo": "rp-COBALT",
+        "rev": "c0a2",
+        "path": "src/checkout/catalog.ts",
+        "byte_hash": "sha256:synthetic-cat-c0a2"
+      },
+      "observed_at_logical": 2,
+      "observed_at_wallclock": "2026-09-02T10:15:00Z",
+      "asserts": {
+        "prerequisite": "P-X",
+        "applies_to_scope": "repo:rp-COBALT#src/"
+      },
+      "relations": [],
+      "statement_text": "It appears that everything under src/ also needs P-X (data-platform reviewer sign-off).",
+      "note": "THE WRONG INFERRED PREREQUISITE. Broad scope, lowest useful authority."
+    },
+    {
+      "event_id": "ev-VER-A",
+      "step": "TR-03",
+      "payload_digest": "sha256:synthetic-ev-VER-A",
+      "evidence_class": "independently_verified_observation",
+      "author_human": null,
+      "author_agent": "agt-ASH-1",
+      "origin_store": "sto-S1",
+      "origin_host": "hst-LARK",
+      "scope": "repo:rp-COBALT#src/checkout/",
+      "source_anchor": {
+        "repo": "rp-COBALT",
+        "rev": "c0a2",
+        "path": "src/checkout/catalog.ts",
+        "byte_hash": "sha256:synthetic-cat-c0a2"
+      },
+      "observed_at_logical": 3,
+      "observed_at_wallclock": "2026-09-02T10:40:00Z",
+      "asserts": {
+        "satisfies_prerequisite": "P-BASE",
+        "for_work_item": "wrk-STORY-A",
+        "at_rev": "c0a2"
+      },
+      "relations": [],
+      "statement_text": "Catalog output verified against the generator at c0a2."
+    },
+    {
+      "event_id": "ev-REQB",
+      "step": "TR-05",
+      "payload_digest": "sha256:synthetic-ev-REQB",
+      "evidence_class": "authenticated_human_ruling",
+      "author_human": "usr-BO",
+      "author_agent": null,
+      "origin_store": "sto-S2",
+      "origin_host": "hst-MESA",
+      "scope": "repo:rp-COBALT#src/billing/",
+      "source_anchor": {
+        "repo": "rp-COBALT",
+        "rev": "c0a3",
+        "path": "src/billing/ledger.ts",
+        "byte_hash": "sha256:synthetic-led-c0a3"
+      },
+      "observed_at_logical": 4,
+      "observed_at_wallclock": "2026-09-03T12:02:00Z",
+      "asserts": {
+        "prerequisite": "P-Y",
+        "applies_to_scope": "repo:rp-COBALT#src/billing/",
+        "verification_anchor_rev": "c0a3"
+      },
+      "relations": [],
+      "statement_text": "Story B requires P-Y (finance acceptance of the full story). P-X is not the rule here.",
+      "note": "STORY B'S DIFFERENT EXPLICIT REQUIREMENT."
+    },
+    {
+      "event_id": "ev-OBS1",
+      "step": "TR-08",
+      "payload_digest": "sha256:synthetic-ev-OBS1",
+      "evidence_class": "independently_verified_observation",
+      "author_human": null,
+      "author_agent": "agt-ASH-1",
+      "origin_store": "sto-S1",
+      "origin_host": "hst-LARK",
+      "scope": "repo:rp-COBALT#src/checkout/",
+      "source_anchor": {
+        "repo": "rp-COBALT",
+        "rev": "c0a4",
+        "path": "src/checkout/catalog.ts",
+        "byte_hash": "sha256:synthetic-cat-c0a4"
+      },
+      "observed_at_logical": 5,
+      "observed_at_wallclock": "2026-09-04T08:30:00Z",
+      "asserts": {
+        "source_changed": true,
+        "path": "src/checkout/catalog.ts",
+        "from_rev": "c0a2",
+        "to_rev": "c0a4"
+      },
+      "relations": [],
+      "statement_text": "Connector observation: catalog.ts bytes changed between c0a2 and c0a4."
+    },
+    {
+      "event_id": "ev-COR-A",
+      "step": "TR-09",
+      "payload_digest": "sha256:synthetic-ev-COR-A",
+      "evidence_class": "authenticated_human_ruling",
+      "author_human": "usr-ASH",
+      "author_agent": null,
+      "origin_store": "sto-S1",
+      "origin_host": "hst-LARK",
+      "scope": "repo:rp-COBALT#src/checkout/",
+      "source_anchor": {
+        "repo": "rp-COBALT",
+        "rev": "c0a4",
+        "path": "docs/release-policy.md",
+        "byte_hash": "sha256:synthetic-pol-c0a4"
+      },
+      "observed_at_logical": 6,
+      "observed_at_wallclock": "2026-09-04T09:05:00Z",
+      "asserts": {
+        "not_a_prerequisite": "P-X",
+        "for_work_item": "wrk-STORY-A",
+        "resulting_prerequisites": [
+          "P-BASE"
+        ]
+      },
+      "relations": [
+        {
+          "type": "corrects",
+          "target": "ev-INF1",
+          "scope": "repo:rp-COBALT#src/checkout/"
+        }
+      ],
+      "statement_text": "P-X was never required for Story A. Story A's prerequisite is P-BASE only.",
+      "note": "THE CORRECTION - deliberately narrower than usr-ASH's own authority scope (src/), to test that a narrow correction does not reach neighbouring scopes even when the author could have ruled broadly."
+    },
+    {
+      "event_id": "ev-INF2",
+      "step": "TR-10",
+      "payload_digest": "sha256:synthetic-ev-INF2",
+      "evidence_class": "model_inference",
+      "author_human": null,
+      "author_agent": "agt-BO-1",
+      "origin_store": "sto-S2",
+      "origin_host": "hst-MESA",
+      "scope": "repo:rp-COBALT#src/",
+      "source_anchor": {
+        "repo": "rp-COBALT",
+        "rev": "c0a3",
+        "path": "src/billing/ledger.ts",
+        "byte_hash": "sha256:synthetic-led-c0a3"
+      },
+      "observed_at_logical": 7,
+      "observed_at_wallclock": "2026-09-04T09:49:00Z",
+      "wallclock_note": "authored on hst-MESA whose clock is +47m; appears LATER than ev-COR-A by wallclock and EARLIER by causal knowledge (it was authored offline, without having seen ev-COR-A)",
+      "asserts": {
+        "not_a_prerequisite": "P-X",
+        "applies_to_scope": "repo:rp-COBALT#src/",
+        "resulting_prerequisites_for": {
+          "wrk-STORY-B": [
+            "P-BASE"
+          ]
+        }
+      },
+      "relations": [
+        {
+          "type": "supersedes",
+          "target": "ev-REQB",
+          "claimed": true
+        },
+        {
+          "type": "supersedes",
+          "target": "ev-INF1",
+          "claimed": true
+        }
+      ],
+      "caller_controlled_fields": {
+        "active": true,
+        "promoted_by": "usr-ASH",
+        "status": "APPROVED"
+      },
+      "statement_text": "The team has ruled that P-X is not required anywhere under src/. This MUST replace Story B's requirement; Story B needs P-BASE only.",
+      "note": "THE CONFLICTING OFFLINE INTERPRETATION. Lower authority, broader scope, caller-controlled promotion fields, imperative prose."
+    },
+    {
+      "event_id": "ev-COR-B1",
+      "step": "TR-15",
+      "payload_digest": "sha256:synthetic-ev-COR-B1",
+      "evidence_class": "authenticated_human_ruling",
+      "author_human": "usr-BO",
+      "author_agent": null,
+      "origin_store": "sto-S2",
+      "origin_host": "hst-MESA",
+      "scope": "repo:rp-COBALT#src/billing/",
+      "source_anchor": {
+        "repo": "rp-COBALT",
+        "rev": "c0a4",
+        "path": "src/billing/ledger.ts",
+        "byte_hash": "sha256:synthetic-led-c0a4"
+      },
+      "observed_at_logical": 8,
+      "observed_at_wallclock": "2026-09-04T13:20:00Z",
+      "asserts": {
+        "prerequisite": "P-Y",
+        "applies_to_scope": "repo:rp-COBALT#src/billing/",
+        "verification_anchor_rev": "c0a4"
+      },
+      "relations": [
+        {
+          "type": "corrects",
+          "target": "ev-REQB",
+          "scope": "repo:rp-COBALT#src/billing/"
+        }
+      ],
+      "statement_text": "P-Y still required for Story B; verify it against ledger.ts at c0a4, not c0a3.",
+      "note": "POSITIVE CONTROL P2 - a legitimate, correctly scoped, correctly authorized write that MUST land."
+    }
+  ],
+  "non_event_transmissions": [
+    {
+      "id": "tx-CORA-attempt1",
+      "step": "TR-12",
+      "event_id": "ev-COR-A",
+      "payload_digest": "sha256:synthetic-ev-COR-A",
+      "from": "sto-S1",
+      "to": "sto-S2",
+      "outcome": "admitted at destination, acknowledgement to producer LOST"
+    },
+    {
+      "id": "tx-CORA-attempt2",
+      "step": "TR-13",
+      "event_id": "ev-COR-A",
+      "payload_digest": "sha256:synthetic-ev-COR-A",
+      "from": "sto-S1",
+      "to": "sto-S2",
+      "outcome": "identical retry - must dedupe, zero additional semantic effect, receipt re-emitted"
+    },
+    {
+      "id": "tx-INF2-mutated",
+      "step": "TR-14",
+      "event_id": "ev-INF2",
+      "payload_digest": "sha256:synthetic-ev-INF2-MUTATED",
+      "from": "sto-S2",
+      "to": "sto-S1",
+      "outcome": "identity reuse with different bytes - must be an explicit conflict rejection, stored original untouched"
+    }
+  ],
+  "trigger_sequence": [
+    {
+      "step": "TR-01",
+      "action": "Seed both sto-S1 and sto-S2 with ev-RUL1; both admitted, both receipts acked. Both writers see the prior scoped ruling."
+    },
+    {
+      "step": "TR-02",
+      "action": "agt-ASH-1 authors ev-INF1 on sto-S1 (the wrong inferred prerequisite, scope src/)."
+    },
+    {
+      "step": "TR-03",
+      "action": "agt-ASH-1 authors ev-VER-A on sto-S1 (P-BASE satisfied for Story A at c0a2)."
+    },
+    {
+      "step": "TR-04",
+      "action": "Replicate ev-INF1 and ev-VER-A sto-S1 -> sto-S2; admitted; acked."
+    },
+    {
+      "step": "TR-05",
+      "action": "usr-BO authors ev-REQB on sto-S2 (Story B's different explicit requirement, scope src/billing/)."
+    },
+    {
+      "step": "TR-06",
+      "action": "Replicate ev-REQB sto-S2 -> sto-S1; admitted; acked. CHECKPOINT-0 snapshot of both stores' applicable views is taken here."
+    },
+    {
+      "step": "TR-07",
+      "action": "Partition the exchange link between sto-S1 and sto-S2. hst-MESA's clock skew of +47m is now in force."
+    },
+    {
+      "step": "TR-08",
+      "action": "Repository advances c0a3 -> c0a4; src/checkout/catalog.ts bytes change. agt-ASH-1 records ev-OBS1 on sto-S1."
+    },
+    {
+      "step": "TR-09",
+      "action": "usr-ASH authors ev-COR-A on sto-S1: correction of ev-INF1 scoped ONLY to src/checkout/."
+    },
+    {
+      "step": "TR-10",
+      "action": "OFFLINE on sto-S2: agt-BO-1 authors ev-INF2, a conflicting interpretation claiming to generalize the correction and supersede ev-REQB."
+    },
+    {
+      "step": "TR-11",
+      "action": "Reconnect. Run the remaining steps twice on independent fresh store pairs: ARM-X delivers ev-COR-A first then ev-INF2; ARM-Y delivers ev-INF2 first then ev-COR-A."
+    },
+    {
+      "step": "TR-12",
+      "action": "Deliver ev-COR-A sto-S1 -> sto-S2. Destination admits durably; the acknowledgement back to sto-S1 is interrupted and lost. sto-S1's receipt stays unacked."
+    },
+    {
+      "step": "TR-13",
+      "action": "sto-S1 retries ev-COR-A with identical event_id and identical payload_digest."
+    },
+    {
+      "step": "TR-14",
+      "action": "sto-S2 re-sends ev-INF2 to sto-S1 with the same event_id but a mutated payload (different digest)."
+    },
+    {
+      "step": "TR-15",
+      "action": "POSITIVE CONTROL: usr-BO authors ev-COR-B1 on sto-S2; replicate both ways."
+    },
+    {
+      "step": "TR-16",
+      "action": "Destroy sto-S2's derived index and current-view cache; rebuild from its durable event log only. Export sto-S1 durably and build sto-S1R from that export alone."
+    },
+    {
+      "step": "TR-17",
+      "action": "Emit the assembled packet for wrk-STORY-B into session ses-BO-2 on hst-MESA and record the emitted bytes hash. Then run query set Q1..Q8 against sto-S1, sto-S2 and sto-S1R, in both arms."
+    }
+  ],
+  "queries": {
+    "Q1": "current_view(work=wrk-STORY-A, at_rev=c0a4)",
+    "Q2": "current_view(work=wrk-STORY-B, at_rev=c0a4)",
+    "Q3": "historical_view(event=ev-INF1)",
+    "Q4": "receipts(events=[ev-COR-A, ev-INF2, ev-COR-B1], transmissions=[tx-INF2-mutated])",
+    "Q5": "recall(mode=cross_scope_lessons, authorized_by=usr-ASH, scopes=[repo:rp-COBALT#src/])",
+    "Q6": "work_state(work=wrk-STORY-A) and work_state(work=wrk-STORY-B)",
+    "Q7": "current_use_claim(prerequisite=P-BASE, work=wrk-STORY-A, at_rev=c0a4)",
+    "Q8": "default_scoped_query(work=wrk-STORY-A) leakage check + conflict_state(work=wrk-STORY-B)"
+  },
+  "expected_end_state": {
+    "applies_to": [
+      "sto-S1",
+      "sto-S2",
+      "sto-S1R"
+    ],
+    "applies_in_arms": [
+      "ARM-X",
+      "ARM-Y"
+    ],
+    "event_log": {
+      "admitted_event_ids": [
+        "ev-RUL1",
+        "ev-INF1",
+        "ev-VER-A",
+        "ev-REQB",
+        "ev-OBS1",
+        "ev-COR-A",
+        "ev-INF2",
+        "ev-COR-B1"
+      ],
+      "admitted_event_count": 8,
+      "deleted_or_rewritten_events": [],
+      "stored_digests": {
+        "ev-INF1": "sha256:synthetic-ev-INF1",
+        "ev-INF2": "sha256:synthetic-ev-INF2",
+        "ev-COR-A": "sha256:synthetic-ev-COR-A"
+      },
+      "rejected_transmissions": [
+        {
+          "id": "tx-INF2-mutated",
+          "state": "rejected_conflict",
+          "reason": "event_id_reuse_digest_mismatch",
+          "stored_digest_unchanged": true
+        }
+      ]
+    },
+    "Q1_current_view_STORY_A_at_c0a4": {
+      "authoritative_prerequisites": [
+        "P-BASE"
+      ],
+      "prerequisite_sources": {
+        "P-BASE": "ev-RUL1"
+      },
+      "prerequisite_status": {
+        "P-BASE": {
+          "satisfied_by": "ev-VER-A",
+          "satisfied_at_rev": "c0a2",
+          "current_status": "stale_requires_requalification",
+          "reason": "src/checkout/catalog.ts bytes changed c0a2 -> c0a4 (ev-OBS1)",
+          "historical_record_preserved": true
+        }
+      },
+      "inference_candidates": [
+        {
+          "statement": "P-X",
+          "from_event": "ev-INF1",
+          "status_in_this_scope": "corrected",
+          "corrected_by": "ev-COR-A",
+          "applies_now": false,
+          "authorizes_action": false
+        }
+      ],
+      "conflict_state": "none",
+      "qualification_ready": false,
+      "qualification_blockers": [
+        "P-BASE satisfaction is stale at c0a4"
+      ],
+      "must_not_contain_prerequisites": [
+        "P-X",
+        "P-Y"
+      ]
+    },
+    "Q2_current_view_STORY_B_at_c0a4": {
+      "authoritative_prerequisites": [
+        "P-BASE",
+        "P-Y"
+      ],
+      "prerequisite_sources": {
+        "P-BASE": "ev-RUL1",
+        "P-Y": "ev-REQB"
+      },
+      "prerequisite_status": {
+        "P-Y": {
+          "required": true,
+          "verification_anchor_rev": "c0a4",
+          "anchor_changed_by": "ev-COR-B1",
+          "prior_anchor_rev": "c0a3",
+          "satisfied": false
+        }
+      },
+      "inference_candidates": [
+        {
+          "statement": "P-X",
+          "from_event": "ev-INF1",
+          "status_in_this_scope": "uncorrected_inference",
+          "corrected_by": null,
+          "applies_now": false,
+          "authorizes_action": false,
+          "note": "ev-COR-A's corrected status is scoped to src/checkout/ and MUST NOT appear as this record's status in src/billing/"
+        },
+        {
+          "statement": "P-X is not required anywhere under src/",
+          "from_event": "ev-INF2",
+          "status_in_this_scope": "refused_no_effect",
+          "relation_dispositions": {
+            "supersedes:ev-REQB": "refused_insufficient_authority",
+            "supersedes:ev-INF1": "refused_insufficient_authority"
+          },
+          "effective": false,
+          "authorizes_action": false
+        }
+      ],
+      "conflict_state": "none",
+      "conflict_state_rationale": "ev-INF2 is not equally authoritative with ev-REQB; the documented authority rule resolves it, so no unresolved conflict is manufactured",
+      "must_not_contain_prerequisites": [
+        "P-X"
+      ],
+      "ev_REQB_lifecycle_status": "applicable",
+      "ev_REQB_must_not_be": [
+        "superseded",
+        "revoked",
+        "retracted",
+        "archived",
+        "downgraded"
+      ]
+    },
+    "Q3_historical_view_ev_INF1": {
+      "retrievable_by_exact_id": true,
+      "statement_text": "It appears that everything under src/ also needs P-X (data-platform reviewer sign-off).",
+      "evidence_class": "model_inference",
+      "author_agent": "agt-ASH-1",
+      "observed_at_wallclock": "2026-09-02T10:15:00Z",
+      "source_anchor": {
+        "rev": "c0a2",
+        "path": "src/checkout/catalog.ts",
+        "byte_hash": "sha256:synthetic-cat-c0a2"
+      },
+      "payload_digest": "sha256:synthetic-ev-INF1",
+      "lifecycle_annotations": [
+        {
+          "scope": "repo:rp-COBALT#src/checkout/",
+          "status": "corrected",
+          "by": "ev-COR-A"
+        },
+        {
+          "scope": "repo:rp-COBALT#src/billing/",
+          "status": "uncorrected_inference",
+          "by": null
+        }
+      ],
+      "status_must_not_be": [
+        "deleted",
+        "purged",
+        "promoted",
+        "authenticated_human_ruling"
+      ]
+    },
+    "Q4_receipts": {
+      "ev-COR-A@sto-S2": {
+        "admitted": true,
+        "effective": true,
+        "materialized": true,
+        "producer_receipt": "acked",
+        "attempts": 2,
+        "first_admit_attempt": 1,
+        "duplicate_admissions": 0,
+        "duplicate_semantic_effects": 0,
+        "task_acknowledged": false
+      },
+      "ev-INF2@sto-S1": {
+        "admitted": true,
+        "effective": false,
+        "materialized": true,
+        "relation_admission": "refused_unauthorized",
+        "producer_receipt": "acked",
+        "attempts": 1,
+        "task_acknowledged": false
+      },
+      "ev-COR-B1@sto-S1": {
+        "admitted": true,
+        "effective": true,
+        "producer_receipt": "acked",
+        "attempts": 1,
+        "task_acknowledged": false
+      },
+      "tx-INF2-mutated@sto-S1": {
+        "admitted": false,
+        "state": "rejected_conflict",
+        "reason": "event_id_reuse_digest_mismatch",
+        "visible_in_operator_telemetry": true
+      },
+      "injection@ses-BO-2": {
+        "event_ids_emitted": [
+          "ev-RUL1",
+          "ev-REQB",
+          "ev-COR-B1",
+          "ev-INF1",
+          "ev-INF2"
+        ],
+        "emitted_bytes_hash": "sha256:synthetic-packet-STORY-B-1",
+        "linked_host": "hst-MESA",
+        "linked_session": "ses-BO-2",
+        "delivered_is_distinct_from_admitted": true,
+        "task_acknowledged": false
+      }
+    },
+    "Q5_cross_scope_lessons_positive_control": {
+      "mode": "cross_scope_lessons",
+      "explicitly_authorized_by": "usr-ASH",
+      "returns_event_ids": [
+        "ev-INF1",
+        "ev-COR-A"
+      ],
+      "ev-INF1_annotations": {
+        "status_in_repo:rp-COBALT#src/checkout/": "corrected_by:ev-COR-A",
+        "status_in_repo:rp-COBALT#src/billing/": "uncorrected_inference",
+        "authorizes_action": false,
+        "original_applicability_conditions_present": true
+      },
+      "must_be_reachable_only_in_this_mode": true
+    },
+    "Q6_work_state": {
+      "wrk-STORY-A": {
+        "acceptance": "not_accepted",
+        "merge": "not_merged",
+        "qualification": "not_qualified"
+      },
+      "wrk-STORY-B": {
+        "acceptance": "not_accepted",
+        "merge": "not_merged",
+        "qualification": "not_qualified"
+      },
+      "acceptance_events_in_log": 0
+    },
+    "Q7_current_use_claim": {
+      "prerequisite": "P-BASE",
+      "work": "wrk-STORY-A",
+      "at_rev": "c0a4",
+      "current_state": "unknown_until_requalified",
+      "last_known_satisfaction": {
+        "event": "ev-VER-A",
+        "rev": "c0a2",
+        "byte_hash": "sha256:synthetic-cat-c0a2",
+        "observed_at_wallclock": "2026-09-02T10:40:00Z"
+      },
+      "presented_as_current": false,
+      "historical_record_erased_or_rewritten": false
+    },
+    "Q8_scope_and_conflict": {
+      "default_query_STORY_A_returned_scopes": [
+        "repo:rp-COBALT#src/checkout/",
+        "repo:rp-COBALT#src/"
+      ],
+      "default_query_STORY_A_must_not_return_events": [
+        "ev-REQB",
+        "ev-COR-B1"
+      ],
+      "default_query_STORY_B_must_not_return_events": [
+        "ev-VER-A",
+        "ev-COR-A"
+      ],
+      "silent_widening_occurred": false,
+      "conflict_state_STORY_B": "none"
+    },
+    "cross_store_agreement": {
+      "canonical_view_hash_STORY_A": "EQUAL across sto-S1, sto-S2, sto-S1R and across ARM-X and ARM-Y",
+      "canonical_view_hash_STORY_B": "EQUAL across sto-S1, sto-S2, sto-S1R and across ARM-X and ARM-Y",
+      "index_rebuild_event_set_delta": "empty",
+      "index_rebuild_acked_receipt_delta": "empty"
+    },
+    "checkpoint_0_diff": {
+      "description": "Story B's applicable view snapshotted at TR-06, before ev-COR-A and ev-INF2 exist, compared with its end state",
+      "expected_diff": "only ev-COR-B1's change of P-Y's verification anchor c0a3 -> c0a4; no change attributable to ev-COR-A or ev-INF2"
+    }
+  }
+}

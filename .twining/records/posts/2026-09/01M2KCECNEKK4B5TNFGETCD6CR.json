@@ -1,0 +1,15 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Canonical form for digests is compact JSON with recursively sorted keys, arrays in order, undefined dropped, UTF-8, no Unicode normalization; the digest covers the envelope minus digest and sig and is recomputed from the PARSED object so on-disk pretty-printing never matters; file bytes, canonical bytes and attachment source bytes are three distinct hashes\" relates to:\n- 01M2KCECC0ZY7SQHV70CG2ANYQ: \"Evidence class is decided by the INGRESS that produced the event (ceremony/adapter/connector/mcp/cli/import/migration), validated before storage, never taken from a caller field; human_ruling is producible only by the signing ceremony or an import carrying a valid signature by a known HUMAN key\"",
+  "entry_type": "finding",
+  "id": "01M2KCECNEKK4B5TNFGETCD6CR",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:34:27.506Z"
+  },
+  "scope": "src/contracts/",
+  "summary": "Related decisions in scope: 1 existing decision(s) overlap",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-09-15T20:34:27.630Z"
+}

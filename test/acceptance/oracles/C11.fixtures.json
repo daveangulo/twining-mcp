@@ -1,0 +1,929 @@
+{
+  "case_id": "C11",
+  "oracle_version": "1.0.0",
+  "frozen_at": "2026-09-15",
+  "derivation": "acceptance-cases.md C11 row; requirements.md R01/R03/R05/R06/R08/R09/R12; 01-foundation.md 'Required proof before broad implementation'. Expected outcomes were fixed before and independently of any implementation.",
+  "notation": {
+    "abstract_store": "A store S exposes four projections: events(S) = admitted append-only event list; current(S, scope) = current applicable view; receipts(S, event_id, peer) = per-peer delivery state; history(S, record_id) = historical view including superseded/contested records with original evidence.",
+    "delivery_states": [
+      "local_durable",
+      "queued",
+      "in_flight",
+      "received",
+      "admitted",
+      "materialized",
+      "injected",
+      "task_acknowledged"
+    ],
+    "evidence_classes": [
+      "human_ruling",
+      "verified_observation",
+      "reported_worker_result",
+      "model_inference",
+      "proposal",
+      "open_question"
+    ],
+    "record_status": [
+      "applicable",
+      "superseded",
+      "conflicted",
+      "claim_rejected",
+      "source_stale"
+    ]
+  },
+  "identities": {
+    "tenant": {
+      "id": "tenant:T_SYN",
+      "label": "synthetic-tenant"
+    },
+    "humans": [
+      {
+        "id": "user:U_ALPHA",
+        "label": "Alpha",
+        "auth": "authenticated",
+        "authority_scopes": [
+          "repo:R1/src/policy/",
+          "repo:R1/src/export/",
+          "repo:R1/src/ingest/"
+        ]
+      },
+      {
+        "id": "user:U_BETA",
+        "label": "Beta",
+        "auth": "authenticated",
+        "authority_scopes": [
+          "repo:R1/src/policy/",
+          "repo:R1/src/export/",
+          "repo:R1/src/ingest/"
+        ]
+      }
+    ],
+    "agents": [
+      {
+        "id": "agent:A1",
+        "runs_on": "host:H1",
+        "acts_for": "user:U_ALPHA",
+        "class": "service_principal"
+      },
+      {
+        "id": "agent:A2",
+        "runs_on": "host:H2",
+        "acts_for": "user:U_BETA",
+        "class": "service_principal"
+      }
+    ],
+    "hosts": [
+      {
+        "id": "host:H1",
+        "installation": "inst-H1-0001",
+        "clock_skew_seconds": 2700,
+        "note": "clock runs +45 min fast"
+      },
+      {
+        "id": "host:H2",
+        "installation": "inst-H2-0002",
+        "clock_skew_seconds": -1200,
+        "note": "clock runs -20 min slow"
+      }
+    ],
+    "stores": [
+      {
+        "id": "store:S1",
+        "resident_host": "host:H1",
+        "kind": "local_durable"
+      },
+      {
+        "id": "store:S2",
+        "resident_host": "host:H2",
+        "kind": "local_durable"
+      },
+      {
+        "id": "store:S3",
+        "resident_host": "host:H3",
+        "kind": "rebuild_target_empty",
+        "note": "used only for the durable-evidence reconstruction assertion"
+      }
+    ],
+    "repository": {
+      "id": "repo:R1",
+      "note": "ONE repository. Its labels differ per host on purpose; labels are not identity (R01).",
+      "clones": [
+        {
+          "host": "host:H1",
+          "path": "/w/alpha/proj",
+          "remote_url": "ssh://git@synth.invalid/org/proj.git",
+          "default_branch": "main"
+        },
+        {
+          "host": "host:H2",
+          "path": "/w/beta/proj-renamed",
+          "remote_url": "https://synth.invalid/org/proj.git",
+          "default_branch": "main"
+        }
+      ],
+      "revision_range": {
+        "base": "rev:G0",
+        "anchored": "rev:G1",
+        "head_after_T8": "rev:G2",
+        "ordered": [
+          "rev:G0",
+          "rev:G1",
+          "rev:G2"
+        ]
+      },
+      "anchors": [
+        {
+          "anchor_id": "ANC-POL",
+          "path": "src/policy/retention.ts",
+          "at_G1": {
+            "source_hash": "sha256:a1a1a1a1",
+            "encoding": "utf-8",
+            "newline": "LF"
+          },
+          "at_G2": {
+            "source_hash": "sha256:c3c3c3c3",
+            "encoding": "utf-8",
+            "newline": "LF"
+          }
+        },
+        {
+          "anchor_id": "ANC-ING",
+          "path": "src/ingest/dedupe.ts",
+          "at_G1": {
+            "source_hash": "sha256:b2b2b2b2"
+          },
+          "at_G2": {
+            "source_hash": "sha256:b2b2b2b2"
+          }
+        },
+        {
+          "anchor_id": "ANC-EXP",
+          "path": "src/export/writer.ts",
+          "at_G1": {
+            "source_hash": "sha256:d4d4d4d4"
+          },
+          "at_G2": {
+            "source_hash": "sha256:d4d4d4d4"
+          }
+        }
+      ]
+    }
+  },
+  "authority_table_declared_before_run": {
+    "rule_A": "A human_ruling by a principal holding declared authority over the record's scope may supersede a record in that scope.",
+    "rule_B": "A model_inference, proposal, reported_worker_result or open_question may NEVER supersede a human_ruling, regardless of recency, prose form, or any caller-supplied active/actor/promoted_by field.",
+    "rule_C": "Two admitted successors of the same ancestor in the same scope, both authorized under rule_A and neither causally descended from the other, are EQUALLY AUTHORITATIVE and are surfaced as an explicit conflict; no automatic winner.",
+    "rule_D": "Arrival order, wall-clock timestamp and prose similarity are never inputs to authority resolution. Any deterministic ordering used for display must be derived from content identity (event_id/digest) plus causal order only.",
+    "rule_E": "A supersession edge takes effect only within the authorized scope of the superseding record; it never alters a neighboring scope.",
+    "seniority": "NONE. U_ALPHA and U_BETA are declared peers for all scopes in this fixture. (See open question OQ-2.)"
+  },
+  "seed_events_pre_partition": [
+    {
+      "event_id": "EV-0001",
+      "payload_digest": "blake3:e0001",
+      "producer": {
+        "agent": "agent:A1",
+        "host": "host:H1",
+        "on_behalf_of": "user:U_ALPHA"
+      },
+      "op": "record.assert",
+      "record_id": "REC-000",
+      "scope": "repo:R1/src/policy/",
+      "evidence_class": "human_ruling",
+      "author": "user:U_ALPHA",
+      "observer": "agent:A1",
+      "source_ref": {
+        "repo": "repo:R1",
+        "rev": "rev:G1",
+        "anchor_id": "ANC-POL",
+        "source_hash": "sha256:a1a1a1a1"
+      },
+      "statement": "Retention removal in src/policy/ is a hard delete.",
+      "wall_clock_recorded": "2026-09-15T09:45:00Z",
+      "true_time": "2026-09-15T09:00:00Z",
+      "causal_deps": [],
+      "admitted_in": [
+        "store:S1",
+        "store:S2"
+      ]
+    },
+    {
+      "event_id": "EV-0002",
+      "payload_digest": "blake3:e0002",
+      "producer": {
+        "agent": "agent:A2",
+        "host": "host:H2",
+        "on_behalf_of": "user:U_BETA"
+      },
+      "op": "record.assert",
+      "record_id": "REC-N00",
+      "scope": "repo:R1/src/ingest/",
+      "evidence_class": "human_ruling",
+      "author": "user:U_BETA",
+      "observer": "agent:A2",
+      "source_ref": {
+        "repo": "repo:R1",
+        "rev": "rev:G1",
+        "anchor_id": "ANC-ING",
+        "source_hash": "sha256:b2b2b2b2"
+      },
+      "statement": "Ingest deduplicates by payload digest in src/ingest/.",
+      "wall_clock_recorded": "2026-09-15T08:40:00Z",
+      "true_time": "2026-09-15T09:00:00Z",
+      "causal_deps": [],
+      "admitted_in": [
+        "store:S1",
+        "store:S2"
+      ]
+    },
+    {
+      "event_id": "EV-0003",
+      "payload_digest": "blake3:e0003",
+      "producer": {
+        "agent": "agent:A1",
+        "host": "host:H1",
+        "on_behalf_of": "user:U_ALPHA"
+      },
+      "op": "record.assert",
+      "record_id": "REC-E00",
+      "scope": "repo:R1/src/export/",
+      "evidence_class": "human_ruling",
+      "author": "user:U_ALPHA",
+      "observer": "agent:A1",
+      "source_ref": {
+        "repo": "repo:R1",
+        "rev": "rev:G1",
+        "anchor_id": "ANC-EXP",
+        "source_hash": "sha256:d4d4d4d4"
+      },
+      "statement": "Export writes NDJSON in src/export/.",
+      "wall_clock_recorded": "2026-09-15T09:46:00Z",
+      "true_time": "2026-09-15T09:01:00Z",
+      "causal_deps": [],
+      "admitted_in": [
+        "store:S1",
+        "store:S2"
+      ]
+    }
+  ],
+  "partition_events": [
+    {
+      "event_id": "EV-1001",
+      "payload_digest": "blake3:e1001",
+      "branch": "A",
+      "producer": {
+        "agent": "agent:A1",
+        "host": "host:H1",
+        "on_behalf_of": "user:U_ALPHA"
+      },
+      "op": "record.supersede",
+      "record_id": "REC-A01",
+      "supersedes": [
+        "REC-000"
+      ],
+      "scope": "repo:R1/src/policy/",
+      "evidence_class": "human_ruling",
+      "author": "user:U_ALPHA",
+      "observer": "agent:A1",
+      "source_ref": {
+        "repo": "repo:R1",
+        "rev": "rev:G1",
+        "anchor_id": "ANC-POL",
+        "source_hash": "sha256:a1a1a1a1"
+      },
+      "statement": "CORRECTION: retention removal in src/policy/ writes a tombstone; it is not a hard delete.",
+      "wall_clock_recorded": "2026-09-15T10:45:00Z",
+      "true_time": "2026-09-15T10:00:00Z",
+      "causal_deps": [
+        "EV-0001"
+      ],
+      "authored_in": "store:S1"
+    },
+    {
+      "event_id": "EV-2001",
+      "payload_digest": "blake3:e2001",
+      "branch": "B",
+      "producer": {
+        "agent": "agent:A2",
+        "host": "host:H2",
+        "on_behalf_of": "user:U_BETA"
+      },
+      "op": "record.supersede",
+      "record_id": "REC-B02",
+      "supersedes": [
+        "REC-000"
+      ],
+      "scope": "repo:R1/src/policy/",
+      "evidence_class": "human_ruling",
+      "author": "user:U_BETA",
+      "observer": "agent:A2",
+      "source_ref": {
+        "repo": "repo:R1",
+        "rev": "rev:G1",
+        "anchor_id": "ANC-POL",
+        "source_hash": "sha256:a1a1a1a1"
+      },
+      "statement": "CORRECTION: retention removal in src/policy/ is a soft delete with a 30-day purge.",
+      "wall_clock_recorded": "2026-09-15T10:10:00Z",
+      "true_time": "2026-09-15T10:30:00Z",
+      "causal_deps": [
+        "EV-0001"
+      ],
+      "authored_in": "store:S2",
+      "trap": "recorded wall clock is EARLIER than EV-1001 although authored LATER in true time (host skew)."
+    },
+    {
+      "event_id": "EV-2002",
+      "payload_digest": "blake3:e2002",
+      "branch": "B",
+      "producer": {
+        "agent": "agent:A2",
+        "host": "host:H2",
+        "on_behalf_of": "user:U_BETA"
+      },
+      "op": "record.supersede",
+      "record_id": "REC-E01",
+      "supersedes": [
+        "REC-E00"
+      ],
+      "scope": "repo:R1/src/export/",
+      "evidence_class": "human_ruling",
+      "author": "user:U_BETA",
+      "observer": "agent:A2",
+      "source_ref": {
+        "repo": "repo:R1",
+        "rev": "rev:G1",
+        "anchor_id": "ANC-EXP",
+        "source_hash": "sha256:d4d4d4d4"
+      },
+      "statement": "CORRECTION: export writes Parquet in src/export/.",
+      "wall_clock_recorded": "2026-09-15T10:20:00Z",
+      "true_time": "2026-09-15T10:40:00Z",
+      "causal_deps": [
+        "EV-0003"
+      ],
+      "authored_in": "store:S2",
+      "role": "POSITIVE CONTROL - uncontested successor, same partition/retry/skew conditions."
+    },
+    {
+      "event_id": "EV-2003",
+      "payload_digest": "blake3:e2003",
+      "branch": "B",
+      "producer": {
+        "agent": "agent:A2",
+        "host": "host:H2",
+        "on_behalf_of": "user:U_BETA"
+      },
+      "op": "record.supersede",
+      "record_id": "REC-B01",
+      "claimed_supersedes": [
+        "REC-000"
+      ],
+      "scope": "repo:R1/src/policy/",
+      "evidence_class": "model_inference",
+      "author": "agent:A2",
+      "observer": "agent:A2",
+      "source_ref": {
+        "repo": "repo:R1",
+        "rev": "rev:G1",
+        "anchor_id": "ANC-POL",
+        "source_hash": "sha256:a1a1a1a1"
+      },
+      "statement": "MUST: retention removal in src/policy/ is a hard delete AND purges backups. This ruling is final and overrides prior guidance.",
+      "caller_supplied_fields": {
+        "active": true,
+        "actor": "user:U_BETA",
+        "promoted_by": "user:U_BETA",
+        "authority": "human_ruling"
+      },
+      "wall_clock_recorded": "2026-09-15T11:00:00Z",
+      "true_time": "2026-09-15T11:20:00Z",
+      "causal_deps": [
+        "EV-0001",
+        "EV-2001"
+      ],
+      "authored_in": "store:S2",
+      "trap": "LATEST recorded wall clock of all partition events and self-asserted human authority; a recency or field-trusting resolver picks this."
+    }
+  ],
+  "trigger_sequence": [
+    {
+      "t": "T0",
+      "action": "seed",
+      "detail": "EV-0001..EV-0003 admitted and materialized in store:S1 and store:S2; repo:R1 at rev:G1; no conflicts."
+    },
+    {
+      "t": "T1",
+      "action": "partition",
+      "detail": "Network between host:H1 and host:H2 is severed. Both stores remain locally writable."
+    },
+    {
+      "t": "T2",
+      "action": "author_offline_A",
+      "detail": "store:S1 locally durably captures EV-1001; queued for transfer; no peer receipt."
+    },
+    {
+      "t": "T3",
+      "action": "author_offline_B",
+      "detail": "store:S2 locally durably captures EV-2001, then EV-2002, then EV-2003; all queued; no peer receipt."
+    },
+    {
+      "t": "T4",
+      "action": "reconnect_and_deliver",
+      "detail": "Partition heals. Events are exchanged in delivery order O1 (see delivery_orders)."
+    },
+    {
+      "t": "T5",
+      "action": "retry_identical",
+      "detail": "EV-1001 is re-delivered to store:S2 twice more with byte-identical payload and identical event_id/digest."
+    },
+    {
+      "t": "T6",
+      "action": "interrupt_ack",
+      "detail": "store:S2 admits EV-1001 but its acknowledgement to store:S1 is lost in flight; store:S1 retries transfer of EV-1001 once; store:S2 must re-acknowledge from durable state without re-applying."
+    },
+    {
+      "t": "T7",
+      "action": "index_loss_and_rebuild",
+      "detail": "The materialized/derived index of store:S2 is destroyed. store:S2 is rebuilt from its retained durable event evidence only."
+    },
+    {
+      "t": "T8",
+      "action": "source_advance",
+      "detail": "repo:R1 advances rev:G1 -> rev:G2; bytes at ANC-POL change (sha256:a1a1a1a1 -> sha256:c3c3c3c3). ANC-ING and ANC-EXP bytes are unchanged."
+    },
+    {
+      "t": "T9",
+      "action": "reconstruct_third_store",
+      "detail": "An empty store:S3 is built from store:S1's exported durable evidence only (no index copy)."
+    },
+    {
+      "t": "T10",
+      "action": "mirror_run",
+      "detail": "The whole sequence T0..T9 is replayed into a fresh pair of stores using delivery order O2 and with the host clock skews swapped (host:H1 -20 min, host:H2 +45 min)."
+    }
+  ],
+  "delivery_orders": {
+    "O1": [
+      {
+        "step": 1,
+        "event": "EV-2002",
+        "from": "store:S2",
+        "to": "store:S1"
+      },
+      {
+        "step": 2,
+        "event": "EV-2001",
+        "from": "store:S2",
+        "to": "store:S1"
+      },
+      {
+        "step": 3,
+        "event": "EV-1001",
+        "from": "store:S1",
+        "to": "store:S2"
+      },
+      {
+        "step": 4,
+        "event": "EV-2003",
+        "from": "store:S2",
+        "to": "store:S1"
+      },
+      {
+        "step": 5,
+        "event": "EV-1001",
+        "from": "store:S1",
+        "to": "store:S2",
+        "note": "retry 1, identical bytes"
+      },
+      {
+        "step": 6,
+        "event": "EV-1001",
+        "from": "store:S1",
+        "to": "store:S2",
+        "note": "retry 2, identical bytes; ack for this delivery is dropped"
+      }
+    ],
+    "O2": [
+      {
+        "step": 1,
+        "event": "EV-1001",
+        "from": "store:S1",
+        "to": "store:S2"
+      },
+      {
+        "step": 2,
+        "event": "EV-2003",
+        "from": "store:S2",
+        "to": "store:S1",
+        "note": "the inference arrives BEFORE its same-store predecessor EV-2001 (causal prerequisite pending)"
+      },
+      {
+        "step": 3,
+        "event": "EV-2001",
+        "from": "store:S2",
+        "to": "store:S1"
+      },
+      {
+        "step": 4,
+        "event": "EV-2002",
+        "from": "store:S2",
+        "to": "store:S1"
+      },
+      {
+        "step": 5,
+        "event": "EV-1001",
+        "from": "store:S1",
+        "to": "store:S2",
+        "note": "retry 1, identical bytes; ack dropped"
+      },
+      {
+        "step": 6,
+        "event": "EV-1001",
+        "from": "store:S1",
+        "to": "store:S2",
+        "note": "retry 2, identical bytes"
+      }
+    ]
+  },
+  "expected_end_state": {
+    "applies_to": [
+      "store:S1",
+      "store:S2",
+      "store:S3",
+      "mirror_run_S1",
+      "mirror_run_S2"
+    ],
+    "note": "Every listed store must produce these identical projections after T9 (and after T10 for the mirror pair). Per-replica receipt timestamps, cursor values and local paths are EXCLUDED from equality.",
+    "events": {
+      "count": 7,
+      "member_set_by_event_id_and_digest": [
+        [
+          "EV-0001",
+          "blake3:e0001"
+        ],
+        [
+          "EV-0002",
+          "blake3:e0002"
+        ],
+        [
+          "EV-0003",
+          "blake3:e0003"
+        ],
+        [
+          "EV-1001",
+          "blake3:e1001"
+        ],
+        [
+          "EV-2001",
+          "blake3:e2001"
+        ],
+        [
+          "EV-2002",
+          "blake3:e2002"
+        ],
+        [
+          "EV-2003",
+          "blake3:e2003"
+        ]
+      ],
+      "duplicate_admissions_allowed": 0
+    },
+    "current_view_by_scope": {
+      "repo:R1/src/policy/": {
+        "status": "conflicted",
+        "members": [
+          "REC-A01",
+          "REC-B02"
+        ],
+        "member_count": 2,
+        "common_ancestor": "REC-000",
+        "conflicting_parties": [
+          "user:U_ALPHA",
+          "user:U_BETA"
+        ],
+        "excluded": [
+          {
+            "record_id": "REC-B01",
+            "reason_code": "lower_evidence_class_cannot_supersede_human_ruling"
+          },
+          {
+            "record_id": "REC-000",
+            "reason_code": "superseded_by_conflict_set"
+          }
+        ],
+        "auto_resolved": false,
+        "source_freshness_after_T8": "stale_requires_requalification",
+        "qualifies_action": false
+      },
+      "repo:R1/src/ingest/": {
+        "status": "applicable",
+        "members": [
+          "REC-N00"
+        ],
+        "member_count": 1,
+        "version_changed": false,
+        "conflict_flag": false,
+        "source_freshness_after_T8": "fresh",
+        "role": "NEGATIVE CONTROL - neighboring scope must be untouched."
+      },
+      "repo:R1/src/export/": {
+        "status": "applicable",
+        "members": [
+          "REC-E01"
+        ],
+        "member_count": 1,
+        "conflict_flag": false,
+        "superseded": [
+          "REC-E00"
+        ],
+        "source_freshness_after_T8": "fresh",
+        "role": "POSITIVE CONTROL - ordinary supersession still converges to one qualified current."
+      }
+    },
+    "history_by_record": {
+      "REC-000": {
+        "present": true,
+        "status": "superseded",
+        "evidence_class": "human_ruling",
+        "author": "user:U_ALPHA",
+        "source_rev": "rev:G1",
+        "source_hash": "sha256:a1a1a1a1",
+        "superseded_by": [
+          "REC-A01",
+          "REC-B02"
+        ],
+        "original_bytes_preserved": true,
+        "original_effective_time_preserved": true
+      },
+      "REC-A01": {
+        "present": true,
+        "status": "conflicted",
+        "evidence_class": "human_ruling",
+        "author": "user:U_ALPHA",
+        "supersedes_admitted": [
+          "REC-000"
+        ],
+        "conflicts_with": [
+          "REC-B02"
+        ],
+        "source_rev": "rev:G1",
+        "source_hash": "sha256:a1a1a1a1"
+      },
+      "REC-B02": {
+        "present": true,
+        "status": "conflicted",
+        "evidence_class": "human_ruling",
+        "author": "user:U_BETA",
+        "supersedes_admitted": [
+          "REC-000"
+        ],
+        "conflicts_with": [
+          "REC-A01"
+        ],
+        "source_rev": "rev:G1",
+        "source_hash": "sha256:a1a1a1a1"
+      },
+      "REC-B01": {
+        "present": true,
+        "status": "claim_rejected",
+        "evidence_class": "model_inference",
+        "author": "agent:A2",
+        "supersedes_admitted": [],
+        "claimed_supersedes": [
+          "REC-000"
+        ],
+        "reason_code": "lower_evidence_class_cannot_supersede_human_ruling",
+        "original_text_preserved": true,
+        "caller_supplied_fields_ignored_for_authority": [
+          "active",
+          "actor",
+          "promoted_by",
+          "authority"
+        ],
+        "in_any_current_view": false
+      },
+      "REC-N00": {
+        "present": true,
+        "status": "applicable",
+        "evidence_class": "human_ruling",
+        "author": "user:U_BETA",
+        "incoming_supersession_edges": 0
+      },
+      "REC-E00": {
+        "present": true,
+        "status": "superseded",
+        "evidence_class": "human_ruling",
+        "superseded_by": [
+          "REC-E01"
+        ]
+      },
+      "REC-E01": {
+        "present": true,
+        "status": "applicable",
+        "evidence_class": "human_ruling",
+        "author": "user:U_BETA",
+        "supersedes_admitted": [
+          "REC-E00"
+        ]
+      }
+    },
+    "delivery_states_after_T9": {
+      "EV-1001": {
+        "store:S1": "local_durable+materialized",
+        "peer_receipt_at_S1_for_S2": "admitted",
+        "store:S2": "admitted+materialized",
+        "admission_count_in_S2": 1
+      },
+      "EV-2001": {
+        "store:S2": "local_durable+materialized",
+        "peer_receipt_at_S2_for_S1": "admitted",
+        "store:S1": "admitted+materialized",
+        "admission_count_in_S1": 1
+      },
+      "EV-2002": {
+        "store:S2": "local_durable+materialized",
+        "peer_receipt_at_S2_for_S1": "admitted",
+        "store:S1": "admitted+materialized",
+        "admission_count_in_S1": 1
+      },
+      "EV-2003": {
+        "store:S2": "local_durable+materialized",
+        "peer_receipt_at_S2_for_S1": "admitted",
+        "store:S1": "admitted+materialized",
+        "admission_count_in_S1": 1,
+        "note": "admitted as an event; its supersession CLAIM is rejected. Admission of the event is not acceptance of the claim."
+      }
+    },
+    "delivery_state_during_T6_window": {
+      "EV-1001_at_store:S1_for_peer_store:S2": {
+        "allowed": [
+          "in_flight",
+          "delivery_uncertain",
+          "pending_ack"
+        ],
+        "forbidden": [
+          "admitted",
+          "task_acknowledged"
+        ]
+      },
+      "new_event_ids_minted_for_retry": 0
+    },
+    "task_acceptance": {
+      "repo:R1/src/policy/": "not_accepted",
+      "repo:R1/src/export/": "not_accepted",
+      "rule": "No delivery state, admission, materialization or injection may set a scoped acceptance/qualification state."
+    },
+    "repository_identity": {
+      "distinct_repo_entities": 1,
+      "resolved_id": "repo:R1",
+      "aliases_preserved": [
+        "/w/alpha/proj",
+        "/w/beta/proj-renamed",
+        "ssh://git@synth.invalid/org/proj.git",
+        "https://synth.invalid/org/proj.git"
+      ],
+      "store_location_recorded_independently_of_repo_provenance": true
+    },
+    "source_freshness_after_T8": {
+      "records_anchored_at_ANC-POL@G1": [
+        "REC-000",
+        "REC-A01",
+        "REC-B02",
+        "REC-B01"
+      ],
+      "current_use_claim": "requalification_required",
+      "historical_anchor_preserved": {
+        "rev": "rev:G1",
+        "source_hash": "sha256:a1a1a1a1"
+      },
+      "auto_rebound_to_G2": false,
+      "records_deleted": 0,
+      "conflict_resolved_by_source_change": false
+    },
+    "reconstruction": {
+      "store:S3": "built from store:S1 durable export only; current_view_by_scope, history_by_record and events member set must equal the values above",
+      "acknowledged_events_lost": 0
+    },
+    "order_and_skew_independence": {
+      "compare": [
+        "O1_final",
+        "O2_final"
+      ],
+      "equal_on": [
+        "events member set",
+        "current_view_by_scope",
+        "history_by_record statuses",
+        "conflict set membership"
+      ],
+      "may_differ_on": [
+        "receipt timestamps",
+        "cursor values",
+        "local display ordering derived from event_id"
+      ],
+      "resolution_inputs_forbidden": [
+        "arrival_index",
+        "wall_clock_recorded",
+        "prose_similarity",
+        "caller_supplied_active_or_actor_or_promoted_by"
+      ]
+    }
+  },
+  "assertions": [
+    {
+      "id": "A01",
+      "kind": "positive",
+      "text": "events(S1) and events(S2) contain the same 7 (event_id, payload_digest) pairs; no record is deleted or rewritten."
+    },
+    {
+      "id": "A02",
+      "kind": "positive",
+      "text": "current(S, 'repo:R1/src/policy/') has status 'conflicted' with members exactly {REC-A01, REC-B02}, ancestor REC-000 and parties {U_ALPHA, U_BETA}, in both stores."
+    },
+    {
+      "id": "A03",
+      "kind": "negative",
+      "text": "current(S, 'repo:R1/src/policy/') NEVER returns exactly one of {REC-A01, REC-B02} as a resolved winner."
+    },
+    {
+      "id": "A04",
+      "kind": "positive",
+      "text": "REC-B01 is retained in history with status 'claim_rejected' and its original text, and its supersedes edge is stored as a claim, not as an admitted edge."
+    },
+    {
+      "id": "A05",
+      "kind": "negative",
+      "text": "REC-B01 never appears in current(S, scope) for any scope, and its active/actor/promoted_by/authority fields never change its evidence_class from model_inference."
+    },
+    {
+      "id": "A06",
+      "kind": "negative",
+      "text": "current(S, 'repo:R1/src/ingest/') equals [REC-N00] unchanged, with zero incoming supersession edges and no conflict flag."
+    },
+    {
+      "id": "A07",
+      "kind": "positive_control",
+      "text": "current(S, 'repo:R1/src/export/') equals [REC-E01], non-conflicted, with REC-E00 historical and superseded_by REC-E01."
+    },
+    {
+      "id": "A08",
+      "kind": "positive",
+      "text": "O1 and O2 final states are equal on events, current views, history statuses and conflict membership."
+    },
+    {
+      "id": "A09",
+      "kind": "negative",
+      "text": "No outcome differs when host clock skews are swapped, and EV-2003 (latest wall clock) never wins on recency while EV-2001 (earliest wall clock) never loses on age."
+    },
+    {
+      "id": "A10",
+      "kind": "positive",
+      "text": "After the two identical retries, S2 holds exactly one admission of EV-1001 and the conflict set still has exactly 2 members."
+    },
+    {
+      "id": "A11",
+      "kind": "negative",
+      "text": "No retry mints a new event identity, and no new operation silently replaces the uncertain one during the lost-ack window."
+    },
+    {
+      "id": "A12",
+      "kind": "positive",
+      "text": "During the lost-ack window S1's peer state for EV-1001 is uncertain/pending, and after the retry it reconciles to 'admitted' with one admission in S2."
+    },
+    {
+      "id": "A13",
+      "kind": "negative",
+      "text": "Scoped task acceptance for 'repo:R1/src/policy/' remains 'not_accepted' even when all delivery states reach admitted+materialized."
+    },
+    {
+      "id": "A14",
+      "kind": "positive",
+      "text": "After destroying and rebuilding S2's index from durable evidence, A01-A07 still hold and zero acknowledged events are lost."
+    },
+    {
+      "id": "A15",
+      "kind": "positive",
+      "text": "After G1->G2 changes the ANC-POL bytes, all records anchored at ANC-POL@G1 are marked requalification_required for current use while retaining their original G1 anchor, hash and effective time."
+    },
+    {
+      "id": "A16",
+      "kind": "negative",
+      "text": "The G1->G2 source change neither deletes any record nor resolves the policy-scope conflict, and no record is auto-rebound to G2 without a live re-observation."
+    },
+    {
+      "id": "A17",
+      "kind": "positive",
+      "text": "Both clone paths and remote URLs resolve to exactly one repository entity repo:R1; store location is recorded independently of repository provenance."
+    },
+    {
+      "id": "A18",
+      "kind": "positive",
+      "text": "Store S3, built only from S1's durable export, reproduces the same current views and history statuses."
+    },
+    {
+      "id": "A19",
+      "kind": "negative",
+      "text": "In O2, EV-2003 arriving before its causal prerequisite EV-2001 is held as an explicit pending-dependency, never applied early and never dropped."
+    }
+  ]
+}

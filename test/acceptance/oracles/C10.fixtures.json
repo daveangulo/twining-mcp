@@ -1,0 +1,698 @@
+{
+  "case_id": "C10",
+  "oracle_version": "1.0.0",
+  "authored_by": "independent validation owner",
+  "derived_from": [
+    "acceptance-cases.md :: C10 row",
+    "acceptance-cases.md :: coverage map (C10 -> R04, R07, R08, R16)",
+    "requirements.md :: R01, R02, R04, R07, R08, R16",
+    "01-foundation.md :: Required proof before broad implementation"
+  ],
+  "not_derived_from": "No file under the Twining source tree or docs/plans was read while authoring this oracle.",
+  "abstract_model": {
+    "projections": {
+      "events": "Durable append-only log of produced or received evidence envelopes, keyed by event_id.",
+      "admitted": "Subset of events that passed validation AND has all causal prerequisites satisfied. Only admitted events may feed current_view.",
+      "current_view": "Map of scoped keys to the currently applicable record, derived only from admitted events under lifecycle rules.",
+      "receipts": "One row per (event_id, from_store, to_store) exposing delivery_state, counters, uncertainty and the admission it references.",
+      "history_view": "Per-event lifecycle chain: original bytes/digest/revision plus superseded, corrected and quarantined status.",
+      "quarantine": "Received-but-refused envelopes with an explicit reason; never merged into events.",
+      "acceptance": "Independent axes of task/work state that no delivery mechanism may move."
+    },
+    "delivery_states": [
+      "local_durable",
+      "queued",
+      "sent_unacked",
+      "received",
+      "received_pending_causal",
+      "admitted",
+      "admitted_acked",
+      "materialized",
+      "context_included",
+      "quarantined"
+    ],
+    "evidence_classes": [
+      "authenticated_human_ruling",
+      "verified_observation",
+      "reported_worker_result",
+      "model_inference",
+      "proposal",
+      "open_question"
+    ],
+    "acceptance_axes": [
+      "qualified",
+      "source_published",
+      "merged",
+      "delivered",
+      "scoped_accepted"
+    ],
+    "receipt_counter_schema": {
+      "attempts_total": "every inbound transport attempt carrying this event_id",
+      "admissions": "count of distinct admissions; MUST be 0 or 1 for a given event_id",
+      "duplicate_suppressed": "attempts whose event_id AND payload_digest matched an already-received envelope",
+      "conflict_rejected": "attempts whose event_id matched but payload_digest differed",
+      "uncertain": "true while the producer has sent but has no receipt",
+      "uncertain_windows": "retained list of [opened_at, closed_at] intervals; reconciliation MUST NOT erase them"
+    }
+  },
+  "identities": {
+    "tenant": {
+      "id": "tnt-orchard",
+      "note": "Single tenant on purpose; cross-scope disclosure is C25's job, not C10's."
+    },
+    "human_principals": [
+      {
+        "id": "usr-avery",
+        "label": "Avery Quill",
+        "home_host": "host-north"
+      },
+      {
+        "id": "usr-blake",
+        "label": "Blake Ferro",
+        "home_host": "host-south"
+      }
+    ],
+    "agent_principals": [
+      {
+        "id": "agt-south-worker",
+        "runs_on": "host-south",
+        "acts_under_session": "sess-south-1",
+        "note": "Service principal. Distinct identity from usr-blake per R01."
+      }
+    ],
+    "hosts": [
+      {
+        "id": "host-north",
+        "installation": "inst-north-01",
+        "clock_offset_seconds": 0
+      },
+      {
+        "id": "host-south",
+        "installation": "inst-south-01",
+        "clock_offset_seconds": 90,
+        "note": "Deliberate skew. Outcome must be skew-independent."
+      }
+    ],
+    "stores": [
+      {
+        "id": "store-north",
+        "bound_host": "host-north",
+        "filesystem_label": "/synthetic/north/.store",
+        "note": "Label is mutable; store identity is not."
+      },
+      {
+        "id": "store-south",
+        "bound_host": "host-south",
+        "filesystem_label": "/synthetic/south/.store"
+      }
+    ],
+    "sessions": [
+      {
+        "id": "sess-north-1",
+        "host": "host-north",
+        "principal": "usr-avery"
+      },
+      {
+        "id": "sess-south-1",
+        "host": "host-south",
+        "principal": "usr-blake"
+      }
+    ],
+    "work_definition": {
+      "id": "wd-pricing-rounding",
+      "scope": "svc/pricing/"
+    }
+  },
+  "repository": {
+    "repo_identity": "rep-7f3a",
+    "mutable_labels": {
+      "path_on_north": "/synthetic/north/checkout",
+      "path_on_south": "/synthetic/south/checkout",
+      "remote_url": "ssh://synthetic.invalid/orchard/ledger.git",
+      "branch": "main"
+    },
+    "revision_range": {
+      "base": "c100",
+      "head": "c103",
+      "ordered": [
+        "c100",
+        "c101",
+        "c102",
+        "c103"
+      ]
+    },
+    "scope_under_test": "svc/pricing/",
+    "out_of_scope_control_path": "svc/shipping/"
+  },
+  "seed_events": [
+    {
+      "event_id": "evt-0001-ruling",
+      "producer_principal": "usr-avery",
+      "producer_host": "host-north",
+      "origin_store": "store-north",
+      "repo": "rep-7f3a",
+      "revision": "c100",
+      "scope": "svc/pricing/",
+      "evidence_class": "authenticated_human_ruling",
+      "kind": "scoped_ruling",
+      "key": "svc/pricing/rounding-policy",
+      "statement": "Pricing totals are rounded once, at the order line, under the documented policy.",
+      "payload_digest": "sha256:d0",
+      "causal": {
+        "requires": []
+      },
+      "producer_recorded_at": "2026-09-10T09:00:00Z",
+      "seeded_state": {
+        "store-north": {
+          "in_events": true,
+          "admitted": true
+        },
+        "store-south": {
+          "in_events": true,
+          "admitted": true
+        }
+      },
+      "seeded_receipts": [
+        {
+          "from_store": "store-north",
+          "to_store": "store-south",
+          "delivery_state": "admitted_acked",
+          "attempts_total": 1,
+          "admissions": 1,
+          "duplicate_suppressed": 0,
+          "conflict_rejected": 0,
+          "uncertain": false
+        }
+      ]
+    }
+  ],
+  "planned_events": [
+    {
+      "event_id": "evt-1001-obs",
+      "alias": "E1",
+      "producer_principal": "usr-blake",
+      "producer_host": "host-south",
+      "origin_store": "store-south",
+      "repo": "rep-7f3a",
+      "revision": "c102",
+      "scope": "svc/pricing/",
+      "evidence_class": "verified_observation",
+      "kind": "observation",
+      "key": "svc/pricing/observed-rounding-at-c102",
+      "statement": "At c102, svc/pricing/round.ts rounds twice for multi-line orders.",
+      "payload_digest": "sha256:d1",
+      "causal": {
+        "requires": []
+      },
+      "producer_recorded_at": "2026-09-14T11:00:00Z"
+    },
+    {
+      "event_id": "evt-1002-infer",
+      "alias": "E2",
+      "producer_principal": "agt-south-worker",
+      "producer_host": "host-south",
+      "origin_store": "store-south",
+      "repo": "rep-7f3a",
+      "revision": "c101",
+      "scope": "svc/pricing/",
+      "evidence_class": "model_inference",
+      "kind": "inference",
+      "key": "svc/pricing/rounding-mode",
+      "statement": "Inferred rounding mode is HALF_UP.",
+      "payload_digest": "sha256:d2",
+      "causal": {
+        "requires": []
+      },
+      "producer_recorded_at": "2026-09-14T11:04:00Z"
+    },
+    {
+      "event_id": "evt-1003-corr",
+      "alias": "E3",
+      "producer_principal": "agt-south-worker",
+      "producer_host": "host-south",
+      "origin_store": "store-south",
+      "repo": "rep-7f3a",
+      "revision": "c103",
+      "scope": "svc/pricing/",
+      "evidence_class": "model_inference",
+      "kind": "correction",
+      "key": "svc/pricing/rounding-mode",
+      "statement": "Correction of evt-1002-infer: rounding mode is HALF_EVEN.",
+      "payload_digest": "sha256:d3",
+      "causal": {
+        "requires": [
+          "evt-1002-infer"
+        ],
+        "relation": "corrects"
+      },
+      "producer_recorded_at": "2026-09-14T11:09:00Z"
+    },
+    {
+      "event_id": "evt-2001-obs",
+      "alias": "E4",
+      "role": "positive_control",
+      "producer_principal": "usr-avery",
+      "producer_host": "host-north",
+      "origin_store": "store-north",
+      "repo": "rep-7f3a",
+      "revision": "c103",
+      "scope": "svc/pricing/",
+      "evidence_class": "verified_observation",
+      "kind": "observation",
+      "key": "svc/pricing/observed-rounding-at-c103",
+      "statement": "At c103, the double-rounding path is gone; one rounding call remains.",
+      "payload_digest": "sha256:d4",
+      "causal": {
+        "requires": []
+      },
+      "producer_recorded_at": "2026-09-14T12:00:00Z"
+    }
+  ],
+  "adversarial_envelopes": [
+    {
+      "alias": "E1-CONFLICT",
+      "event_id": "evt-1001-obs",
+      "payload_digest": "sha256:d1x",
+      "statement": "At c102, svc/pricing/round.ts rounds once. (Same id, different bytes.)",
+      "expected_disposition": "quarantined:identity_conflict"
+    },
+    {
+      "alias": "E1-REMINT",
+      "event_id": "evt-1001b-obs",
+      "payload_digest": "sha256:d1",
+      "expected_disposition": "MUST NEVER BE PRODUCED",
+      "note": "A new identity carrying the semantics of an ack-uncertain event. Its existence anywhere is a C10 failure."
+    }
+  ],
+  "trigger_sequence": [
+    {
+      "step": "T0",
+      "actor": "harness",
+      "action": "Seed evt-0001-ruling admitted on both stores with a complete receipt; set host-south clock +90s."
+    },
+    {
+      "step": "T1",
+      "actor": "usr-blake@host-south",
+      "action": "Record E1 into store-south.",
+      "transport": "none",
+      "expected_state": "store-south receipts[E1] = local_durable"
+    },
+    {
+      "step": "T2",
+      "actor": "store-south outbox",
+      "action": "Transfer E1 to store-north. store-north validates and admits it, emits receipt rcpt-A. The return path drops rcpt-A.",
+      "transport": "lossy",
+      "expected_state": "store-north admitted E1; store-south receipts[E1] = sent_unacked, uncertain=true, attempts_total=1"
+    },
+    {
+      "step": "T3",
+      "actor": "store-south outbox",
+      "action": "Retry E1 byte-identical (same event_id, same payload_digest). store-north dedups and re-emits the receipt referencing the SAME admission. Receipt arrives.",
+      "transport": "reliable",
+      "expected_state": "store-south receipts[E1] = admitted_acked, uncertain=false, attempts_total=2; store-north admissions=1, duplicate_suppressed=1"
+    },
+    {
+      "step": "T4",
+      "actor": "agt-south-worker@host-south",
+      "action": "Record E2 then E3 (E3 corrects E2) into store-south.",
+      "transport": "none"
+    },
+    {
+      "step": "T5",
+      "actor": "transport",
+      "action": "Deliver E3 to store-north BEFORE E2.",
+      "expected_state": "store-north events contains E3; admitted does NOT; receipts[E3] = received_pending_causal with pending_on=[evt-1002-infer]"
+    },
+    {
+      "step": "T6",
+      "actor": "transport",
+      "action": "Deliver E2 to store-north. E2 admits; E3's prerequisite is satisfied and E3 admits from the pending set.",
+      "expected_state": "current_view[svc/pricing/rounding-mode] sourced from E3"
+    },
+    {
+      "step": "T7",
+      "actor": "harness",
+      "action": "Hard-kill the store-north process and cold-start it from durable evidence only."
+    },
+    {
+      "step": "T8",
+      "actor": "transport",
+      "action": "Consumer cursor rewind: replay the batch [E3, E1, E2, E1, E3] into store-north."
+    },
+    {
+      "step": "T9",
+      "actor": "harness (injected transport frame; NOT store-south's outbox)",
+      "action": "Deliver E1-CONFLICT (event_id evt-1001-obs, payload_digest sha256:d1x) into store-north.",
+      "note": "store-south must never be recorded as the producer of these bytes; its outbound attempt count stays 4."
+    },
+    {
+      "step": "T10",
+      "actor": "usr-avery@host-north",
+      "action": "POSITIVE CONTROL: record E4 into store-north; deliver once to store-south; then deliver one byte-identical retry."
+    },
+    {
+      "step": "T11",
+      "actor": "harness",
+      "action": "Probe every acceptance axis on both stores for wd-pricing-rounding at c103."
+    },
+    {
+      "step": "T12",
+      "actor": "harness",
+      "action": "Delete store-north's materialized/derived index and rebuild it from the durable event log."
+    },
+    {
+      "step": "T13",
+      "actor": "harness",
+      "action": "Re-run T1..T12 for each delivery permutation in permutation_matrix and each clock-skew sign, on fresh stores."
+    }
+  ],
+  "expected_end_state": {
+    "store-north": {
+      "events": [
+        {
+          "event_id": "evt-0001-ruling",
+          "payload_digest": "sha256:d0",
+          "revision": "c100",
+          "origin_store": "store-north",
+          "repo": "rep-7f3a",
+          "count": 1
+        },
+        {
+          "event_id": "evt-1001-obs",
+          "payload_digest": "sha256:d1",
+          "revision": "c102",
+          "origin_store": "store-south",
+          "repo": "rep-7f3a",
+          "count": 1
+        },
+        {
+          "event_id": "evt-1002-infer",
+          "payload_digest": "sha256:d2",
+          "revision": "c101",
+          "origin_store": "store-south",
+          "repo": "rep-7f3a",
+          "count": 1
+        },
+        {
+          "event_id": "evt-1003-corr",
+          "payload_digest": "sha256:d3",
+          "revision": "c103",
+          "origin_store": "store-south",
+          "repo": "rep-7f3a",
+          "count": 1
+        },
+        {
+          "event_id": "evt-2001-obs",
+          "payload_digest": "sha256:d4",
+          "revision": "c103",
+          "origin_store": "store-north",
+          "repo": "rep-7f3a",
+          "count": 1
+        }
+      ],
+      "events_total": 5,
+      "admitted": [
+        "evt-0001-ruling",
+        "evt-1001-obs",
+        "evt-1002-infer",
+        "evt-1003-corr",
+        "evt-2001-obs"
+      ],
+      "current_view": {
+        "svc/pricing/rounding-policy": {
+          "source_event": "evt-0001-ruling",
+          "evidence_class": "authenticated_human_ruling",
+          "status": "active",
+          "revision": "c100"
+        },
+        "svc/pricing/observed-rounding-at-c102": {
+          "source_event": "evt-1001-obs",
+          "evidence_class": "verified_observation",
+          "status": "active",
+          "revision": "c102"
+        },
+        "svc/pricing/rounding-mode": {
+          "source_event": "evt-1003-corr",
+          "value": "HALF_EVEN",
+          "evidence_class": "model_inference",
+          "status": "active",
+          "revision": "c103",
+          "can_authorize_action": false
+        },
+        "svc/pricing/observed-rounding-at-c103": {
+          "source_event": "evt-2001-obs",
+          "evidence_class": "verified_observation",
+          "status": "active",
+          "revision": "c103"
+        }
+      },
+      "current_view_key_count": 4,
+      "receipts": [
+        {
+          "event_id": "evt-1001-obs",
+          "from_store": "store-south",
+          "to_store": "store-north",
+          "delivery_state": "admitted_acked",
+          "attempts_total": 5,
+          "admissions": 1,
+          "duplicate_suppressed": 3,
+          "conflict_rejected": 1,
+          "uncertain": false
+        },
+        {
+          "event_id": "evt-1002-infer",
+          "from_store": "store-south",
+          "to_store": "store-north",
+          "delivery_state": "admitted_acked",
+          "attempts_total": 2,
+          "admissions": 1,
+          "duplicate_suppressed": 1,
+          "conflict_rejected": 0,
+          "uncertain": false
+        },
+        {
+          "event_id": "evt-1003-corr",
+          "from_store": "store-south",
+          "to_store": "store-north",
+          "delivery_state": "admitted_acked",
+          "attempts_total": 3,
+          "admissions": 1,
+          "duplicate_suppressed": 2,
+          "conflict_rejected": 0,
+          "uncertain": false,
+          "admission_trigger": "prerequisite_satisfied",
+          "pending_causal_window_retained": true
+        }
+      ],
+      "quarantine": [
+        {
+          "event_id": "evt-1001-obs",
+          "payload_digest": "sha256:d1x",
+          "reason": "identity_conflict",
+          "merged_into_events": false,
+          "overwrote_admitted_bytes": false
+        }
+      ],
+      "quarantine_total": 1,
+      "history_view": {
+        "evt-1002-infer": {
+          "original_payload_digest": "sha256:d2",
+          "original_value": "HALF_UP",
+          "original_revision": "c101",
+          "status": "corrected_by:evt-1003-corr",
+          "bytes_retained": true
+        },
+        "evt-1001-obs": {
+          "original_payload_digest": "sha256:d1",
+          "original_revision": "c102",
+          "status": "active",
+          "restamped_by_later_revision": false
+        },
+        "evt-0001-ruling": {
+          "original_payload_digest": "sha256:d0",
+          "status": "active",
+          "superseded_by": null
+        }
+      }
+    },
+    "store-south": {
+      "events_total": 5,
+      "admitted": [
+        "evt-0001-ruling",
+        "evt-1001-obs",
+        "evt-1002-infer",
+        "evt-1003-corr",
+        "evt-2001-obs"
+      ],
+      "current_view_equals_store_north": true,
+      "receipts": [
+        {
+          "event_id": "evt-1001-obs",
+          "from_store": "store-south",
+          "to_store": "store-north",
+          "delivery_state": "admitted_acked",
+          "outbound_attempts_total": 4,
+          "admissions": 1,
+          "uncertain": false,
+          "uncertain_windows_retained": 1,
+          "note": "4 outbound sends vs 5 inbound attempts at store-north; the difference is exactly the injected conflict frame, which store-south must not be credited with producing."
+        },
+        {
+          "event_id": "evt-2001-obs",
+          "from_store": "store-north",
+          "to_store": "store-south",
+          "delivery_state": "admitted_acked",
+          "attempts_total": 2,
+          "admissions": 1,
+          "duplicate_suppressed": 1,
+          "conflict_rejected": 0,
+          "uncertain": false
+        }
+      ],
+      "events_with_digest_sha256_d1": [
+        "evt-1001-obs"
+      ]
+    },
+    "acceptance_probe": {
+      "work_definition": "wd-pricing-rounding",
+      "scope": "svc/pricing/",
+      "revision": "c103",
+      "store-north": {
+        "qualified": false,
+        "source_published": false,
+        "merged": false,
+        "delivered": false,
+        "scoped_accepted": "none"
+      },
+      "store-south": {
+        "qualified": false,
+        "source_published": false,
+        "merged": false,
+        "delivered": false,
+        "scoped_accepted": "none"
+      },
+      "acceptance_transitions_caused_by_T1_through_T12": 0
+    },
+    "post_index_rebuild_T12": {
+      "events_total": 5,
+      "admitted_count": 5,
+      "receipts_equal_to_pre_rebuild": true,
+      "current_view_equal_to_pre_rebuild": true,
+      "rebuilt_records_labeled_derived": true,
+      "new_evidence_created": 0
+    }
+  },
+  "negative_assertions": [
+    {
+      "id": "N1",
+      "assertion": "No event_id other than evt-1001-obs ever carries payload_digest sha256:d1 in either store, in any outbox, or in any transport log, at any step.",
+      "requirement": "C10 'no new operation silently replacing an uncertain one'"
+    },
+    {
+      "id": "N2",
+      "assertion": "Between T5 and T6, evt-1003-corr never appears in store-north.admitted nor contributes to current_view, and evt-1002-infer is never synthesized, guessed or back-filled by the consumer.",
+      "requirement": "R08 causal prerequisites"
+    },
+    {
+      "id": "N3",
+      "assertion": "E1-CONFLICT never overwrites, merges into, or silently replaces evt-1001-obs; store-north.events['evt-1001-obs'].payload_digest is sha256:d1 before and after T9.",
+      "requirement": "R07 reused identity with conflicting bytes"
+    },
+    {
+      "id": "N4",
+      "assertion": "Between T2 and T3 no store reports evt-1001-obs as delivered or acknowledged; the sent_unacked/uncertain state is queryable throughout that window.",
+      "requirement": "R08, R16 selected/emitted/delivered/unavailable distinction"
+    },
+    {
+      "id": "N5",
+      "assertion": "No receipt, admission, dedup or reconciliation moves any acceptance axis; acceptance_transitions_caused_by_T1_through_T12 == 0.",
+      "requirement": "R04; 01-foundation 'Exchange acknowledgements do not become task acceptance'"
+    },
+    {
+      "id": "N6",
+      "assertion": "No event that reached state admitted is ever absent afterwards, including across the T7 restart, the T8 replay and the T12 index loss.",
+      "requirement": "R07 no silently lost acknowledged event"
+    },
+    {
+      "id": "N7",
+      "assertion": "evt-1003-corr (class model_inference) never supersedes, weakens or restates evt-0001-ruling, and never writes a key outside scope svc/pricing/.",
+      "requirement": "R05, R06; 01-foundation 'A lower-authority inference cannot supersede the ruling'"
+    },
+    {
+      "id": "N8",
+      "assertion": "No projection or report claims exactly-once network delivery; every receipt exposes attempts_total and uncertain.",
+      "requirement": "R08"
+    }
+  ],
+  "positive_controls": [
+    {
+      "id": "P1",
+      "description": "evt-2001-obs, a legitimate in-scope write by usr-avery on store-north, traverses local_durable -> queued -> received -> admitted -> materialized -> context_included on store-south with exactly one admission and a complete receipt, and appears in current_view on both stores.",
+      "expected": {
+        "admissions": 1,
+        "final_delivery_state": "context_included",
+        "in_current_view_both_stores": true,
+        "receipt_complete": true
+      }
+    },
+    {
+      "id": "P2",
+      "description": "The byte-identical retry of evt-2001-obs returns SUCCESS referencing the existing admission, not an error and not a second event. Dedup must not degrade into refusal.",
+      "expected": {
+        "result": "success",
+        "admissions": 1,
+        "duplicate_suppressed": 1,
+        "errors": 0
+      }
+    },
+    {
+      "id": "P3",
+      "description": "Out-of-scope control: an event written to svc/shipping/ by usr-avery is admitted normally and is absent from every svc/pricing/ current_view query, proving scope filtering is real and not a blanket block.",
+      "expected": {
+        "admitted": true,
+        "appears_in_pricing_view": false
+      }
+    }
+  ],
+  "permutation_matrix": {
+    "delivery_orders": [
+      [
+        "evt-1001-obs",
+        "evt-1003-corr",
+        "evt-1002-infer"
+      ],
+      [
+        "evt-1003-corr",
+        "evt-1001-obs",
+        "evt-1002-infer"
+      ],
+      [
+        "evt-1003-corr",
+        "evt-1002-infer",
+        "evt-1001-obs"
+      ],
+      [
+        "evt-1002-infer",
+        "evt-1003-corr",
+        "evt-1001-obs"
+      ]
+    ],
+    "clock_skews_seconds": [
+      90,
+      -90,
+      0
+    ],
+    "invariance_claim": "events, admitted, current_view, quarantine and acceptance_probe must be identical across all 12 combinations. receipts may differ only in observed_at and in the ordering of attempt records, never in attempts_total, admissions, duplicate_suppressed or conflict_rejected."
+  },
+  "pass_fail_rule": {
+    "pass": "All A-assertions in the oracle document, all negative assertions N1-N8, and all positive controls P1-P3 hold for all 12 permutation/skew combinations.",
+    "immediate_rejection": [
+      "N1",
+      "N3",
+      "N5",
+      "N6",
+      "N7"
+    ],
+    "note": "Per the go/no-go criteria, an authority-changing error or silent loss of an acknowledged event is immediate rejection regardless of every other measurement."
+  }
+}

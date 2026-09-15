@@ -38,3 +38,11 @@ Audit trail for `2026-09-15-foundation-programme-plan.md`. Append-only, in the o
 ## Supersessions
 
 - **S1** (2026-09-15) — `docs/plans/2026-09-08-2.17.0-w2-implementation.md` and `docs/plans/2026-09-08-2.17.1-implementation.md` are superseded as plans of record by the foundation programme (RB2). Their items are carried by: assemble disclosure / budget order / payload measurement → S3 (R15/R16); sync-state disclosure / createSuperseding / ingest counters / fallback diagnosability → S1 (R07/R08/R19/R20); lineage reverse scan → S1 lifecycle resolver (R05/R06); tool-description byte baseline → S2 CLI/MCP contract measurement. The files stay in the repo with a banner; nothing in them is executed as written.
+
+## 2026-09-15 — execution start
+
+- **DN6** — Named teammates (split-pane agents) are unavailable in this session ("Could not determine current tmux pane/window"); the CLI lane runs as a background subagent instead. No change to ownership or reporting.
+- **DN4 resolved** — the binary-flagged test file carries a deliberate `"\x00"` fixture entry; not a defect.
+- **D8** — Repo mechanics executed per RB7: Codex work parked at `dedaacc` (`wip/codex-plugin`); shared base `07230e6` on `main` (plan, log, absorbed W2 drafts with banner, session records); `foundation/v3` cut from it; CLI lane worktree `.claude/worktrees/cli-2.17` on `feat/cli-2.17`.
+- **D9** — Stage 0 launched as workflow `wf_f80a3b3b-ac2`: 8 worktree-isolated gap reproductions with positive controls, 5 implementation-blind oracles (C10, C11, C14, C16, C09), one steelman of the smallest evolution (§3.4), two host capability matrices (Claude Code 2.1.272, Codex 0.154.0). Reproductions run at `07230e6`, whose `src/` equals the baseline `d7860e0`.
+- **D10** — CLI lane dispatched (opus) with the lead-settled design: `createTwiningContext` extracted from `createServer`; a `CommandRegistry` shared by MCP and CLI; `twining` bin with a single JSON envelope, exit codes 0/1/2, `capabilities`; offline/sandbox-safe; `STORE_UNWRITABLE` instead of silent store fallback. Controller commits; lane reports.

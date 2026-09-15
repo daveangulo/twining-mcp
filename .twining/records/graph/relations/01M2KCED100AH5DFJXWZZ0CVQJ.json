@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T20:34:28.000Z",
+  "id": "01M2KCED100AH5DFJXWZZ0CVQJ",
+  "properties": {
+    "decision_summary": "Two scope operations, deliberately distinct: scopeMatches (retrieval; bidirectional on path at segment boundaries, exact on tenant/repo/task/attempt/consumer, global events match any repo) and scopeGoverns (authority; unidirectional, a rule must name a repo or be global, revision-bound rules govern only their exact head)",
+    "origin": "derived"
+  },
+  "source": "01M2KCECD1PM4J8Q318VGE36MG",
+  "target": "01M2KCED0X73BER4M8F8KH2MSW",
+  "type": "decided_by"
+}
