@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: CLI lane applied all 7 confirmed review findings on feat/cli-2.17: exit-134 blocker fixed (process.exitCode + drain, red-on-revert test with a real model cache), unknown flags/positional payloads/dangling value flags rejected with exit 2, envelope carries absolute project_root/store_dir, requires_mode in capabilities, doc counts corrected (15 handlers, 24+7 hidden), embedder offline upgrade-only.\nDecisions: [object Object]; [object Object]; [object Object]\nFindings: The placeholder-model-dir test cannot fail on the old code: with a fake cache transformers.js dies at tokenizer.json before any ONNX session exists, so no thread pool and exit 0 even with process.exit. It pins the cached-model branch only; the real-cache symlink test (it.skipIf when absent, live on dev machines, skipped in CI) is the actual regression guard — CI therefore does not cover the blocker; a dev-machine run does.; A new parity test pins the counts 39 commands / 24 full-surface / 15 internal-only / 7 mode-gated / 15 named handlers so CHANGELOG and docs/CLI.md cannot drift from the code again.",
+  "entry_type": "status",
+  "id": "01M2KF9QTW7CP3GC0ATXKEPQBG",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "d862f6ce8b8216ee51145fd1ba7864516492f3cc",
+    "recorded_at": "2026-09-15T21:24:20.937Z"
+  },
+  "scope": "src/cli/",
+  "summary": "CLI lane applied all 7 confirmed review findings on feat/cli-2.17: exit-134 blocker fixed (process.exitCode + drain, red-on-revert test with a real model cache), unknown flags/positional payloads/d…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-15T21:24:20.956Z"
+}

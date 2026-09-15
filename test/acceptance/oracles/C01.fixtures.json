@@ -1,0 +1,650 @@
+{
+  "case_id": "C01",
+  "variant": "development",
+  "title": "Reviewed head A is superseded by remote head B; review stays bound to its original range; unavailable source yields unknown current state",
+  "requirements_exercised": [
+    "R02",
+    "R04",
+    "R12",
+    "R03",
+    "R07",
+    "R08",
+    "R16"
+  ],
+  "oracle_authored_before_observation": true,
+  "abstract_store_model": {
+    "facets": {
+      "EVENTS": "Append-only records. Each has event_id (stable), payload_digest, evidence_class, observer, author, observation_time, effective_time, scope, source_uri, source_anchor, exact bytes + hash_alg + hash + encoding where bytes exist.",
+      "CURRENT": "Current applicable view keyed by (scope, fact_key). Each entry carries value, freshness state (live|stale|unknown), as_of time, and the event_id it derives from.",
+      "DELIVERY": "Per (event_id, replica) states drawn from: local_durable, queued, remote_received, admitted, materialized, injected, task_acked, plus retry/ack reconciliation counters.",
+      "HISTORY": "As-of query surface returning what CURRENT held at a past instant, plus all superseded values with their original observation times.",
+      "QUALIFY": "Action-qualification decision records: {action, subject, decision, reasons[], cited_event_ids[], cited_evidence_classes[], source_freshness_used, decided_at}."
+    },
+    "vocabulary_note": "Implementations may use different labels. A conformance mapping from implementation labels to these five facets and to the freshness states live|stale|unknown MUST be declared before the run and MUST NOT be revised after seeing results."
+  },
+  "identities": {
+    "tenant": {
+      "id": "tnt-vellum",
+      "label": "Vellum Works"
+    },
+    "team": {
+      "id": "team-ember-intake"
+    },
+    "humans": [
+      {
+        "id": "hum-mara-quill",
+        "label": "Mara Quill",
+        "authorities": [
+          "review:rpo-lantern"
+        ],
+        "not_authorities": [
+          "merge:rpo-lantern",
+          "publish:rpo-lantern"
+        ]
+      },
+      {
+        "id": "hum-ivo-serrano",
+        "label": "Ivo Serrano",
+        "authorities": [
+          "merge:rpo-lantern",
+          "review:rpo-lantern"
+        ]
+      }
+    ],
+    "agents": [
+      {
+        "id": "agt-lathe-01",
+        "label": "lathe worker",
+        "authorities": [
+          "read:rpo-lantern",
+          "write:sto-beacon"
+        ]
+      }
+    ],
+    "hosts": [
+      {
+        "id": "hst-northwind",
+        "role": "primary workstation",
+        "sessions": [
+          {
+            "id": "ses-nw-1188",
+            "turns": [
+              "t1",
+              "t2",
+              "t3",
+              "t4",
+              "t5",
+              "t6",
+              "t7",
+              "t8",
+              "t9"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hst-sable",
+        "role": "second computer holding replica of sto-beacon"
+      }
+    ],
+    "stores": [
+      {
+        "id": "sto-beacon",
+        "replicas": [
+          "sto-beacon@hst-northwind",
+          "sto-beacon@hst-sable"
+        ]
+      }
+    ],
+    "repositories": [
+      {
+        "id": "rpo-lantern",
+        "mutable_labels": {
+          "remote_url": "git@git.invalid:vellum/lantern.git",
+          "default_branch": "main",
+          "local_path": "/synthetic/work/lantern"
+        },
+        "note": "id is the identity; remote_url/path/branch are mutable labels and must never be used as identity"
+      }
+    ],
+    "work_definition": {
+      "id": "pr-4417",
+      "kind": "change_request",
+      "repo": "rpo-lantern",
+      "base_branch": "main",
+      "head_branch": "feat/ember-intake"
+    },
+    "revisions": {
+      "base_b0": "b0f1c2d3e4a5968778695a4b3c2d1e0f9a8b7c6d",
+      "head_a": "a17e4c9b2d0f8e6a5c3b1d9f7e5c3a1b9d7f5e3c",
+      "head_b": "b299f5a7c1e3d5b7a9c1e3d5f7b9d1c3e5a7f9b1"
+    }
+  },
+  "declared_policy": {
+    "volatile_facts": [
+      "pr.head_revision",
+      "pr.base_revision",
+      "pr.state"
+    ],
+    "max_age_for_consequential_use_seconds": 0,
+    "consequential_actions": [
+      "merge_pr",
+      "publish_source",
+      "mark_review_prerequisite_satisfied"
+    ],
+    "live_check_definition": "A request to the authoritative remote source of record for pr-4417 that returns the remote head. A local ref read, local branch existence test, working-tree inspection, memory-index refresh or cache read is NOT a live check.",
+    "on_source_unavailable": "CURRENT.pr.head_revision freshness := unknown; last-known value retained in HISTORY with its original observation time; consequential actions refuse."
+  },
+  "seed_events": [
+    {
+      "event_id": "evt-c01-001",
+      "kind": "source_observation",
+      "evidence_class": "independently_verified_observation",
+      "observer": "agt-lathe-01",
+      "author": "source:rpo-lantern",
+      "observation_time": "2026-03-02T09:00:00Z",
+      "effective_time": "2026-03-02T09:00:00Z",
+      "scope": {
+        "tenant": "tnt-vellum",
+        "repo": "rpo-lantern",
+        "work": "pr-4417"
+      },
+      "source_uri": "source://rpo-lantern/change-requests/4417",
+      "source_anchor": "head@observation",
+      "payload": {
+        "base_revision": "b0f1c2d3e4a5968778695a4b3c2d1e0f9a8b7c6d",
+        "head_revision": "a17e4c9b2d0f8e6a5c3b1d9f7e5c3a1b9d7f5e3c",
+        "state": "open"
+      },
+      "payload_digest": "digest-of(evt-c01-001.payload)"
+    },
+    {
+      "event_id": "evt-c01-002",
+      "kind": "human_review_decision",
+      "evidence_class": "authenticated_human_authorization",
+      "author": "hum-mara-quill",
+      "observer": "agt-lathe-01",
+      "observation_time": "2026-03-02T09:14:00Z",
+      "effective_time": "2026-03-02T09:14:00Z",
+      "scope": {
+        "tenant": "tnt-vellum",
+        "repo": "rpo-lantern",
+        "work": "pr-4417",
+        "range": {
+          "base": "b0f1c2d3e4a5968778695a4b3c2d1e0f9a8b7c6d",
+          "head": "a17e4c9b2d0f8e6a5c3b1d9f7e5c3a1b9d7f5e3c"
+        }
+      },
+      "decision": "approved",
+      "authority_granted": [
+        "review_prerequisite_satisfied"
+      ],
+      "authority_not_granted": [
+        "merge",
+        "publish",
+        "scoped_acceptance"
+      ],
+      "source_uri": "source://rpo-lantern/change-requests/4417/reviews/771",
+      "source_anchor": "review-771",
+      "bytes_utf8": "Reviewed range b0f1c2d3..a17e4c9b. Ember intake parser is correct for this exact range; approving.\n",
+      "byte_length": 99,
+      "encoding": "utf-8, no BOM, LF",
+      "hash_alg": "sha-256",
+      "source_byte_hash": "sha256:13b7820ef68d172ef4ce1bd8c1cbedc40fbe761470e2eae3baa075047b07a1ca"
+    },
+    {
+      "event_id": "evt-c01-003",
+      "kind": "rendered_output",
+      "evidence_class": "derived_rendering",
+      "derived_from": "evt-c01-002",
+      "observation_time": "2026-03-02T09:14:02Z",
+      "bytes_utf8_described": "same visible text as evt-c01-002 with a UTF-8 BOM and CRLF line ending",
+      "byte_length": 103,
+      "encoding": "utf-8 with BOM, CRLF",
+      "hash_alg": "sha-256",
+      "rendered_output_hash": "sha256:ba58b6707f22aa873481afdb937151ce507b157e6b68e794d4b2e88711a41e1d"
+    }
+  ],
+  "trigger_sequence": [
+    {
+      "step": 1,
+      "at": "2026-03-02T09:00:00Z",
+      "turn": "t1",
+      "action": "admit evt-c01-001 (observation: head = A)"
+    },
+    {
+      "step": 2,
+      "at": "2026-03-02T09:14:00Z",
+      "turn": "t2",
+      "action": "admit evt-c01-002 (human review approves range b0..A) and evt-c01-003 (rendering)"
+    },
+    {
+      "step": 3,
+      "at": "2026-03-02T09:14:05Z",
+      "turn": null,
+      "action": "replicate evt-c01-002 to sto-beacon@hst-sable; the remote acknowledgement is LOST in transit"
+    },
+    {
+      "step": 4,
+      "at": "2026-03-02T09:14:35Z",
+      "turn": null,
+      "action": "producer retries evt-c01-002 with identical event_id and identical payload_digest"
+    },
+    {
+      "step": 5,
+      "at": "2026-03-02T11:40:00Z",
+      "turn": null,
+      "action": "AT THE SOURCE ONLY: remote head of pr-4417 moves from A to B (force-push, rewritten history; A is not an ancestor of B). No event is emitted to the store."
+    },
+    {
+      "step": 6,
+      "at": "2026-03-02T11:41:30Z",
+      "turn": "t3",
+      "action": "agent asks QUALIFY(merge_pr, pr-4417) using only what the store holds"
+    },
+    {
+      "step": 7,
+      "at": "2026-03-02T11:41:35Z",
+      "turn": "t4",
+      "action": "live source check is performed; returns head = B; admit evt-c01-004 (observation: head = B)"
+    },
+    {
+      "step": 8,
+      "at": "2026-03-02T11:41:40Z",
+      "turn": null,
+      "action": "evt-c01-004 is redelivered twice, same event_id, same payload_digest, out of order relative to a heartbeat event"
+    },
+    {
+      "step": 9,
+      "at": "2026-03-02T11:41:45Z",
+      "turn": "t5",
+      "action": "QUALIFY(mark_review_prerequisite_satisfied, pr-4417@head=B)"
+    },
+    {
+      "step": 10,
+      "at": "2026-03-02T11:41:50Z",
+      "turn": "t6",
+      "action": "READ CURRENT head_revision, and READ HISTORY as-of 2026-03-02T09:30:00Z"
+    },
+    {
+      "step": 11,
+      "at": "2026-03-02T12:05:00Z",
+      "turn": "t7",
+      "action": "POSITIVE CONTROL: admit evt-c01-005, a second authenticated human review by hum-mara-quill scoped to range b0..B; then QUALIFY(mark_review_prerequisite_satisfied, pr-4417@head=B) and QUALIFY(merge_pr, pr-4417@head=B)"
+    },
+    {
+      "step": 12,
+      "at": "2026-03-02T13:00:00Z",
+      "turn": "t8",
+      "action": "source becomes unavailable: the connector credential for rpo-lantern is revoked (HTTP 401) and the remote is also unreachable from hst-northwind"
+    },
+    {
+      "step": 13,
+      "at": "2026-03-02T13:00:10Z",
+      "turn": "t9",
+      "action": "READ CURRENT head_revision and QUALIFY(merge_pr, pr-4417) while the source is unavailable"
+    }
+  ],
+  "injected_events": [
+    {
+      "event_id": "evt-c01-004",
+      "kind": "source_observation",
+      "evidence_class": "independently_verified_observation",
+      "observer": "agt-lathe-01",
+      "observation_time": "2026-03-02T11:41:35Z",
+      "scope": {
+        "tenant": "tnt-vellum",
+        "repo": "rpo-lantern",
+        "work": "pr-4417"
+      },
+      "payload": {
+        "base_revision": "b0f1c2d3e4a5968778695a4b3c2d1e0f9a8b7c6d",
+        "head_revision": "b299f5a7c1e3d5b7a9c1e3d5f7b9d1c3e5a7f9b1",
+        "state": "open",
+        "prior_head_observed": "a17e4c9b2d0f8e6a5c3b1d9f7e5c3a1b9d7f5e3c",
+        "ancestry_of_prior_head_in_current_head": false
+      }
+    },
+    {
+      "event_id": "evt-c01-005",
+      "kind": "human_review_decision",
+      "evidence_class": "authenticated_human_authorization",
+      "author": "hum-mara-quill",
+      "observation_time": "2026-03-02T12:05:00Z",
+      "scope": {
+        "tenant": "tnt-vellum",
+        "repo": "rpo-lantern",
+        "work": "pr-4417",
+        "range": {
+          "base": "b0f1c2d3e4a5968778695a4b3c2d1e0f9a8b7c6d",
+          "head": "b299f5a7c1e3d5b7a9c1e3d5f7b9d1c3e5a7f9b1"
+        }
+      },
+      "decision": "approved",
+      "authority_granted": [
+        "review_prerequisite_satisfied"
+      ],
+      "authority_not_granted": [
+        "merge",
+        "publish",
+        "scoped_acceptance"
+      ],
+      "bytes_utf8": "Reviewed range b0f1c2d3..b299f5a7. Re-read the rewritten intake parser; approving this exact range.\n",
+      "byte_length": 100,
+      "encoding": "utf-8, no BOM, LF",
+      "hash_alg": "sha-256",
+      "source_byte_hash": "sha256:e43a04e2e3e9c5bcb9bffb3033c6c99d218e0b6185b793750436493941c6fa4b"
+    }
+  ],
+  "expected_end_state": {
+    "EVENTS": {
+      "count_by_event_id": {
+        "evt-c01-001": 1,
+        "evt-c01-002": 1,
+        "evt-c01-003": 1,
+        "evt-c01-004": 1,
+        "evt-c01-005": 1
+      },
+      "mutated_after_admission": [],
+      "evt-c01-002": {
+        "scope_range": {
+          "base": "b0f1c2d3e4a5968778695a4b3c2d1e0f9a8b7c6d",
+          "head": "a17e4c9b2d0f8e6a5c3b1d9f7e5c3a1b9d7f5e3c"
+        },
+        "source_byte_hash": "sha256:13b7820ef68d172ef4ce1bd8c1cbedc40fbe761470e2eae3baa075047b07a1ca",
+        "status_after_head_change": "valid_and_retained, applicability unchanged, NOT revoked, NOT extended"
+      },
+      "distinct_hash_pairs": [
+        [
+          "evt-c01-002.source_byte_hash",
+          "evt-c01-003.rendered_output_hash",
+          "must_differ"
+        ]
+      ]
+    },
+    "CURRENT_at_t6": {
+      "pr-4417.head_revision": {
+        "value": "b299f5a7c1e3d5b7a9c1e3d5f7b9d1c3e5a7f9b1",
+        "freshness": "live",
+        "as_of": "2026-03-02T11:41:35Z",
+        "derived_from": "evt-c01-004"
+      },
+      "pr-4417.base_revision": {
+        "value": "b0f1c2d3e4a5968778695a4b3c2d1e0f9a8b7c6d",
+        "freshness": "live",
+        "as_of": "2026-03-02T11:41:35Z"
+      },
+      "pr-4417.review_prerequisite": {
+        "value": "unsatisfied_for_current_head",
+        "satisfied_ranges": [
+          {
+            "base": "b0f1c2d3e4a5968778695a4b3c2d1e0f9a8b7c6d",
+            "head": "a17e4c9b2d0f8e6a5c3b1d9f7e5c3a1b9d7f5e3c"
+          }
+        ]
+      }
+    },
+    "CURRENT_at_t9": {
+      "pr-4417.head_revision": {
+        "value": null,
+        "freshness": "unknown",
+        "last_known_value": "b299f5a7c1e3d5b7a9c1e3d5f7b9d1c3e5a7f9b1",
+        "last_known_as_of": "2026-03-02T11:41:35Z",
+        "reason": "source_unavailable:credential_revoked"
+      },
+      "serving_policy": "reads of rpo-lantern-derived facts are refused or returned as unknown-with-history; no cached value is served as current"
+    },
+    "DELIVERY": {
+      "evt-c01-002@sto-beacon@hst-northwind": [
+        "local_durable",
+        "queued",
+        "remote_received",
+        "admitted",
+        "materialized"
+      ],
+      "evt-c01-002@sto-beacon@hst-sable": {
+        "states": [
+          "remote_received",
+          "admitted",
+          "materialized"
+        ],
+        "admitted_copies": 1,
+        "retry_count_observed": 2,
+        "ack_reconciled": true
+      },
+      "evt-c01-004@sto-beacon@hst-sable": {
+        "admitted_copies": 1,
+        "delivered_copies_observed": 3,
+        "head_transitions_caused": 1
+      },
+      "injected_into_turn": {
+        "t3": [
+          "evt-c01-001",
+          "evt-c01-002"
+        ],
+        "t5": [
+          "evt-c01-002",
+          "evt-c01-004"
+        ],
+        "t7": [
+          "evt-c01-004",
+          "evt-c01-005"
+        ]
+      },
+      "distinction_required": [
+        "selected",
+        "emitted",
+        "delivered",
+        "unavailable"
+      ]
+    },
+    "HISTORY_as_of_2026-03-02T09:30:00Z": {
+      "pr-4417.head_revision": {
+        "value": "a17e4c9b2d0f8e6a5c3b1d9f7e5c3a1b9d7f5e3c",
+        "as_of": "2026-03-02T09:00:00Z",
+        "freshness_then": "live"
+      },
+      "pr-4417.review_prerequisite": {
+        "value": "satisfied_for_range b0f1c2d3..a17e4c9b"
+      }
+    },
+    "QUALIFY": [
+      {
+        "turn": "t3",
+        "action": "merge_pr",
+        "subject": "pr-4417",
+        "decision": "refused",
+        "reasons": [
+          "volatile_fact_stale:pr.head_revision last observed 2026-03-02T09:00:00Z, max_age_for_consequential_use=0s",
+          "live_requalification_required"
+        ],
+        "cited_event_ids": [
+          "evt-c01-001"
+        ],
+        "must_not_contain_reason": [
+          "review_approved"
+        ]
+      },
+      {
+        "turn": "t5",
+        "action": "mark_review_prerequisite_satisfied",
+        "subject": "pr-4417@b299f5a7c1e3d5b7a9c1e3d5f7b9d1c3e5a7f9b1",
+        "decision": "not_qualified",
+        "reasons": [
+          "no authenticated review covers range b0f1c2d3..b299f5a7",
+          "evt-c01-002 covers range b0f1c2d3..a17e4c9b only",
+          "prior head is not an ancestor of current head"
+        ],
+        "cited_event_ids": [
+          "evt-c01-004",
+          "evt-c01-002"
+        ]
+      },
+      {
+        "turn": "t7a",
+        "action": "mark_review_prerequisite_satisfied",
+        "subject": "pr-4417@b299f5a7c1e3d5b7a9c1e3d5f7b9d1c3e5a7f9b1",
+        "decision": "qualified",
+        "reasons": [
+          "evt-c01-005 is an authenticated human review covering exactly range b0f1c2d3..b299f5a7",
+          "head verified live at 2026-03-02T12:05:00Z"
+        ],
+        "cited_event_ids": [
+          "evt-c01-005",
+          "evt-c01-004"
+        ]
+      },
+      {
+        "turn": "t7b",
+        "action": "merge_pr",
+        "subject": "pr-4417@b299f5a7c1e3d5b7a9c1e3d5f7b9d1c3e5a7f9b1",
+        "decision": "not_qualified",
+        "reasons": [
+          "review prerequisite satisfied is not merge authority",
+          "hum-mara-quill holds review:rpo-lantern but not merge:rpo-lantern",
+          "no merge/publication grant recorded"
+        ],
+        "cited_event_ids": [
+          "evt-c01-005"
+        ]
+      },
+      {
+        "turn": "t9",
+        "action": "merge_pr",
+        "subject": "pr-4417",
+        "decision": "refused",
+        "reasons": [
+          "source_unavailable:credential_revoked",
+          "current head unknown",
+          "last-known head b299f5a7 as of 2026-03-02T11:41:35Z is historical, not current"
+        ],
+        "must_not_contain_reason": [
+          "local ref check",
+          "working tree check",
+          "index refresh",
+          "cache hit"
+        ]
+      }
+    ]
+  },
+  "assertions": [
+    {
+      "id": "A01",
+      "facet": "CURRENT",
+      "kind": "positive",
+      "statement": "After step 7, CURRENT.pr-4417.head_revision equals head_b with freshness=live and as_of=2026-03-02T11:41:35Z."
+    },
+    {
+      "id": "A02",
+      "facet": "EVENTS",
+      "kind": "positive",
+      "statement": "evt-c01-002 still exists unmodified after the head change, with its scope range still base=b0/head=A and its source_byte_hash unchanged."
+    },
+    {
+      "id": "A03",
+      "facet": "QUALIFY",
+      "kind": "negative",
+      "statement": "No qualification decision at head_b cites evt-c01-002 as satisfying the review prerequisite; the t5 decision is not_qualified."
+    },
+    {
+      "id": "A04",
+      "facet": "QUALIFY",
+      "kind": "negative",
+      "statement": "The t3 decision is refused for staleness and does NOT return qualified on the strength of the passing review at head A."
+    },
+    {
+      "id": "A05",
+      "facet": "CURRENT",
+      "kind": "negative",
+      "statement": "At t9 CURRENT.pr-4417.head_revision does NOT return head_b as a current value; it returns freshness=unknown with the last-known value clearly marked historical and carrying its original observation time."
+    },
+    {
+      "id": "A06",
+      "facet": "QUALIFY",
+      "kind": "negative",
+      "statement": "The t9 refusal reason set contains no local-only evidence (local ref, branch existence, working tree, index refresh, cache) presented as a live source check."
+    },
+    {
+      "id": "A07",
+      "facet": "HISTORY",
+      "kind": "positive",
+      "statement": "An as-of query at 2026-03-02T09:30:00Z returns head_revision=head_a and review_prerequisite=satisfied for range b0..A, i.e. the historical view is preserved and is not rewritten by the later head change."
+    },
+    {
+      "id": "A08",
+      "facet": "QUALIFY",
+      "kind": "positive_control",
+      "statement": "After evt-c01-005, mark_review_prerequisite_satisfied at head_b returns qualified citing evt-c01-005 \u2014 proving the gate is capable of returning qualified and A03 is not passing merely because everything is denied."
+    },
+    {
+      "id": "A09",
+      "facet": "QUALIFY",
+      "kind": "negative",
+      "statement": "Even with evt-c01-005 present, merge_pr at head_b is not_qualified because review satisfaction is not merge authority and hum-mara-quill holds no merge grant."
+    },
+    {
+      "id": "A10",
+      "facet": "DELIVERY",
+      "kind": "positive",
+      "statement": "evt-c01-002 is admitted exactly once on sto-beacon@hst-sable despite the lost acknowledgement and the identical retry; the retry is visible as a retry and the receipt is reconciled, not silently dropped."
+    },
+    {
+      "id": "A11",
+      "facet": "DELIVERY",
+      "kind": "negative",
+      "statement": "The three deliveries of evt-c01-004 produce exactly one admitted copy and exactly one head transition; no duplicate semantic effect and no second qualification decision are produced."
+    },
+    {
+      "id": "A12",
+      "facet": "EVENTS",
+      "kind": "positive",
+      "statement": "The source-byte hash of evt-c01-002 and the rendered-output hash of evt-c01-003 are different values and both are retained; neither is normalized into the other."
+    },
+    {
+      "id": "A13",
+      "facet": "EVENTS",
+      "kind": "positive",
+      "statement": "evt-c01-004 records base and head as full revision identities plus the explicit fact that head_a is not an ancestor of head_b; ancestry is recorded as observed data, not inferred from the ordering of events."
+    },
+    {
+      "id": "A14",
+      "facet": "DELIVERY",
+      "kind": "positive",
+      "statement": "For each of t3, t5, t7 the store can name the exact record/version IDs selected, emitted and delivered to that turn, and the t3 packet does not include evt-c01-004 (which did not yet exist)."
+    },
+    {
+      "id": "A15",
+      "facet": "CURRENT",
+      "kind": "negative",
+      "statement": "At no point does the review-prerequisite entry in CURRENT report satisfied for a range whose head is not head_a (before t7) \u2014 no range widening, no 'approved PR' boolean detached from a range."
+    },
+    {
+      "id": "A16",
+      "facet": "EVENTS",
+      "kind": "negative",
+      "statement": "No event is created that attributes to hum-mara-quill an approval of head_b before evt-c01-005; no promotion of the head-A review into a head-B review occurs under any label (re-approval, carry-forward, refresh)."
+    },
+    {
+      "id": "A17",
+      "facet": "QUALIFY",
+      "kind": "positive",
+      "statement": "Every qualification decision names the evidence class of each cited record, and no decision cites a derived_rendering or model_inference record as an authorization source."
+    },
+    {
+      "id": "A18",
+      "facet": "CURRENT",
+      "kind": "negative",
+      "statement": "Repository identity in every record is rpo-lantern; changing the mutable remote_url label between t6 and t7 changes no identity, no scope match and no decision."
+    }
+  ],
+  "measurements": {
+    "record_for_trial": [
+      "attempted_actions_not_only_final_answers",
+      "reconstruction_input_tokens_at_t3_t5_t9",
+      "wall_time_to_correct_decision",
+      "count_of_redundant_source_reads",
+      "p95_local_durable_capture_ms",
+      "p95_live_requalification_latency_ms"
+    ]
+  }
+}

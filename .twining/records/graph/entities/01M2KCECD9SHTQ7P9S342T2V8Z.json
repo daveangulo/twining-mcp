@@ -3,8 +3,8 @@
   "id": "01M2KCECD9SHTQ7P9S342T2V8Z",
   "name": "src/contracts/delivery.ts",
   "properties": {
-    "scope": "src/contracts/"
+    "scope": "src/contracts/,src/events/"
   },
   "type": "file",
-  "updated_at": "2026-09-15T20:34:28.321Z"
+  "updated_at": "2026-09-15T21:35:41.346Z"
 }

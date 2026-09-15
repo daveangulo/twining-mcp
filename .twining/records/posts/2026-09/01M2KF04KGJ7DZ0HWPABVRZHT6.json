@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Environment restored (Dave accepted the Xcode license; git/brew back on the plain PATH); pruned the eight Stage 0 reproduction worktrees; logged DN7-resolved/DN14/D18; noted the archiver's 500 tracked post-record deletions for the next records commit.\nDecisions: Chose to prune the eight Stage 0 reproduction worktrees immediately after confirming their gap tests were already committed on foundation/v3 — leaving changed workflow worktrees on disk is the exact accumulation prior sessions had to clean up later.\nFindings: DN7 resolved: after `sudo xcodebuild -license accept`, /usr/bin/git 2.54.0 and Homebrew 7.0.2 work on the plain PATH; the CLT-git prefix workaround is no longer needed but still works if an Xcode update recurs.; The auto-archiver deleted 500 git-tracked .twining/records/posts/2026-08/*.json files during this session (known prune-posts-only behavior; decisions untouched) — the deletions must be included in the next records commit, as prior sessions did.",
+  "entry_type": "status",
+  "id": "01M2KF04KGJ7DZ0HWPABVRZHT6",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "d862f6ce8b8216ee51145fd1ba7864516492f3cc",
+    "recorded_at": "2026-09-15T21:19:06.313Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "Environment restored (Dave accepted the Xcode license; git/brew back on the plain PATH); pruned the eight Stage 0 reproduction worktrees; logged DN7-resolved/DN14/D18; noted the archiver's 500 trac…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-15T21:19:06.352Z"
+}

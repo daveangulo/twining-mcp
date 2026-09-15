@@ -8,7 +8,7 @@
  */
 import type { EventEnvelope } from "./event.js";
 import type { DeliveryState } from "./delivery.js";
-import type { Ingress } from "./evidence.js";
+import type { EvidenceClass, Ingress } from "./evidence.js";
 import type { Scope } from "./scope.js";
 import type { ValidationResult } from "./validate.js";
 
@@ -34,7 +34,7 @@ export interface ProjectedRecord<Body = Record<string, unknown>> {
   /** Current applicable lifecycle status as derived by the reducer. */
   status: string;
   /** Evidence class of the governing event for this record. */
-  evidence_class: string;
+  evidence_class: EvidenceClass;
   scope: Scope;
   /** Event id of the latest admitted event affecting this record on this replica. */
   version: string;

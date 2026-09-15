@@ -1,7 +1,7 @@
 # ADR: Twining v3 foundation contracts — identity, evidence, lifecycle, exchange
 
-**Status:** PROPOSED (draft 1, 2026-09-15). Becomes ACCEPTED only after Stage 0 evidence: the reproduced gaps with controls, the independent oracles for C09/C10/C11/C14/C16, the smaller-evolution steelman (§9.1), and the vertical slice (§12) — all recorded in `docs/plans/2026-09-15-foundation-programme-log.md`.
-**Owner:** lead (lane 01). **Consumers:** lanes 02–05. **Contract version:** `3.0.0-draft.1` (`src/contracts/`).
+**Status:** ACCEPTED (draft 2, 2026-09-15). Stage 0 evidence complete: all eight supplied gaps reproduced with positive controls; independent oracles for C09/C10/C11/C14/C16 (plus 23 more, dev + held-out); the smaller-evolution steelman fails C10/C11/C14/C16/C22 (§9.1); the vertical slice (§12) passes 121 oracle-derived assertions with 12 marked todo for later lanes (appendix C). Contract version `3.0.0-draft.2`. Amendments after acceptance are recorded as supersessions in `docs/plans/2026-09-15-foundation-programme-log.md`.
+**Owner:** lead (lane 01). **Consumers:** lanes 02–05. **Contract version:** `3.0.0-draft.2` (`src/contracts/`). Appendices: A steelman, B oracle rulings, C slice interpretations.
 **Plan of record:** `docs/plans/2026-09-15-foundation-programme-plan.md`. **Package:** `twining-foundation-20260915` (R01–R20, C01–C28).
 
 ---
@@ -160,6 +160,7 @@ Rendering preserves the class. `MUST`, `active`, or a heading confers nothing (R
 | `created` with `verified_observation` | connector/adapter | adapter key + check method recorded | same |
 | `promoted`/`reconsidered`/`archived`/`restored`/`resolved`/`acknowledged`/`amended`/`commit_linked` | any principal with `write` | membership | same |
 | `superseded`/`overridden`/`corrected` | principal with `write`; **class rule:** the successor's class must be ≥ the target's class, else the event is admitted as `contested`, not applied | membership + class rule | same |
+| `reinstated` | principal with `rule`; class ≥ the superseding event's class; refused (visibly) on revoked, tombstoned or retracted targets | membership + class rule | same |
 | `retracted` | the target's own producer principal | signature match (or asserted match when unsigned, flagged) | same |
 | `revoked`, `conflict_resolved`, `ruling`, `membership` changes, `global: true` | human principal with `rule` capability in scope | ceremony signature + membership | same |
 | `tombstoned` | `rule` capability, or the own producer for own proposals | as above | same |
@@ -177,9 +178,13 @@ Applied in this order; wall-clock never enters:
 
 Causal order comes from `parents`; equal-class concurrent successors with no path between them are, by definition, concurrent. Corrections of corrections chain through `parents`; competing corrections follow rule 3.
 
+### 4.3.1 Admission order and capability evaluation
+
+Admission checks structure first (schema, digest, signature), then **parents and relation endpoints**, then capability against the projected membership. Capability is judged only when a membership policy exists on this replica; with no policy yet the event is `quarantined:no_policy_yet` and retried when the policy arrives (a membership must therefore be a causal ancestor of anything it authorizes). Capability refusal is terminal only when a policy exists and denies (`rejected:unauthorized`). Roles: `read` < `propose` (create proposals, inferences, questions only) < `write` (lifecycle transitions) < `rule` (authority).
+
 ### 4.4 Archival is not revocation
 
-`archived` hides from default retrieval; `restored` returns the record to its **remembered** prior status (derived from the event chain, never assumed). A restored provisional stays provisional and restoration never emits or implies `promoted`; a restored superseded stays superseded; a revoked ruling cannot be restored to authority by `restored` (C16). A superseded or overridden record returns to applicability only through `reinstated` (§4.1), never through `restored`.
+`archived` is a **flag beside an untouched status** (with `archived_from` recorded), not a status replacement, so restoration cannot change what the record was. `archived` hides from default retrieval; `restored` returns the record to its **remembered** prior status (derived from the event chain, never assumed). A restored provisional stays provisional and restoration never emits or implies `promoted`; a restored superseded stays superseded; a revoked ruling cannot be restored to authority by `restored` (C16). A superseded or overridden record returns to applicability only through `reinstated` (§4.1), never through `restored`.
 
 ---
 
@@ -238,6 +243,7 @@ A local branch deletion, a file existence test or an index refresh is **not** a 
 | Malicious imported record (Git pull, relay, file) | admission validates schema, digest, signature/policy, scope, class; text is data — no ingress path executes it; `human_ruling` from any non-ceremony path is rejected at the schema layer | unsigned proposals are admitted as `proposal`; they can mislead a reader but cannot change authority or policy |
 | Authenticated but unauthorized user | capability check against `membership` for every authority-changing kind; a valid signature without capability → `rejected:unauthorized` with the attempt logged (C12) | a store with no membership policy defaults to deny for authority-changing kinds |
 | Old client (2.x) | `config.version: 3` → 2.x goes read-only (`FORMAT_VERSION_TOO_NEW`, existing gate); 2.x never sees `events/`; anything it writes into the frozen `records/` after rollback is ingested as new legacy events on forward recovery | a 2.x older than the version gate (< 1.21) is unsupported and documented |
+| Imported `principal` record introducing a human key | a human key becomes trusted for rulings only when bootstrapped out of band at store creation or introduced by a `principal` event signed by an already-trusted human key (a ruling that grants); an unsigned or agent-signed human-principal record is admitted as data, never as a trusted signer (C12) | the bootstrap key is the root of trust and is distributed out of band |
 | Compromised adapter/host key | keys are per host, scope-limited by membership; `revoked` principal events; rotation = new key + `principal` event citing the old | events signed before the revocation cut stay admitted (history), flagged `key_revoked_after` |
 | Direct DB/file access on the same OS user | projections are rebuildable; signed events detect byte tampering; attachments are content-addressed | an attacker with the user's filesystem can read keys that are not passphrase/keychain protected and can delete files; the guarantee is *not forgeable through Twining's APIs or imported records*, not *unforgeable by local root* |
 | Prompt-injection text in any field | rendering preserves evidence class; no field is executed; recipes are retrieved for inspection only (C08) | a model may still be persuaded by data — the boundary is enforced in ingress/action APIs, not in prose |
@@ -355,7 +361,7 @@ Shared-schema changes go through the lead; lanes propose them as PR-style diffs 
 Two host principals `h_A`, `h_B` with keys; one human principal `p_H` with a ruling capability in scope `r_1/src/auth/`; two stores (temp dirs) sharing one `store_id`; carrier = `fs:` transport (a shared directory standing in for a remote) and the reference relay.
 
 1. `p_H` records a ruling R in scope `src/auth/` ("password reset tokens expire in 15 minutes"); both replicas admit it.
-2. Offline, `h_A` records a **correction** C (class `verified_observation`, cites R, `applies_to: src/auth/reset/`); `h_B` records a **conflicting interpretation** I (class `model_inference`, `supersedes: R`).
+2. Offline, `p_H` (through `h_A`, signed) records a **scoped correction** C of its own ruling (class `human_ruling`, cites R, `applies_to: src/auth/reset/`); `h_B` records a **conflicting interpretation** I (class `model_inference`, `supersedes: R`). *(Draft 1 had C as a `verified_observation`; under §4.3 rule 1 a class-4 correction of a class-5 ruling is contested, not governing — the slice showed the wording contradicted the mechanism, and the mechanism is right.)*
 3. Deliver A→B then B→A, and B→A then A→B (fresh replicas each time); deliver each event twice; drop the first ack of C and retry.
 4. Expected (from the independent oracle, not from this ADR): both replicas hold R, C, I; R governs `src/auth/`; C governs `src/auth/reset/` within its scope; I is `contested` (lower class cannot supersede a ruling) and visible; no duplicate effects; the retried C has one admission row; the receipts identify which events each replica admitted; a `receipt` never becomes a task acknowledgement.
 5. Change the source revision (new `head`) for R's cited range → R's `applies_to.revision` no longer covers `head`: current-use claims are refused with `stale_revision`; R remains in history.

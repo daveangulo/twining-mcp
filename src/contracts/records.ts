@@ -22,7 +22,8 @@ export const RECORD_TYPES = [
 export type RecordType = (typeof RECORD_TYPES)[number];
 export const recordTypeSchema = z.enum(RECORD_TYPES);
 
-const decisionPart = z.object({ part_id: z.string().min(1), text: z.string().min(1) }).strict();
+/** Unit of partial supersession/revocation (C16). A part may narrow the record's scope; its evidence class and version are projection state derived from the event that last established it. */
+const decisionPart = z.object({ part_id: z.string().min(1), text: z.string().min(1), scope: scopeSchema.optional() }).strict();
 
 export const decisionBodySchema = z
   .object({
@@ -108,7 +109,8 @@ export const membershipBodySchema = z
     members: z.array(
       z.object({
         principal: principalIdSchema,
-        roles: z.array(z.enum(["read", "write", "rule"])).min(1),
+        /** propose = may create proposals/inferences/questions only; write = propose + lifecycle transitions; rule = write + authority. */
+        roles: z.array(z.enum(["read", "propose", "write", "rule"])).min(1),
         scopes: z.array(scopeSchema).min(1),
       }).strict(),
     ),
@@ -142,9 +144,15 @@ export const rulingBodySchema = z
     statement: z.string().min(1),
     cites: z.array(ulidSchema).optional(),
     grants: z
-      .array(z.object({ principal: principalIdSchema, roles: z.array(z.enum(["read", "write", "rule"])).min(1), scope: scopeSchema }).strict())
+      .array(z.object({ principal: principalIdSchema, roles: z.array(z.enum(["read", "propose", "write", "rule"])).min(1), scope: scopeSchema }).strict())
       .optional(),
     supersedes: z.array(ulidSchema).optional(),
+    /** Multi-part rulings (C16): the unit of partial supersession/revocation. */
+    parts: z.array(decisionPart).min(1).optional(),
+    /** Machine-checkable requirements a ruling establishes (C09 prerequisites), instead of tokens parsed out of prose. */
+    requirements: z
+      .array(z.object({ key: z.string().min(1), value: z.unknown(), applies_to: scopeSchema.optional() }).strict())
+      .optional(),
   })
   .strict();
 

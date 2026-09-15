@@ -1,0 +1,16 @@
+{
+  "agent_id": "general-purpose",
+  "detail": "",
+  "entry_type": "status",
+  "id": "01M2KEWANDDT6DGNGF78T5W2A8",
+  "provenance": {
+    "recorded_at": "2026-09-15T21:17:01.372Z"
+  },
+  "scope": "project",
+  "summary": "Subagent completed: general-purpose",
+  "tags": [
+    "subagent-stop",
+    "hook-generated"
+  ],
+  "timestamp": "2026-09-15T21:17:01.485Z"
+}

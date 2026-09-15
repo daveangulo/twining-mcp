@@ -20,7 +20,7 @@ export const DELIVERY_STATES = [
 export type DeliveryState = (typeof DELIVERY_STATES)[number];
 
 export const DELIVERY_TRANSITIONS: Record<DeliveryState, ReadonlyArray<DeliveryState>> = {
-  local_persisted: ["exported"],
+  local_persisted: ["exported", "admitted"], // a producer admits its own event locally
   exported: ["transferred"],
   transferred: ["received"],
   received: ["admitted", "pending_parents", "quarantined", "rejected"],
@@ -46,5 +46,7 @@ export const QUARANTINE_REASONS = [
   "unauthorized_principal",
   "envelope_version_unsupported",
   "attachment_missing",
+  "signer_unknown", // retryable: the principal record may still be in flight
+  "no_policy_yet", // retryable: capability cannot be judged until the membership arrives
 ] as const;
-export const REJECT_REASONS = ["schema", "digest_mismatch", "conflicting_duplicate", "cycle", "class_not_allowed"] as const;
+export const REJECT_REASONS = ["schema", "digest_mismatch", "conflicting_duplicate", "cycle", "class_not_allowed", "unauthorized"] as const;

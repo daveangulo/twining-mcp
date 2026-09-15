@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: the slice's src/events/projection.ts had four string-vs-EvidenceClass type errors the lane reported as clean (it ran tsc before its final edits); fixed by typing ProjectedRecord.evidence_class in the contract. Lanes must run tsc as their LAST step.",
+  "entry_type": "warning",
+  "id": "01M2KFYGC1C7DGC9BBQFHB2242",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "d862f6ce8b8216ee51145fd1ba7864516492f3cc",
+    "recorded_at": "2026-09-15T21:35:41.422Z"
+  },
+  "scope": "src/events/",
+  "summary": "the slice's src/events/projection.ts had four string-vs-EvidenceClass type errors the lane reported as clean (it ran tsc before its final edits); fixed by typing ProjectedRecord.evidence_class in t…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-15T21:35:41.441Z"
+}

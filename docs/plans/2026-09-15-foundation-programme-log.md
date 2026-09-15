@@ -64,3 +64,25 @@ Audit trail for `2026-09-15-foundation-programme-plan.md`. Append-only, in the o
 - **D15** — CLI lane (opus, 28 min, ~320k tokens) delivered on `feat/cli-2.17`: shared command core (`src/core/*`, 39 handlers moved verbatim, MCP adapter loop), `createTwiningContext` extracted from `createServer`, `twining` bin (JSON envelope, exit 0/1/2, `capabilities`, `STORE_UNWRITABLE`, offline), docs + CHANGELOG. Full suite in the worktree 121 files / 1739 passed with the CLT git. Lane rulings recorded (`01M2KDH436…`, `01M2KDH4D8…`): plugin keeps shipping only the MCP bundle for now; nudge-per-process accepted; full-surface gate not applied in the CLI; real package version; plain-text `--version`.
 - **DN11** — 20 of the lane's test failures were the Xcode git shim (DN7), none real; the lane deliberately kept its new tests git-free.
 - **Next** — adversarial review of `main..feat/cli-2.17` (behavior-neutrality, CLI contract/sandbox safety, refactor quality) before any merge; the branch ships as 2.17.0 only under Dave's tag.
+
+## 2026-09-15 — CLI review + oracle rulings
+
+- **D16** — CLI review workflow `wf_49f1131a-59e` (29 agents, 0 errors, 17 min): neutrality lens 0 findings (19 properties identical); cli-contract lens BLOCKER (exit 134 on success with cached ONNX model — `process.exit` races onnxruntime), MAJOR (unknown flags silently ignored), 3 minors; quality lens 4 doc/count corrections + 1 nit; 3 findings refuted (STORE_UNWRITABLE doc paragraph ×1 with two refuters, embedder nit split). Confirmed items sent to the CLI lane for fix; commit after re-verification.
+- **DN12** — The committed plugin bundle (`plugin/server/twining-server.mjs`) will fail the CI freshness check on `feat/cli-2.17` until `bump-plugin-version.sh` rebuilds it at release; intentionally left for the release step (Dave's tag).
+- **D17** — Oracle rulings appendix B: 54 defaults stand, 12 adjusted with ADR reasons, 7 lead rulings made (recorded `01M2KDRBYZ…`, `01M2KDRC8D…`); `reinstated` kind added to contracts; ADR §2.3/§4.1/§4.3/§4.4/§12/§13 updated; commit `d862f6c`.
+- **DN13** — Lead extraction defect: oracle open-question/invariant lists were not written to the oracle files in Stage 0; repaired from the journal (warning `01M2KDRCJ1…`). Lesson: extraction scripts must write every structured field, not only the prose body.
+
+## 2026-09-15 — environment restored
+
+- **DN7 resolved** — Dave ran `sudo xcodebuild -license accept`; `/usr/bin/git` (2.54.0) and `brew` work on the plain PATH again. The CLT-git PATH prefix is no longer required.
+- **DN14** — The auto-archiver deleted git-tracked `.twining/records/posts/2026-08/*.json` files during this session (known behavior: archive prunes only posts; decisions are never pruned). The deletions are committed alongside the next records commit, as prior sessions did.
+- **D18** — Pruned the eight Stage 0 reproduction worktrees (`wf_f80a3b3b-ac2-2..9`) and their branches after confirming the gap test files match what is committed on `foundation/v3`.
+
+## 2026-09-15 — Stage 0 slice landed; ADR accepted
+
+- **D19** — Lane 02 slice delivered (opus, 47 min, ~460k tokens): `src/events/{db,projection,event-store}.ts`, `src/exchange/{fs-transport,relay,inbox,outbox}.ts`, `test/acceptance/slice/*` — 73 oracle-derived assertions pass, 12 todo (other lanes), C10/C11 converge in both delivery orders plus reverse/shuffled, mutation-checked (class-rank off → 4 C11 failures; conflict detection off → 5).
+- **D20** — ADR status → ACCEPTED (draft 2). All Stage 0 conditions met. §12 scenario corrected (the governing correction is authored by the ruling's own human principal; a class-4 correction of a class-5 ruling is contested — the slice showed the wording contradicted the mechanism). §4.3.1 admission order + `propose` role; §4.4 archived-as-flag; §7 chain of trust for human keys (C12).
+- **D21** — Contracts `3.0.0-draft.2`: `local_persisted → admitted`; quarantine reasons `signer_unknown`, `no_policy_yet`; reject reason `unauthorized`; `CONFLICTING_DUPLICATE`; `corrected.by`; `parts` on `revoked`/`overridden`; per-part `scope`; ruling `parts` + `requirements`; `ProjectedRecord.evidence_class` typed. All additive; slice + contracts green after.
+- **DN15** — 23 further implementation-blind oracles (C01–C08, C12, C13, C15, C17–C28) with held-out variants, fixtures, instrument-can-fail controls and open questions written to `test/acceptance/oracles/` (workflow `wf_7d1a87df-55f`, 23 agents, 0 errors, 30 min). This time every structured field was written (DN13 lesson).
+- **DN16** — The slice's `projection.ts` had four `string`-vs-`EvidenceClass` type errors the lane missed (it ran tsc before its last edits); fixed at the contract level by typing `ProjectedRecord.evidence_class`.
+- **DN17** — The slice builder proposed 8 contract changes; all accepted in D21 except the general chain-of-trust mechanism for human keys, which is specified in ADR §7 and implemented by lane 02 (continued).

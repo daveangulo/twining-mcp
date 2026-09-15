@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T21:35:41.206Z",
+  "id": "01M2KFYG4PCHGETZ797SS3B2JC",
+  "properties": {
+    "decision_summary": "Corrected ADR §12: the governing scoped correction in the slice scenario is authored by the ruling's own human principal (class human_ruling); a verified_observation correction of a ruling is contested, not governing — the class-rank mechanism is right and the draft-1 wording was wrong",
+    "origin": "derived"
+  },
+  "source": "01M2KFYG1FYSBPVW7JV4GG1BYM",
+  "target": "01M2KFYG4KHHG4FGQSHY7HH78E",
+  "type": "decided_by"
+}

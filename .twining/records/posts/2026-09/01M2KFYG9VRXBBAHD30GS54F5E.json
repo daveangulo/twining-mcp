@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Slice numbers: adr-12 13/1, c09 13/2, c10 12/1, c11 11/0, c14 12/3, c16 12/5 (pass/todo); rebuild after rm events.db reproduces an identical projection_digest; fs transport and in-process relay both pass; delivery evidence persisted in store/receipts.jsonl survives db loss.",
+  "entry_type": "finding",
+  "id": "01M2KFYG9VRXBBAHD30GS54F5E",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "d862f6ce8b8216ee51145fd1ba7864516492f3cc",
+    "recorded_at": "2026-09-15T21:35:41.352Z"
+  },
+  "scope": "src/events/",
+  "summary": "Slice numbers: adr-12 13/1, c09 13/2, c10 12/1, c11 11/0, c14 12/3, c16 12/5 (pass/todo); rebuild after rm events.db reproduces an identical projection_digest; fs transport and in-process relay bot…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-15T21:35:41.371Z"
+}

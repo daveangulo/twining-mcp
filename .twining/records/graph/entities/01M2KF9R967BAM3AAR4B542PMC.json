@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T21:24:21.414Z",
+  "id": "01M2KF9R967BAM3AAR4B542PMC",
+  "name": "01M2KF9R5Y014A8YA3SSAVYT1N",
+  "properties": {
+    "scope": "src/cli/",
+    "summary": "Embedder.getInstance upgrades a cached instance to offline when a later caller asks for it, never downgrades"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-15T21:24:21.414Z"
+}

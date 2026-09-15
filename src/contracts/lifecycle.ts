@@ -40,12 +40,14 @@ export const lifecyclePayloadSchemas: Record<LifecycleKind, z.ZodTypeAny> = {
   superseded: z
     .object({ ...target, by: ulidSchema, parts: z.array(z.string().min(1)).min(1).optional(), ...reason })
     .strict(),
-  overridden: z.object({ ...target, replacement: ulidSchema.optional(), reason: z.string().min(1) }).strict(),
+  overridden: z.object({ ...target, replacement: ulidSchema.optional(), parts: z.array(z.string().min(1)).min(1).optional(), reason: z.string().min(1) }).strict(),
   corrected: z
     .object({
       ...target,
       correction: z.record(z.unknown()),
       applies_to: scopeSchema,
+      /** Successor record carrying the correction, when one exists (attribution + cycle detection). */
+      by: ulidSchema.optional(),
       ...reason,
     })
     .strict(),
@@ -69,7 +71,7 @@ export const lifecyclePayloadSchemas: Record<LifecycleKind, z.ZodTypeAny> = {
     .strict(),
   commit_linked: z.object({ ...target, commit: gitShaSchema }).strict(),
   retracted: z.object({ ...target, reason: z.string().min(1) }).strict(),
-  revoked: z.object({ ...target, reason: z.string().min(1) }).strict(),
+  revoked: z.object({ ...target, parts: z.array(z.string().min(1)).min(1).optional(), reason: z.string().min(1) }).strict(),
   tombstoned: z.object({ ...target, reason: z.string().min(1), purge: z.boolean().default(false) }).strict(),
 };
 

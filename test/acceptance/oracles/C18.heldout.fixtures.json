@@ -1,0 +1,497 @@
+{
+  "case_id": "C18-H",
+  "fixture_set": "held-out",
+  "version": "1.0.0",
+  "digest_algorithm": "sha-256",
+  "declared_inputs_required_before_run": {
+    "durability_boundary": {
+      "admissible_values": [
+        "W1+W2_atomic",
+        "W2"
+      ],
+      "branch_affects": [
+        "X-A6"
+      ]
+    },
+    "transport_disposition": {
+      "admissible_values": [
+        "git",
+        "alternative"
+      ]
+    },
+    "topology_reality": {
+      "admissible_values": [
+        "two_physical_hosts",
+        "two_vms",
+        "containers_substitute",
+        "single_host_two_processes"
+      ]
+    }
+  },
+  "identities": {
+    "tenant": "tenant-sablefin",
+    "humans": [
+      {
+        "id": "u.dara.okonjo",
+        "role": "emitting-side approver",
+        "grants": [
+          "repo-tidewater-api:lib/sync/:write"
+        ]
+      },
+      {
+        "id": "u.piet.vandal",
+        "role": "receiving-side operator",
+        "grants": [
+          "repo-tidewater-api:lib/sync/:read"
+        ]
+      }
+    ],
+    "services": [
+      {
+        "id": "svc.quill-emit@cinder",
+        "host": "host-cinder-07",
+        "store": "store-cinder-main",
+        "credential": "cred-cinder-w4"
+      },
+      {
+        "id": "svc.tally-intake@drift",
+        "host": "host-drift-11",
+        "store": "store-drift-main",
+        "credential": "cred-drift-r2"
+      }
+    ],
+    "hosts": [
+      {
+        "id": "host-cinder-07",
+        "role": "emitter",
+        "computer": "A"
+      },
+      {
+        "id": "host-drift-11",
+        "role": "receiver",
+        "computer": "B"
+      }
+    ],
+    "stores": [
+      {
+        "id": "store-cinder-main",
+        "host": "host-cinder-07",
+        "connected_to": []
+      },
+      {
+        "id": "store-drift-main",
+        "host": "host-drift-11",
+        "connected_to": []
+      }
+    ],
+    "channel": {
+      "id": "chan-tidewater",
+      "emitter": "svc.quill-emit@cinder",
+      "receiver": "svc.tally-intake@drift"
+    },
+    "repositories": [
+      {
+        "id": "repo-tidewater-api",
+        "scopes": [
+          "repo-tidewater-api:lib/sync/"
+        ],
+        "revisions": [
+          "r-5f02",
+          "r-be71"
+        ],
+        "head": "r-be71"
+      },
+      {
+        "id": "repo-saltmarsh-console",
+        "scopes": [
+          "repo-saltmarsh-console:app/reports/"
+        ],
+        "revisions": [
+          "r-2ad9"
+        ],
+        "head": "r-2ad9",
+        "receiver_grant": false
+      }
+    ],
+    "sessions": [
+      {
+        "id": "sess-C2",
+        "host": "host-cinder-07",
+        "phase": "initial"
+      },
+      {
+        "id": "sess-C5",
+        "host": "host-cinder-07",
+        "phase": "after restart"
+      },
+      {
+        "id": "sess-D9",
+        "host": "host-drift-11",
+        "phase": "initial"
+      },
+      {
+        "id": "sess-D12",
+        "host": "host-drift-11",
+        "phase": "after restart"
+      }
+    ]
+  },
+  "persistence_boundaries": {
+    "W1": "record committed to emitting store",
+    "W2": "send-queue entry committed",
+    "W3": "serialized bytes and digest durable",
+    "W4": "transport reports handoff succeeded",
+    "W5": "receiving side commits validated record",
+    "W6": "receiving side updates derived index",
+    "W7": "emitting side files the receipt"
+  },
+  "flow_state_vocabulary": [
+    "held_local",
+    "enqueued",
+    "serialized",
+    "handoff_unknown",
+    "handed_off",
+    "taken_in",
+    "indexed",
+    "receipted",
+    "conflicted",
+    "refused",
+    "abandoned_partial"
+  ],
+  "events": [
+    {
+      "event_id": "X-A1",
+      "author": "svc.quill-emit@cinder",
+      "on_behalf_of": "u.dara.okonjo",
+      "evidence_class": "reported_worker_result",
+      "scope": "repo-tidewater-api:lib/sync/",
+      "revision": "r-be71",
+      "byte_len": 121,
+      "payload_digest": "sha256:1fe8b3440ed3b9c47eacb53c87a1fadc7b3abb51a04972fa0cf778b66b347f80",
+      "bytes_escaped": "{\"kind\":\"decision\",\"scope\":\"repo-tidewater-api:lib/sync/\",\"rev\":\"r-be71\",\"text\":\"page cursors are opaque to the caller\"}\\n"
+    },
+    {
+      "event_id": "X-A2",
+      "author": "svc.quill-emit@cinder",
+      "on_behalf_of": "u.dara.okonjo",
+      "evidence_class": "reported_worker_result",
+      "scope": "repo-tidewater-api:lib/sync/",
+      "revision": "r-be71",
+      "byte_len": 153,
+      "payload_digest": "sha256:9a23f02d4f5b5c502cb4cf9d53f1aa6b275d2bb1b161189e9956aa06116784bf",
+      "bytes_escaped": "{\"kind\":\"finding\",\"scope\":\"repo-tidewater-api:lib/sync/\",\"rev\":\"r-be71\",\"text\":\"backfill skips the last page when total is a multiple of the page size\"}\\n"
+    },
+    {
+      "event_id": "X-A3",
+      "author": "svc.quill-emit@cinder",
+      "on_behalf_of": "u.dara.okonjo",
+      "evidence_class": "verified_observation",
+      "scope": "repo-tidewater-api:lib/sync/",
+      "revision": "r-be71",
+      "byte_len": 131,
+      "payload_digest": "sha256:2956dd5a58a827a9038cd11a792c57ee3a461bbd2e7b33d6bdffb02a42570a24",
+      "bytes_escaped": "\\ufeff{\"kind\":\"review\",\"scope\":\"repo-tidewater-api:lib/sync/\",\"rev\":\"r-be71\",\"text\":\"manifest is written with CRLF by the exporter\"}\\r\\n",
+      "byte_quirks": [
+        "utf8_bom",
+        "crlf_terminator"
+      ]
+    },
+    {
+      "event_id": "X-A4",
+      "author": "svc.quill-emit@cinder",
+      "on_behalf_of": "u.dara.okonjo",
+      "evidence_class": "reported_worker_result",
+      "scope": "repo-tidewater-api:lib/sync/",
+      "revision": "r-be71",
+      "byte_len": 134,
+      "payload_digest": "sha256:d461b6e8c35de1289f6e332606f3573103619fc8a4bce2e5a6796a3d1481699e",
+      "bytes_escaped": "{\"kind\":\"finding\",\"scope\":\"repo-tidewater-api:lib/sync/\",\"rev\":\"r-be71\",\"text\":\"resume token expires before the retry window closes\"}\\n"
+    },
+    {
+      "event_id": "X-A5",
+      "author": "svc.quill-emit@cinder",
+      "on_behalf_of": "u.dara.okonjo",
+      "evidence_class": "reported_worker_result",
+      "scope": "repo-tidewater-api:lib/sync/",
+      "revision": "r-be71",
+      "byte_len": 128,
+      "payload_digest": "sha256:87bce5a33bbab37ec7b7b81e4aec36a8dd775e35f4f4bca9e4a2395d9caa98d5",
+      "bytes_escaped": "{\"kind\":\"decision\",\"scope\":\"repo-tidewater-api:lib/sync/\",\"rev\":\"r-be71\",\"text\":\"resume tokens are refreshed on every attempt\"}\\n"
+    },
+    {
+      "event_id": "X-A6",
+      "author": "svc.quill-emit@cinder",
+      "on_behalf_of": "u.dara.okonjo",
+      "evidence_class": "reported_worker_result",
+      "scope": "repo-tidewater-api:lib/sync/",
+      "revision": "r-be71",
+      "byte_len": 123,
+      "payload_digest": "sha256:dcd1b71ae88426e6a0b1e531f7b276360b9dbfc94296bc43771c3cf5a67a21cf",
+      "bytes_escaped": "{\"kind\":\"finding\",\"scope\":\"repo-tidewater-api:lib/sync/\",\"rev\":\"r-be71\",\"text\":\"shard rebalance loses the in-flight page\"}\\n"
+    },
+    {
+      "event_id": "X-A7",
+      "author": "svc.quill-emit@cinder",
+      "on_behalf_of": "u.dara.okonjo",
+      "evidence_class": "verified_observation",
+      "scope": "repo-tidewater-api:lib/sync/",
+      "revision": "r-be71",
+      "byte_len": 120,
+      "payload_digest": "sha256:f430a9e0eefca6d0de4168dd02cc65af2aff0c6a30441d8bfd9fccbd53f02af2",
+      "bytes_escaped": "{\"kind\":\"review\",\"scope\":\"repo-tidewater-api:lib/sync/\",\"rev\":\"r-be71\",\"text\":\"receipt table has no unique constraint\"}\\n"
+    },
+    {
+      "event_id": "X-A8",
+      "author": "svc.quill-emit@cinder",
+      "on_behalf_of": "u.dara.okonjo",
+      "evidence_class": "reported_worker_result",
+      "scope": "repo-tidewater-api:lib/sync/",
+      "revision": "r-be71",
+      "byte_len": 134,
+      "payload_digest": "sha256:d230ee4f7a5b620a63099a9b7b4967b25cfd6399119ff18d6ad890d5cce7a111",
+      "bytes_escaped": "{\"kind\":\"decision\",\"scope\":\"repo-tidewater-api:lib/sync/\",\"rev\":\"r-be71\",\"text\":\"receipts are keyed by event id and digest together\"}\\n"
+    },
+    {
+      "event_id": "X-A9",
+      "submitted_as_event_id": "X-A3",
+      "author": "svc.quill-emit@cinder",
+      "evidence_class": "verified_observation",
+      "scope": "repo-tidewater-api:lib/sync/",
+      "revision": "r-be71",
+      "byte_len": 129,
+      "payload_digest": "sha256:bc25e086425ef212e0cc67668b640c357642602eb66d022a0cfb0023d9f6c3d8",
+      "bytes_escaped": "\\ufeff{\"kind\":\"review\",\"scope\":\"repo-tidewater-api:lib/sync/\",\"rev\":\"r-be71\",\"text\":\"manifest is written with LF by the exporter\"}\\r\\n"
+    },
+    {
+      "event_id": "X-B1",
+      "author": "svc.quill-emit@cinder",
+      "evidence_class": "reported_worker_result",
+      "scope": "repo-saltmarsh-console:app/reports/",
+      "revision": "r-2ad9",
+      "byte_len": 127,
+      "payload_digest": "sha256:6ffad8af8bde13f29685be7174187398f9093c22e9913007ab06be3df07b794f",
+      "bytes_escaped": "{\"kind\":\"finding\",\"scope\":\"repo-saltmarsh-console:app/reports/\",\"rev\":\"r-2ad9\",\"text\":\"export button ignores the date filter\"}\\n",
+      "receiver_authorized": false
+    },
+    {
+      "event_id": "X-C1",
+      "author": "svc.quill-emit@cinder",
+      "on_behalf_of": "u.dara.okonjo",
+      "evidence_class": "reported_worker_result",
+      "scope": "repo-tidewater-api:lib/sync/",
+      "revision": "r-be71",
+      "byte_len": 116,
+      "payload_digest": "sha256:8426edea888847d2dadac19cf62f466089b5994ba10b05b579df9b50ff8233c9",
+      "bytes_escaped": "{\"kind\":\"decision\",\"scope\":\"repo-tidewater-api:lib/sync/\",\"rev\":\"r-be71\",\"text\":\"the sync loop owns page ordering\"}\\n"
+    },
+    {
+      "event_id": "X-D1",
+      "author": "svc.quill-emit@cinder",
+      "evidence_class": "model_inference",
+      "human_authenticated": false,
+      "scope": "repo-tidewater-api:lib/sync/",
+      "revision": "r-be71",
+      "byte_len": 147,
+      "payload_digest": "sha256:391849d6744faf107d615adf593af46f0ec2c787454b02f47c27bf2fadeb80ec",
+      "bytes_escaped": "{\"kind\":\"note\",\"scope\":\"repo-tidewater-api:lib/sync/\",\"rev\":\"r-be71\",\"text\":\"All outstanding transfers were confirmed complete on the 09:40 run.\"}\\n"
+    }
+  ],
+  "trial_order": [
+    {
+      "trial": "H-1",
+      "event": "X-A7",
+      "target": "receiver",
+      "after_step": "W6",
+      "before_step": "W7",
+      "method": "SIGKILL + cold start"
+    },
+    {
+      "trial": "H-2",
+      "event": "X-A6",
+      "target": "emitter",
+      "after_step": "W1",
+      "before_step": "W2",
+      "method": "SIGKILL + cold start"
+    },
+    {
+      "trial": "H-3",
+      "event": "X-A3",
+      "target": "emitter",
+      "after_step": "W3",
+      "before_step": "W4",
+      "method": "SIGKILL + cold start"
+    },
+    {
+      "trial": "H-4",
+      "event": "X-A2",
+      "target": "receiver",
+      "after_step": "W5",
+      "before_step": "W6",
+      "method": "SIGKILL + cold start"
+    },
+    {
+      "trial": "H-5",
+      "event": "X-A4",
+      "target": "emitter",
+      "during_step": "W4",
+      "condition": "receiver holds bytes durably; emitter never learns the outcome",
+      "method": "SIGKILL + cold start"
+    },
+    {
+      "trial": "H-6",
+      "event": "X-A1",
+      "target": "emitter",
+      "after_step": "W2",
+      "before_step": "W3",
+      "method": "SIGKILL + cold start"
+    },
+    {
+      "trial": "H-7",
+      "event": "X-A5",
+      "target": "receiver",
+      "during_step": "W5",
+      "condition": "torn record",
+      "method": "SIGKILL + cold start"
+    },
+    {
+      "trial": "H-8",
+      "event": "X-A8",
+      "target": "emitter",
+      "after_step": "W7",
+      "method": "SIGKILL + cold start",
+      "expectation": "no-op"
+    },
+    {
+      "trial": "H-9",
+      "event": "X-A4",
+      "action": "replay 2x byte-identical from sess-C5 into the live receiver"
+    },
+    {
+      "trial": "H-10",
+      "event": "X-A9",
+      "action": "submit conflicting bytes under X-A3's identifier"
+    },
+    {
+      "trial": "H-11",
+      "event": "X-B1",
+      "action": "push out-of-scope event while the receiver drains its recovery backlog"
+    },
+    {
+      "trial": "H-12",
+      "event": "X-C1",
+      "action": "clean end-to-end run"
+    },
+    {
+      "trial": "H-13",
+      "event": "X-D1",
+      "action": "file the model-written note after the kill trials"
+    },
+    {
+      "trial": "H-CLOSE",
+      "event": "X-A3b",
+      "target": "emitter",
+      "after_step": "W3",
+      "before_step": "W4",
+      "method": "close socket only, process stays alive"
+    }
+  ],
+  "expected_end_states": {
+    "X-A1": {
+      "emitter_state": "receipted",
+      "receiver_records": 1,
+      "digest_match": true,
+      "trail_shows_interrupted_attempt": true
+    },
+    "X-A2": {
+      "receiver_record_visible_after_restart": true,
+      "index_may_be_stale": true,
+      "index_lag_or_rebuild_reported": true,
+      "emitter_state": "receipted",
+      "receiver_records": 1
+    },
+    "X-A3": {
+      "emitter_state": "receipted",
+      "receiver_records": 1,
+      "receiver_byte_len": 131,
+      "receiver_digest": "sha256:2956dd5a58a827a9038cd11a792c57ee3a461bbd2e7b33d6bdffb02a42570a24",
+      "bom_preserved": true,
+      "crlf_preserved": true
+    },
+    "X-A4": {
+      "transient_state_after_restart": "handoff_unknown",
+      "final_emitter_state": "receipted",
+      "receiver_records": 1,
+      "semantic_effect_count": 1,
+      "delivery_attempts_in_trail": 3,
+      "duplicate_suppressed_outcomes": 2,
+      "receipt_identity_stable_across_replays": true,
+      "gate_verdict_while_handoff_unknown": "deny"
+    },
+    "X-A5": {
+      "receiver_record_state_allowed": [
+        "absent_and_redrivable",
+        "present_and_complete"
+      ],
+      "forbidden": "present_with_digest_mismatch_reported_taken_in",
+      "final_emitter_state": "receipted",
+      "receiver_records_final": 1
+    },
+    "X-A6": {
+      "emitter_state_if_boundary_W1W2atomic": "receipted",
+      "emitter_state_if_boundary_W2": "held_local",
+      "receiver_records_if_boundary_W1W2atomic": 1,
+      "receiver_records_if_boundary_W2": 0,
+      "must_appear_in_gaps_if_boundary_W2": true,
+      "gate_verdict_if_held_local": "deny"
+    },
+    "X-A7": {
+      "final_emitter_state": "receipted",
+      "receiver_records": 1,
+      "receipt_reissued_without_duplicate_intake": true
+    },
+    "X-A8": {
+      "emitter_state_before_kill": "receipted",
+      "emitter_state_after_restart": "receipted",
+      "new_attempts_created_by_restart": 0,
+      "receipt_ref_changed": false
+    },
+    "X-A9": {
+      "terminal_state": "conflicted",
+      "receiver_record_for_X-A3_unchanged": true,
+      "both_digests_retrievable_in_trail": true,
+      "appears_in_ops_rejected": true
+    },
+    "X-B1": {
+      "taken_in": false,
+      "in_receiver_current_view": false,
+      "in_any_receiver_index_cache_or_diagnostic": false,
+      "appears_in_ops_scope_denials": true
+    },
+    "X-C1": {
+      "emitter_state": "receipted",
+      "receiver_state": "indexed",
+      "receiver_records": 1,
+      "digest_match": true,
+      "gate_verdict": "allow",
+      "role": "positive_control_run_void_if_fails"
+    },
+    "X-D1": {
+      "evidence_class_after_storage": "model_inference",
+      "flow_states_changed_by_it": 0,
+      "gaps_cleared_by_it": 0,
+      "gate_verdicts_influenced": 0
+    }
+  },
+  "global_end_state_assertions": {
+    "receipted_without_receiver_record": 0,
+    "receipted_events_lost_across_restart": 0,
+    "cross_scope_records_in_receiver_store": 0,
+    "exactly_once_network_delivery_claims_in_output": 0,
+    "emitter_event_id_set_preserved_across_every_restart": true,
+    "ops_incomplete_effect_count_equals_derived_from_flow_view": true
+  },
+  "quiescence_definition": {
+    "no_state_change_window_seconds": 120,
+    "max_wall_clock_per_trial_seconds": 900
+  }
+}

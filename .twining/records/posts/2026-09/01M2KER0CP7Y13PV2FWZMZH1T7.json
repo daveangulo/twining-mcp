@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Adversarial review of main..feat/cli-2.17 (c6dbc07): three lenses (MCP behavior neutrality, CLI contract + sandbox safety executing in a scratch copy, refactor quality) then two refuters per finding (13 findings, 26 verdicts, 29 agents, 0 errors, 17 min). Neutrality: all 39 tool names, descriptions, input schemas, surface gating, registration order, error-code mapping (incl. the deliberate 15-tool INTERNAL_ERROR-only asymmetry), sentinel writes (3 sites), maybeResync probe, metrics instrumentation, closure/ctx plumbing verified identical — zero findings. Confirmed and sent for fix: (1) BLOCKER process.exit() races onnxruntime-node's thread pool → exit 134 on success whenever .twining/models is cached (reproduced 3/3 by both refuters against dist/cli/twining.js); (2) MAJOR unknown flags silently ignored, payload dropped — a typo turns a dry run into an argument-free destructive call (archive-everything); (3) success envelope omits which store was written (linked-worktree redirect invisible); (4) capabilities echoes relative --project verbatim; (5) surface omits the tools.mode gate on lifecycle/graph; (6) count errors in CHANGELOG (\"nine\" → 15 handlers) and docs/CLI.md (\"16\" → 24 hidden commands), ErrorMode comment omits twining_status, src/index.ts keeps its own version copy; (7) Embedder.getInstance ignores offline when an instance exists (nit). Refuted: docs/CLI.md STORE_UNWRITABLE remedies \"fork the store\" (promise scoped to the CLI's own behavior); the stale committed plugin bundle is a release-step matter (bump script rebuilds). Standing practice holds: pre-merge review again caught a real blocker in the same session's own work.",
+  "entry_type": "finding",
+  "id": "01M2KER0CP7Y13PV2FWZMZH1T7",
+  "provenance": {
+    "recorded_at": "2026-09-15T21:14:39.786Z"
+  },
+  "scope": "src/cli/",
+  "summary": "CLI review wf_49f1131a-59e: neutrality 0 findings (19 identical); BLOCKER exit-134 on success with cached ONNX model; MAJOR silent unknown flags; 3 refuted; fixes sent to the lane",
+  "tags": [
+    "review",
+    "cli",
+    "foundation-programme"
+  ],
+  "timestamp": "2026-09-15T21:14:39.894Z"
+}

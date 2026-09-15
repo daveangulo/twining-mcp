@@ -28,7 +28,9 @@ export type ValidationCode =
   | "TARGET_RECORD_MISMATCH"
   | "SIGNATURE_REQUIRED"
   | "SIGNATURE_INVALID"
-  | "SIGNER_UNKNOWN";
+  | "SIGNER_UNKNOWN"
+  /** Raised by stores, not by validateEvent: same id, different digest (R07). */
+  | "CONFLICTING_DUPLICATE";
 
 export type ValidationResult =
   | { ok: true; event: EventEnvelope }

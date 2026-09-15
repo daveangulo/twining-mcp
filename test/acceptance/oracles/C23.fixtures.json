@@ -1,0 +1,427 @@
+{
+  "case_id": "C23",
+  "fixture_set": "dev",
+  "oracle_version": "1.0.0",
+  "authored_before_observation": true,
+  "declared_envelope": {
+    "note": "Fixed and published before the measured run; any change requires a documented source/requirement reason per acceptance-cases.md preamble.",
+    "queue_capacity_inflight": 256,
+    "declared_sustained_admit_rate_eps": 40,
+    "offered_aggregate_rate_eps": 200,
+    "writers": 8,
+    "events_per_writer": 250,
+    "total_submitted": 2000,
+    "corpus_tier_records_preloaded": 1000,
+    "p95_local_durable_capture_ms_target": 100,
+    "p95_async_index_ms_target": 30000,
+    "index_fresh_threshold_ms": 30000,
+    "enforcement_gate_max_attempts": 3,
+    "enforcement_gate_max_wall_ms": 10000,
+    "tokenizer": "declared-by-implementation-before-run",
+    "clock_skew_injected_ms": {
+      "host_nimbus_01": 0,
+      "host_nimbus_02": 2400,
+      "host_cinder_03": -1800
+    }
+  },
+  "identities": {
+    "tenants": [
+      {
+        "id": "tnt-quillon",
+        "label": "Quillon Works",
+        "in_scope": true
+      },
+      {
+        "id": "tnt-mirefield",
+        "label": "Mirefield Labs",
+        "in_scope": false
+      }
+    ],
+    "teams": [
+      {
+        "id": "team-harbor",
+        "tenant": "tnt-quillon"
+      },
+      {
+        "id": "team-drift",
+        "tenant": "tnt-mirefield"
+      }
+    ],
+    "humans": [
+      {
+        "id": "hum-marek",
+        "tenant": "tnt-quillon",
+        "role": "publisher",
+        "may_author_human_authorization": true
+      },
+      {
+        "id": "hum-tova",
+        "tenant": "tnt-quillon",
+        "role": "reviewer",
+        "may_author_human_authorization": true
+      },
+      {
+        "id": "hum-esker",
+        "tenant": "tnt-mirefield",
+        "role": "publisher",
+        "may_author_human_authorization": true
+      }
+    ],
+    "agent_principals": [
+      {
+        "id": "svc-scribe-a1",
+        "host": "host-nimbus-01",
+        "writes_to": "store-harbor-main"
+      },
+      {
+        "id": "svc-scribe-a2",
+        "host": "host-nimbus-01",
+        "writes_to": "store-harbor-main"
+      },
+      {
+        "id": "svc-scribe-a3",
+        "host": "host-nimbus-01",
+        "writes_to": "store-harbor-main"
+      },
+      {
+        "id": "svc-scribe-b1",
+        "host": "host-nimbus-02",
+        "writes_to": "store-harbor-edge"
+      },
+      {
+        "id": "svc-scribe-b2",
+        "host": "host-nimbus-02",
+        "writes_to": "store-harbor-edge"
+      },
+      {
+        "id": "svc-scribe-b3",
+        "host": "host-nimbus-02",
+        "writes_to": "store-harbor-edge"
+      },
+      {
+        "id": "svc-scribe-c1",
+        "host": "host-cinder-03",
+        "writes_to": "store-harbor-edge"
+      },
+      {
+        "id": "svc-scribe-c2",
+        "host": "host-cinder-03",
+        "writes_to": "store-harbor-edge"
+      }
+    ],
+    "hosts": [
+      {
+        "id": "host-nimbus-01",
+        "kind": "writer",
+        "backend": "backend-alpha"
+      },
+      {
+        "id": "host-nimbus-02",
+        "kind": "writer",
+        "backend": "backend-alpha"
+      },
+      {
+        "id": "host-cinder-03",
+        "kind": "writer+consumer",
+        "backend": "backend-beta"
+      }
+    ],
+    "stores": [
+      {
+        "id": "store-harbor-main",
+        "tenant": "tnt-quillon",
+        "hosts": [
+          "host-nimbus-01"
+        ]
+      },
+      {
+        "id": "store-harbor-edge",
+        "tenant": "tnt-quillon",
+        "hosts": [
+          "host-nimbus-02",
+          "host-cinder-03"
+        ]
+      },
+      {
+        "id": "store-drift-main",
+        "tenant": "tnt-mirefield",
+        "hosts": [
+          "host-nimbus-02"
+        ],
+        "note": "co-resident on a writer host; must never be read by Quillon queries"
+      }
+    ],
+    "repositories": [
+      {
+        "id": "repo-atlas-ingest",
+        "tenant": "tnt-quillon",
+        "path_label": "atlas/ingest",
+        "query_scope": true
+      },
+      {
+        "id": "repo-atlas-web",
+        "tenant": "tnt-quillon",
+        "path_label": "atlas/web",
+        "query_scope": false
+      },
+      {
+        "id": "repo-drift-core",
+        "tenant": "tnt-mirefield",
+        "path_label": "atlas/ingest",
+        "query_scope": false,
+        "note": "identical path label, different tenant"
+      }
+    ],
+    "derived_services": [
+      {
+        "id": "svc-embed",
+        "path": "dense/semantic"
+      },
+      {
+        "id": "svc-extract",
+        "path": "entity+relation extraction and summarization"
+      },
+      {
+        "id": "svc-rerank",
+        "path": "reranking"
+      }
+    ],
+    "receiving_sessions": [
+      {
+        "id": "sess-cinder-77",
+        "host": "host-cinder-03",
+        "turns": [
+          "turn-77-01",
+          "turn-77-02",
+          "turn-77-03"
+        ]
+      }
+    ]
+  },
+  "seed_records": [
+    {
+      "record_id": "REC-CTRL-BYTES",
+      "event_id": "EV-CTRL-BYTES-0001",
+      "revision": "rev-1",
+      "tenant": "tnt-quillon",
+      "repository": "repo-atlas-ingest",
+      "scope": "atlas/ingest/retry/",
+      "evidence_class": "independently_verified_observation",
+      "author": "hum-tova",
+      "observer": "svc-scribe-a1",
+      "written_at_phase": "T1_healthy_baseline",
+      "payload_description": "UTF-8 BOM, CRLF line endings, trailing CRLF",
+      "payload_bytes_len": 95,
+      "payload_sha256": "5b20106bf3e2524ed8ba446f42b0be88f0642a3d5add5ab904549606d29da242",
+      "encoding": "utf-8-with-bom",
+      "newline": "CRLF",
+      "normalized_variant_sha256_must_never_be_returned": "8ff0e8df6cc3c22a56fc9268c932cfbcda9a1107c7e8bc7252bd4f470f1dbadb"
+    },
+    {
+      "record_id": "REC-PREREQ",
+      "event_id": "EV-PREREQ-R1",
+      "revision": "rev-1",
+      "tenant": "tnt-quillon",
+      "repository": "repo-atlas-ingest",
+      "scope": "atlas/ingest/publish/",
+      "evidence_class": "authenticated_human_authorization",
+      "author": "hum-marek",
+      "written_at_phase": "T1_healthy_baseline",
+      "payload_bytes_len": 54,
+      "payload_sha256": "bd167b36a05506a0a64f18fdf289a2b816cac246d01dbec90a0a921df928f573",
+      "encoding": "utf-8",
+      "newline": "LF"
+    },
+    {
+      "record_id": "REC-PREREQ",
+      "event_id": "EV-PREREQ-R2",
+      "revision": "rev-2",
+      "supersedes": "EV-PREREQ-R1",
+      "tenant": "tnt-quillon",
+      "repository": "repo-atlas-ingest",
+      "scope": "atlas/ingest/publish/",
+      "evidence_class": "authenticated_human_authorization",
+      "author": "hum-marek",
+      "written_at_phase": "T5_mid_saturation",
+      "payload_bytes_len": 78,
+      "payload_sha256": "63fbd8474055044efdc6eface35529bde9ce6d407aeeea754701e534e09a56d5",
+      "encoding": "utf-8",
+      "newline": "LF"
+    },
+    {
+      "record_id": "REC-LESSON-WEB",
+      "event_id": "EV-LESSON-WEB-0001",
+      "revision": "rev-1",
+      "tenant": "tnt-quillon",
+      "repository": "repo-atlas-web",
+      "scope": "atlas/web/backpressure/",
+      "evidence_class": "independently_verified_observation",
+      "author": "hum-tova",
+      "written_at_phase": "T0_preload",
+      "role": "positive control for explicitly authorized cross-scope lesson mode only"
+    },
+    {
+      "record_id": "REC-INFER-SUMMARY",
+      "event_id": "EV-INFER-SUMMARY-0001",
+      "revision": "rev-1",
+      "tenant": "tnt-quillon",
+      "repository": "repo-atlas-ingest",
+      "scope": "atlas/ingest/publish/",
+      "evidence_class": "model_inference",
+      "producer": "svc-extract",
+      "written_at_phase": "T4_pre_outage",
+      "claim_text": "Backlog drained at 09:41; the publisher signed off on proceeding without the catalog-output review during the saturation window.",
+      "role": "unverified model-produced claim; must remain model_inference and must not qualify ACT-SKIP-GATE or create human authorization"
+    }
+  ],
+  "decoys": [
+    {
+      "record_id": "DEC-MIREFIELD-1",
+      "tenant": "tnt-mirefield",
+      "repository": "repo-drift-core",
+      "scope": "atlas/ingest/retry/",
+      "note": "near-identical wording to the in-scope retry finding; high lexical and dense similarity"
+    },
+    {
+      "record_id": "DEC-MIREFIELD-2",
+      "tenant": "tnt-mirefield",
+      "repository": "repo-drift-core",
+      "scope": "atlas/ingest/publish/",
+      "note": "seeded into warm caches and the diagnostic endpoint fixture before saturation"
+    },
+    {
+      "record_id": "DEC-WEB-1",
+      "tenant": "tnt-quillon",
+      "repository": "repo-atlas-web",
+      "scope": "atlas/web/publish/",
+      "note": "in-tenant, out-of-query-scope; must appear only under the explicit cross-scope lesson mode"
+    }
+  ],
+  "load_plan": {
+    "phase": "T5_saturation",
+    "writers": 8,
+    "events_per_writer": 250,
+    "total_submitted": 2000,
+    "deliberate_identical_retries": {
+      "count": 40,
+      "same_event_id_and_digest": true,
+      "of_event_ids": "EV-LOAD-A1-0007..EV-LOAD-C2-0233 (40 listed in the harness manifest)"
+    },
+    "deliberate_conflicting_reuses": {
+      "count": 3,
+      "same_event_id_different_bytes": true,
+      "event_ids": [
+        "EV-LOAD-A1-0007",
+        "EV-LOAD-B2-0100",
+        "EV-LOAD-C1-0199"
+      ]
+    },
+    "reordering": {
+      "out_of_order_delivery_pairs": 60,
+      "correction_before_predecessor_pairs": 5
+    },
+    "restart": {
+      "kill_signal": "SIGKILL",
+      "targets": [
+        "writer svc-scribe-b2 mid-submit",
+        "consumer/admitter on host-cinder-03 mid-admit",
+        "indexer mid-index"
+      ],
+      "restart_process_not_connection": true
+    }
+  },
+  "fault_plan": [
+    {
+      "step": "T6",
+      "action": "stop svc-embed",
+      "duration_s": 120
+    },
+    {
+      "step": "T7",
+      "action": "stop svc-extract",
+      "duration_s": 120
+    },
+    {
+      "step": "T8",
+      "action": "stop svc-rerank",
+      "duration_s": 120
+    },
+    {
+      "step": "T9",
+      "action": "all three down simultaneously",
+      "duration_s": 180
+    },
+    {
+      "step": "T10",
+      "action": "index write failure injected (disk EIO) on 5% of index writes",
+      "duration_s": 120
+    },
+    {
+      "step": "T11",
+      "action": "restore all derived services; allow catch-up",
+      "duration_s": 600
+    }
+  ],
+  "actions_under_test": [
+    {
+      "action_id": "ACT-PUBLISH-CATALOG",
+      "required_facts": [
+        "REC-PREREQ@current"
+      ],
+      "expected_qualified_during_outage": true,
+      "reason": "prerequisite is an exact durable record on a non-derived path"
+    },
+    {
+      "action_id": "ACT-PROMOTE-RELEASE",
+      "required_facts": [
+        "REC-PREREQ@current",
+        "DERIVED-RELATION-SET:atlas/ingest/publish/"
+      ],
+      "expected_qualified_during_outage": false,
+      "reason": "a required fact lives only on an unavailable extraction-derived path; an incomplete packet cannot qualify"
+    },
+    {
+      "action_id": "ACT-SKIP-GATE",
+      "required_facts": [
+        "authenticated_human_authorization to bypass the record gate"
+      ],
+      "expected_qualified_ever": false,
+      "reason": "only REC-INFER-SUMMARY asserts it, and it is model inference"
+    }
+  ],
+  "expected_end_state": {
+    "deterministic": {
+      "cross_scope_results_all_modes_all_phases": 0,
+      "duplicate_semantic_effects_from_40_identical_retries": 0,
+      "distinct_records_created_by_40_identical_retries": 0,
+      "conflicting_reuse_admitted": 0,
+      "conflicting_reuse_reported_as_explicit_conflict": 3,
+      "acknowledged_events_missing_after_restart_and_recovery": 0,
+      "recalls_during_outage_labeled_degraded_false": 0,
+      "human_authorization_records_created_by_model_inference": 0,
+      "ACT_PUBLISH_CATALOG_qualified_during_outage": true,
+      "ACT_PROMOTE_RELEASE_qualified_during_outage": false,
+      "ACT_SKIP_GATE_qualified_any_phase": false,
+      "REC_CTRL_BYTES_sha256_on_exact_id_recall_during_T9": "5b20106bf3e2524ed8ba446f42b0be88f0642a3d5add5ab904549606d29da242",
+      "REC_CTRL_BYTES_bytes_len": 95,
+      "current_applicable_REC_PREREQ_after_T11": "rev-2",
+      "historical_view_REC_PREREQ_after_T11": [
+        "rev-1",
+        "rev-2"
+      ],
+      "enforcement_gate_attempts_max": 3,
+      "enforcement_gate_terminal_decision_records_per_commit_attempt": 1,
+      "cross_scope_lesson_mode_returns_REC_LESSON_WEB": true
+    },
+    "relational": {
+      "ledger": "submitted(2000) == acked + refused_backpressure + reported_unknown",
+      "no_silent_bucket": "every reported_unknown event id appears in observability.gaps with a cursor and a reason",
+      "recoverable": "set(acked event ids) subset-of set(recoverable-by-exact-id after restart) and the set difference is empty",
+      "backpressure_visible": "refused_backpressure > 0 and every refusal carries a retryable outcome code, the queue depth at refusal, and no ack timestamp",
+      "queue_depth_peak": "observed peak queue_depth >= 230 (0.9 * 256) and queue_oldest_age_ms is non-null for every sample during T5-T11",
+      "index_freshness": "index_freshness == stale with a numeric lag_ms during T5-T10, and == fresh with lag_ms <= 30000 by end of T11",
+      "capture_latency": "either p95 local durable capture <= 100 ms, or the over-envelope condition is explicitly reported in observability for the whole interval in which it is exceeded",
+      "packet_proof": "for each of turn-77-01..03, persisted emitted-packet hash == hash of the bytes the receiving turn reports, and the packet separates selected / emitted / delivered / unavailable"
+    }
+  }
+}

@@ -3,8 +3,8 @@
   "id": "01M2KCECD7T252MZ587SY5JF0J",
   "name": "src/contracts/records.ts",
   "properties": {
-    "scope": "src/contracts/"
+    "scope": "src/contracts/,src/events/"
   },
   "type": "file",
-  "updated_at": "2026-09-15T20:34:28.318Z"
+  "updated_at": "2026-09-15T21:35:41.344Z"
 }
