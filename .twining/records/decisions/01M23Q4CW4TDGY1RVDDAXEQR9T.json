@@ -1,0 +1,35 @@
+{
+  "affected_files": [
+    "scripts/build-codex-plugin.mjs",
+    "plugins/twining/",
+    "docs/plans/2026-09-09-codex-plugin.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": false,
+  "assumptions": [
+    "Request is for a repository distribution equivalent to the existing Claude plugin, not only a personal installation.",
+    "macOS/Linux or WSL with Node >=22.13 and bash matches the existing launcher support boundary.",
+    "Plugin version tracks the existing Claude plugin release version."
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Planned a generated Codex distribution of the Claude Twining plugin, preserving launcher and lifecycle behavior with focused platform adapters.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M23Q4CW4TDGY1RVDDAXEQR9T",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d7860e060ddf79e9cca2cc8a0bd9179985c04eee",
+    "recorded_at": "2026-09-09T18:33:23.569Z"
+  },
+  "rationale": "User requested equivalence. Native Windows launcher, lifecycle redesign and promotion of default-off tools are independent product decisions. Codex command/agent workflows will be skills with explicit instructions, not claims that Claude named agent types are registered.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "plugins/twining/",
+  "status": "active",
+  "summary": "Chose to retain the existing POSIX launcher, full-surface opt-in and hook guardrails",
+  "timestamp": "2026-09-09T18:33:23.588Z"
+}

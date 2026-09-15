@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-09T18:33:23.635Z",
+  "id": "01M23Q4CXKJFD47HC6G4AXCK98",
+  "properties": {
+    "decision_summary": "Chose to retain the existing POSIX launcher, full-surface opt-in and hook guardrails",
+    "origin": "derived"
+  },
+  "source": "01M23Q4CVCHQHJYZ2BCVT4WRTF",
+  "target": "01M23Q4CXCRFD05RHTSMSWJJRM",
+  "type": "decided_by"
+}

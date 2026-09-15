@@ -378,6 +378,54 @@ npx twining-mcp validate-records    # read-only preflight for .twining/records: 
 
 Requires Node >= 22.13 (`node:sqlite`) for both the sqlite backend and the `migrate` command. See [docs/FOUNDATION-PLAN.md](docs/FOUNDATION-PLAN.md) (W3) for design details.
 
+## CLI
+
+Twining also ships a `twining` command, so an agent that cannot reach an MCP
+server can still use Twining from a shell — Codex sandboxes (no network, no
+way for a plugin to put anything on `PATH`) and enterprise setups that
+allowlist exact command identities. It is not a second implementation: the CLI
+and the MCP server are two front ends over one shared command core, so the
+command names, input schemas and result JSON are the same on both.
+
+```bash
+npm i -D twining-mcp        # then: npx twining <command>
+# or
+npm i -g twining-mcp        # then: twining <command>
+```
+
+```bash
+twining capabilities                                             # every command + JSON Schema
+twining assemble --json '{"task":"add rate limiting","scope":"src/api/"}'
+twining why      --json '{"scope":"src/api/limiter.ts"}'
+twining post     --json '{"entry_type":"finding","summary":"limiter shares the auth cache"}'
+twining record   --json '{"summary":"Added a token-bucket limiter","findings":["warning: shares the auth cache"]}'
+```
+
+Command names are the `twining_*` tool names with the prefix optional. Input
+comes from `--json`, `--input-file <f>`, or `--stdin`. Every command prints
+**one JSON envelope** on stdout and nothing else; diagnostics go to stderr:
+
+```json
+{"ok":true,"schema_version":"1","server_version":"2.17.0","command":"twining_why","project_root":"/repo","store_dir":"/repo/.twining","result":{"decisions":[]}}
+```
+
+Every success envelope names the store it wrote (`project_root`, `store_dir`),
+so the linked-worktree redirect is never silent. Unrecognized flags are
+refused rather than ignored — a dropped payload must not look like success.
+
+Exit codes: `0` success, `1` the command ran and failed, `2` the invocation was
+wrong (usage, unknown command, bad input). `migrate` and `validate-records`
+work under `twining` too, keeping their own output and exit codes.
+
+A CLI call never reaches the network (no embedding-model download — it falls
+back to keyword search and says so on stderr), starts no dashboard, and sends
+no telemetry. Store resolution is identical to the server's, and if the
+resolved store is not writable it fails loudly with `STORE_UNWRITABLE` rather
+than silently picking a different one.
+
+Full reference — envelope, exit codes, offline behavior, sandbox notes, and
+how hooks should call it: **[docs/CLI.md](docs/CLI.md)**.
+
 ## FAQ
 
 **Does Twining slow down Claude Code?**

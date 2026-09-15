@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-08T23:01:35.847Z",
+  "id": "01M21M2RZ7G7ET64VWZQH6DQ65",
+  "properties": {
+    "decision_summary": "Chose to pull the tool-description byte measurement (cross-host plan §4.4, scheduled for W4) forward into W2 as Task 0",
+    "origin": "derived"
+  },
+  "source": "01M21M2RWY5EAKBRD1FENQ8NVF",
+  "target": "01M21M2RZ46S8B961G8X3NENSR",
+  "type": "decided_by"
+}

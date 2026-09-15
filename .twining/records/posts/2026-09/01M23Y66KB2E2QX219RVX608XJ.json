@@ -1,0 +1,25 @@
+{
+  "agent_id": "main",
+  "detail": "Supersedes assumption A1 in finding 01M23W4P6P7QZ7GJAHCYSGN681 (that the Codex cwd/path limitation was the motivation). Actual driver: the field organization is rolling out a corporate-wide MCP server whitelist; twining-mcp would need to be admitted to keep working in Codex; a CLI interface has been raised (not for the first time) as a solution/workaround, now with urgency. Assessment consequences: (1) governance risk — a CLI framed as a whitelist workaround is a control circumvention in the eyes of the whitelist owner; the defensible framing is that Twining is a local no-network tool governed by the org's shell-command/sandbox policy, and only the field's security owner can confirm that; whitelisting should be pursued in parallel. (2) The whitelist's scope (MCP servers only, or also plugins/marketplaces/hooks) determines distribution: plugin-carried CLI vs npm devDependency + AGENTS.md with no hook enforcement. (3) Codex shell commands run inside the sandbox (likely no network, workspace-write) while MCP servers run outside it — so npx fetches, embedding-model downloads, worktree-redirected stores outside cwd, and dashboard port binding are all at risk for a CLI path. (4) Telemetry must be off/absent in any field CLI build. Research agents launched for Codex enterprise controls and sandbox/hook/skill mechanics.",
+  "entry_type": "need",
+  "id": "01M23Y66KB2E2QX219RVX608XJ",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d7860e060ddf79e9cca2cc8a0bd9179985c04eee",
+    "recorded_at": "2026-09-09T20:36:42.706Z"
+  },
+  "relates_to": [
+    "01M23W4P6P7QZ7GJAHCYSGN681"
+  ],
+  "scope": "plugins/",
+  "summary": "Motivation confirmed by Dave 2026-09-09: field org is imposing a corporate-wide MCP whitelist; a CLI is proposed so Twining can run in Codex without whitelisting. Urgent. Invalidates assumption A1",
+  "tags": [
+    "cli",
+    "mcp",
+    "codex",
+    "governance",
+    "field",
+    "urgent"
+  ],
+  "timestamp": "2026-09-09T20:36:42.731Z"
+}

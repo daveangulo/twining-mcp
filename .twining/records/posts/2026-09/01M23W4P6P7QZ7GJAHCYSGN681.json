@@ -1,0 +1,21 @@
+{
+  "agent_id": "main",
+  "detail": "Dave asked \"Can we swap out the mcp interface for a cli interface?\" Assumption set for the assessment (unconfirmed by Dave): A1 the motivation is at least partly the Codex plugin's MCP path/cwd limitation documented today in docs/CODEX.md and docs/plans/2026-09-09-codex-plugin.md S1 (legacy Codex MCP does not expand plugin-root placeholders; portable MCP constrains cwd to plugin/data dirs, selecting the wrong store; automatic startup therefore uses npx). A2 \"CLI interface\" means the agent invokes a twining executable from its shell tool with subcommands mirroring the MCP tools and JSON output, not a human TUI. A3 \"swap\" is a hypothesis; adding a CLI beside MCP over a shared transport-agnostic command core is in scope as the alternative. A4 Gate-2 hook semantics (.last-record sentinel written by record/post/decide handlers, per-session activity marker) must be preserved by any new front-end. A5 the consumers whose constraints matter most are the field repo on Dave's other machine and the Codex port. Facts already established from Twining orientation: hooks are sentinel/marker based, not keyed on MCP tool names (decisions 01KQWCCVTV, 01KY3627YG); default surface is 5 core tools with 39 total registered under full_surface; the field's dominant outage class is the stdio server never starting (runner=none); a CLI subcommand dispatcher already exists (src/cli/dispatch.ts: migrate, validate-records). Investigation workflow wf_4271c5d9-7f0 launched with six readers plus one worktree-isolated measurement agent.",
+  "entry_type": "finding",
+  "id": "01M23W4P6P7QZ7GJAHCYSGN681",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d7860e060ddf79e9cca2cc8a0bd9179985c04eee",
+    "recorded_at": "2026-09-09T20:00:55.996Z"
+  },
+  "scope": "src/",
+  "summary": "CLI-vs-MCP assessment started 2026-09-09; the in-flight Codex plugin documents that Codex MCP configs cannot bind the bundled server to the project cwd — the concrete pain a CLI could avoid",
+  "tags": [
+    "cli",
+    "mcp",
+    "architecture",
+    "codex",
+    "assessment"
+  ],
+  "timestamp": "2026-09-09T20:00:56.023Z"
+}

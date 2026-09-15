@@ -1,0 +1,18 @@
+{
+  "agent_id": "Parallel read-only investigation of what replacing the MCP interface with a CLI would touch",
+  "detail": "",
+  "entry_type": "status",
+  "id": "01M23W60QW6JQQ6XA8E6JNYD9G",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d7860e060ddf79e9cca2cc8a0bd9179985c04eee",
+    "recorded_at": "2026-09-09T20:01:39.558Z"
+  },
+  "scope": "project",
+  "summary": "Subagent completed: Parallel read-only investigation of what replacing the MCP interface with a CLI would touch",
+  "tags": [
+    "subagent-stop",
+    "hook-generated"
+  ],
+  "timestamp": "2026-09-09T20:01:39.580Z"
+}
