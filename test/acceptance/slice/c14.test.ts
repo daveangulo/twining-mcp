@@ -29,6 +29,11 @@ import path from "node:path";
 
 import { currentUseClaim } from "../../../src/events/projection.js";
 import type { EventStore } from "../../../src/events/event-store.js";
+import { GitTransport, EXCHANGE_BRANCH } from "../../../src/exchange/git-transport.js";
+import { git, gitTry, revParse } from "../../../src/exchange/git.js";
+import { Inbox } from "../../../src/exchange/inbox.js";
+import { bareRemote, cleanupGitTempDirs, dirtyTheCheckout, fingerprintCheckout, sourceCheckout } from "../../exchange/git-fixtures.js";
+import type { EventEnvelope } from "../../../src/contracts/index.js";
 import {
   admitAndProject,
   buildEvent,
@@ -46,6 +51,7 @@ import {
 } from "./harness.js";
 
 afterAll(cleanupTempDirs);
+afterAll(cleanupGitTempDirs);
 
 const PAY = "src/pay/";
 const LEDGER = "src/ledger/";
@@ -515,7 +521,263 @@ describe("C14 — no silent loss or resurrection across a rewind", () => {
     store.close();
   });
 
-  it.todo("C14 §10 Git arm: the Git carrier (commit ids, force-push reachability) is lane 02's next deliverable — fs:/relay arms do not cover it");
-  it.todo("C14 N10: 'no unsolicited source-repo write' is unobservable here — lane 02 never invokes git (the server never runs git, ADR §0)");
+  it.todo("C14 A-EV6: three delivery attempts across a REAL cherry-pick re-carry needs the producer-side attempt counter to be driven by the Git arm's outbox, which lane 03's `twining sync` owns");
   it.todo("C14 A-CUR5/N8: an offline replica labelling its view `incomplete` with a known cursor gap needs lane 04's retrieval surface");
+});
+
+/**
+ * ========================= C14 §10 — THE GIT ARM =========================
+ *
+ * The oracle's §10 is explicit that an unimplemented Git adapter must NOT be
+ * marked covered by an alternative transport's run. This block is that arm,
+ * over real git: real commits, real reflog-less force-pushes, real rebases,
+ * real cherry-picks, and disposable bare repositories as remotes.
+ *
+ * Two topologies, matching the lead's C14-ASM-1 ruling:
+ *   Git Arm A — the EXCHANGE ref is rewound. The store lives beside the
+ *               rewound history, so the received set shrinks and the admitted
+ *               set does not.
+ *   Git Arm B — source-branch mode: the event files are TRACKED, so a
+ *               `reset --hard` physically removes them from the store's own
+ *               directory. This is the oracle's hard variant (§11 assumption 1)
+ *               and the one that produces `checkout_behind_journal`.
+ */
+describe("C14 §10 Git arm — real git history movement", () => {
+  interface GitWorld {
+    w: C14World;
+    f: Fixture;
+    remote: string;
+    producerRepo: string;
+    transport: GitTransport;
+    consumer: EventStore;
+    consumerTransport: GitTransport;
+    inbox: Inbox;
+  }
+
+  async function gitWorld(): Promise<GitWorld> {
+    const w = c14World();
+    const f = fixture(w);
+    const remote = bareRemote("c14");
+    const producer = sourceCheckout("c14-prod");
+    const consumerCheckout = sourceCheckout("c14-cons");
+
+    const transport = new GitTransport({ twiningDir: producer.twiningDir, repoDir: producer.repoDir, remote });
+    await transport.publish([...f.infra, ...f.k0] as unknown as EventEnvelope[]);
+
+    const consumer = newStore(w, w.hostB, consumerCheckout.twiningDir, w.extraKeys);
+    const consumerTransport = new GitTransport({ twiningDir: consumerCheckout.twiningDir, repoDir: consumerCheckout.repoDir, remote });
+    const inbox = new Inbox(consumer, consumerTransport, w.hostB.principal);
+    await inbox.pull();
+    return { w, f, remote, producerRepo: producer.repoDir, transport, consumer, consumerTransport, inbox };
+  }
+
+  it("A-EV1/A-CUR1: the K0 lifecycle arrives intact over the Git carrier", async () => {
+    const g = await gitWorld();
+    expect(await k0View(g.consumer, g.w, g.f)).toEqual({
+      [g.f.rec050.id as string]: "superseded",
+      [g.f.rec100.id as string]: "active",
+      [g.f.rec200.id as string]: "active",
+      [g.f.rec300.id as string]: "revoked",
+    });
+    // Carrier identity is the COMMIT SHA, and it is recorded as a representation.
+    const reps = g.consumer.representations(g.f.rec100.id as string);
+    expect(reps).toHaveLength(1);
+    expect(reps[0]?.carrier_id).toMatch(/^[0-9a-f]{40}$/);
+    expect(reps[0]?.carrier).toContain("git:");
+    g.consumer.close();
+  });
+
+  it("N1/N2/N3/A-EV1: reset + force-push of the exchange ref changes the RECEIVED set, never the admitted set", async () => {
+    const g = await gitWorld();
+    const before = await k0View(g.consumer, g.w, g.f);
+    const beforeDigest = g.consumer.projectionDigest();
+
+    // T2/T3 — the producer rewinds the exchange ref to its genesis and force-pushes.
+    const pwt = g.transport.exchangeDir;
+    const genesis = git(pwt, ["rev-list", "--max-parents=0", "HEAD"]).trim();
+    git(pwt, ["reset", "--hard", genesis]);
+    git(pwt, ["push", "--force", g.remote, `HEAD:refs/heads/${EXCHANGE_BRANCH}`]);
+
+    // The consumer polls again. Its cursor is unreachable: a REWIND, reported.
+    const after = await g.inbox.pull();
+    expect(g.consumerTransport.lastGap.gap).toBe(true);
+    expect(after.polled).toBe(0); // the carrier now holds nothing
+
+    // ...and the consumer's own admitted set is untouched (N1/N2/N3).
+    expect(await k0View(g.consumer, g.w, g.f)).toEqual(before);
+    expect(g.consumer.projectionDigest()).toBe(beforeDigest);
+    expect((await g.consumer.get(g.f.rec050.id as string))?.status).toBe("superseded");
+    expect((await g.consumer.get(g.f.rec300.id as string))?.status).toBe("revoked");
+    for (const e of g.f.k0) {
+      expect((await g.consumer.events({})).find((x) => x.id === (e as { id: string }).id)?.digest).toBe((e as { digest: string }).digest);
+    }
+    g.consumer.close();
+  });
+
+  it("A-EV4/A-EV7: a rebase and a cherry-pick re-carry the same bytes under NEW commits — new representations, one event", async () => {
+    const g = await gitWorld();
+    const pwt = g.transport.exchangeDir;
+    const repBefore = g.consumer.representations(g.f.rec200.id as string);
+    expect(repBefore).toHaveLength(1);
+
+    // A RELAYOUT: the same bytes under a different path — a different commit.
+    const relocated = path.join(pwt, "v2", "events");
+    fs.mkdirSync(relocated, { recursive: true });
+    fs.writeFileSync(path.join(relocated, `${g.f.rec200.id as string}.json`), `${JSON.stringify(g.f.rec200, null, 2)}\n`);
+    git(pwt, ["add", "--", `v2/events/${g.f.rec200.id as string}.json`]);
+    git(pwt, ["commit", "--no-verify", "-m", "relayout"]);
+
+    // A CHERRY-PICK: a commit authored on a side branch, replayed onto the
+    // exchange branch. Same bytes, a third path, a third commit id.
+    // Detached one commit back, so the replay lands on a DIFFERENT parent and
+    // git is forced to mint a new commit id for identical bytes.
+    git(pwt, ["checkout", "-q", "--detach", "HEAD~1"]);
+    fs.mkdirSync(path.join(pwt, "c4bb", "events"), { recursive: true });
+    fs.writeFileSync(path.join(pwt, "c4bb", "events", `${g.f.rec200.id as string}.json`), `${JSON.stringify(g.f.rec200, null, 2)}\n`);
+    git(pwt, ["add", "--", `c4bb/events/${g.f.rec200.id as string}.json`]);
+    git(pwt, ["commit", "--no-verify", "-m", "side-branch carry"]);
+    const sideCommit = revParse(pwt, "HEAD") as string;
+    git(pwt, ["checkout", "-q", EXCHANGE_BRANCH]);
+    git(pwt, ["cherry-pick", sideCommit]);
+    expect(revParse(pwt, "HEAD")).not.toBe(sideCommit); // a NEW commit id for the same bytes
+    git(pwt, ["push", "--force", g.remote, `HEAD:refs/heads/${EXCHANGE_BRANCH}`]);
+
+    await g.inbox.pull();
+
+    // ONE event, MORE THAN ONE representation (A-EV4/A-EV7), and exactly one
+    // admitted effect however many times the bytes were re-carried (N6).
+    expect((await g.consumer.events({})).filter((e) => e.id === g.f.rec200.id)).toHaveLength(1);
+    const reps = g.consumer.representations(g.f.rec200.id as string);
+    expect(reps.length).toBeGreaterThan(1);
+    expect(new Set(reps.map((r) => r.carrier_id)).size).toBe(reps.length);
+    const st = await g.consumer.deliveryState(g.f.rec200.id as string);
+    expect(st?.admissions).toBe(1);
+    expect(st?.attempts).toBeGreaterThan(1);
+
+    // A-EV4: an old representation is retained and marked unreachable, not deleted.
+    g.consumer.markRepresentationUnreachable(repBefore[0]?.carrier_id as string);
+    const after = g.consumer.representations(g.f.rec200.id as string);
+    expect(after).toHaveLength(reps.length);
+    expect(after.find((r) => r.carrier_id === repBefore[0]?.carrier_id)?.reachable).toBe(false);
+    g.consumer.close();
+  });
+
+  it("N2: deleting the exchange branch outright revokes nothing — the tombstoned and revoked states survive", async () => {
+    const g = await gitWorld();
+    // Tombstone a record first, so the rewind has something to try to resurrect.
+    const tomb = buildEvent({
+      kind: "tombstoned",
+      record: { type: "decision", id: g.f.rec200.id as string },
+      scope: { repo: g.w.repo, path: PAY },
+      producer: { principal: g.w.ava.principal, kind: "human", host: g.w.ava.host },
+      parents: [g.f.rec200.id as string],
+      evidence_class: "human_ruling",
+      payload: { target: g.f.rec200.id as string, reason: "withdrawn", purge: false },
+      signWith: { keyId: g.w.ava.keyId, kp: g.w.ava.kp },
+    });
+    await g.transport.publish([tomb as unknown as EventEnvelope]);
+    await g.inbox.pull();
+    expect((await g.consumer.get(g.f.rec200.id as string))?.status).toBe("tombstoned");
+
+    // Delete the branch on the remote entirely.
+    git(g.transport.exchangeDir, ["push", g.remote, `:refs/heads/${EXCHANGE_BRANCH}`]);
+    expect(gitTry(g.remote, ["rev-parse", "--quiet", "--verify", EXCHANGE_BRANCH]).status).not.toBe(0);
+
+    // The consumer polls into a carrier that no longer exists upstream.
+    await g.inbox.pull();
+    expect((await g.consumer.get(g.f.rec200.id as string))?.status).toBe("tombstoned"); // N2
+    expect((await g.consumer.get(g.f.rec300.id as string))?.status).toBe("revoked");
+    expect((await g.consumer.get(g.f.rec050.id as string))?.status).toBe("superseded");
+    g.consumer.close();
+  });
+
+  it("A-CUR9: divergent heads on the exchange ref converge by union, and both replicas project identically", async () => {
+    const g = await gitWorld();
+    // A second producer publishes from its own checkout while the first is offline.
+    const second = sourceCheckout("c14-prod2");
+    const t2 = new GitTransport({ twiningDir: second.twiningDir, repoDir: second.repoDir, remote: g.remote });
+    const ev030 = created("ruling", {
+      scope: { repo: g.w.repo, path: LEDGER, revision: { head: C5BB } },
+      producer: { principal: g.w.ava.principal, kind: "human", host: g.w.ava.host },
+      parents: g.f.infraIds,
+      evidence_class: "human_ruling",
+      payload: { statement: "ledger entries are append-only" },
+      signWith: { keyId: g.w.ava.keyId, kp: g.w.ava.kp },
+    });
+    await t2.publish([ev030 as unknown as EventEnvelope]);
+
+    // The first producer publishes too, then both union-merge.
+    const ev031 = created("ruling", {
+      scope: { repo: g.w.repo, path: PAY, revision: { head: C5BB } },
+      producer: { principal: g.w.ava.principal, kind: "human", host: g.w.ava.host },
+      parents: g.f.infraIds,
+      evidence_class: "human_ruling",
+      payload: { statement: "settlement retries are capped at 5" },
+      signWith: { keyId: g.w.ava.keyId, kp: g.w.ava.kp },
+    });
+    await g.transport.publish([ev031 as unknown as EventEnvelope]);
+    await t2.publish([]);
+
+    expect(g.transport.carriedEventIds()).toContain(ev030.id as string);
+    expect(t2.carriedEventIds()).toContain(ev031.id as string);
+
+    await g.inbox.pull();
+    expect((await g.consumer.get(ev030.id as string))?.status).toBe("active"); // P3
+    expect((await g.consumer.get(ev031.id as string))?.status).toBe("active");
+    g.consumer.close();
+  });
+
+  it("Git Arm B (source-branch mode): a reset --hard removes the event FILES and the journal still holds the admitted set", async () => {
+    const w = c14World();
+    const f = fixture(w);
+    const checkout = sourceCheckout("c14-armb-git");
+    // Events ride the working branch, tracked, inside the store directory.
+    const storeDir = path.join(checkout.repoDir, "store");
+    const store = newStore(w, w.hostA, storeDir, w.extraKeys);
+    for (const e of [...f.infra, ...f.k0]) store.receive(e, "git:source-branch", "commit-pending");
+    await admitAndProject(store);
+    const before = await k0View(store, w, f);
+    const beforeDigest = store.projectionDigest();
+
+    // Track and commit the store's event files, then reset --hard back past them.
+    git(checkout.repoDir, ["add", "-A", "--", "store"]);
+    git(checkout.repoDir, ["commit", "--no-verify", "-m", "events on the working branch"]);
+    git(checkout.repoDir, ["reset", "--hard", "HEAD~1"]);
+    expect(fs.existsSync(path.join(storeDir, "events", "2026-09", `${f.rec100.id as string}.json`))).toBe(false);
+
+    // A-EV3/A-CUR1/N1: the files are physically gone, and NOTHING was revoked.
+    const status = store.checkoutStatus();
+    expect(status.status).toBe("checkout_behind_journal");
+    expect(status.missing.length).toBeGreaterThan(0);
+    await store.project(); // re-project with the files absent — the hard case
+    expect(await k0View(store, w, f)).toEqual(before);
+    expect(store.projectionDigest()).toBe(beforeDigest);
+    expect((await store.get(f.rec050.id as string))?.status).toBe("superseded"); // N1
+    expect((await store.get(f.rec300.id as string))?.status).toBe("revoked"); // N2
+
+    // The gap is reported on the observability surface, not left implicit.
+    const exchange = await store.exchangeStatus();
+    expect(exchange.store.checkout).toBe("checkout_behind_journal");
+    expect(exchange.gaps.find((g) => g.kind === "checkout_behind_journal")?.ids.sort()).toEqual(status.missing.sort());
+    store.close();
+  });
+
+  it("N10: a full Git exchange cycle performs no unsolicited write to the user's source checkout", async () => {
+    const w = c14World();
+    const f = fixture(w);
+    const remote = bareRemote("c14-n10");
+    const checkout = sourceCheckout("c14-n10");
+    dirtyTheCheckout(checkout.repoDir);
+    const before = fingerprintCheckout(checkout.repoDir);
+
+    const transport = new GitTransport({ twiningDir: checkout.twiningDir, repoDir: checkout.repoDir, remote });
+    await transport.publish([...f.infra, ...f.k0] as unknown as EventEnvelope[]);
+    await transport.poll(null);
+    // ...including across a rewind of the exchange checkout.
+    git(transport.exchangeDir, ["reset", "--hard", git(transport.exchangeDir, ["rev-list", "--max-parents=0", "HEAD"]).trim()]);
+    await transport.poll({ transport: transport.id(), position: "0".repeat(40) });
+    await transport.ack(w.hostB.principal, { transport: transport.id(), position: "0" });
+
+    expect(fingerprintCheckout(checkout.repoDir)).toEqual(before);
+  });
 });

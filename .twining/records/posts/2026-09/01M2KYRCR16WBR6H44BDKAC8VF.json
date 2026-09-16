@@ -1,0 +1,18 @@
+{
+  "agent_id": "general-purpose",
+  "detail": "",
+  "entry_type": "status",
+  "id": "01M2KYRCR16WBR6H44BDKAC8VF",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "0dec2d1562d5e3dd5c6a2ba710eb1a7da2c6bafa",
+    "recorded_at": "2026-09-16T01:54:29.719Z"
+  },
+  "scope": "project",
+  "summary": "Subagent completed: general-purpose",
+  "tags": [
+    "subagent-stop",
+    "hook-generated"
+  ],
+  "timestamp": "2026-09-16T01:54:29.761Z"
+}

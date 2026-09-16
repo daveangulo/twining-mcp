@@ -3,8 +3,8 @@
   "id": "01M2KF9R0FN85FX4NCX5SGHT1E",
   "name": "test/core/command-registry.test.ts",
   "properties": {
-    "scope": "src/cli/"
+    "scope": "src/cli/,src/exchange/"
   },
   "type": "file",
-  "updated_at": "2026-09-15T21:24:21.426Z"
+  "updated_at": "2026-09-16T01:55:38.319Z"
 }

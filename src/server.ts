@@ -21,6 +21,7 @@ import { registerTriageTools } from "./tools/triage-tools.js";
 import { registerExportTools } from "./tools/export-tools.js";
 import { registerCoordinationTools } from "./tools/coordination-tools.js";
 import { registerHousekeepingTools } from "./tools/housekeeping-tools.js";
+import { registerExchangeTools } from "./tools/exchange-tools.js";
 import { MetricsCollector } from "./analytics/metrics-collector.js";
 import { createInstrumentedServer } from "./analytics/instrumented-server.js";
 import { TWINING_INSTRUCTIONS } from "./instructions.js";
@@ -101,6 +102,7 @@ export function createServer(projectRoot: string): ServerContext {
   });
   registerDecisionTools(server, ctx.decisionEngine, twiningDir, { fullSurface });
   registerContextTools(server, ctx.contextAssembler, { fullSurface });
+  registerExchangeTools(server, twiningDir, { fullSurface });
   if (fullSurface) {
     registerVerifyTools(server, ctx.verifyEngine);
   }

@@ -27,7 +27,7 @@ export interface SqliteDatabase {
   close(): void;
 }
 
-export const EVENTS_SCHEMA_VERSION = 1;
+export const EVENTS_SCHEMA_VERSION = 3;
 
 /**
  * journal: one row per (event id, digest) OFFERED to this replica.
@@ -56,6 +56,20 @@ CREATE TABLE IF NOT EXISTS journal (
   occurred_at    TEXT NOT NULL,
   parents        TEXT NOT NULL,
   file           TEXT NOT NULL,
+  /**
+   * The event's exact stored bytes, cached in the journal (schema v2).
+   *
+   * Without this the projection re-read every admitted event FROM THE FILE, so
+   * a shallow/sparse checkout or a 'reset --hard' that removed event files made
+   * those records vanish at the next project() — a silent revoke, and exactly
+   * what ADR §8.2 promises cannot happen ("the local journal retains every
+   * admitted event"). The cache is derived like everything else here: rebuild()
+   * still replays the FILES, and an event whose file is gone at rebuild time is
+   * honestly reported as lost rather than resurrected from this column.
+   */
+  envelope       TEXT,
+  /** 1 when this event's payload was destroyed locally by purge (C20). */
+  purged         INTEGER NOT NULL DEFAULT 0,
   state          TEXT NOT NULL,
   reason         TEXT,
   pending_on     TEXT,
@@ -117,6 +131,60 @@ CREATE TABLE IF NOT EXISTS representations (
   PRIMARY KEY (event_id, carrier, carrier_id)
 );
 
+/**
+ * One row per IMPORT ATTEMPT of an artifact that was not a well-formed event
+ * (C17 'ingest_attempts'): a truncated part, a merge-conflicted file, a batch
+ * that arrived incomplete, an envelope from a newer client.
+ *
+ * Keyed on the sha256 of the observed bytes, so a byte-identical re-ingest is
+ * the SAME attempt with a higher retry count — never a second entry (C17 A15) —
+ * and the original bytes stay retrievable at their original hash (A16).
+ */
+CREATE TABLE IF NOT EXISTS ingest_attempts (
+  artifact_id    TEXT PRIMARY KEY,
+  carrier        TEXT NOT NULL,
+  carrier_id     TEXT,
+  disposition    TEXT NOT NULL,
+  reason         TEXT NOT NULL,
+  observed_bytes INTEGER NOT NULL,
+  declared_bytes INTEGER,
+  completeness   TEXT,
+  bytes_file     TEXT NOT NULL,
+  retry_count    INTEGER NOT NULL DEFAULT 1,
+  first_seen     TEXT NOT NULL,
+  last_seen      TEXT NOT NULL,
+  detail         TEXT
+);
+
+/**
+ * Batches the store knows are unresolved (C17 §5.4): while one is open, any
+ * answer served from a locally-held version carries a fallback marker naming
+ * it, and no consequential action qualifies from that version.
+ */
+CREATE TABLE IF NOT EXISTS pending_imports (
+  batch_id     TEXT PRIMARY KEY,
+  carrier      TEXT NOT NULL,
+  reason       TEXT NOT NULL,
+  missing      TEXT NOT NULL,
+  scopes       TEXT NOT NULL,
+  opened_at    TEXT NOT NULL,
+  resolved_at  TEXT
+);
+
+/**
+ * Local destructive operations (C20): purge removes the local bytes and keeps a
+ * tombstone; forget removes only the projection row. Both are LOCAL acts — the
+ * tombstone event is what propagates — so they live beside the derived index
+ * and are enumerated by the erasure report rather than inferred from absence.
+ */
+CREATE TABLE IF NOT EXISTS local_erasures (
+  record_id TEXT NOT NULL,
+  op        TEXT NOT NULL,
+  at        TEXT NOT NULL,
+  detail    TEXT,
+  PRIMARY KEY (record_id, op)
+);
+
 CREATE TABLE IF NOT EXISTS meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);
 `;
 
@@ -139,6 +207,16 @@ export function openEventsDatabase(twiningDir: string): SqliteDatabase {
   else if (current > EVENTS_SCHEMA_VERSION) {
     db.close();
     throw new Error(`events.db schema version ${current} is newer than this build supports (${EVENTS_SCHEMA_VERSION})`);
+  } else if (current < EVENTS_SCHEMA_VERSION) {
+    // v1 → v2: the journal gains its envelope cache. CREATE TABLE IF NOT EXISTS
+    // leaves an existing table alone, so the column is added explicitly; a v1
+    // row simply has NULL there and falls back to reading its file, which is
+    // the pre-v2 behaviour rather than a failure.
+    const cols = db.prepare("PRAGMA table_info(journal);").all() as Array<{ name: string }>;
+    if (!cols.some((c) => String(c.name) === "envelope")) db.exec("ALTER TABLE journal ADD COLUMN envelope TEXT;");
+    // v2 → v3: the purge marker. A row without it is simply not purged.
+    if (!cols.some((c) => String(c.name) === "purged")) db.exec("ALTER TABLE journal ADD COLUMN purged INTEGER NOT NULL DEFAULT 0;");
+    db.exec(`PRAGMA user_version = ${EVENTS_SCHEMA_VERSION};`);
   }
   return db;
 }

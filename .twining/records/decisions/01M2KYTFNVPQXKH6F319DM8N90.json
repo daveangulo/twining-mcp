@@ -1,0 +1,37 @@
+{
+  "affected_files": [
+    "src/tools/exchange-tools.ts",
+    "src/server.ts",
+    "test/core/command-registry.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "merge-integrator",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "mark it surface:'full' to dodge the default-surface count change",
+      "pros": [],
+      "reason_rejected": "that contradicts the lane's recorded rationale"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Merged lane/02-exchange into foundation/v3 (no conflicts); wired twining_exchange_status onto the MCP surface, which the lane had left registry-only, and re-pinned the command counts 39→40 / default 15→16.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01M2KYTFNVPQXKH6F319DM8N90",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "0dec2d1562d5e3dd5c6a2ba710eb1a7da2c6bafa",
+    "recorded_at": "2026-09-16T01:55:38.279Z"
+  },
+  "rationale": "the command declares surface:'default' in its own definition, the CLI already reaches it through commandRegistry, and leaving it MCP-invisible would mean an agent could not ask 'what is this replica uncertain about?' without an operator widening the surface, which is exactly what R20 forbids. Alternative rejected: mark it surface:'full' to dodge the default-surface count change — that contradicts the lane's recorded rationale.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/exchange/",
+  "status": "active",
+  "summary": "Chose to add src/tools/exchange-tools.ts and register twining_exchange_status on the DEFAULT MCP surface rather than relaxing the registry↔MCP parity test",
+  "timestamp": "2026-09-16T01:55:38.299Z"
+}
