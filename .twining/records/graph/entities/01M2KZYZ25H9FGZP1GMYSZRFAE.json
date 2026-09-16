@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-16T02:15:33.701Z",
+  "id": "01M2KZYZ25H9FGZP1GMYSZRFAE",
+  "name": "test/acceptance/slice/admission-monotonic.test.ts",
+  "properties": {
+    "scope": "src/cli/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-16T02:15:33.701Z"
+}

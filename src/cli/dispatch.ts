@@ -37,11 +37,21 @@ export function classifyArgv(argv: string[]): Dispatch {
  * footgun. Here a bare word is the normal case — it names a command — and the
  * only reserved words are the two pre-existing subcommands plus capabilities.
  */
+/**
+ * v3 verbs (lane 03). Deliberately NOT command-registry commands: `rule` must
+ * be unreachable from any dispatcher (ADR §2.3 — only the ceremony may mint a
+ * human_ruling), and the rest are operator verbs about this machine and this
+ * store rather than about the project's records.
+ */
+export const V3_CLI_VERBS = ["identity", "rule", "events", "sync", "doctor", "hook"] as const;
+export type V3CliVerb = (typeof V3_CLI_VERBS)[number];
+
 export type CliDispatch =
   | { kind: "version" }
   | { kind: "help" }
   | { kind: "capabilities"; args: string[] }
   | { kind: "subcommand"; name: Subcommand; args: string[] }
+  | { kind: "v3"; name: V3CliVerb; args: string[] }
   | { kind: "command"; name: string; args: string[] }
   | { kind: "usage"; reason: string };
 
@@ -49,10 +59,16 @@ export const TWINING_CLI_USAGE = [
   "usage: twining <command> [--json '<json>' | --input-file <f> | --stdin]",
   "                        [--project <dir>] [--agent-id <id>]",
   "       twining capabilities [--project <dir>]",
+  "       twining identity init [--human] [--label <name>]",
+  "       twining rule --scope <path> --statement <text> [--cites <ids>]",
+  "                    [--grants <principal:role>] [--requirements <k=v>]   (TTY only)",
+  "       twining events ls [--limit <n>] [--kind <k>] | twining events show <id>",
+  "       twining sync [--remote <name>] [--path <dir>]",
+  "       twining doctor",
+  "       twining hook <claude-code|codex> <EventName>       (hook shim; reads stdin)",
   "       twining migrate [--project <dir>] [--dry-run] [--check] [--reverse] [--to 3]",
   "       twining rollback --to 2 [--project <dir>] [--dry-run]",
   "       twining migrate-status [--project <dir>]",
-  "       twining events ls|show <id> [--project <dir>]",
   "       twining validate-records [--project <dir>] [--json]",
   "       twining --version | --help",
   "",
@@ -72,6 +88,21 @@ export function classifyCliArgv(argv: string[]): CliDispatch {
   }
   const args = argv.slice(3);
   if (word === "capabilities") return { kind: "capabilities", args };
+  /**
+   * V3 VERBS ARE CHECKED FIRST, and `events` is deliberately in both lists.
+   *
+   * Lane 02c put `events` in KNOWN_SUBCOMMANDS so the retained archive stays
+   * listable while a store is rolled back (ADR §10.7) — that reader takes no
+   * database and prints plain text with an exit code, which is the
+   * `twining-mcp` entry point's contract (classifyArgv above, unchanged).
+   * Lane 03 put `events` in V3_CLI_VERBS as a JSON-envelope reader over the
+   * live event log, which is the `twining` CLI's contract. On THIS entry point
+   * the JSON verb wins; `twining events` on a rolled-back store names the
+   * `twining-mcp events` reader rather than dead-ending (see runEvents).
+   */
+  if ((V3_CLI_VERBS as readonly string[]).includes(word)) {
+    return { kind: "v3", name: word as V3CliVerb, args };
+  }
   if ((KNOWN_SUBCOMMANDS as readonly string[]).includes(word)) {
     return { kind: "subcommand", name: word as Subcommand, args };
   }

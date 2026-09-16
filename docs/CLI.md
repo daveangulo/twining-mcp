@@ -310,3 +310,111 @@ Small, and all deliberate:
 
 `config.tools.full_surface` still gates provisional minting inside
 `twining_record` on both fronts — that is a behavior gate, not a surface gate.
+
+---
+
+## v3 verbs (lane 03, foundation programme)
+
+These verbs exist only in the `twining` CLI. They are **not** command-registry
+commands and therefore not MCP tools, and that is deliberate:
+
+- **`twining rule` must be unreachable from a dispatcher.** The signing ceremony
+  is the only producer of a `human_ruling` (ADR §2.3). Registering it as a
+  command and refusing at runtime would leave the capability one forgotten guard
+  away from being real; making it CLI-native means there is no code path from an
+  MCP peer to a ruling at all.
+- **`identity`, `sync` and `doctor` are operator verbs** about this machine and
+  this store, not about the project's records. Key management does not belong on
+  an LLM's tool list.
+- **`events` is a raw log reader.** The retrieval surface is lane 04's.
+
+Every verb prints the usual one-line JSON envelope on stdout, except `hook`
+(below), whose stdout belongs to the host.
+
+### `twining identity init [--human] [--label <name>]`
+
+Mints this machine's **host key** (`~/.twining/identity/host/host.json`, mode
+0600) if absent, and creates or upgrades `.twining/store.json` to format 3.
+Idempotent: a second run keeps the existing `store_id` — events already cite it.
+
+`--human` additionally mints a **human principal** whose private key is
+passphrase-encrypted (PKCS8 + aes-256-cbc) under
+`~/.twining/identity/human-<p_…>/key.json`. The passphrase is read from the TTY,
+or from `TWINING_HUMAN_PASSPHRASE` for automated qualification runs. There is no
+unprotected form. A key shorter than 8 characters is refused rather than written.
+
+`TWINING_IDENTITY_HOME` overrides the identity directory (used by tests so a run
+never touches your real keys).
+
+### `twining rule --scope <path> --statement <text> [--cites <ids>] [--grants <principal:role>] [--requirements <k=v>]`
+
+The ruling ceremony. Refuses, in this order, when:
+
+| Refusal | Code |
+|---|---|
+| invoked through the command registry | `REGISTRY_INVOCATION` |
+| `TWINING_AGENT_CONTEXT` is set | `AGENT_CONTEXT` |
+| stdin is not a TTY | `NOT_A_TTY` |
+| the store is not on format 3 | `STORE_NOT_V3` |
+| this machine holds no human key | `NO_HUMAN_KEY` |
+
+On success it signs a `ruling` event **with the human key** (never the host key)
+and appends it through the `ceremony` ingress — the only ingress whose allowed
+class set contains `human_ruling`.
+
+The first ceremony on a store with no membership policy also writes the
+bootstrap `membership` that makes that human key the store's root of trust
+(ADR §7). Later ceremonies find the policy already there and change nothing:
+"the bootstrap key is the root of trust" must not quietly become "whoever runs
+the ceremony becomes the root of trust".
+
+An automated run produces rulings by calling `appendRuling()` with a fixture
+human key — never by faking a TTY.
+
+### `twining events ls [--limit <n>] [--kind <k>] [--record <id>]` / `twining events show <id>`
+
+Reads the admitted event log. `show` distinguishes **not admitted** from **not
+here**: an event present on disk but quarantined reports its delivery state and
+reason rather than "not found".
+
+### `twining sync [--remote <name>] [--path <dir>]`
+
+Flushes the outbox and pulls the inbox through a `Transport`. It prefers lane
+02's `src/exchange/git-transport.ts` when that module exists and otherwise wires
+the fs carrier, reporting which one it used in `carrier`.
+
+`published.uncertain` is reported separately from success and failure. After a
+lost receipt the producer does not know whether the bytes landed, and saying so
+is the only honest answer; the next flush retries the identical event ids, never
+new ones.
+
+### `twining doctor`
+
+Active bindings (project root, store dir, **and separately** the producing
+checkout's branch/commit — those are different things and are never inferred
+from one another), identity (key **ids** only; no key material, ever), capture
+coverage per host, installed hook provenance, and journal counts.
+
+Its `honest_limits` array says what the numbers do *not* mean — notably that
+coverage describes what the adapter captures, not that a host is installed.
+
+### `twining hook <claude-code|codex> <EventName>`
+
+The shim the shell hooks call. Reads the host's event JSON on stdin and prints
+the host's response JSON on stdout — **not** a Twining envelope, because stdout
+here is the host's channel. **Always exits 0**: a memory layer that breaks the
+user's turn because its own store was unwritable has made itself the problem.
+
+Two honest caveats about what "does nothing" means here:
+
+- **The host key is minted on first invocation regardless of store format.**
+  `openRuntime` calls `ensureHostIdentity` before it checks the format, so the
+  first hook event on any store creates `~/.twining/identity/host/host.json`.
+  Nothing is written to the *project* on a 2.x store, and no events are
+  produced, but the machine-level key file does appear.
+- **`SessionStart` still emits the 2.x gate context on a non-v3 store.** That is
+  deliberate (on 2.x the gates are the whole capture mechanism), but it means
+  the verb is not silent there. It is silent for every other event, and the
+  `plugin/hooks/v3-capture-hook.sh` shim exits before calling the CLI at all
+  unless `.twining/store.json` says `"format": 3` — so in the shipped hook
+  configuration the 2.x path is untouched.

@@ -95,3 +95,83 @@ Hook capability matrix gathered in Stage 0 (workflow wf_f80a3b3b-ac2, 2026-09-15
 - https://code.claude.com/docs/en/hooks.md — raw markdown of the same page (3806 lines), read directly for every per-event input/decision table
 - Local CLI: `claude --version` → 2.1.272 (Claude Code); `claude --help` → confirms hook-adjacent flags --include-hook-events and --bare (skip hooks)
 - Doc sections used verbatim: #common-input-fields, #json-output, #exit-code-output, #exit-code-2-behavior-per-event, #decision-control, #add-context-for-claude, and each ### event section
+
+---
+
+# Lane 03 — what the Twining adapter actually does on this host
+
+Added 2026-09-15 by lane 03 (runtime integration). The survey above records what
+the HOST offers; this section records what Twining's adapter DOES with it. The
+table is generated from `src/adapters/claude-code.ts` (`CLAUDE_CODE_MATRIX`) and
+`test/adapters/host-matrix-docs.test.ts` fails if this file drifts from the code —
+a capability claim that only lives in prose is a claim nobody notices going stale.
+
+The adapter is active only on a **v3-enabled store** (`.twining/store.json` with
+`"format": 3`). On a 2.x store every row below is inert and the pre-existing
+hooks behave exactly as they did.
+
+<!-- BEGIN GENERATED: claude-code@2.1.272 — source of record is src/adapters/host-capability.ts consumers -->
+
+| Event | Captured fields | Injects? | Channel | Twining events written | Receipt |
+|---|---|---|---|---|---|
+| `SessionStart` | `session_id`, `source`, `cwd`, `transcript_path`, `model`, `agent_type` | yes | `hookSpecificOutput.additionalContext` | `observation(session_start)`, `receipt(injected)` | `injected` |
+| `UserPromptSubmit` | `session_id`, `prompt_id`, `prompt`, `cwd` | yes | `hookSpecificOutput.additionalContext` | `created(post/human_statement)`, `receipt(injected)` | `injected` |
+| `PreCompact` | `session_id`, `trigger`, `custom_instructions`, `cwd` | **no** | — | `created(observation)` | — |
+| `SubagentStart` | `session_id`, `agent_id`, `agent_type`, `cwd` | yes | `hookSpecificOutput.additionalContext` | `created(work/assignment)`, `receipt(injected)` | `injected` |
+| `SubagentStop` | `session_id`, `agent_id`, `agent_type`, `last_assistant_message`, `agent_transcript_path`, `stop_hook_active` | yes | `hookSpecificOutput.additionalContext` | `created(post/reported_result)` | — |
+| `PreToolUse` | `tool_name`, `tool_input`, `tool_use_id` | yes | `hookSpecificOutput.additionalContext` | — | — |
+| `PostToolUse` | `tool_name`, `tool_input`, `tool_use_id` | yes | `hookSpecificOutput.additionalContext` | — | — |
+| `Stop` | `session_id`, `last_assistant_message`, `stop_hook_active` | yes | `hookSpecificOutput.additionalContext` | `receipt(projected)` | `projected` |
+| `SessionEnd` | `session_id`, `reason`, `cwd` | **no** | — | `receipt(projected)` | `projected` |
+
+**Captures:** session_start, user_prompt, compaction, dispatch, worker_return, turn_end, session_end
+
+**Injects on:** SessionStart, UserPromptSubmit, SubagentStart, SubagentStop, Stop
+
+**Cannot observe:** nothing known
+
+**Per-event notes**
+
+- `SessionStart` — matchers startup|resume|clear|compact|fork; `compact` is the only channel that can re-seed after a compaction, because PreCompact/PostCompact cannot inject.
+- `UserPromptSubmit` — the literal prompt is stored byte-for-byte with its sha256; deltas since the last receipt are injected.
+- `PreCompact` — CANNOT INJECT — the host discards additionalContext on this event. Durable progress is captured here and re-seeded through SessionStart(compact).
+- `SubagentStart` — injects into the SUBAGENT, never the parent. The work record is a reference (R04) — recorded, never granted.
+- `SubagentStop` — a worker return. Never a completion: stage, finisher and next action are recorded and task_completion_state stays not_complete.
+- `PreToolUse` — unchanged from 2.x — the git-commit gate. Not a v3 capture point.
+- `PostToolUse` — unchanged from 2.x — the per-session activity marker.
+- `Stop` — flushes the outbox; never blocks.
+- `SessionEnd` — CANNOT INJECT — all JSON output is discarded. Default timeout 1.5 s, so the flush must be cheap.
+
+<!-- END GENERATED -->
+
+## Honest limits on this host
+
+- **PreCompact cannot inject.** Claude Code discards `additionalContext` on
+  `PreCompact` *and* `PostCompact`. Compaction is therefore CAPTURED there
+  (cursors, last injected event, last payload hash) and RE-SEEDED at
+  `SessionStart` with `source: "compact"`, which is a genuine injection channel.
+  The adapter says so in its stderr notes on every PreCompact; it does not
+  report the event as covered in both directions.
+- **SessionEnd discards all hook output** and defaults to a 1.5 s budget, so the
+  flush there is admit + project + one receipt, and nothing else.
+- **SubagentStart/SubagentStop inject into the SUBAGENT, never the parent.** A
+  worker's return reaches the parent at the parent's next injecting event.
+- **A worker return is never a completion.** `SubagentStop` writes a
+  `reported_result` whose payload states `task_completion_state: "not_complete"`,
+  `acceptance_state: "none_recorded"` and `merge_state: "not_merged"`, and keeps
+  the worker's own text verbatim with its sha256. The worker claiming otherwise
+  changes none of those fields.
+- **No prose reminders are injected on a v3 store.** Capture happens at the hook
+  boundary, so the payload carries the working set and nothing else. The 2.x gate
+  text (which does contain "Gate 1"/"Gate 2") is emitted only on a 2.x store,
+  where those gates are the entire capture mechanism.
+
+## Installed hooks
+
+`plugin/hooks/hooks.json` registers `v3-capture-hook.sh` for SessionStart
+(`startup|resume|clear|compact|fork`), UserPromptSubmit, PreCompact,
+SubagentStart, SubagentStop, Stop and SessionEnd. The PreToolUse commit gate and
+the PostToolUse activity marker are unchanged from 2.x. The shim resolves the
+CLI through `plugin/scripts/launch-cli.sh` and exits 0 silently when it cannot —
+a memory layer that breaks the user's turn because it could not find its own
+binary is a worse failure than one that does not capture.

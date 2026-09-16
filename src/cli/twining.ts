@@ -310,6 +310,11 @@ async function readInput(
 export async function runTwiningCli(argv: string[]): Promise<number> {
   const dispatch = classifyCliArgv(argv);
 
+  // The v3 write mirror reads this to decide the INGRESS of the events a
+  // command produces (evidence class comes from the ingress, never from the
+  // input). The server leaves it unset and is therefore "mcp".
+  process.env.TWINING_INGRESS = "cli";
+
   if (dispatch.kind === "version") {
     writeStdout(`twining ${PKG_VERSION}\n`);
     return 0;
@@ -350,6 +355,44 @@ export async function runTwiningCli(argv: string[]): Promise<number> {
   // Store resolution is identical to the server's (--project > TWINING_PROJECT
   // > cwd, with the linked-worktree redirect on the cwd branch only).
   const projectRoot = resolveProjectRoot(argv, process.env, process.cwd());
+
+  // The hook shim is checked FIRST and never prints an envelope: its stdout is
+  // the host's JSON channel, and its exit code is always 0 (a memory layer must
+  // not break the user's turn). See src/cli/hook-verb.ts.
+  if (dispatch.kind === "v3" && dispatch.name === "hook") {
+    const { runHookVerb } = await import("./hook-verb.js");
+    const { LEGACY_SESSION_START_CONTEXT } = await import("../adapters/legacy-gate-text.js");
+    const result = await runHookVerb(dispatch.args, projectRoot, process.env, {
+      legacyGateText: LEGACY_SESSION_START_CONTEXT,
+    });
+    if (result.stderr) console.error(result.stderr.trimEnd());
+    if (result.stdout) writeStdout(result.stdout + "\n");
+    return 0;
+  }
+
+  if (dispatch.kind === "v3") {
+    const verbs = await import("./v3-verbs.js");
+    const runner = {
+      identity: verbs.runIdentity,
+      rule: verbs.runRule,
+      events: verbs.runEvents,
+      sync: verbs.runSync,
+      doctor: verbs.runDoctor,
+    }[dispatch.name as Exclude<typeof dispatch.name, "hook">];
+    const outcome = await runner(dispatch.args, projectRoot, process.env);
+    if (outcome.exitCode === 0) {
+      emitOk(
+        dispatch.name,
+        { projectRoot, storeDir: probeStore(projectRoot).storeDir },
+        outcome.result,
+      );
+      return 0;
+    }
+    const err = outcome.error ?? { code: "INTERNAL_ERROR", message: "unknown failure" };
+    console.error(`twining ${dispatch.name}: ${err.message}`);
+    emitError(dispatch.name, err.code, err.message);
+    return outcome.exitCode;
+  }
 
   if (dispatch.kind === "capabilities") {
     const capsError = validateCommandArgs(dispatch.args, { "--project": "value" });
@@ -448,6 +491,10 @@ export async function runTwiningCli(argv: string[]): Promise<number> {
     try {
       ctx?.stopBackgroundWork();
       ctx?.closeDb();
+      // The v3 mirror keeps one EventStore handle per store per process; a CLI
+      // process exits in milliseconds, so it is closed with everything else.
+      const { closeMirrorRuntimes } = await import("../core/commands/v3-mirror-wrap.js");
+      closeMirrorRuntimes();
     } catch {
       // Teardown is best-effort; the envelope is already written.
     }

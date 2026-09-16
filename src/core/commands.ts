@@ -21,6 +21,7 @@ import { lifecycleCommands } from "./commands/lifecycle.js";
 import { graphCommands } from "./commands/graph.js";
 import { exchangeCommands } from "./commands/exchange.js";
 import { migrateCommands } from "./commands/migrate.js";
+import { mirrorAll } from "./commands/v3-mirror-wrap.js";
 
 export * from "./command-def.js";
 
@@ -29,7 +30,14 @@ export * from "./command-def.js";
  * modules. The narrow per-module context types are all satisfied by
  * TwiningContext.
  */
-export const ALL_COMMANDS: ReadonlyArray<CommandDef<TwiningContext>> = [
+/**
+ * v3 (lane 03): every WRITE command is wrapped so that a successful 2.x write
+ * also appends its v3 event through EventStore.append(raw, "mcp"|"cli").
+ * `mirrorAll` returns read commands untouched, and every wrapped command is a
+ * no-op mirror on a store that is not v3-enabled — so this decoration cannot
+ * change 2.x behavior. See src/core/commands/v3-mirror-wrap.ts.
+ */
+export const ALL_COMMANDS: ReadonlyArray<CommandDef<TwiningContext>> = mirrorAll([
   ...recordCommands,
   ...housekeepingCommands,
   ...blackboardCommands,
@@ -43,7 +51,7 @@ export const ALL_COMMANDS: ReadonlyArray<CommandDef<TwiningContext>> = [
   ...graphCommands,
   ...exchangeCommands,
   ...migrateCommands,
-];
+]);
 
 export class CommandRegistry {
   private readonly byName = new Map<string, CommandDef<TwiningContext>>();

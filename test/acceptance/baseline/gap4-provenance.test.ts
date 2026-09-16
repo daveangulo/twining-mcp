@@ -19,6 +19,16 @@
  *
  * Setup idioms mirror test/project-root.test.ts (real git repos under
  * mkdtemp, realpathSync for darwin's /var -> /private/var symlink).
+ *
+ * FLIPPED BY LANE 03 (runtime integration, 2026-09-15). The 2.x defect is
+ * preserved verbatim below as a control — captureProvenance(resolvedRoot) does
+ * still stamp the main checkout, because the 2.x write path is untouched. The
+ * flip is that v3 no longer captures provenance that way at all: `source` is
+ * a separate field captured by src/adapters/source.ts against the PRODUCING
+ * checkout (a hook's own cwd), while the store location stays a property of
+ * the store. ADR §3: "store_id says where the bytes live; source.repo /
+ * worktree / commit say where the producer was working. They are recorded
+ * separately and never inferred from one another."
  */
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { spawnSync } from "node:child_process";
@@ -27,6 +37,10 @@ import os from "node:os";
 import path from "node:path";
 import { resolveProjectRoot, resolveWorktreeMain } from "../../../src/utils/project-root.js";
 import { captureProvenance } from "../../../src/utils/provenance.js";
+import { captureSource } from "../../../src/adapters/source.js";
+import { ensureStoreDescriptor } from "../../../src/adapters/identity.js";
+import { openRuntime } from "../../../src/adapters/runtime.js";
+import { STORE_FORMAT_VERSION } from "../../../src/contracts/index.js";
 
 describe("gap 4 — provenance follows the resolved root, not the worktree", () => {
   let tmpDir: string;
@@ -114,7 +128,7 @@ describe("gap 4 — provenance follows the resolved root, not the worktree", () 
     expect(prov.commit_sha).toBe(featureSha);
   });
 
-  it("GAP: captureProvenance(resolvedRoot) stamps the MAIN checkout's branch/sha, losing feature-x", () => {
+  it("CONTROL (lane 03): the 2.x path still stamps the MAIN checkout — unchanged on purpose", () => {
     const { main, worktree, mainBranch, mainSha, featureSha } =
       makeRepoWithFeatureWorktree();
 
@@ -130,9 +144,60 @@ describe("gap 4 — provenance follows the resolved root, not the worktree", () 
     expect(prov.branch).toBe(mainBranch);
     expect(prov.commit_sha).toBe(mainSha);
 
-    // ...and therefore does NOT describe feature-x. These are the
-    // assertions that would fail once the gap is closed.
+    // ...and therefore does NOT describe feature-x. This is the 2.x behavior,
+    // kept intact: the v3 path below does not use captureProvenance at all.
     expect(prov.branch).not.toBe("feature-x");
     expect(prov.commit_sha).not.toBe(featureSha);
+  });
+
+  it("CLOSED (lane 03): the v3 adapter captures `source` from the PRODUCING worktree", () => {
+    const { main, worktree, mainBranch, mainSha, featureSha } =
+      makeRepoWithFeatureWorktree();
+
+    // Exactly what a hook does: the store is resolved as before (main), and
+    // the producing checkout is the hook's own cwd (the worktree).
+    const resolvedRoot = resolveProjectRoot([], {}, worktree);
+    expect(resolvedRoot).toBe(main);
+
+    const source = captureSource(worktree, "r_01ARZ3NDEKTSV4RRFFQ69G5FAV");
+
+    // THE FLIP — provenance now describes the code being worked on.
+    expect(source.branch).toBe("feature-x");
+    expect(source.commit).toBe(featureSha);
+    expect(source.branch).not.toBe(mainBranch);
+    expect(source.commit).not.toBe(mainSha);
+
+    // And the two checkouts are distinguishable without either PATH appearing
+    // in the event: a worktree token is a hash, because a path is a label (R01).
+    const mainSource = captureSource(main, "r_01ARZ3NDEKTSV4RRFFQ69G5FAV");
+    expect(source.worktree).toBeTruthy();
+    expect(mainSource.worktree).toBeTruthy();
+    expect(source.worktree).not.toBe(mainSource.worktree);
+    expect(JSON.stringify(source)).not.toContain(worktree);
+  });
+
+  it("CLOSED (lane 03): a runtime opened for the main store still sources from the hook's cwd", () => {
+    const { main, worktree, featureSha } = makeRepoWithFeatureWorktree();
+    const identityHome = path.join(tmpDir, "identity");
+    fs.mkdirSync(identityHome, { recursive: true });
+    fs.mkdirSync(path.join(main, ".twining"), { recursive: true });
+    ensureStoreDescriptor(path.join(main, ".twining"), { format: STORE_FORMAT_VERSION });
+
+    // The store binds to the MAIN checkout (worktree teammates share one
+    // store, as before) while `source` describes the worktree — the exact
+    // split the gap said did not exist.
+    const runtime = openRuntime({
+      projectRoot: main,
+      sourceCwd: worktree,
+      env: { ...process.env, HOME: tmpDir, TWINING_IDENTITY_HOME: identityHome },
+    });
+    try {
+      expect(runtime.twiningDir).toBe(path.join(main, ".twining"));
+      expect(runtime.source.branch).toBe("feature-x");
+      expect(runtime.source.commit).toBe(featureSha);
+      expect(runtime.storeId).toMatch(/^s_/);
+    } finally {
+      runtime.close();
+    }
   });
 });

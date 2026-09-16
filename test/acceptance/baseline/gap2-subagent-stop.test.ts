@@ -15,12 +15,25 @@
  * linkage, and no next action. A downstream consumer therefore cannot tell
  * whether the subagent's work was reviewed, who finished it, which assignment
  * or attempt it belongs to, or what should happen next.
+ *
+ * FLIPPED BY LANE 03 (runtime integration, 2026-09-15). The 2.x assertions are
+ * kept verbatim as CONTROLS — on a store with no .twining/store.json the
+ * legacy hook still queues exactly the generic post, and that is correct, not
+ * a defect. The flip is the block at the bottom: on a v3-enabled store the
+ * adapter records a `reported_result` carrying finisher, assignment, attempt,
+ * stage and an ordered next action — and states that the task is NOT complete,
+ * not accepted and not merged, because a worker return is none of those
+ * (oracle C06 A2/A3/A4).
  */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { runHook } from "../../hooks/run-hook";
+import { handleClaudeCodeHook } from "../../../src/adapters/claude-code.js";
+import { ensureStoreDescriptor } from "../../../src/adapters/identity.js";
+import { openRuntime } from "../../../src/adapters/runtime.js";
+import { STORE_FORMAT_VERSION } from "../../../src/contracts/index.js";
 
 let dir: string;
 
@@ -174,6 +187,9 @@ describe("Gap 2 baseline: SubagentStop queues a state-free generic status post",
     const post = queuedPosts(twining)[0] as Record<string, unknown>;
     const keys = Object.keys(post);
 
+    // CONTROL (lane 03): this store has no store.json, so it is 2.x and the
+    // legacy hook's generic post is the expected output. The v3 field set is
+    // asserted in the flipped block at the end of this file.
     // R04 — no review / qualification state is recorded.
     for (const field of REVIEW_STATE_FIELDS) {
       expect(keys).not.toContain(field);
@@ -237,4 +253,69 @@ describe("Gap 2 baseline: SubagentStop queues a state-free generic status post",
       expect(serialized).not.toContain(dropped);
     }
   });
+});
+
+/**
+ * THE FLIP (lane 03). Same trigger, v3-enabled store: the capture path records
+ * the coordination state the baseline proved was lost.
+ */
+describe("CLOSED (lane 03): on a v3 store the worker return carries its state", () => {
+  it("records finisher, assignment/attempt, stage and next action — and denies completion", async () => {
+    const twining = path.join(dir, ".twining");
+    fs.mkdirSync(twining, { recursive: true });
+    ensureStoreDescriptor(twining, { format: STORE_FORMAT_VERSION });
+    const identityHome = path.join(dir, "identity");
+    fs.mkdirSync(identityHome, { recursive: true });
+    const env = { ...process.env, HOME: dir, TWINING_IDENTITY_HOME: identityHome };
+
+    const runtime = openRuntime({ projectRoot: dir, env });
+    try {
+      const out = await handleClaudeCodeHook(
+        "SubagentStop",
+        {
+          hook_event_name: "SubagentStop",
+          agent_type: "code-reviewer",
+          agent_id: "assign-42",
+          session_id: "sess-gap2",
+          transcript_path: path.join(dir, "transcript.jsonl"),
+          last_assistant_message: "Reviewed and merged. Task complete.",
+          cwd: dir,
+        },
+        { runtime, ingress: "adapter" },
+      );
+
+      const created = out.events.find((e) => e.kind === "created");
+      expect(created, "the v3 path must capture the return").toBeTruthy();
+      const post = created!.payload as Record<string, unknown>;
+
+      // R04 — review/qualification state is recorded, in its honest form: the
+      // work is NOT complete, NOT accepted and NOT merged.
+      expect(post.stage).toBe("worker_returned_review_pending");
+      expect(post.task_completion_state).toBe("not_complete");
+      expect(post.acceptance_state).toBe("none_recorded");
+      expect(post.merge_state).toBe("not_merged");
+
+      // R08 — a finisher identity beyond the raw agent label.
+      const finisher = post.finisher as Record<string, unknown>;
+      expect(finisher.session).toBe("sess-gap2");
+      expect(finisher.agent).toBe("assign-42");
+      expect(finisher.host).toBeTruthy();
+
+      // R10 — assignment/attempt linkage and an ordered next action.
+      expect(post.assignment).toBe("assign-42");
+      expect(post.attempt).toBe("assign-42:1");
+      expect(post.parent_session).toBe("sess-gap2");
+      const next = post.next_action as { ordered: boolean; items: unknown[] };
+      expect(next.ordered).toBe(true);
+      expect(next.items.length).toBeGreaterThan(0);
+
+      // The worker CLAIMED completion. The claim is preserved verbatim and
+      // still confers nothing — the class stays reported_result.
+      expect(created!.evidence_class).toBe("reported_result");
+      expect(post.detail).toContain("Task complete.");
+      expect(post.promoted).toBe(false);
+    } finally {
+      runtime.close();
+    }
+  }, 60_000);
 });

@@ -1,0 +1,32 @@
+{
+  "affected_files": [
+    "src/cli/dispatch.ts",
+    "src/cli/v3-verbs.ts",
+    "src/core/commands.ts",
+    "test/cli/v3-verbs.test.ts",
+    "test/acceptance/slice/admission-monotonic.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "merge-integrator",
+  "alternatives": [],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Merged lane/03-runtime into foundation/v3; resolved the events-verb collision between lanes 02c and 03, and fixed the signing ceremony producing rulings its own admission rule quarantined.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M2KZYYZDSGF7SYFAC1PX87AQ",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "b7b1c88a37a0fbcddea846256de458c25a9657fc",
+    "recorded_at": "2026-09-16T02:15:33.594Z"
+  },
+  "rationale": "withV3Mirror is a no-op for any name outside COMMAND_EVENT_MAP, so this is behaviour-neutral today and keeps the decoration uniform if a write command is ever added to those sets",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/cli/",
+  "status": "active",
+  "summary": "Wrapped exchangeCommands and migrateCommands inside mirrorAll along with every other command set",
+  "timestamp": "2026-09-16T02:15:33.613Z"
+}

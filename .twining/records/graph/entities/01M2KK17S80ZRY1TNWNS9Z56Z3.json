@@ -3,8 +3,8 @@
   "id": "01M2KK17S80ZRY1TNWNS9Z56Z3",
   "name": "src/cli/v3-verbs.ts",
   "properties": {
-    "scope": "src/adapters/"
+    "scope": "src/adapters/,src/cli/"
   },
   "type": "file",
-  "updated_at": "2026-09-15T22:29:36.908Z"
+  "updated_at": "2026-09-16T02:15:33.697Z"
 }
