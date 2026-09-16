@@ -25,6 +25,7 @@ import {
   digestOf,
   eventEnvelopeSchema,
   sha256Hex,
+  verifyEventSignature,
   ENVELOPE_V,
   EVENT_KINDS,
   pathCovers,
@@ -140,6 +141,8 @@ interface JournalRow {
   parents: string;
   file: string;
   first_seen: string;
+  /** 1 when this event's payload was destroyed locally by purge (C20). */
+  purged: number;
   /** Exact stored bytes, cached so the projection never depends on the checkout. */
   envelope: string | null;
   state: DeliveryState;
@@ -307,6 +310,49 @@ export class EventStore {
     const existing = this.rowsForId(id);
     const same = existing.find((r) => r.digest === digest);
     if (same) {
+      /**
+       * The digest deliberately excludes `sig`, so two copies that differ ONLY
+       * in their signature hash identically. Treating the second as a plain
+       * redelivery let an attacker suppress a legitimate event for ever by
+       * pre-sending the same bytes with a forged signature: whichever copy
+       * landed first owned the id, and the real one was discarded unrecorded.
+       *
+       * A differing signature is therefore a COMPETING SIGNATURE: the bytes are
+       * retained, the suppression is logged, and — when the incumbent is
+       * sitting in a signature-related quarantine — the newcomer replaces it so
+       * a verifiable copy can still win. A squatter can delay, never silence.
+       */
+      const incomingSig = JSON.stringify((envelope as { sig?: unknown }).sig ?? null);
+      const heldSig = JSON.stringify((this.parseEnvelopeText(this.readEventFileText(same.file) ?? same.envelope) as { sig?: unknown } | null)?.sig ?? null);
+      if (incomingSig !== heldSig) {
+        this.recordIngestAttempt({
+          carrier: carrier ?? "direct",
+          disposition: "QUARANTINE",
+          reason: "competing_signature",
+          bytes: JSON.stringify(envelope, null, 2),
+          detail: `same id and digest as ${id} but a different signature`,
+        });
+        this.logAdmission(id, digest, "competing_signature", `a second copy of ${id} arrived with a different signature; both byte streams are retained`);
+        // Which copy is replaceable is decided by whether the signature
+        // VERIFIES, not by whether admission happens to have run yet: the two
+        // copies can arrive back to back, and a rule that depended on the
+        // interleaving would be the same arrival-order bug in a new place.
+        const heldEnvelope = this.parseEnvelopeText(this.readEventFileText(same.file) ?? same.envelope);
+        const replaceable =
+          !ADMITTED_STATES.has(same.state) &&
+          !this.signatureVerifies(heldEnvelope as unknown as Record<string, unknown> | null) &&
+          this.signatureVerifies(envelope);
+        if (replaceable) {
+          // The incumbent could not be verified. Let the newcomer try.
+          durableWrite(path.join(this.eventsDir, same.file), JSON.stringify(envelope, null, 2));
+          this.db.prepare("UPDATE journal SET envelope = ?, state = 'received', reason = NULL WHERE id = ? AND digest = ?").run(JSON.stringify(envelope, null, 2), id, digest);
+          this.viewCache = undefined; // the bytes changed under an unchanged key
+          this.appendReceiptLog({ k: "sig_replace", id, digest });
+          return { id, state: "received", duplicate: false, reason: "competing_signature" };
+        }
+        this.countAttempt(id, digest, "duplicate");
+        return { id, state: same.state, duplicate: true, reason: "competing_signature" };
+      }
       this.countAttempt(id, digest, "duplicate");
       this.logAdmission(id, digest, "duplicate_suppressed", "redelivery of an event already held");
       return { id, state: same.state, duplicate: true };
@@ -479,6 +525,20 @@ export class EventStore {
     } catch (err) {
       return this.settle(row, "quarantined", "attachment_missing", `event file unreadable: ${(err as Error).message}`);
     }
+    /**
+     * A PURGED event is admitted on the strength of what it already was.
+     *
+     * Its payload was destroyed locally, so the stored bytes no longer hash to
+     * the recorded digest — re-verifying them would refuse an event this
+     * replica had already admitted, which is `rebuild()` reporting
+     * `acknowledged_events_lost` for a supported operation and regressing every
+     * descendant to `pending_parents`. The digest in the journal is the proof
+     * of what the bytes WERE; the erasure is why they are no longer checkable.
+     */
+    if (this.isPurgedRow(row)) {
+      return this.settle(row, "admitted", undefined, "admitted:purged_stub (payload destroyed locally; digest retained as evidence)", undefined);
+    }
+
     const credential = this.checkCredential(raw, view);
     if (credential.length > 0) {
       // C24 C-5: when more than one check fails, EACH is recorded as its own
@@ -496,6 +556,15 @@ export class EventStore {
     // 2. Parents must all be admitted; until then the event waits, visible.
     const missingParents = (ev.parents ?? []).filter((p) => !view.admittedIds.has(p));
     if (missingParents.length > 0) {
+      // "Has not arrived yet" and "arrived here and was terminally refused" are
+      // different facts. Treating both as `pending_parents` left an event whose
+      // parent was REJECTED permanently non-terminal: never admitted, never
+      // refused, never surfaced as undeliverable, and re-offered on every pass
+      // for ever. A dead parent is a dead prerequisite (C28 A13, C18 A9).
+      const dead = missingParents.filter((id) => this.isTerminallyRefused(id));
+      if (dead.length > 0) {
+        return this.settle(row, "rejected", "unsatisfiable_parent", `parent(s) terminally refused on this replica: ${dead.join(", ")}`, validation);
+      }
       return this.settle(row, "pending_parents", undefined, `waiting on ${missingParents.join(", ")}`, undefined, missingParents);
     }
 
@@ -515,9 +584,12 @@ export class EventStore {
     if (capability) {
       const allowed = this.hasCapability(ev, capability, view, this.ancestorMembership(ev, view, admittedThisPass));
       if (!allowed.ok) {
-        return allowed.terminal
-          ? this.settle(row, "rejected", "unauthorized", allowed.reason, validation)
-          : this.settle(row, "quarantined", "unauthorized_principal", allowed.reason, validation);
+        if (allowed.terminal) return this.settle(row, "rejected", "unauthorized", allowed.reason, validation);
+        // `no_policy_yet` and `unauthorized_principal` are different answers:
+        // the first says the policy is not reachable yet, the second says a
+        // reachable policy does not name this principal. Both retry.
+        const reason = allowed.reason.includes("no_policy_yet") ? "no_policy_yet" : "unauthorized_principal";
+        return this.settle(row, "quarantined", reason, allowed.reason, validation);
       }
     }
 
@@ -586,6 +658,55 @@ export class EventStore {
       });
     }
     return out;
+  }
+
+  /**
+   * Is this id present on THIS replica in a state nothing can clear?
+   *
+   * Rejected outright, or quarantined for a reason no later event repairs. An
+   * id with no row at all is simply still in flight and is NOT terminal.
+   */
+  private isTerminallyRefused(id: string): boolean {
+    const row = this.rowsForId(id).find((r) => r.canonical === 1);
+    if (!row) return false;
+    if (row.state === "rejected") return true;
+    return row.state === "quarantined" && !RETRYABLE_QUARANTINE.has(row.reason ?? "");
+  }
+
+  /** Record ids whose local payload bytes were destroyed (survives rebuild). */
+  private purgedRecordIds(): Set<string> {
+    return new Set(this.localErasures().filter((e) => e.op === "purge").map((e) => e.record_id));
+  }
+
+  private isPurgedRow(row: JournalRow): boolean {
+    if (row.purged === 1) return true;
+    const purged = this.purgedRecordIds();
+    if (purged.size === 0) return false;
+    return (row.record_id !== null && purged.has(row.record_id)) || purged.has(row.id);
+  }
+
+  /**
+   * Does this replica hold a membership record at all — admitted, or still
+   * making its way through admission? Rejected rows do not count.
+   */
+  private replicaKnowsAPolicy(): boolean {
+    const row = this.db
+      .prepare("SELECT 1 AS present FROM journal WHERE canonical = 1 AND record_type = 'membership' AND state != 'rejected' LIMIT 1")
+      .get() as { present?: number } | undefined;
+    return row?.present === 1;
+  }
+
+  /**
+   * Does this envelope's signature verify against a key this replica can
+   * resolve? An unsigned or unresolvable-key envelope does NOT verify — it is
+   * asserted, not authenticated (ADR §2.1).
+   */
+  private signatureVerifies(envelope: Record<string, unknown> | null): boolean {
+    const sig = (envelope as { sig?: { key?: string; value?: string } } | null)?.sig;
+    if (!envelope || !sig?.key || !sig.value) return false;
+    const pub = this.validateOptions("import").resolveKey(sig.key);
+    if (!pub) return false;
+    return verifyEventSignature(envelope, sig.value, pub);
   }
 
   private settle(
@@ -793,6 +914,7 @@ export class EventStore {
     this.close();
     dropEventsDatabase(this.twiningDir);
     this.db = openEventsDatabase(this.twiningDir);
+    this.viewCache = undefined;
     this.replaying = true;
     try {
       // 1. Re-journal from the durable event files, with no counter side
@@ -1189,25 +1311,61 @@ export class EventStore {
    * here claims anything about other clones — `erasureReport` says so per
    * location, in words, because ADR §10.10 forbids the unqualified claim.
    */
-  async purge(recordId: string): Promise<{ purged: boolean; reason?: string; files_removed: number }> {
-    const rec = await this.get(recordId);
-    if (!rec) return { purged: false, reason: "not_found", files_removed: 0 };
-    if (rec.status !== "tombstoned") return { purged: false, reason: "purge requires an admitted tombstoned event", files_removed: 0 };
+  async purge(recordId: string): Promise<{ purged: boolean; reason?: string; files_removed: number; retained: Array<{ event: string; kind: string; field: string }> }> {
+    // Tombstone status comes from the ADMITTED EVENTS, not from the projection
+    // row: `forget()` deletes that row, and letting a local view operation make
+    // the compliance action unreachable — and the erasure report claim the
+    // record was never tombstoned — is the forget/tombstone confusion in its
+    // most damaging direction.
+    if (!this.isTombstoned(recordId)) return { purged: false, reason: "purge requires an admitted tombstoned event", files_removed: 0, retained: [] };
     let removed = 0;
-    for (const row of this.allRows().filter((r) => r.record_id === recordId || r.id === recordId)) {
+    const retained: Array<{ event: string; kind: string; field: string }> = [];
+    for (const row of this.allRows().filter((r) => this.rowTouchesRecord(r, recordId))) {
       const abs = path.join(this.eventsDir, row.file);
-      if (row.kind === "created" && fs.existsSync(abs)) {
-        // The event stays as a STUB carrying its digest (ADR §10.10): the
-        // identity and the proof of what was there survive; the payload does not.
-        const stub = { purged: true, id: row.id, digest: row.digest, kind: row.kind, purged_at: this.now() };
-        durableWrite(abs, JSON.stringify(stub, null, 2));
-        this.db.prepare("UPDATE journal SET envelope = NULL WHERE id = ? AND digest = ?").run(row.id, row.digest);
-        removed += 1;
+      if (!fs.existsSync(abs)) continue;
+      const held = this.parseEnvelopeText(this.readEventFileText(row.file));
+      if (!held) continue;
+      if (row.kind === "tombstoned") {
+        // The tombstone's own `reason` is the AUTHORIZATION for the erasure and
+        // is kept deliberately. Saying so per event is the difference between
+        // an honest report and the unqualified claim ADR §10.10 forbids.
+        retained.push({ event: row.id, kind: row.kind, field: "payload.reason" });
+        continue;
       }
+      // A schema-VALID stub: everything but the payload survives, so the causal
+      // graph and the admitted set survive a rebuild while the content does not.
+      // Dropping the whole envelope made rebuild() report acknowledged_events_lost
+      // for a supported operation and regressed every descendant to pending_parents.
+      const stub = { ...held, payload: { purged: true, purged_at: this.now() } } as unknown as Record<string, unknown>;
+      durableWrite(abs, JSON.stringify(stub, null, 2));
+      this.db.prepare("UPDATE journal SET envelope = ?, purged = 1 WHERE id = ? AND digest = ?").run(JSON.stringify(stub, null, 2), row.id, row.digest);
+      removed += 1;
     }
-    this.db.prepare("INSERT INTO local_erasures (record_id, op, at, detail) VALUES (?,?,?,?) ON CONFLICT DO NOTHING").run(recordId, "purge", this.now(), `${removed} payload file(s) destroyed locally`);
+    this.db.prepare("INSERT INTO local_erasures (record_id, op, at, detail) VALUES (?,?,?,?) ON CONFLICT DO NOTHING").run(recordId, "purge", this.now(), `${removed} payload(s) destroyed locally`);
+    // The derived index must not keep the bytes either.
+    try {
+      this.db.exec("PRAGMA wal_checkpoint(TRUNCATE);");
+      this.db.exec("VACUUM;");
+    } catch {
+      /* a checkpoint failure does not undo the file-level destruction */
+    }
+    this.viewCache = undefined; // the bytes changed under an unchanged key
     this.appendReceiptLog({ k: "purge", id: recordId, files: removed });
-    return { purged: true, files_removed: removed };
+    return { purged: true, files_removed: removed, retained };
+  }
+
+  /** Does this journal row carry content ABOUT the record? */
+  private rowTouchesRecord(row: JournalRow, recordId: string): boolean {
+    if (row.record_id === recordId || row.id === recordId) return true;
+    const held = this.parseEnvelopeText(row.envelope);
+    return (held?.payload as { target?: string } | undefined)?.target === recordId;
+  }
+
+  /** Tombstone status from the admitted EVENT set — survives `forget()`. */
+  private isTombstoned(recordId: string): boolean {
+    return this.allRows().some(
+      (r) => r.canonical === 1 && ADMITTED_STATES.has(r.state) && r.kind === "tombstoned" && this.rowTouchesRecord(r, recordId),
+    );
   }
 
   /**
@@ -1240,18 +1398,26 @@ export class EventStore {
     record_id: string;
     tombstoned: boolean;
     purged_locally: boolean;
+    forgotten_locally: boolean;
     locations: Array<{ id: string; kind: string; status: string; note: string }>;
     global_erasure_claimed: false;
     statement: string;
   }> {
     const rec = await this.get(recordId);
     const purgedLocally = this.localErasures(recordId).some((e) => e.op === "purge");
+    const forgottenLocally = this.localErasures(recordId).some((e) => e.op === "forget");
+    // From the events, never from the projection row `forget()` can delete.
+    const tombstoned = this.isTombstoned(recordId);
     const rows: Array<{ id: string; kind: string; status: string; note: string }> = [
       {
         id: "this replica",
         kind: "local_store",
-        status: purgedLocally ? "purged" : rec?.status === "tombstoned" ? "tombstoned" : "present",
-        note: purgedLocally ? "local payload bytes destroyed; the event stub and its digest are retained" : "no local purge has run",
+        status: purgedLocally ? "purged" : tombstoned ? "tombstoned" : "present",
+        note: purgedLocally
+          ? "local payload bytes destroyed for every event carrying this record's content; the tombstone's own reason is retained as the authorization, and each event stub keeps its identity and digest"
+          : tombstoned
+            ? "tombstoned and awaiting a local purge"
+            : "no local purge has run",
       },
     ];
     for (const loc of locations) {
@@ -1259,12 +1425,15 @@ export class EventStore {
       else if (loc.kind === "backup") rows.push({ id: loc.id, kind: loc.kind, status: "not_erased", note: "a retained backup still holds the bytes unless it was destroyed and the destruction observed" });
       else if (loc.kind === "carrier_history") rows.push({ id: loc.id, kind: loc.kind, status: "retention_obligation", note: "git history and every clone of it still carry the bytes; removal is a history-rewrite obligation, not an automatic effect" });
       else if (loc.reachable === false) rows.push({ id: loc.id, kind: loc.kind, status: "pending", note: "unreachable replica: the obligation stays open with its age, never silently closed" });
-      else rows.push({ id: loc.id, kind: loc.kind, status: rec?.status === "tombstoned" ? "tombstone_delivered" : "unknown", note: "verified only to the extent this replica holds a receipt" });
+      else rows.push({ id: loc.id, kind: loc.kind, status: tombstoned ? "tombstone_delivered" : "unknown", note: "verified only to the extent this replica holds a receipt" });
     }
     return {
       record_id: recordId,
-      tombstoned: rec?.status === "tombstoned",
+      tombstoned,
       purged_locally: purgedLocally,
+      // `forget` hides the projection row; saying so keeps it distinguishable
+      // from "never tombstoned", which is what it used to look like.
+      forgotten_locally: forgottenLocally,
       locations: rows,
       global_erasure_claimed: false,
       statement:
@@ -1407,6 +1576,11 @@ export class EventStore {
             );
           break;
         }
+        case "sig_replace":
+          // The bytes themselves are on disk, so the replay only has to make
+          // sure the row is re-offered rather than left in its old quarantine.
+          this.db.prepare("UPDATE journal SET state = 'received', reason = NULL WHERE id = ? AND digest = ? AND state = 'quarantined'").run(id, String(line.digest ?? ""));
+          break;
         case "ingest_retry":
           this.db.prepare("UPDATE ingest_attempts SET retry_count = retry_count + 1, last_seen = ? WHERE artifact_id = ?").run(String(line.at ?? ""), String(line.artifact_id ?? ""));
           break;
@@ -1511,8 +1685,40 @@ export class EventStore {
       .filter((e): e is EventEnvelope => e !== null);
   }
 
-  /** The admitted set, projected — what admission decisions are made against. */
+  /**
+   * The admitted set, projected — what admission decisions are made against.
+   *
+   * MEMOIZED, because building it is O(admitted): it reads every admitted
+   * event file and runs the whole reducer. `append()` calls it (through
+   * `validateOptions`) on EVERY write, so a store with n admitted events paid
+   * O(n) per append and O(n^2) to build a corpus — the super-linear append cost
+   * lane 05 measured (p95 crossing 100 ms near 35k events).
+   *
+   * The cache key is the admitted set itself: its size and its highest event
+   * id. Both change whenever an event is admitted, and neither changes when an
+   * event is merely journaled (`local_persisted`) or moves admitted→projected,
+   * which is exactly the invalidation rule the view's content needs. The key is
+   * one indexed aggregate query rather than a scan of the rows.
+   */
+  private viewCache?: { key: string; view: AdmittedView };
+
+  private admittedViewKey(): string {
+    const row = this.db
+      .prepare("SELECT COUNT(*) AS n, MAX(id) AS top FROM journal WHERE canonical = 1 AND state IN ('admitted','projected')")
+      .get() as { n: number | bigint; top: string | null } | undefined;
+    return `${String(row?.n ?? 0)}:${row?.top ?? ""}`;
+  }
+
   private admittedView(): AdmittedView {
+    const key = this.admittedViewKey();
+    const cached = this.viewCache;
+    if (cached && cached.key === key) return cached.view;
+    const view = this.buildAdmittedView();
+    this.viewCache = { key, view };
+    return view;
+  }
+
+  private buildAdmittedView(): AdmittedView {
     const envelopes = this.admittedEnvelopes();
     const byId = new Map(envelopes.map((e) => [e.id, e]));
     const { records } = projectEvents(envelopes);
@@ -1547,6 +1753,19 @@ export class EventStore {
       if (rec.revoked || rec.status === "revoked") revokedKeys.add(body.key_id);
       if (body.kind === "human") {
         const created = byId.get(rec.record_id);
+        // The body and the provenance must be read from the SAME point in the
+        // record's history. Today nothing can move `key_id`, but the invariant
+        // was incidental: any future lifecycle kind that merged into a
+        // principal body would let a `write`-capability event mint a trusted
+        // human signing key — exactly the C12 hole this closure exists to shut.
+        // So the key in the projected body must be the key the create event
+        // declared; a record whose body has drifted is dropped from the
+        // closure with a logged reason rather than silently trusted.
+        const declared = (created?.payload as { key_id?: string } | undefined)?.key_id;
+        if (declared !== undefined && declared !== body.key_id) {
+          this.logAdmission(rec.record_id, rec.version, "trust_withheld", `principal ${rec.record_id} projects key_id ${body.key_id} but its create event declared ${declared}; not a trusted signer`);
+          continue;
+        }
         humanPrincipals.push({ keyId: body.key_id, ...(created ? { event: created } : {}) });
       }
     }
@@ -1627,13 +1846,46 @@ export class EventStore {
       return { ok: true };
     }
     if (!membership) {
-      // No policy in this event's ANCESTRY: proposals are allowed, authority-
-      // changing kinds are not.
-      // The one exception is the first membership record itself, which has to
-      // be creatable or the store could never acquire a policy at all.
-      if (capability === "write") return { ok: true };
-      if (ev.kind === "created" && ev.record?.type === "membership") return { ok: true };
-      return { ok: false, reason: `no membership policy is a causal ancestor of this event: ${capability} is default-deny until one is`, terminal: false };
+      /**
+       * No policy in this event's ANCESTRY.
+       *
+       * `parents` is a field the AUTHOR controls, so "no policy in my ancestry"
+       * cannot be treated as "this store has no policy": a principal with no
+       * grant anywhere could simply set `parents: []` and have its writes
+       * admitted, while the identical event that honestly cited the policy was
+       * rejected. The replica's own admitted set is what decides which of the
+       * two situations this is:
+       *   - the replica holds NO membership at all → genuine bootstrap, allow
+       *     the first membership and ordinary writes, because otherwise a store
+       *     could never acquire a policy;
+       *   - the replica HOLDS a policy but this event does not descend from one
+       *     → quarantined `no_policy_yet`, retryable, so a later delivery of
+       *     the real ancestry can clear it (ADR §4.3.1).
+       */
+      /**
+       * The BOOTSTRAP set is exempt by TYPE, not by ancestry.
+       *
+       * A `principal` record is an identity declaration and grants nothing —
+       * the chain-of-trust closure decides who may sign, the membership decides
+       * who may act — and the first `membership` must be creatable or the store
+       * could never acquire a policy at all. Both legitimately precede the
+       * policy in causal order (the membership names the principals as parents),
+       * so neither can be required to descend from one.
+       */
+      if (ev.kind === "created" && (ev.record?.type === "membership" || ev.record?.type === "principal")) return { ok: true };
+      // "This replica knows of a policy" includes one still working through
+      // admission: otherwise an event evaluated earlier in the same batch than
+      // the membership would slip through on the bootstrap exemption, which is
+      // the arrival-order bypass in a different coat.
+      if (!this.replicaKnowsAPolicy()) {
+        if (capability === "write") return { ok: true };
+        return { ok: false, reason: `no membership policy has been admitted on this replica: ${capability} is default-deny until one is`, terminal: false };
+      }
+      return {
+        ok: false,
+        reason: `this replica holds a membership policy but no policy is a causal ancestor of this event — ${capability} cannot be judged (no_policy_yet)`,
+        terminal: false,
+      };
     }
     const body = membership.body as { members?: Array<{ principal: string; roles: string[]; scopes: Scope[] }> };
     for (const member of body.members ?? []) {
@@ -1708,6 +1960,7 @@ function toRow(r: Record<string, unknown>): JournalRow {
     parents: String(r.parents),
     file: String(r.file),
     first_seen: String(r.first_seen ?? ""),
+    purged: Number(r.purged ?? 0),
     envelope: r.envelope === null || r.envelope === undefined ? null : String(r.envelope),
     state: String(r.state) as DeliveryState,
     reason: r.reason === null || r.reason === undefined ? null : String(r.reason),

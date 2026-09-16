@@ -227,7 +227,7 @@ function statusOf(run: WorkerRun): {
   return run.out?.status as never;
 }
 
-// The eight durable boundaries, in pipeline order (oracle §1 `D1`..`D7`).
+// The nine durable kill points, in pipeline order (oracle §1 `D1`..`D7`).
 const KILL_POINTS = [
   { scn: "KS-1", step: "event_file_written", side: "producer" as const, note: "D1 internals — the B branch point" },
   { scn: "KS-2", step: "journal_row_written", side: "producer" as const, note: "after D1, before D2 — unreachable under the declared boundary" },

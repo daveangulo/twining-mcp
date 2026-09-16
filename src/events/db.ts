@@ -27,7 +27,7 @@ export interface SqliteDatabase {
   close(): void;
 }
 
-export const EVENTS_SCHEMA_VERSION = 2;
+export const EVENTS_SCHEMA_VERSION = 3;
 
 /**
  * journal: one row per (event id, digest) OFFERED to this replica.
@@ -68,6 +68,8 @@ CREATE TABLE IF NOT EXISTS journal (
    * honestly reported as lost rather than resurrected from this column.
    */
   envelope       TEXT,
+  /** 1 when this event's payload was destroyed locally by purge (C20). */
+  purged         INTEGER NOT NULL DEFAULT 0,
   state          TEXT NOT NULL,
   reason         TEXT,
   pending_on     TEXT,
@@ -212,6 +214,8 @@ export function openEventsDatabase(twiningDir: string): SqliteDatabase {
     // the pre-v2 behaviour rather than a failure.
     const cols = db.prepare("PRAGMA table_info(journal);").all() as Array<{ name: string }>;
     if (!cols.some((c) => String(c.name) === "envelope")) db.exec("ALTER TABLE journal ADD COLUMN envelope TEXT;");
+    // v2 → v3: the purge marker. A row without it is simply not purged.
+    if (!cols.some((c) => String(c.name) === "purged")) db.exec("ALTER TABLE journal ADD COLUMN purged INTEGER NOT NULL DEFAULT 0;");
     db.exec(`PRAGMA user_version = ${EVENTS_SCHEMA_VERSION};`);
   }
   return db;

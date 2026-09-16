@@ -202,8 +202,14 @@ describe("C20 — the three end states are observably distinct", () => {
     // and the digest remains, and the tombstone is enumerable.
     const purgedFile = path.join(dir, "events", "2026-09", `${f.rec9XKM.id as string}.json`);
     const stub = JSON.parse(fs.readFileSync(purgedFile, "utf8")) as Record<string, unknown>;
-    expect(stub.purged).toBe(true);
+    // The stub stays a SCHEMA-VALID envelope: only the payload is redacted, so
+    // the causal graph and the admitted set survive a rebuild while the content
+    // does not. Dropping the whole envelope made rebuild report an acknowledged
+    // event lost for a supported operation.
+    expect((stub.payload as { purged?: boolean }).purged).toBe(true);
+    expect(stub.id).toBe(f.rec9XKM.id);
     expect(stub.digest).toBe(f.rec9XKM.digest);
+    expect(stub.record).toEqual({ type: "decision", id: f.rec9XKM.id });
     expect(JSON.stringify(stub)).not.toContain("vault token rotation runbook");
     expect(store.localErasures(f.rec9XKM.id as string).map((e) => e.op)).toEqual(["purge"]);
     store.close();
@@ -526,6 +532,93 @@ describe("C20 — delivery states, restore and the honesty of erasure claims", (
     expect(attempt.purged).toBe(false);
     expect(attempt.reason).toContain("tombstoned");
     expect((await store.get(f.rec5CQP.id as string))?.body).not.toEqual({});
+    store.close();
+  });
+
+  it("R11: purge destroys EVERY event carrying the record's content, and names what it deliberately keeps", async () => {
+    const w = c20World();
+    const f = fixture(w);
+    const dir = tempDir("c20-r11");
+    const a = acts(w, f);
+    // An `amended` event carries content ABOUT the record in its own payload.
+    const amend = buildEvent({
+      kind: "amended",
+      record: { type: "decision", id: f.rec9XKM.id as string },
+      scope: { repo: w.repo, path: SECRETS },
+      producer: { principal: w.marisol.principal, kind: "human", host: w.marisol.host },
+      parents: [f.rec9XKM.id as string],
+      evidence_class: "human_ruling",
+      payload: { target: f.rec9XKM.id as string, add_affected_files: ["vault/rotate-token-abc123.sh"], add_affected_symbols: [], reason: "names the secret path" },
+      signWith: { keyId: w.marisol.keyId, kp: w.marisol.kp },
+    });
+    const store = await replica(w, [...f.infra, ...f.seed, amend, ...a.all], dir);
+    const result = await store.purge(f.rec9XKM.id as string);
+    expect(result.purged).toBe(true);
+    expect(result.files_removed).toBeGreaterThan(1); // the created event AND the amendment
+
+    // Nothing anywhere under events/ still carries the secret.
+    const leaked: string[] = [];
+    const walk = (d: string): void => {
+      for (const entry of fs.readdirSync(d, { withFileTypes: true })) {
+        const abs = path.join(d, entry.name);
+        if (entry.isDirectory()) walk(abs);
+        else if (fs.readFileSync(abs, "utf8").includes("rotate-token-abc123")) leaked.push(abs);
+      }
+    };
+    walk(path.join(dir, "events"));
+    expect(leaked).toEqual([]);
+
+    // ...and what is kept on purpose is NAMED, rather than covered by an
+    // unqualified "local payload bytes destroyed".
+    expect(result.retained.map((r) => r.kind)).toContain("tombstoned");
+    expect(result.retained[0]?.field).toBe("payload.reason");
+    const report = await store.erasureReport(f.rec9XKM.id as string);
+    expect(report.locations[0]?.note).toContain("the tombstone's own reason is retained");
+    store.close();
+  });
+
+  it("R12: purge does not break rebuild — the admitted set survives and descendants do not regress", async () => {
+    const w = c20World();
+    const f = fixture(w);
+    const dir = tempDir("c20-r12");
+    const a = acts(w, f);
+    const store = await replica(w, [...f.infra, ...f.seed, ...a.all], dir);
+    await store.purge(f.rec9XKM.id as string);
+
+    const rebuilt = await store.rebuild();
+    // The R07 alarm must NOT fire for a supported operation.
+    expect(rebuilt.acknowledged_events_lost).toBe(0);
+    expect(rebuilt.lost).toEqual([]);
+    // The tombstone that authorized the erasure is still admitted, so the
+    // obligation stays provable from the replica's own state.
+    expect(store.journalRows().find((r) => r.id === a.purge.id && r.canonical)?.state).toBe("projected");
+    expect((await store.get(f.rec9XKM.id as string))?.status).toBe("tombstoned");
+    // ...and nothing regressed to pending_parents.
+    expect(store.journalRows().filter((r) => r.state === "pending_parents")).toEqual([]);
+    // The content is still gone after the rebuild.
+    expect(JSON.stringify(await store.query({ include_retired: true, include_archived: true }))).not.toContain("vault token rotation runbook");
+    store.close();
+  });
+
+  it("R13: forget() cannot disable purge or make the erasure report claim the record was never tombstoned", async () => {
+    const w = c20World();
+    const f = fixture(w);
+    const a = acts(w, f);
+    const store = await replica(w, [...f.infra, ...f.seed, ...a.all], tempDir("c20-r13"));
+
+    // A purely local view operation must not reach the compliance surface.
+    expect(store.forget(f.rec9XKM.id as string).forgotten).toBe(true);
+    expect(await store.get(f.rec9XKM.id as string)).toBeNull();
+
+    const report = await store.erasureReport(f.rec9XKM.id as string);
+    expect(report.tombstoned).toBe(true); // derived from the EVENTS
+    expect(report.forgotten_locally).toBe(true); // ...and forget is visible, not invisible
+    expect(report.locations[0]?.status).toBe("tombstoned");
+
+    // ...and the compliance ACTION is still reachable.
+    const result = await store.purge(f.rec9XKM.id as string);
+    expect(result.purged).toBe(true);
+    expect(result.reason).toBeUndefined();
     store.close();
   });
 

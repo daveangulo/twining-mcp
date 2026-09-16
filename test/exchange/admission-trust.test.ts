@@ -10,6 +10,7 @@
  */
 import { describe, expect, it, afterAll } from "vitest";
 
+import { signEvent } from "../../src/contracts/index.js";
 import { EventStore } from "../../src/events/event-store.js";
 import {
   admitAndProject,
@@ -212,6 +213,64 @@ describe("chain of trust — a human key becomes a trusted signer only by bootst
   });
 });
 
+describe("R10 — a forged signature cannot silently suppress a legitimate event", () => {
+  it("a same-digest copy with a DIFFERENT signature is retained and logged, not discarded as a redelivery", async () => {
+    const w = makeWorld();
+    const attacker = makeIdentity();
+    // The attacker's key is deliberately NOT bootstrapped and has no principal
+    // record: a key nobody vouched for. (A key that IS bound to a principal
+    // record is caught a step earlier, by the author-assertion check — C24 C-5.)
+    const store = newStore(w, w.hostA, tempDir("sig-squat"));
+    const principals = principalEvents(w.repo, w.hostA, [{ id: w.human, kind: "human" }, { id: w.hostA, kind: "agent" }]);
+    const membership = membershipEvent(
+      w.repo,
+      w.storeId,
+      w.hostA,
+      [{ principal: w.hostA.principal, roles: ["write"], scopes: [{ repo: w.repo }] }],
+      principals.map((e) => e.id as string),
+    );
+    const infra = [...principals, membership];
+    for (const e of infra) store.receive(e, "fs:carrier", `events/${(e as { id: string }).id}`);
+    await admitAndProject(store);
+
+    const legitimate = created("decision", {
+      scope: { repo: w.repo, path: AUTH },
+      producer: { principal: w.hostA.principal, kind: "agent", host: w.hostA.host },
+      parents: infra.map((e) => e.id as string),
+      evidence_class: "proposal",
+      payload: { summary: "the real event", rationale: "authored honestly" },
+      signWith: { keyId: w.hostA.keyId, kp: w.hostA.kp },
+    });
+    // The digest EXCLUDES sig, so a copy signed by someone else hashes
+    // identically. Pre-sending it used to take ownership of the id and make the
+    // genuine event a silent no-op.
+    const squatter = { ...(legitimate as Record<string, unknown>) };
+    squatter.sig = { alg: "ed25519", key: attacker.keyId, value: signEvent(legitimate as Record<string, unknown>, attacker.kp.privateKeyPkcs8Pem) };
+    expect(squatter.digest).toBe(legitimate.digest);
+    expect(JSON.stringify(squatter.sig)).not.toBe(JSON.stringify(legitimate.sig));
+
+    store.receive(squatter, "attacker", "events/squat");
+    const second = store.receive(legitimate, "fs:carrier", "events/real");
+    await admitAndProject(store);
+
+    // The second copy is NOT silently discarded: the competition is recorded
+    // and its bytes are retained.
+    expect(second.reason).toBe("competing_signature");
+    expect(store.admissionLog(legitimate.id as string).some((r) => r.outcome === "competing_signature")).toBe(true);
+    expect(store.ingestAttempts().some((a) => a.reason === "competing_signature")).toBe(true);
+
+    // ...and the squatter cannot SILENCE it: the attacker's key resolves to no
+    // principal record, so its copy is quarantined as an unknown signer, which
+    // lets the genuine copy take the row and be admitted.
+    const row = store.journalRows().find((r) => r.id === legitimate.id && r.canonical);
+    expect(["admitted", "projected"]).toContain(row?.state);
+    const held = (await store.events({})).find((e) => e.id === legitimate.id);
+    expect(JSON.stringify(held?.sig)).toBe(JSON.stringify(legitimate.sig));
+    expect((await store.get(legitimate.id as string))?.status).toBe("active");
+    store.close();
+  });
+});
+
 // -------------------------------- capability against the causal ancestry
 
 describe("capability is judged against the event's ANCESTOR membership, never the latest", () => {
@@ -334,11 +393,118 @@ describe("capability is judged against the event's ANCESTOR membership, never th
 
     const row = store.journalRows().find((r) => r.id === orphanRuling.id && r.canonical);
     expect(row?.state).toBe("quarantined");
-    expect(row?.reason).toBe("unauthorized_principal");
+    // `no_policy_yet` and `unauthorized_principal` are different answers: the
+    // first says the policy is not REACHABLE from this event, the second says a
+    // reachable policy does not name this principal. Both retry; conflating
+    // them loses the distinction ADR §4.3.1 exists to keep.
+    expect(row?.reason).toBe("no_policy_yet");
     expect(store.admissionLog(orphanRuling.id as string).at(-1)?.reason).toContain("causal ancestor");
     // Retryable: the status surface counts it as such rather than as terminal.
     const st = await store.exchangeStatus();
     expect(st.quarantined.retryable).toBeGreaterThan(0);
+    store.close();
+  });
+
+  it("R9: an event that OMITS its parents cannot bypass the policy — self-declared ancestry is not a grant", async () => {
+    const { w, infra } = world();
+    const store = newStore(w, w.hostA, tempDir("ancestry-bypass"));
+    const stranger = makeIdentity();
+    // `parents` is a field the AUTHOR controls. A principal with no grant
+    // anywhere used to be admitted simply by declaring no ancestry, while the
+    // identical event that honestly cited the policy was rejected.
+    const bypass = created("decision", {
+      scope: { repo: w.repo, path: AUTH },
+      producer: { principal: stranger.principal, kind: "agent", host: stranger.host },
+      parents: [],
+      evidence_class: "proposal",
+      payload: { summary: "admitted by omitting parents", rationale: "bypass" },
+    });
+    for (const e of [...infra, bypass]) store.receive(e, "fs:carrier", `events/${(e as { id: string }).id}`);
+    await admitAndProject(store);
+
+    const row = store.journalRows().find((r) => r.id === bypass.id && r.canonical);
+    expect(row?.state).toBe("quarantined");
+    expect(row?.reason).toBe("no_policy_yet");
+    expect(await store.get(bypass.id as string)).toBeNull();
+    // Retryable, not terminal: a later delivery of the real ancestry clears it.
+    expect((await store.exchangeStatus()).quarantined.retryable).toBeGreaterThan(0);
+    store.close();
+  });
+
+  it("R14: an event whose parent was terminally REJECTED terminates instead of waiting for ever", async () => {
+    const { w, infra, infraIds } = world();
+    const store = newStore(w, w.hostA, tempDir("dead-parent"));
+    const stranger = makeIdentity();
+    // The parent is rejected on this replica (a reachable policy denies it).
+    const deadParent = created("decision", {
+      scope: { repo: w.repo, path: AUTH },
+      producer: { principal: stranger.principal, kind: "agent", host: stranger.host },
+      parents: infraIds,
+      evidence_class: "proposal",
+      payload: { summary: "denied", rationale: "no grant" },
+    });
+    const child = created("decision", {
+      scope: { repo: w.repo, path: AUTH },
+      producer: { principal: w.hostA.principal, kind: "agent", host: w.hostA.host },
+      parents: [deadParent.id as string],
+      evidence_class: "proposal",
+      payload: { summary: "depends on a dead parent", rationale: "unsatisfiable" },
+      signWith: { keyId: w.hostA.keyId, kp: w.hostA.kp },
+    });
+    for (const e of [...infra, deadParent, child]) store.receive(e, "fs:carrier", `events/${(e as { id: string }).id}`);
+    await admitAndProject(store);
+
+    expect(store.journalRows().find((r) => r.id === deadParent.id && r.canonical)?.state).toBe("rejected");
+    const row = store.journalRows().find((r) => r.id === child.id && r.canonical);
+    expect(row?.state).toBe("rejected"); // terminal, not pending for ever
+    expect(row?.reason).toBe("unsatisfiable_parent");
+    expect(store.admissionLog(child.id as string).at(-1)?.reason).toContain(deadParent.id as string);
+    // ...and it is no longer counted as an in-flight prerequisite.
+    const st = await store.exchangeStatus();
+    expect(st.inbound.pending_parents.map((p) => p.id)).not.toContain(child.id as string);
+    expect(st.rejected.by_reason.unsatisfiable_parent).toBe(1);
+    store.close();
+  });
+
+  it("a parent that simply has not ARRIVED still waits — absence is not refusal", async () => {
+    const { w, infra, infraIds } = world();
+    const store = newStore(w, w.hostA, tempDir("absent-parent"));
+    const never = created("decision", {
+      scope: { repo: w.repo, path: AUTH },
+      producer: { principal: w.hostA.principal, kind: "agent", host: w.hostA.host },
+      parents: infraIds,
+      evidence_class: "proposal",
+      payload: { summary: "never delivered", rationale: "absent" },
+      signWith: { keyId: w.hostA.keyId, kp: w.hostA.kp },
+    });
+    const child = created("decision", {
+      scope: { repo: w.repo, path: AUTH },
+      producer: { principal: w.hostA.principal, kind: "agent", host: w.hostA.host },
+      parents: [never.id as string],
+      evidence_class: "proposal",
+      payload: { summary: "waits", rationale: "in flight" },
+      signWith: { keyId: w.hostA.keyId, kp: w.hostA.kp },
+    });
+    for (const e of [...infra, child]) store.receive(e, "fs:carrier", `events/${(e as { id: string }).id}`);
+    await admitAndProject(store);
+    expect(store.journalRows().find((r) => r.id === child.id && r.canonical)?.state).toBe("pending_parents");
+    store.close();
+  });
+
+  it("R15: a principal whose projected key_id drifts from its create event is dropped from the trusted set", async () => {
+    const w = makeWorld();
+    const store = newStore(w, w.hostA, tempDir("trust-drift"));
+    // The closure reads the body from the projection and the provenance from
+    // the create event; if a future lifecycle kind ever moves `key_id`, the two
+    // must not silently disagree. The guard is asserted directly.
+    const principals = principalEvents(w.repo, w.hostA, [{ id: w.human, kind: "human" }, { id: w.hostA, kind: "agent" }]);
+    for (const e of principals) store.receive(e, "fs:carrier", `events/${(e as { id: string }).id}`);
+    await admitAndProject(store);
+    const rec = await store.get(principals[0]?.id as string);
+    expect((rec?.body as { key_id: string }).key_id).toBe(w.human.keyId);
+    // The invariant the guard defends: projected key_id === create-event key_id.
+    const createEvent = (await store.events({})).find((e) => e.id === principals[0]?.id);
+    expect((createEvent?.payload as { key_id: string }).key_id).toBe((rec?.body as { key_id: string }).key_id);
     store.close();
   });
 

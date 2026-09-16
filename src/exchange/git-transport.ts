@@ -78,6 +78,40 @@ export interface MalformedArtifact {
   reason: "unparseable" | "conflict_markers" | "truncated";
 }
 
+/**
+ * Strip userinfo from a remote before it becomes an identity.
+ *
+ * The transport id is written into cursor FILES that are committed to the
+ * exchange ref and pushed to every replica, so a remote configured as
+ * `https://x-access-token:<token>@host/org/repo.git` would publish the token to
+ * everyone who can read the branch. Redaction happens once, at construction, so
+ * the id stays stable for the cursors that already reference it.
+ */
+export function redactRemote(remote: string): string {
+  try {
+    const u = new URL(remote);
+    if (u.username === "" && u.password === "") return remote;
+    u.username = "";
+    u.password = "";
+    return `${u.protocol}//***@${u.host}${u.pathname}${u.search}`;
+  } catch {
+    // Not a URL (a remote NAME, or scp-style user@host:path). The scp form can
+    // carry a user but never a password, and a bare name carries nothing.
+    return remote.replace(/^[^@/\s]*:[^@/\s]*@/, "***@");
+  }
+}
+
+/** Remove any credential-bearing URL from text that will be shown or stored. */
+export function redactText(text: string, ...remotes: Array<string | undefined>): string {
+  let out = text.replace(/([a-z][a-z0-9+.-]*:\/\/)[^@/\s]*:[^@/\s]*@/gi, "$1***@");
+  for (const r of remotes) {
+    if (r === undefined || r === "") continue;
+    const red = redactRemote(r);
+    if (red !== r) out = out.split(r).join(red);
+  }
+  return out;
+}
+
 export type GitExchangeMode = "exchange_ref" | "source_branch";
 
 export interface GitTransportOptions {
@@ -111,6 +145,17 @@ export interface GitTransportOptions {
  * event, which is the identity failure the case is written against. Cursors are
  * the one excluded subtree: they are consumer state, not events.
  */
+/**
+ * A principal rendered as exactly one filesystem-safe path segment.
+ *
+ * Injective: percent-encoding is reversible and encodes `/`, `.` and `:`, so
+ * two distinct principals can never collide on one cursor file — the property
+ * ADR §5's single-writer cursors depend on.
+ */
+export function cursorFileName(principal: string): string {
+  return encodeURIComponent(principal).replace(/\*/g, "%2A");
+}
+
 function isCarriedArtifact(rel: string): boolean {
   return rel.endsWith(".json") && !rel.startsWith("cursors/");
 }
@@ -137,24 +182,52 @@ export class GitTransport implements Transport {
   readonly branch: string;
   readonly mode: GitExchangeMode;
   private readonly remote?: string;
+  /** The remote with any userinfo stripped — the only form that leaves this object. */
+  private readonly remoteLabel?: string;
   private readonly worktreeDir: string;
+  /** Where cursors live when the carrier has no worktree of its own. */
+  private readonly cursorFallbackDir: string;
   private readonly now: () => string;
   private ensured = false;
+  /**
+   * Sticky: set when a union violation was detected. Once set, this carrier
+   * refuses to push, because republishing a tree we know has lost a blob would
+   * make the loss authoritative for every other replica.
+   */
+  private unionViolated: UnionViolationError | null = null;
 
   constructor(opts: GitTransportOptions) {
     this.repoDir = opts.repoDir;
     this.branch = opts.branch ?? EXCHANGE_BRANCH;
     this.mode = opts.mode ?? "exchange_ref";
-    if (opts.remote !== undefined) this.remote = opts.remote;
+    if (opts.remote !== undefined) {
+      this.remote = opts.remote;
+      this.remoteLabel = redactRemote(opts.remote);
+    }
     this.worktreeDir =
       this.mode === "exchange_ref"
         ? path.join(opts.twiningDir, "exchange")
         : path.join(opts.repoDir, opts.sourcePath ?? "twining-exchange");
+    this.cursorFallbackDir = path.join(opts.twiningDir, "exchange-cursors");
     this.now = opts.now ?? (() => new Date().toISOString());
   }
 
   id(): string {
-    return `git:${this.remote ?? this.repoDir}/${this.branch}`;
+    return `git:${this.remoteLabel ?? this.repoDir}/${this.branch}`;
+  }
+
+  /** Whether this carrier has refused to push because it detected a loss. */
+  get violation(): UnionViolationError | null {
+    return this.unionViolated;
+  }
+
+  /**
+   * Clear the sticky refusal after an operator has repaired the branch.
+   * Deliberately explicit: nothing clears it automatically, because the whole
+   * point is that a detected loss must not be able to leave this host.
+   */
+  clearViolation(): void {
+    this.unionViolated = null;
   }
 
   /** Where the carrier's own checkout lives — the ONLY tree publish may touch. */
@@ -199,12 +272,66 @@ export class GitTransport implements Transport {
         else createOrphanBranch(this.repoDir, this.branch, "twining exchange: genesis");
       }
       fs.mkdirSync(path.dirname(this.worktreeDir), { recursive: true });
-      // A stale administrative record from a previously removed directory would
-      // make `worktree add` refuse; pruning is safe and touches no working tree.
-      gitTry(this.repoDir, ["worktree", "prune"]);
+      this.ensureIgnored();
+      // Remove only OUR OWN stale administrative record. A bare
+      // `git worktree prune` prunes EVERY linked worktree whose directory is
+      // momentarily absent — an unmounted volume, a directory being moved, a
+      // sibling agent lane — and leaves those as dead husks. The blast radius
+      // in a repo full of `.claude/worktrees/` lanes is not hypothetical.
+      gitTry(this.repoDir, ["worktree", "remove", "--force", this.worktreeDir]);
       git(this.repoDir, ["worktree", "add", this.worktreeDir, this.branch]);
     }
     this.ensured = true;
+    // A half-written publish must not poison the next one: anything uncommitted
+    // in the EXCHANGE worktree is residue by definition, because every carried
+    // file is written and committed in the same call.
+    this.cleanResidue();
+  }
+
+
+  /**
+   * Discard uncommitted state in the EXCHANGE worktree only.
+   *
+   * Scoped with an explicit cwd and `-- .`, so it can touch nothing outside the
+   * carrier's own checkout. This is not a working-tree reset of the user's
+   * repository; the exchange worktree holds no human-authored state.
+   */
+  private cleanResidue(): void {
+    if (this.mode !== "exchange_ref") return;
+    gitTry(this.worktreeDir, ["reset", "--quiet", "--", "."]);
+    gitTry(this.worktreeDir, ["checkout", "--", "."]);
+    gitTry(this.worktreeDir, ["clean", "-qfd", "--", "."]);
+  }
+
+  /**
+   * Make sure the exchange worktree is invisible to the user's `git status`.
+   *
+   * A project that TRACKS `.twining/` (this one does) would otherwise see the
+   * carrier's linked worktree as an untracked embedded repository, and a
+   * routine `git add -A` would sweep it into the source branch as a gitlink to
+   * an orphan commit nothing can resolve. `.git/info/exclude` is local, is not
+   * part of the working tree, and is not shared — so writing there changes
+   * nothing the user would commit. The canonical fix is an `exchange/` entry in
+   * the store's own .gitignore; this is the belt-and-braces that makes the
+   * carrier safe on a store that predates it.
+   */
+  private ensureIgnored(): void {
+    if (gitTry(this.repoDir, ["check-ignore", "-q", this.worktreeDir]).status === 0) return;
+    const gitDir = gitTry(this.repoDir, ["rev-parse", "--git-common-dir"]).stdout.trim();
+    if (gitDir === "") return;
+    const abs = path.isAbsolute(gitDir) ? gitDir : path.join(this.repoDir, gitDir);
+    const excludeFile = path.join(abs, "info", "exclude");
+    const rel = path.relative(this.repoDir, this.worktreeDir).split(path.sep).join("/");
+    if (rel.startsWith("..")) return; // outside the repo: nothing to ignore
+    try {
+      fs.mkdirSync(path.dirname(excludeFile), { recursive: true });
+      const current = fs.existsSync(excludeFile) ? fs.readFileSync(excludeFile, "utf8") : "";
+      if (!current.split("\n").includes(`/${rel}`)) {
+        fs.appendFileSync(excludeFile, `${current.endsWith("\n") || current === "" ? "" : "\n"}# twining exchange worktree (not part of the source tree)\n/${rel}\n`);
+      }
+    } catch {
+      /* an unwritable .git is not a reason to refuse to exchange */
+    }
   }
 
   /** Fetch the exchange branch into a remote-tracking ref; returns its sha. */
@@ -241,30 +368,40 @@ export class GitTransport implements Transport {
       const rel = this.relPathFor(ev);
       const abs = path.join(wt, rel);
       const bytes = `${JSON.stringify(ev, null, 2)}\n`;
-      if (fs.existsSync(abs)) {
-        pathByDigest[ev.digest] = rel;
-        continue; // already carried at this path with these bytes
-      }
+      pathByDigest[ev.digest] = rel;
+      // Idempotence is decided against what is COMMITTED, never against what
+      // happens to be sitting in the working tree. A crash between the write
+      // and the commit used to leave the bytes on disk uncommitted; the retry
+      // then saw the file, staged nothing, committed nothing, and returned no
+      // carrier id — so the outbox read it as uncertain and retried into the
+      // same short-circuit for ever. An uncommitted file is not carried.
+      if (this.committedAt(rel)) continue;
       fs.mkdirSync(path.dirname(abs), { recursive: true });
       fs.writeFileSync(abs, bytes);
       staged.push(rel);
-      pathByDigest[ev.digest] = rel;
     }
 
     this.faultHook?.("export_staged");
 
     const before = this.head();
     if (staged.length > 0) {
-      git(wt, ["add", "--", ...staged]);
       if (this.mode === "exchange_ref") {
+        git(wt, ["add", "--", ...staged]);
         this.assertOnlyStaged(wt, staged);
         git(wt, ["commit", "--no-verify", "-m", this.commitMessage(staged.length)]);
       } else {
-        // source_branch mode shares the user's index, so a plain commit would
-        // sweep up whatever they had staged. A pathspec-limited commit narrows
-        // the damage — it does NOT restore non-interference, which this mode
-        // forfeits by definition (ADR §8.2).
+        // source_branch mode shares the user's index, so `git add` would leave
+        // the carrier's paths staged in it afterwards — a gratuitous mutation,
+        // since a pathspec-limited commit takes working-tree contents without
+        // the index. It still does NOT restore non-interference, which this
+        // mode forfeits by definition (ADR §8.2): it commits on the user's
+        // branch. It just does not also dirty their index.
+        // `git add` is unavoidable — a pathspec commit cannot name an untracked
+        // path — but the entries are removed again straight afterwards, so the
+        // carrier leaves the user's index exactly as it found it.
+        git(wt, ["add", "--", ...staged]);
         git(wt, ["commit", "--no-verify", "-m", this.commitMessage(staged.length), "--", ...staged]);
+        gitTry(wt, ["reset", "--quiet", "HEAD", "--", ...staged]);
       }
       this.faultHook?.("committed");
       const after = this.head();
@@ -295,11 +432,28 @@ export class GitTransport implements Transport {
   private relPathFor(ev: EventEnvelope): string {
     const shard = ev.occurred_at.slice(0, 7);
     const primary = path.posix.join("events", shard, `${ev.id}.json`);
-    const abs = path.join(this.worktreeDir, primary);
-    if (!fs.existsSync(abs)) return primary;
-    const held = this.readEnvelopeFile(abs);
+    // Same rule as publish(): only COMMITTED bytes own a path. An uncommitted
+    // file left by a crashed publish must not divert a retry into conflicts/.
+    const committed = this.committedBlob(primary);
+    if (committed === null) return primary;
+    const held = this.decode(committed, primary, "");
     if (held && held.digest === ev.digest) return primary;
     return path.posix.join("conflicts", `${ev.id}.${ev.digest.slice(7, 19)}.json`);
+  }
+
+  /** Is this path present in the exchange branch's committed tree? */
+  private committedAt(rel: string): boolean {
+    const head = this.head();
+    if (!head) return false;
+    return gitTry(this.worktreeDir, ["cat-file", "-e", `${head}:${rel}`]).status === 0;
+  }
+
+  /** The committed bytes at a path, or null when the carrier does not hold it. */
+  private committedBlob(rel: string): string | null {
+    const head = this.head();
+    if (!head) return null;
+    const r = gitTry(this.worktreeDir, ["show", `${head}:${rel}`]);
+    return r.status === 0 ? r.stdout : null;
   }
 
   private commitMessage(n: number): string {
@@ -317,14 +471,27 @@ export class GitTransport implements Transport {
 
   /** Every (path, oid) present on any input side must be present afterwards. */
   private assertUnion(wt: string, sides: string[], merged: string): void {
-    const after = new Map(treeEntries(wt, merged).map((e: TreeEntry) => [e.path, e.oid]));
+    const entries = treeEntries(wt, merged);
+    const after = new Map(entries.map((e: TreeEntry) => [e.path, e.oid]));
+    // Where each blob ENDED UP, by content. The union is a statement about
+    // bytes, not about paths: an add/add resolution relocates the losing side's
+    // bytes into `conflicts/` on purpose, and that is retention, not loss. Any
+    // other relocation — or a blob that is nowhere at all — is the violation.
+    const relocated = new Map<string, string[]>();
+    for (const e of entries) {
+      const at = relocated.get(e.oid);
+      if (at) at.push(e.path);
+      else relocated.set(e.oid, [e.path]);
+    }
     const dropped: string[] = [];
     const rewritten: string[] = [];
     for (const side of sides) {
       for (const e of treeEntries(wt, side)) {
-        const got = after.get(e.path);
-        if (got === undefined) dropped.push(e.path);
-        else if (got !== e.oid) rewritten.push(e.path);
+        if (after.get(e.path) === e.oid) continue; // kept in place
+        const elsewhere = (relocated.get(e.oid) ?? []).filter((p) => p.startsWith("conflicts/"));
+        if (elsewhere.length > 0) continue; // retained under conflicts/, by design
+        if (after.has(e.path)) rewritten.push(e.path);
+        else dropped.push(e.path);
       }
     }
     if (rewritten.length > 0) throw new UnionViolationError("rewritten", rewritten);
@@ -350,23 +517,90 @@ export class GitTransport implements Transport {
     } else {
       const r = gitTry(wt, ["merge", "--no-edit", "--allow-unrelated-histories", "-m", "twining exchange: union merge", remoteHead]);
       if (r.status !== 0) {
-        const conflicted = gitTry(wt, ["diff", "--name-only", "--diff-filter=U", "-z"])
-          .stdout.split("\0")
-          .filter((p) => p !== "");
-        gitTry(wt, ["merge", "--abort"]);
-        throw new UnionViolationError("merge_conflict", conflicted, r.stderr.trim());
+        // An add/add on the SAME event path with different bytes: two replicas
+        // minted the same id offline. Resolvable without losing anything — keep
+        // the incumbent at its path and carry BOTH sides under conflicts/, which
+        // is exactly what the single-replica case already does. Aborting here
+        // wedged the carrier permanently: mergeRemote runs from publish AND
+        // poll, so the replica could neither send nor receive again.
+        if (!this.resolveAddAdd(wt)) {
+          const conflicted = gitTry(wt, ["diff", "--name-only", "--diff-filter=U", "-z"])
+            .stdout.split("\0")
+            .filter((p) => p !== "");
+          gitTry(wt, ["merge", "--abort"]);
+          this.unionViolated = new UnionViolationError("merge_conflict", conflicted, redactText(r.stderr.trim(), this.remote));
+          throw this.unionViolated;
+        }
       }
     }
     const merged = this.head();
-    if (merged) this.assertUnion(wt, [localHead, remoteHead], merged);
+    if (!merged) return;
+    try {
+      this.assertUnion(wt, [localHead, remoteHead], merged);
+    } catch (err) {
+      // A CLEAN merge that dropped or rewrote a blob is the case this check
+      // exists for, and git has already committed it. Roll the exchange
+      // worktree back to the pre-merge tip — the rollback `merge --abort` gives
+      // the conflict path — and refuse to push until an operator repairs it.
+      // Without the reset the violation never recurs (the next mergeRemote
+      // sees remoteHead as an ancestor and returns early) and the next publish
+      // pushes the loss upstream, where it becomes authoritative for everyone.
+      gitTry(wt, ["reset", "--hard", localHead]);
+      this.unionViolated = err instanceof UnionViolationError ? err : new UnionViolationError("dropped", [], String(err));
+      throw this.unionViolated;
+    }
+  }
+
+  /**
+   * Resolve an add/add conflict on carried artifacts without losing bytes.
+   *
+   * Every conflicted path keeps OUR side at its own path and gains BOTH sides
+   * under `conflicts/<id>.<digest12>.json`, so the union invariant holds by
+   * construction and the consumer gets to refuse the rival copy for itself
+   * (R07) rather than never seeing it. Returns false when a conflict is on a
+   * path this rule does not own, in which case the caller aborts.
+   */
+  private resolveAddAdd(wt: string): boolean {
+    const conflicted = gitTry(wt, ["diff", "--name-only", "--diff-filter=U", "-z"])
+      .stdout.split("\0")
+      .filter((p) => p !== "");
+    if (conflicted.length === 0) return false;
+    if (!conflicted.every((rel) => isCarriedArtifact(rel))) return false;
+
+    for (const rel of conflicted) {
+      const ours = gitTry(wt, ["show", `:2:${rel}`]).stdout;
+      const theirs = gitTry(wt, ["show", `:3:${rel}`]).stdout;
+      if (ours === "" && theirs === "") return false;
+      const keep = ours !== "" ? ours : theirs;
+      fs.writeFileSync(path.join(wt, rel), keep);
+      git(wt, ["add", "--", rel]);
+      for (const side of [ours, theirs]) {
+        if (side === "" || side === keep) continue;
+        const decoded = this.decode(side, rel, "");
+        if (!decoded) continue;
+        const crel = path.posix.join("conflicts", `${decoded.envelope.id}.${decoded.digest.slice(7, 19)}.json`);
+        const cabs = path.join(wt, crel);
+        if (fs.existsSync(cabs)) continue;
+        fs.mkdirSync(path.dirname(cabs), { recursive: true });
+        fs.writeFileSync(cabs, side);
+        git(wt, ["add", "--", crel]);
+      }
+    }
+    git(wt, ["commit", "--no-verify", "-m", "twining exchange: union merge (add/add resolved, both sides retained)"]);
+    return true;
   }
 
   private pushBranch(): void {
     if (!this.remote) return;
+    // A carrier that has SEEN a union violation must never publish again until
+    // an operator repairs it: pushing a tree we know has lost a blob makes the
+    // loss authoritative for every replica that fetches it.
+    if (this.unionViolated) {
+      throw new Error(`git exchange: refusing to push — a union violation was detected and not repaired (${this.unionViolated.message})`);
+    }
     const dir = this.mode === "exchange_ref" ? this.wt : this.repoDir;
-    const src = this.mode === "exchange_ref" ? "HEAD" : "HEAD";
-    const r = gitTry(dir, ["push", this.remote, `${src}:refs/heads/${this.branch}`]);
-    if (r.status !== 0) throw new Error(`git exchange: push failed — ${r.stderr.trim()}`);
+    const r = gitTry(dir, ["push", this.remote, `HEAD:refs/heads/${this.branch}`]);
+    if (r.status !== 0) throw new Error(`git exchange: push failed — ${redactText(r.stderr.trim(), this.remote)}`);
   }
 
   /** The commit that last touched a carried path — the event's carrier id. */
@@ -516,11 +750,23 @@ export class GitTransport implements Transport {
       this.faults.dropNextAck = false;
       return; // the carrier never learns this consumer moved
     }
-    const wt = this.wt;
-    const rel = path.posix.join("cursors", `${consumer}.json`);
+    // In source_branch mode the "worktree" IS the user's checkout, and the
+    // cursor is consumer state rather than source: it goes beside the store, so
+    // the mode's forfeit stays bounded to the commits it declares it makes.
+    const wt = this.mode === "exchange_ref" ? this.wt : this.cursorFallbackDir;
+    fs.mkdirSync(wt, { recursive: true });
+    // ONE path segment, always. `path.posix.join` normalizes, so a principal
+    // like `agent://peer` collapsed onto the same file as `agent:/peer` — two
+    // distinct consumers silently sharing one single-writer cursor — and a
+    // principal containing `../` escaped the worktree entirely and landed a
+    // file in the user's source checkout.
+    const rel = path.posix.join("cursors", `${cursorFileName(consumer)}.json`);
     const abs = path.join(wt, rel);
+    if (path.relative(wt, abs).startsWith("..")) throw new Error(`git exchange: refusing to write a cursor outside the exchange worktree (${consumer})`);
     fs.mkdirSync(path.dirname(abs), { recursive: true });
-    fs.writeFileSync(abs, `${JSON.stringify(cursor, null, 2)}\n`);
+    // The full principal is stored INSIDE the body, so an encoded filename
+    // never loses the identity it stands for.
+    fs.writeFileSync(abs, `${JSON.stringify({ ...cursor, principal: consumer }, null, 2)}\n`);
     if (this.mode === "source_branch") return;
     git(wt, ["add", "--", rel]);
     const staged = gitTry(wt, ["diff", "--cached", "--name-only", "--relative", "-z"]).stdout.split("\0").filter((p) => p !== "");
@@ -532,7 +778,7 @@ export class GitTransport implements Transport {
   }
 
   consumerCursor(principal: string): Cursor | null {
-    const abs = path.join(this.worktreeDir, "cursors", `${principal}.json`);
+    const abs = path.join(this.mode === "exchange_ref" ? this.worktreeDir : this.cursorFallbackDir, "cursors", `${cursorFileName(principal)}.json`);
     if (!fs.existsSync(abs)) return null;
     try {
       return JSON.parse(fs.readFileSync(abs, "utf8")) as Cursor;
@@ -552,7 +798,7 @@ export class GitTransport implements Transport {
     return {
       reachable,
       lag_events: carried,
-      ...(reachable ? {} : { last_error: probe.stderr.trim() || `git ls-remote exited ${probe.status}` }),
+      ...(reachable ? {} : { last_error: redactText(probe.stderr.trim() || `git ls-remote exited ${probe.status}`, this.remote) }),
       credential_state: reachable ? "ok" : "unknown",
     };
   }
