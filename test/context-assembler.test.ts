@@ -301,8 +301,11 @@ describe("ContextAssembler", () => {
         config,
       );
 
-      // With a tiny budget, warnings should be included first
-      const result = await assembler.assemble("check security", "project", 30);
+      // Budget scaled for the declared tokenizer (lane 04): selection is now
+      // costed in the same conservative unit the receipt reports, so a "tight"
+      // budget is a larger integer than it was under the old chars/4 estimate.
+      // The PROPERTY under test is unchanged.
+      const result = await assembler.assemble("check security", "project", 160);
 
       // Warnings get reserved budget, so should appear even with tight budget
       expect(result.active_warnings.length).toBeGreaterThanOrEqual(1);
@@ -508,9 +511,13 @@ describe("ContextAssembler", () => {
         graphEngine,
       );
 
-      // Use a tight budget that only fits one decision — the higher-scored
-      // (graph-connected) one should be selected
-      const result = await assembler.assemble("work on auth JWT", "src/auth/", 30);
+      // Budget scaled for the declared tokenizer (lane 04): selection is now
+      // costed in the same conservative unit the receipt reports, so a "tight"
+      // budget is a larger integer than it was under the old chars/4 estimate.
+      // The PROPERTY under test is unchanged.
+      // A tight budget that fits only one decision; the higher-scored
+      // (graph-connected) one should be selected.
+      const result = await assembler.assemble("work on auth JWT", "src/auth/", 150);
 
       // With tight budget, only the higher-scored decision fits
       // The connected decision should win due to graph_connectivity boost

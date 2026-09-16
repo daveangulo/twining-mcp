@@ -161,7 +161,14 @@ function rec(id: string, size: number, cls: RenderableRecord["evidence_class"] =
     body: "x".repeat(size),
     scope_label: "repo-quarry/svc",
     evidence_class: cls,
-    lifecycle: classifyLegacy("active"),
+    // The lifecycle must AGREE with the class: `qualifies_action` now reads the
+    // records, so a human_ruling fixture carrying a legacy_unverified lifecycle
+    // would make every positive control fail for the right reason.
+    lifecycle: {
+      ...classifyLegacy("active"),
+      evidence_class: cls,
+      authorizes_action: cls === "human_ruling" || cls === "verified_observation",
+    },
   };
 }
 

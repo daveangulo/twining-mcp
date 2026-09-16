@@ -52,6 +52,17 @@ import {
 } from "../contracts/scope.js";
 import { digestOf } from "../contracts/canonical.js";
 
+/** Marker path for a 2.x scope string the contract's path rules cannot express. */
+export const UNREPRESENTABLE_PREFIX = "\u0000unrepresentable/";
+
+/**
+ * True for a scope produced by `legacyScope` from an unrepresentable string
+ * (a leading "/", or a ".." segment). Such a record is DENIED, never widened.
+ */
+export function isUnrepresentableScope(scope: Scope): boolean {
+  return (scope.path ?? "").startsWith(UNREPRESENTABLE_PREFIX);
+}
+
 /** Explicit, entitlement-gated modes. `strict` is the default and never widens. */
 export type RetrievalMode = "strict" | "lessons";
 
@@ -252,6 +263,21 @@ export function selectCandidates<T>(
   getScope: (c: T) => Scope,
   getId: (c: T) => string,
   req: SelectionRequest,
+  /**
+   * The scope under which a candidate should be tested for QUERY RELEVANCE,
+   * when that differs from the scope it is AUTHORIZED by.
+   *
+   * These are two different questions and conflating them loses real answers.
+   * A 2.x decision scoped `src/payments/` that names `src/auth/jwt.ts` in its
+   * `affected_files` is a genuine answer to "what constrains src/auth/" — the
+   * project's own Gate 1 asks exactly that question of a file path. Its
+   * AUTHORIZATION is still decided by its own scope (`src/payments/`); only its
+   * RELEVANCE is decided by the file that matched.
+   *
+   * Defaults to `getScope`, so a caller that does not distinguish the two gets
+   * the strict behaviour.
+   */
+  getQueryScope: (c: T) => Scope = getScope,
 ): SelectionOutcome<T> {
   const mode = req.mode ?? "strict";
   const suppressed: Record<string, number> = {};
@@ -288,9 +314,20 @@ export function selectCandidates<T>(
   const admitted: T[] = [];
   for (const c of candidates) {
     const scope = getScope(c);
+    const queryScope = getQueryScope(c);
     const id = getId(c);
 
     // --- 1. AUTHORIZATION. Hard, first, before anything else. ---
+    //
+    // A scope we cannot represent is a scope we cannot authorize. Denying is
+    // the only safe answer: the alternative (an absent path) is the WILDCARD in
+    // `pathCovers`, which makes such a record match every query instead of
+    // none. Counted under the opaque `scope_denied` reason like any other
+    // authorization failure, so the cut is visible without naming the record.
+    if (!req.disable?.scope_filter_off && isUnrepresentableScope(scope)) {
+      bump("scope_denied", id);
+      continue;
+    }
     if (!req.disable?.scope_filter_off && !authorizes(req.authorized, scope)) {
       bump("scope_denied", id);
       continue;
@@ -308,7 +345,7 @@ export function selectCandidates<T>(
       continue;
     }
     if (mode === "strict") {
-      if (!scopeMatches(req.query, scope)) {
+      if (!scopeMatches(req.query, queryScope)) {
         bump("out_of_query_scope", id);
         continue;
       }
@@ -318,7 +355,7 @@ export function selectCandidates<T>(
       // authorized channel, not a general widening — the authorization check
       // above still ran, so an unentitled scope is still invisible.
       const { path: _path, ...identity } = req.query;
-      if (!scopeMatches(identity as Scope, scope)) {
+      if (!scopeMatches(identity as Scope, queryScope)) {
         bump("out_of_query_scope", id);
         continue;
       }
@@ -430,21 +467,51 @@ export const LEGACY_PROJECT_SCOPE = "project";
 export function legacyScope(scopeString: string | undefined, repo: string): Scope {
   const raw = (scopeString ?? "").trim();
   if (raw === "" || raw === LEGACY_PROJECT_SCOPE) return { repo };
-  // A 2.x scope can be a module name or a symbol, not only a path. Anything
-  // that would fail the contract's path refinement is carried as a repo-wide
-  // scope rather than silently rewritten — widening the record's own scope is
-  // the safe direction for AUTHORIZATION only because the repo still bounds it.
-  if (raw.startsWith("/") || raw.includes("..")) return { repo };
+  // An unrepresentable scope string FAILS CLOSED.
+  //
+  // A 2.x scope can be a module name or a symbol, not only a path, and some are
+  // strings the contract's path refinement rejects outright (a leading "/", or
+  // a ".." segment). An earlier version returned a bare `{ repo }` for those,
+  // reasoning that widening is the safe direction for authorization. That is
+  // true of authorization and FALSE of relevance, and `selectCandidates` uses
+  // the same derived scope for both: an absent `path` is the wildcard in
+  // `pathCovers`, so `docs/../secrets` matched EVERY query in the store instead
+  // of none. Universally visible, not universally invisible.
+  //
+  // The sentinel below is a path no real record and no real query can produce
+  // (a NUL byte is not legal in a path), so it matches nothing in either
+  // direction while remaining stable and inspectable.
+  if (raw.startsWith("/") || raw.includes("..")) {
+    return { repo, path: `${UNREPRESENTABLE_PREFIX}${digestOf(raw).slice(7, 23)}` };
+  }
   return { repo, path: normalizePath(raw) };
 }
 
+
+
 /**
- * The authorized envelope a 2.x caller gets. 2.x has no principals and no
- * membership policy, so the envelope is the whole repo: the store IS the
- * authorization boundary there. What this buys is the repo-identity hard
- * filter (R13) — a record ingested from another repo's records tree can no
- * longer be ranked into this repo's briefing — plus one predicate shared with
- * the v3 path, so both get fixed at once.
+ * The authorized envelope a 2.x caller gets: the whole store's repo.
+ *
+ * ## What this does NOT buy
+ *
+ * It does not give the 2.x path cross-repo isolation. `legacyScope` stamps the
+ * READER's repo id onto every candidate, so the repo component is equal by
+ * construction and can never deny. A record ingested from a foreign records
+ * tree is indistinguishable here, because 2.x rows carry no origin identity to
+ * compare against — that is a property of the 2.x schema, not of this gate.
+ *
+ * An earlier docstring claimed the R13 cross-repo filter was in force on this
+ * path. It was not, and asserting a control the code does not implement is more
+ * dangerous than the missing control: a reader who believes it stops looking.
+ * On the 2.x path the STORE BOUNDARY is the only repo boundary.
+ *
+ * What the gate does buy on 2.x: segment-boundary path matching (so `src/auth`
+ * no longer matches `src/authz`), fail-closed handling of unrepresentable
+ * scopes, and one predicate shared with the v3 path — where repo identity is
+ * real, because records carry their own `scope.repo` from the event envelope.
+ *
+ * Closing the 2.x gap needs an origin field on the row (store.json `repo_id`
+ * recorded at ingest); that is lane 02's migration surface, not this one.
  */
 export function legacyEnvelope(repo: string): Scope[] {
   return [{ repo }];

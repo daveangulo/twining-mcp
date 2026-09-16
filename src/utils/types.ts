@@ -219,6 +219,12 @@ export interface AssembledContext {
   superseded_excluded_count?: number;
   active_decisions: {
     id: string;
+    /**
+     * Lifecycle status, so the briefing can mark a provisional record inline
+     * instead of rendering it identically to a ratified one (lane 04, gap 6
+     * render side). Optional: hand-built contexts omit it.
+     */
+    status?: string;
     summary: string;
     rationale: string;
     confidence: string;

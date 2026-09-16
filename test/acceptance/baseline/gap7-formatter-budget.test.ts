@@ -177,7 +177,9 @@ describe("Gap 7 — formatter budget (R15/R16/R17)", () => {
       null,
       config,
     );
-    const ctx = await assembler.assemble(TASK, SCOPE, 400);
+    // 1600 in the declared tokenizer's conservative units is the same degree of
+    // tightness 400 was under the old chars/4 selection currency.
+    const ctx = await assembler.assemble(TASK, SCOPE, 1600);
     const briefing = ContextAssembler.formatForLLM(ctx);
     const full = ctx.active_decisions.filter((d) => briefing.includes(d.rationale));
     expect(full.length).toBeLessThan(ctx.active_decisions.length);

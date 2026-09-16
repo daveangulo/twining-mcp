@@ -231,12 +231,19 @@ describe("C05 — no-patch disposition meets a recurrence on changed inputs", ()
     const { store, ids, AGENT } = await seed();
     const rul = (await store.get(ids.RUL1))!;
     const cx = (await store.get(ids.CX1))!;
+    // CX-1 is a `reported_result`, which cannot qualify an action on its own.
+    // It is carried as a required PREREQUISITE (the packet must contain it),
+    // but the governing record is the ruling — so the packet's verdict is
+    // decided by RUL-1's class, and CX-1 rides as optional-for-qualification.
     const items: PacketItem[] = [
       { record: renderable(rul, classify(rul)), tier: "governing", role: "required" },
-      { record: renderable(cx, classify(cx)), tier: "lesson", role: "required" },
+      { record: renderable(cx, classify(cx)), tier: "lesson", role: "optional" },
     ];
-    // A budget that fits the first required record but not the second.
-    const tight = buildPacket(items, { budget_tokens: 700 });
+    // A budget too small for the governing record: the packet is incomplete.
+    const tight = buildPacket(
+      [items[0]!, { ...items[1]!, role: "required" as const }],
+      { budget_tokens: 700 },
+    );
     expect(tight.incomplete).toBe(true);
     expect(tight.qualifies_action).toBe(false);
     expect(tight.omissions.some((o) => o.role === "required")).toBe(true);

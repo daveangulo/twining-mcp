@@ -22,7 +22,13 @@
  * charges for the headings, the JSON envelope or the escaping. Here the
  * renderer runs first, the bytes are measured with the declared tokenizer
  * (`tokenizer.ts`), and a record is admitted only if the packet still fits
- * WITH it — headings, separators, manifest, footer and JSON escaping included.
+ * WITH it — headings, separators, manifest and footer included.
+ *
+ * JSON escaping is NOT included here, because this function does not know the
+ * transport. The docstring used to claim it was, which was false: the admission
+ * loop measures the plain concatenation. `measureEnvelope` is the wire-level
+ * gate, and an emitting path that serializes this packet must call it (the
+ * assemble command does, via `annotateEmitted(ctx, briefing, envelope)`).
  *
  * ## Incompleteness is loud
  *
@@ -96,8 +102,14 @@ export interface Packet {
    * packet then exceeds its budget; saying so out loud is the honest failure.
    */
   budget_infeasible: boolean;
-  /** False whenever incomplete, stale or unknown-freshness. Never "yes, but". */
+  /**
+   * False whenever the packet is incomplete, stale, over its own bound, empty,
+   * or carries a required record that cannot itself qualify an action (wrong
+   * class, conflicted, retired). Never "yes, but".
+   */
   qualifies_action: boolean;
+  /** Every reason the verdict is false, including the blocking record ids. */
+  qualification_refused_because?: string[];
   /** Required ids that are not in `emitted` — named in the packet body too. */
   missing_required: string[];
   token_usage: {
@@ -279,6 +291,31 @@ export function buildPacket(items: readonly PacketItem[], opts: PacketOptions): 
     : missing.length > 0 || omissions.some((o) => o.role === "required");
   const stale = opts.freshness === "stale" || opts.freshness === "unknown";
 
+  // The verdict must read the RECORDS, not just the packet's shape.
+  //
+  // `!incomplete && !stale` consulted completeness and packet-level freshness
+  // only, so a packet whose sole required governing record was conflicted,
+  // superseded or `legacy_unverified` reported that it qualified an action —
+  // while `renderRecord` printed "qualifies an action: no" for that same record
+  // two lines above. The structured flag and the rendered text disagreed, and a
+  // consumer reads the flag.
+  const blocking = emittedItems
+    .filter((i) => i.role === "required")
+    .filter((i) => !i.record.lifecycle.authorizes_action || i.record.lifecycle.conflicts.length > 0)
+    .map((i) => i.record.id);
+
+  // A packet that carried no evidence cannot qualify anything, and one that
+  // broke its own bound says so in the verdict rather than only in a sibling.
+  const carriedEvidence = emittedItems.length > 0;
+  const qualifies = !incomplete && !stale && !budgetInfeasible && carriedEvidence && blocking.length === 0;
+
+  const refusedBecause: string[] = [];
+  if (incomplete) refusedBecause.push("incomplete: a required record is missing");
+  if (stale) refusedBecause.push(`freshness_${opts.freshness}`);
+  if (budgetInfeasible) refusedBecause.push("budget_infeasible: the packet exceeded its own budget");
+  if (!carriedEvidence) refusedBecause.push("no_records_emitted");
+  for (const id of blocking) refusedBecause.push(`record_cannot_qualify:${id}`);
+
   return {
     text,
     selected,
@@ -286,7 +323,8 @@ export function buildPacket(items: readonly PacketItem[], opts: PacketOptions): 
     omissions,
     incomplete,
     budget_infeasible: budgetInfeasible,
-    qualifies_action: !incomplete && !stale,
+    qualifies_action: qualifies,
+    ...(refusedBecause.length > 0 ? { qualification_refused_because: refusedBecause } : {}),
     missing_required: missing,
     token_usage: {
       budget: opts.budget_tokens,

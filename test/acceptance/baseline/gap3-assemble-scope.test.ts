@@ -238,3 +238,91 @@ describe("Gap 3 — assemble() scope is not a hard filter (R01, R13, R14)", () =
     expect(admittedIds).not.toContain(outOfScope.id);
   });
 });
+
+/**
+ * Gap 3, round 2 — the two bypasses the first flip did not pin.
+ *
+ * The original fixture used a `vendor-repo/billing/` scope with no prefix
+ * relation to `src/auth/` in either direction, so it was cut by the SEMANTIC
+ * path's gate and the assertion passed without ever exercising the
+ * scope-matched path. The adversarial review showed
+ * `decisionStore.getByScope` never met the gate at all, and that two record
+ * shapes slipped through it:
+ *
+ *   1. a SEGMENT COLLISION (`src/authz/` for a `src/auth` query), which 2.x's
+ *      raw `startsWith` matcher admits;
+ *   2. a record scoped anywhere that merely NAMES a file inside the query
+ *      scope in `affected_files`.
+ *
+ * (2) turns out to be a FEATURE, not a leak — it is the question Gate 1 tells
+ * agents to ask — so it is pinned as kept. (1) is the leak, and is pinned cut.
+ */
+describe("Gap 3 (round 2) — the scope-matched path is gated too", () => {
+  let twiningDir: string;
+  let blackboardStore: BlackboardStore;
+  let decisionStore: DecisionStore;
+  let config: TwiningConfig;
+
+  beforeEach(() => {
+    twiningDir = makeTwiningDir();
+    blackboardStore = new BlackboardStore(twiningDir);
+    decisionStore = new DecisionStore(twiningDir);
+    config = makeConfig();
+    Embedder.resetInstances();
+  });
+
+  it("CUT: a segment collision never answers a src/auth query", async () => {
+    const collide = await decisionStore.create({
+      ...baseDecision,
+      scope: "src/authz/",
+      summary: "AUTHZ-SEGMENT-COLLISION",
+      rationale: "a different module entirely",
+      affected_files: ["src/authz/policy.ts"],
+    });
+    const inScope = await decisionStore.create({
+      ...baseDecision,
+      scope: "src/auth/",
+      summary: "IN-SCOPE",
+      rationale: "r",
+      affected_files: ["src/auth/jwt.ts"],
+    });
+
+    const assembler = new ContextAssembler(blackboardStore, decisionStore, null, config);
+    const result = await assembler.assemble("auth work", "src/auth", 100000);
+    const ids = result.active_decisions.map((d) => d.id);
+
+    // 2.x's matcher would admit it; the gate does not.
+    expect("src/authz/".startsWith("src/auth")).toBe(true);
+    expect(ids).toContain(inScope.id);
+    expect(ids).not.toContain(collide.id);
+    expect(ContextAssembler.formatForLLM(result)).not.toContain("AUTHZ-SEGMENT-COLLISION");
+  });
+
+  it("KEPT: a foreign-scoped record that NAMES a file in the query scope", async () => {
+    const foreign = await decisionStore.create({
+      ...baseDecision,
+      scope: "vendor-repo/billing/",
+      summary: "FOREIGN-BUT-TOUCHES-AUTH",
+      rationale: "changes a file under src/auth/",
+      affected_files: ["src/auth/jwt.ts"],
+    });
+    const assembler = new ContextAssembler(blackboardStore, decisionStore, null, config);
+    const result = await assembler.assemble("auth work", "src/auth/", 100000);
+    // Authorized by its own scope, matched for relevance by the file. Cutting
+    // it would make twining_why on a file answer "nothing constrains this".
+    expect(result.active_decisions.map((d) => d.id)).toContain(foreign.id);
+  });
+
+  it("CUT: the same foreign record when it names no file in the query scope", async () => {
+    const foreign = await decisionStore.create({
+      ...baseDecision,
+      scope: "vendor-repo/billing/",
+      summary: "FOREIGN-AND-UNRELATED",
+      rationale: "r",
+      affected_files: ["vendor-repo/billing/proration.ts"],
+    });
+    const assembler = new ContextAssembler(blackboardStore, decisionStore, null, config);
+    const result = await assembler.assemble("auth work", "src/auth/", 100000);
+    expect(result.active_decisions.map((d) => d.id)).not.toContain(foreign.id);
+  });
+});

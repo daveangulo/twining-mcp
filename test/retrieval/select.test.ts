@@ -19,6 +19,7 @@ import {
   cacheServable,
   legacyScope,
   legacyEnvelope,
+  isUnrepresentableScope,
   type SelectionRequest,
 } from "../../src/retrieval/select.js";
 import type { Scope } from "../../src/contracts/scope.js";
@@ -337,9 +338,32 @@ describe("2.x compatibility", () => {
     expect(legacyScope("src/auth/", REPO)).toEqual({ repo: REPO, path: "src/auth" });
   });
 
-  it("a scope the contract would reject as a path degrades to repo-wide, never to a leak", () => {
-    expect(legacyScope("../elsewhere", REPO)).toEqual({ repo: REPO });
-    expect(legacyScope("/abs/path", REPO)).toEqual({ repo: REPO });
+  it("a scope the contract would reject as a path FAILS CLOSED, matching nothing", () => {
+    // It used to return a bare { repo }. An absent path is the WILDCARD in
+    // pathCovers, so `docs/../secrets` matched every query in the store rather
+    // than none — universally visible, not universally invisible. Widening is
+    // only safe when the derived scope is used for authorization alone, and
+    // here it is also the relevance key.
+    for (const bad of ["../elsewhere", "/abs/path", "docs/../secrets"]) {
+      const sc = legacyScope(bad, REPO);
+      expect(isUnrepresentableScope(sc)).toBe(true);
+      expect(sc.path).toBeDefined();
+      // Matches no ordinary query, in either direction.
+      for (const q of ["src/auth/", "docs/", "project"]) {
+        expect(
+          selectCandidates([{ id: "x", scope: sc, title: "", cosine: 1 }], (r) => r.scope, (r) => r.id, {
+            principal: "p",
+            authorized: legacyEnvelope(REPO),
+            query: legacyScope(q, REPO),
+          }).admitted,
+        ).toHaveLength(0);
+      }
+    }
+  });
+
+  it("the sentinel is stable and distinct per input, so the cut is inspectable", () => {
+    expect(legacyScope("../a", REPO).path).toBe(legacyScope("../a", REPO).path);
+    expect(legacyScope("../a", REPO).path).not.toBe(legacyScope("../b", REPO).path);
   });
 
   it("the legacy envelope gives one repo, so two stores can never see each other", () => {

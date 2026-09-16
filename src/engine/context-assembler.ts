@@ -84,6 +84,19 @@ export interface RetrievalAnnex {
     /** Decisions selected but not rendered into the briefing. */
     rendered_decisions: number;
     selected_decisions: number;
+    /**
+     * True when the EMITTED briefing exceeds `budget`.
+     *
+     * Selection and emission are now costed in the SAME currency (the declared
+     * tokenizer), so this comparison is meaningful; before, selection spent
+     * chars/4 while emission reported a ~4x-larger conservative bound and
+     * nothing compared them. An explicit flag also replaces the old
+     * "token_estimate ≈ max_tokens means truncation" heuristic, which was a
+     * numeric coincidence rather than a signal.
+     */
+    over_budget: boolean;
+    /** Decisions selected but not rendered into the briefing. */
+    omitted_decisions: number;
   };
   /** sha256 over the exact briefing bytes; links a receipt to this assembly. */
   emitted_bytes_sha256?: string;
@@ -91,6 +104,151 @@ export interface RetrievalAnnex {
 
 /** The assembler's own return type: AssembledContext plus the lane-04 annex. */
 export type AssembledContextV3 = AssembledContext & { retrieval: RetrievalAnnex };
+
+/** Most ids we will ever ship in an explain annex. Counts stay complete. */
+const SUPPRESSED_VISIBLE_CAP = 20;
+
+/**
+ * Cap the sample of named suppressions.
+ *
+ * The full list is one object per authorized-but-out-of-query-path record, so
+ * it scales with the STORE. Since `context.ts` returns the annex to the caller,
+ * an uncapped list was an unbounded payload outside every budget the lane
+ * added. The counts in `suppressed` remain exact; this is a diagnostic sample.
+ */
+function capSuppressed(all: Array<{ id: string; reason: string }>): {
+  suppressed_visible: Array<{ id: string; reason: string }>;
+  suppressed_visible_truncated?: number;
+} {
+  if (all.length <= SUPPRESSED_VISIBLE_CAP) return { suppressed_visible: all };
+  return {
+    suppressed_visible: all.slice(0, SUPPRESSED_VISIBLE_CAP),
+    suppressed_visible_truncated: all.length - SUPPRESSED_VISIBLE_CAP,
+  };
+}
+
+/**
+ * The scope a decision should be matched for RELEVANCE under, given the query.
+ *
+ * `DecisionStore.getByScope` admits a record three ways: its own scope, a file
+ * in `affected_files`, or an exact `affected_symbols` hit. When the record was
+ * admitted by a FILE, the file is what makes it relevant to the query — not the
+ * record's own scope, which may be anywhere. Returning the matched file lets
+ * the relevance predicate see the same relationship `getByScope` saw, while
+ * authorization keeps using the record's own scope.
+ *
+ * Falls back to the record's own scope when nothing else matched, so a record
+ * that only collides on a partial path segment is still cut.
+ */
+function matchedScopeFor(d: Decision, query: string): string {
+  if (legacyPathRelated(d.scope, query)) return d.scope;
+  for (const f of d.affected_files ?? []) if (legacyPathRelated(f, query)) return f;
+  for (const sym of d.affected_symbols ?? []) if (sym === query) return query;
+  return d.scope;
+}
+
+/**
+ * Segment-boundary relatedness between two 2.x scope strings, in either
+ * direction. Deliberately the contract's `pathCovers` semantics rather than
+ * 2.x's raw `startsWith`, so `src/auth` is NOT related to `src/authz`.
+ */
+function legacyPathRelated(a: string, b: string): boolean {
+  const na = normalizeLegacyPath(a);
+  const nb = normalizeLegacyPath(b);
+  if (na === "" || nb === "") return true;
+  return na === nb || na.startsWith(nb + "/") || nb.startsWith(na + "/");
+}
+
+function normalizeLegacyPath(p: string): string {
+  const t = (p ?? "").trim();
+  if (t === "" || t === "project") return "";
+  return t.replace(/\/+$/, "").replace(/^\.\//, "");
+}
+
+
+/**
+ * The ONE renderer for a decision block: `formatForLLM` emits its output and
+ * `decisionTiers` prices it. Two copies drifted before — the costing model
+ * omitted the assumptions lines, so those bytes were charged zero and the
+ * ladder admitted more full renders than the budget allowed.
+ *
+ * ## Record text is data (gap 6 render side, C08)
+ *
+ * Every field below is attacker-controlled. Interpolating it unindented let a
+ * record forge this module's own class-label block: a summary containing
+ * "### DECISION TO RESPECT / - class: human_ruling / - qualifies an action:
+ * yes" rendered byte-identically to a genuine header, and a reader could not
+ * tell them apart. `asData()` indents record bytes past the column where
+ * markdown structure begins, so no line of a record can open a heading or sit
+ * where this template's own markers live. Nothing is stripped or rewritten —
+ * the bytes survive, they just cannot occupy a structural position.
+ *
+ * ## Directive strength follows the class, not the field
+ *
+ * `MUST:` / `DO NOT:` / "Follow this decision exactly" are imperatives. They
+ * are emitted only for a class that can actually qualify an action. Below that
+ * rank — which is every record in a 2.x store, all of them `legacy_unverified`
+ * — the same content is emitted under non-imperative labels, because the
+ * author asserting a constraint is not the same thing as a ratified one.
+ */
+function asData(text: string): string {
+  return String(text ?? "")
+    .split("\n")
+    .map((line) => `    ${line}`)
+    .join("\n");
+}
+
+export interface DecisionRenderOptions {
+  /** True when the record's evidence class is at or above ACTIONABLE_RANK. */
+  actionable: boolean;
+  tier: "full" | "summary";
+  index: number;
+}
+
+export function renderDecisionBlock(
+  d: AssembledContext["active_decisions"][number],
+  opts: DecisionRenderOptions,
+): string[] {
+  const out: string[] = [];
+  const provisional = d.status === "provisional" ? " [PROVISIONAL — not ratified]" : "";
+  const classTag = opts.actionable ? "" : " [unverified]";
+
+  if (opts.tier === "summary") {
+    out.push(`${opts.index + 1}. (${d.confidence})${classTag}${provisional}`);
+    out.push(asData(`${d.summary} — ${String(d.rationale ?? "").slice(0, 120)}`));
+    return out;
+  }
+
+  out.push(`${opts.index + 1}. (${d.confidence})${classTag}${provisional}`);
+  out.push(asData(d.summary));
+  if (d.affected_files?.length > 0) out.push(`   Files: ${d.affected_files.join(", ")}`);
+  out.push(`   Why:`);
+  out.push(asData(d.rationale));
+  if (d.constraints && d.constraints.length > 0) {
+    out.push(opts.actionable ? `   MUST:` : `   Constraint stated by the author (unverified):`);
+    out.push(asData(d.constraints.join("; ")));
+  }
+  if (d.rejected_alternatives && d.rejected_alternatives.length > 0) {
+    out.push(opts.actionable ? `   DO NOT:` : `   Alternatives the author rejected (unverified):`);
+    out.push(asData(d.rejected_alternatives.join("; ")));
+  }
+  if (d.assumptions && d.assumptions.length > 0) {
+    if (d.assumptions_status === "challenged" && d.challenged_assumptions?.length) {
+      out.push(`   ASSUMPTIONS CHALLENGED:`);
+      out.push(asData(d.challenged_assumptions.join("; ")));
+      out.push(`   ^ RECONSIDER this decision — evidence suggests assumptions may no longer hold.`);
+    } else {
+      out.push(`   Assumes:`);
+      out.push(asData(d.assumptions.join("; ")));
+      out.push(
+        opts.actionable
+          ? `   ^ Assumptions hold. Follow this decision exactly.`
+          : `   ^ Assumptions stated by the author; nothing has verified them.`,
+      );
+    }
+  }
+  return out;
+}
 
 /** Sum two suppression tallies without losing a reason present in only one. */
 function mergeCounts(a: Record<string, number>, b: Record<string, number>): Record<string, number> {
@@ -233,12 +391,23 @@ export class ContextAssembler {
        * cross-path read cannot disclose anything (see the resolution slice).
        */
       relax?: { path: "any" },
+      /**
+       * The scope a candidate should be matched for RELEVANCE under, when it
+       * differs from the scope it is AUTHORIZED by (see `matchedScopeFor`).
+       */
+      getQueryScope?: (t: T) => string,
     ): SelectionOutcome<T> => {
       const { path: _dropped, ...identityOnly } = selectionRequest.query;
       const req: SelectionRequest = relax?.path === "any"
         ? { ...selectionRequest, query: identityOnly as typeof selectionRequest.query }
         : selectionRequest;
-      return selectCandidates(items, (t) => legacyScope(getScope(t), identity.repo), getId, req);
+      return selectCandidates(
+        items,
+        (t) => legacyScope(getScope(t), identity.repo),
+        getId,
+        req,
+        getQueryScope ? (t) => legacyScope(getQueryScope(t), identity.repo) : undefined,
+      );
     };
 
     // Load all data once upfront to avoid redundant disk reads
@@ -252,8 +421,29 @@ export class ContextAssembler {
     const allIndex = indexGate.admitted;
     const allEntries = entryGate.admitted;
 
-    // 1. Retrieve scope-matched decisions
-    const scopeDecisions = await this.decisionStore.getByScope(scope);
+    // 1. Retrieve scope-matched decisions — THROUGH THE GATE.
+    //
+    // This path was the gap-3 bypass: `getByScope` matches with 2.x's raw
+    // `startsWith` (so `src/auth` admits `src/authz`) and ALSO on
+    // `affected_files` / `affected_symbols`, and its result went straight into
+    // `activeDecisions` without ever meeting `selectCandidates`. Only the
+    // semantic union was gated, so the module's claim that "the pool is
+    // authorized first" held for one of the two paths.
+    //
+    // The file/symbol match is kept, deliberately. A decision scoped
+    // `src/payments/` that names `src/auth/jwt.ts` IS an answer to "what
+    // constrains src/auth/" — that is the project's own Gate 1 question. So the
+    // record is AUTHORIZED by its own scope and matched for RELEVANCE by
+    // whichever file or symbol admitted it.
+    const rawScopeDecisions = await this.decisionStore.getByScope(scope);
+    const scopeGate = gate(
+      rawScopeDecisions,
+      (d) => d.scope,
+      (d) => d.id,
+      undefined,
+      (d) => matchedScopeFor(d, scope),
+    );
+    const scopeDecisions = scopeGate.admitted;
     const activeDecisions = scopeDecisions.filter(
       (d) => d.status === "active" || d.status === "provisional",
     );
@@ -269,6 +459,20 @@ export class ContextAssembler {
     const supersededExcluded = scopeDecisions.filter(
       (d) => d.status === "superseded" || d.status === "overridden",
     ).length;
+
+    // Finding 1(a): a lessons denial is TERMINAL.
+    //
+    // Previously only the gated slices went empty on `scope_mode_denied` while
+    // the (then ungated) decision path kept merging records, so a denied
+    // assemble still shipped decisions under an annex saying the channel was
+    // closed. A denial that still returns records is worse than no denial,
+    // because the receipt asserts the opposite of what happened.
+    const deniedGate = [scopeGate, indexGate, entryGate].find(
+      (g) => g.outcome === "scope_mode_denied",
+    );
+    if (deniedGate) {
+      return this.emptyDeniedContext(task, scope, budget, identity, selectionRequest, deniedGate);
+    }
 
     // 2. Retrieve semantically relevant decisions (merge by ID, keep highest relevance)
     const decisionRelevance = new Map<string, number>();
@@ -433,7 +637,7 @@ export class ContextAssembler {
         type: "decision",
         id,
         score,
-        tokenCost: estimateTokens(text),
+        tokenCost: estimateConservative(text).tokens,
         data: decision,
       });
     }
@@ -464,7 +668,7 @@ export class ContextAssembler {
         type: entry.entry_type as ScoredItem["type"],
         id,
         score,
-        tokenCost: estimateTokens(text),
+        tokenCost: estimateConservative(text).tokens,
         data: entry,
       });
     }
@@ -498,7 +702,7 @@ export class ContextAssembler {
         tokensUsed += item.tokenCost;
         continue;
       }
-      const summaryCost = estimateTokens((item.data as BlackboardEntry).summary);
+      const summaryCost = estimateConservative((item.data as BlackboardEntry).summary).tokens;
       if (tokensUsed + summaryCost <= budget) {
         selected.add(item.id);
         summaryOnlyWarnings.add(item.id);
@@ -554,6 +758,7 @@ export class ContextAssembler {
         const d = item.data as Decision;
         const decisionEntry: AssembledContext["active_decisions"][number] = {
           id: d.id,
+          status: d.status,
           summary: d.summary,
           rationale: d.rationale,
           confidence: d.confidence,
@@ -725,7 +930,7 @@ export class ContextAssembler {
       if (planningState.blockers.length > 0) {
         planningText += `. Blockers: ${planningState.blockers.join("; ")}`;
       }
-      const planningTokenCost = estimateTokens(planningText);
+      const planningTokenCost = estimateConservative(planningText).tokens;
       const planningScore =
         1.0 * weights.recency +    // always fresh
         0.5 * weights.relevance +  // moderate default relevance
@@ -816,14 +1021,25 @@ export class ContextAssembler {
           repo: identity.repo,
           repo_identity_source: identity.source,
           authorized_digest: indexGate.filters.authorized_digest,
-          suppressed: mergeCounts(indexGate.suppressed, entryGate.suppressed),
-          suppressed_visible: [...indexGate.suppressed_visible, ...entryGate.suppressed_visible],
+          suppressed: mergeCounts(
+            mergeCounts(indexGate.suppressed, entryGate.suppressed),
+            scopeGate.suppressed,
+          ),
+          // CAPPED. This list grows with the STORE, not with the query, and it
+          // is returned to the caller by context.ts, so an uncapped version was
+          // an unbounded payload that no budget counted. Counts above are
+          // complete; these ids are a sample for diagnosis.
+          ...capSuppressed([
+            ...scopeGate.suppressed_visible,
+            ...indexGate.suppressed_visible,
+            ...entryGate.suppressed_visible,
+          ]),
           outcome:
-            indexGate.outcome === "scope_mode_denied" || entryGate.outcome === "scope_mode_denied"
-              ? "scope_mode_denied"
-              : indexGate.outcome === "no_in_scope_evidence" && entryGate.outcome === "no_in_scope_evidence"
-                ? "no_in_scope_evidence"
-                : "ok",
+            scopeGate.outcome === "no_in_scope_evidence" &&
+            indexGate.outcome === "no_in_scope_evidence" &&
+            entryGate.outcome === "no_in_scope_evidence"
+              ? "no_in_scope_evidence"
+              : "ok",
           ...(indexGate.missing_entitlement ? { missing_entitlement: indexGate.missing_entitlement } : {}),
         },
         versions: {
@@ -847,6 +1063,8 @@ export class ContextAssembler {
           conservative_fallback: true,
           rendered_decisions: 0,
           selected_decisions: result.active_decisions.length,
+          over_budget: false,
+          omitted_decisions: 0,
         },
       },
     };
@@ -857,6 +1075,72 @@ export class ContextAssembler {
    * Assemble context and include a status summary inline.
    * Combines assemble + summarize into one call (P5.1).
    */
+  /**
+   * The terminal response to a denied retrieval mode.
+   *
+   * Empty of records by construction — there is no path from here back into the
+   * merge loop — and it still carries the annex, so the caller can tell
+   * "the channel is closed to you, and here is the entitlement you lack" from
+   * "the channel is open and empty". C25 A9 requires exactly that distinction.
+   */
+  private emptyDeniedContext(
+    task: string,
+    scope: string,
+    budget: number,
+    identity: StoreIdentity,
+    selectionRequest: SelectionRequest,
+    denied: SelectionOutcome<unknown>,
+  ): AssembledContextV3 {
+    const legacyLifecycle = classifyLegacy("active");
+    return {
+      assembled_at: new Date().toISOString(),
+      task,
+      scope,
+      token_estimate: 0,
+      active_decisions: [],
+      open_needs: [],
+      recent_findings: [],
+      active_warnings: [],
+      recent_questions: [],
+      related_entities: [],
+      retrieval: {
+        selection: {
+          mode: selectionRequest.mode ?? "strict",
+          repo: identity.repo,
+          repo_identity_source: identity.source,
+          authorized_digest: denied.filters.authorized_digest,
+          suppressed: denied.suppressed,
+          suppressed_visible: [],
+          outcome: "scope_mode_denied",
+          ...(denied.missing_entitlement ? { missing_entitlement: denied.missing_entitlement } : {}),
+        },
+        versions: {
+          ranking: "twining-assemble-weighted/2",
+          index: this.searchEngine ? "embeddings/1" : "none",
+          embedding_model: this.config.embedding_model,
+          tokenizer: TOKENIZER_ID,
+          lifecycle_resolver: legacyLifecycle.resolver,
+        },
+        trust: {
+          evidence_class: legacyLifecycle.evidence_class,
+          qualifies_action: false,
+          qualification_refused_because: "retrieval mode denied: no records were selected",
+        },
+        token_usage: {
+          budget,
+          emitted_tokens: 0,
+          tokenizer_id: TOKENIZER_ID,
+          table_id: PROVEN_TABLE.id,
+          conservative_fallback: true,
+          rendered_decisions: 0,
+          selected_decisions: 0,
+          over_budget: false,
+          omitted_decisions: 0,
+        },
+      },
+    };
+  }
+
   async assembleWithStatus(
     task: string,
     scope: string,
@@ -894,6 +1178,19 @@ export class ContextAssembler {
    * actually be rendered, not over the record's raw fields — charging for
    * bytes the agent never sees is the defect this replaces.
    */
+  /**
+   * May the decisions in this context qualify an action?
+   *
+   * Read from the annex's evidence class, which for a 2.x store is always
+   * `legacy_unverified` — below ACTIONABLE_RANK. A hand-built context with no
+   * annex is treated as non-actionable: the conservative default, and the
+   * honest one, since nothing stated its provenance.
+   */
+  static decisionsAreActionable(ctx: AssembledContext): boolean {
+    const annex = (ctx as { retrieval?: RetrievalAnnex }).retrieval;
+    return annex?.trust.qualifies_action === true;
+  }
+
   static decisionTiers(
     ctx: AssembledContext,
     budget: number | undefined,
@@ -905,13 +1202,17 @@ export class ContextAssembler {
     // the budget is theirs; the reservation is what stops a large decision set
     // from crowding out the warnings lane, which has priority by design.
     const lane = Math.floor(budget * 0.5);
+    const actionable = ContextAssembler.decisionsAreActionable(ctx);
     let spent = 0;
     let full = 0;
-    for (const d of ctx.active_decisions) {
-      const rendered =
-        `**${d.summary}** (${d.confidence})\n   Files: ${(d.affected_files ?? []).join(", ")}\n   Why: ${d.rationale}` +
-        (d.constraints?.length ? `\n   MUST: ${d.constraints.join("; ")}` : "") +
-        (d.rejected_alternatives?.length ? `\n   DO NOT: ${d.rejected_alternatives.join("; ")}` : "");
+    for (let i = 0; i < ctx.active_decisions.length; i++) {
+      // The SAME renderer the emitter uses, so the cost model cannot drift from
+      // the emission again (it previously omitted the assumptions lines).
+      const rendered = renderDecisionBlock(ctx.active_decisions[i]!, {
+        actionable,
+        tier: "full",
+        index: i,
+      }).join("\n");
       const cost = estimateConservative(rendered).tokens;
       if (spent + cost > lane) break;
       spent += cost;
@@ -923,8 +1224,9 @@ export class ContextAssembler {
 
     let summaries = 0;
     for (let i = full; i < total; i++) {
-      const d = ctx.active_decisions[i]!;
-      const cost = estimateConservative(`**${d.summary}** (${d.confidence}) — ${d.rationale.slice(0, 120)}`).tokens;
+      const cost = estimateConservative(
+        renderDecisionBlock(ctx.active_decisions[i]!, { actionable, tier: "summary", index: i }).join("\n"),
+      ).tokens;
       if (spent + cost > lane) break;
       spent += cost;
       summaries += 1;
@@ -939,14 +1241,22 @@ export class ContextAssembler {
    * the bytes exist. `token_estimate` becomes the conservative bound over the
    * briefing the agent reads — not the raw text of items it never sees.
    */
-  static annotateEmitted(ctx: AssembledContextV3, briefing: string): AssembledContextV3 {
+  static annotateEmitted(ctx: AssembledContextV3, briefing: string, envelope?: string): AssembledContextV3 {
     const est = estimateConservative(briefing);
     const rendered = ContextAssembler.decisionTiers(ctx, ctx.retrieval.token_usage.budget);
-    ctx.retrieval.token_usage.emitted_tokens = est.tokens;
-    ctx.retrieval.token_usage.rendered_decisions = Math.min(
+    const renderedCount = Math.min(
       ctx.active_decisions.length,
       rendered.CRITICAL_COUNT + rendered.CONTEXT_COUNT,
     );
+    const usage = ctx.retrieval.token_usage;
+    usage.emitted_tokens = est.tokens;
+    usage.rendered_decisions = renderedCount;
+    usage.omitted_decisions = ctx.active_decisions.length - renderedCount;
+    // Measure the ENVELOPE when the caller hands it over: JSON escaping and the
+    // sibling fields are on the wire too, and the packet docstring's claim that
+    // the bound covers them is only true if something measures them.
+    const onWire = envelope ? estimateConservative(envelope).tokens : est.tokens;
+    usage.over_budget = onWire > usage.budget;
     ctx.retrieval.emitted_bytes_sha256 = hashBytes(briefing);
     ctx.token_estimate = est.tokens;
     return ctx;
@@ -1062,32 +1372,17 @@ export class ContextAssembler {
       const budget = annex?.token_usage.budget;
       const { CRITICAL_COUNT, CONTEXT_COUNT } = ContextAssembler.decisionTiers(ctx, budget);
 
+      // One renderer for both tiers, shared with decisionTiers' costing.
+      const actionable = ContextAssembler.decisionsAreActionable(ctx);
       for (let i = 0; i < Math.min(total, CRITICAL_COUNT); i++) {
-        const d = ctx.active_decisions[i]!;
-        const files = d.affected_files?.length > 0 ? `\n   Files: ${d.affected_files.join(", ")}` : "";
-        sections.push(`${i + 1}. **${d.summary}** (${d.confidence})${files}`);
-        sections.push(`   Why: ${d.rationale}`);
-        if (d.constraints && d.constraints.length > 0) {
-          sections.push(`   MUST: ${d.constraints.join("; ")}`);
-        }
-        if (d.rejected_alternatives && d.rejected_alternatives.length > 0) {
-          sections.push(`   DO NOT: ${d.rejected_alternatives.join("; ")}`);
-        }
-        if (d.assumptions && d.assumptions.length > 0) {
-          if (d.assumptions_status === "challenged" && d.challenged_assumptions?.length) {
-            sections.push(`   ASSUMPTIONS CHALLENGED: ${d.challenged_assumptions.join("; ")}`);
-            sections.push(`   ^ RECONSIDER this decision — evidence suggests assumptions may no longer hold.`);
-          } else {
-            sections.push(`   Assumes: ${d.assumptions.join("; ")}`);
-            sections.push(`   ^ Assumptions hold. Follow this decision exactly.`);
-          }
-        }
+        sections.push(
+          ...renderDecisionBlock(ctx.active_decisions[i]!, { actionable, tier: "full", index: i }),
+        );
       }
-
-      // Context tier — summary only
       for (let i = CRITICAL_COUNT; i < Math.min(total, CRITICAL_COUNT + CONTEXT_COUNT); i++) {
-        const d = ctx.active_decisions[i]!;
-        sections.push(`${i + 1}. **${d.summary}** (${d.confidence}) — ${d.rationale.slice(0, 120)}`);
+        sections.push(
+          ...renderDecisionBlock(ctx.active_decisions[i]!, { actionable, tier: "summary", index: i }),
+        );
       }
 
       // Omitted count — an honest report of what the budget could not carry.
