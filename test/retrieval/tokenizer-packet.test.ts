@@ -8,13 +8,23 @@ import {
   estimateTokensConservative,
   classifyBytes,
   buildCalibrationTable,
+  validateCalibrationTable,
+  loadCalibrationTable,
   countExact,
+  ACTIVE_TABLE,
+  CHAR_CLASSES,
   PROVEN_TABLE,
+  TABLES,
   TOKENIZER_ID,
   TOKENIZER_NAME,
   TOKENIZER_VERSION,
   type CalibrationTable,
+  type CharClass,
 } from "../../src/retrieval/tokenizer.js";
+import calibrationJson from "../../src/retrieval/calibration.json" with { type: "json" };
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { buildPacket, measureEnvelope, type PacketItem } from "../../src/retrieval/packet.js";
 import type { RenderableRecord } from "../../src/retrieval/render.js";
 import { classifyLegacy, classify } from "../../src/retrieval/lifecycle.js";
@@ -23,16 +33,57 @@ import { classifyLegacy, classify } from "../../src/retrieval/lifecycle.js";
 /* Tokenizer                                                            */
 /* ------------------------------------------------------------------ */
 
+/**
+ * The bound a table DECLARES over a text: bytes x ratio per class, plus the
+ * envelope. `estimate` must never come in under this — it rounds each class up,
+ * so it lands on or above it for every input.
+ */
+function declaredBound(text: string, table: CalibrationTable): number {
+  const classes = classifyBytes(text);
+  let total = table.envelope_overhead_tokens;
+  for (const cls of CHAR_CLASSES) total += (classes[cls] ?? 0) * table.ratios[cls];
+  return total;
+}
+
+const CORPUS_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "fixtures", "tokenizer-corpus");
+
+/** The corpus documents the shipped table was actually measured over. */
+function corpusDocuments(): Array<[string, string]> {
+  return fs
+    .readdirSync(CORPUS_DIR, { withFileTypes: true })
+    .filter((d) => d.isFile())
+    .map((d) => [d.name, fs.readFileSync(path.join(CORPUS_DIR, d.name), "utf8")] as [string, string])
+    .filter(([, text]) => text.trim() !== "");
+}
+
 describe("C26-A04 — the tokenizer is declared", () => {
   it("names itself and its calibration table in every estimate", () => {
     const e = estimate("hello world");
     expect(e.tokenizer_id).toBe(TOKENIZER_ID);
     expect(TOKENIZER_ID).toBe(`${TOKENIZER_NAME}/${TOKENIZER_VERSION}`);
-    expect(e.table_id).toBe("proven-utf8-bytes/1");
+    expect(e.table_id).toBe(ACTIVE_TABLE.id);
   });
 
-  it("flags itself as a conservative fallback, since it is a bound not a count", () => {
+  it("carries the table's provenance, safety factor and envelope in the estimate", () => {
+    const e = estimate("hello world");
+    expect(e.declared.table_id).toBe(ACTIVE_TABLE.id);
+    expect(e.declared.provenance).toBe(ACTIVE_TABLE.provenance);
+    expect(e.declared.safety_factor).toBe(ACTIVE_TABLE.safety_factor);
+    expect(e.declared.envelope_overhead_tokens).toBe(ACTIVE_TABLE.envelope_overhead_tokens);
+    // A measured table must be able to name what it was measured against.
+    if (e.declared.provenance === "measured") {
+      expect(e.declared.reference).toBeTruthy();
+      expect(e.declared.corpus?.sha256).toMatch(/^sha256:[0-9a-f]{64}$/);
+    }
+  });
+
+  it("flags itself as a conservative fallback, since a measured table is still a bound", () => {
+    // TRUE FOR BOTH TABLES. The proven table is a proof; the measured table is
+    // an empirical bound over a named corpus that unlike text can exceed. Only
+    // `countExact` ever reports false.
     expect(estimate("hello").conservative_fallback).toBe(true);
+    expect(estimate("hello", PROVEN_TABLE).conservative_fallback).toBe(true);
+    expect(estimate("hello", ACTIVE_TABLE).conservative_fallback).toBe(true);
   });
 
   it("the shipped table says where its ratios came from, and nothing is measured", () => {
@@ -56,10 +107,23 @@ describe("the bound never undercounts", () => {
   ];
 
   it.each(corpus.map((c, i) => [i, c] as const))(
-    "corpus[%i]: the estimate is >= the UTF-8 byte length, the proven ceiling on BPE tokens",
+    "corpus[%i]: the PROVEN table's estimate is >= the UTF-8 byte length, the ceiling on BPE tokens",
     (_i, text) => {
       const bytes = Buffer.byteLength(text, "utf8");
-      expect(estimateTokensConservative(text)).toBeGreaterThanOrEqual(bytes);
+      expect(estimateTokensConservative(text, PROVEN_TABLE)).toBeGreaterThanOrEqual(bytes);
+    },
+  );
+
+  // RE-BASELINED for the shipped measured table. The byte length is the PROVEN
+  // table's floor, and a calibrated table exists precisely to charge less than
+  // it — so asserting it against the default would assert the calibration away.
+  // What must still hold for every table is that the estimate is never below
+  // the table's OWN declared ratios: ceil-per-class rounds up, every class is
+  // priced, and the envelope is added on top.
+  it.each(corpus.map((c, i) => [i, c] as const))(
+    "corpus[%i]: the default estimate is >= the shipped table's own declared bound",
+    (_i, text) => {
+      expect(estimateTokensConservative(text)).toBeGreaterThanOrEqual(declaredBound(text, ACTIVE_TABLE));
     },
   );
 
@@ -84,7 +148,8 @@ describe("the bound never undercounts", () => {
   });
 
   it("charges a nonzero envelope overhead even for the empty string", () => {
-    expect(estimateTokensConservative("")).toBe(PROVEN_TABLE.envelope_overhead_tokens);
+    expect(estimateTokensConservative("")).toBe(ACTIVE_TABLE.envelope_overhead_tokens);
+    expect(ACTIVE_TABLE.envelope_overhead_tokens).toBeGreaterThanOrEqual(PROVEN_TABLE.envelope_overhead_tokens);
   });
 });
 
@@ -129,6 +194,143 @@ describe("calibration can only tighten the bound, never loosen it", () => {
     });
     const text = "the quick brown fox jumps over the lazy dog ".repeat(20);
     expect(estimateTokensConservative(text, tight)).toBeLessThan(estimateTokensConservative(text));
+  });
+});
+
+describe("the shipped calibration table (src/retrieval/calibration.json)", () => {
+  it("loads, validates, and is the table every default estimate uses", () => {
+    expect(ACTIVE_TABLE.provenance).toBe("measured");
+    expect(ACTIVE_TABLE.id).toBe((calibrationJson as { id: string }).id);
+    expect(ACTIVE_TABLE.reference).toBe("anthropic-count-tokens/claude-sonnet-4-5");
+    expect(ACTIVE_TABLE.corpus?.name).toBe("tokenizer-corpus");
+    expect(ACTIVE_TABLE.corpus?.sha256).toMatch(/^sha256:[0-9a-f]{64}$/);
+    expect(ACTIVE_TABLE.safety_factor).toBe(1.15);
+    expect(TABLES.active).toBe(ACTIVE_TABLE);
+    expect(TABLES.measured).toBe(ACTIVE_TABLE);
+    expect(TABLES.proven).toBe(PROVEN_TABLE);
+    // Loaded from the file, not fabricated: the numbers match byte for byte.
+    expect(ACTIVE_TABLE.ratios).toEqual((calibrationJson as { ratios: Record<CharClass, number> }).ratios);
+  });
+
+  it("is TIGHTER than the proven bound on the prose class, which is the point of calibrating", () => {
+    // ascii_alnum is where a byte-level BPE compresses hardest, and where the
+    // proven 1-token-per-byte bound costs the most.
+    expect(ACTIVE_TABLE.ratios.ascii_alnum).toBeLessThan(PROVEN_TABLE.ratios.ascii_alnum);
+    expect(ACTIVE_TABLE.ratios.ascii_alnum).toBeGreaterThan(0);
+
+    const prose = fs.readFileSync(path.join(CORPUS_DIR, "prose-en.txt"), "utf8");
+    const measured = estimateTokensConservative(prose);
+    const proven = estimateTokensConservative(prose, PROVEN_TABLE);
+    expect(measured).toBeLessThan(proven);
+    // Materially tighter, not tighter by a rounding error: the whole reason the
+    // calibration exists is that 1 token/byte made every briefing ~4x stingier.
+    expect(measured).toBeLessThan(proven / 2);
+  });
+
+  it("never charges below its own declared ratios on the documents it was measured over", () => {
+    const docs = corpusDocuments();
+    expect(docs.length).toBeGreaterThan(0); // liveness: the corpus is really there
+    for (const [name, text] of docs) {
+      const est = estimateTokensConservative(text);
+      expect(est, name).toBeGreaterThanOrEqual(declaredBound(text, ACTIVE_TABLE));
+      // And the proven table remains the ceiling it always was.
+      expect(est, name).toBeLessThanOrEqual(estimateTokensConservative(text, PROVEN_TABLE));
+    }
+  });
+
+  it("every ratio is inside (0, proven] — a table can only tighten, never loosen", () => {
+    for (const cls of CHAR_CLASSES) {
+      expect(ACTIVE_TABLE.ratios[cls]).toBeGreaterThan(0);
+      expect(ACTIVE_TABLE.ratios[cls]).toBeLessThanOrEqual(PROVEN_TABLE.ratios[cls]);
+    }
+  });
+});
+
+describe("a table that is absent or corrupt falls back to the proof", () => {
+  /** The shipped file, as a plain object, so each case mutates one thing. */
+  const good = (): Record<string, unknown> => JSON.parse(JSON.stringify(calibrationJson));
+
+  it("accepts the shipped file", () => {
+    expect(validateCalibrationTable(good())).not.toBeNull();
+  });
+
+  it.each([
+    ["absent (undefined)", undefined],
+    ["absent (null)", null],
+    ["not an object", "measured-table"],
+    ["an array", []],
+  ])("%s -> the proven table", (_label, raw) => {
+    expect(validateCalibrationTable(raw)).toBeNull();
+    const table = loadCalibrationTable(raw);
+    expect(table).toBe(PROVEN_TABLE);
+    expect(table.provenance).toBe("proven-upper-bound");
+  });
+
+  const corruptions: Array<[string, (t: Record<string, unknown>) => void]> = [
+    ["a ratio ABOVE the proven bound", (t) => { (t.ratios as Record<string, number>).ascii_alnum = 1.0001; }],
+    ["a zero ratio", (t) => { (t.ratios as Record<string, number>).ascii_alnum = 0; }],
+    ["a negative ratio", (t) => { (t.ratios as Record<string, number>).multibyte = -0.5; }],
+    ["a NaN ratio", (t) => { (t.ratios as Record<string, number>).ascii_punct = NaN; }],
+    ["a ratio that is a string", (t) => { (t.ratios as Record<string, unknown>).ascii_space = "1"; }],
+    ["a missing class", (t) => { delete (t.ratios as Record<string, unknown>).latin1_supp; }],
+    ["no ratios at all", (t) => { delete t.ratios; }],
+    ["no corpus sha256", (t) => { delete (t.corpus as Record<string, unknown>).sha256; }],
+    ["an empty corpus sha256", (t) => { (t.corpus as Record<string, unknown>).sha256 = "   "; }],
+    ["no corpus", (t) => { delete t.corpus; }],
+    ["a zero-document corpus", (t) => { (t.corpus as Record<string, unknown>).documents = 0; }],
+    ["provenance claiming a proof", (t) => { t.provenance = "proven-upper-bound"; }],
+    ["no id", (t) => { delete t.id; }],
+    ["a safety factor below 1", (t) => { t.safety_factor = 0.9; }],
+    ["a negative envelope overhead", (t) => { t.envelope_overhead_tokens = -1; }],
+  ];
+
+  it.each(corruptions)("rejects %s and falls back, provenance and all", (_label, corrupt) => {
+    const t = good();
+    corrupt(t);
+    expect(validateCalibrationTable(t)).toBeNull();
+    const table = loadCalibrationTable(t);
+    expect(table).toBe(PROVEN_TABLE);
+    expect(table.provenance).toBe("proven-upper-bound");
+    // The fallback is the SAFE direction: it charges at least as much as the
+    // corrupted table would have, for every class.
+    for (const cls of CHAR_CLASSES) expect(table.ratios[cls]).toBe(1);
+  });
+
+  it("clamps a too-small envelope overhead UP rather than rejecting the table", () => {
+    const t = good();
+    t.envelope_overhead_tokens = 0;
+    const table = validateCalibrationTable(t);
+    expect(table).not.toBeNull();
+    expect(table!.envelope_overhead_tokens).toBe(PROVEN_TABLE.envelope_overhead_tokens);
+  });
+
+  it("a fallback estimate is never smaller than the measured one it replaces", () => {
+    const text = fs.readFileSync(path.join(CORPUS_DIR, "prose-en.txt"), "utf8");
+    expect(estimateTokensConservative(text, loadCalibrationTable(undefined))).toBeGreaterThanOrEqual(
+      estimateTokensConservative(text, ACTIVE_TABLE),
+    );
+  });
+});
+
+describe("the safety factor is applied exactly once", () => {
+  it("buildCalibrationTable folds it into the ratios, and estimate does not re-apply it", () => {
+    const t = buildCalibrationTable({
+      id: "safety/1",
+      reference: "fake",
+      corpus: { name: "unit", documents: 1, bytes: 10, sha256: "sha256:00" },
+      safety_factor: 2,
+      observed_max: { ascii_alnum: 0.25 },
+      envelope_overhead_tokens: 8,
+    });
+    expect(t.ratios.ascii_alnum).toBeCloseTo(0.5, 12);
+    // 100 alnum bytes: 100 * 0.5 = 50, plus the envelope. NOT 100 (0.5 x 2).
+    expect(estimateTokensConservative("x".repeat(100), t)).toBe(50 + t.envelope_overhead_tokens);
+  });
+
+  it("the shipped file's ratios are charged unmodified", () => {
+    const bytes = 1000;
+    const expected = Math.ceil(bytes * ACTIVE_TABLE.ratios.ascii_alnum) + ACTIVE_TABLE.envelope_overhead_tokens;
+    expect(estimateTokensConservative("x".repeat(bytes))).toBe(expected);
   });
 });
 
@@ -297,7 +499,12 @@ describe("required facts come first and never yield budget to optional ones", ()
         { record: rec("OPT-BIG", 2000), tier: "lesson", role: "optional", score: 99 },
         item("REQ-A", 100, "required"),
       ],
-      { budget_tokens: 900 },
+      // RE-BASELINED (was 900 under the proven 1-token-per-byte table). These
+      // bodies are pure ASCII alnum, the class the measured table tightens most,
+      // so the same shape — room for the required fact, not for the 2000-byte
+      // optional one — now sits near 400. Verified against the boundaries: at
+      // 250 REQ-A starts fitting, at ~880 OPT-BIG joins it.
+      { budget_tokens: 400 },
     );
     expect(p.emitted).toContain("REQ-A");
     expect(p.emitted).not.toContain("OPT-BIG");
@@ -327,7 +534,8 @@ describe("C26-A18 — observability without leakage", () => {
     const p = buildPacket([item("REQ-A", 100, "required")], { budget_tokens: 4000 });
     expect(p.token_usage.budget).toBe(4000);
     expect(p.token_usage.tokenizer_id).toBe(TOKENIZER_ID);
-    expect(p.token_usage.table_id).toBe(PROVEN_TABLE.id);
+    expect(p.token_usage.table_id).toBe(ACTIVE_TABLE.id);
+    expect(p.token_usage.table_provenance).toBe(ACTIVE_TABLE.provenance);
     expect(p.token_usage.per_record).toEqual([{ id: "REQ-A", tokens: expect.any(Number) }]);
   });
 });
@@ -428,9 +636,13 @@ describe("the lifecycle resolver is reused, not reimplemented", () => {
 
 describe("C26 §6 — refused_incomplete is the second accepted terminal shape", () => {
   it("when even the framing does not fit, nothing is emitted and the refusal is explicit", () => {
-    const p = buildPacket([item("REQ-A", 4000, "required"), item("REQ-B", 4000, "required")], { budget_tokens: 200 });
+    // RE-BASELINED (was 200 under the proven table): the INCOMPLETE-PACKET
+    // banner plus the omission manifest now costs ~131 tokens, so 200 no longer
+    // forces the refusal shape this case exists to pin. 80 does, and still
+    // leaves room for the refusal line (57) so `budget_infeasible` stays false.
+    const p = buildPacket([item("REQ-A", 4000, "required"), item("REQ-B", 4000, "required")], { budget_tokens: 80 });
     expect(p.emitted).toEqual([]);
-    expect(p.token_usage.emitted_tokens).toBeLessThanOrEqual(200);
+    expect(p.token_usage.emitted_tokens).toBeLessThanOrEqual(80);
     expect(p.text).toContain("REFUSED");
     expect(p.incomplete).toBe(true);
     expect(p.qualifies_action).toBe(false);

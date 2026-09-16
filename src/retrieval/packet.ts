@@ -38,7 +38,7 @@
  */
 import { createHash } from "node:crypto";
 
-import { estimate, PROVEN_TABLE, TOKENIZER_ID, type CalibrationTable } from "./tokenizer.js";
+import { estimate, ACTIVE_TABLE, TOKENIZER_ID, type CalibrationTable } from "./tokenizer.js";
 import { renderRecord, renderRecipeForInspection, type RenderableRecord } from "./render.js";
 
 export type PacketRole = "required" | "optional";
@@ -119,6 +119,8 @@ export interface Packet {
     tokenizer_id: string;
     table_id: string;
     conservative_fallback: boolean;
+    /** Which bound `table_id` is: a proof, or a measurement over a named corpus. */
+    table_provenance: CalibrationTable["provenance"];
     /** Per-record cost of what was emitted, for C26 A03's framing arithmetic. */
     per_record: Array<{ id: string; tokens: number }>;
     /** emitted_tokens minus the sum of per_record — headings, manifest, footer. */
@@ -148,7 +150,7 @@ function sha256(text: string): string {
  * records) and is the difference between a bound and an estimate.
  */
 export function buildPacket(items: readonly PacketItem[], opts: PacketOptions): Packet {
-  const table = opts.table ?? PROVEN_TABLE;
+  const table = opts.table ?? ACTIVE_TABLE;
   const ordered = [...items].sort((a, b) => {
     const t = TIER_ORDER[a.tier] - TIER_ORDER[b.tier];
     if (t !== 0) return t;
@@ -331,6 +333,7 @@ export function buildPacket(items: readonly PacketItem[], opts: PacketOptions): 
       emitted_tokens: est.tokens,
       tokenizer_id: TOKENIZER_ID,
       table_id: table.id,
+      table_provenance: table.provenance,
       conservative_fallback: est.conservative_fallback,
       per_record: perRecord,
       framing_tokens: est.tokens - bodySum,
@@ -347,12 +350,19 @@ export function buildPacket(items: readonly PacketItem[], opts: PacketOptions): 
  * this with the serialized response to get the number that belongs in the
  * receipt.
  */
-export function measureEnvelope(json: string, table: CalibrationTable = PROVEN_TABLE): {
+export function measureEnvelope(json: string, table: CalibrationTable = ACTIVE_TABLE): {
   tokens: number;
   tokenizer_id: string;
   table_id: string;
+  table_provenance: CalibrationTable["provenance"];
   bytes: number;
 } {
   const est = estimate(json, table);
-  return { tokens: est.tokens, tokenizer_id: TOKENIZER_ID, table_id: table.id, bytes: est.bytes };
+  return {
+    tokens: est.tokens,
+    tokenizer_id: TOKENIZER_ID,
+    table_id: table.id,
+    table_provenance: table.provenance,
+    bytes: est.bytes,
+  };
 }

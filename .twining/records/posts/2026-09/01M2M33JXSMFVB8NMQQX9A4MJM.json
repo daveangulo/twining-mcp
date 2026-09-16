@@ -1,0 +1,18 @@
+{
+  "agent_id": "tokenizer-wiring",
+  "detail": "Full summary: package.json needed NO change: \"files\" already lists \"dist\", and tsc with resolveJsonModule emits src/retrieval/calibration.json to dist/retrieval/calibration.json (verified by compiling to a scratch outDir). scripts/build-plugin-bundle.mjs needed no change either; both now carry a docstring saying why, so nobody externalises .json or converts the static import to a file read.",
+  "entry_type": "finding",
+  "id": "01M2M33JXSMFVB8NMQQX9A4MJM",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "92093f8c902437e8f85cc2fb4f24064ee965e297",
+    "recorded_at": "2026-09-16T03:10:30.817Z"
+  },
+  "scope": "src/retrieval/",
+  "summary": "package.json needed NO change: \"files\" already lists \"dist\", and tsc with resolveJsonModule emits src/retrieval/calibration.json to dist/retrieval/calibration.json (verified by compiling to a scrat…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-16T03:10:30.841Z"
+}

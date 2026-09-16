@@ -177,9 +177,17 @@ describe("Gap 7 — formatter budget (R15/R16/R17)", () => {
       null,
       config,
     );
-    // 1600 in the declared tokenizer's conservative units is the same degree of
-    // tightness 400 was under the old chars/4 selection currency.
-    const ctx = await assembler.assemble(TASK, SCOPE, 1600);
+    // RE-BASELINED TWICE, and the chain matters:
+    //   400  — the original, in the old chars/4 selection currency.
+    //   1600 — lane 04 unified the currency on the PROVEN table (1 token per
+    //          UTF-8 byte), which charges ~4x, so the same tightness needed 4x
+    //          the integer.
+    //   700  — the shipped measured table (src/retrieval/calibration.json)
+    //          charges ~0.43 tokens/byte on prose, so the integer comes most of
+    //          the way back down. Measured, not scaled by eye: degradation stops
+    //          between 1600 and 2000, so 1600 had drifted to the very edge of
+    //          still proving anything; 700 sits well inside the degrading band.
+    const ctx = await assembler.assemble(TASK, SCOPE, 700);
     const briefing = ContextAssembler.formatForLLM(ctx);
     const full = ctx.active_decisions.filter((d) => briefing.includes(d.rationale));
     expect(full.length).toBeLessThan(ctx.active_decisions.length);

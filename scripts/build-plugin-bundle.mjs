@@ -10,6 +10,14 @@
  * assets, because http-server.ts resolves publicDir relative to the
  * module location (path.join(dirname(fileURLToPath(import.meta.url)), "public")).
  *
+ * JSON data files (src/retrieval/calibration.json) are INLINED by esbuild as
+ * plain object literals — verified in the output, and the reason the tokenizer
+ * imports its calibration table statically rather than reading it with
+ * createRequire at runtime. A runtime read would resolve relative to THIS
+ * bundle, where no calibration.json sits beside it, and the tokenizer would
+ * silently fall back to the ~4x-looser proven table for every plugin user.
+ * Do not add .json to `external`, and do not convert that import to a file read.
+ *
  * Externalized (loaded dynamically at runtime with graceful fallback):
  *   - @huggingface/transformers  (embedder.ts — try/catch, keyword fallback)
  *   - posthog-node               (telemetry-client.ts — Function() import, no-op fallback)

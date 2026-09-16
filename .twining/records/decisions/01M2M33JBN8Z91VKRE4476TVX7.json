@@ -1,0 +1,76 @@
+{
+  "affected_files": [
+    "src/retrieval/tokenizer.ts",
+    "src/retrieval/calibration.json",
+    "src/retrieval/packet.ts",
+    "src/engine/context-assembler.ts",
+    "tsconfig.json",
+    "scripts/build-plugin-bundle.mjs",
+    "scripts/calibrate-tokenizer.mjs",
+    "test/retrieval/tokenizer-packet.test.ts",
+    "test/acceptance/cases/c26.test.ts",
+    "test/acceptance/cases/c05.test.ts",
+    "test/acceptance/baseline/gap7-formatter-budget.test.ts",
+    "test/context-assembler.test.ts",
+    "test/coordination/overhead-measurement.test.ts"
+  ],
+  "affected_symbols": [
+    "ACTIVE_TABLE",
+    "validateCalibrationTable",
+    "loadCalibrationTable",
+    "describeTable",
+    "estimate",
+    "estimateTokensConservative",
+    "buildCalibrationTable",
+    "buildPacket",
+    "measureEnvelope",
+    "CHAR_CLASSES"
+  ],
+  "agent_id": "tokenizer-wiring",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Normalize the loaded table by dividing ratios by safety_factor",
+      "pros": [],
+      "reason_rejected": "Round-trips numerically but mangles the committed artefact's meaning and leaves two readings of the same field."
+    },
+    {
+      "cons": [],
+      "option": "Set safety_factor: 1 on the loaded table and carry the real factor elsewhere",
+      "pros": [],
+      "reason_rejected": "The table would then lie about itself in every receipt."
+    }
+  ],
+  "assembled_before": false,
+  "assumptions": [
+    "The committed src/retrieval/calibration.json is the genuine output of scripts/calibrate-tokenizer.mjs against a real ANTHROPIC_API_KEY — its numbers were not re-derived here, only validated for shape and range",
+    "A measured table still warrants conservative_fallback: true, because it is an empirical bound over a named corpus rather than a count",
+    "Breaking the packet token_usage shape (new table_provenance field) is acceptable on the v3 line, per the settled 'breaking behaviour is permitted on v3' decision"
+  ],
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [
+    "Could not run npm run build or touch plugin/ — verified dist and bundle carriage with a scratch outDir and an in-memory esbuild instead",
+    "No network: the measured ratios could not be re-verified against the count-tokens API"
+  ],
+  "context": "Wired src/retrieval/calibration.json into the tokenizer: ACTIVE_TABLE (measured, validated at load, proven fallback) is now the default for every estimate, packet and briefing. 2711 pass.",
+  "depends_on": [
+    "01M2KKE0XE0K2201Z5081YMNB0",
+    "01M2KXWC719QF8B4C4A0GE4SPN",
+    "01M2KKE0QJJ3A4X4B56G6QB4M6"
+  ],
+  "domain": "implementation",
+  "id": "01M2M33JBN8Z91VKRE4476TVX7",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "92093f8c902437e8f85cc2fb4f24064ee965e297",
+    "recorded_at": "2026-09-16T03:10:30.238Z"
+  },
+  "rationale": "Latent defect found while wiring, invisible until now because PROVEN_TABLE.safety_factor is 1. scripts/calibrate-tokenizer.mjs writes ratios that ALREADY include the 1.15 (Math.min(1, measured * SAFETY)), while estimate() multiplied by safety_factor again — the first real table would have been charged 1.3225x, eating a third of the calibration benefit. Fixed by making ratios the final charge everywhere: buildCalibrationTable now folds the factor in before the clamp (matching the script), estimate charges ratios unmodified, and safety_factor survives as provenance only. All three sites now agree and say so in their docstrings. A new test pins it (100 alnum bytes at observed 0.25 x safety 2 costs 50, not 100).",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/retrieval/",
+  "status": "active",
+  "summary": "The safety factor is applied ONCE, into the ratios, and estimate() no longer multiplies by table.safety_factor",
+  "timestamp": "2026-09-16T03:10:30.261Z"
+}

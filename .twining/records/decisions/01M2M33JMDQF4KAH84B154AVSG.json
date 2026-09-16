@@ -1,0 +1,70 @@
+{
+  "affected_files": [
+    "src/retrieval/tokenizer.ts",
+    "src/retrieval/calibration.json",
+    "src/retrieval/packet.ts",
+    "src/engine/context-assembler.ts",
+    "tsconfig.json",
+    "scripts/build-plugin-bundle.mjs",
+    "scripts/calibrate-tokenizer.mjs",
+    "test/retrieval/tokenizer-packet.test.ts",
+    "test/acceptance/cases/c26.test.ts",
+    "test/acceptance/cases/c05.test.ts",
+    "test/acceptance/baseline/gap7-formatter-budget.test.ts",
+    "test/context-assembler.test.ts",
+    "test/coordination/overhead-measurement.test.ts"
+  ],
+  "affected_symbols": [
+    "ACTIVE_TABLE",
+    "validateCalibrationTable",
+    "loadCalibrationTable",
+    "describeTable",
+    "estimate",
+    "estimateTokensConservative",
+    "buildCalibrationTable",
+    "buildPacket",
+    "measureEnvelope",
+    "CHAR_CLASSES"
+  ],
+  "agent_id": "tokenizer-wiring",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Divide each baseline by the ~2.35x density ratio",
+      "pros": [],
+      "reason_rejected": "Would have kept the two already-vacuous cases vacuous, since neither was failing — they were passing for the wrong reason."
+    }
+  ],
+  "assembled_before": false,
+  "assumptions": [
+    "The committed src/retrieval/calibration.json is the genuine output of scripts/calibrate-tokenizer.mjs against a real ANTHROPIC_API_KEY — its numbers were not re-derived here, only validated for shape and range",
+    "A measured table still warrants conservative_fallback: true, because it is an empirical bound over a named corpus rather than a count",
+    "Breaking the packet token_usage shape (new table_provenance field) is acceptable on the v3 line, per the settled 'breaking behaviour is permitted on v3' decision"
+  ],
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [
+    "Could not run npm run build or touch plugin/ — verified dist and bundle carriage with a scratch outDir and an in-memory esbuild instead",
+    "No network: the measured ratios could not be re-verified against the count-tokens API"
+  ],
+  "context": "Wired src/retrieval/calibration.json into the tokenizer: ACTIVE_TABLE (measured, validated at load, proven fallback) is now the default for every estimate, packet and briefing. 2711 pass.",
+  "depends_on": [
+    "01M2KKE0XE0K2201Z5081YMNB0",
+    "01M2KXWC719QF8B4C4A0GE4SPN",
+    "01M2KKE0QJJ3A4X4B56G6QB4M6"
+  ],
+  "domain": "implementation",
+  "id": "01M2M33JMDQF4KAH84B154AVSG",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "92093f8c902437e8f85cc2fb4f24064ee965e297",
+    "recorded_at": "2026-09-16T03:10:30.519Z"
+  },
+  "rationale": "Supersedes the D36 re-baseline that moved these to the proven 1-token-per-byte bound. Two of them had gone vacuous, which a scale-by-eye pass would have missed: test/context-assembler.test.ts's graph tie-break at 150 now fits TWO decisions, dropping the case into its tolerant else-branch so it stopped testing the tie-break at all (one-decision band measured at 40..70, set to 65); and test/acceptance/cases/c05.test.ts A13/A14 at 700 now fits both records whole, so it stopped testing incompleteness (set to 300, which reproduces the proven-700 shape exactly: nothing emitted, banner rendered). The rest: c26's 4000 -> TIGHT=1700 (same 3-of-5 emission, same manifest; emitted=3 band is 1600..1870), gap7's control 1600 -> 700 (degradation stops between 1600 and 2000, so 1600 had drifted to the edge of proving anything), overhead-measurement 800/400 -> 200/100 (the ORIGINAL chars/4-era thresholds, restored because measured actuals are 70.3 and 51). Every band was probed, not scaled; every site carries the 3-step chain (chars/4 -> proven -> measured) in a comment.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/retrieval/",
+  "status": "active",
+  "summary": "Re-baselined SIX lane-04 budget/density baselines down to measured-table units, each to a MEASURED band rather than a scaled guess, restoring the pre-lane-04 numbers where the measured table brings them back",
+  "timestamp": "2026-09-16T03:10:30.541Z"
+}

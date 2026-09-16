@@ -3,8 +3,8 @@
   "id": "01M2M1J0H9282D1XNP2S4VYE6N",
   "name": "scripts/calibrate-tokenizer.mjs",
   "properties": {
-    "scope": "src/contracts/"
+    "scope": "src/contracts/,src/retrieval/"
   },
   "type": "file",
-  "updated_at": "2026-09-16T02:43:26.438Z"
+  "updated_at": "2026-09-16T03:10:30.657Z"
 }

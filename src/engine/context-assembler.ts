@@ -31,7 +31,7 @@ import {
   type SelectionOutcome,
 } from "../retrieval/select.js";
 import { storeIdentity, deriveRepoId, type StoreIdentity } from "../retrieval/store-identity.js";
-import { estimate as estimateConservative, TOKENIZER_ID, PROVEN_TABLE } from "../retrieval/tokenizer.js";
+import { estimate as estimateConservative, TOKENIZER_ID, ACTIVE_TABLE } from "../retrieval/tokenizer.js";
 import { classifyLegacy } from "../retrieval/lifecycle.js";
 import { hashBytes } from "../retrieval/receipts.js";
 import { CLASS_PRESENTATION } from "../retrieval/render.js";
@@ -995,7 +995,7 @@ export class ContextAssembler {
           budget,
           emitted_tokens: 0, // filled by formatForLLM via annotateEmitted()
           tokenizer_id: TOKENIZER_ID,
-          table_id: PROVEN_TABLE.id,
+          table_id: ACTIVE_TABLE.id,
           conservative_fallback: true,
           rendered_decisions: 0,
           selected_decisions: result.active_decisions.length,
@@ -1066,7 +1066,7 @@ export class ContextAssembler {
           budget,
           emitted_tokens: 0,
           tokenizer_id: TOKENIZER_ID,
-          table_id: PROVEN_TABLE.id,
+          table_id: ACTIVE_TABLE.id,
           conservative_fallback: true,
           rendered_decisions: 0,
           selected_decisions: 0,

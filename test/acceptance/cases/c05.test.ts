@@ -240,9 +240,17 @@ describe("C05 — no-patch disposition meets a recurrence on changed inputs", ()
       { record: renderable(cx, classify(cx)), tier: "lesson", role: "optional" },
     ];
     // A budget too small for the governing record: the packet is incomplete.
+    //
+    // RE-BASELINED 700 -> 300 for the shipped measured calibration table
+    // (src/retrieval/calibration.json). Under the proven 1-token-per-UTF-8-byte
+    // table 700 emitted NOTHING and rendered the INCOMPLETE-PACKET banner; the
+    // measured table charges this packet 501 tokens instead of ~1165, so 700
+    // now fits both records whole and the case stopped testing incompleteness
+    // at all. 300 reproduces the proven-700 shape exactly (nothing emitted,
+    // banner rendered, 162 tokens) at the same fraction of the full cost.
     const tight = buildPacket(
       [items[0]!, { ...items[1]!, role: "required" as const }],
-      { budget_tokens: 700 },
+      { budget_tokens: 300 },
     );
     expect(tight.incomplete).toBe(true);
     expect(tight.qualifies_action).toBe(false);

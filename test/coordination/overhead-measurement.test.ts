@@ -199,28 +199,34 @@ describe("signal-to-noise ratio", () => {
 
 describe("per-item overhead", () => {
   it("< 200 tokens per decision on average", async () => {
+    // Threshold restored to its pre-lane-04 value: see the note below.
     const kit = createAssembler(twiningDir);
     await seedDecisions(twiningDir, 10, kit);
     const ctx = await kit.assembler.assemble("task", "src/mod/");
     if (ctx.active_decisions.length > 0) {
       const avgTokens = ctx.token_estimate / ctx.active_decisions.length;
-      expect(avgTokens).toBeLessThan(800);
+      expect(avgTokens).toBeLessThan(200);
     }
   });
 
-  // Thresholds re-baselined for the declared tokenizer (lane 04). token_estimate
-  // is now a CONSERVATIVE UPPER BOUND over the emitted briefing (1 token per
-  // UTF-8 byte) rather than a chars/4 central estimate, so the same briefing
-  // reports a larger number by construction. The property under test — bounded
-  // per-item overhead — is unchanged; only the unit moved. These will tighten
-  // again if a calibrated tokenizer table is ever shipped.
-  it("< 400 tokens per warning on average (conservative-bound units)", async () => {
+  // Thresholds RESTORED to 200/100 — the calibrated table anticipated in the
+  // lane-04 note has now shipped (src/retrieval/calibration.json).
+  //
+  // The chain: 200/100 (chars/4) -> 800/400 (lane 04's proven 1-token-per-byte
+  // table, ~4x looser by construction) -> 200/100 again, because the measured
+  // table charges ~0.43 tokens/byte on prose and brings the numbers back into
+  // the original range. Measured at the time of the restore: 70.3 tokens per
+  // decision and 51 per warning, so both keep real headroom rather than sitting
+  // on a knife edge. token_estimate is still a CONSERVATIVE UPPER BOUND, not a
+  // chars/4 central estimate; the property under test — bounded per-item
+  // overhead — has never changed.
+  it("< 100 tokens per warning on average (conservative-bound units)", async () => {
     const kit = createAssembler(twiningDir);
     await seedWarnings(twiningDir, 5, kit);
     const ctx = await kit.assembler.assemble("task", "src/mod/");
     if (ctx.active_warnings.length > 0) {
       const avgTokens = ctx.token_estimate / ctx.active_warnings.length;
-      expect(avgTokens).toBeLessThan(400);
+      expect(avgTokens).toBeLessThan(100);
     }
   });
 });

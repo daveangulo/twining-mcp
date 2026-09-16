@@ -1,0 +1,18 @@
+{
+  "agent_id": "tokenizer-wiring",
+  "detail": "Full summary: the committed plugin bundle is ALREADY stale on foundation/v3 and this change does not make it newly so — plugin/server/twining-server.mjs is 1,385,871 bytes against a fresh 1,641,873 (last rebuilt at the 2.16.1 release, 2026-09-08; src has moved through the whole lane merge since). CI's plugin-bundle-freshness job diffs a rebuild against the committed file, so it is red on this branch for every src change. Left untouched deliberately per decision 01M2M22KYZ3AE0ZAYFXXG6SFTN (editing plugin/ forces a version bump and is release work under Dave's authority). Verified separately that the bundle WOULD carry the table once rebuilt: esbuild inlines calibration.json as an object literal, no runtime path.",
+  "entry_type": "need",
+  "id": "01M2M33JV4NGBGNAN60XNWMKHR",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "92093f8c902437e8f85cc2fb4f24064ee965e297",
+    "recorded_at": "2026-09-16T03:10:30.733Z"
+  },
+  "scope": "src/retrieval/",
+  "summary": "the committed plugin bundle is ALREADY stale on foundation/v3 and this change does not make it newly so — plugin/server/twining-server.mjs is 1,385,871 bytes against a fresh 1,641,873 (last rebuilt…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-16T03:10:30.756Z"
+}

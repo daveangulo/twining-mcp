@@ -301,11 +301,12 @@ describe("ContextAssembler", () => {
         config,
       );
 
-      // Budget scaled for the declared tokenizer (lane 04): selection is now
-      // costed in the same conservative unit the receipt reports, so a "tight"
-      // budget is a larger integer than it was under the old chars/4 estimate.
-      // The PROPERTY under test is unchanged.
-      const result = await assembler.assemble("check security", "project", 160);
+      // Budget re-baselined twice for the declared tokenizer: 40 (chars/4) ->
+      // 160 (lane 04's proven 1-token-per-byte table, ~4x looser) -> 70 (the
+      // shipped measured table, src/retrieval/calibration.json, ~0.43
+      // tokens/byte on prose). The PROPERTY under test is unchanged; only the
+      // unit moved, and it has now moved most of the way back.
+      const result = await assembler.assemble("check security", "project", 70);
 
       // Warnings get reserved budget, so should appear even with tight budget
       expect(result.active_warnings.length).toBeGreaterThanOrEqual(1);
@@ -511,13 +512,16 @@ describe("ContextAssembler", () => {
         graphEngine,
       );
 
-      // Budget scaled for the declared tokenizer (lane 04): selection is now
-      // costed in the same conservative unit the receipt reports, so a "tight"
-      // budget is a larger integer than it was under the old chars/4 estimate.
-      // The PROPERTY under test is unchanged.
       // A tight budget that fits only one decision; the higher-scored
       // (graph-connected) one should be selected.
-      const result = await assembler.assemble("work on auth JWT", "src/auth/", 150);
+      //
+      // Budget re-baselined twice: ~38 (chars/4) -> 150 (lane 04's proven
+      // table) -> 65 (the shipped measured table). Measured, and the
+      // re-baseline was NOT cosmetic: at 150 the measured table fits TWO
+      // decisions, which drops this case into the tolerant else-branch below
+      // and stops it testing the tie-break it exists for. The one-decision band
+      // is 40..70; 65 sits inside it.
+      const result = await assembler.assemble("work on auth JWT", "src/auth/", 65);
 
       // With tight budget, only the higher-scored decision fits
       // The connected decision should win due to graph_connectivity boost

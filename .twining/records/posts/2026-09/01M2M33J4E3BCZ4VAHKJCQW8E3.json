@@ -1,0 +1,18 @@
+{
+  "agent_id": "tokenizer-wiring",
+  "detail": "Decisions: [object Object]; [object Object]; [object Object]; [object Object]\nFindings: warning: the calibrated table leaves ascii_space at the PROVEN ratio 1.0 because whitespace.txt is the one corpus doc the count-tokens API refuses (blank text), so the calibrate script skips it and no document is dominated by that class. Whitespace is ~15% of briefing bytes, so this alone costs ~0.15 tokens/byte of the residual looseness — measured prose density is 0.42-0.44 rather than the ~0.28 a fully-measured table would give. ascii_punct is also 1.0, but there by clamp (measured x 1.15 exceeded the proven bound), which is correct. To close the space gap the corpus needs a document that is >=80% whitespace bytes yet not blank — e.g. indented/padded text — since a document the API will actually count is the only way that class gets a measurement.; need: the committed plugin bundle is ALREADY stale on foundation/v3 and this change does not make it newly so — plugin/server/twining-server.mjs is 1,385,871 bytes against a fresh 1,641,873 (last rebuilt at the 2.16.1 release, 2026-09-08; src has moved through the whole lane merge since). CI's plugin-bundle-freshness job diffs a rebuild against the committed file, so it is red on this branch for every src change. Left untouched deliberately per decision 01M2M22KYZ3AE0ZAYFXXG6SFTN (editing plugin/ forces a version bump and is release work under Dave's authority). Verified separately that the bundle WOULD carry the table once rebuilt: esbuild inlines calibration.json as an object literal, no runtime path.; estimate() double-applied the safety factor and nothing caught it, because PROVEN_TABLE.safety_factor is 1 — the bug was unreachable until a real table shipped. The general shape: a constant that neutralises a code path is a place where tests prove nothing. The calibrate script and buildCalibrationTable had disagreed about where the factor belongs since they were written.; package.json needed NO change: \"files\" already lists \"dist\", and tsc with resolveJsonModule emits src/retrieval/calibration.json to dist/retrieval/calibration.json (verified by compiling to a scratch outDir). scripts/build-plugin-bundle.mjs needed no change either; both now carry a docstring saying why, so nobody externalises .json or converts the static import to a file read.; test/migrate/golden-fixture.test.ts failed with a 10s beforeEach hook timeout during the first full-suite run and passed immediately when run singly — the documented lock/timeout contention artifact, not a regression. Unrelated to this change.; the whole-suite count moved 2674 -> 2711 (+37, all in test/retrieval/tokenizer-packet.test.ts: the calibration-load, corrupt/absent-fallback, safety-factor-once and corpus-document blocks, plus the corpus byte-floor it.each splitting into a proven-table half and an active-table half).",
+  "entry_type": "status",
+  "id": "01M2M33J4E3BCZ4VAHKJCQW8E3",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "92093f8c902437e8f85cc2fb4f24064ee965e297",
+    "recorded_at": "2026-09-16T03:10:30.007Z"
+  },
+  "scope": "src/retrieval/",
+  "summary": "Wired src/retrieval/calibration.json into the tokenizer: ACTIVE_TABLE (measured, validated at load, proven fallback) is now the default for every estimate, packet and briefing. 2711 pass.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-16T03:10:30.030Z"
+}

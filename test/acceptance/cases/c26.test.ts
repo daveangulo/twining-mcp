@@ -14,7 +14,7 @@
  */
 import { describe, it, expect } from "vitest";
 import { buildPacket, type PacketItem } from "../../../src/retrieval/packet.js";
-import { estimate, TOKENIZER_ID, PROVEN_TABLE } from "../../../src/retrieval/tokenizer.js";
+import { estimate, TOKENIZER_ID, ACTIVE_TABLE, PROVEN_TABLE, CHAR_CLASSES, classifyBytes } from "../../../src/retrieval/tokenizer.js";
 import { mintReceipt, acknowledge, hashBytes, deliveryQualifies } from "../../../src/retrieval/receipts.js";
 import { classifyLegacy } from "../../../src/retrieval/lifecycle.js";
 import { selectCandidates } from "../../../src/retrieval/select.js";
@@ -56,6 +56,20 @@ const ALL = [REQ_A, REQ_B, REQ_C, OPT_D, OPT_E];
 /** rec-xs-0006: out of scope. It must consume zero budget and appear nowhere. */
 const XS_SCOPE: Scope = { repo: OTHER, path: "elsewhere" };
 
+/**
+ * The oracle's "budget 4000" attempt, RE-BASELINED for the shipped measured
+ * calibration table (src/retrieval/calibration.json).
+ *
+ * 4000 was chosen under the proven 1-token-per-UTF-8-byte table, where it
+ * emitted 3 of the 5 candidates (3797 tokens). The measured table charges the
+ * same packet 1512 tokens, so 4000 now fits everything and the partial-with-
+ * manifest SHAPE this attempt exists to exercise disappears. 1700 reproduces it
+ * exactly — same 3 records, same omission manifest, same verdict — at the same
+ * degree of tightness (4000 x 1512/3797 ~ 1590; the emitted=3 band runs
+ * 1600..1870, so 1700 sits in its middle rather than on an edge).
+ */
+const TIGHT = 1700;
+
 describe("C26 — a context packet does not fit the budget", () => {
   it("A10 — scope runs BEFORE budget: the out-of-scope record never becomes a candidate", () => {
     const pool = [
@@ -78,9 +92,9 @@ describe("C26 — a context packet does not fit the budget", () => {
     expect(JSON.stringify(packet)).not.toContain("rec-xs-0006");
   });
 
-  it("A1 (budget 4000) — partial_with_manifest: within budget, omissions named, blocked", () => {
-    const p = buildPacket(ALL, { budget_tokens: 4000 });
-    expect(p.token_usage.emitted_tokens).toBeLessThanOrEqual(4000);
+  it("A1 (the tight budget) — partial_with_manifest: within budget, omissions named, blocked", () => {
+    const p = buildPacket(ALL, { budget_tokens: TIGHT });
+    expect(p.token_usage.emitted_tokens).toBeLessThanOrEqual(TIGHT);
     // A05: delivered_records derive from the emitted byte stream, not selection.
     expect(p.selected).toHaveLength(5);
     expect(p.emitted.length).toBeLessThan(5);
@@ -109,7 +123,7 @@ describe("C26 — a context packet does not fit the budget", () => {
   });
 
   it("A2 — an independent recount of the emitted bytes reproduces the count exactly (±0)", () => {
-    for (const budget of [4000, 6000, 100000]) {
+    for (const budget of [TIGHT, 6000, 100000]) {
       const p = buildPacket(ALL, { budget_tokens: budget });
       expect(estimate(p.text).tokens).toBe(p.token_usage.emitted_tokens);
     }
@@ -118,11 +132,25 @@ describe("C26 — a context packet does not fit the budget", () => {
   it("A4 — the tokenizer and its calibration table are named, and the bound declares itself", () => {
     const p = buildPacket(ALL, { budget_tokens: 100000 });
     expect(p.token_usage.tokenizer_id).toBe(TOKENIZER_ID);
-    expect(p.token_usage.table_id).toBe(PROVEN_TABLE.id);
+    expect(p.token_usage.table_id).toBe(ACTIVE_TABLE.id);
+    // The table says which KIND of bound it is, so a receipt read later can
+    // tell a proof from a measurement over a named corpus.
+    expect(p.token_usage.table_provenance).toBe(ACTIVE_TABLE.provenance);
     expect(p.token_usage.conservative_fallback).toBe(true);
-    // A conservative fallback's count must be >= the true count over the same
-    // bytes. The proven table's floor is the UTF-8 byte length.
-    expect(p.token_usage.emitted_tokens).toBeGreaterThanOrEqual(Buffer.byteLength(p.text, "utf8"));
+
+    // RE-BASELINED. The UTF-8 byte length is the PROVEN table's floor, and the
+    // shipped measured table exists to charge less than it — asserting it
+    // against the default would assert the calibration away. Both halves of the
+    // property are kept separately:
+    //   1. the proven table still never comes in under the byte length;
+    expect(estimate(p.text, PROVEN_TABLE).tokens).toBeGreaterThanOrEqual(Buffer.byteLength(p.text, "utf8"));
+    //   2. the shipped table never comes in under its OWN declared ratios, and
+    //      never above the proof it was clamped to.
+    const classes = classifyBytes(p.text);
+    let declared = ACTIVE_TABLE.envelope_overhead_tokens;
+    for (const cls of CHAR_CLASSES) declared += (classes[cls] ?? 0) * ACTIVE_TABLE.ratios[cls];
+    expect(p.token_usage.emitted_tokens).toBeGreaterThanOrEqual(declared);
+    expect(p.token_usage.emitted_tokens).toBeLessThanOrEqual(estimate(p.text, PROVEN_TABLE).tokens);
   });
 
   it("A9 (P) — a generous budget delivers all three required records and qualifies", () => {
@@ -188,7 +216,7 @@ describe("C26 — a context packet does not fit the budget", () => {
   });
 
   it("A15/A16 — a blocked attempt's receipt is unchanged by a later successful one", () => {
-    const blocked = buildPacket(ALL, { budget_tokens: 4000 });
+    const blocked = buildPacket(ALL, { budget_tokens: TIGHT });
     const blockedReceipt = mintReceipt({
       receipt_id: "pkt-A1-0001",
       emitted_text: blocked.text,
@@ -212,7 +240,7 @@ describe("C26 — a context packet does not fit the budget", () => {
   });
 
   it("A17 — no truncated record passes as complete: a record is emitted whole or omitted", () => {
-    const p = buildPacket(ALL, { budget_tokens: 4000 });
+    const p = buildPacket(ALL, { budget_tokens: TIGHT });
     // Every emitted record's full body is present in the bytes.
     for (const id of p.emitted) {
       const item = ALL.find((i) => i.record.id === id)!;
@@ -223,8 +251,8 @@ describe("C26 — a context packet does not fit the budget", () => {
   });
 
   it("A18 — the trace exposes budget, tokenizer, sets and per-record cost without content leakage", () => {
-    const p = buildPacket(ALL, { budget_tokens: 4000 });
-    expect(p.token_usage.budget).toBe(4000);
+    const p = buildPacket(ALL, { budget_tokens: TIGHT });
+    expect(p.token_usage.budget).toBe(TIGHT);
     expect(p.token_usage.per_record.every((r) => typeof r.tokens === "number")).toBe(true);
     expect(JSON.stringify(p.token_usage)).not.toContain("rec-xs-0006");
   });

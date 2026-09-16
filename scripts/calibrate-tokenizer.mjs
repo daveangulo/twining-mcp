@@ -28,6 +28,14 @@
  * ratio that still holds for every document in the corpus. The safety factor
  * then covers documents the corpus does not contain.
  *
+ * ## Where the safety factor goes
+ *
+ * INTO the ratios, here, before the clamp — so `ratios` in the emitted file is
+ * the final tokens-per-byte charge and nothing multiplies it again. The
+ * `safety_factor` field travels with it as provenance only. `estimate()` and
+ * `buildCalibrationTable()` in src/retrieval/tokenizer.ts follow the same rule;
+ * if any one of the three applies it separately the margin is charged twice.
+ *
  * ## Honest limits
  *
  * A calibrated table is an empirical bound over the corpus it was measured on,

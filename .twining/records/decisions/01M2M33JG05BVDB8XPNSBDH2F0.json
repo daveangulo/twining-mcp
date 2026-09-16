@@ -1,0 +1,70 @@
+{
+  "affected_files": [
+    "src/retrieval/tokenizer.ts",
+    "src/retrieval/calibration.json",
+    "src/retrieval/packet.ts",
+    "src/engine/context-assembler.ts",
+    "tsconfig.json",
+    "scripts/build-plugin-bundle.mjs",
+    "scripts/calibrate-tokenizer.mjs",
+    "test/retrieval/tokenizer-packet.test.ts",
+    "test/acceptance/cases/c26.test.ts",
+    "test/acceptance/cases/c05.test.ts",
+    "test/acceptance/baseline/gap7-formatter-budget.test.ts",
+    "test/context-assembler.test.ts",
+    "test/coordination/overhead-measurement.test.ts"
+  ],
+  "affected_symbols": [
+    "ACTIVE_TABLE",
+    "validateCalibrationTable",
+    "loadCalibrationTable",
+    "describeTable",
+    "estimate",
+    "estimateTokensConservative",
+    "buildCalibrationTable",
+    "buildPacket",
+    "measureEnvelope",
+    "CHAR_CLASSES"
+  ],
+  "agent_id": "tokenizer-wiring",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Keep PROVEN_TABLE as the default and opt in per call site",
+      "pros": [],
+      "reason_rejected": "Silent partial adoption; the assembler's hardcoded table_id proves the failure mode is real."
+    }
+  ],
+  "assembled_before": false,
+  "assumptions": [
+    "The committed src/retrieval/calibration.json is the genuine output of scripts/calibrate-tokenizer.mjs against a real ANTHROPIC_API_KEY — its numbers were not re-derived here, only validated for shape and range",
+    "A measured table still warrants conservative_fallback: true, because it is an empirical bound over a named corpus rather than a count",
+    "Breaking the packet token_usage shape (new table_provenance field) is acceptable on the v3 line, per the settled 'breaking behaviour is permitted on v3' decision"
+  ],
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [
+    "Could not run npm run build or touch plugin/ — verified dist and bundle carriage with a scratch outDir and an in-memory esbuild instead",
+    "No network: the measured ratios could not be re-verified against the count-tokens API"
+  ],
+  "context": "Wired src/retrieval/calibration.json into the tokenizer: ACTIVE_TABLE (measured, validated at load, proven fallback) is now the default for every estimate, packet and briefing. 2711 pass.",
+  "depends_on": [
+    "01M2KKE0XE0K2201Z5081YMNB0",
+    "01M2KXWC719QF8B4C4A0GE4SPN",
+    "01M2KKE0QJJ3A4X4B56G6QB4M6"
+  ],
+  "domain": "implementation",
+  "id": "01M2M33JG05BVDB8XPNSBDH2F0",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "92093f8c902437e8f85cc2fb4f24064ee965e297",
+    "recorded_at": "2026-09-16T03:10:30.376Z"
+  },
+  "rationale": "The alternative — keep PROVEN as the default and pass ACTIVE explicitly at call sites — would have left any missed call site silently 2.3x loose, and the assembler was already hardcoding PROVEN_TABLE.id into the receipt, which would have misreported the table in use. Making the default the active table means tsc and the test suite find every site. Measured effect on prose: 0.42-0.44 tokens/byte against the proven 1.0, so a 4000-token briefing budget buys ~2.3x the content it did on the merge commit. Packet token_usage gained table_provenance so a receipt can still tell a proof from a measurement.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/retrieval/",
+  "status": "active",
+  "summary": "ACTIVE_TABLE (measured when valid, proven otherwise) is the DEFAULT table for estimate, estimateTokensConservative, buildPacket and measureEnvelope, and is what context-assembler reports as table_id",
+  "timestamp": "2026-09-16T03:10:30.400Z"
+}

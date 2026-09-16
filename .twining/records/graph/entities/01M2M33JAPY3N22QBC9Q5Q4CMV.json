@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-16T03:10:30.230Z",
+  "id": "01M2M33JAPY3N22QBC9Q5Q4CMV",
+  "name": "measureEnvelope",
+  "properties": {
+    "scope": "src/retrieval/"
+  },
+  "type": "function",
+  "updated_at": "2026-09-16T03:10:30.677Z"
+}
