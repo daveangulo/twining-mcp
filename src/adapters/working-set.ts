@@ -12,6 +12,13 @@
  *      same bytes, so `payload_hash` means something;
  *   2. honest when incomplete — an omitted record is *stated* with a count,
  *      never silently dropped (R14/gap 7 in spirit).
+ *
+ * And one it must have because the packet is read by a model: the class
+ * label at column 0 is always the RENDERER's. Every piece of record text goes
+ * through `oneLine`, so no stored byte can start a line and pose as a
+ * `- [RULING (human)]` head, and no single field can consume the budget.
+ * (Lane 04's renderer fences bytes verbatim instead; this one is bounded and
+ * so must normalise — the two are different tools for different packets.)
  */
 import type { EventStore } from "../events/event-store.js";
 import type { Scope } from "../contracts/index.js";
@@ -42,21 +49,60 @@ const CLASS_LABEL: Record<string, string> = {
   legacy_unverified: "legacy (unverified)",
 };
 
-/** Git prefix length on rendered ranges; the full sha stays in the record. */
+/** Git prefix length on rendered shas; the full sha stays in the record. */
 const SHA_PREFIX = 8;
-/** Upper bound on the compact `result` rendering so one verbose check cannot eat the budget. */
+/** Observation-derived text: a result's key=value pairs or summary, check_method, source_uri. */
 const RESULT_RENDER_MAX = 240;
+/** Human or decision prose: a ruling's statement, a decision's summary and rationale, a post's summary. */
+const PROSE_RENDER_MAX = 500;
+
+const FULL_SHA = /^[0-9a-f]{40}$/;
+/** `scheme://user:secret@host` → `scheme://host`. A credentialed remote URL never reaches the packet. */
+const URL_USERINFO = /([a-z][a-z0-9+.-]*:\/\/)[^\s/@]+@/gi;
+/**
+ * Result keys never rendered as key=value: `error` is subprocess stderr (which
+ * echoes the command line, credentials and all) and is not a fact about the
+ * source; `summary` is the head line when present and absent when blank.
+ */
+const RESULT_KEYS_NEVER_RENDERED = new Set(["error", "summary"]);
 
 function shortSha(sha: unknown): string | undefined {
   return typeof sha === "string" && sha.length > 0 ? sha.slice(0, SHA_PREFIX) : undefined;
 }
 
-/** `base..head` with 8-hex prefixes; one side may be absent (`..head`, `base..`). */
-function renderRange(base: unknown, head: unknown): string | undefined {
+/** Whitespace collapsed to single spaces, trimmed, URL userinfo stripped. */
+function normalise(text: string): string {
+  return text.replace(/\s+/g, " ").trim().replace(URL_USERINFO, "$1");
+}
+
+function clip(text: string, max: number): string {
+  return text.length > max ? `${text.slice(0, max - 1)}…` : text;
+}
+
+/**
+ * The one path record text takes into the packet. Non-strings and blank
+ * strings are ABSENT (undefined), never an empty line, so a caller's fallback
+ * chain (`summary ?? key=value ?? id`) keeps working.
+ */
+function oneLine(value: unknown, max: number): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const text = normalise(value);
+  return text.length === 0 ? undefined : clip(text, max);
+}
+
+/**
+ * A revision as a self-labelling token. `base..head` is a range. A head alone
+ * is `@head`: git's own `..head` would read as `HEAD..head`, a range, whereas
+ * scope.ts binds a head-only revision to exactly one commit. A base alone is
+ * `since base`.
+ */
+function renderRevision(base: unknown, head: unknown): { text: string; range: boolean } | undefined {
   const b = shortSha(base);
   const h = shortSha(head);
-  if (b === undefined && h === undefined) return undefined;
-  return `${b ?? ""}..${h ?? ""}`;
+  if (b !== undefined && h !== undefined) return { text: `${b}..${h}`, range: true };
+  if (h !== undefined) return { text: `@${h}`, range: false };
+  if (b !== undefined) return { text: `since ${b}`, range: false };
+  return undefined;
 }
 
 function isScalar(v: unknown): v is string | number | boolean | null {
@@ -67,19 +113,43 @@ function isScalar(v: unknown): v is string | number | boolean | null {
  * Compact, deterministic rendering of an observation's `result`: its top-level
  * scalar fields as `key=value`, keys sorted so two replicas that projected the
  * same event render the same bytes whatever the insertion order, whitespace
- * collapsed so the record stays on one line, and bounded so one verbose check
- * cannot consume the whole budget. Nested values are not rendered.
+ * collapsed so the record stays on one line, full shas shortened like the
+ * body's base/head, and bounded so one verbose check cannot consume the whole
+ * budget. Nested values are not rendered.
  */
 function renderResult(result: unknown): string | undefined {
   if (typeof result !== "object" || result === null || Array.isArray(result)) return undefined;
   const r = result as Record<string, unknown>;
   const pairs = Object.keys(r)
     .sort()
-    .filter((k) => isScalar(r[k]))
-    .map((k) => `${k}=${String(r[k]).replace(/\s+/g, " ")}`);
+    .filter((k) => !RESULT_KEYS_NEVER_RENDERED.has(k) && isScalar(r[k]))
+    .map((k) => {
+      const v = r[k];
+      const text = typeof v === "string" && FULL_SHA.test(v) ? v.slice(0, SHA_PREFIX) : String(v);
+      return `${k}=${normalise(text)}`;
+    });
   if (pairs.length === 0) return undefined;
-  const joined = pairs.join(" ");
-  return joined.length > RESULT_RENDER_MAX ? `${joined.slice(0, RESULT_RENDER_MAX - 1)}…` : joined;
+  return clip(pairs.join(" "), RESULT_RENDER_MAX);
+}
+
+/**
+ * The hooks' own bookkeeping — "a session started", "a compaction happened",
+ * carrying the host's cwd, session id and injection cursors — is plumbing
+ * about the injection machinery, not working context, exactly like receipts.
+ * Left in, it outranks every proposal (`verified_observation` sorts second)
+ * and on a long-lived store overflows the budget by itself, which pins the
+ * delta cursor so every turn re-injects the full set. Both hosts write these
+ * through claude-code.ts's SessionStart / PreCompact / PostCompact handlers.
+ */
+const HOOK_BOOKKEEPING_KINDS = new Set(["session_start", "compaction", "post_compaction"]);
+
+function isHookBookkeeping(rec: SliceProjectedRecord): boolean {
+  if (rec.record_type !== "observation") return false;
+  const body = rec.body as Record<string, unknown>;
+  if (body.source_kind !== "other") return false;
+  const result = body.result;
+  if (typeof result !== "object" || result === null) return false;
+  return HOOK_BOOKKEEPING_KINDS.has(String((result as Record<string, unknown>).kind));
 }
 
 /**
@@ -91,6 +161,9 @@ function renderResult(result: unknown): string | undefined {
  * revision, and what the check found — because a `verified_observation` whose
  * body is `.strict()` has no `summary` and used to render as a bare record id,
  * which delivered the class label and withheld the fact (DN-2 / DP-0).
+ *
+ * Layout invariant: the head is the only line at column 0; every other line
+ * is indented, and every field is one bounded line (see `oneLine`).
  */
 export function renderRecord(rec: SliceProjectedRecord): string {
   const body = rec.body as Record<string, unknown>;
@@ -98,47 +171,53 @@ export function renderRecord(rec: SliceProjectedRecord): string {
   const isObservation = rec.record_type === "observation";
   const result = isObservation ? body.result : undefined;
   const resultSummary =
-    typeof result === "object" && result !== null && typeof (result as Record<string, unknown>).summary === "string"
-      ? ((result as Record<string, unknown>).summary as string)
+    typeof result === "object" && result !== null
+      ? oneLine((result as Record<string, unknown>).summary, RESULT_RENDER_MAX)
       : undefined;
-  const scopeRange = renderRange(rec.scope.revision?.base, rec.scope.revision?.head);
-  const scopeBits = [rec.scope.path, rec.scope.task, scopeRange ? `revision ${scopeRange}` : undefined]
+  const scopeRevision = renderRevision(rec.scope.revision?.base, rec.scope.revision?.head);
+  const scopeBits = [
+    oneLine(rec.scope.path, RESULT_RENDER_MAX),
+    oneLine(rec.scope.task, RESULT_RENDER_MAX),
+    scopeRevision ? `revision ${scopeRevision.text}` : undefined,
+  ]
     .filter(Boolean)
     .join(" · ");
   const head =
     rec.record_type === "ruling"
-      ? String(body.statement ?? "")
+      ? (oneLine(body.statement, PROSE_RENDER_MAX) ?? rec.record_id)
       : rec.record_type === "decision"
-        ? String(body.summary ?? "")
+        ? (oneLine(body.summary, PROSE_RENDER_MAX) ?? rec.record_id)
         : rec.record_type === "post"
-          ? `${String(body.entry_type ?? "post")}: ${String(body.summary ?? "")}`
+          ? `${oneLine(body.entry_type, PROSE_RENDER_MAX) ?? "post"}: ${oneLine(body.summary, PROSE_RENDER_MAX) ?? rec.record_id}`
           : isObservation
             ? (resultSummary ?? renderResult(result) ?? rec.record_id)
-            : String(body.summary ?? body.name ?? rec.record_id);
+            : (oneLine(body.summary, PROSE_RENDER_MAX) ?? oneLine(body.name, PROSE_RENDER_MAX) ?? rec.record_id);
 
   const lines = [`- [${cls}] ${head}`];
   if (isObservation) {
-    const observedRange = renderRange(body.base, body.head);
+    const observedRevision = renderRevision(body.base, body.head);
+    const checkMethod = oneLine(body.check_method, RESULT_RENDER_MAX);
+    const observedAt = oneLine(body.observed_at, RESULT_RENDER_MAX);
     // "<source_kind> [<source_uri>] via <check_method>" reads as one clause.
     const source = [
-      body.source_kind,
-      body.source_uri,
-      typeof body.check_method === "string" ? `via ${body.check_method}` : undefined,
+      oneLine(body.source_kind, RESULT_RENDER_MAX),
+      oneLine(body.source_uri, RESULT_RENDER_MAX),
+      checkMethod ? `via ${checkMethod}` : undefined,
     ]
-      .filter((s) => typeof s === "string" && s.length > 0)
+      .filter(Boolean)
       .join(" ");
     const bits = [
       source,
-      typeof body.observed_at === "string" ? `at ${body.observed_at}` : undefined,
+      observedAt ? `at ${observedAt}` : undefined,
       typeof body.volatile === "boolean" ? `volatile: ${body.volatile ? "yes" : "no"}` : undefined,
-      observedRange,
+      // "over" labels what was checked; the scope line's "revision" is what the record is bound to.
+      observedRevision ? (observedRevision.range ? `over ${observedRevision.text}` : observedRevision.text) : undefined,
     ].filter(Boolean);
     if (bits.length > 0) lines.push(`  observed: ${bits.join(" · ")}`);
   }
   if (scopeBits) lines.push(`  scope: ${scopeBits}`);
-  if (rec.record_type === "decision" && typeof body.rationale === "string") {
-    lines.push(`  why: ${body.rationale}`);
-  }
+  const why = rec.record_type === "decision" ? oneLine(body.rationale, PROSE_RENDER_MAX) : undefined;
+  if (why) lines.push(`  why: ${why}`);
   if (rec.conflicts.length > 0) {
     lines.push(`  CONFLICTED with: ${rec.conflicts.join(", ")} — do not act on this without resolving it`);
   }
@@ -171,9 +250,10 @@ export async function buildWorkingSet(
   const budget = opts.budget ?? DEFAULT_WORKING_SET_BUDGET;
   const records = await store.query(opts.scope ? { scope: opts.scope } : {});
 
-  // Principals, memberships and receipts are plumbing, not working context.
+  // Principals, memberships, receipts and the hooks' own bookkeeping
+  // observations are plumbing, not working context.
   const candidates = records.filter(
-    (r) => !["principal", "membership", "receipt"].includes(r.record_type),
+    (r) => !["principal", "membership", "receipt"].includes(r.record_type) && !isHookBookkeeping(r),
   );
 
   const ordered = [...candidates].sort((a, b) => {
