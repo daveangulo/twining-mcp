@@ -689,6 +689,18 @@ export class EventStore {
    * Does this replica hold a membership record at all — admitted, or still
    * making its way through admission? Rejected rows do not count.
    */
+  /**
+   * Did THIS replica already admit this exact (id, digest)? Read from the
+   * admission log, which is local first-party evidence restored from the
+   * durable receipt log on rebuild. See the call site in checkCapability.
+   */
+  private admittedHereBefore(eventId: string, digest: string): boolean {
+    const row = this.db
+      .prepare("SELECT 1 AS present FROM admission_log WHERE event_id = ? AND digest = ? AND outcome = 'admitted' LIMIT 1")
+      .get(eventId, digest) as { present?: number } | undefined;
+    return row?.present === 1;
+  }
+
   private replicaKnowsAPolicy(): boolean {
     const row = this.db
       .prepare("SELECT 1 AS present FROM journal WHERE canonical = 1 AND record_type = 'membership' AND state != 'rejected' LIMIT 1")
@@ -1881,6 +1893,28 @@ export class EventStore {
         if (capability === "write") return { ok: true };
         return { ok: false, reason: `no membership policy has been admitted on this replica: ${capability} is default-deny until one is`, terminal: false };
       }
+      /**
+       * ADMISSION IS MONOTONIC FOR WHAT THIS REPLICA ALREADY ADMITTED.
+       *
+       * The bootstrap branch above is a function of REPLICA state ("do I hold
+       * a policy?"), not of the event's ancestry, so a policy that arrives
+       * AFTER an event was admitted would otherwise re-answer that event's
+       * question the other way on the next rebuild — the whole legacy corpus
+       * of a migrated store flips to `no_policy_yet` the moment the store
+       * acquires its first membership, and rebuild stops reproducing the
+       * projection (ADR §12 step 6; found merging lane 02b with lane 02c,
+       * C21 A-REC-10).
+       *
+       * This replica's own admission log is first-party evidence — it is
+       * written by logAdmission on this machine and replayed from the durable
+       * receipt log before admit() runs — so honouring it cannot be forged by
+       * a peer the way `parents: []` can. It only ever preserves a verdict
+       * this replica already reached under the bootstrap regime; it never
+       * grants admission to an event seen for the first time, and it does not
+       * touch the terminal "lacks capability" answer below. C14 N1/N2/N3
+       * (never silently revoke what was already admitted) is the same rule.
+       */
+      if (this.admittedHereBefore(ev.id, ev.digest)) return { ok: true };
       return {
         ok: false,
         reason: `this replica holds a membership policy but no policy is a causal ancestor of this event — ${capability} cannot be judged (no_policy_yet)`,

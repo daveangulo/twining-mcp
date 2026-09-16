@@ -24,7 +24,19 @@ describe("classifyArgv (2.16.1)", () => {
       name: "validate-records",
       args: [],
     });
-    expect(KNOWN_SUBCOMMANDS).toEqual(["migrate", "validate-records"]);
+    // The v3 migration verbs (lane 02c): rollback and events must be reachable
+    // while the store is rolled back, when no other read surface works.
+    expect(classifyArgv(argv("rollback", "--to", "2"))).toEqual({
+      kind: "subcommand",
+      name: "rollback",
+      args: ["--to", "2"],
+    });
+    expect(classifyArgv(argv("events", "ls"))).toEqual({
+      kind: "subcommand",
+      name: "events",
+      args: ["ls"],
+    });
+    expect(KNOWN_SUBCOMMANDS).toEqual(["migrate", "rollback", "migrate-status", "events", "validate-records"]);
   });
   it("an unknown non-flag word is refused, never treated as the server", () => {
     expect(classifyArgv(argv("drain"))).toEqual({ kind: "unknown", word: "drain" });

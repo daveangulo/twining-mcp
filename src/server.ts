@@ -19,6 +19,7 @@ import { registerGraphTools } from "./tools/graph-tools.js";
 import { registerVerifyTools } from "./tools/verify-tools.js";
 import { registerTriageTools } from "./tools/triage-tools.js";
 import { registerExportTools } from "./tools/export-tools.js";
+import { registerMigrateTools } from "./tools/migrate-tools.js";
 import { registerCoordinationTools } from "./tools/coordination-tools.js";
 import { registerHousekeepingTools } from "./tools/housekeeping-tools.js";
 import { registerExchangeTools } from "./tools/exchange-tools.js";
@@ -118,6 +119,11 @@ export function createServer(projectRoot: string): ServerContext {
   // Export tools only in full surface mode
   if (fullSurface) {
     registerExportTools(server, ctx.exporter);
+  }
+
+  // Migration status is a READ; the migration verbs stay CLI-only (lane 02c).
+  if (fullSurface) {
+    registerMigrateTools(server, ctx.twiningDir);
   }
 
   // Triage tool only in full surface mode in v1 (TRIAGE-SPEC §6)

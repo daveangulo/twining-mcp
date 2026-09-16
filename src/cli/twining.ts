@@ -324,12 +324,24 @@ export async function runTwiningCli(argv: string[]): Promise<number> {
     return 2;
   }
 
-  // The two pre-2.17 subcommands keep their own output and exit codes
-  // verbatim — they are not command-core commands and print no envelope.
+  // The CLI-only subcommands keep their own output and exit codes verbatim —
+  // they are not command-core commands and print no envelope.
   if (dispatch.kind === "subcommand") {
     if (dispatch.name === "migrate") {
       const { runMigrateCli } = await import("../migrate/cli.js");
       return await runMigrateCli(dispatch.args);
+    }
+    if (dispatch.name === "rollback") {
+      const { runRollbackCli } = await import("../migrate/cli.js");
+      return await runRollbackCli(dispatch.args);
+    }
+    if (dispatch.name === "migrate-status") {
+      const { runMigrateStatusCli } = await import("../migrate/cli.js");
+      return runMigrateStatusCli(dispatch.args);
+    }
+    if (dispatch.name === "events") {
+      const { runEventsCli } = await import("../migrate/cli.js");
+      return runEventsCli(dispatch.args);
     }
     const { runValidateRecordsCli } = await import("./validate-records.js");
     return await runValidateRecordsCli(dispatch.args);

@@ -20,6 +20,7 @@ import { triageCommands } from "./commands/triage.js";
 import { lifecycleCommands } from "./commands/lifecycle.js";
 import { graphCommands } from "./commands/graph.js";
 import { exchangeCommands } from "./commands/exchange.js";
+import { migrateCommands } from "./commands/migrate.js";
 
 export * from "./command-def.js";
 
@@ -41,6 +42,7 @@ export const ALL_COMMANDS: ReadonlyArray<CommandDef<TwiningContext>> = [
   ...lifecycleCommands,
   ...graphCommands,
   ...exchangeCommands,
+  ...migrateCommands,
 ];
 
 export class CommandRegistry {

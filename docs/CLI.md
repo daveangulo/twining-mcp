@@ -161,7 +161,7 @@ answer you need.
 
 `surface` (`"default"` | `"full"`) says which **MCP tool surface** the command
 appears on: `"full"` means an MCP peer sees it only with config
-`tools.full_surface: true`, which hides 24 of the 39 commands.
+`tools.full_surface: true`, which hides 25 of the 40 commands.
 
 `requires_mode: "full"` is the **second, independent** MCP gate — config
 `tools.mode`. A `"lite"` install registers no lifecycle or graph tools at all,

@@ -3,8 +3,8 @@
   "id": "01M2KDH494X2P992PQEK2K4W9C",
   "name": "src/core/commands.ts",
   "properties": {
-    "scope": "src/cli/"
+    "scope": "src/cli/,src/events/"
   },
   "type": "file",
-  "updated_at": "2026-09-15T20:53:26.245Z"
+  "updated_at": "2026-09-16T02:05:12.856Z"
 }

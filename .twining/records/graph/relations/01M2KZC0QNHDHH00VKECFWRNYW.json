@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T02:05:12.821Z",
+  "id": "01M2KZC0QNHDHH00VKECFWRNYW",
+  "properties": {
+    "decision_summary": "Made admission monotonic for events this replica already admitted: when the bootstrap branch would quarantine no_policy_yet, honour a prior 'admitted' outcome for the same (event id, digest) in this replica's own admission_log",
+    "origin": "derived"
+  },
+  "source": "01M2KFYG1DM83NV91PNWGY1GAH",
+  "target": "01M2KZC0QJE8W1HH269J2MHZ8K",
+  "type": "decided_by"
+}
