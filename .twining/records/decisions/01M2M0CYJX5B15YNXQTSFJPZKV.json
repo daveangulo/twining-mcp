@@ -1,0 +1,42 @@
+{
+  "affected_files": [
+    "src/adapters/runtime.ts",
+    "src/events/event-store.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "merge-integrator",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Leave it and let each adapter call site pass parents",
+      "pros": [],
+      "reason_rejected": "the defect is exactly that call sites forget; the ceremony had already shipped with the same omission"
+    },
+    {
+      "cons": [],
+      "option": "Have admission fall back to the replica's latest policy when ancestry is empty",
+      "pros": [],
+      "reason_rejected": "contradicts D29 and the ADR, and reintroduces the rebuild non-determinism fixed in merge 2"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Merged lane/04-retrieval into foundation/v3 (no conflicts) and fixed a production defect it exposed: no adapter write path cited the membership policy, so every mirrored write on a store with a policy would have been quarantined.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M2M0CYJX5B15YNXQTSFJPZKV",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "e9b4817f9645b9627706a6181a37e579f035961f",
+    "recorded_at": "2026-09-16T02:23:11.946Z"
+  },
+  "rationale": "ADR §4.3.1 states plainly that 'a membership must therefore be a causal ancestor of anything it authorizes', but no adapter path set parents at all: src/adapters/runtime.ts, v3-mirror.ts and event-factory.ts all left parents empty. On a store that has acquired a policy — which is every store after `twining identity init --human` runs the ceremony — every mirrored 2.x write (twining_post, twining_decide, twining_record) would have been quarantined no_policy_yet and never projected. Lane 03's own tests missed it because they run on policy-free stores. The producer is the one replica that always knows which policy applies, so citing it centrally in runtime.append is better than leaving each call site to remember. A caller-supplied parent list is extended, never replaced. The LATEST admitted membership is cited because an event is judged under the policy it names.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/adapters/",
+  "status": "active",
+  "summary": "Every event minted through the adapter runtime now cites this replica's current membership as a causal parent, via a new EventStore.currentPolicyEvent()",
+  "timestamp": "2026-09-16T02:23:11.965Z"
+}

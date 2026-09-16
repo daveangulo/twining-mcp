@@ -1,0 +1,17 @@
+{
+  "agent_id": "merge-integrator",
+  "detail": "New decision \"Fixed the lane-04 acceptance fixtures to link the policy rather than relaxing the admission rule, adding citeParents()/deliverUnderPolicy() to the slice harness\" relates to:\n- 01M2KMTDSKBZSCCP3KRGF6G7FH: \"Accepted deriving the working-set session cursor solely from the versions of records actually emitted (no store.events() scan), so the cursor cannot advance while any selected record remains budget-omitted\"\n- 01M2M0CYJX5B15YNXQTSFJPZKV: \"Every event minted through the adapter runtime now cites this replica's current membership as a causal parent, via a new EventStore.currentPolicyEvent()\"",
+  "entry_type": "finding",
+  "id": "01M2M0CYP34X567ADN6YRGVK8N",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "e9b4817f9645b9627706a6181a37e579f035961f",
+    "recorded_at": "2026-09-16T02:23:12.049Z"
+  },
+  "scope": "src/adapters/",
+  "summary": "Related decisions in scope: 2 existing decision(s) overlap",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-09-16T02:23:12.067Z"
+}

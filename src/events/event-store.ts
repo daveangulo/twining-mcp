@@ -701,6 +701,28 @@ export class EventStore {
     return row?.present === 1;
   }
 
+  /**
+   * The event id to cite so that this replica's membership policy is a causal
+   * ancestor of a new event.
+   *
+   * ADR §4.3.1: "a membership must therefore be a causal ancestor of anything
+   * it authorizes". A producer that mints an event without citing the policy
+   * it will be judged under is quarantined `no_policy_yet` — correctly, but
+   * uselessly, since the producer is the one replica that always knows which
+   * policy applies. Every adapter/runtime write path calls this so the honest
+   * citation is automatic rather than something each call site must remember.
+   *
+   * The LATEST admitted membership event is returned: an event is judged under
+   * the policy it cites, so citing the newest one is what an honest producer
+   * does.
+   */
+  currentPolicyEvent(): string | null {
+    const row = this.db
+      .prepare("SELECT id FROM journal WHERE canonical = 1 AND record_type = 'membership' AND state IN ('admitted','projected') ORDER BY id DESC LIMIT 1")
+      .get() as { id?: string } | undefined;
+    return row?.id ?? null;
+  }
+
   private replicaKnowsAPolicy(): boolean {
     const row = this.db
       .prepare("SELECT 1 AS present FROM journal WHERE canonical = 1 AND record_type = 'membership' AND state != 'rejected' LIMIT 1")

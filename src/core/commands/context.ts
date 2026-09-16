@@ -17,7 +17,7 @@ export const contextCommands: CommandDef<ContextCtx>[] = [
     name: "twining_assemble",
     surface: "default",
     description:
-      "Your FIRST call every session. Returns a briefing with decisions to respect, warnings to address, and handoff context from previous agents. Call BEFORE reading code or making changes. token_estimate ≈ max_tokens is the signature of budget truncation: the briefing (and decisions_count) was clipped — re-call with a larger max_tokens (e.g. 100000) for complete coverage. decisions_count is the briefing selection, not a scope census; use twining_why total_in_scope for populations.",
+      "Your FIRST call every session. Returns a briefing with decisions to respect, warnings to address, and handoff context from previous agents. Call BEFORE reading code or making changes. Truncation is now reported explicitly, not inferred from a number: retrieval.token_usage.over_budget and retrieval.token_usage.omitted_decisions say whether anything was clipped — re-call with a larger max_tokens (e.g. 100000) when they are set. token_estimate is a deliberately conservative upper bound on the emitted briefing and is NOT comparable to max_tokens. decisions_count is the briefing selection, not a scope census; use twining_why total_in_scope for populations.",
     input: {
       task: z.string().describe("Description of what the agent is about to do"),
       scope: z
@@ -38,11 +38,21 @@ export const contextCommands: CommandDef<ContextCtx>[] = [
         args.scope,
         args.max_tokens,
         args.agent_id,
+        // `mode: "lessons"` is deliberately NOT exposed here.
+        //
+        // The channel is entitlement-gated, and 2.x has no principals and no
+        // membership policy, so there is no source that could grant the
+        // entitlement — every lessons request would be denied. Shipping a
+        // parameter whose only possible outcome is denial invites callers to
+        // read that denial as "no lessons exist". The engine supports the mode
+        // and it is tested; it becomes callable when a real entitlement source
+        // lands (lane 02's membership projection).
+        undefined,
       );
       const formatted = ContextAssembler.formatForLLM(context, status_summary);
       // Return only the briefing + metadata — avoids duplicating structured data
       // that wastes agent context tokens. Use twining_why for detailed lookups.
-      return {
+      const body = {
         briefing: formatted,
         scope: context.scope,
         decisions_count: context.active_decisions.length,
@@ -56,7 +66,17 @@ export const contextCommands: CommandDef<ContextCtx>[] = [
           ? { superseded_excluded_count: context.superseded_excluded_count }
           : {}),
         token_estimate: context.token_estimate,
+        // --- Lane 04 additive fields. Existing consumers are unaffected. ---
+        retrieval: context.retrieval,
       };
+      // Measure the payload that actually goes on the wire — the serialized
+      // envelope, not just the briefing — and hash the emitted briefing
+      // (R16/R17). Done after `body` exists so the annex's own bytes are
+      // inside the measurement.
+      ContextAssembler.annotateEmitted(context, formatted, JSON.stringify(body));
+      body.token_estimate = context.token_estimate;
+      body.retrieval = context.retrieval;
+      return body;
     },
   }),
 

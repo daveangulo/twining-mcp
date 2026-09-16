@@ -204,17 +204,23 @@ describe("per-item overhead", () => {
     const ctx = await kit.assembler.assemble("task", "src/mod/");
     if (ctx.active_decisions.length > 0) {
       const avgTokens = ctx.token_estimate / ctx.active_decisions.length;
-      expect(avgTokens).toBeLessThan(200);
+      expect(avgTokens).toBeLessThan(800);
     }
   });
 
-  it("< 100 tokens per warning on average", async () => {
+  // Thresholds re-baselined for the declared tokenizer (lane 04). token_estimate
+  // is now a CONSERVATIVE UPPER BOUND over the emitted briefing (1 token per
+  // UTF-8 byte) rather than a chars/4 central estimate, so the same briefing
+  // reports a larger number by construction. The property under test — bounded
+  // per-item overhead — is unchanged; only the unit moved. These will tighten
+  // again if a calibrated tokenizer table is ever shipped.
+  it("< 400 tokens per warning on average (conservative-bound units)", async () => {
     const kit = createAssembler(twiningDir);
     await seedWarnings(twiningDir, 5, kit);
     const ctx = await kit.assembler.assemble("task", "src/mod/");
     if (ctx.active_warnings.length > 0) {
       const avgTokens = ctx.token_estimate / ctx.active_warnings.length;
-      expect(avgTokens).toBeLessThan(100);
+      expect(avgTokens).toBeLessThan(400);
     }
   });
 });

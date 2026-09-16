@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T02:23:12.024Z",
+  "id": "01M2M0CYMRBNMK5600V64PESFS",
+  "name": "01M2M0CYJX5B15YNXQTSFJPZKV",
+  "properties": {
+    "scope": "src/adapters/",
+    "summary": "Every event minted through the adapter runtime now cites this replica's current membership as a causal parent, via a new EventStore.currentPolicyEvent()"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-16T02:23:12.024Z"
+}

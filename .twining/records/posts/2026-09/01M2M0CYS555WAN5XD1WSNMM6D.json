@@ -1,0 +1,18 @@
+{
+  "agent_id": "merge-integrator",
+  "detail": "Full summary: lane 04 shipped a literal NUL byte in src/retrieval/select.ts (a cache-key join separator written as a raw 0x00 instead of the \u0000 escape), which makes the file binary to git. Caught by lane 02c's F4 regression test — the same defect 02c's own review found in v3-forward.ts. Runtime value unchanged by the fix.",
+  "entry_type": "warning",
+  "id": "01M2M0CYS555WAN5XD1WSNMM6D",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "e9b4817f9645b9627706a6181a37e579f035961f",
+    "recorded_at": "2026-09-16T02:23:12.147Z"
+  },
+  "scope": "src/adapters/",
+  "summary": "lane 04 shipped a literal NUL byte in src/retrieval/select.ts (a cache-key join separator written as a raw 0x00 instead of the \u0000 escape), which makes the file binary to git. Caught by lane 02c's F4…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-16T02:23:12.165Z"
+}

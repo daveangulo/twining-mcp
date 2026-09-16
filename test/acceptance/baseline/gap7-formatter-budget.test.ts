@@ -12,8 +12,21 @@
  * formatter renders, and not the JSON envelope twining_assemble actually puts
  * on the wire.
  *
- * Structure: a positive control (the instrument sees all 8 decisions and does
- * render the top one in full) followed by the gap assertions.
+ * ## CLOSED by lane 04 (retrieval and trust), 2026-09-15.
+ *
+ * R15/R16: the ladder is now driven by the caller's budget
+ * (`ContextAssembler.decisionTiers`). A generous `max_tokens` buys full
+ * rationales for every selected decision instead of announcing the loss.
+ *
+ * R17: `token_estimate` is the conservative bound (`src/retrieval/tokenizer.ts`,
+ * `twining-conservative-utf8/1.0.0`) over the briefing that is actually
+ * EMITTED, stamped by `ContextAssembler.annotateEmitted`. It no longer charges
+ * for records the formatter never rendered, and the tool reports the tokenizer
+ * it used.
+ *
+ * Structure: the positive control is unchanged and still green; the two gap
+ * assertions are FLIPPED, and each keeps the original defect's arithmetic in
+ * view so the change is legible.
  */
 import { describe, it, expect, beforeEach } from "vitest";
 import { ContextAssembler } from "../../../src/engine/context-assembler.js";
@@ -22,6 +35,11 @@ import { DecisionStore } from "../../../src/storage/decision-store.js";
 import { Embedder } from "../../../src/embeddings/embedder.js";
 import { registerContextTools } from "../../../src/tools/context-tools.js";
 import { estimateTokens } from "../../../src/utils/tokens.js";
+import {
+  estimate as estimateConservative,
+  TOKENIZER_ID,
+} from "../../../src/retrieval/tokenizer.js";
+import { measureEnvelope } from "../../../src/retrieval/packet.js";
 import { DEFAULT_CONFIG } from "../../../src/config.js";
 import type { TwiningConfig } from "../../../src/utils/types.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -116,7 +134,7 @@ describe("Gap 7 — formatter budget (R15/R16/R17)", () => {
     expect(briefing).toContain(ctx.active_decisions[0]!.rationale);
   });
 
-  it("GAP R15/R16: the briefing renders only 3 full rationales + 2 summaries and hides the rest behind '+3 more decisions'", async () => {
+  it("FLIPPED R15/R16 (lane 04): a generous budget renders every selected decision in full, with nothing hidden", async () => {
     const assembler = new ContextAssembler(
       blackboardStore,
       decisionStore,
@@ -129,35 +147,46 @@ describe("Gap 7 — formatter budget (R15/R16/R17)", () => {
 
     expect(ctx.active_decisions).toHaveLength(SEEDED);
 
-    // Full rationales present == exactly the top 3 (ENDMARK<i> lives past
-    // char 120, so the CONTEXT tier's rationale.slice(0, 120) drops it).
+    // Every selected decision renders in FULL — the budget is 100000 tokens
+    // and the eight rationales cost a tiny fraction of it.
     const fullRationales = ctx.active_decisions.filter((d) =>
       briefing.includes(d.rationale),
     );
-    expect(fullRationales).toHaveLength(3);
-    expect(fullRationales.map((d) => d.id)).toEqual(
-      ctx.active_decisions.slice(0, 3).map((d) => d.id),
-    );
+    expect(fullRationales).toHaveLength(SEEDED);
 
-    // Decisions 4 and 5 appear as summary-only lines: summary present,
-    // full rationale absent.
-    for (const d of ctx.active_decisions.slice(3, 5)) {
+    // Nothing is hidden and nothing is summarized away.
+    for (const d of ctx.active_decisions) {
       expect(briefing).toContain(d.summary);
-      expect(briefing).not.toContain(d.rationale);
+      expect(briefing).toContain(d.rationale);
     }
+    expect(briefing).not.toContain("more decisions in scope");
 
-    // Decisions 6, 7, 8 are not in the briefing at all — neither summary
-    // nor rationale — despite being present in active_decisions.
-    for (const d of ctx.active_decisions.slice(5)) {
-      expect(briefing).not.toContain(d.summary);
-      expect(briefing).not.toContain(d.rationale);
-    }
-
-    // The ladder announces the loss instead of spending the budget.
-    expect(briefing).toContain("+3 more decisions");
+    // The heading now states the authority class of what follows, so an
+    // unverified 2.x assertion is not presented as a ratified ruling
+    // (gap 6, render side).
+    expect(briefing).toContain("Evidence class: legacy_unverified");
+    expect(briefing).toContain("Qualifies an action: no");
   });
 
-  it("GAP R17: estimateTokens is a flat 4-char heuristic and token_estimate does not measure the JSON envelope the tool returns", async () => {
+  it("CONTROL R15/R16: a small budget still degrades gracefully and reports the loss", async () => {
+    // Proves the flip above comes from the budget being spent, not from the
+    // ladder being removed: shrink the budget and the omission line returns.
+    const assembler = new ContextAssembler(
+      blackboardStore,
+      decisionStore,
+      null,
+      config,
+    );
+    // 1600 in the declared tokenizer's conservative units is the same degree of
+    // tightness 400 was under the old chars/4 selection currency.
+    const ctx = await assembler.assemble(TASK, SCOPE, 1600);
+    const briefing = ContextAssembler.formatForLLM(ctx);
+    const full = ctx.active_decisions.filter((d) => briefing.includes(d.rationale));
+    expect(full.length).toBeLessThan(ctx.active_decisions.length);
+    expect(briefing).toContain("more decisions in scope");
+  });
+
+  it("FLIPPED R17 (lane 04): token_estimate measures the EMITTED briefing with a declared, conservative tokenizer", async () => {
     // The heuristic itself: 400 chars -> 100 tokens, regardless of content.
     expect(estimateTokens("x".repeat(400))).toBe(100);
 
@@ -185,43 +214,42 @@ describe("Gap 7 — formatter budget (R15/R16/R17)", () => {
     const envelope: string = res.content[0].text;
     const payload = JSON.parse(envelope);
 
-    // The tool reports all 8 decisions while the briefing shows 5.
+    // The tool reports all 8 decisions AND the briefing renders all 8.
     expect(payload.decisions_count).toBe(SEEDED);
-    expect(payload.briefing).toContain("+3 more decisions");
+    expect(payload.briefing).not.toContain("more decisions in scope");
 
     // Same inputs through the engine, to inspect what was selected.
     const ctx = await assembler.assemble(TASK, SCOPE, MAX_TOKENS);
 
-    const briefingEstimate = estimateTokens(payload.briefing);
-    const envelopeEstimate = estimateTokens(envelope);
+    // token_estimate is now EXACTLY the declared tokenizer's bound over the
+    // briefing that was emitted. Reproducible to +/-0 by an independent count.
+    expect(payload.token_estimate).toBe(estimateConservative(payload.briefing).tokens);
+    expect(payload.retrieval.token_usage.emitted_tokens).toBe(payload.token_estimate);
 
-    // eslint-disable-next-line no-console
-    console.log(
-      `[gap7] token_estimate=${payload.token_estimate} ` +
-        `briefingEstimate=${briefingEstimate} ` +
-        `envelopeEstimate=${envelopeEstimate} ` +
-        `briefingChars=${payload.briefing.length} envelopeChars=${envelope.length}`,
-    );
+    // The tokenizer names itself, and declares that it is a bound not a count.
+    expect(payload.retrieval.token_usage.tokenizer_id).toBe(TOKENIZER_ID);
+    expect(payload.retrieval.token_usage.conservative_fallback).toBe(true);
 
-    // token_estimate is NOT the briefing's own 4-char estimate: it charges
-    // the raw text of every SELECTED item, including the 3 decisions the
-    // formatter never rendered. Reconstruct the accounting exactly.
-    const perItemCost = ctx.active_decisions.map((d) =>
-      estimateTokens(
-        `${d.summary} ${d.rationale} ${d.confidence} ${d.affected_files.join(", ")}`,
-      ),
-    );
-    const selectedItemsEstimate = perItemCost.reduce((a, b) => a + b, 0);
-    expect(payload.token_estimate).toBe(selectedItemsEstimate);
+    // It no longer charges for records the formatter never rendered: every
+    // selected decision was rendered at this budget.
+    expect(payload.retrieval.token_usage.rendered_decisions).toBe(SEEDED);
+    expect(payload.retrieval.token_usage.selected_decisions).toBe(SEEDED);
 
-    // Structural, not numeric: a nonzero slice of that number pays for the
-    // three decisions the agent never sees.
-    const neverRenderedCost = perItemCost.slice(5).reduce((a, b) => a + b, 0);
-    expect(neverRenderedCost).toBeGreaterThan(0);
+    // The old accounting charged the raw text of every selected item. Show it
+    // is gone: that number and this one are different.
+    const oldAccounting = ctx.active_decisions
+      .map((d) =>
+        estimateTokens(`${d.summary} ${d.rationale} ${d.confidence} ${d.affected_files.join(", ")}`),
+      )
+      .reduce((a, b) => a + b, 0);
+    expect(payload.token_estimate).not.toBe(oldAccounting);
 
-    // So token_estimate is neither the briefing...
-    expect(payload.token_estimate).not.toBe(briefingEstimate);
-    // ...nor the size of what actually crosses the wire.
-    expect(payload.token_estimate).toBeLessThan(envelopeEstimate);
+    // The emitted bytes are hashed, so a receipt can be bound to this exact
+    // briefing (R16).
+    expect(payload.retrieval.emitted_bytes_sha256).toMatch(/^sha256:[0-9a-f]{64}$/);
+
+    // The envelope is measurable too — the tool's caller can bound the wire
+    // cost with the same declared tokenizer.
+    expect(measureEnvelope(envelope).tokens).toBeGreaterThan(payload.token_estimate);
   });
 });

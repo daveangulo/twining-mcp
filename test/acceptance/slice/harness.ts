@@ -178,6 +178,47 @@ export function deliver(store: EventStore, envelopes: Array<Record<string, unkno
   for (const e of envelopes) store.receive(e, "direct");
 }
 
+/**
+ * Re-stamp an already-built envelope so it cites `extra` among its parents,
+ * recomputing the digest and re-signing with whichever fixture key signed it.
+ *
+ * ADR §4.3.1 requires a membership to be a causal ancestor of anything it
+ * authorizes, so a fixture that delivers a policy alongside the events it
+ * grants must LINK them or every one of those events is quarantined
+ * `no_policy_yet`. `created()` fixes the record id up front and `parents` feeds
+ * only the digest and signature, so re-parenting preserves every id a test
+ * already captured.
+ */
+export function citeParents(world: World, envelope: Record<string, unknown>, extra: string[]): Record<string, unknown> {
+  const parents = [...new Set([...((envelope.parents as string[] | undefined) ?? []), ...extra])];
+  const { digest: _d, sig, ...rest } = envelope;
+  const next: Record<string, unknown> = { ...rest, parents };
+  next.digest = computeEventDigest(next);
+  if (sig) {
+    const keyId = (sig as { key: string }).key;
+    const signer = [world.human, world.hostA, world.hostB].find((i) => i.keyId === keyId);
+    if (!signer) throw new Error(`citeParents: no fixture identity holds key ${keyId}`);
+    next.sig = { alg: "ed25519", key: keyId, value: signEvent(next, signer.kp.privateKeyPkcs8Pem) };
+  }
+  return next;
+}
+
+/**
+ * Deliver a policy and the events it authorizes, with the membership cited as
+ * their causal ancestor. The policy events go in untouched (a membership and
+ * the principals it names legitimately precede any policy); everything else is
+ * re-parented onto the whole infrastructure set.
+ */
+export function deliverUnderPolicy(
+  store: EventStore,
+  world: World,
+  policy: Array<Record<string, unknown>>,
+  authorized: Array<Record<string, unknown>>,
+): void {
+  const infraIds = policy.map((e) => e.id as string);
+  deliver(store, [...policy, ...authorized.map((e) => citeParents(world, e, infraIds))]);
+}
+
 export async function admitAndProject(store: EventStore): Promise<void> {
   await store.admit();
   await store.project();

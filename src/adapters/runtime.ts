@@ -179,8 +179,28 @@ export function openRuntime(opts: RuntimeOptions): V3Runtime {
         spec.assertedActor && spec.assertedActor !== producer.asserted_actor
           ? { ...producer, asserted_actor: spec.assertedActor }
           : producer;
+      /**
+       * CITE THE POLICY THIS EVENT WILL BE JUDGED UNDER.
+       *
+       * ADR §4.3.1: "a membership must therefore be a causal ancestor of
+       * anything it authorizes". Capability is evaluated against the
+       * membership projected from the event's ANCESTORS, never the replica's
+       * latest policy, so an event minted with no parents on a store that
+       * holds a policy is quarantined `no_policy_yet` and never projected.
+       * The producer always knows which policy applies, so it cites it here
+       * rather than leaving every call site to remember. A caller-supplied
+       * parent list is extended, never replaced — causal history the caller
+       * knows about is not ours to drop.
+       */
+      const policyEvent = s.currentPolicyEvent();
+      const parents =
+        policyEvent === null
+          ? spec.parents
+          : [...new Set([...(spec.parents ?? []), policyEvent])];
+
       const event = buildEvent({
         ...spec,
+        ...(parents ? { parents } : {}),
         scope: spec.scope ?? scope,
         producer: perEventProducer,
         source,

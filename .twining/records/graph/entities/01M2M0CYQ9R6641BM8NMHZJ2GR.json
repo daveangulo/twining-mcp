@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T02:23:12.104Z",
+  "id": "01M2M0CYQ9R6641BM8NMHZJ2GR",
+  "name": "01M2M0CYNH8H4ZVX49ZXKZCA37",
+  "properties": {
+    "scope": "src/adapters/",
+    "summary": "Fixed the lane-04 acceptance fixtures to link the policy rather than relaxing the admission rule, adding citeParents()/deliverUnderPolicy() to the slice harness"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-16T02:23:12.104Z"
+}

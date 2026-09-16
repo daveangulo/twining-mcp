@@ -3,8 +3,8 @@
   "id": "01M2KKE0KQWRF5MJBHFK1W4860",
   "name": "src/retrieval/select.ts",
   "properties": {
-    "scope": "src/retrieval/"
+    "scope": "src/adapters/,src/retrieval/"
   },
   "type": "file",
-  "updated_at": "2026-09-15T22:36:35.698Z"
+  "updated_at": "2026-09-16T02:23:12.142Z"
 }
