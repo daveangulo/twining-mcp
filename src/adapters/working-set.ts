@@ -42,10 +42,69 @@ const CLASS_LABEL: Record<string, string> = {
   legacy_unverified: "legacy (unverified)",
 };
 
-function renderRecord(rec: SliceProjectedRecord): string {
+/** Git prefix length on rendered ranges; the full sha stays in the record. */
+const SHA_PREFIX = 8;
+/** Upper bound on the compact `result` rendering so one verbose check cannot eat the budget. */
+const RESULT_RENDER_MAX = 240;
+
+function shortSha(sha: unknown): string | undefined {
+  return typeof sha === "string" && sha.length > 0 ? sha.slice(0, SHA_PREFIX) : undefined;
+}
+
+/** `base..head` with 8-hex prefixes; one side may be absent (`..head`, `base..`). */
+function renderRange(base: unknown, head: unknown): string | undefined {
+  const b = shortSha(base);
+  const h = shortSha(head);
+  if (b === undefined && h === undefined) return undefined;
+  return `${b ?? ""}..${h ?? ""}`;
+}
+
+function isScalar(v: unknown): v is string | number | boolean | null {
+  return v === null || typeof v === "string" || typeof v === "number" || typeof v === "boolean";
+}
+
+/**
+ * Compact, deterministic rendering of an observation's `result`: its top-level
+ * scalar fields as `key=value`, keys sorted so two replicas that projected the
+ * same event render the same bytes whatever the insertion order, whitespace
+ * collapsed so the record stays on one line, and bounded so one verbose check
+ * cannot consume the whole budget. Nested values are not rendered.
+ */
+function renderResult(result: unknown): string | undefined {
+  if (typeof result !== "object" || result === null || Array.isArray(result)) return undefined;
+  const r = result as Record<string, unknown>;
+  const pairs = Object.keys(r)
+    .sort()
+    .filter((k) => isScalar(r[k]))
+    .map((k) => `${k}=${String(r[k]).replace(/\s+/g, " ")}`);
+  if (pairs.length === 0) return undefined;
+  const joined = pairs.join(" ");
+  return joined.length > RESULT_RENDER_MAX ? `${joined.slice(0, RESULT_RENDER_MAX - 1)}…` : joined;
+}
+
+/**
+ * One record, as the model will read it. Exported for the renderer's own
+ * tests; `buildWorkingSet` is the only production caller and every byte this
+ * returns is counted against the budget by that one loop.
+ *
+ * An observation renders its SUBSTANCE — what was checked, how, at which
+ * revision, and what the check found — because a `verified_observation` whose
+ * body is `.strict()` has no `summary` and used to render as a bare record id,
+ * which delivered the class label and withheld the fact (DN-2 / DP-0).
+ */
+export function renderRecord(rec: SliceProjectedRecord): string {
   const body = rec.body as Record<string, unknown>;
   const cls = CLASS_LABEL[rec.evidence_class] ?? rec.evidence_class;
-  const scopeBits = [rec.scope.path, rec.scope.task].filter(Boolean).join(" · ");
+  const isObservation = rec.record_type === "observation";
+  const result = isObservation ? body.result : undefined;
+  const resultSummary =
+    typeof result === "object" && result !== null && typeof (result as Record<string, unknown>).summary === "string"
+      ? ((result as Record<string, unknown>).summary as string)
+      : undefined;
+  const scopeRange = renderRange(rec.scope.revision?.base, rec.scope.revision?.head);
+  const scopeBits = [rec.scope.path, rec.scope.task, scopeRange ? `revision ${scopeRange}` : undefined]
+    .filter(Boolean)
+    .join(" · ");
   const head =
     rec.record_type === "ruling"
       ? String(body.statement ?? "")
@@ -53,9 +112,29 @@ function renderRecord(rec: SliceProjectedRecord): string {
         ? String(body.summary ?? "")
         : rec.record_type === "post"
           ? `${String(body.entry_type ?? "post")}: ${String(body.summary ?? "")}`
-          : String(body.summary ?? body.name ?? rec.record_id);
+          : isObservation
+            ? (resultSummary ?? renderResult(result) ?? rec.record_id)
+            : String(body.summary ?? body.name ?? rec.record_id);
 
   const lines = [`- [${cls}] ${head}`];
+  if (isObservation) {
+    const observedRange = renderRange(body.base, body.head);
+    // "<source_kind> [<source_uri>] via <check_method>" reads as one clause.
+    const source = [
+      body.source_kind,
+      body.source_uri,
+      typeof body.check_method === "string" ? `via ${body.check_method}` : undefined,
+    ]
+      .filter((s) => typeof s === "string" && s.length > 0)
+      .join(" ");
+    const bits = [
+      source,
+      typeof body.observed_at === "string" ? `at ${body.observed_at}` : undefined,
+      typeof body.volatile === "boolean" ? `volatile: ${body.volatile ? "yes" : "no"}` : undefined,
+      observedRange,
+    ].filter(Boolean);
+    if (bits.length > 0) lines.push(`  observed: ${bits.join(" · ")}`);
+  }
   if (scopeBits) lines.push(`  scope: ${scopeBits}`);
   if (rec.record_type === "decision" && typeof body.rationale === "string") {
     lines.push(`  why: ${body.rationale}`);
