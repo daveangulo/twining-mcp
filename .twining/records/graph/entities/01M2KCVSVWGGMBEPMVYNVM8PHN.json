@@ -3,8 +3,8 @@
   "id": "01M2KCVSVWGGMBEPMVYNVM8PHN",
   "name": "docs/reports/2026-09-foundation-matrix.md",
   "properties": {
-    "scope": "docs/,src/events/"
+    "scope": "docs/,docs/reports/,src/events/"
   },
   "type": "file",
-  "updated_at": "2026-09-15T21:35:41.351Z"
+  "updated_at": "2026-09-16T02:49:33.200Z"
 }

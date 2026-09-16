@@ -1,0 +1,18 @@
+{
+  "agent_id": "merge-integrator",
+  "detail": "",
+  "entry_type": "finding",
+  "id": "01M2M1X6T347B7VH6AJM2D9GB0",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "aef83faba517a8bafeb107d11ece4f587fcbbd7b",
+    "recorded_at": "2026-09-16T02:49:33.233Z"
+  },
+  "scope": "docs/reports/",
+  "summary": "C15's Codex half and C28 remain UNAVAILABLE and are recorded as such, never as passed. C28's one-machine partial run (12 pass / 1 fail / 21 unavailable) is explicitly not the case.",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-16T02:49:33.251Z"
+}
