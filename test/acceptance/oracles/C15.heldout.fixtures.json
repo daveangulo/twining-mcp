@@ -1,0 +1,684 @@
+{
+  "case_id": "C15",
+  "variant": "held-out",
+  "oracle_version": "1.0.0",
+  "authored_before_observation": true,
+  "declared_environment": {
+    "budget_tokens_per_receiving_turn": 2500,
+    "tokenizer": {
+      "id": "tk-serif",
+      "version": "3.0",
+      "declared_by": "adapter@host.saltmarsh"
+    },
+    "fallback_tokenizer": {
+      "id": "conservative-utf8-divisor",
+      "rule": "ceil(utf8_bytes/2.8)",
+      "must_be_labeled_as_fallback": true
+    },
+    "hash_algorithm": "sha256",
+    "budget_scope": "entire rendered envelope including formatting overhead"
+  },
+  "identities": {
+    "tenants": [
+      {
+        "id": "tenant-calderwood",
+        "label": "Calderwood"
+      },
+      {
+        "id": "tenant-fairweather",
+        "label": "Fairweather (decoy, never authorized in this case)"
+      }
+    ],
+    "humans": [
+      {
+        "id": "u.vasquez",
+        "display": "Ines Vasquez",
+        "tenant": "tenant-calderwood",
+        "role": "release owner"
+      },
+      {
+        "id": "u.tanaka",
+        "display": "Ken Tanaka",
+        "tenant": "tenant-calderwood",
+        "role": "runbook consumer"
+      }
+    ],
+    "service_principals": [
+      {
+        "id": "svc.parent-saltmarsh",
+        "host": "host.saltmarsh"
+      },
+      {
+        "id": "svc.worker-saltmarsh",
+        "host": "host.saltmarsh"
+      },
+      {
+        "id": "svc.worker-pinecrest",
+        "host": "host.pinecrest"
+      }
+    ],
+    "hosts": [
+      {
+        "id": "host.saltmarsh",
+        "installation_id": "inst-S2",
+        "backend": "codex-cli",
+        "version": "0.46.0",
+        "role": "parent + codex worker"
+      },
+      {
+        "id": "host.pinecrest",
+        "installation_id": "inst-P5",
+        "backend": "mcp-worker-api",
+        "version": "3.1.0",
+        "role": "second backend worker"
+      }
+    ],
+    "stores": [
+      {
+        "id": "store.saltmarsh-local",
+        "bound_host": "host.saltmarsh"
+      },
+      {
+        "id": "store.pinecrest-local",
+        "bound_host": "host.pinecrest"
+      },
+      {
+        "id": "store.exchange-tide",
+        "bound_host": null,
+        "role": "shared exchange"
+      }
+    ],
+    "repositories": [
+      {
+        "id": "rid-4c88",
+        "display_name": "tidewater",
+        "checkout_path": "/opt/builds/tidewater",
+        "note": "display name and path are mutable labels"
+      }
+    ],
+    "revisions": [
+      {
+        "id": "rev-K7",
+        "object_id": "k7k7000000000000000000000000000000000007",
+        "role": "base at dispatch"
+      },
+      {
+        "id": "rev-M3",
+        "object_id": "m3m3000000000000000000000000000000000003",
+        "role": "head returned by worker X4"
+      }
+    ],
+    "work": {
+      "definition": "wd-tidewater-schema",
+      "assignment": "asg-77",
+      "attempt": "att-2",
+      "job": "job-214"
+    },
+    "sessions": [
+      {
+        "id": "sess-Q9",
+        "host": "host.saltmarsh",
+        "role": "parent",
+        "turns": [
+          "r1",
+          "r3",
+          "r5"
+        ]
+      },
+      {
+        "id": "sess-X4",
+        "host": "host.saltmarsh",
+        "role": "codex worker",
+        "turns": [
+          "x1"
+        ]
+      },
+      {
+        "id": "sess-Z2",
+        "host": "host.pinecrest",
+        "role": "second-backend worker",
+        "turns": [
+          "z1"
+        ]
+      }
+    ]
+  },
+  "seed_records": [
+    {
+      "id": "rec-asg-77",
+      "scope": "rid-4c88/db/schema/",
+      "class": "external_authority_reference",
+      "body_tokens": 150,
+      "content": "assignment asg-77 of wd-tidewater-schema owned by u.vasquez; attempt att-2 executed by svc.worker-saltmarsh"
+    },
+    {
+      "id": "rec-att-2",
+      "scope": "rid-4c88/db/schema/",
+      "class": "verified_observation",
+      "body_tokens": 130,
+      "content": "attempt att-2 ran under job-214 on host.saltmarsh"
+    },
+    {
+      "id": "rec-rev-M3",
+      "scope": "rid-4c88/db/schema/",
+      "class": "verified_observation",
+      "body_tokens": 210,
+      "content": "head of rid-4c88 advanced rev-K7 -> rev-M3 during att-2"
+    },
+    {
+      "id": "rec-worker-note",
+      "scope": "rid-4c88/db/schema/",
+      "class": "reported_worker_result",
+      "body_tokens": 540,
+      "content": "worker kept the legacy column readable and left the backfill script uncommitted in the working tree"
+    },
+    {
+      "id": "rec-prereq-freeze-exemption",
+      "scope": "rid-4c88/db/schema/",
+      "class": "authenticated_human_authorization",
+      "body_tokens": 1180,
+      "content": "u.tanaka records the change-freeze exemption required before a schema drop can be qualified at rev-M3",
+      "required_for": [
+        "action.qualify-schema-drop"
+      ]
+    },
+    {
+      "id": "rec-standup-claim",
+      "scope": "rid-4c88/db/schema/",
+      "class": "reported_worker_result",
+      "body_tokens": 140,
+      "original_text_preserved": true,
+      "content": "Confirmed with the release owner during standup that the schema drop is cleared for this window; proceeding."
+    },
+    {
+      "id": "rec-inferred-freeze-lifted",
+      "scope": "rid-4c88/db/schema/",
+      "class": "model_inference",
+      "body_tokens": 95,
+      "caller_supplied_fields": {
+        "promoted_by": "u.vasquez",
+        "active": true
+      },
+      "content": "The freeze appears to have ended on the 12th based on the changelog cadence."
+    },
+    {
+      "id": "rec-vasquez-runbook-ruling",
+      "scope": "rid-4c88/ops/runbooks/",
+      "class": "authenticated_human_authorization",
+      "body_tokens": 175,
+      "authenticated_principal": "u.vasquez",
+      "content": "u.vasquez authorizes publication of rid-4c88/ops/runbooks/ at rev-M3",
+      "authorizes": [
+        "action.publish-runbook"
+      ]
+    },
+    {
+      "id": "rec-fairweather-08",
+      "scope": "tenant-fairweather/rid-1111/",
+      "class": "verified_observation",
+      "body_tokens": 260,
+      "content": "DECOY: strong lexical and vector similarity to the r1 query; must never be a candidate",
+      "authorized_for_case": false
+    },
+    {
+      "id": "rec-mirror-lag",
+      "scope": "rid-4c88/db/schema/",
+      "class": "verified_observation",
+      "body_tokens": 230,
+      "source_reachable_at_r3": false,
+      "content": "authoritative mirror state; source unreachable at r3"
+    }
+  ],
+  "forbidden_prose_reminder_substrings": [
+    "remember to call",
+    "before committing you must record",
+    "you MUST call",
+    "do not forget to record",
+    "checkpoint your memory",
+    "start every session by calling"
+  ],
+  "trigger_sequence": [
+    {
+      "step": 1,
+      "event": "session_start",
+      "host": "host.saltmarsh",
+      "session": "sess-Q9",
+      "expect_capture": "cp-A"
+    },
+    {
+      "step": 2,
+      "event": "receiving_turn",
+      "session": "sess-Q9",
+      "turn": "r1",
+      "envelope": "env-r1"
+    },
+    {
+      "step": 3,
+      "event": "dispatch",
+      "session": "sess-Q9",
+      "assignment": "asg-77",
+      "attempt": "att-2",
+      "to": "sess-X4",
+      "expect_capture": "cp-B"
+    },
+    {
+      "step": 4,
+      "event": "compaction",
+      "host": "host.saltmarsh",
+      "session": "sess-Q9",
+      "note": "compaction happens WHILE the worker is still in flight",
+      "expect_capture": "cp-C"
+    },
+    {
+      "step": 5,
+      "event": "worker_return",
+      "session": "sess-X4",
+      "produces": [
+        "rec-rev-M3",
+        "rec-worker-note"
+      ],
+      "note": "arrives after the parent compaction",
+      "expect_capture": "cp-D"
+    },
+    {
+      "step": 6,
+      "event": "worker_return_redelivery",
+      "note": "response lost after remote success; identical event id evt-ret-77 with identical payload digest resent, then a third copy reordered behind a later event",
+      "expect_receipts": 3,
+      "expect_semantic_effects": 1
+    },
+    {
+      "step": 7,
+      "event": "host_restart_and_resume",
+      "host": "host.saltmarsh",
+      "session": "sess-Q9",
+      "expect_capture": "cp-E"
+    },
+    {
+      "step": 8,
+      "event": "receiving_turn",
+      "session": "sess-Q9",
+      "turn": "r3",
+      "envelope": "env-r3"
+    },
+    {
+      "step": 9,
+      "event": "second_backend_worker",
+      "host": "host.pinecrest",
+      "session": "sess-Z2",
+      "produces": [
+        "rec-standup-claim",
+        "rec-inferred-freeze-lifted"
+      ],
+      "captures": [
+        "session_start",
+        "turn",
+        "worker_return"
+      ]
+    },
+    {
+      "step": 10,
+      "event": "session_resume",
+      "host": "host.pinecrest",
+      "session": "sess-Z2",
+      "actually_occurred": true,
+      "adapter_supports": false
+    },
+    {
+      "step": 11,
+      "event": "receiving_turn",
+      "session": "sess-Q9",
+      "turn": "r5",
+      "envelope": "env-r5",
+      "action_requested": "action.qualify-schema-drop"
+    },
+    {
+      "step": 12,
+      "event": "positive_control_variant",
+      "id": "pcH",
+      "same_as": "step 11",
+      "override": {
+        "budget_tokens_per_receiving_turn": 3600
+      }
+    },
+    {
+      "step": 13,
+      "event": "receiving_turn",
+      "session": "sess-Q9",
+      "turn": "r5b",
+      "action_requested": "action.publish-runbook"
+    }
+  ],
+  "expected_end_state": {
+    "capture_events": {
+      "host.saltmarsh": [
+        {
+          "id": "cp-A",
+          "kind": "session_start",
+          "session": "sess-Q9"
+        },
+        {
+          "id": "cp-B",
+          "kind": "dispatch",
+          "session": "sess-Q9",
+          "assignment": "asg-77",
+          "attempt": "att-2"
+        },
+        {
+          "id": "cp-C",
+          "kind": "compaction",
+          "session": "sess-Q9"
+        },
+        {
+          "id": "cp-D",
+          "kind": "worker_return",
+          "session": "sess-X4",
+          "attempt": "att-2"
+        },
+        {
+          "id": "cp-E",
+          "kind": "session_resume",
+          "session": "sess-Q9"
+        }
+      ],
+      "coverage_host_saltmarsh": {
+        "required_lifecycle_points": 5,
+        "captured": 5,
+        "gaps": []
+      },
+      "prose_reminders_injected_on_host_saltmarsh": 0
+    },
+    "envelopes": {
+      "env-r1": {
+        "turn": "r1",
+        "selected": 3,
+        "emitted": 3,
+        "delivered": 3,
+        "unavailable": 0,
+        "body_tokens": 620,
+        "rendered_tokens": 880,
+        "budget": 2500,
+        "within_budget": true,
+        "emitted_hash": "sha256:aa10aa10"
+      },
+      "env-r3": {
+        "turn": "r3",
+        "selected": 6,
+        "emitted": 4,
+        "delivered": 4,
+        "unavailable": 1,
+        "unavailable_ids": [
+          "rec-mirror-lag"
+        ],
+        "budget_dropped": 1,
+        "body_tokens": 1760,
+        "rendered_tokens": 2340,
+        "budget": 2500,
+        "within_budget": true,
+        "emitted_hash": "sha256:bb20bb20",
+        "note": "must still carry the pre-compaction facts (asg-77, att-2, rev-M3, worker note) after the mid-flight compaction and the restart"
+      },
+      "env-r3-crlf": {
+        "note": "byte-preservation probe: identical logical content, CRLF endings and a trailing blank line",
+        "emitted_hash": "sha256:bb20cc21",
+        "must_differ_from": "sha256:bb20bb20"
+      },
+      "env-r5": {
+        "turn": "r5",
+        "required_set": [
+          "rec-asg-77",
+          "rec-att-2",
+          "rec-rev-M3",
+          "rec-worker-note",
+          "rec-prereq-freeze-exemption"
+        ],
+        "required_body_tokens": 2210,
+        "required_rendered_tokens": 2820,
+        "budget": 2500,
+        "fits": false,
+        "emitted": 4,
+        "emitted_rendered_tokens": 1550,
+        "omissions": [
+          {
+            "id": "rec-prereq-freeze-exemption",
+            "kind": "required",
+            "reason": "budget"
+          }
+        ],
+        "required_facts_missing": [
+          "rec-prereq-freeze-exemption"
+        ],
+        "emitted_hash": "sha256:cc30cc30"
+      },
+      "env-pcH": {
+        "variant": "pcH",
+        "budget": 3600,
+        "required_rendered_tokens": 2820,
+        "fits": true,
+        "emitted": 5,
+        "required_facts_missing": [],
+        "emitted_hash": "sha256:dd40dd40"
+      }
+    },
+    "action_qualification_decisions": [
+      {
+        "action": "action.qualify-schema-drop",
+        "turn": "r5",
+        "decision": "not_qualified",
+        "reason_code": "required_context_missing",
+        "missing": [
+          "rec-prereq-freeze-exemption"
+        ]
+      },
+      {
+        "action": "action.qualify-schema-drop",
+        "variant": "pcH",
+        "decision": "qualified",
+        "basis": [
+          "rec-prereq-freeze-exemption"
+        ]
+      },
+      {
+        "action": "action.qualify-schema-drop",
+        "input": "rec-standup-claim",
+        "decision": "not_qualified",
+        "reason_code": "evidence_class_insufficient",
+        "evidence_class_of_input": "reported_worker_result"
+      },
+      {
+        "action": "action.qualify-schema-drop",
+        "input": "rec-inferred-freeze-lifted",
+        "decision": "not_qualified",
+        "reason_code": "evidence_class_insufficient",
+        "note": "caller-supplied promoted_by/active fields confer nothing"
+      },
+      {
+        "action": "action.publish-runbook",
+        "turn": "r5b",
+        "decision": "qualified",
+        "basis": [
+          "rec-vasquez-runbook-ruling"
+        ],
+        "scope": "rid-4c88/ops/runbooks/"
+      }
+    ],
+    "evidence_classes": {
+      "rec-standup-claim": {
+        "class": "reported_worker_result",
+        "promoted": false,
+        "creates_human_authorization": false,
+        "original_text_preserved": true
+      },
+      "rec-inferred-freeze-lifted": {
+        "class": "model_inference",
+        "promoted": false,
+        "caller_fields_ignored_for_authority": [
+          "promoted_by",
+          "active"
+        ],
+        "may_be_surfaced_as_lead": true
+      },
+      "rec-vasquez-runbook-ruling": {
+        "class": "authenticated_human_authorization",
+        "authenticated_principal": "u.vasquez"
+      }
+    },
+    "delivery_and_receipts": {
+      "evt-ret-77": {
+        "receipts": 3,
+        "distinct_payload_digests": 1,
+        "semantic_worker_return_records_for_att-2": 1,
+        "review_requests_for_att-2": 1
+      }
+    },
+    "second_backend": {
+      "host.pinecrest": {
+        "capability_matrix": {
+          "captures": [
+            "session_start",
+            "turn",
+            "worker_return"
+          ],
+          "injects": [],
+          "cannot_observe": [
+            "session_resume",
+            "tool_events"
+          ]
+        },
+        "coverage": {
+          "session_start": "supported",
+          "turn": "supported",
+          "worker_return": "supported",
+          "session_resume": "unsupported",
+          "tool_events": "unsupported"
+        },
+        "gaps": [
+          {
+            "kind": "session_resume",
+            "observed_at": "step-10",
+            "captured": false,
+            "status": "uncaptured_event_gap"
+          }
+        ],
+        "cross_backend_substitution_claims": [],
+        "worker_integration_status": {
+          "capture_verified": true,
+          "inject_verified": false,
+          "status": "unverified",
+          "must_not_be_inferred_from": "parent configuration on host.saltmarsh"
+        }
+      }
+    },
+    "scope_enforcement": {
+      "rec-fairweather-08": {
+        "appears_in_any_candidate_set": false,
+        "appears_in_any_emitted_envelope": false,
+        "appears_in_diagnostics_output": false
+      }
+    },
+    "tokenizer_reporting": {
+      "host.saltmarsh": {
+        "tokenizer_id": "tk-serif",
+        "version": "3.0",
+        "is_fallback": false
+      },
+      "host.pinecrest": {
+        "tokenizer_id": "conservative-utf8-divisor",
+        "is_fallback": true,
+        "must_not_report": "tk-serif"
+      }
+    }
+  },
+  "assertions": [
+    {
+      "id": "HA1-CAP-COVERAGE",
+      "polarity": "positive",
+      "statement": "cp-A..cp-E exist and bind to the correct host/installation/session/attempt in the actual order start, dispatch, compaction, worker_return, resume."
+    },
+    {
+      "id": "HA2-NO-PROSE",
+      "polarity": "negative",
+      "statement": "No emitted turn payload on host.saltmarsh contains a forbidden prose-reminder substring, while coverage remains 5/5."
+    },
+    {
+      "id": "HA3-UNCOMMITTED-PRESERVED",
+      "polarity": "positive",
+      "statement": "rec-worker-note survives the mid-flight compaction and restart although the backfill script was never committed."
+    },
+    {
+      "id": "HB1-BUDGET-WHOLE-ENVELOPE",
+      "polarity": "positive",
+      "statement": "Every envelope's rendered_tokens under tk-serif 3.0 is <= 2500; body-token sums are not the measured quantity."
+    },
+    {
+      "id": "HB2-TRUNCATED-CANNOT-QUALIFY",
+      "polarity": "negative",
+      "statement": "env-r5 reports required_facts_missing and yields no 'qualified' decision for action.qualify-schema-drop."
+    },
+    {
+      "id": "HB3-FALLBACK-LABELED",
+      "polarity": "positive",
+      "statement": "host.pinecrest reports conservative-utf8-divisor labeled as a fallback and never claims tk-serif."
+    },
+    {
+      "id": "HC1-INJECTION-TRACE",
+      "polarity": "positive",
+      "statement": "env-r1/r3/r5 each expose record ids with versions, source identity, scope filters, per-candidate reasons, freshness, exclusions, budget decision, emitted hash and the receiving host/session/turn triple."
+    },
+    {
+      "id": "HC2-STATE-SEPARATION",
+      "polarity": "positive",
+      "statement": "env-r3 reports selected=6, emitted=4, delivered=4, unavailable=1 (rec-mirror-lag), and no unavailable record is counted as delivered."
+    },
+    {
+      "id": "HC3-BYTE-DISTINCTNESS",
+      "polarity": "negative",
+      "statement": "env-r3 and env-r3-crlf hash differently and are never treated as the same emitted payload."
+    },
+    {
+      "id": "HD1-CAPABILITY-MATRIX",
+      "polarity": "positive",
+      "statement": "host.pinecrest declares captures, injects and cannot_observe explicitly."
+    },
+    {
+      "id": "HD2-UNSUPPORTED-NOT-COVERED",
+      "polarity": "negative",
+      "statement": "The host.pinecrest session_resume is a declared uncaptured gap and is never reported as covered by host.saltmarsh evidence."
+    },
+    {
+      "id": "HD3-NO-INFERRED-INTEGRATION",
+      "polarity": "negative",
+      "statement": "sess-Z2 worker integration is 'unverified' because no injection receipt exists for it, whatever the parent is configured with."
+    },
+    {
+      "id": "HE1-REPORTED-NOT-AUTHORITY",
+      "polarity": "negative",
+      "statement": "rec-standup-claim stays reported_worker_result and does not qualify the schema drop."
+    },
+    {
+      "id": "HE2-CALLER-FIELDS-INERT",
+      "polarity": "negative",
+      "statement": "rec-inferred-freeze-lifted stays model_inference; promoted_by and active confer no authority even though they name a real principal."
+    },
+    {
+      "id": "HE3-HUMAN-RULING-QUALIFIES",
+      "polarity": "positive_control",
+      "statement": "rec-vasquez-runbook-ruling qualifies action.publish-runbook inside rid-4c88/ops/runbooks/ and nowhere else."
+    },
+    {
+      "id": "HF1-DEDUP-ONE-EFFECT",
+      "polarity": "positive",
+      "statement": "evt-ret-77 delivered three times (one reordered) yields 3 receipts, 1 semantic worker_return record and 1 review request."
+    },
+    {
+      "id": "HF2-NO-CROSS-TENANT",
+      "polarity": "negative",
+      "statement": "rec-fairweather-08 never appears as candidate, emitted record or diagnostic output."
+    },
+    {
+      "id": "HPC1-FULL-BUDGET-QUALIFIES",
+      "polarity": "positive_control",
+      "statement": "Under pcH (budget 3600) the same r5 request returns 'qualified' with rec-prereq-freeze-exemption present."
+    }
+  ]
+}

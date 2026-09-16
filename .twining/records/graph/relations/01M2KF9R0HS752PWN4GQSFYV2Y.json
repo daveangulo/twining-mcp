@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T21:24:21.137Z",
+  "id": "01M2KF9R0HS752PWN4GQSFYV2Y",
+  "properties": {
+    "decision_summary": "CLI exits by setting process.exitCode and letting the event loop drain (sqlite handle and drain timer closed in finally) instead of calling process.exit — the latter raced onnxruntime-node's thread pool and aborted with SIGABRT (exit 134) on every successful run with a cached embedding model",
+    "origin": "derived"
+  },
+  "source": "01M2KDH49C7WTMQN0HKBJWAS9C",
+  "target": "01M2KF9R02T9625J3GD5551AB1",
+  "type": "decided_by"
+}

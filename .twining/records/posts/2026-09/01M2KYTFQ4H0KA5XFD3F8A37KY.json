@@ -1,0 +1,18 @@
+{
+  "agent_id": "merge-integrator",
+  "detail": "Full summary: lane 02b added twining_exchange_status to the shared command registry but never registered it as an MCP tool — src/tools/ had no exchange-tools.ts and src/server.ts had no call. Caught only by the registry↔MCP parity test. Every future lane that adds a command must add BOTH the registry entry and the src/tools registration loop, plus the collectTools() line in test/core/command-registry.test.ts.",
+  "entry_type": "warning",
+  "id": "01M2KYTFQ4H0KA5XFD3F8A37KY",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "0dec2d1562d5e3dd5c6a2ba710eb1a7da2c6bafa",
+    "recorded_at": "2026-09-16T01:55:38.320Z"
+  },
+  "scope": "src/exchange/",
+  "summary": "lane 02b added twining_exchange_status to the shared command registry but never registered it as an MCP tool — src/tools/ had no exchange-tools.ts and src/server.ts had no call. Caught only by the …",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-16T01:55:38.340Z"
+}

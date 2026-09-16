@@ -1,0 +1,49 @@
+{
+  "affected_files": [
+    "src/contracts/canonical.ts",
+    "src/contracts/event.ts",
+    "src/contracts/evidence.ts",
+    "src/contracts/validate.ts",
+    "src/contracts/scope.ts",
+    "src/contracts/lifecycle.ts",
+    "src/contracts/records.ts",
+    "src/contracts/signing.ts",
+    "src/contracts/delivery.ts",
+    "src/contracts/ids.ts",
+    "docs/adr/2026-09-foundation-contracts.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Hash the file bytes as written",
+      "pros": [],
+      "reason_rejected": "pretty-printing, key order or a BOM would change identity without changing meaning"
+    },
+    {
+      "cons": [],
+      "option": "RFC 8785 JCS with number canonicalization",
+      "pros": [],
+      "reason_rejected": "adds a dependency or a hand-written number formatter for no case this programme has; revisit if non-integer numbers enter payloads"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Wrote the v3 foundation ADR (docs/adr/2026-09-foundation-contracts.md, PROPOSED) and executable contracts in src/contracts (event envelope, canonical digest, ids, evidence classes, scope algebra, lifecycle payloads, delivery states, Ed25519 signing, ingress validation); 21 contract tests green, tsc clean.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01M2KCECHHYB9Z6EK9S5HYSS7V",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:34:27.375Z"
+  },
+  "rationale": "DP1: deterministic across Node versions with node:crypto only; reuses the sorted-key idea already shipped in record-export's stableStringify; the three-hash separation is required by R02/C07 (a normalized-text hash must never rebind evidence).",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/contracts/",
+  "status": "active",
+  "summary": "Canonical form for digests is compact JSON with recursively sorted keys, arrays in order, undefined dropped, UTF-8, no Unicode normalization; the digest covers the envelope minus digest and sig and is recomputed from the PARSED object so on-disk pretty-printing never matters; file bytes, canonical bytes and attachment source bytes are three distinct hashes",
+  "timestamp": "2026-09-15T20:34:27.506Z"
+}

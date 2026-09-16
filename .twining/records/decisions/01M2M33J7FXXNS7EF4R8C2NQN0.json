@@ -1,0 +1,76 @@
+{
+  "affected_files": [
+    "src/retrieval/tokenizer.ts",
+    "src/retrieval/calibration.json",
+    "src/retrieval/packet.ts",
+    "src/engine/context-assembler.ts",
+    "tsconfig.json",
+    "scripts/build-plugin-bundle.mjs",
+    "scripts/calibrate-tokenizer.mjs",
+    "test/retrieval/tokenizer-packet.test.ts",
+    "test/acceptance/cases/c26.test.ts",
+    "test/acceptance/cases/c05.test.ts",
+    "test/acceptance/baseline/gap7-formatter-budget.test.ts",
+    "test/context-assembler.test.ts",
+    "test/coordination/overhead-measurement.test.ts"
+  ],
+  "affected_symbols": [
+    "ACTIVE_TABLE",
+    "validateCalibrationTable",
+    "loadCalibrationTable",
+    "describeTable",
+    "estimate",
+    "estimateTokensConservative",
+    "buildCalibrationTable",
+    "buildPacket",
+    "measureEnvelope",
+    "CHAR_CLASSES"
+  ],
+  "agent_id": "tokenizer-wiring",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "createRequire(import.meta.url)(\"./calibration.json\")",
+      "pros": [],
+      "reason_rejected": "Resolves relative to the bundle, which has no sibling JSON; the plugin would silently ship the proven table. Would also need a postbuild copy step that tsc gives for free."
+    },
+    {
+      "cons": [],
+      "option": "Generate a TS module from the JSON at build time",
+      "pros": [],
+      "reason_rejected": "Verified unnecessary — both tsc and esbuild handle the JSON import natively; a generated module adds a build step and a second source of truth."
+    }
+  ],
+  "assembled_before": false,
+  "assumptions": [
+    "The committed src/retrieval/calibration.json is the genuine output of scripts/calibrate-tokenizer.mjs against a real ANTHROPIC_API_KEY — its numbers were not re-derived here, only validated for shape and range",
+    "A measured table still warrants conservative_fallback: true, because it is an empirical bound over a named corpus rather than a count",
+    "Breaking the packet token_usage shape (new table_provenance field) is acceptable on the v3 line, per the settled 'breaking behaviour is permitted on v3' decision"
+  ],
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [
+    "Could not run npm run build or touch plugin/ — verified dist and bundle carriage with a scratch outDir and an in-memory esbuild instead",
+    "No network: the measured ratios could not be re-verified against the count-tokens API"
+  ],
+  "context": "Wired src/retrieval/calibration.json into the tokenizer: ACTIVE_TABLE (measured, validated at load, proven fallback) is now the default for every estimate, packet and briefing. 2711 pass.",
+  "depends_on": [
+    "01M2KKE0XE0K2201Z5081YMNB0",
+    "01M2KXWC719QF8B4C4A0GE4SPN",
+    "01M2KKE0QJJ3A4X4B56G6QB4M6"
+  ],
+  "domain": "implementation",
+  "id": "01M2M33J7FXXNS7EF4R8C2NQN0",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "92093f8c902437e8f85cc2fb4f24064ee965e297",
+    "recorded_at": "2026-09-16T03:10:30.101Z"
+  },
+  "rationale": "Verified empirically before choosing: tsc emits the file to dist/retrieval/calibration.json (so package.json's existing \"dist\" files entry already ships it) and esbuild inlines it into the plugin bundle as a plain object literal with no runtime path left behind. createRequire would have resolved relative to plugin/server/twining-server.mjs, where no calibration.json sits, so every plugin user would have silently fallen back to the ~4x-looser proven table — the exact failure mode the wiring exists to close. The cost of the static import is that an absent file is a BUILD error rather than a runtime fallback; that is the safer failure (loud, at build time, versus a silent 4x budget regression in the field), and the absent path stays testable because loadCalibrationTable(raw) is exported and tested with undefined/null/garbage.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/retrieval/",
+  "status": "active",
+  "summary": "Loaded calibration.json with a STATIC import (`with { type: \"json\" }` + tsconfig resolveJsonModule) rather than createRequire, and kept validation at module load anyway",
+  "timestamp": "2026-09-16T03:10:30.127Z"
+}

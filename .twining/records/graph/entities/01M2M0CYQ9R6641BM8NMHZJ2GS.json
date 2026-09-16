@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-16T02:23:12.105Z",
+  "id": "01M2M0CYQ9R6641BM8NMHZJ2GS",
+  "name": "test/acceptance/slice/harness.ts",
+  "properties": {
+    "scope": "src/adapters/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-16T02:23:12.145Z"
+}

@@ -1,0 +1,42 @@
+{
+  "affected_files": [
+    "src/cli/dispatch.ts",
+    "src/cli/v3-verbs.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "merge-integrator",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Drop `events` from V3_CLI_VERBS and let 02c's reader serve both binaries",
+      "pros": [],
+      "reason_rejected": "loses the JSON envelope contract on the twining CLI and the live-log fields (kind/record/producer filters) lane 03's verb provides"
+    },
+    {
+      "cons": [],
+      "option": "Drop `events` from KNOWN_SUBCOMMANDS",
+      "pros": [],
+      "reason_rejected": "breaks ADR §10.7 — the rolled-back archive must stay listable with no database, which lane 03's verb cannot do"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Merged lane/03-runtime into foundation/v3; resolved the events-verb collision between lanes 02c and 03, and fixed the signing ceremony producing rulings its own admission rule quarantined.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M2KZYYVGJRPE7SB9GTYDCYB1",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "b7b1c88a37a0fbcddea846256de458c25a9657fc",
+    "recorded_at": "2026-09-16T02:15:33.467Z"
+  },
+  "rationale": "Both lanes claimed the word `events` with incompatible contracts: 02c prints plain text with an exit code and needs no database (that is what keeps a rolled-back store inspectable under ADR §10.7), 03 returns the single JSON envelope the `twining` CLI promises. classifyCliArgv checked KNOWN_SUBCOMMANDS first, so 03's verb was shadowed and its 'every v3 verb routes away from the registry' test failed. V3_CLI_VERBS is now checked first on that entry point only; classifyArgv (twining-mcp) is untouched, and runEvents returns STORE_ROLLED_BACK naming `twining-mcp events` instead of reporting a rolled-back store as never-migrated.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/cli/",
+  "status": "active",
+  "summary": "On the `twining` CLI, `events` routes to lane 03's JSON-envelope v3 verb; on `twining-mcp` it stays lane 02c's database-free archive reader, and the v3 verb names that reader when the store is rolled back",
+  "timestamp": "2026-09-16T02:15:33.488Z"
+}

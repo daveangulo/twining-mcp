@@ -1,0 +1,18 @@
+{
+  "agent_id": "merge-integrator",
+  "detail": "Decisions: Rebuilt every matrix count by running the suite against the merged tree rather than transcribing the lanes' self-reported numbers — lane reports were measured in worktrees before the merge and three of them changed once the lanes met (the 65 lane-04 fixture failures alone would have made a copied number wrong). Cost: one extra full acceptance run. Alternative rejected: trusting the lane reports, which is exactly how a matrix stops being evidence.; Marked C07, C13 and C23 not-tested rather than partial, and recorded that C13's stated blocker (the Git carrier) has since merged so it is now a coverage gap rather than a dependency — a stub whose blocker is gone but which still has no test must not read as blocked-by-something-else.\nFindings: Gaps 5 (remote/social staleness signals) and 8 (file-wins precedence on ingest) still reproduce after all five lanes — no lane addressed them. Gap 8 is a named open design decision; gap 5 has no owner.; C15's Codex half and C28 remain UNAVAILABLE and are recorded as such, never as passed. C28's one-machine partial run (12 pass / 1 fail / 21 unavailable) is explicitly not the case.",
+  "entry_type": "status",
+  "id": "01M2M1X6MBX4QWGEBMEG7B86AG",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "aef83faba517a8bafeb107d11ece4f587fcbbd7b",
+    "recorded_at": "2026-09-16T02:49:33.049Z"
+  },
+  "scope": "docs/reports/",
+  "summary": "Rewrote the foundation matrix from the merged tree with measured counts and appended the D39 merge log entry; every unavailable and todo left honest.",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-16T02:49:33.068Z"
+}

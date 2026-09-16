@@ -1,0 +1,34 @@
+{
+  "affected_files": [
+    "src/adapters/claude-code.ts",
+    "src/adapters/codex.ts",
+    "src/adapters/working-set.ts",
+    "src/cli/v3-verbs.ts",
+    "plugin/hooks/hooks.json",
+    "plugin/hooks/v3-capture-hook.sh",
+    "docs/operations/hosts-claude-code-capabilities.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Lane 03 (runtime) delivered on lane/03-runtime: v3 adapters (identity, ceremony, working set, receipts, Claude Code + Codex + library adapters, git connector), CLI v3 verbs, hooks incl. PreCompact and compact SessionStart; Claude real-host evidence captured; Codex not tested (hook trust); gaps 1/2/4 flipped.",
+  "depends_on": [],
+  "domain": "integration",
+  "id": "01M2KK17WHQNKYY9RWJ918K8XQ",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:29:36.761Z"
+  },
+  "rationale": "`codex exec --dangerously-bypass-hook-trust` ran the SessionStart hook with no filesystem effect and UserPromptSubmit never fires in exec mode; reporting NOT TESTED instead of a vacuous pass is the package's rule (unavailable is not passed).",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/adapters/",
+  "status": "active",
+  "summary": "Lane 03 correctly skipped cherry-picking the parked Codex plugin carrier (dedaacc) because it edits shared files (ci.yml, README, package.json, AGENTS.md); the Codex real-host path is NOT TESTED until the plugin's hooks receive one-time interactive trust in Codex (`/hooks`), which is Dave's action on this machine",
+  "timestamp": "2026-09-15T22:29:36.787Z"
+}

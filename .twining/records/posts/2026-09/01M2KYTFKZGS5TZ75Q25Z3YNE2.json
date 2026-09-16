@@ -1,0 +1,18 @@
+{
+  "agent_id": "merge-integrator",
+  "detail": "Full summary: Merged lane/02-exchange into foundation/v3 (no conflicts); wired twining_exchange_status onto the MCP surface, which the lane had left registry-only, and re-pinned the command counts 39→40 / default 15→16.\nDecisions: Chose to add src/tools/exchange-tools.ts and register twining_exchange_status on the DEFAULT MCP surface rather than relaxing the registry↔MCP parity test — the command declares surface:'default' in its own definition, the CLI already reaches it through commandRegistry, and leaving it MCP-invisible would mean an agent could not ask 'what is this replica uncertain about?' without an operator widening the surface, which is exactly what R20 forbids. Alternative rejected: mark it surface:'full' to dodge the default-surface count change — that contradicts the lane's recorded rationale.\nFindings: warning: lane 02b added twining_exchange_status to the shared command registry but never registered it as an MCP tool — src/tools/ had no exchange-tools.ts and src/server.ts had no call. Caught only by the registry↔MCP parity test. Every future lane that adds a command must add BOTH the registry entry and the src/tools registration loop, plus the collectTools() line in test/core/command-registry.test.ts.",
+  "entry_type": "status",
+  "id": "01M2KYTFKZGS5TZ75Q25Z3YNE2",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "0dec2d1562d5e3dd5c6a2ba710eb1a7da2c6bafa",
+    "recorded_at": "2026-09-16T01:55:38.221Z"
+  },
+  "scope": "src/exchange/",
+  "summary": "Merged lane/02-exchange into foundation/v3 (no conflicts); wired twining_exchange_status onto the MCP surface, which the lane had left registry-only, and re-pinned the command counts 39→40 / defaul…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-16T01:55:38.239Z"
+}

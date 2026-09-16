@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T02:15:33.702Z",
+  "id": "01M2KZYZ260CEF9KT33YWCYVRY",
+  "properties": {
+    "decision_summary": "Wrapped exchangeCommands and migrateCommands inside mirrorAll along with every other command set",
+    "origin": "derived"
+  },
+  "source": "01M2KZYZ25H9FGZP1GMYSZRFAE",
+  "target": "01M2KZYZ1Z715DKSXNYWZ4ATSB",
+  "type": "decided_by"
+}

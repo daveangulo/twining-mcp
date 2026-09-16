@@ -1,0 +1,410 @@
+{
+  "case_id": "C07",
+  "set": "development",
+  "title": "Stored review output vs CLI rendering: header, BOM and newline divergence",
+  "oracle_version": "1.0.0",
+  "hash_algorithms": {
+    "source_byte_hash": "sha256 over the exact stored octets, no decoding, no trimming",
+    "git_object_id": "sha1 of 'blob <len>\\0' + exact octets (loose object rule)",
+    "normalized_text_hash": "sha256 over TEST-DEFINED normalization N (see normalization_rule), computed only for oracle bookkeeping",
+    "rendered_output_hash": "sha256 over the octets actually emitted at a host/session/turn boundary"
+  },
+  "normalization_rule": {
+    "id": "N-v1",
+    "steps": [
+      "decode by declared/BOM-detected encoding",
+      "strip leading U+FEFF",
+      "CRLF and CR -> LF",
+      "remove one leading 'Key: value' header block terminated by a blank line",
+      "Unicode NFC",
+      "strip trailing newlines"
+    ],
+    "note": "This rule exists ONLY so the oracle can prove that two byte streams normalize identically. The system under test is not required to implement it; if it does, assertion A05 constrains what the equality may be used for."
+  },
+  "identities": {
+    "tenants": [
+      {
+        "id": "tnt-northwind",
+        "teams": [
+          "team-ledger"
+        ]
+      },
+      {
+        "id": "tnt-southwind",
+        "teams": [
+          "team-mint"
+        ]
+      }
+    ],
+    "human_principals": [
+      {
+        "id": "hp-mira-okonkwo",
+        "tenant": "tnt-northwind",
+        "role": "reviewer",
+        "authenticated": true
+      },
+      {
+        "id": "hp-dell-abara",
+        "tenant": "tnt-southwind",
+        "role": "reviewer",
+        "authenticated": true
+      }
+    ],
+    "agent_principals": [
+      {
+        "id": "ap-reviewbot-01",
+        "tenant": "tnt-northwind",
+        "home_host": "host-ALPHA"
+      },
+      {
+        "id": "ap-packer-07",
+        "tenant": "tnt-northwind",
+        "home_host": "host-BETA"
+      },
+      {
+        "id": "ap-mintbot-03",
+        "tenant": "tnt-southwind",
+        "home_host": "host-GAMMA"
+      }
+    ],
+    "hosts": [
+      {
+        "id": "host-ALPHA",
+        "kind": "workstation",
+        "store": "store-alpha"
+      },
+      {
+        "id": "host-BETA",
+        "kind": "ci-runner",
+        "store": "store-beta"
+      },
+      {
+        "id": "host-GAMMA",
+        "kind": "workstation",
+        "store": "store-gamma"
+      }
+    ],
+    "stores": [
+      {
+        "id": "store-alpha",
+        "tenant": "tnt-northwind",
+        "role": "primary"
+      },
+      {
+        "id": "store-beta",
+        "tenant": "tnt-northwind",
+        "role": "replica-consumer"
+      },
+      {
+        "id": "store-gamma",
+        "tenant": "tnt-southwind",
+        "role": "primary",
+        "isolated_from": [
+          "store-alpha",
+          "store-beta"
+        ]
+      }
+    ],
+    "repositories": [
+      {
+        "id": "rid-LEDGER-7A3",
+        "tenant": "tnt-northwind",
+        "display_label": "ledger-core",
+        "remote": "git@synthetic.invalid:northwind/ledger-core.git"
+      },
+      {
+        "id": "rid-MINT-2K9",
+        "tenant": "tnt-southwind",
+        "display_label": "ledger-core",
+        "remote": "git@synthetic.invalid:southwind/ledger-core.git",
+        "note": "identical display label, different identity"
+      }
+    ],
+    "revisions": {
+      "B1_base": "1b1b0a5c9d7f4e2b8a6c3d1e0f5a7b9c2d4e6f80",
+      "H1_head_at_review": "7f3e9c2a1d5b8e604c7a9f2b3d1e5c8a0b6d4f22",
+      "H2_head_later": "9c4d2e7a0b3f815c6d9e2a4b7c1f3d5e8a0b6c14"
+    },
+    "work": {
+      "work_definition": "pr-2291",
+      "review_run": "rr-2291-01",
+      "assignment": "asg-2291-rev",
+      "attempt": 1
+    },
+    "sessions": [
+      {
+        "id": "sess-B-114",
+        "host": "host-BETA",
+        "principal": "ap-packer-07",
+        "turn_under_test": "t-7"
+      }
+    ]
+  },
+  "artifacts": {
+    "A_stored_review_output": {
+      "role": "file committed in the repository at H1",
+      "source_uri": "repo://rid-LEDGER-7A3@7f3e9c2a1d5b8e604c7a9f2b3d1e5c8a0b6d4f22/reports/review-2291.md",
+      "source_kind": "review_output.stored",
+      "bytes_base64": "IyBSZXZpZXc6IGxlZGdlci1jb3JlIFBSIDIyOTEKVmVyZGljdDogY2hhbmdlcy1yZXF1ZXN0ZWQKRmluZGluZzogcm91bmRpbmcgZHJpZnQgaW4gc2V0dGxlX2JhdGNoKCkK",
+      "byte_length": 99,
+      "encoding": "utf-8",
+      "bom": false,
+      "newline": "LF",
+      "trailing_newline": true,
+      "header_lines": 0,
+      "source_byte_sha256": "449d20e96ccb208c58faf12135c0676b48b5b5ee84a90c25a8d674ea55b71f59",
+      "git_object_id": "0cdb1cb67e50122af5518090699e6e60b798c78f",
+      "normalized_text_sha256_Nv1": "a1c1d61dced8699660d9ac9e8d46d2b713ac63a146af21dbeeeaabe9a9c428ab"
+    },
+    "B_cli_rendering": {
+      "role": "terminal rendering of the same review run on another host",
+      "source_uri": "cli://ledgerctl@host-BETA/run/rr-2291-01/stdout",
+      "source_kind": "review_output.rendered",
+      "bytes_base64": "77u/UmVuZGVyZWQtQnk6IGxlZGdlcmN0bCA0LjIuMA0KUmVuZGVyZWQtQXQ6IDIwMjYtMDktMTRUMTE6MDI6MDBaDQoNCiMgUmV2aWV3OiBsZWRnZXItY29yZSBQUiAyMjkxDQpWZXJkaWN0OiBjaGFuZ2VzLXJlcXVlc3RlZA0KRmluZGluZzogcm91bmRpbmcgZHJpZnQgaW4gc2V0dGxlX2JhdGNoKCkNCg==",
+      "byte_length": 172,
+      "encoding": "utf-8",
+      "bom": true,
+      "newline": "CRLF",
+      "trailing_newline": true,
+      "header_lines": 2,
+      "source_byte_sha256": "7d69d0c6dca7445f02dd9e9ff93286ef743016ffe0600124e8045f43e4e4cb57",
+      "git_object_id": null,
+      "git_object_id_reason": "not a repository object",
+      "decoy_blob_oid_if_hashed_as_file": "b216c44fffd1c6c25d1736505248fe7ee654c762",
+      "normalized_text_sha256_Nv1": "a1c1d61dced8699660d9ac9e8d46d2b713ac63a146af21dbeeeaabe9a9c428ab"
+    },
+    "Bp_pasted_header_stripped": {
+      "role": "bytes a caller pastes into a qualification attempt; header removed, BOM and CRLF retained",
+      "bytes_base64": "77u/IyBSZXZpZXc6IGxlZGdlci1jb3JlIFBSIDIyOTENClZlcmRpY3Q6IGNoYW5nZXMtcmVxdWVzdGVkDQpGaW5kaW5nOiByb3VuZGluZyBkcmlmdCBpbiBzZXR0bGVfYmF0Y2goKQ0K",
+      "byte_length": 105,
+      "source_byte_sha256": "45bc835ae9f6f8595050bb9ecd96bfcf69f9370a5e311932cc1ea5c881faef65",
+      "normalized_text_sha256_Nv1": "a1c1d61dced8699660d9ac9e8d46d2b713ac63a146af21dbeeeaabe9a9c428ab",
+      "note": "normalizes to the same text as A and B, matches the bytes of neither"
+    },
+    "D_conflicting_bytes_same_event_id": {
+      "role": "different bytes submitted under an already-used producer event id",
+      "bytes_base64": "IyBSZXZpZXc6IGxlZGdlci1jb3JlIFBSIDIyOTEKVmVyZGljdDogYXBwcm92ZWQKRmluZGluZzogcm91bmRpbmcgZHJpZnQgaW4gc2V0dGxlX2JhdGNoKCkK",
+      "byte_length": 90,
+      "source_byte_sha256": "c17e6beeec2bec63eb518c41eff04b3f4e9ed20e7569482123e92089e925f90d",
+      "normalized_text_sha256_Nv1": "d42debe2dc98a773ce92e2c090f677c9e9a15a984650205603d2c2b402e139ce"
+    },
+    "T_cross_tenant_twin": {
+      "role": "byte-identical artifact owned by an unrelated tenant",
+      "tenant": "tnt-southwind",
+      "source_uri": "repo://rid-MINT-2K9@a0a0b1b1c2c2d3d3e4e4f5f60718293a4b5c6d7e/reports/review-2291.md",
+      "bytes_base64": "IyBSZXZpZXc6IGxlZGdlci1jb3JlIFBSIDIyOTEKVmVyZGljdDogY2hhbmdlcy1yZXF1ZXN0ZWQKRmluZGluZzogcm91bmRpbmcgZHJpZnQgaW4gc2V0dGxlX2JhdGNoKCkK",
+      "byte_length": 99,
+      "source_byte_sha256": "449d20e96ccb208c58faf12135c0676b48b5b5ee84a90c25a8d674ea55b71f59"
+    }
+  },
+  "seed_records": [
+    {
+      "record_id": "M-1",
+      "store": "store-alpha",
+      "tenant": "tnt-northwind",
+      "evidence_class": "model_inference",
+      "author": "ap-reviewbot-01",
+      "observed_at": "2026-09-14T11:05:30Z",
+      "text": "ledgerctl writes the identical file it prints, so the stored report and the terminal copy are one artifact; either hash can stand as the review evidence for PR 2291.",
+      "oracle_truth": "false with respect to the fixture bytes; must never qualify an action, merge records, or change any evidence class"
+    }
+  ],
+  "trigger_sequence": [
+    {
+      "step": "T1",
+      "action": "seed tenants, principals, hosts, stores, repositories; no evidence records yet"
+    },
+    {
+      "step": "T2",
+      "action": "ingest A into store-alpha as producer event ev-RVW-0001",
+      "at": "2026-09-14T10:58:11Z",
+      "observer_host": "host-ALPHA",
+      "producer": "ap-reviewbot-01"
+    },
+    {
+      "step": "T3",
+      "action": "ingest B into store-alpha as producer event ev-RVW-0002",
+      "at": "2026-09-14T11:02:04Z",
+      "observer_host": "host-BETA",
+      "producer": "ap-packer-07"
+    },
+    {
+      "step": "T4",
+      "action": "transport retry: redeliver ev-RVW-0001 with byte-identical payload after a lost acknowledgement"
+    },
+    {
+      "step": "T5",
+      "action": "submit ev-RVW-0001 again carrying D (conflicting bytes, same event id)"
+    },
+    {
+      "step": "T6",
+      "action": "independently ingest T into store-gamma under tnt-southwind as ev-MNT-0009"
+    },
+    {
+      "step": "T7",
+      "action": "post seed record M-1 into store-alpha"
+    },
+    {
+      "step": "T8",
+      "action": "replicate store-alpha to store-beta; drop one receipt acknowledgement; replay until reconciled"
+    },
+    {
+      "step": "T9",
+      "action": "exact-hash lookups with tnt-northwind credentials for 449d20e9..., 7d69d0c6..., 45bc835a...; repeat the 449d20e9... lookup with tnt-southwind credentials"
+    },
+    {
+      "step": "T10",
+      "action": "assemble and deliver a context packet containing A to sess-B-114 turn t-7 on host-BETA over the verbatim channel; capture the octets at the host boundary with an external probe"
+    },
+    {
+      "step": "T11",
+      "action": "Q-BAD: ap-packer-07 requests qualification 'review evidence satisfied for pr-2291 at H1' supplying Bp and citing M-1"
+    },
+    {
+      "step": "T12",
+      "action": "Q-GOOD (positive control): ap-packer-07 requests the same qualification supplying bytes hashing to 449d20e9... and citing ev-RVW-0001"
+    },
+    {
+      "step": "T13",
+      "action": "repository head advances H1 -> H2 with no new review; re-query the current applicable view for review evidence at current head"
+    }
+  ],
+  "expected_end_state": {
+    "admitted_evidence_records": [
+      {
+        "event_id": "ev-RVW-0001",
+        "artifact": "A",
+        "source_byte_sha256": "449d20e96ccb208c58faf12135c0676b48b5b5ee84a90c25a8d674ea55b71f59",
+        "byte_length": 99,
+        "encoding": "utf-8",
+        "bom": false,
+        "newline": "LF",
+        "git_object_id": "0cdb1cb67e50122af5518090699e6e60b798c78f",
+        "scope": "tnt-northwind/rid-LEDGER-7A3@H1",
+        "transport_attempts": 2,
+        "semantic_effects": 1
+      },
+      {
+        "event_id": "ev-RVW-0002",
+        "artifact": "B",
+        "source_byte_sha256": "7d69d0c6dca7445f02dd9e9ff93286ef743016ffe0600124e8045f43e4e4cb57",
+        "byte_length": 172,
+        "encoding": "utf-8",
+        "bom": true,
+        "newline": "CRLF",
+        "git_object_id": null,
+        "scope": "tnt-northwind/rid-LEDGER-7A3@H1",
+        "transport_attempts": 1,
+        "semantic_effects": 1
+      }
+    ],
+    "relations_between_them": {
+      "expected": [],
+      "forbidden": [
+        "duplicate_of",
+        "equivalent_to",
+        "supersedes",
+        "alias_of",
+        "same_evidence_as"
+      ]
+    },
+    "quarantine": [
+      {
+        "event_id": "ev-RVW-0001",
+        "submitted_sha256": "c17e6beeec2bec63eb518c41eff04b3f4e9ed20e7569482123e92089e925f90d",
+        "disposition": "rejected_conflict",
+        "reason_class": "reused_event_id_conflicting_digest",
+        "stored_record_unchanged": true
+      }
+    ],
+    "current_applicable_view": {
+      "query": "review evidence for pr-2291 at H1 in tnt-northwind",
+      "returns": [
+        "ev-RVW-0001",
+        "ev-RVW-0002"
+      ],
+      "each_labeled_with": [
+        "source_kind",
+        "encoding",
+        "bom",
+        "newline",
+        "source_byte_sha256",
+        "observer_host",
+        "observation_time"
+      ],
+      "must_not_contain_substring": [
+        "Verdict: approved"
+      ],
+      "single_record_answer_allowed": false
+    },
+    "historical_view": {
+      "ev-RVW-0001": "retrievable, bound to H1, observed 2026-09-14T10:58:11Z on host-ALPHA",
+      "ev-RVW-0002": "retrievable, bound to H1, observed 2026-09-14T11:02:04Z on host-BETA",
+      "M-1": "retrievable verbatim, class model_inference"
+    },
+    "delivery_receipts": [
+      {
+        "session": "sess-B-114",
+        "turn": "t-7",
+        "host": "host-BETA",
+        "selected": [
+          "ev-RVW-0001"
+        ],
+        "emitted_byte_length": 99,
+        "emitted_bytes_sha256": "449d20e96ccb208c58faf12135c0676b48b5b5ee84a90c25a8d674ea55b71f59",
+        "delivery_state": "delivered",
+        "transform": "none"
+      },
+      {
+        "replication": "store-alpha->store-beta",
+        "states_tracked_separately": [
+          "queued",
+          "received",
+          "admitted",
+          "acknowledged"
+        ],
+        "duplicate_admissions": 0,
+        "lost_acknowledged_events": 0
+      }
+    ],
+    "action_qualification_decisions": [
+      {
+        "id": "Q-BAD",
+        "decision": "deny",
+        "reason_class": "supplied_bytes_match_no_admitted_evidence_in_scope",
+        "forbidden_reasons": [
+          "normalized_text_match",
+          "model_inference_citation",
+          "similar_prose"
+        ],
+        "post_state": "no qualification record exists for pr-2291@H1 citing 45bc835a..."
+      },
+      {
+        "id": "Q-GOOD",
+        "decision": "allow",
+        "qualification_record": {
+          "cites": "ev-RVW-0001",
+          "source_byte_sha256": "449d20e96ccb208c58faf12135c0676b48b5b5ee84a90c25a8d674ea55b71f59",
+          "scope": "tnt-northwind/rid-LEDGER-7A3@H1",
+          "actor": "ap-packer-07",
+          "claims_human_authority": false
+        }
+      }
+    ],
+    "freshness_after_T13": {
+      "review evidence at H2": "none admitted / unknown",
+      "ev-RVW-0001": "historical, bound to H1",
+      "ev-RVW-0002": "historical, bound to H1",
+      "forbidden": "presenting either record as evidence for H2"
+    },
+    "scope_isolation": {
+      "lookup 449d20e9... as tnt-northwind": [
+        "ev-RVW-0001"
+      ],
+      "lookup 449d20e9... as tnt-southwind": [
+        "ev-MNT-0009"
+      ],
+      "cross_tenant_leak_in_any_path": "none (exact-id, lexical, dense, graph neighbors, cache, diagnostics)"
+    }
+  }
+}

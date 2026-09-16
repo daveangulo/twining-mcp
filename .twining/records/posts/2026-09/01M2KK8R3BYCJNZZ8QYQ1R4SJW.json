@@ -1,0 +1,23 @@
+{
+  "agent_id": "lane-04-retrieval",
+  "detail": "New: src/retrieval/{select,lifecycle,tokenizer,packet,render,receipts,explain,store-identity,index}.ts. Modified: src/engine/context-assembler.ts, src/engine/decisions.ts (why read path), src/core/commands/context.ts, src/dashboard/query-routes.ts. Tests: test/retrieval/{select,tokenizer-packet,render-receipts,recall-measurement,dashboard-scope}.test.ts and test/acceptance/cases/{c01-c05,c08,c12,c19,c25,c26}.test.ts + harness.ts + README.md. Harness: scripts/calibrate-tokenizer.mjs + test/fixtures/tokenizer-corpus/.\n\nCENTRAL DESIGN POINT: read visibility is a THIRD scope operation. scopeMatches is bidirectional so it would admit records a principal may not read; scopeGoverns carries a revision clause that would make a read entitlement evaporate the moment HEAD moved. select.ts defines scopeAuthorizes(envelope, record): identity-exact plus pathCovers, no revision clause. Proposed contract diff: export it from src/contracts/scope.ts alongside the existing two.\n\nSelection = authorization (hard, denials opaque) INTERSECT query relevance (denials reportable). The split is load-bearing: scope_denied members must never be named to the requester, out_of_query_scope members safely can.\n\nLifecycle states are READ from src/events/projection.ts, never recomputed. One addition: retrieval refuses action qualification on a conflicted record even when the reducer's authorizes_action says the class is high enough - two authorized statements disagree and retrieval declines to pick.",
+  "entry_type": "finding",
+  "id": "01M2KK8R3BYCJNZZ8QYQ1R4SJW",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:33:42.741Z"
+  },
+  "scope": "src/retrieval/",
+  "summary": "Lane 04 built: scope-first gate (src/retrieval/select.ts) applied before all ranking; gaps 3/6/7 flipped with controls green; 2096 tests pass, tsc clean",
+  "tags": [
+    "retrieval",
+    "scope",
+    "R13",
+    "R14",
+    "gap3",
+    "gap6",
+    "gap7"
+  ],
+  "timestamp": "2026-09-15T22:33:42.763Z"
+}

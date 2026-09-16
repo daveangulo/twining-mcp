@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-16T03:10:30.209Z",
+  "id": "01M2M33JA1RBQJ9F9P7W458QA9",
+  "name": "scripts/build-plugin-bundle.mjs",
+  "properties": {
+    "scope": "src/retrieval/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-16T03:10:30.656Z"
+}

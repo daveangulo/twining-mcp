@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-16T03:10:30.216Z",
+  "id": "01M2M33JA8MWYCFCFH1R341S0D",
+  "name": "test/acceptance/baseline/gap7-formatter-budget.test.ts",
+  "properties": {
+    "scope": "src/retrieval/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-16T03:10:30.662Z"
+}

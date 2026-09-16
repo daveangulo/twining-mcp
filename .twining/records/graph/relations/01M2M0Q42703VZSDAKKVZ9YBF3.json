@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T02:28:45.255Z",
+  "id": "01M2M0Q42703VZSDAKKVZ9YBF3",
+  "properties": {
+    "decision_summary": "Merged the two competing test/acceptance/cases/README.md claims (lane 04's conformance mapping and scoring rules, lane 05's ownership rules and blocker table) into one file rather than choosing a side, and updated the blocker table to post-merge truth: C03 is lane 04's and C27 is lane 03's per DN26, leaving C13, C23 and C28 as the honest remaining stubs",
+    "origin": "derived"
+  },
+  "source": "01M2M0Q40QHJEFV657H50AYKE6",
+  "target": "01M2M0Q425GDB559M7P06TJ0FG",
+  "type": "decided_by"
+}

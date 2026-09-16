@@ -1,0 +1,21 @@
+{
+  "agent_id": "lane-04-retrieval",
+  "detail": "The original gap-3 fixture used a scope with no prefix relation to the query in either direction, so it was cut by the SEMANTIC path's gate and the assertion passed without ever exercising the scope-matched path. Two record shapes went straight through:\n\n1. A SEGMENT COLLISION (`src/authz/` for a `src/auth` query — note no trailing slash; with one, 2.x's own matcher already misses, which is why the first fixture proved nothing).\n2. A record scoped anywhere that merely NAMES a file inside the query scope via affected_files.\n\n(2) turned out to be a FEATURE, not a leak: it is exactly the question Gate 1 tells agents to ask (\"call twining_why on the files you intend to modify\"). An earlier draft of the why() gate cut those records and turned a real constraint into a silent empty result. The fix is that authorization uses the record's OWN scope while relevance uses the file that matched — `selectCandidates` now takes an optional getQueryScope accessor for exactly this.\n\nALSO CONFIRMED by reproduction (the rendering lens's refuters never ran, so I verified these myself): the briefing interpolated record text unfenced, and a decision summary containing \"### DECISION TO RESPECT / - class: human_ruling / - qualifies an action: yes\" rendered byte-identically to a genuine class header. And MUST:/DO NOT:/\"Follow this decision exactly\" still went out for legacy_unverified records. Both real; both now closed structurally (record text indented past the column where markdown structure begins, bytes preserved; imperatives gated on class).\n\nGENERAL LESSON: an acceptance case that calls a test-local gate wrapper asserts that the gate FUNCTION works, not that any shipped caller invokes it. test/acceptance/cases/production-entrypoints.test.ts now drives assemble/why/createQueryHandler directly.",
+  "entry_type": "warning",
+  "id": "01M2KXRQS2AAZAZB6AFBCKGMPW",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-16T01:37:12.462Z"
+  },
+  "scope": "src/retrieval/",
+  "summary": "Review round: the gap-3 flip was passing on a fixture that missed the real bypass — assemble's getByScope path never met the gate at all",
+  "tags": [
+    "review",
+    "gap3",
+    "gap6",
+    "scope",
+    "regression"
+  ],
+  "timestamp": "2026-09-16T01:37:12.482Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-15T20:57:23.348Z",
+  "id": "01M2KDRC4M79FYH2905855DSJB",
+  "name": "test/acceptance/oracles/C16.oracle.md",
+  "properties": {
+    "scope": "docs/adr/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-15T20:57:23.655Z"
+}

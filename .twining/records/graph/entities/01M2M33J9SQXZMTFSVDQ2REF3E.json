@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T03:10:30.201Z",
+  "id": "01M2M33J9SQXZMTFSVDQ2REF3E",
+  "name": "01M2M33J7FXXNS7EF4R8C2NQN0",
+  "properties": {
+    "scope": "src/retrieval/",
+    "summary": "Loaded calibration.json with a STATIC import (`with { type: \"json\" }` + tsconfig resolveJsonModule) rather than createRequire, and kept validation at module load anyway"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-16T03:10:30.201Z"
+}

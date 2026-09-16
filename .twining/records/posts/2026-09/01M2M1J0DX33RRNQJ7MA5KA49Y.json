@@ -1,0 +1,17 @@
+{
+  "agent_id": "merge-integrator",
+  "detail": "New decision \"The offline switch is the OR of caller option, TWINING_OFFLINE and config embeddings.offline, resolved once in createTwiningContext\" relates to:\n- 01M2M1J0BG99B15JWDGCGF73B4: \"correctionFor resolves by evidence class, then by scope specificity, and returns undefined when equal-class corrections share identical coverage; the reducer marks those records conflicted\"",
+  "entry_type": "finding",
+  "id": "01M2M1J0DX33RRNQJ7MA5KA49Y",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9241cc079a04bb9d9221dc54e15ffd7b945409b6",
+    "recorded_at": "2026-09-16T02:43:26.251Z"
+  },
+  "scope": "src/contracts/",
+  "summary": "Related decisions in scope: 1 existing decision(s) overlap",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-09-16T02:43:26.269Z"
+}

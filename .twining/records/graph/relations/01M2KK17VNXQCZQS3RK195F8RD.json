@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T22:29:36.757Z",
+  "id": "01M2KK17VNXQCZQS3RK195F8RD",
+  "properties": {
+    "decision_summary": "Flush receipts (Stop/SessionEnd) are cursor-shaped (position = last admitted event id); receiptPayloadSchema stays as is (events or cursor required)",
+    "origin": "derived"
+  },
+  "source": "01M2KK17SKR9JNSVRNXZ8VWZQV",
+  "target": "01M2KK17VAYAM1G6SD980Q3J2E",
+  "type": "decided_by"
+}

@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Reviews of lanes 02b/02c/04 completed (partially — refuters killed by the usage limit); confirmed blockers routed to each lane as fix passes; lane 03 review fixes committed 9e67c63; resumption state saved in the programme log (D34/D35) and memory. Context near exhaustion.\nFindings: warning: three lane reviews ran while the claude.ai session limit was hit, so most refuters and lane 02b's quality lens never executed; confirmed survivors are in the tasks output files (w8jybac9a, w3rnyqkba, w78rxiiys) and unrefuted finder results in the workflow journals; the lanes were told to verify those themselves. Do not treat the journals' unrefuted findings as confirmed.; Confirmed blockers awaiting lane fixes: lane 04 assemble getByScope path bypasses the scope gate + twining_why file-match regression; lane 02c UTF-8 attachment corruption, archived-from-provisional unmigratable, raw NUL byte in v3-forward.ts, weak reinstated unpicks ruling parts, part events escalate to whole record; lane 02b lossy merge not rolled back, crash-poisoned publish idempotence, credentials in transport id/cursors, parent-rejected pending forever, O(n^1.5) append.",
+  "entry_type": "status",
+  "id": "01M2KWYGS8RRNJTBJZWH8X08KK",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-16T01:22:53.332Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "Reviews of lanes 02b/02c/04 completed (partially — refuters killed by the usage limit); confirmed blockers routed to each lane as fix passes; lane 03 review fixes committed 9e67c63; resumption stat…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-16T01:22:53.352Z"
+}

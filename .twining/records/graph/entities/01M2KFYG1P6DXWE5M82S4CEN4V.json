@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-15T21:35:41.110Z",
+  "id": "01M2KFYG1P6DXWE5M82S4CEN4V",
+  "name": "src/exchange/outbox.ts",
+  "properties": {
+    "scope": "src/events/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-15T21:35:41.342Z"
+}

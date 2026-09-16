@@ -1,0 +1,34 @@
+{
+  "affected_files": [
+    "src/contracts/lifecycle.ts",
+    "test/contracts/contracts.test.ts",
+    "docs/adr/2026-09-foundation-contracts.md",
+    "docs/adr/2026-09-foundation-contracts.appendix-b-oracle-rulings.md",
+    "test/acceptance/oracles/C09.oracle.md",
+    "test/acceptance/oracles/C10.oracle.md",
+    "test/acceptance/oracles/C11.oracle.md",
+    "test/acceptance/oracles/C14.oracle.md",
+    "test/acceptance/oracles/C16.oracle.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Ruled on the oracle-rulings appendix: 7 lead decisions + 7 conflicts resolved; added the `reinstated` lifecycle kind (rule capability, class-ranked) for C14 intentional restoration; ADR §2.3/§4.1/§4.3/§4.4/§12/§13 updated; oracle files gained their missing structured open-question sections.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01M2KDRC8D0VA76CZ2H27B7NSX",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:57:23.352Z"
+  },
+  "rationale": "Resolves the six conflicts the rulings pass found between the ADR text and the independent oracles without editing any oracle: each is a wording or convention clarification with a requirement reason (R01 keeps identity records separate; R05 preserves history; R09 non-interference explains the two arms), and each is now stated in the ADR so the slice and the oracles agree.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/adr/",
+  "status": "active",
+  "summary": "`contested` is an annotation (history and explain packets), never a member of the current applicable view and never a change to the target's conflict state; oracle event counts are evaluated over the case's own record types only (principal/membership/observation/receipt excluded); C14 runs two arms (exchange-ref carrier and source-branch mode); `representations[]` lives on the admission-log projection, not the envelope; the admission log records a reason for every outcome; closed uncertainty windows are retained; attachment default 256 KiB",
+  "timestamp": "2026-09-15T20:57:23.469Z"
+}

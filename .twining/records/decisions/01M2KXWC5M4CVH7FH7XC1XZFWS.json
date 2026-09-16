@@ -1,0 +1,26 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Lane 04 review fixes committed 199e010 (16 findings fixed, 2126 pass); tokenizer calibration retry failed on a whitespace-only corpus doc (API 400) — fix script and calibrate at merge; lessons mode withdrawn from the tool schema until membership exists.",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01M2KXWC5M4CVH7FH7XC1XZFWS",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-16T01:39:11.647Z"
+  },
+  "rationale": "a parameter whose only possible outcome is denial invites callers to read the denial as 'no lessons exist'.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/retrieval/",
+  "status": "active",
+  "summary": "Withdrew `mode: \"lessons\"` from the assemble tool schema until lane 02's membership projection exists (the engine keeps and tests the mode)",
+  "timestamp": "2026-09-16T01:39:11.668Z"
+}

@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: every session on this machine serves this repo's dist/ via the npm link — running `npm run build` in the main checkout on a v3 branch would make v3 server code serve v2 stores in other sessions. Plan assumption A11: no dist builds in the main checkout during the programme; builds in worktrees/scratch; v3 must refuse to serve a v2 store without explicit migrate.",
+  "entry_type": "warning",
+  "id": "01M2K97AEQZXQ72K6045008VKS",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d7860e060ddf79e9cca2cc8a0bd9179985c04eee",
+    "recorded_at": "2026-09-15T19:38:10.244Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "every session on this machine serves this repo's dist/ via the npm link — running `npm run build` in the main checkout on a v3 branch would make v3 server code serve v2 stores in other sessions. Pl…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-15T19:38:10.263Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T20:01:56.591Z",
+  "id": "01M2KAJVBF5XEK1RF8X00BEJFA",
+  "name": "01M2KAJV8JT0FKAQ0Q5MQ3F8C1",
+  "properties": {
+    "scope": "docs/plans/",
+    "summary": "RB7 ruled: delivery on one long-lived branch foundation/v3 (3.0.0-alpha.N in package.json, no v* tags, draft PR opened early, per-stage commits); the in-flight Codex-plugin work is parked on wip/codex-plugin first; session records and the two drafted W2 plans commit to main as the shared base"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-15T20:01:56.591Z"
+}

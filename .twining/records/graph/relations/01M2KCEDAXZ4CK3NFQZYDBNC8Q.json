@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T20:34:28.317Z",
+  "id": "01M2KCEDAXZ4CK3NFQZYDBNC8Q",
+  "properties": {
+    "decision_summary": "Envelope and lifecycle payloads are STRICT (unknown keys rejected) while created-record bodies pass unknown fields through; unknown kinds and newer envelope versions are distinct rejection codes so ingest can quarantine rather than half-apply",
+    "origin": "derived"
+  },
+  "source": "01M2KCECD5116H0C966X1940MQ",
+  "target": "01M2KCEDAQHD1Q09W9H11MZWP0",
+  "type": "decided_by"
+}

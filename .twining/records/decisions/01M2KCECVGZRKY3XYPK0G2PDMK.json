@@ -1,0 +1,43 @@
+{
+  "affected_files": [
+    "src/contracts/canonical.ts",
+    "src/contracts/event.ts",
+    "src/contracts/evidence.ts",
+    "src/contracts/validate.ts",
+    "src/contracts/scope.ts",
+    "src/contracts/lifecycle.ts",
+    "src/contracts/records.ts",
+    "src/contracts/signing.ts",
+    "src/contracts/delivery.ts",
+    "src/contracts/ids.ts",
+    "docs/adr/2026-09-foundation-contracts.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "One matcher for both uses",
+      "pros": [],
+      "reason_rejected": "retrieval wants to show narrower records for a broad query; authority must never let a narrow record govern a broad scope"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Wrote the v3 foundation ADR (docs/adr/2026-09-foundation-contracts.md, PROPOSED) and executable contracts in src/contracts (event envelope, canonical digest, ids, evidence classes, scope algebra, lifecycle payloads, delivery states, Ed25519 signing, ingress validation); 21 contract tests green, tsc clean.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01M2KCECVGZRKY3XYPK0G2PDMK",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:34:27.691Z"
+  },
+  "rationale": "The 2.x scopeMatches is bidirectional prefix on raw strings (src/auth matches src/authz) and is used for both retrieval and, implicitly, authority. C09 needs a narrow correction that never widens; C01 needs a review bound to its range; R13 needs repo identity as a hard filter that similar paths cannot cross.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/contracts/",
+  "status": "active",
+  "summary": "Two scope operations, deliberately distinct: scopeMatches (retrieval; bidirectional on path at segment boundaries, exact on tenant/repo/task/attempt/consumer, global events match any repo) and scopeGoverns (authority; unidirectional, a rule must name a repo or be global, revision-bound rules govern only their exact head)",
+  "timestamp": "2026-09-15T20:34:27.824Z"
+}

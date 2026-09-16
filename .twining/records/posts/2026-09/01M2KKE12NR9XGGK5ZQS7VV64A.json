@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Lane 04 measured recall (synthetic, 24 docs, K=6): gating drives leakage from 4–5 records to 0 and RAISES in-scope recall (semantic 0.17→1.00, lexical 0.33→0.67) because ungated runs spent top-K slots on unreadable bait; scoped semantic beats scoped lexical (1.00 vs 0.67) and exact (0.17).",
+  "entry_type": "finding",
+  "id": "01M2KKE12NR9XGGK5ZQS7VV64A",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:36:35.776Z"
+  },
+  "scope": "src/retrieval/",
+  "summary": "Lane 04 measured recall (synthetic, 24 docs, K=6): gating drives leakage from 4–5 records to 0 and RAISES in-scope recall (semantic 0.17→1.00, lexical 0.33→0.67) because ungated runs spent top-K sl…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-15T22:36:35.797Z"
+}

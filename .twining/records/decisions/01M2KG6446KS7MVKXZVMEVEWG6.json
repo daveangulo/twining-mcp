@@ -1,0 +1,41 @@
+{
+  "affected_files": [
+    "test/cli/twining.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Spawn via tsx",
+      "pros": [],
+      "reason_rejected": "adds ~300 ms per spawn across 28 tests and runs a different loader than the shipped artifact"
+    },
+    {
+      "cons": [],
+      "option": "Build dist in the main checkout",
+      "pros": [],
+      "reason_rejected": "violates A11; later v3 server changes would be served to unrelated sessions"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Merged feat/cli-2.17 into foundation/v3 (conflict-free, tsc clean); opened draft PRs #48 (CLI → main, 2.17.0) and #49 (foundation/v3 → main, do-not-merge); fixed the CLI test suite's hard dependency on a prior dist build by bundling its entry per suite with esbuild.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01M2KG6446KS7MVKXZVMEVEWG6",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T21:39:51.025Z"
+  },
+  "rationale": "The suite threw in beforeAll wherever dist/ had not been built — the main checkout by design (A11: its dist serves every session on this machine via the npm link). Bundling per suite mirrors the plugin bundle recipe, keeps the real-process exit-code test meaningful (same code path), and removes an `npm run build` precondition from the test contract.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "test/cli/",
+  "status": "active",
+  "summary": "test/cli/twining.test.ts bundles src/cli/twining.ts with esbuild into node_modules/.cache/twining-cli-test/ in beforeAll (packages external, __TWINING_VERSION__ define) instead of spawning dist/cli/twining.js",
+  "timestamp": "2026-09-15T21:39:51.046Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T21:35:41.330Z",
+  "id": "01M2KFYG8JF5CQP0K49ZMXJ4BX",
+  "properties": {
+    "decision_summary": "Contracts draft.2 accepted the slice's eight proposals as additive changes (local_persisted→admitted, signer_unknown/no_policy_yet quarantine, unauthorized reject, CONFLICTING_DUPLICATE, corrected.by, part-level revoke/override, per-part scope, ruling parts + machine-checkable requirements, propose role, typed evidence_class); admission order is parents/endpoints before capability with no-policy-yet as a retryable quarantine; archived is a flag beside an untouched status; a human key becomes a trusted signer only via out-of-band bootstrap or a principal event signed by an already-trusted human key",
+    "origin": "derived"
+  },
+  "source": "01M2KFYG1GWK3RE0E912VK38R8",
+  "target": "01M2KFYG8E2ECZA576D5HXJPJB",
+  "type": "decided_by"
+}

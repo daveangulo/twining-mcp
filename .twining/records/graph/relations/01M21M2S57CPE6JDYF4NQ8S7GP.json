@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-08T23:01:36.039Z",
+  "id": "01M21M2S57CPE6JDYF4NQ8S7GP",
+  "properties": {
+    "decision_summary": "Chose a lazily built claimant map (one get per index entry, only at retired dead-ends, ≤20 hidden rows) for the lineage reverse scan over projecting `supersedes` into DecisionIndexEntry this wave",
+    "origin": "derived"
+  },
+  "source": "01M21M2RWX6H4GZWT3TRR69ZSW",
+  "target": "01M21M2S55AQE3EFNVWAKY32DN",
+  "type": "decided_by"
+}

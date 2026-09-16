@@ -1,0 +1,35 @@
+{
+  "affected_files": [
+    "docs/reports/2026-09-foundation-matrix.md",
+    "docs/plans/2026-09-15-foundation-programme-log.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "merge-integrator",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "trusting the lane reports, which is exactly how a matrix stops being evidence",
+      "pros": []
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Rewrote the foundation matrix from the merged tree with measured counts and appended the D39 merge log entry; every unavailable and todo left honest.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01M2M1X6P0EYR9E3BQ1RGR3Q85",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "aef83faba517a8bafeb107d11ece4f587fcbbd7b",
+    "recorded_at": "2026-09-16T02:49:33.100Z"
+  },
+  "rationale": "lane reports were measured in worktrees before the merge and three of them changed once the lanes met (the 65 lane-04 fixture failures alone would have made a copied number wrong). Cost: one extra full acceptance run. Alternative rejected: trusting the lane reports, which is exactly how a matrix stops being evidence.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/reports/",
+  "status": "active",
+  "summary": "Rebuilt every matrix count by running the suite against the merged tree rather than transcribing the lanes' self-reported numbers",
+  "timestamp": "2026-09-16T02:49:33.120Z"
+}

@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Lane 02b review fixes committed 0290566: lossy merges rolled back with a sticky push gate, carrier-decided publish idempotence, credential redaction, rejected-parent termination, append cost flat in corpus size. All five lanes review-fixed and committed; merge into foundation/v3 is next.\nDecisions: Accepted lane 02b's partial refutations: redaction of remote credentials happens at construction (the id is committed into cursors, so print-time redaction is too late); cross-replica add/add conflicts are resolved keep-ours-and-retain-theirs (never checkout --ours, which loses a side); same-digest/different-signature duplicates are decided by which signature verifies (no timing input), not by a widened journal primary key that would break existing rows.\nFindings: Append cost root cause: append() → validateOptions() → admittedView() read every admitted event file and ran the whole reducer on every write (O(n) per append, O(n²) per corpus). Memoized on COUNT+MAX(id) over admitted rows with explicit invalidation where admitted bytes change (purge, signature swap, rebuild). Measured: 16k p50 28.5→9.9 ms, p95 50.8→31.6 ms; last-decile p95 flat (10.7–10.9 ms) at both 8k and 16k; residual ~10 ms is ed25519 signing + two fsyncs. Lane 05's 35k threshold should be re-measured, not assumed gone.; At merge: add exchange/ to GITIGNORE_ENTRIES in src/storage/init.ts (canonical fix for stores that track .twining); the lane's .git/info/exclude write is belt-and-braces for pre-existing stores.",
+  "entry_type": "status",
+  "id": "01M2KYHQWMMJ5G10X4912YWG88",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-16T01:50:51.778Z"
+  },
+  "scope": "src/exchange/",
+  "summary": "Lane 02b review fixes committed 0290566: lossy merges rolled back with a sticky push gate, carrier-decided publish idempotence, credential redaction, rejected-parent termination, append cost flat i…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-16T01:50:51.796Z"
+}

@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Lane 04 review fixes committed 199e010 (16 findings fixed, 2126 pass); tokenizer calibration retry failed on a whitespace-only corpus doc (API 400) — fix script and calibrate at merge; lessons mode withdrawn from the tool schema until membership exists.\nDecisions: Withdrew `mode: \"lessons\"` from the assemble tool schema until lane 02's membership projection exists (the engine keeps and tests the mode) — a parameter whose only possible outcome is denial invites callers to read the denial as 'no lessons exist'.; Tokenizer calibration (DP4) must run before the v3 merge ships: the unified budget currency under the proven 1 token/byte bound makes every 2.x briefing ~4x tighter for the same max_tokens, which conflicts with the field's standing 'do not make assemble quieter' constraint; the calibration script's whitespace-only corpus document must be skipped or padded first (API rejects empty text blocks).\nFindings: Lane 04 rendering findings were real: a decision summary could forge a byte-identical evidence-class label block, and MUST/DO NOT/'follow exactly' imperatives went out for legacy_unverified records; fixed structurally (record text indented past where markdown structure begins, imperatives gated on class, provisional marked inline) — no sanitizer.",
+  "entry_type": "status",
+  "id": "01M2KXWC39R3Z01E8Q6YKJHCTQ",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-16T01:39:11.574Z"
+  },
+  "scope": "src/retrieval/",
+  "summary": "Lane 04 review fixes committed 199e010 (16 findings fixed, 2126 pass); tokenizer calibration retry failed on a whitespace-only corpus doc (API 400) — fix script and calibrate at merge; lessons mode…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-16T01:39:11.593Z"
+}

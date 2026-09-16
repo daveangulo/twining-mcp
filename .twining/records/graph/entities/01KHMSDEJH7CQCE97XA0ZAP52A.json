@@ -5,8 +5,8 @@
   "properties": {
     "description": "MCP server setup — createServer() wires all engines and registers tool handlers",
     "layer": "server",
-    "scope": "docs/field-responses/,project,src/,src/engine/,src/tools/"
+    "scope": "docs/field-responses/,project,src/,src/cli/,src/engine/,src/exchange/,src/tools/"
   },
   "type": "file",
-  "updated_at": "2026-08-26T05:07:20.347Z"
+  "updated_at": "2026-09-16T01:55:38.318Z"
 }

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-15T21:35:41.119Z",
+  "id": "01M2KFYG1Z0M496CWWHA0JW1DF",
+  "name": "docs/adr/2026-09-foundation-contracts.appendix-c-slice-interpretations.md",
+  "properties": {
+    "scope": "src/events/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-15T21:35:41.350Z"
+}

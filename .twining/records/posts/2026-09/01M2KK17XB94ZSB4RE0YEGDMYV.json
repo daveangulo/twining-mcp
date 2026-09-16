@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Lane 03 correctly skipped cherry-picking the parked Codex plugin carrier (dedaacc) because it edits shared files (ci.yml, README, package.json, AGENTS.md); the Codex real-host path is NOT TESTED until the plugin's hooks receive one-time interactive trust in Codex (`/hooks`), which is Dave's action on this machine\" relates to:\n- 01M2KK17R6FQPR46A16374NS5F: \"On a v3 store the SessionStart hook injects ONLY the bounded working set (no 'Gate 1'/'Gate 2' instruction prose), while 2.x stores keep today's gate text; the gates on v3 are enforced by the hooks themselves (capture, commit gate, stop gate), not by prose the model must remember\"",
+  "entry_type": "finding",
+  "id": "01M2KK17XB94ZSB4RE0YEGDMYV",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:29:36.788Z"
+  },
+  "scope": "src/adapters/",
+  "summary": "Related decisions in scope: 1 existing decision(s) overlap",
+  "tags": [
+    "integration"
+  ],
+  "timestamp": "2026-09-15T22:29:36.811Z"
+}

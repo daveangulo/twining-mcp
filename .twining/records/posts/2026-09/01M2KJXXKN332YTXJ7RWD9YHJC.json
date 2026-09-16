@@ -1,0 +1,22 @@
+{
+  "agent_id": "lane-03-runtime",
+  "detail": "Built in .claude/worktrees/lane-03-runtime (branch lane/03-runtime, no commits).\n\nNEW: src/adapters/{identity,source,event-factory,runtime,working-set,host-capability,claude-code,codex,library,v3-mirror,legacy-gate-text}.ts, src/adapters/connectors/git.ts, src/cli/{v3-verbs,hook-verb}.ts, src/core/commands/v3-mirror-wrap.ts, plugin/hooks/v3-capture-hook.sh, plugin/scripts/launch-cli.sh.\nEDITED: src/cli/{twining,dispatch}.ts, src/core/commands.ts (one additive mirrorAll wrap), plugin/hooks/hooks.json, plugin/hooks/{session-start-context,subagent-stop-hook}.sh (v3 skip guard only), docs/operations/hosts-*.md, docs/CLI.md, baseline gap tests 1/2/4.\n\nKEY DECISIONS\n- v3 verbs (identity/rule/events/sync/doctor/hook) are CLI-NATIVE, not registry commands: `rule` must be unreachable from any dispatcher, not merely refused at runtime.\n- The write mirror wraps the REGISTRY once (mirrorAll in src/core/commands.ts) rather than editing 39 handlers; covers MCP and CLI ingress identically and is provably inert on a 2.x store.\n- On a v3 store the SessionStart payload carries the working set ONLY, with no \"Gate 1\"/\"Gate 2\" prose. Oracle C15 A2-NO-PROSE forbids those exact substrings in any delivered payload and the current 2.x hook injects them. The 2.x text is still emitted on a 2.x store, where the gates ARE the mechanism.\n- The first ceremony on a policy-less store writes the bootstrap membership (ADR section 7). Without it a validly signed ruling is quarantined unauthorized_principal; found empirically, not predicted.\n\nDEFECT FOUND AND FIXED MID-BUILD: V3Runtime.store was a lazy getter returning null before the first append, so every READING handler silently took the \"no store\" branch. Capture and injection both went quiet on a fully enabled store. Now opened eagerly when format is 3.\n\nCODEX REAL-HOST: NOT VERIFIED. codex exec --dangerously-bypass-hook-trust prints \"hook: SessionStart Completed\" but the hook command produces no filesystem effect (no log, no marker, no events), inside or outside the workspace; UserPromptSubmit never fires in exec mode. Most likely the bypass flag lets an untrusted hook RUN without lifting the sandbox. Needs a one-time interactive trust via /hooks in a TUI, or a managed hook. Documented in docs/operations/hosts-codex-capabilities.md; the test reports NOT TESTED rather than passing vacuously.\n\nCLAUDE CODE REAL-HOST: VERIFIED. TWINING_REAL_HOST=1 runs captured session_start + human_statement + 3 receipts, and the injected receipt's payload_hash equals sha256 of the bytes printed on the hook's own stdout.\n\nCONTRACT DIFFS PROPOSED (not applied, src/contracts is the lead's): (1) receiptPayloadSchema should allow a receipt naming neither events nor a cursor, or the ADR should say a flush receipt is cursor-shaped (worked around locally); (2) CONFLICTING_DUPLICATE still has no ValidationCode (lane 02 already flagged it).\n\nNOT DONE: the Codex plugin carrier (cherry-pick dedaacc) was deliberately skipped. That commit also edits .github/workflows/ci.yml, README.md, package.json and AGENTS.md, which belong to other lanes and the lead; and the Codex hook path is blocked on trust regardless. Recorded as a decision-not-taken.",
+  "entry_type": "status",
+  "id": "01M2KJXXKN332YTXJ7RWD9YHJC",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:27:47.937Z"
+  },
+  "scope": "src/adapters/",
+  "summary": "Lane 03 complete in worktree: v3 adapters + CLI verbs + hooks; 278 lane tests green, gaps 1/2/4 flipped; Codex real-host NOT verified",
+  "tags": [
+    "lane-03",
+    "foundation-v3",
+    "adapters",
+    "cli",
+    "hooks",
+    "receipts"
+  ],
+  "timestamp": "2026-09-15T22:27:47.957Z"
+}

@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Lane 03 (runtime) delivered on lane/03-runtime: v3 adapters (identity, ceremony, working set, receipts, Claude Code + Codex + library adapters, git connector), CLI v3 verbs, hooks incl. PreCompact and compact SessionStart; Claude real-host evidence captured; Codex not tested (hook trust); gaps 1/2/4 flipped.\nDecisions: [object Object]; [object Object]; [object Object]\nFindings: Lane 03 real-host evidence (Claude Code 2.1.272, temp synthetic project, TWINING_REAL_HOST=1): session_start + human_statement events and 3 receipts captured; the injected receipt's payload_hash equals sha256 of the bytes the hook printed. Claude Code: SessionStart/UserPromptSubmit/SubagentStart inject; PreCompact/SessionEnd cannot and say so; SubagentStop writes reported_result with finisher/stage/next_action and denies completion. Codex: 5 injecting events, 7 observe-only; hook trust blocks automated verification.; need: Dave to open Codex interactively once on this machine, install the plugin from the repo marketplace (wip/codex-plugin carrier) and trust its hooks via /hooks, so lane 03's Codex real-host test can run; until then C15's second-backend half stays NOT TESTED.",
+  "entry_type": "status",
+  "id": "01M2KK17NVW6D9NFW7S9XPJFXW",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:29:36.549Z"
+  },
+  "scope": "src/adapters/",
+  "summary": "Lane 03 (runtime) delivered on lane/03-runtime: v3 adapters (identity, ceremony, working set, receipts, Claude Code + Codex + library adapters, git connector), CLI v3 verbs, hooks incl. PreCompact …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-15T22:29:36.571Z"
+}

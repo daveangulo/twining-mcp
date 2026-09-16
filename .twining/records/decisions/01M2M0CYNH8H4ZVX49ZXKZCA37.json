@@ -1,0 +1,36 @@
+{
+  "affected_files": [
+    "test/acceptance/slice/harness.ts",
+    "test/acceptance/cases/harness.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "merge-integrator",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Relax the ancestor-membership rule for same-batch delivery",
+      "pros": [],
+      "reason_rejected": "lane 02b chose replica-state deliberately so an event judged earlier in a batch than the membership cannot slip through on the bootstrap exemption; that is the ADR's rule, not an accident"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Merged lane/04-retrieval into foundation/v3 (no conflicts) and fixed a production defect it exposed: no adapter write path cited the membership policy, so every mirrored write on a store with a policy would have been quarantined.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M2M0CYNH8H4ZVX49ZXKZCA37",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "e9b4817f9645b9627706a6181a37e579f035961f",
+    "recorded_at": "2026-09-16T02:23:12.030Z"
+  },
+  "rationale": "65 tests across 8 case files failed because they delivered a policy alongside the events it grants without linking them. The slice harness's own C10 fixture already threads infra ids as parents, so the shape was established; lane 04 was written before the ancestor rule landed. citeParents re-stamps an already-built envelope with extra parents, recomputing the digest and re-signing with whichever fixture key signed it — safe because created() fixes the record id up front and parents feed only digest and signature, so every id a test already captured survives.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/adapters/",
+  "status": "active",
+  "summary": "Fixed the lane-04 acceptance fixtures to link the policy rather than relaxing the admission rule, adding citeParents()/deliverUnderPolicy() to the slice harness",
+  "timestamp": "2026-09-16T02:23:12.049Z"
+}

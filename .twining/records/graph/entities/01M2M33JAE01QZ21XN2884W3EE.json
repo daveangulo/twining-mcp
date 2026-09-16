@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-16T03:10:30.222Z",
+  "id": "01M2M33JAE01QZ21XN2884W3EE",
+  "name": "loadCalibrationTable",
+  "properties": {
+    "scope": "src/retrieval/"
+  },
+  "type": "function",
+  "updated_at": "2026-09-16T03:10:30.669Z"
+}

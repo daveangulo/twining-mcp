@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-08T23:01:35.969Z",
+  "id": "01M21M2S31PJ6ZNHWAJZJS9012",
+  "properties": {
+    "decision_summary": "Placed createSuperseding last in W2 as the pre-authorized slide candidate (wave-2 response §3.2) with a decidable criterion (review findings > 6 or touching both backends' write sections), and marked the lineage bundle and the empty-result sync caveat as the two items that never move (cross-host plan §6.3)",
+    "origin": "derived"
+  },
+  "source": "01M21M2RWY5EAKBRD1FENQ8NVF",
+  "target": "01M21M2S2YFFQG36KPYDDH4JZ6",
+  "type": "decided_by"
+}

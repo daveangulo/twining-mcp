@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T03:10:30.362Z",
+  "id": "01M2M33JET4GRDKE492M4H3MBB",
+  "properties": {
+    "decision_summary": "The safety factor is applied ONCE, into the ratios, and estimate() no longer multiplies by table.safety_factor",
+    "origin": "derived"
+  },
+  "source": "01M2M33JAHGS3ABWSYV1YHB5DP",
+  "target": "01M2M33JE1ZMD4EZS1NR5J55GH",
+  "type": "decided_by"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-15T22:48:46.008Z",
+  "id": "01M2KM4A5R89KPYWSJAHK5EBYH",
+  "name": "src/core/commands/exchange.ts",
+  "properties": {
+    "scope": "src/exchange/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-15T22:48:46.111Z"
+}

@@ -1,0 +1,36 @@
+{
+  "affected_files": [
+    "src/events/event-store.ts",
+    "src/core/commands.ts",
+    "test/core/command-registry.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "merge-integrator",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "either side",
+      "pros": []
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Merged lane/02c-migration into foundation/v3; resolved the commands.ts and registry-count conflicts keeping both lanes' commands, and fixed a cross-lane admission non-monotonicity that wiped every projection on rebuild.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01M2KZC0RC6XB3T5DYBWP62Z2S",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "28402bb3f65df5d85da08d2d74b4121f17766060",
+    "recorded_at": "2026-09-16T02:05:12.824Z"
+  },
+  "rationale": "registry now 41 commands (25 full-surface, 16 default), which is the true total with twining_exchange_status and twining_migrate_status",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/events/",
+  "status": "active",
+  "summary": "Resolved src/core/commands.ts and test/core/command-registry.test.ts by keeping BOTH lanes' command sets rather than either side",
+  "timestamp": "2026-09-16T02:05:12.844Z"
+}

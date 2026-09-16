@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T01:39:11.690Z",
+  "id": "01M2KXWC6ATG0E5EXNH71K39QF",
+  "name": "01M2KXWC5M4CVH7FH7XC1XZFWS",
+  "properties": {
+    "scope": "src/retrieval/",
+    "summary": "Withdrew `mode: \"lessons\"` from the assemble tool schema until lane 02's membership projection exists (the engine keeps and tests the mode)"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-16T01:39:11.690Z"
+}

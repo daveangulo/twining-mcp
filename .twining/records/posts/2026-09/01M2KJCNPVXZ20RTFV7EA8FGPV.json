@@ -1,0 +1,20 @@
+{
+  "agent_id": "lane-05-verification",
+  "detail": "F-CONTROLS: the five cases the lane 02 vertical slice discharged directly (C09, C10, C11, C14, C16) are the ONLY five with no \"## Instrument-can-fail controls\" section — every other case has 9 to 20 entries. They are also the only five with no held-out variant. Their negative assertions therefore have no written statement of what must break them, and their mutation coverage lives only inside the slice tests. Lane 05 does NOT author controls or held-out twins for them: doing so now, after the implementation exists, would not be implementation-blind and a non-blind held-out set is worthless. Recorded in test/acceptance/harness/oracles.test.ts as an explicit expectation so the gap cannot drift silently.\n\nF-IDS: the corpus uses at least six assertion-id grammars — A1/N1/P1 (most cases), A01..A18 stated only in PROSE (C01), A-REC-01 / A-BYTE-3 (C04, C21), C26-A01 (C26), INV-1 (C19), POS-A1 (C23), plus X-A4 / H-7 / W2 in the held-out sets. 18 of 28 fixture sets also carry a machine-readable assertions[] list, which is the highest-fidelity source and is now preferred by the extractor. INDEX.md records the source used per case (fixtures / fixtures+markdown / structured / scan) so precision is visible rather than assumed.\n\nF-CASEID: fixture `case_id` is not uniform — C02-DEV, C01-HO, C02-HELDOUT, C04-H, C13-H, C18-H, C21-H, C28-H — and at least one set omits `version`. Lane 05 did NOT rewrite 51 fixture identity fields for a cosmetic rule; the structural test checks the case NUMBER instead.\n\nHeld-out quality is GOOD: measured dev/held-out identity overlap is 0% for 22 of 23 pairs and 7% for C08 (one shared capability name, `repo.read`, not an identity).",
+  "entry_type": "finding",
+  "id": "01M2KJCNPVXZ20RTFV7EA8FGPV",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:18:22.790Z"
+  },
+  "scope": "test/acceptance/",
+  "summary": "Oracle corpus asymmetries: C09/C10/C11/C14/C16 have no instrument-can-fail controls section and no held-out variant; six assertion-id grammars in use",
+  "tags": [
+    "oracles",
+    "coverage-gap",
+    "held-out",
+    "index"
+  ],
+  "timestamp": "2026-09-15T22:18:22.811Z"
+}

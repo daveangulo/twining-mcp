@@ -280,7 +280,7 @@ Built to stay usable at scale: lists are virtualized with live facet counts, the
 
 ### Core Tools (always available)
 
-The full default surface is these 15 tools. Everything else needs `full_surface: true` — if a tool is not on this list, assume you cannot call it until you have opted in.
+The full default surface is these 16 tools. Everything else needs `full_surface: true` — if a tool is not on this list, assume you cannot call it until you have opted in.
 
 | Tool | What It Does |
 |------|-------------|
@@ -299,6 +299,7 @@ The full default surface is these 15 tools. Everything else needs `full_surface:
 | `twining_neighbors` | Traverse the graph from an entity |
 | `twining_graph_query` | Query graph entities and relations |
 | `twining_prune_graph` | Remove stale graph nodes |
+| `twining_exchange_status` | What this replica is uncertain about — outbox depth, events waiting on prerequisites, rejected/quarantined counts with reasons, per-consumer cursors, and the gaps it knows it has. Read-only; never runs git. Default-surface on purpose: uncertainty should be visible without an operator widening the surface first |
 
 `twining_record` accepts natural language decisions like `"Chose Redis over Memcached — need persistence"` and automatically parses them into structured records with rationale, rejected alternatives, and inferred domain. It also accepts assumptions, constraints, affected files, and dependency chains — everything the decision store needs for high-fidelity context assembly.
 
@@ -314,6 +315,7 @@ For advanced workflows — deep decision management, graph exploration, multi-ag
 | **Triage** | `twining_triage` |
 | **Coordination** | `twining_register`, `twining_agents`, `twining_discover`, `twining_delegate`, `twining_handoff`†, `twining_acknowledge`† |
 | **Lifecycle** | `twining_verify`, `twining_export` |
+| **Migration** | `twining_migrate_status` |
 
 † Deprecated in v2.0 — real handoffs happen as git-committed markdown docs; redesign or v3 removal tracked in [#33](https://github.com/daveangulo/twining-mcp/issues/33).
 
@@ -377,6 +379,54 @@ npx twining-mcp validate-records    # read-only preflight for .twining/records: 
 **Reverse caveat:** after `--reverse`, the `records/` tree and `twining.db` are frozen — re-run `migrate` before ever switching back to sqlite, or remove `.twining/records/` first. The overwritten file-backend layout is backed up to `pre-reverse-backup/`. Reverse also restores `version: 1`, re-enabling 1.x clients — that's the point of the escape hatch.
 
 Requires Node >= 22.13 (`node:sqlite`) for both the sqlite backend and the `migrate` command. See [docs/FOUNDATION-PLAN.md](docs/FOUNDATION-PLAN.md) (W3) for design details.
+
+## CLI
+
+Twining also ships a `twining` command, so an agent that cannot reach an MCP
+server can still use Twining from a shell — Codex sandboxes (no network, no
+way for a plugin to put anything on `PATH`) and enterprise setups that
+allowlist exact command identities. It is not a second implementation: the CLI
+and the MCP server are two front ends over one shared command core, so the
+command names, input schemas and result JSON are the same on both.
+
+```bash
+npm i -D twining-mcp        # then: npx twining <command>
+# or
+npm i -g twining-mcp        # then: twining <command>
+```
+
+```bash
+twining capabilities                                             # every command + JSON Schema
+twining assemble --json '{"task":"add rate limiting","scope":"src/api/"}'
+twining why      --json '{"scope":"src/api/limiter.ts"}'
+twining post     --json '{"entry_type":"finding","summary":"limiter shares the auth cache"}'
+twining record   --json '{"summary":"Added a token-bucket limiter","findings":["warning: shares the auth cache"]}'
+```
+
+Command names are the `twining_*` tool names with the prefix optional. Input
+comes from `--json`, `--input-file <f>`, or `--stdin`. Every command prints
+**one JSON envelope** on stdout and nothing else; diagnostics go to stderr:
+
+```json
+{"ok":true,"schema_version":"1","server_version":"2.17.0","command":"twining_why","project_root":"/repo","store_dir":"/repo/.twining","result":{"decisions":[]}}
+```
+
+Every success envelope names the store it wrote (`project_root`, `store_dir`),
+so the linked-worktree redirect is never silent. Unrecognized flags are
+refused rather than ignored — a dropped payload must not look like success.
+
+Exit codes: `0` success, `1` the command ran and failed, `2` the invocation was
+wrong (usage, unknown command, bad input). `migrate` and `validate-records`
+work under `twining` too, keeping their own output and exit codes.
+
+A CLI call never reaches the network (no embedding-model download — it falls
+back to keyword search and says so on stderr), starts no dashboard, and sends
+no telemetry. Store resolution is identical to the server's, and if the
+resolved store is not writable it fails loudly with `STORE_UNWRITABLE` rather
+than silently picking a different one.
+
+Full reference — envelope, exit codes, offline behavior, sandbox notes, and
+how hooks should call it: **[docs/CLI.md](docs/CLI.md)**.
 
 ## FAQ
 

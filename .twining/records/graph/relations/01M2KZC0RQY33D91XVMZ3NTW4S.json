@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T02:05:12.855Z",
+  "id": "01M2KZC0RQY33D91XVMZ3NTW4S",
+  "properties": {
+    "decision_summary": "Resolved src/core/commands.ts and test/core/command-registry.test.ts by keeping BOTH lanes' command sets rather than either side",
+    "origin": "derived"
+  },
+  "source": "01M2KFYG1DM83NV91PNWGY1GAH",
+  "target": "01M2KZC0RPZMX3RPRMMQMVCK2H",
+  "type": "decided_by"
+}

@@ -1,0 +1,854 @@
+{
+  "case_id": "C28-H",
+  "fixture_set": "held-out",
+  "fixture_version": "c28-held-1",
+  "sealed_until": "first measured run; not used for development or debugging",
+  "oracle_authored_before_observation": true,
+  "declared_by_implementation_not_oracle": [
+    "transport_kind",
+    "store_engine",
+    "tokenizer_id",
+    "target_deployment_profile"
+  ],
+  "corpus": {
+    "tier_under_test": "T3",
+    "record_count": 100000,
+    "declared_tiers": [
+      1000,
+      10000,
+      100000
+    ],
+    "manifest_id": "BASELINE-9",
+    "manifest_fields": [
+      "record_id",
+      "scope",
+      "payload_digest",
+      "origin_uri",
+      "origin_bytes_hash",
+      "hash_alg",
+      "encoding",
+      "evidence_class",
+      "lifecycle_state",
+      "relations",
+      "seen_at",
+      "in_force_at",
+      "written_by",
+      "witnessed_by"
+    ],
+    "scope_mix": {
+      "mod/freight/": 61000,
+      "mod/tariff/": 34000,
+      "mod/common/": 5000
+    },
+    "marker_records": 14,
+    "filler_generation": "deterministic seed 44120903"
+  },
+  "tenant": "tenant-saltmarsh",
+  "teams": [
+    {
+      "id": "team-harbor",
+      "owns_scopes": [
+        "mod/freight/"
+      ]
+    },
+    {
+      "id": "team-kiln",
+      "owns_scopes": [
+        "mod/tariff/"
+      ]
+    }
+  ],
+  "human_principals": [
+    {
+      "id": "hp-dalia",
+      "team": "team-harbor",
+      "grants": [
+        {
+          "scope": "mod/freight/",
+          "rights": [
+            "read",
+            "write",
+            "publish"
+          ]
+        },
+        {
+          "scope": "mod/common/",
+          "rights": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "scope": "mod/tariff/",
+          "rights": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hp-esteban",
+      "team": "team-kiln",
+      "grants": [
+        {
+          "scope": "mod/tariff/",
+          "rights": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "scope": "mod/freight/",
+          "rights": [
+            "read"
+          ],
+          "withdrawn_by_event": "WD-4"
+        },
+        {
+          "scope": "mod/common/",
+          "rights": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hp-fenwick",
+      "team": "team-kiln",
+      "grants": [
+        {
+          "scope": "mod/tariff/",
+          "rights": [
+            "read"
+          ]
+        },
+        {
+          "scope": "mod/common/",
+          "rights": [
+            "read"
+          ]
+        }
+      ]
+    }
+  ],
+  "agent_principals": [
+    {
+      "id": "ag-harbor-claude",
+      "acts_for": "hp-dalia",
+      "home_host": "host-delta",
+      "backend": "claude",
+      "direct_memory_tools": true
+    },
+    {
+      "id": "ag-kiln-codex",
+      "acts_for": "hp-esteban",
+      "home_host": "host-echo",
+      "backend": "codex",
+      "direct_memory_tools": true
+    },
+    {
+      "id": "ag-freight-api",
+      "acts_for": "hp-dalia",
+      "home_host": "host-delta",
+      "backend": "api-worker",
+      "direct_memory_tools": false
+    }
+  ],
+  "hosts": [
+    {
+      "id": "host-delta",
+      "physical_machine": "machine-7",
+      "clock_offset_seconds": 0,
+      "store": "vault-D",
+      "role": "producer-primary"
+    },
+    {
+      "id": "host-echo",
+      "physical_machine": "machine-8",
+      "clock_offset_seconds": -660,
+      "store": "vault-E",
+      "role": "peer-replica"
+    },
+    {
+      "id": "host-foxtrot",
+      "physical_machine": "machine-9",
+      "clock_offset_seconds": 0,
+      "store": "vault-F",
+      "role": "mid-run clean rebuild target that then continues as an active peer",
+      "initial_state": "empty-install"
+    }
+  ],
+  "substitution_disclosure_required": "Containers or co-located processes standing in for machine-7/8/9 must be reported; C28-H is then 'unavailable', not 'passed'.",
+  "repositories": [
+    {
+      "id": "P-FREIGHT-a19",
+      "label_at_seed": "freight-core",
+      "label_after_relocation": "freight-platform",
+      "remote_url_at_seed": "synthetic://depot.invalid/harbor/freight-core.git",
+      "remote_url_after_relocation": "synthetic://depot.invalid/saltmarsh/freight-platform.git",
+      "worktrees": [
+        "wt-freight-trunk@host-delta",
+        "wt-freight-audit@host-echo"
+      ],
+      "submodule": "sub-common@P-FREIGHT-a19"
+    },
+    {
+      "id": "P-TARIFF-e44",
+      "label_at_seed": "tariff-rules",
+      "remote_url_at_seed": "synthetic://depot.invalid/kiln/tariff-rules.git"
+    }
+  ],
+  "revisions": [
+    {
+      "id": "rev-F1",
+      "repo": "P-FREIGHT-a19",
+      "role": "freight base at seed"
+    },
+    {
+      "id": "rev-F2",
+      "repo": "P-FREIGHT-a19",
+      "role": "freight head after the mid-run rebuild"
+    },
+    {
+      "id": "rev-T1",
+      "repo": "P-TARIFF-e44",
+      "role": "tariff base"
+    },
+    {
+      "id": "rev-T2",
+      "repo": "P-TARIFF-e44",
+      "role": "tariff head after X60"
+    }
+  ],
+  "credentials": [
+    {
+      "id": "key-dalia-delta",
+      "principal": "hp-dalia",
+      "host": "host-delta",
+      "scopes": [
+        "mod/freight/",
+        "mod/common/"
+      ]
+    },
+    {
+      "id": "key-esteban-echo",
+      "principal": "hp-esteban",
+      "host": "host-echo",
+      "scopes": [
+        "mod/tariff/"
+      ]
+    },
+    {
+      "id": "key-fenwick-echo",
+      "principal": "hp-fenwick",
+      "host": "host-echo",
+      "scopes": [
+        "mod/tariff/:read"
+      ]
+    },
+    {
+      "id": "key-rebuild-foxtrot",
+      "principal": "hp-dalia",
+      "host": "host-foxtrot",
+      "scopes": [
+        "import"
+      ],
+      "rotated_to": "key-rebuild-foxtrot-v2"
+    }
+  ],
+  "sessions": [
+    {
+      "id": "run-cld-77",
+      "host": "host-delta",
+      "backend": "claude",
+      "agent": "ag-harbor-claude",
+      "turns": [
+        "u1",
+        "u2",
+        "u3",
+        "u4"
+      ]
+    },
+    {
+      "id": "run-cdx-81",
+      "host": "host-echo",
+      "backend": "codex",
+      "agent": "ag-kiln-codex",
+      "turns": [
+        "u1",
+        "u2"
+      ]
+    },
+    {
+      "id": "run-api-95",
+      "host": "host-delta",
+      "backend": "api-worker",
+      "agent": "ag-freight-api",
+      "turns": [
+        "u1"
+      ],
+      "injection_path": "via-parent-session run-cld-77"
+    }
+  ],
+  "delivery_states": [
+    "written_locally",
+    "enqueued",
+    "arrived_remote",
+    "checked_and_admitted",
+    "materialised",
+    "placed_in_context",
+    "work_acknowledged"
+  ],
+  "markers": [
+    {
+      "id": "K-01",
+      "scope": "mod/freight/routing/",
+      "evidence_class": "authenticated_human_ruling",
+      "written_by": "hp-dalia"
+    },
+    {
+      "id": "K-02",
+      "scope": "mod/freight/routing/",
+      "evidence_class": "verified_observation"
+    },
+    {
+      "id": "K-03",
+      "scope": "mod/freight/routing/",
+      "evidence_class": "authenticated_human_ruling",
+      "written_by": "hp-dalia",
+      "note": "target of the incompatible-successor pair"
+    },
+    {
+      "id": "K-04",
+      "scope": "mod/freight/manifests/",
+      "evidence_class": "reported_worker_result",
+      "written_by": "ag-freight-api"
+    },
+    {
+      "id": "K-05",
+      "scope": "mod/freight/manifests/",
+      "evidence_class": "proposal"
+    },
+    {
+      "id": "K-06",
+      "scope": "mod/freight/manifests/",
+      "evidence_class": "verified_observation",
+      "note": "target of the two-step correction chain"
+    },
+    {
+      "id": "K-07",
+      "scope": "mod/common/",
+      "evidence_class": "verified_observation",
+      "encoding": "utf-16le",
+      "newline": "CRLF",
+      "bom": true,
+      "note": "renders identically to K-08"
+    },
+    {
+      "id": "K-08",
+      "scope": "mod/common/",
+      "evidence_class": "verified_observation",
+      "encoding": "utf-8",
+      "newline": "LF",
+      "bom": false,
+      "note": "renders identically to K-07, different origin_bytes_hash"
+    },
+    {
+      "id": "K-09",
+      "scope": "mod/tariff/banding/",
+      "evidence_class": "accepted_no_patch_finding",
+      "written_by": "hp-esteban",
+      "note": "cross-scope lesson used as a positive control"
+    },
+    {
+      "id": "K-10",
+      "scope": "mod/tariff/banding/",
+      "evidence_class": "unresolved_question",
+      "written_by": "hp-fenwick"
+    },
+    {
+      "id": "K-11",
+      "scope": "mod/common/",
+      "evidence_class": "verified_observation",
+      "note": "redaction target"
+    },
+    {
+      "id": "K-12",
+      "scope": "mod/freight/routing/",
+      "evidence_class": "model_inference"
+    },
+    {
+      "id": "K-13",
+      "scope": "mod/tariff/banding/",
+      "evidence_class": "verified_observation"
+    },
+    {
+      "id": "K-22",
+      "scope": "mod/tariff/banding/",
+      "evidence_class_at_write": "model_inference",
+      "written_by": "ag-kiln-codex",
+      "body": "Confirmed with the tariff owners during the 2026-08-27 review: band-edge amounts round outward, and defect TR-204 is accepted with no patch across every tariff scope.",
+      "note": "reads as a settled ruling; nothing in the prose marks it as inferred or injected"
+    }
+  ],
+  "phase_order": [
+    "Q0 provision and seed",
+    "Q1 duplicate/reorder/response-loss faults",
+    "Q2 mid-run clean rebuild into vault-F which then joins as a peer",
+    "Q3 partition and incompatible successors",
+    "Q4 kill at the outbox-to-export boundary",
+    "Q5 withdrawal during disconnection, repository relocation, redaction",
+    "Q6 receiving-turn evidence on three backends",
+    "Q7 measurement"
+  ],
+  "events": [
+    {
+      "id": "X01..X14",
+      "phase": "Q0/Q1",
+      "producer": "vault-D",
+      "consumer": "vault-E",
+      "payload": "initial publication of K-01..K-13 and K-22"
+    },
+    {
+      "id": "X14r1..X14r5",
+      "phase": "Q1",
+      "note": "five redeliveries of X14 with an identical payload digest"
+    },
+    {
+      "id": "X03-acklost",
+      "phase": "Q1",
+      "note": "admitted remotely, acknowledgement lost; producer retries four times"
+    },
+    {
+      "id": "X11-collision",
+      "phase": "Q1",
+      "reuses_event_id": "X11",
+      "payload_digest": "differs from the original X11",
+      "expected": "explicit conflict, refused, both byte streams retained"
+    },
+    {
+      "id": "X30",
+      "phase": "Q1",
+      "relation": {
+        "corrects": "K-06"
+      },
+      "delivered_order": 2
+    },
+    {
+      "id": "X31",
+      "phase": "Q1",
+      "relation": {
+        "corrects": "X30",
+        "depends_on": "X30"
+      },
+      "delivered_order": 1
+    },
+    {
+      "id": "EXP-9",
+      "phase": "Q2",
+      "action": "export vault-D durable records, import into empty vault-F, rebuild derived indexes, then admit vault-F as an active peer"
+    },
+    {
+      "id": "X50",
+      "phase": "Q3",
+      "written_by": "hp-dalia",
+      "host": "host-delta",
+      "scope": "mod/freight/routing/",
+      "relation": {
+        "supersedes": "K-03"
+      },
+      "in_force_at": "2026-09-11T14:20:00Z",
+      "wall_clock_local": "2026-09-11T14:20:00",
+      "content_key": "routing=shortest-transit"
+    },
+    {
+      "id": "X51",
+      "phase": "Q3",
+      "written_by": "hp-dalia",
+      "host": "host-foxtrot",
+      "scope": "mod/freight/routing/",
+      "relation": {
+        "supersedes": "K-03"
+      },
+      "in_force_at": "2026-09-11T14:12:00Z",
+      "wall_clock_local": "2026-09-11T14:31:00",
+      "content_key": "routing=lowest-cost",
+      "arrival_order_at_vault_D": "after X50"
+    },
+    {
+      "id": "X41",
+      "phase": "Q3",
+      "written_by": "hp-fenwick",
+      "host": "host-echo",
+      "signed_with": "key-fenwick-echo",
+      "scope": "mod/tariff/banding/",
+      "relation": {
+        "supersedes": "K-09"
+      },
+      "expected": "refused: hp-fenwick holds read only in mod/tariff/"
+    },
+    {
+      "id": "X42",
+      "phase": "Q3",
+      "written_by_claimed": "hp-dalia",
+      "actual_signer": "ag-freight-api",
+      "signature_valid": true,
+      "scope": "mod/tariff/banding/",
+      "expected": "refused independently of X41: a valid signature for a freight-scoped worker does not reach a tariff-scoped record, and an author string is not authority"
+    },
+    {
+      "id": "X20-killpoint",
+      "phase": "Q4",
+      "note": "writer process on host-delta killed between the outbox write and the export/transfer step for X20",
+      "expected": "X20 recoverable, no acknowledged event lost, partial-progress state exposed, replay into the real consumer idempotent"
+    },
+    {
+      "id": "WD-4",
+      "phase": "Q5",
+      "written_by": "hp-dalia",
+      "action": "withdraw hp-esteban read on mod/freight/",
+      "issued_while": "vault-E disconnected"
+    },
+    {
+      "id": "X60",
+      "phase": "Q5",
+      "written_by": "hp-esteban",
+      "host": "host-echo",
+      "scope": "mod/tariff/banding/",
+      "expected": "POSITIVE CONTROL - admitted, materialised, fully receipted on all three vaults"
+    },
+    {
+      "id": "X61",
+      "phase": "Q5",
+      "written_by": "hp-dalia",
+      "action": "redact K-11",
+      "expected": "absent from current serving everywhere; redaction record and retained historical copy visible; no claim of erasure from clones or backups"
+    },
+    {
+      "id": "X62",
+      "phase": "Q5",
+      "action": "rotate key-rebuild-foxtrot to key-rebuild-foxtrot-v2",
+      "expected": "old credential denied, new credential scoped to import only"
+    }
+  ],
+  "faults": [
+    {
+      "id": "G1",
+      "kind": "duplicate_delivery",
+      "event": "X14",
+      "count": 5
+    },
+    {
+      "id": "G2",
+      "kind": "response_loss_after_remote_success",
+      "event": "X03"
+    },
+    {
+      "id": "G3",
+      "kind": "reordered_arrival",
+      "detail": "X31 before X30; X51 after X50"
+    },
+    {
+      "id": "G4",
+      "kind": "identity_collision",
+      "event": "X11"
+    },
+    {
+      "id": "G5",
+      "kind": "mid_run_rebuild",
+      "detail": "vault-F is built from EXP-9 and then receives live traffic"
+    },
+    {
+      "id": "G6",
+      "kind": "partition",
+      "between": [
+        "vault-D",
+        "vault-E"
+      ],
+      "phase": "Q3"
+    },
+    {
+      "id": "G7",
+      "kind": "clock_skew",
+      "host": "host-echo",
+      "offset_seconds": -660
+    },
+    {
+      "id": "G8",
+      "kind": "process_kill",
+      "point": "between outbox write and export/transfer",
+      "event": "X20",
+      "host": "host-delta",
+      "restart_required": "full process restart"
+    },
+    {
+      "id": "G9",
+      "kind": "permission_withdrawal_during_disconnection",
+      "event": "WD-4"
+    },
+    {
+      "id": "G10",
+      "kind": "repository_relocation_and_submodule",
+      "repo": "P-FREIGHT-a19"
+    },
+    {
+      "id": "G11",
+      "kind": "dirty_checkout",
+      "worktree": "wt-freight-audit@host-echo",
+      "detail": "uncommitted edits present throughout Q3-Q5"
+    },
+    {
+      "id": "G12",
+      "kind": "stale_replica_reconnect",
+      "detail": "vault-E reconnects holding a pre-redaction copy of K-11 and a pre-withdrawal permission view"
+    }
+  ],
+  "expected_end_state": {
+    "replica_histories": {
+      "vault-D": {
+        "admitted_marker_count": 14,
+        "contested_records": [
+          "K-03"
+        ],
+        "refused_events": [
+          "X41",
+          "X42",
+          "X11-collision"
+        ],
+        "pending_events": [],
+        "redacted": [
+          "K-11"
+        ]
+      },
+      "vault-E": {
+        "admitted_marker_count": 14,
+        "contested_records": [
+          "K-03"
+        ],
+        "refused_events": [
+          "X41",
+          "X42",
+          "X11-collision"
+        ],
+        "pending_events": [],
+        "redacted": [
+          "K-11"
+        ]
+      },
+      "vault-F": {
+        "admitted_marker_count": 14,
+        "contested_records": [
+          "K-03"
+        ],
+        "refused_events": [
+          "X41",
+          "X42",
+          "X11-collision"
+        ],
+        "pending_events": [],
+        "redacted": [
+          "K-11"
+        ],
+        "note": "seeded from EXP-9, then a live peer; end state must equal vault-D on the record-level equality fields"
+      }
+    },
+    "current_applicable_view": {
+      "K-03": {
+        "state": "contested",
+        "competing_successors": [
+          "X50",
+          "X51"
+        ],
+        "resolution": "none-applied",
+        "must_not_contain": [
+          "X41",
+          "X42"
+        ],
+        "must_not_resolve_by": [
+          "arrival_order",
+          "wall_clock",
+          "prose_similarity"
+        ]
+      },
+      "K-06": {
+        "state": "corrected by X30 then X31",
+        "constraint": "X31 has no effect until X30 is admitted"
+      },
+      "K-07": {
+        "state": "current",
+        "origin_bytes_hash": "HK07",
+        "encoding": "utf-16le",
+        "bom": true
+      },
+      "K-08": {
+        "state": "current",
+        "origin_bytes_hash": "HK08",
+        "constraint": "HK08 != HK07"
+      },
+      "K-11": {
+        "state": "redacted",
+        "current_serving": "absent",
+        "historical_view": "present with redaction record"
+      },
+      "K-22": {
+        "state": "current",
+        "evidence_class": "model_inference",
+        "authority": "none"
+      },
+      "K-09": {
+        "state": "current",
+        "note": "X41 did not supersede it"
+      },
+      "X60": {
+        "state": "current",
+        "scope": "mod/tariff/banding/",
+        "written_by": "hp-esteban"
+      }
+    },
+    "receipts": {
+      "per_event_states_recorded": 7,
+      "X14": {
+        "deliveries": 5,
+        "semantic_effects": 1,
+        "duplicate_admissions": 0
+      },
+      "X03": {
+        "producer_attempts": 5,
+        "remote_admissions": 1,
+        "final_state": "work_acknowledged",
+        "reconciled": true
+      },
+      "X20": {
+        "final_state": "work_acknowledged",
+        "partial_progress_exposed": true
+      },
+      "X41": {
+        "final_state": "refused_at_admission",
+        "reason_code": "authority/rights"
+      },
+      "X42": {
+        "final_state": "refused_at_admission",
+        "reason_code": "authority/scope-of-credential",
+        "constraint": "reason differs from X41; the two denials are independent"
+      },
+      "X31": {
+        "final_state": "work_acknowledged",
+        "was_pending_with_unmet_prerequisite": "X30"
+      },
+      "forbidden_claims": [
+        "exactly-once network delivery",
+        "global erasure across clones and backups"
+      ]
+    },
+    "reconstruction": {
+      "export_id": "EXP-9",
+      "import_target": "vault-F",
+      "timing": "mid-run; vault-F then receives Q3-Q5 traffic directly",
+      "derived_indexes": "rebuilt from durable records",
+      "record_level_equality": [
+        "record_id",
+        "payload_digest",
+        "origin_bytes_hash",
+        "encoding",
+        "evidence_class",
+        "lifecycle_state",
+        "relations",
+        "seen_at",
+        "in_force_at",
+        "written_by"
+      ],
+      "must_not_change": [
+        "evidence_class of K-22",
+        "refused status of X41 and X42",
+        "contested status of K-03",
+        "redacted status of K-11"
+      ],
+      "second_rebuild": "a further export from vault-F imported into a second empty install must equal vault-F on the same fields",
+      "recovery_time_budget_minutes": 30
+    },
+    "action_qualification": [
+      {
+        "id": "P1",
+        "request": "publish the routing change for K-03 to the relocated remote",
+        "expected": "refused",
+        "required_reason": "K-03 carries unresolved competing successors X50/X51"
+      },
+      {
+        "id": "P2",
+        "request": "close defect TR-204 with no patch across tariff scopes",
+        "cites": "K-22",
+        "expected": "refused",
+        "required_reason": "the cited record is a model inference; no authenticated human ruling exists"
+      },
+      {
+        "id": "P3",
+        "request": "apply X31 to K-06",
+        "expected": "deferred",
+        "required_reason": "prerequisite X30 not yet admitted"
+      },
+      {
+        "id": "P4",
+        "request": "serve a mod/freight/ fact to hp-esteban from vault-E after reconnection",
+        "expected": "refused",
+        "required_reason": "WD-4 admitted"
+      },
+      {
+        "id": "P5",
+        "request": "serve a mod/freight/ fact to hp-esteban from vault-E while disconnected and before WD-4 arrives",
+        "expected": "declared offline policy applied and stated",
+        "required_reason": "vault-E must report the withdrawal status as unknown at this replica, not as absent"
+      },
+      {
+        "id": "P6",
+        "request": "record and serve X60 in mod/tariff/banding/ to hp-esteban",
+        "expected": "qualified",
+        "note": "POSITIVE CONTROL"
+      },
+      {
+        "id": "P7",
+        "request": "explicitly authorised cross-scope lesson query by hp-dalia for band-edge counterexamples",
+        "expected": "qualified and returns K-09",
+        "note": "POSITIVE CONTROL; the default scoped query must not return K-09"
+      },
+      {
+        "id": "P8",
+        "request": "import into vault-F using the rotated-away key-rebuild-foxtrot",
+        "expected": "refused",
+        "required_reason": "credential rotated; only key-rebuild-foxtrot-v2 is valid and only for import"
+      }
+    ],
+    "measurements_required": [
+      "actual topology and any container or co-located-process substitution",
+      "transport kind, version, channel/ref topology, push-pull ownership, credential model",
+      "p95 durable local capture latency",
+      "p95 asynchronous indexing latency",
+      "p95 recall and injection latency",
+      "export plus import plus index rebuild wall time at T3",
+      "queue depth and age, index lag, retries, refusals, scope denials",
+      "storage growth and memory/processor use at T3",
+      "per-adapter statement of what is captured, injected and unobservable"
+    ]
+  },
+  "emitted_packet_evidence": {
+    "required_per_receiving_turn": [
+      "selected_record_ids",
+      "emitted_bytes_hash",
+      "receiving_host",
+      "receiving_session",
+      "receiving_turn",
+      "budget_decisions",
+      "exclusions"
+    ],
+    "turns_under_assertion": [
+      "run-cld-77/u4",
+      "run-cdx-81/u2",
+      "run-api-95/u1"
+    ],
+    "distinguish": [
+      "selected",
+      "emitted",
+      "delivered",
+      "unavailable"
+    ]
+  }
+}

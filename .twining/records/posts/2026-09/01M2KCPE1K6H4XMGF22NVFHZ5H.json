@@ -1,0 +1,16 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: git broke mid-session at 13:33 — /Applications/Xcode.app was updated (mtime 13:33, root) so Apple's /usr/bin/git now exits with 'You have not agreed to the Xcode license agreements'; /opt/homebrew/bin/git does not exist; brew itself fails the same way. Workaround in use: prefix PATH with /Library/Developer/CommandLineTools/usr/bin (git 2.50.1 works). Permanent fix is Dave's: `sudo xcodebuild -license accept`. Until then every git-spawning test, hook and subagent that uses the plain PATH fails; the first Stage 0 commit attempt was silently lost this way (exit printed empty hash) and was redone as 474dfac.",
+  "entry_type": "warning",
+  "id": "01M2KCPE1K6H4XMGF22NVFHZ5H",
+  "origin": "discovery",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:38:51.060Z"
+  },
+  "scope": "docs/adr/",
+  "summary": "git broke mid-session at 13:33 — /Applications/Xcode.app was updated (mtime 13:33, root) so Apple's /usr/bin/git now exits with 'You have not agreed to the Xcode license agreements'; /opt/homebrew/…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-15T20:38:51.187Z"
+}

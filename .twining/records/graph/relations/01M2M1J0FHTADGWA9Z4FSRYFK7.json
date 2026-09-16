@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T02:43:26.321Z",
+  "id": "01M2M1J0FHTADGWA9Z4FSRYFK7",
+  "properties": {
+    "decision_summary": "The offline switch is the OR of caller option, TWINING_OFFLINE and config embeddings.offline, resolved once in createTwiningContext",
+    "origin": "derived"
+  },
+  "source": "01M2M1J0FGQFDZX03DGGRBK9PY",
+  "target": "01M2M1J0FA6DHC8W7AQ45Z234J",
+  "type": "decided_by"
+}

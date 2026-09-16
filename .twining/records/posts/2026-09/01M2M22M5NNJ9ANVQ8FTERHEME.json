@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Tokenizer calibration ran successfully after the whitespace-document fix (src/retrieval/calibration.json, 607 bytes, envelope_overhead_tokens 8) but tokenizer.ts does not load it yet — wiring with proven-bound fallback dispatched.",
+  "entry_type": "finding",
+  "id": "01M2M22M5NNJ9ANVQ8FTERHEME",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "92093f8c902437e8f85cc2fb4f24064ee965e297",
+    "recorded_at": "2026-09-16T02:52:30.753Z"
+  },
+  "scope": "src/",
+  "summary": "Tokenizer calibration ran successfully after the whitespace-document fix (src/retrieval/calibration.json, 607 bytes, envelope_overhead_tokens 8) but tokenizer.ts does not load it yet — wiring with …",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-16T02:52:30.773Z"
+}

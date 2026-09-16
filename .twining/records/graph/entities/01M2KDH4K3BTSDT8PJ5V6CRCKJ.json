@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T20:53:26.243Z",
+  "id": "01M2KDH4K3BTSDT8PJ5V6CRCKJ",
+  "name": "01M2KDH4D8A9DTQEDEGNGP5DQG",
+  "properties": {
+    "scope": "src/cli/",
+    "summary": "Accepted the lane's per-command `errors: \"internal-only\"` flag to preserve the nine handlers whose catch blocks never mapped TwiningError (twining_why, twining_triage, read/query/recent, three housekeeping tools, all coordination tools) rather than centralising error mapping and silently widening their error codes"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-15T20:53:26.243Z"
+}

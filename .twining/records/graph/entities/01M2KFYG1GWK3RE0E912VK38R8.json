@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-15T21:35:41.104Z",
+  "id": "01M2KFYG1GWK3RE0E912VK38R8",
+  "name": "src/events/db.ts",
+  "properties": {
+    "scope": "src/events/,src/exchange/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-15T22:48:46.110Z"
+}

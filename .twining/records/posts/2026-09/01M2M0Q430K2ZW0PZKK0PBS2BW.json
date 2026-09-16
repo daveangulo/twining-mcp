@@ -1,0 +1,18 @@
+{
+  "agent_id": "merge-integrator",
+  "detail": "Full summary: author_assertion_not_authenticated is emitted by src/events/event-store.ts checkCredential but is not yet in REJECT_REASONS in src/contracts/delivery.ts — it is one of the draft.3 additions still to apply.",
+  "entry_type": "finding",
+  "id": "01M2M0Q430K2ZW0PZKK0PBS2BW",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "36a4ab51ae367cb696587759a4adf8689a0ac9df",
+    "recorded_at": "2026-09-16T02:28:45.261Z"
+  },
+  "scope": "test/acceptance/",
+  "summary": "author_assertion_not_authenticated is emitted by src/events/event-store.ts checkCredential but is not yet in REJECT_REASONS in src/contracts/delivery.ts — it is one of the draft.3 additions still t…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-16T02:28:45.280Z"
+}

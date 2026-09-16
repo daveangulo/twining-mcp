@@ -41,6 +41,34 @@ describe("initTwiningDir", () => {
     expect(gitignore).toContain(".sessions/");
   });
 
+  it("gitignores the v3 derived store and the exchange worktree, but never events/", () => {
+    initTwiningDir(tmpDir);
+    const gitignore = fs.readFileSync(path.join(tmpDir, ".twining", ".gitignore"), "utf-8");
+    // `store/` is the journal database and outbox cursor — derived from
+    // events/ and machine-local. `exchange/` is the Git carrier's own
+    // worktree: a checkout of the exchange ref, never part of the repo it
+    // exchanges (lane 02b, D38).
+    expect(gitignore).toContain("store/");
+    expect(gitignore).toContain("exchange/");
+    // The event files themselves are the durable record and must stay tracked.
+    expect(gitignore.split("\n").map((l) => l.trim())).not.toContain("events/");
+  });
+
+  it("adds the v3 entries to an existing store without disturbing it", () => {
+    const twiningDir = path.join(tmpDir, ".twining");
+    fs.mkdirSync(twiningDir, { recursive: true });
+    fs.writeFileSync(path.join(twiningDir, ".gitignore"), "archive/\n# mine\nmy-entry\n");
+
+    ensureInitialized(tmpDir);
+
+    const gitignore = fs.readFileSync(path.join(twiningDir, ".gitignore"), "utf-8");
+    expect(gitignore).toContain("store/");
+    expect(gitignore).toContain("exchange/");
+    expect(gitignore).toContain("# mine");
+    expect(gitignore).toContain("my-entry");
+    expect(gitignore.match(/^archive\/$/gm)).toHaveLength(1);
+  });
+
   it("reconciles missing canonical gitignore entries on existing stores (#44)", () => {
     // Simulate a pre-.last-record-era store: .twining exists with a
     // partial .gitignore missing several canonical entries.

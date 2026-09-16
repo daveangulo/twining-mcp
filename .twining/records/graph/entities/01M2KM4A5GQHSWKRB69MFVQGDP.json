@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T22:48:46.000Z",
+  "id": "01M2KM4A5GQHSWKRB69MFVQGDP",
+  "name": "01M2KM4A4KFR77KH1RW59CN347",
+  "properties": {
+    "scope": "src/exchange/",
+    "summary": "Contracts draft.3 also adopts lane 02b's additive proposals: quarantine reason signer_untrusted; reject reasons credential_revoked and author_assertion_not_authenticated; CONFLICTING_DUPLICATE already a ValidationCode; EventStore.exchangeStatus() + ExchangeStatus type; optional lastMalformed/lastGap on Transport"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-15T22:48:46.000Z"
+}

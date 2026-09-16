@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T20:34:28.311Z",
+  "id": "01M2KCEDAQHD1Q09W9H11MZWP0",
+  "name": "01M2KCED56K0J9QN71A30SH1H6",
+  "properties": {
+    "scope": "src/contracts/",
+    "summary": "Envelope and lifecycle payloads are STRICT (unknown keys rejected) while created-record bodies pass unknown fields through; unknown kinds and newer envelope versions are distinct rejection codes so ingest can quarantine rather than half-apply"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-15T20:34:28.311Z"
+}

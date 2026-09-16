@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-15T21:35:41.101Z",
+  "id": "01M2KFYG1DM83NV91PNWGY1GAH",
+  "name": "src/events/event-store.ts",
+  "properties": {
+    "scope": "src/adapters/,src/events/,src/exchange/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-16T02:23:12.141Z"
+}

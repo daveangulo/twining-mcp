@@ -1,0 +1,23 @@
+{
+  "agent_id": "lane-03-runtime",
+  "detail": "All 11 confirmed findings from the adversarial review of lane/03-runtime (fb35c17) are fixed in the worktree. Counts after: test/hooks 125 passed, test/adapters 68 passed + 4 skipped + 11 todo, test/cli 70 passed, test/acceptance/baseline 30 passed. tsc clean. Real Claude Code host re-verified after the hook change (injected_receipts=2).\n\nROOT CAUSE OF THE BLOCKER, worth recording: the v3 handoff guard was written into the two legacy hooks by a Python heredoc, and I used shell single-quote-escaping ('\"'\"') inside it. Python wrote those characters literally, so the grep pattern contained literal quote marks and could never match. The mistake was invisible to review-by-reading because the escaping LOOKS correct for a shell heredoc. It shipped green because the flipped gap1 test spawns v3-capture-hook.sh directly and never exercised the legacy scripts on a v3 store. New test/hooks/legacy-v3-handoff.test.ts runs each LEGACY hook against a real format-3 store with 2.x controls; it was red before the fix and green after. Lesson: when a test flips a gap, it must exercise the path the OLD behavior lived on, not only the new one.\n\nSECOND DEFECT I INTRODUCED WHILE FIXING: the finding-8 stdout protocol check added 2>/dev/null to the CLI invocation, silently swallowing every stderr diagnostic (\"cannot inject\", \"could not parse\"). Command substitution already captures stdout only. Caught by two existing hook tests; stderr passthrough restored with a comment naming the trap.\n\nFINDING 9 DISPOSITION (my call, as invited): I DELETED the dead surface rather than implementing it. requalify's maxAgeMs could never fire (the age of a check that just ran is always zero), and an option that reads like a staleness policy while enforcing nothing is worse than no option. requalify now always performs the live check and returns one of three refusals: unreachable, changed, not_recorded (new — the check succeeded but no durable observation was persisted to cite, so qualified:true would have been an unverifiable claim). Serving a cached observation with its age is a separate honest operation and belongs to lane 04's retrieval layer, labelled stale.\n\nFINDING 3 NOTE: I removed the store.events() call entirely rather than scoping it. The cursor is now derived from the versions of the records actually emitted, and does not advance at all while any record remains omitted — so the scoping concern is resolved by construction and budget-dropped records stay reachable on the next injection.\n\nFINDING 7 NOTE: the npx rung is gone and PKG_SPEC with it. Documented in the script that it should be restored as `npx -y -p twining-mcp@<version> twining` once a published release carries the CLI bin.",
+  "entry_type": "finding",
+  "id": "01M2KMRTXR2AAG60DKSY4014MY",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:59:58.500Z"
+  },
+  "relates_to": [
+    "01M2KJXXKN332YTXJ7RWD9YHJC"
+  ],
+  "scope": "src/adapters/",
+  "summary": "Lane 03 review fixes applied: all 11 confirmed findings closed, incl. the BLOCKER where the legacy hooks' v3 guard never matched",
+  "tags": [
+    "lane-03",
+    "review-fixes",
+    "foundation-v3",
+    "a2-no-prose"
+  ],
+  "timestamp": "2026-09-15T22:59:58.520Z"
+}

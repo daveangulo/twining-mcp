@@ -1,0 +1,22 @@
+{
+  "agent_id": "lane-02c",
+  "detail": "MEASURED, not theorised. Repro: migrate a legacy store to v3 (no membership exists, so admission default-allows `write`), then admit a normal post-upgrade policy — a `membership` granting one human rule+write in `src/catalog/`. Then call store.rebuild(). Result: acknowledged_events_lost = 1, id reported, journal row `rejected: unauthorized`. The lost event was a derived `amended` event authored by the migrator principal, which the new membership does not name.\n\nWhy only ONE of ~16 migrator-authored events: admit() takes ONE view snapshot per pass and loops up to 32 passes. Events settled in pass 1 (before the membership was admitted) saw no policy and were default-allowed; only events that were still pending_parents when the membership landed were judged against it. So WHICH previously-admitted events survive a rebuild depends on how many admission passes they happened to need. That is worse than a uniform denial: it is not reproducible from the event set alone.\n\nThis contradicts C14/C16 A3.7 (\"destroying and rebuilding the materialized view loses no acknowledged event\") and ADR §4.2 (\"no acknowledged event is ever silently lost\"). It is not fully silent — rebuild() returns acknowledged_events_lost and the ids — but the events do leave the projection.\n\nFIX TRIED AND REJECTED inside lane 02c: seed a membership at migration time naming the migrator as a causal ancestor of every migration event. It does fix the rebuild (lost 0), but any seeded membership can only be replaced by a principal it grants `rule`, so the store's policy is locked to the migrator forever — and the next thing that broke in the probe was exactly that: the operator's own post-upgrade membership was rejected as unauthorized. Trading a rebuild hazard for a permanent policy lockout is the worse bargain, so the migration seeds NO policy and the note is in the code.\n\nPROPOSED FIX (lane 02b / the lead, admission seam): make the admission decision durable, or evaluate capability against the policy in force at the event's causal position rather than against admittedView().membership (which is `memberships.at(-1)`). Either removes the retroactive re-judgement; the second also makes admission a pure function of the causal history, which is what determinism requires.\n\nWORKAROUND for anyone hitting this now: a replacement membership must carry forward a `write` grant for every principal already present in the history, including the migrator principal in .twining/store.json's companion id-map.",
+  "entry_type": "warning",
+  "id": "01M2KK31QD8B3AQ88DFPH4G18B",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:30:35.994Z"
+  },
+  "scope": "src/migrate/",
+  "summary": "rebuild() re-evaluates capability against the LATEST membership, so a policy added after migration drops already-admitted events — ordering-dependently",
+  "tags": [
+    "v3",
+    "admission",
+    "rebuild",
+    "C14",
+    "C21",
+    "lane-02b"
+  ],
+  "timestamp": "2026-09-15T22:30:36.013Z"
+}

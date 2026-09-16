@@ -1,0 +1,18 @@
+{
+  "agent_id": "merge-integrator",
+  "detail": "Full summary: Merged lane/02c-migration into foundation/v3; resolved the commands.ts and registry-count conflicts keeping both lanes' commands, and fixed a cross-lane admission non-monotonicity that wiped every projection on rebuild.\nDecisions: [object Object]; Resolved src/core/commands.ts and test/core/command-registry.test.ts by keeping BOTH lanes' command sets rather than either side — registry now 41 commands (25 full-surface, 16 default), which is the true total with twining_exchange_status and twining_migrate_status\nFindings: warning: EventStore.rebuild() re-journals every event with ingress hard-coded to 'import' (src/events/event-store.ts step 1 of rebuild), losing the originating ingress. Today ingress only feeds the journal reason string, so nothing depends on it — but any future rule keyed on ingress will silently differ between first admission and rebuild. The journal has no ingress column.; C21 A-REC-10 (derived-index rebuild is not data loss) is the assertion that catches admission non-monotonicity end-to-end; it passed in both lanes separately and only failed once 02b and 02c were merged. Cross-lane determinism defects are invisible to per-lane suites.",
+  "entry_type": "status",
+  "id": "01M2KZC0MJESB6JGM44Y1TR5CS",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "28402bb3f65df5d85da08d2d74b4121f17766060",
+    "recorded_at": "2026-09-16T02:05:12.704Z"
+  },
+  "scope": "src/events/",
+  "summary": "Merged lane/02c-migration into foundation/v3; resolved the commands.ts and registry-count conflicts keeping both lanes' commands, and fixed a cross-lane admission non-monotonicity that wiped every …",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-16T02:05:12.722Z"
+}

@@ -1,0 +1,23 @@
+{
+  "id": "measured-claude-sonnet-4-5/2026-09-16",
+  "provenance": "measured",
+  "reference": "anthropic-count-tokens/claude-sonnet-4-5",
+  "corpus": {
+    "skipped_blank": [
+      "whitespace.txt"
+    ],
+    "name": "tokenizer-corpus",
+    "documents": 5,
+    "bytes": 2675,
+    "sha256": "sha256:c67d99ea31f2359ec13353f76ab5ce34fcdab36d8f4fbe1bd784a1894d758b20"
+  },
+  "safety_factor": 1.15,
+  "ratios": {
+    "ascii_alnum": 0.26313559322033897,
+    "ascii_space": 1,
+    "ascii_punct": 1,
+    "latin1_supp": 0.8817359855334538,
+    "multibyte": 0.34104882459312835
+  },
+  "envelope_overhead_tokens": 8
+}

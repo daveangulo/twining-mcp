@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-16T03:10:30.225Z",
+  "id": "01M2M33JAHGS3ABWSYV1YHB5DP",
+  "name": "estimate",
+  "properties": {
+    "scope": "src/retrieval/"
+  },
+  "type": "function",
+  "updated_at": "2026-09-16T03:10:30.671Z"
+}

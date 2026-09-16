@@ -1,0 +1,41 @@
+{
+  "affected_files": [
+    "src/core/command-def.ts",
+    "src/core/commands.ts",
+    "src/core/context.ts",
+    "src/cli/twining.ts",
+    "src/server.ts",
+    "src/tools/record-tools.ts",
+    "src/embeddings/embedder.ts",
+    "package.json",
+    "docs/CLI.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Centralise TwiningError mapping for every command",
+      "pros": [],
+      "reason_rejected": "changes nine tools' error codes on the 2.x line without a field-facing reason"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "CLI lane delivered on feat/cli-2.17 (worktree): shared command core (src/core/*, 39 commands moved verbatim, MCP adapter loop), createTwiningContext extracted from createServer, `twining` bin with JSON envelope/exit codes/capabilities/STORE_UNWRITABLE, docs/CLI.md, CHANGELOG unreleased 2.17.0; 123 git-dependent tests pass with working git; tsc clean.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M2KDH4D8A9DTQEDEGNGP5DQG",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:53:25.936Z"
+  },
+  "rationale": "Behavior-neutrality is the CLI lane's contract with the field: a centralised wrapper would have changed e.g. FORMAT_VERSION_TOO_NEW surfacing as INTERNAL_ERROR on those tools, which field automation may key on. Making the asymmetry explicit and named lets the v3 lane fix it deliberately later with a recorded decision.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/cli/",
+  "status": "active",
+  "summary": "Accepted the lane's per-command `errors: \"internal-only\"` flag to preserve the nine handlers whose catch blocks never mapped TwiningError (twining_why, twining_triage, read/query/recent, three housekeeping tools, all coordination tools) rather than centralising error mapping and silently widening their error codes",
+  "timestamp": "2026-09-15T20:53:26.056Z"
+}

@@ -1,0 +1,38 @@
+{
+  "affected_files": [
+    "src/adapters/runtime.ts",
+    "src/events/event-store.ts",
+    "src/retrieval/select.ts",
+    "test/acceptance/slice/harness.ts",
+    "test/acceptance/cases/harness.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "merge-integrator",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "an invalid record, and the case tests the scope GATE rather than admission",
+      "pros": []
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Merged lane/04-retrieval into foundation/v3 (no conflicts) and fixed a production defect it exposed: no adapter write path cited the membership policy, so every mirrored write on a store with a policy would have been quarantined.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01M2M0CYR0NBNB78KZM833QFZZ",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "e9b4817f9645b9627706a6181a37e579f035961f",
+    "recorded_at": "2026-09-16T02:23:12.110Z"
+  },
+  "rationale": "each bait is a legitimate record in its own repository, which is what makes it bait rather than an invalid record, and the case tests the scope GATE rather than admission",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/adapters/",
+  "status": "active",
+  "summary": "Widened C25's fixture grant from R_GW to every repo it seeds (R_GW, R_LED, R_BILL)",
+  "timestamp": "2026-09-16T02:23:12.128Z"
+}

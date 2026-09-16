@@ -1,43 +1,17 @@
 /**
- * MCP tool handlers for export operations.
- * Registers twining_export for full state snapshot as markdown.
+ * MCP registration for twining_export.
+ * Handler lives in src/core/commands/export.ts (2.17.0).
+ * Module gated at the call site (`if (fullSurface)` in createServer).
  */
-import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { Exporter } from "../engine/exporter.js";
-import { toolResult, toolError, TwiningError } from "../utils/errors.js";
+import { registerCommands } from "../core/command-def.js";
+import { exportCommands, type ExportCtx } from "../core/commands/export.js";
 
 export function registerExportTools(
   server: McpServer,
   exporter: Exporter,
 ): void {
-  server.registerTool(
-    "twining_export",
-    {
-      description:
-        "Export full Twining state as a single markdown document. Includes blackboard entries, decisions with full rationale, and knowledge graph entities/relations. Use for handoff between context windows, documentation, or debugging.",
-      inputSchema: {
-        scope: z
-          .string()
-          .optional()
-          .describe(
-            "Optional scope filter to export only a subset of state (e.g., 'src/auth/'). If omitted, exports everything.",
-          ),
-      },
-    },
-    async (args) => {
-      try {
-        const result = await exporter.exportMarkdown(args.scope);
-        return toolResult(result);
-      } catch (e) {
-        if (e instanceof TwiningError) {
-          return toolError(e.message, e.code);
-        }
-        return toolError(
-          e instanceof Error ? e.message : "Unknown error",
-          "INTERNAL_ERROR",
-        );
-      }
-    },
-  );
+  const ctx: ExportCtx = { exporter };
+  registerCommands(server, ctx, exportCommands, { fullSurface: true });
 }

@@ -1,0 +1,26 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Lane 03 review fixes applied and committed on lane/03-runtime: all 11 distinct findings closed incl. the mis-quoted legacy-hook guard blocker; requalify's inert staleness surface deleted; working-set cursor derived from emitted records only.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M2KMTDSKBZSCCP3KRGF6G7FH",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T23:00:50.585Z"
+  },
+  "rationale": "resolves the scoping concern by construction.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/adapters/",
+  "status": "active",
+  "summary": "Accepted deriving the working-set session cursor solely from the versions of records actually emitted (no store.events() scan), so the cursor cannot advance while any selected record remains budget-omitted",
+  "timestamp": "2026-09-15T23:00:50.611Z"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Off-scope semantic admissions are CUT before ranking (not dampened by the SEMANTIC_ADMISSION_FLOOR), the briefing ladder is budget-driven (the historical 3+2 tier only when no budget is given), and token_estimate measures the emitted bytes — three deliberate 2.x behavior changes on the v3 line that supersede the field-D12 mitigation's admission half\" relates to:\n- 01M2KKE0HZSC7RR53XAAEW6SXF: \"Read visibility is a THIRD scope operation, scopeAuthorizes(envelope, record): identity-exact on tenant/repo/task/attempt/consumer plus unidirectional pathCovers, with NO revision clause — distinct from scopeMatches (retrieval, bidirectional) and scopeGoverns (authority, revision-bound); to be exported from src/contracts/scope.ts\"",
+  "entry_type": "finding",
+  "id": "01M2KKE0RM4Q35WD9Z4TCQG6V4",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:36:35.454Z"
+  },
+  "scope": "src/retrieval/",
+  "summary": "Related decisions in scope: 1 existing decision(s) overlap",
+  "tags": [
+    "architecture"
+  ],
+  "timestamp": "2026-09-15T22:36:35.476Z"
+}

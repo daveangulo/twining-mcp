@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-16T02:43:26.320Z",
+  "id": "01M2M1J0FGQFDZX03DGGRBK9PY",
+  "name": "test/core/offline-switch.test.ts",
+  "properties": {
+    "scope": "src/contracts/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-16T02:43:26.320Z"
+}

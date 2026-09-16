@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T02:28:45.208Z",
+  "id": "01M2M0Q40RMSN4BKCXPMN83J4P",
+  "properties": {
+    "decision_summary": "Signed the switchboard fixture's agentB-authored rival events with agentB's own key instead of relaxing lane 02b's author-assertion check",
+    "origin": "derived"
+  },
+  "source": "01M2M0Q40QHJEFV657H50AYKE6",
+  "target": "01M2M0Q40P9JGFHHS1M2559F39",
+  "type": "decided_by"
+}
