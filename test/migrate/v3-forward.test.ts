@@ -34,7 +34,13 @@ import { cleanupStores, copyStore, legacySnapshot, readJson, twiningDirOf, V1_FI
 afterAll(cleanupStores);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const SRC_ROOT = path.resolve(__dirname, "..", "..", "src");
 const sha = (b: Buffer | string): string => createHash("sha256").update(b).digest("hex");
+
+// Review-regression fixture ids (test/fixtures/legacy-stores/generate.ts).
+const NON_UTF8_ID = "01M3C21DBYTES0000000000000";
+const ARCHIVED_FROM_PROVISIONAL_ID = "01M3C21DARCPV0000000000000";
+const OVERRIDDEN_BY_ACTOR_ID = "01M3C21DVRDAC0000000000000";
 
 describe("migrate --to 3: manifest and dry run (§10.1)", () => {
   it("the dry run writes the manifest and NOTHING else, and leaves the legacy bytes untouched", async () => {
@@ -558,5 +564,150 @@ describe("scope translation", () => {
     const traversal: string[] = [];
     scopeFromLegacy(repo, "a/../b", traversal);
     expect(traversal).toContain("scope_path_traversal:a/../b");
+  });
+});
+
+/**
+ * Regressions from the adversarial review of 52ba50d. Each test fails against
+ * the code as it stood before its fix — they are pins, not decoration.
+ */
+describe("review regressions", () => {
+  it("F1: a legacy record whose bytes are NOT valid UTF-8 is stored verbatim and still hashes to its own filename", async () => {
+    const root = copyStore(V1_FIXTURE);
+    const tw = twiningDirOf(root);
+    const source = fs.readFileSync(path.join(tw, "decisions", `${NON_UTF8_ID}.json`));
+    // The fixture is a real instrument: a UTF-8 round trip changes its bytes.
+    expect(Buffer.from(source.toString("utf8"), "utf8").equals(source)).toBe(false);
+
+    await migrateToV3({ projectRoot: root });
+    const store = new EventStore({ twiningDir: tw });
+    try {
+      const created = (await store.history(NON_UTF8_ID)).find((e) => e.kind === "created");
+      const att = created?.attachments?.[0] as { sha256: string; bytes: number };
+      expect(att.sha256).toBe(sha(source));
+      expect(att.bytes).toBe(source.length);
+
+      const stored = fs.readFileSync(path.join(tw, "attachments", att.sha256.slice(0, 2), att.sha256));
+      expect(stored.equals(source), "the stored blob is not byte-identical to the source").toBe(true);
+      // …and the blob hashes to its own filename, the invariant the whole
+      // byte-anchored design rests on.
+      expect(sha(stored)).toBe(att.sha256);
+      // The body IS a decode, and the difference is named rather than hidden.
+      expect((await store.get(NON_UTF8_ID))?.legacy?.legacy_ambiguity).toContain("non_utf8_source_bytes");
+    } finally {
+      store.close();
+    }
+  });
+
+  it("F1: a quarantined damaged blob is retained as BYTES, not as a UTF-8 round trip", async () => {
+    const root = copyStore(V1_FIXTURE);
+    const tw = twiningDirOf(root);
+    await migrateToV3({ projectRoot: root });
+    for (const d of (readManifest(tw) as LegacyManifest).damaged) {
+      const kept = fs.readFileSync(path.join(tw, "legacy", "quarantine", `${d.sha256}.bytes`));
+      expect(sha(kept), `quarantined blob ${d.file} no longer hashes to its name`).toBe(d.sha256);
+    }
+  });
+
+  it("F2: a decision archived out of `provisional` stays provisional under the archive flag", async () => {
+    const root = copyStore(V1_FIXTURE);
+    const tw = twiningDirOf(root);
+    const report = await migrateToV3({ projectRoot: root });
+    // It used to hard-fail the WHOLE run, not just this record.
+    expect(report.ok).toBe(true);
+    expect(report.verification?.status_mismatched).toEqual([]);
+
+    const store = new EventStore({ twiningDir: tw });
+    try {
+      const rec = await store.get(ARCHIVED_FROM_PROVISIONAL_ID);
+      expect(rec?.status).toBe("provisional");
+      expect(rec?.archived).toBe(true);
+      expect(rec?.archived_from).toBe("provisional"); // remembered, never guessed
+      expect(rec?.authorizes_action).toBe(false);
+      // Archival did not ratify it: no promotion anywhere in its history.
+      expect((await store.history(ARCHIVED_FROM_PROVISIONAL_ID)).some((e) => e.kind === "promoted")).toBe(false);
+    } finally {
+      store.close();
+    }
+  });
+
+  it("F3: an `overridden_by` holding an ACTOR label is preserved, and not reported as absent", async () => {
+    const root = copyStore(V1_FIXTURE);
+    const tw = twiningDirOf(root);
+    await migrateToV3({ projectRoot: root });
+    const store = new EventStore({ twiningDir: tw });
+    try {
+      const ev = (await store.history(OVERRIDDEN_BY_ACTOR_ID)).find((e) => e.kind === "overridden");
+      expect(ev).toBeDefined();
+      // The value survives, in the structured field and in the audit string.
+      expect(ev?.producer.asserted_actor).toBe("dave");
+      expect(ev?.legacy?.legacy_ambiguity).toContain("overridden_by_not_a_record_id:dave");
+      // …and the migration does NOT claim the legacy store lacked a value.
+      expect(ev?.legacy?.legacy_ambiguity).not.toContain("overridden_without_overridden_by");
+      // A record id that genuinely resolves still becomes a replacement edge.
+      const resolved = (await store.history("01M3C21DVRDW10000000000000")).find((e) => e.kind === "overridden");
+      expect((resolved?.payload as { replacement?: string }).replacement).toBe("01M3C21DACT1V0000000000000");
+      // CONTROL: the genuinely-absent case keeps the original ambiguity word.
+      const absent = (await store.history("01M3C21DVRDN10000000000000")).find((e) => e.kind === "overridden");
+      expect(absent?.legacy?.legacy_ambiguity).toContain("overridden_without_overridden_by");
+    } finally {
+      store.close();
+    }
+  });
+
+  it("F4: no file under src/ contains a control byte, so no source file is binary to git", () => {
+    const offenders: string[] = [];
+    const walk = (dir: string): void => {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const abs = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          if (entry.name === "vendor" || entry.name === "assets") continue; // third-party/binary by design
+          walk(abs);
+          continue;
+        }
+        if (!/\.(ts|js|mjs|json|md)$/.test(entry.name)) continue;
+        const bytes = fs.readFileSync(abs);
+        // \t (0x09), \n (0x0a) and \r (0x0d) are the only control bytes text
+        // may carry; anything below 0x09 makes git classify the file as
+        // BINARY, and an unreviewable diff is how a merge silently takes one
+        // whole side. A raw NUL in a template literal did exactly this.
+        for (let i = 0; i < bytes.length; i += 1) {
+          if ((bytes[i] as number) < 0x09) {
+            offenders.push(`${path.relative(SRC_ROOT, abs)}@${i}:0x${(bytes[i] as number).toString(16)}`);
+            break;
+          }
+        }
+      }
+    };
+    walk(SRC_ROOT);
+    expect(offenders).toEqual([]);
+  });
+
+  it("F8/F11: contradictory and malformed CLI arguments are refused, never reinterpreted", async () => {
+    const root = copyStore(V1_FIXTURE);
+    const quiet = async <T>(fn: () => T | Promise<T>): Promise<T> => {
+      const log = console.log;
+      const err = console.error;
+      console.log = () => {};
+      console.error = () => {};
+      try {
+        return await fn();
+      } finally {
+        console.log = log;
+        console.error = err;
+      }
+    };
+    const { runMigrateCli, runEventsCli } = await import("../../src/migrate/cli.js");
+
+    // `--reverse` targets format 1, so `--to 2 --reverse` names two targets.
+    expect(await quiet(() => runMigrateCli(["--to", "2", "--reverse", "--project", root]))).toBe(2);
+    // The store is untouched by a refused invocation.
+    expect(loadConfig(twiningDirOf(root)).version).toBe(1);
+
+    await quiet(() => migrateToV3({ projectRoot: root }));
+    // A non-numeric --limit used to print the WHOLE archive.
+    expect(await quiet(() => runEventsCli(["ls", "--limit", "abc", "--project", root]))).toBe(2);
+    expect(await quiet(() => runEventsCli(["ls", "--limit", "0", "--project", root]))).toBe(2);
+    expect(await quiet(() => runEventsCli(["ls", "--limit", "2", "--project", root]))).toBe(0);
   });
 });

@@ -194,6 +194,11 @@ function interpret(c: Candidate, expectedId: string | undefined, damaged: Damage
   const legacyId = typeof body.id === "string" ? body.id : "";
   if (!legacyId) return report("missing_id");
   const ambiguity = [...c.ambiguity];
+  // The PAYLOAD is a UTF-8 decode of the source, so a file that is not valid
+  // UTF-8 loses information on the way into the body (U+FFFD). The attachment
+  // keeps the true bytes; this names the fact that the two differ rather than
+  // letting the body pass as a faithful copy.
+  if (!Buffer.from(text, "utf8").equals(c.raw)) ambiguity.push("non_utf8_source_bytes");
   if (expectedId !== undefined && expectedId !== legacyId) {
     ambiguity.push(`id_filename_mismatch:filename=${expectedId}`);
   }

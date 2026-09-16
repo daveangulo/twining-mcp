@@ -756,9 +756,25 @@ function partsFixture(w: PartsWorld) {
     signWith: { keyId: w.hera.keyId, kp: w.hera.kp },
   });
 
+  // L3 (c) — a WEAK reinstatement. juno holds `rule` in svc/billing/tax/, so
+  // this is authorized; what it is not is strong enough to unpick a part a
+  // human ruling retired. Authority and evidence class are separate gates,
+  // and this fixture exists to keep them separate in the test too.
+  const WEAK_REINSTATE = buildEvent({
+    kind: "reinstated",
+    record: { type: "decision", id: D5.id as string },
+    scope: { repo: w.repo, path: TAX },
+    producer: { principal: w.juno.principal, kind: "human", host: w.juno.host },
+    parents: [OVERRIDE_P3.id as string],
+    evidence_class: "model_inference",
+    payload: { target: D5.id as string, reason: "a weaker claim to reopen the review" },
+    signWith: { keyId: w.juno.keyId, kp: w.juno.kp },
+  });
+
   const throughP4 = [...infra, RULING_PARTS, D5, REVOKE_P1, JUNO_RULING, SUPERSEDE_P2, SCRIBE_REC, SCRIBE_TAKES_P4, SCRIBE_TRIES_P2];
   const all = [...throughP4, OBS_REC, OVERRIDE_P3, REINSTATE];
-  return { infra, RULING_PARTS, D5, REVOKE_P1, JUNO_RULING, SUPERSEDE_P2, SCRIBE_REC, SCRIBE_TAKES_P4, SCRIBE_TRIES_P2, OBS_REC, OVERRIDE_P3, REINSTATE, throughP4, all };
+  const weakArm = [...throughP4, OBS_REC, OVERRIDE_P3, WEAK_REINSTATE];
+  return { infra, RULING_PARTS, D5, REVOKE_P1, JUNO_RULING, SUPERSEDE_P2, SCRIBE_REC, SCRIBE_TAKES_P4, SCRIBE_TRIES_P2, OBS_REC, OVERRIDE_P3, REINSTATE, WEAK_REINSTATE, throughP4, weakArm, all };
 }
 
 describe("C16 L1–L4 / A3.4 — per-part class, version and revocation", () => {
@@ -890,6 +906,114 @@ describe("C16 L1–L4 / A3.4 — per-part class, version and revocation", () => 
     expect(partOf(d5, "P3")?.version).toBe(f.D5.id);
     expect(partOf(d5, "P3")?.version).not.toBe(d5?.version);
     expect(new Set((d5?.parts ?? []).map((p) => p.version)).size).toBe(4);
+    store.close();
+  });
+
+  it("L3 CONTROL: a WEAK reinstatement returns only the parts its class covers, and is refused on the rest", async () => {
+    const w = world();
+    const f = partsFixture(w);
+    const store = await replica(w as C16World, f.weakArm);
+    const d5 = await store.get(f.D5.id as string);
+
+    // It IS authorized (juno holds `rule`) and it IS admitted…
+    expect((await store.deliveryState(f.WEAK_REINSTATE.id as string))?.state).toBe("projected");
+    // …and it returns the part retired by an equal-class claim.
+    expect(partOf(d5, "P4")?.status).toBe("applicable");
+    expect(partOf(d5, "P4")?.evidence_class).toBe("model_inference");
+    // …but NOT the part a human ruling retired, and not the observed one.
+    expect(partOf(d5, "P2")?.status).toBe("superseded");
+    expect(partOf(d5, "P2")?.evidence_class).toBe("human_ruling"); // never restamped
+    expect(partOf(d5, "P2")?.superseded_by).toBe(f.JUNO_RULING.id);
+    expect(partOf(d5, "P3")?.status).toBe("overridden");
+    expect(partOf(d5, "P3")?.evidence_class).toBe("verified_observation");
+    // The refusal is RECORDED, naming the parts it could not return.
+    const refusal = (d5?.contested ?? []).find((c) => c.event === f.WEAK_REINSTATE.id && c.reason.includes("lower_evidence_class_cannot_reinstate_parts"));
+    expect(refusal).toBeDefined();
+    expect(refusal?.reason).toContain("P2");
+    expect(refusal?.reason).toContain("P3");
+    expect(refusal?.claimed_class).toBe("model_inference");
+    // …and the revoked part is still refused separately, as ever.
+    expect(partOf(d5, "P1")?.status).toBe("revoked");
+    store.close();
+  });
+
+  it("L3 CONTROL (paired): the STRONG reinstatement of the same state returns every non-revoked part", async () => {
+    const w = world();
+    const f = partsFixture(w);
+    const store = await replica(w as C16World, f.all);
+    const d5 = await store.get(f.D5.id as string);
+    // Same events, same order, one field different (human_ruling vs
+    // model_inference). If this arm did not differ from the weak one, the
+    // weak arm's refusals would be proving nothing about evidence class.
+    for (const id of ["P2", "P3", "P4"]) expect(partOf(d5, id)?.status).toBe("applicable");
+    expect((d5?.contested ?? []).some((c) => c.reason.includes("lower_evidence_class_cannot_reinstate_parts"))).toBe(false);
+    store.close();
+  });
+
+  it("F6: a part-scoped event on a record with NO parts is refused, never widened to the whole record", async () => {
+    const w = world();
+    const f = partsFixture(w);
+    // D3-style: a plain decision with no parts at all.
+    const PLAIN = created("decision", {
+      scope: { repo: w.repo, path: BILLING, revision: { head: C1 } },
+      producer: { principal: w.hera.principal, kind: "human", host: w.hera.host },
+      parents: f.infra.map((e) => e.id as string),
+      evidence_class: "proposal",
+      payload: { summary: "an unparted decision", rationale: "no parts here" },
+      signWith: { keyId: w.hera.keyId, kp: w.hera.kp },
+    });
+    const REVOKE_ONE_PART = buildEvent({
+      kind: "revoked",
+      record: { type: "decision", id: PLAIN.id as string },
+      scope: { repo: w.repo, path: BILLING },
+      producer: { principal: w.hera.principal, kind: "human", host: w.hera.host },
+      parents: [PLAIN.id as string],
+      evidence_class: "human_ruling",
+      payload: { target: PLAIN.id as string, parts: ["P1"], reason: "withdrawn" },
+      signWith: { keyId: w.hera.keyId, kp: w.hera.kp },
+    });
+    const store = await replica(w as C16World, [...f.infra, PLAIN, REVOKE_ONE_PART]);
+    const plain = await store.get(PLAIN.id as string);
+
+    // The narrow claim did NOT become a whole-record revocation — the one
+    // direction this must never fail in.
+    expect(plain?.revoked).toBe(false);
+    expect(plain?.status).toBe("active");
+    expect(plain?.applicable).toBe(true);
+    // …and it is recorded, not discarded.
+    const annotation = (plain?.contested ?? []).find((c) => c.event === REVOKE_ONE_PART.id);
+    expect(annotation).toBeDefined();
+    expect(annotation?.reason).toContain("unknown_part");
+    expect(annotation?.reason).toContain("P1");
+    store.close();
+  });
+
+  it("F7: a mixed revoke-then-supersede retirement keeps the pointer to what replaced the record", async () => {
+    const w = world();
+    const f = partsFixture(w);
+    // Order matters: the LAST claim applied is a supersession while an earlier
+    // part was revoked, so the roll-up labels the record "overridden".
+    // Provenance must follow the claim, not the label.
+    const SUP_REST = buildEvent({
+      kind: "superseded",
+      record: { type: "decision", id: f.D5.id as string },
+      scope: { repo: w.repo, path: TAX, revision: { head: C2 } },
+      producer: { principal: w.juno.principal, kind: "human", host: w.juno.host },
+      parents: [f.SCRIBE_TAKES_P4.id as string],
+      evidence_class: "human_ruling",
+      payload: { target: f.D5.id as string, by: f.JUNO_RULING.id as string, parts: ["P3"], reason: "the rest goes too" },
+      signWith: { keyId: w.juno.keyId, kp: w.juno.kp },
+    });
+    const store = await replica(w as C16World, [...f.throughP4, SUP_REST]);
+    const d5 = await store.get(f.D5.id as string);
+
+    expect((d5?.parts ?? []).every((p) => p.status !== "applicable")).toBe(true);
+    expect(d5?.applicable).toBe(false);
+    // The mixed retirement is labelled overridden (a revocation happened)…
+    expect(d5?.status).toBe("overridden");
+    expect(d5?.revoked).toBe(false);
+    // …and the successor of the claim that actually retired it is findable.
+    expect(d5?.superseded_by).toContain(f.JUNO_RULING.id);
     store.close();
   });
 

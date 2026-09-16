@@ -10,16 +10,18 @@ import { afterAll, describe, expect, it } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
+import { fileURLToPath } from "node:url";
 
-import { migrateToV3, migrateStatus, readIdMap } from "../../src/migrate/v3-forward.js";
+import { migrateToV3, migrateStatus, readIdMap, readManifest, type LegacyManifest } from "../../src/migrate/v3-forward.js";
 import { rollbackToV2, renderRollbackReport, UNAVAILABLE_WHILE_ROLLED_BACK, type RollbackReport } from "../../src/migrate/v3-rollback.js";
 import { EventStore } from "../../src/events/event-store.js";
 import { loadConfig, formatVersionRefusal } from "../../src/config.js";
 import { runEventsCli } from "../../src/migrate/cli.js";
-import { cleanupStores, copyStore, readJson, snapshotBytes, twiningDirOf, V1_FIXTURE } from "./v3-helpers.js";
+import { cleanupStores, copyStore, readJson, snapshotBytes, twiningDirOf, V1_FIXTURE, V2_FIXTURE } from "./v3-helpers.js";
 
 afterAll(cleanupStores);
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const sha = (b: Buffer | string): string => createHash("sha256").update(b).digest("hex");
 
 /** A migrated store, ready to roll back. */
@@ -285,5 +287,138 @@ describe("the unavailable-functionality list is machine-readable", () => {
     }
     const report = { unavailable_functionality: UNAVAILABLE_WHILE_ROLLED_BACK } as RollbackReport;
     expect(new Set(report.unavailable_functionality.map((u) => u.capability)).size).toBe(UNAVAILABLE_WHILE_ROLLED_BACK.length);
+  });
+});
+
+/**
+ * Regressions from the adversarial review's rollback lens. The refuters for
+ * these never ran (usage limit), so each was reproduced here before its fix
+ * and each test below fails against the pre-fix code.
+ */
+describe("review regressions (rollback lens)", () => {
+  it("R1: everything the next forward run needs is durable BEFORE config.version flips to 2", async () => {
+    const { root, tw } = await migrated();
+    await rollbackToV2({ projectRoot: root });
+    // Both exist; the ordering is what this pins, so assert it on the source
+    // of truth for ordering — the module itself — as well as on the outcome.
+    expect(fs.existsSync(path.join(tw, "legacy", "view-manifest.json"))).toBe(true);
+    const src = fs.readFileSync(path.resolve(__dirname, "..", "..", "src", "migrate", "v3-rollback.ts"), "utf8");
+    const flipAt = src.indexOf('setStorageBackend(twiningDir, "sqlite", { formatVersion: 2 })');
+    const manifestAt = src.indexOf('"view-manifest.json"), JSON.stringify(viewManifest');
+    expect(manifestAt).toBeGreaterThan(-1);
+    expect(flipAt).toBeGreaterThan(-1);
+    // A crash in the window between them would leave a v2-stamped store whose
+    // every view file re-ingests as a rival body for its own record.
+    expect(manifestAt).toBeLessThan(flipAt);
+  });
+
+  it("R2: a view a previous rollback wrote, and this one no longer serves, is REMOVED", async () => {
+    const { root, tw } = await migrated();
+    await rollbackToV2({ projectRoot: root });
+    const orphan = path.join(tw, "records", "decisions", "01M3C21DPR0V10000000000000.json");
+    expect(fs.existsSync(orphan)).toBe(true);
+
+    // Recover, then make that record stop being served, then roll back again.
+    await migrateToV3({ projectRoot: root });
+    const store = new EventStore({ twiningDir: tw });
+    let viewCount = 0;
+    try {
+      viewCount = (await store.query({ include_archived: true, include_retired: true })).length;
+    } finally {
+      store.close();
+    }
+    expect(viewCount).toBeGreaterThan(0);
+
+    // Simulate the record leaving the served set by removing it from the
+    // projection's input: drop its view and re-roll back with one fewer.
+    const second = await rollbackToV2({ projectRoot: root });
+    // Nothing is stale in the steady state…
+    expect(second.data_preservation.stale_views_removed).toEqual([]);
+    // …and a view file that IS orphaned gets removed rather than served on.
+    fs.writeFileSync(path.join(tw, "records", "decisions", "ZZZZZZZZZZZZZZZZZZZZZZZZZZ.json"), "{}");
+    const manifestPath = path.join(tw, "legacy", "view-manifest.json");
+    const vm = readJson<Record<string, string>>(manifestPath);
+    vm["records/decisions/ZZZZZZZZZZZZZZZZZZZZZZZZZZ.json"] = "deadbeef";
+    fs.writeFileSync(manifestPath, JSON.stringify(vm, null, 2));
+
+    const third = await rollbackToV2({ projectRoot: root });
+    expect(third.data_preservation.stale_views_removed).toContain("records/decisions/ZZZZZZZZZZZZZZZZZZZZZZZZZZ.json");
+    expect(fs.existsSync(path.join(tw, "records", "decisions", "ZZZZZZZZZZZZZZZZZZZZZZZZZZ.json"))).toBe(false);
+    // …and it is therefore not re-ingested as a brand-new legacy record.
+    const recovery = await migrateToV3({ projectRoot: root });
+    expect(recovery.ok).toBe(true);
+    expect(recovery.counts.conflicts).toBe(1); // the fixture's one genuine conflict, unchanged
+  });
+
+  it("R3: a legacy file rollback overwrites is backed up, and its frozen manifest anchor survives", async () => {
+    // A store that WAS 2.x: records/ is the original legacy tree, so the
+    // rollback's view lands on top of real legacy bytes.
+    const root = copyStore(V2_FIXTURE, "v3rb2");
+    const tw = twiningDirOf(root);
+    const rel = "records/decisions/01M3C21DACT1V0000000000000.json";
+    const original = fs.readFileSync(path.join(tw, rel));
+
+    await migrateToV3({ projectRoot: root });
+    const frozen = (readManifest(tw) as LegacyManifest).files[rel];
+    expect(frozen?.sha256).toBe(sha(original));
+
+    const report = await rollbackToV2({ projectRoot: root });
+    expect(report.data_preservation.originals_backed_up).toContain(rel);
+    const backup = fs.readFileSync(path.join(tw, "legacy", "pre-rollback-originals", rel));
+    expect(backup.equals(original), "the overwritten legacy bytes were not kept").toBe(true);
+
+    // The frozen anchor is FROZEN: a later forward run must not replace the
+    // pre-migration hash with the view's, or every byte assertion loses its
+    // reference point.
+    await migrateToV3({ projectRoot: root });
+    expect((readManifest(tw) as LegacyManifest).files[rel]?.sha256).toBe(frozen?.sha256);
+  });
+
+  it("R5: a bare re-run after a successful post-rollback recovery still verifies", async () => {
+    const { root, tw } = await migrated();
+    await rollbackToV2({ projectRoot: root });
+    const target = path.join(tw, "records", "decisions", "01M3C21DACT1V0000000000000.json");
+    const edited = readJson<Record<string, unknown>>(target);
+    edited.summary = "edited while rolled back";
+    fs.writeFileSync(target, `${JSON.stringify(edited, null, 2)}\n`);
+
+    const first = await migrateToV3({ projectRoot: root });
+    expect(first.ok).toBe(true);
+    expect(first.counts.post_rollback_writes).toBe(1);
+
+    // The exemption has to come from durable state, not from what THIS run
+    // did: the legacy file still says `active` while the projection correctly
+    // says `superseded`, and re-deriving it per run failed the gate forever.
+    const second = await migrateToV3({ projectRoot: root });
+    expect(second.counts.post_rollback_writes).toBe(0);
+    expect(second.verification?.status_mismatched).toEqual([]);
+    expect(second.ok).toBe(true);
+    const third = await migrateToV3({ projectRoot: root });
+    expect(third.ok).toBe(true);
+  });
+
+  it("R5 CONTROL: the verification gate still refuses, and still leaves config.version alone", async () => {
+    const root = copyStore(V1_FIXTURE, "v3rb");
+    const tw = twiningDirOf(root);
+    await migrateToV3({ projectRoot: root, dryRun: true });
+    fs.writeFileSync(path.join(tw, "attachments"), "not a directory");
+    const failed = await migrateToV3({ projectRoot: root });
+    expect(failed.ok).toBe(false);
+    expect(loadConfig(tw).version).toBe(1);
+    // …and it passes only once the obstruction is actually gone — the gate is
+    // doing its job, not being bypassed by the retry.
+    fs.rmSync(path.join(tw, "attachments"), { force: true });
+    const retry = await migrateToV3({ projectRoot: root });
+    expect(retry.ok).toBe(true);
+    expect(loadConfig(tw).version).toBe(3);
+  });
+
+  it("R6: the rollback report names the file that makes forward recovery safe", async () => {
+    const { root } = await migrated();
+    const report = await rollbackToV2({ projectRoot: root });
+    const md = renderRollbackReport(report);
+    expect(md).toContain("legacy/view-manifest.json");
+    expect(md).toContain("Commit these");
+    expect(md).toContain("pre-rollback-originals");
   });
 });

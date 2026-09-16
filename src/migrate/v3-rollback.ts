@@ -46,6 +46,10 @@ export interface RollbackReport {
     cursors_retained: number;
     records_written: number;
     tombstoned_not_materialised: string[];
+    /** Views a PREVIOUS rollback wrote that this one no longer serves. */
+    stale_views_removed: string[];
+    /** Legacy files this rollback overwrote, copied first (first-wins). */
+    originals_backed_up: string[];
     inspect_with: string[];
     note: string[];
   };
@@ -227,6 +231,20 @@ export async function rollbackToV2(opts: RollbackOptions): Promise<RollbackRepor
   const viewManifest: Record<string, string> = {};
   const lostList: LostSemantic[] = [];
   const tombstoned: string[] = [];
+  const staleRemoved: string[] = [];
+  const originalsBackedUp: string[] = [];
+  // What the LAST rollback wrote. A path in here that this rollback does not
+  // write again is a stale view of a record that is no longer served — a
+  // record tombstoned between two rollbacks, say. Left on disk it is both
+  // served to a 2.x reader AND re-ingested as a brand-new legacy record by the
+  // next forward run, which is resurrection by two different routes.
+  const previousViews: Record<string, string> = (() => {
+    try {
+      return JSON.parse(fs.readFileSync(path.join(twiningDir, "legacy", "view-manifest.json"), "utf8")) as Record<string, string>;
+    } catch {
+      return {};
+    }
+  })();
   try {
     await store.admit();
     await store.project();
@@ -248,9 +266,29 @@ export async function rollbackToV2(opts: RollbackOptions): Promise<RollbackRepor
       filesWritten.push(rel);
       viewManifest[rel] = createHash("sha256").update(bytes).digest("hex");
       if (!opts.dryRun) {
+        // On a store that WAS 2.x, records/ is the original legacy tree and
+        // this write lands on top of a legacy file. The bytes also live in
+        // attachments/ (content-addressed) and are frozen in the manifest, but
+        // "legacy files are never modified" should not quietly stop being true
+        // — keep a first-wins copy of what is about to be overwritten.
+        if (!Object.prototype.hasOwnProperty.call(previousViews, rel) && fs.existsSync(file)) {
+          const backup = path.join(twiningDir, "legacy", "pre-rollback-originals", rel);
+          if (!fs.existsSync(backup)) {
+            ensureDir(path.dirname(backup));
+            fs.copyFileSync(file, backup);
+            originalsBackedUp.push(rel);
+          }
+        }
         ensureDir(path.dirname(file));
         atomicWriteFileSync(file, bytes);
       }
+    }
+
+    // Remove the views a previous rollback wrote that this one does not.
+    for (const rel of Object.keys(previousViews)) {
+      if (Object.prototype.hasOwnProperty.call(viewManifest, rel)) continue;
+      staleRemoved.push(rel);
+      if (!opts.dryRun) fs.rmSync(path.join(twiningDir, rel), { force: true });
     }
 
     const report: RollbackReport = {
@@ -262,6 +300,8 @@ export async function rollbackToV2(opts: RollbackOptions): Promise<RollbackRepor
         cursors_retained: countFiles(path.join(twiningDir, "cursors"), ".json"),
         records_written: filesWritten.length,
         tombstoned_not_materialised: tombstoned,
+        stale_views_removed: staleRemoved.sort(),
+        originals_backed_up: originalsBackedUp.sort(),
         inspect_with: ["twining events ls", "twining events show <event-id>", "twining migrate-status"],
         note: [
           "events/, attachments/ and cursors/ are UNCHANGED and remain the authority",
@@ -276,14 +316,21 @@ export async function rollbackToV2(opts: RollbackOptions): Promise<RollbackRepor
     };
 
     if (!opts.dryRun) {
-      fs.rmSync(path.join(recordsDir, "RECORDS-FROZEN.md"), { force: true });
-      setStorageBackend(twiningDir, "sqlite", { formatVersion: 2 });
-      const next: MigrationState = { ...state, status: "rolled_back", rolled_back_at: new Date().toISOString(), updated_at: new Date().toISOString() };
       ensureDir(path.join(twiningDir, "legacy"));
+      // ORDER MATTERS. The view manifest is what lets the next `migrate --to 3`
+      // tell "a view I generated" from "a legacy record I have never seen"; a
+      // crash between the config flip and that write would leave a v2-stamped
+      // store whose every view file re-ingests as a rival body for its own
+      // record. So every artefact the next forward run depends on is fsynced
+      // FIRST, and flipping config.version — the switch that says "you are on
+      // 2.x now" — is the last thing that happens.
+      atomicWriteFileSync(path.join(twiningDir, "legacy", "view-manifest.json"), JSON.stringify(viewManifest, null, 2) + "\n");
+      const next: MigrationState = { ...state, status: "rolled_back", rolled_back_at: new Date().toISOString(), updated_at: new Date().toISOString() };
       atomicWriteFileSync(path.join(twiningDir, "legacy", "migration-state.json"), JSON.stringify(next, null, 2) + "\n");
       atomicWriteFileSync(path.join(twiningDir, "legacy", "rollback-report.json"), JSON.stringify(report, null, 2) + "\n");
-      atomicWriteFileSync(path.join(twiningDir, "legacy", "view-manifest.json"), JSON.stringify(viewManifest, null, 2) + "\n");
       atomicWriteFileSync(path.join(twiningDir, "legacy", "ROLLBACK-REPORT.md"), renderRollbackReport(report));
+      fs.rmSync(path.join(recordsDir, "RECORDS-FROZEN.md"), { force: true });
+      setStorageBackend(twiningDir, "sqlite", { formatVersion: 2 });
     }
     return report;
   } finally {
@@ -306,6 +353,17 @@ export function renderRollbackReport(report: RollbackReport): string {
     ...d.note.map((n) => `- ${n}`),
     "",
     `Inspect the retained v3 data with: ${d.inspect_with.join(", ")}`,
+    "",
+    "## Commit these (nothing has been committed for you)",
+    "",
+    "- `.twining/records/` — the regenerated 2.x view",
+    "- `.twining/config.yml` — now `version: 2`",
+    "- **`.twining/legacy/view-manifest.json`** — REQUIRED. Without it the next",
+    "  `twining migrate --to 3` reads every view file as a new legacy record and",
+    "  creates a rival body for every record you have.",
+    "- `.twining/legacy/pre-rollback-originals/` — legacy files this rollback overwrote",
+    "",
+    "`.twining/events/` and `.twining/attachments/` are unchanged; keep them committed.",
     "",
     "## Unavailable functionality (NOT data loss)",
     "",

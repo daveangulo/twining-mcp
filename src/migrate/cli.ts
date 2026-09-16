@@ -72,6 +72,15 @@ export async function runMigrateCli(argv: string[]): Promise<number> {
     console.error(`migrate: unsupported target format ${to} (expected 2 or 3)\n${USAGE}`);
     return 2;
   }
+  // `--reverse` goes to format 1, so `--to 2 --reverse` names two different
+  // targets in one invocation. Before this lane `--to` was an unknown
+  // argument (exit 2), so the combination was impossible; letting `reverse`
+  // quietly win would be exactly the silent reinterpretation the note above
+  // refuses.
+  if (to === 2 && reverse) {
+    console.error(`migrate: --reverse targets format 1, not 2 — drop --to, or drop --reverse\n${USAGE}`);
+    return 2;
+  }
   if (to === 3) {
     if (check) {
       console.error(`migrate: --check is not supported with --to 3 (use \`twining-mcp migrate-status\`)\n${USAGE}`);
@@ -307,7 +316,18 @@ export function runEventsCli(argv: string[]): number {
 
   if (sub === "ls") {
     let limit = Number.POSITIVE_INFINITY;
-    for (let i = 0; i < rest.length; i++) if (rest[i] === "--limit" && rest[i + 1]) limit = Number(rest[++i]);
+    for (let i = 0; i < rest.length; i++) {
+      if (rest[i] !== "--limit") continue;
+      // Number("abc") is NaN and `shown >= NaN` is always false, so an
+      // unvalidated limit silently prints the WHOLE archive — the opposite of
+      // what the operator asked for, on a store that may hold 10k events.
+      const value = Number(rest[++i]);
+      if (!Number.isInteger(value) || value < 1) {
+        console.error(`events: --limit takes a positive integer (got ${String(rest[i])})\n${USAGE}`);
+        return 2;
+      }
+      limit = value;
+    }
     const idMap = readIdMap(path.join(projectRoot, ".twining"));
     let shown = 0;
     for (const rel of files) {

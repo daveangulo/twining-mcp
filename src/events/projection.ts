@@ -77,14 +77,16 @@ export interface ProjectedPart {
   /** Authority withdrawn from this part alone (L3). Permanent. */
   revoked?: boolean;
   authorizing_event?: string;
-  /** The status this part held before it was retired, for `reinstated`. */
-  reinstated_from?: string;
 }
 
 /** Part statuses that are not part of the applicable view. */
 export const RETIRED_PART_STATUSES = new Set(["superseded", "overridden", "revoked"]);
 
-/** The parts of `rec` that still apply. An unparted record yields []. */
+/**
+ * The parts of `rec` that still apply. An unparted record yields [].
+ * Used by the reducer's roll-up and by retrieval surfaces that need the
+ * applicable slice of a multi-part record without re-deriving the rule.
+ */
 export function applicableParts(rec: { parts?: ProjectedPart[] }): ProjectedPart[] {
   return (rec.parts ?? []).filter((p) => !RETIRED_PART_STATUSES.has(p.status));
 }
@@ -242,26 +244,57 @@ export function correctionFor(record: SliceProjectedRecord, scope: Scope): Corre
 }
 
 /**
+ * Resolve the parts a part-scoped lifecycle event names.
+ *
+ * A payload carrying `parts` is a NARROWER claim than a whole-record one, and
+ * the one direction this must never fail in is widening: if the target has no
+ * parts, or none of the named ids resolve, the event is recorded as a
+ * contested `unknown_part` annotation and the record is left untouched —
+ * never escalated into a whole-record supersession, override or revocation.
+ */
+function resolveNamedParts(
+  rec: Mutable,
+  ev: EventEnvelope,
+  named: string[],
+): ProjectedPart[] | null {
+  const resolved = (rec.parts ?? []).filter((p) => named.includes(p.part_id));
+  if (resolved.length > 0) return resolved;
+  rec.contested.push({
+    event: ev.id,
+    kind: ev.kind,
+    reason: `unknown_part (${named.join(", ")}) — a part-scoped ${ev.kind} was not applied to the whole record`,
+    claimed_class: ev.evidence_class,
+    target_class: rec.evidence_class,
+  });
+  return null;
+}
+
+/**
  * Roll a part-scoped change up to the record. A multi-part record stays
  * applicable while ANY part still applies — that is the whole point of
  * partial supersession (C16 A1.1/A1.2). Only when nothing applicable is left
  * does the record take the most severe status its parts hold, so a record
  * whose parts were retired one at a time ends in the same state as one
- * retired whole.
+ * retired whole. Returns whether the record was retired by this roll-up, so
+ * the caller can record provenance for the claim it just applied — a mixed
+ * revoke-then-supersede retirement is LABELLED "overridden", and without this
+ * the supersession's own `by` pointer was dropped and the record reported a
+ * retired status with nothing to follow to its successor.
  */
-function rollUpParts(rec: { status: string; parts?: ProjectedPart[]; revoked: boolean }): void {
+function rollUpParts(rec: { status: string; parts?: ProjectedPart[]; revoked: boolean }): boolean {
   const parts = rec.parts;
-  if (!parts || parts.length === 0) return;
-  if (parts.some((p) => !RETIRED_PART_STATUSES.has(p.status))) return;
+  if (!parts || parts.length === 0) return false;
+  if (applicableParts(rec).length > 0) return false;
   if (parts.some((p) => p.status === "revoked")) {
     // A record all of whose parts are gone, some by revocation, is revoked
     // only when EVERY part was revoked; a mix means authority was withdrawn
     // from part of it and replaced elsewhere — the stronger claim governs.
     rec.status = parts.every((p) => p.revoked === true) ? "revoked" : "overridden";
     if (parts.every((p) => p.revoked === true)) rec.revoked = true;
-    return;
+    return true;
   }
   rec.status = parts.some((p) => p.status === "overridden") ? "overridden" : "superseded";
+  return true;
 }
 
 export function projectEvents(admitted: EventEnvelope[]): ProjectionResult {
@@ -342,6 +375,15 @@ export function projectEvents(admitted: EventEnvelope[]): ProjectionResult {
         .map((pid) => rec.parts?.find((x) => x.part_id === pid)?.evidence_class)
         .filter((c): c is EvidenceClass => c !== undefined)
         .sort((a, b) => EVIDENCE_RANK[b] - EVIDENCE_RANK[a]);
+      // A `reinstated` on a PARTED record is judged PER PART, not here: the
+      // authority it must overcome lives on each part (a part-scoped
+      // supersession never reaches `supersession_events`), and the case's own
+      // title is "only authorized parts change" — so a reinstatement returns
+      // the parts its class covers and is refused, visibly, on the rest.
+      // Blocking the whole event on the strongest part would make the
+      // per-part rule unreachable and would throw away the parts it was
+      // entitled to return.
+      const perPartReinstate = ev.kind === "reinstated" && (rec.parts?.length ?? 0) > 0;
       const against: EvidenceClass =
         partClasses[0] ??
         (ev.kind === "reinstated"
@@ -350,7 +392,7 @@ export function projectEvents(admitted: EventEnvelope[]): ProjectionResult {
               .filter(Boolean)
               .sort((a, b) => EVIDENCE_RANK[b] - EVIDENCE_RANK[a])[0] ?? rec.evidence_class)
           : rec.evidence_class);
-      if (!successorMayApply(against, ev.evidence_class)) {
+      if (!perPartReinstate && !successorMayApply(against, ev.evidence_class)) {
         touch(rec, ev);
         const claimant = (p.by as string | undefined) ?? (p.replacement as string | undefined);
         const verb = ev.kind === "corrected" ? "correct" : ev.kind === "reinstated" ? "reinstate_over" : "supersede";
@@ -390,12 +432,11 @@ export function projectEvents(admitted: EventEnvelope[]): ProjectionResult {
         touch(rec, ev);
         const by = p.by as string;
         const parts = p.parts as string[] | undefined;
-        if (parts && rec.parts) {
-          for (const partId of parts) {
-            const part = rec.parts.find((x) => x.part_id === partId);
-            if (!part) continue;
+        if (parts && parts.length > 0) {
+          const named = resolveNamedParts(rec, ev, parts);
+          if (!named) break; // recorded as unknown_part; the record is untouched
+          for (const part of named) {
             if (part.revoked) continue; // withdrawn authority is not supersedable
-            part.reinstated_from = part.status;
             part.status = "superseded";
             part.superseded_by = by;
             part.authorizing_event = ev.id;
@@ -405,8 +446,10 @@ export function projectEvents(admitted: EventEnvelope[]): ProjectionResult {
             part.evidence_class = ev.evidence_class;
             part.version = ev.id;
           }
-          rollUpParts(rec);
-          if (rec.status === "superseded") rec.superseded_by = [...new Set([...rec.superseded_by, by])];
+          // Provenance follows the CLAIM, not the roll-up's chosen label: a
+          // mixed retirement is labelled "overridden" while the last claim
+          // applied was a supersession, and its successor must stay findable.
+          if (rollUpParts(rec)) rec.superseded_by = [...new Set([...rec.superseded_by, by])];
           break;
         }
         // Whole-record supersession. Two successors with no causal path
@@ -431,19 +474,18 @@ export function projectEvents(admitted: EventEnvelope[]): ProjectionResult {
       case "overridden": {
         touch(rec, ev);
         const parts = p.parts as string[] | undefined;
-        if (parts && rec.parts) {
-          for (const partId of parts) {
-            const part = rec.parts.find((x) => x.part_id === partId);
-            if (!part || part.revoked) continue;
-            part.reinstated_from = part.status;
+        if (parts && parts.length > 0) {
+          const named = resolveNamedParts(rec, ev, parts);
+          if (!named) break; // recorded as unknown_part; the record is untouched
+          for (const part of named) {
+            if (part.revoked) continue;
             part.status = "overridden";
             if (typeof p.replacement === "string") part.overridden_by = p.replacement;
             part.authorizing_event = ev.id;
             part.evidence_class = ev.evidence_class;
             part.version = ev.id;
           }
-          rollUpParts(rec);
-          if (rec.status === "overridden" && typeof p.replacement === "string") rec.overridden_by = p.replacement;
+          if (rollUpParts(rec) && typeof p.replacement === "string") rec.overridden_by = p.replacement;
           break;
         }
         rec.status = "overridden";
@@ -497,16 +539,33 @@ export function projectEvents(admitted: EventEnvelope[]): ProjectionResult {
         // refusal is recorded beside the record rather than passed over.
         if (rec.parts && rec.parts.length > 0) {
           const revokedParts = rec.parts.filter((x) => x.revoked === true).map((x) => x.part_id);
+          const outranked: string[] = [];
           for (const part of rec.parts) {
             if (part.revoked === true) continue;
             if (!RETIRED_PART_STATUSES.has(part.status)) continue;
+            // Per part, the same rule as per record: undoing a retirement needs
+            // at least the authority that made it. A part retired by a stronger
+            // class stays retired and the refusal is recorded — it is never
+            // returned AND relabelled with the weaker reinstatement's class.
+            if (!successorMayApply(part.evidence_class, ev.evidence_class)) {
+              outranked.push(part.part_id);
+              continue;
+            }
             part.status = "applicable";
             delete part.superseded_by;
             delete part.overridden_by;
-            delete part.reinstated_from;
             part.authorizing_event = ev.id;
             part.evidence_class = ev.evidence_class;
             part.version = ev.id;
+          }
+          if (outranked.length > 0) {
+            rec.contested.push({
+              event: ev.id,
+              kind: "reinstated",
+              reason: `lower_evidence_class_cannot_reinstate_parts (${outranked.join(", ")})`,
+              claimed_class: ev.evidence_class,
+              target_class: rec.parts.find((x) => x.part_id === outranked[0])?.evidence_class ?? rec.evidence_class,
+            });
           }
           if (revokedParts.length > 0) {
             rec.contested.push({
@@ -599,26 +658,23 @@ export function projectEvents(admitted: EventEnvelope[]): ProjectionResult {
       case "revoked": {
         touch(rec, ev);
         const parts = p.parts as string[] | undefined;
-        if (parts && rec.parts) {
+        if (parts && parts.length > 0) {
           // Part-level revocation (C16 L3/T7). Only the named parts lose
           // authority; the record itself is revoked only when nothing
           // applicable is left. Revocation is permanent per part exactly as it
           // is per record — `reinstated` refuses on a revoked part below.
-          for (const partId of parts) {
-            const part = rec.parts.find((x) => x.part_id === partId);
-            if (!part) continue;
+          const named = resolveNamedParts(rec, ev, parts);
+          if (!named) break; // recorded as unknown_part; the record is untouched
+          for (const part of named) {
             part.status = "revoked";
             part.revoked = true;
             part.authorizing_event = ev.id;
             part.evidence_class = ev.evidence_class;
             part.version = ev.id;
-            delete part.reinstated_from;
           }
+          // rollUpParts already decides the record-level outcome, revocation
+          // included — re-deriving it here would be a second place to edit.
           rollUpParts(rec);
-          if (rec.parts.every((x) => x.revoked === true)) {
-            rec.status = "revoked";
-            rec.revoked = true;
-          }
           break;
         }
         rec.status = "revoked";

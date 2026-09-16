@@ -53,6 +53,9 @@ export const IDS = {
   dOverriddenWithout: id("DVRDN1"),
   dArchivedWith: id("DARCW1"),
   dArchivedWithout: id("DARCN1"),
+  dArchivedFromProvisional: id("DARCPV"),
+  dOverriddenByActor: id("DVRDAC"),
+  dNonUtf8: id("DBYTES"),
   dAmended: id("DAMND1"),
   dOrphan: id("DRPHN1"),
   dIdMismatch: id("DMSMT1"),
@@ -187,6 +190,26 @@ const decisions: LegacyDecision[] = [
     summary: "end-of-cycle archive of a ratified decision",
     status: "archived",
     archived_from: "active",
+  }),
+  decision({
+    // Archived out of PROVISIONAL. housekeeping's archive_stale sweep writes
+    // exactly this shape, and its own description says "a provisional goes
+    // back to the ratification queue" — so the migration has to keep the
+    // record provisional under the archive flag, not silently ratify it.
+    id: IDS.dArchivedFromProvisional,
+    summary: "a provisional swept into the archive by archive_stale",
+    status: "archived",
+    archived_from: "provisional",
+    confidence: "low",
+  }),
+  decision({
+    // `overridden_by` holding an ACTOR label, which is what 1.x actually
+    // wrote (`overriddenBy ?? "human"`), not a record id.
+    id: IDS.dOverriddenByActor,
+    summary: "overridden by a person, not by another decision",
+    status: "overridden",
+    overridden_by: "dave",
+    override_reason: "reversed on the release call",
   }),
   decision({
     // Legacy ambiguity: archived with no remembered prior status.
@@ -345,6 +368,20 @@ const handoffs = [
 
 // ------------------------------------------------------------ damaged files
 
+/**
+ * A legacy record whose file contains a byte sequence that is not valid UTF-8
+ * (0xFF 0xFE inside a JSON string, as a latin-1 export or a truncated
+ * multi-byte character would produce). Its JSON still parses as latin-1-ish
+ * bytes, and the point is that the migration stores the BYTES: decoding them
+ * to UTF-8 would map both to U+FFFD and the attachment would stop hashing to
+ * its own filename.
+ */
+const NON_UTF8_BYTES = Buffer.concat([
+  Buffer.from(`{\n  "agent_id": "agent-scribe",\n  "confidence": "medium",\n  "id": "${IDS.dNonUtf8}",\n  "rationale": "exported by a latin-1 client",\n  "scope": "src/catalog/",\n  "status": "active",\n  "summary": "byte `, "utf8"),
+  Buffer.from([0xff, 0xfe]),
+  Buffer.from(` survives",\n  "timestamp": "${T("01")}"\n}\n`, "utf8"),
+]);
+
 const MALFORMED_BYTES = '{"id": "' + IDS.dMalformed + '", "summary": "truncated mid-pay';
 /** The rival body for the duplicate-declared id — different bytes, same id. */
 const duplicateRival: LegacyDecision = decision({
@@ -384,6 +421,12 @@ function write(file: string, content: string): void {
   fs.writeFileSync(file, content);
 }
 
+/** Write raw BYTES — used for the fixture that is deliberately not UTF-8. */
+function writeBytes(file: string, content: Buffer): void {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, content);
+}
+
 function writeV1(root: string): void {
   const tw = path.join(root, ".twining");
   fs.rmSync(root, { recursive: true, force: true });
@@ -406,6 +449,7 @@ function writeV1(root: string): void {
     write(path.join(tw, "decisions", `${file}.json`), stable(d));
   }
   write(path.join(tw, "decisions", `${DUPLICATE_DECL_FILENAME}.json`), stable(duplicateRival));
+  writeBytes(path.join(tw, "decisions", `${IDS.dNonUtf8}.json`), NON_UTF8_BYTES);
   write(path.join(tw, "decisions", `${IDS.dMalformed}.json`), MALFORMED_BYTES);
   write(path.join(tw, "decisions", `${IDS.dConflictMarkers}.json`), CONFLICT_BYTES);
 
@@ -448,6 +492,7 @@ function writeV2(root: string): void {
     write(path.join(tw, "records", "decisions", `${file}.json`), stable(d));
   }
   write(path.join(tw, "records", "decisions", `${DUPLICATE_DECL_FILENAME}.json`), stable(duplicateRival));
+  writeBytes(path.join(tw, "records", "decisions", `${IDS.dNonUtf8}.json`), NON_UTF8_BYTES);
   write(path.join(tw, "records", "decisions", `${IDS.dMalformed}.json`), MALFORMED_BYTES);
   write(path.join(tw, "records", "decisions", `${IDS.dConflictMarkers}.json`), CONFLICT_BYTES);
 

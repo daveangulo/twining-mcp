@@ -324,8 +324,8 @@ export async function runTwiningCli(argv: string[]): Promise<number> {
     return 2;
   }
 
-  // The two pre-2.17 subcommands keep their own output and exit codes
-  // verbatim — they are not command-core commands and print no envelope.
+  // The CLI-only subcommands keep their own output and exit codes verbatim —
+  // they are not command-core commands and print no envelope.
   if (dispatch.kind === "subcommand") {
     if (dispatch.name === "migrate") {
       const { runMigrateCli } = await import("../migrate/cli.js");

@@ -72,6 +72,24 @@
     "timestamp": "2026-08-01T09:00:00.000Z"
   },
   {
+    "confidence": "low",
+    "domain": "architecture",
+    "id": "01M3C21DARCPV0000000000000",
+    "scope": "src/catalog/",
+    "status": "archived",
+    "summary": "a provisional swept into the archive by archive_stale",
+    "timestamp": "2026-08-01T09:00:00.000Z"
+  },
+  {
+    "confidence": "medium",
+    "domain": "architecture",
+    "id": "01M3C21DVRDAC0000000000000",
+    "scope": "src/catalog/",
+    "status": "overridden",
+    "summary": "overridden by a person, not by another decision",
+    "timestamp": "2026-08-01T09:00:00.000Z"
+  },
+  {
     "confidence": "medium",
     "domain": "architecture",
     "id": "01M3C21DARCN10000000000000",
