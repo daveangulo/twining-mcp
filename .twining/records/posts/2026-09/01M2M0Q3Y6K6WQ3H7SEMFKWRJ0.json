@@ -1,0 +1,18 @@
+{
+  "agent_id": "merge-integrator",
+  "detail": "Full summary: Merged lane/05-verification into foundation/v3; merged the two README claims on test/acceptance/cases/ and fixed the switchboard fixture, whose agentB-authored rivals were rejected as unauthenticated author assertions.\nDecisions: [object Object]; Merged the two competing test/acceptance/cases/README.md claims (lane 04's conformance mapping and scoring rules, lane 05's ownership rules and blocker table) into one file rather than choosing a side, and updated the blocker table to post-merge truth: C03 is lane 04's and C27 is lane 03's per DN26, leaving C13, C23 and C28 as the honest remaining stubs\nFindings: author_assertion_not_authenticated is emitted by src/events/event-store.ts checkCredential but is not yet in REJECT_REASONS in src/contracts/delivery.ts — it is one of the draft.3 additions still to apply.; The switchboard's N-CONFLICT control was silently vacuous-adjacent before this: it reported a projection defect (superseded instead of conflicted) when the real cause was that half the fixture never got admitted. A control that fails for the wrong reason is as misleading as one that cannot fail.",
+  "entry_type": "status",
+  "id": "01M2M0Q3Y6K6WQ3H7SEMFKWRJ0",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "36a4ab51ae367cb696587759a4adf8689a0ac9df",
+    "recorded_at": "2026-09-16T02:28:45.107Z"
+  },
+  "scope": "test/acceptance/",
+  "summary": "Merged lane/05-verification into foundation/v3; merged the two README claims on test/acceptance/cases/ and fixed the switchboard fixture, whose agentB-authored rivals were rejected as unauthenticat…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-16T02:28:45.126Z"
+}

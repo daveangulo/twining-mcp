@@ -1,0 +1,41 @@
+{
+  "affected_files": [
+    "test/acceptance/harness/scenario-fixture.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "merge-integrator",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Treat a host-signed event as authenticating whatever producer it claims",
+      "pros": [],
+      "reason_rejected": "that is the 2.x gap 6 the evidence-class system was built to close"
+    },
+    {
+      "cons": [],
+      "option": "Author agentB's events on replica B",
+      "pros": [],
+      "reason_rejected": "the fixture deliberately seeds both on the producer and exchanges them; signing is the smaller and more honest change"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Merged lane/05-verification into foundation/v3; merged the two README claims on test/acceptance/cases/ and fixed the switchboard fixture, whose agentB-authored rivals were rejected as unauthenticated author assertions.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M2M0Q3ZX92TJ90BSGPSV5592",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "36a4ab51ae367cb696587759a4adf8689a0ac9df",
+    "recorded_at": "2026-09-16T02:28:45.161Z"
+  },
+  "rationale": "The N-CONFLICT control failed with the switch ON: the record projected as `superseded` rather than `conflicted` because rivalTwo and supersedeTwo were never admitted — both were rejected author_assertion_not_authenticated on the producer. The fixture left them unsigned so the producing store host-signed them, but that host key binds to agentA, and an event claiming agentB while carrying agentA's signature is exactly the forged-author case R03/R17 exists to stop. Two rivals that are supposed to be two different authors must authenticate as two. The control now breaks its assertion for the right reason.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "test/acceptance/",
+  "status": "active",
+  "summary": "Signed the switchboard fixture's agentB-authored rival events with agentB's own key instead of relaxing lane 02b's author-assertion check",
+  "timestamp": "2026-09-16T02:28:45.181Z"
+}

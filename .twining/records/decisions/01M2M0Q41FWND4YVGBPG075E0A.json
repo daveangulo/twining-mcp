@@ -1,0 +1,35 @@
+{
+  "affected_files": [
+    "test/acceptance/harness/scenario-fixture.ts",
+    "test/acceptance/cases/README.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "merge-integrator",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "choosing a side, and updated the blocker table to post-merge truth: C03 is lane 04's and C27 is lane 03's per DN26, leaving C13, C23 and C28 as the honest remaining stubs",
+      "pros": []
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Merged lane/05-verification into foundation/v3; merged the two README claims on test/acceptance/cases/ and fixed the switchboard fixture, whose agentB-authored rivals were rejected as unauthenticated author assertions.",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01M2M0Q41FWND4YVGBPG075E0A",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "36a4ab51ae367cb696587759a4adf8689a0ac9df",
+    "recorded_at": "2026-09-16T02:28:45.211Z"
+  },
+  "rationale": "Merged the two competing test/acceptance/cases/README.md claims (lane 04's conformance mapping and scoring rules, lane 05's ownership rules and blocker table) into one file rather than choosing a side, and updated the blocker table to post-merge truth: C03 is lane 04's and C27 is lane 03's per DN26, leaving C13, C23 and C28 as the honest remaining stubs",
+  "rationale_source": "derived",
+  "reversible": true,
+  "scope": "test/acceptance/",
+  "status": "active",
+  "summary": "Merged the two competing test/acceptance/cases/README.md claims (lane 04's conformance mapping and scoring rules, lane 05's ownership rules and blocker table) into one file rather than choosing a side, and updated the blocker table to post-merge truth: C03 is lane 04's and C27 is lane 03's per DN26, leaving C13, C23 and C28 as the honest remaining stubs",
+  "timestamp": "2026-09-16T02:28:45.231Z"
+}

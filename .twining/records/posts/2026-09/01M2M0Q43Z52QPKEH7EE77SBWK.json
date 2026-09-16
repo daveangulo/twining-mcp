@@ -1,0 +1,18 @@
+{
+  "agent_id": "merge-integrator",
+  "detail": "Full summary: The switchboard's N-CONFLICT control was silently vacuous-adjacent before this: it reported a projection defect (superseded instead of conflicted) when the real cause was that half the fixture never got admitted. A control that fails for the wrong reason is as misleading as one that cannot fail.",
+  "entry_type": "finding",
+  "id": "01M2M0Q43Z52QPKEH7EE77SBWK",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "36a4ab51ae367cb696587759a4adf8689a0ac9df",
+    "recorded_at": "2026-09-16T02:28:45.292Z"
+  },
+  "scope": "test/acceptance/",
+  "summary": "The switchboard's N-CONFLICT control was silently vacuous-adjacent before this: it reported a projection defect (superseded instead of conflicted) when the real cause was that half the fixture neve…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-16T02:28:45.311Z"
+}
