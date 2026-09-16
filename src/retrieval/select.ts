@@ -25,10 +25,9 @@
  *    read entitlement is not revision-bound in that way; applying it would
  *    make an entitlement evaporate the moment HEAD moved.
  *
- * So this module defines `scopeAuthorizes(envelope, record)`: coverage on the
- * identity components and `pathCovers` on the path, with no revision clause.
- * A contract diff proposing this as a third exported operation is in the lane
- * report; until it lands, the definition lives here and is tested here.
+ * So the contract defines a third operation, `scopeAuthorizes(envelope,
+ * record)`: coverage on the identity components and `pathCovers` on the path,
+ * with no revision clause. It is re-exported here and tested here.
  *
  * ## Selection is the intersection of two predicates
  *
@@ -49,6 +48,7 @@ import {
   scopeMatches,
   normalizePath,
   type Scope,
+  scopeAuthorizes,
 } from "../contracts/scope.js";
 import { digestOf } from "../contracts/canonical.js";
 
@@ -164,36 +164,14 @@ export interface SelectionOutcome<T> {
 }
 
 /**
- * Read visibility: does `envelope` cover `record`?
+ * Read visibility — adopted into the contract at draft.3.
  *
- * Unidirectional (an envelope for `src/` covers `src/auth/`, never the
- * reverse), exact on the identity components, and — unlike `scopeGoverns` —
- * with **no revision clause**, because a read entitlement is not bound to the
- * head it was granted at.
- *
- * An envelope that names no `repo` authorizes nothing unless it declares
- * `global: true`; the same deny-by-default shape `scopeGoverns` uses.
+ * The definition now lives in `src/contracts/scope.ts` beside `scopeMatches`
+ * and `scopeGoverns`, because it is a third scope operation rather than a
+ * retrieval detail. Re-exported here so every existing caller and test keeps
+ * importing it from the module that enforces it.
  */
-export function scopeAuthorizes(envelope: Scope, record: Scope): boolean {
-  const IDENTITY = ["tenant", "repo", "task", "attempt", "consumer"] as const;
-  for (const k of IDENTITY) {
-    const e = envelope[k];
-    if (e === undefined) {
-      // An envelope silent on `repo` must be explicitly global.
-      if (k === "repo" && envelope.global !== true) return false;
-      continue;
-    }
-    if (k === "repo" && record[k] === undefined && record.global === true) {
-      // A store-global record is readable by anyone authorized in the store.
-      continue;
-    }
-    if (record[k] !== e) return false;
-  }
-  if (envelope.path !== undefined && !pathCovers(envelope.path, record.path)) {
-    return false;
-  }
-  return true;
-}
+export { scopeAuthorizes };
 
 /** Is `record` readable by a principal holding this envelope set? */
 export function authorizes(envelopes: readonly Scope[], record: Scope): boolean {

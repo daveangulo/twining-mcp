@@ -280,7 +280,7 @@ Built to stay usable at scale: lists are virtualized with live facet counts, the
 
 ### Core Tools (always available)
 
-The full default surface is these 15 tools. Everything else needs `full_surface: true` — if a tool is not on this list, assume you cannot call it until you have opted in.
+The full default surface is these 16 tools. Everything else needs `full_surface: true` — if a tool is not on this list, assume you cannot call it until you have opted in.
 
 | Tool | What It Does |
 |------|-------------|
@@ -299,6 +299,7 @@ The full default surface is these 15 tools. Everything else needs `full_surface:
 | `twining_neighbors` | Traverse the graph from an entity |
 | `twining_graph_query` | Query graph entities and relations |
 | `twining_prune_graph` | Remove stale graph nodes |
+| `twining_exchange_status` | What this replica is uncertain about — outbox depth, events waiting on prerequisites, rejected/quarantined counts with reasons, per-consumer cursors, and the gaps it knows it has. Read-only; never runs git. Default-surface on purpose: uncertainty should be visible without an operator widening the surface first |
 
 `twining_record` accepts natural language decisions like `"Chose Redis over Memcached — need persistence"` and automatically parses them into structured records with rationale, rejected alternatives, and inferred domain. It also accepts assumptions, constraints, affected files, and dependency chains — everything the decision store needs for high-fidelity context assembly.
 
@@ -314,6 +315,7 @@ For advanced workflows — deep decision management, graph exploration, multi-ag
 | **Triage** | `twining_triage` |
 | **Coordination** | `twining_register`, `twining_agents`, `twining_discover`, `twining_delegate`, `twining_handoff`†, `twining_acknowledge`† |
 | **Lifecycle** | `twining_verify`, `twining_export` |
+| **Migration** | `twining_migrate_status` |
 
 † Deprecated in v2.0 — real handoffs happen as git-committed markdown docs; redesign or v3 removal tracked in [#33](https://github.com/daveangulo/twining-mcp/issues/33).
 

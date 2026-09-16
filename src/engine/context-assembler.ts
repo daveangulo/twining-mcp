@@ -19,6 +19,7 @@ import { computeLiveness } from "../utils/liveness.js";
 import { computeResolvedIds } from "./resolution.js";
 import { normalizeTags } from "../utils/tags.js";
 import { estimateTokens } from "../utils/tokens.js";
+import type { RetrievalAnnex } from "../utils/types.js";
 import { dedupeFullSummary } from "../utils/full-summary.js";
 import type { IAgentStore, IBlackboardStore, IDecisionStore, IHandoffStore } from "../storage/interfaces.js";
 import {
@@ -35,72 +36,7 @@ import { classifyLegacy } from "../retrieval/lifecycle.js";
 import { hashBytes } from "../retrieval/receipts.js";
 import { CLASS_PRESENTATION } from "../retrieval/render.js";
 
-/**
- * Lane 04 additive annex on AssembledContext.
- *
- * Declared here rather than in `src/utils/types.ts` so the change stays inside
- * this lane's owned files; a proposed diff moving it into the shared type is in
- * the lane report. Every field is additive — 2.x consumers that read only
- * `briefing`, `decisions_count` and friends are unaffected.
- */
-export interface RetrievalAnnex {
-  /** How the candidate pool was authorized and filtered, before any ranking. */
-  selection: {
-    mode: RetrievalMode;
-    /** The repo identity every record in this store carries (R01/R13). */
-    repo: string;
-    repo_identity_source: "store.json" | "derived-from-path";
-    authorized_digest: string;
-    /** Counts by denial reason. Opaque reasons are counted, never named. */
-    suppressed: Record<string, number>;
-    /** Suppressions safe to name: authorized but not relevant to this query. */
-    suppressed_visible: Array<{ id: string; reason: string }>;
-    outcome: "ok" | "no_in_scope_evidence" | "scope_mode_denied";
-    missing_entitlement?: string;
-  };
-  /** Everything a second run would need to reproduce this result. */
-  versions: {
-    ranking: string;
-    index: string;
-    embedding_model: string;
-    tokenizer: string;
-    lifecycle_resolver: "event-projection" | "legacy-status-field";
-  };
-  /** Freshness and authority of what was returned. */
-  trust: {
-    /** 2.x records carry no authorship proof; nothing here qualifies an action. */
-    evidence_class: string;
-    qualifies_action: boolean;
-    /** Why not, when not. */
-    qualification_refused_because?: string;
-  };
-  /** Budget accounting over the EMITTED briefing, not the selected items. */
-  token_usage: {
-    budget: number;
-    emitted_tokens: number;
-    tokenizer_id: string;
-    table_id: string;
-    conservative_fallback: boolean;
-    /** Decisions selected but not rendered into the briefing. */
-    rendered_decisions: number;
-    selected_decisions: number;
-    /**
-     * True when the EMITTED briefing exceeds `budget`.
-     *
-     * Selection and emission are now costed in the SAME currency (the declared
-     * tokenizer), so this comparison is meaningful; before, selection spent
-     * chars/4 while emission reported a ~4x-larger conservative bound and
-     * nothing compared them. An explicit flag also replaces the old
-     * "token_estimate ≈ max_tokens means truncation" heuristic, which was a
-     * numeric coincidence rather than a signal.
-     */
-    over_budget: boolean;
-    /** Decisions selected but not rendered into the briefing. */
-    omitted_decisions: number;
-  };
-  /** sha256 over the exact briefing bytes; links a receipt to this assembly. */
-  emitted_bytes_sha256?: string;
-}
+export type { RetrievalAnnex };
 
 /** The assembler's own return type: AssembledContext plus the lane-04 annex. */
 export type AssembledContextV3 = AssembledContext & { retrieval: RetrievalAnnex };

@@ -3,8 +3,8 @@
   "id": "01M2KDH495XQ5X2BYBVG8VB3Z1",
   "name": "src/core/context.ts",
   "properties": {
-    "scope": "src/cli/"
+    "scope": "src/cli/,src/contracts/"
   },
   "type": "file",
-  "updated_at": "2026-09-15T20:53:26.246Z"
+  "updated_at": "2026-09-16T02:43:26.436Z"
 }

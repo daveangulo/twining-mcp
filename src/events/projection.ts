@@ -97,6 +97,12 @@ export interface Correction {
   applies_to: Scope;
   correction: Record<string, unknown>;
   by: string;
+  /**
+   * The correcting event's evidence class. Without it, two corrections over
+   * the same scope could only be separated by array order, which is exactly
+   * the invented resolution `correctionFor` must not perform.
+   */
+  evidence_class: EvidenceClass;
   reason?: string;
 }
 
@@ -238,9 +244,50 @@ export function currentUseClaim(rec: SliceProjectedRecord, at: Scope): { ok: boo
   return { ok: true };
 }
 
-/** The correction that governs `scope`, if any (C09 A5/A10/A15: per-scope status). */
+/** Every correction whose scope governs `scope` (C09 A5/A10/A15). */
+export function correctionsFor(record: SliceProjectedRecord, scope: Scope): Correction[] {
+  return record.corrections.filter((c) => scopeGoverns(c.applies_to, scope));
+}
+
+/** Do `a` and `b` cover exactly the same scope? */
+function sameCoverage(a: Scope, b: Scope): boolean {
+  return scopeGoverns(a, b) && scopeGoverns(b, a);
+}
+
+/**
+ * The correction that governs `scope`, if any — or `undefined` when the answer
+ * is genuinely ambiguous.
+ *
+ * This used to be `corrections.find(...)`, which returned whichever competing
+ * correction happened to sit first in the array. Array order is append order
+ * is ULID order, so two concurrent corrections of EQUAL class over the SAME
+ * scope were silently resolved by the id a producer happened to mint — an
+ * invented resolution (C22 INV-11). The resolution order now is:
+ *
+ *  1. higher evidence class wins (ADR §4.3 rule 1);
+ *  2. among equals, the MORE SPECIFIC scope wins — a correction scoped to
+ *     `src/auth/` is a narrower statement than one scoped to `src/`, which is
+ *     a property of the statements, not of their arrival;
+ *  3. equal class AND identical coverage is a CONFLICT: nothing governs, and
+ *     the reducer has already put both on the record's `conflicts` so
+ *     `currentUseClaim` refuses. Returning `undefined` here is the honest
+ *     answer, not a failure to find one.
+ */
 export function correctionFor(record: SliceProjectedRecord, scope: Scope): Correction | undefined {
-  return record.corrections.find((c) => scopeGoverns(c.applies_to, scope));
+  const governing = correctionsFor(record, scope);
+  if (governing.length === 0) return undefined;
+
+  const topRank = Math.max(...governing.map((c) => EVIDENCE_RANK[c.evidence_class]));
+  const contenders = governing.filter((c) => EVIDENCE_RANK[c.evidence_class] === topRank);
+
+  // Keep only the most specific: drop any contender that another contender's
+  // strictly narrower scope is covered by.
+  const narrowest = contenders.filter(
+    (c) => !contenders.some((other) => other !== c && scopeGoverns(c.applies_to, other.applies_to) && !sameCoverage(c.applies_to, other.applies_to)),
+  );
+  if (narrowest.length === 1) return narrowest[0];
+  // More than one at the same class and the same coverage: ambiguous.
+  return undefined;
 }
 
 /**
@@ -494,13 +541,40 @@ export function projectEvents(admitted: EventEnvelope[]): ProjectionResult {
       }
       case "corrected": {
         touch(rec, ev);
+        const appliesTo = p.applies_to as Scope;
+        /**
+         * COMPETING CORRECTIONS ARE A CONFLICT, NOT A RACE.
+         *
+         * Two corrections of EQUAL class covering exactly the same scope, with
+         * no causal path between them, are concurrent claims about the same
+         * thing. Both bytes are retained (nothing is dropped) and the record is
+         * explicitly conflicted, so `currentUseClaim` refuses and
+         * `correctionFor` returns nothing. Before this, whichever correction
+         * sat first in the array won — append order, which is ULID order,
+         * which is the producer's clock (C22 INV-11).
+         *
+         * A HIGHER-class correction still governs, and a NARROWER one still
+         * wins over a broader one: both are properties of the statements.
+         */
+        const rivals = rec.corrections.filter(
+          (c) =>
+            EVIDENCE_RANK[c.evidence_class] === EVIDENCE_RANK[ev.evidence_class] &&
+            sameCoverage(c.applies_to, appliesTo) &&
+            !descendsFrom(ev.id, c.event, byId) &&
+            !descendsFrom(c.event, ev.id, byId),
+        );
         rec.corrections.push({
           event: ev.id,
-          applies_to: p.applies_to as Scope,
+          applies_to: appliesTo,
           correction: p.correction as Record<string, unknown>,
           by: ev.producer.principal,
+          evidence_class: ev.evidence_class,
           ...(typeof p.reason === "string" ? { reason: p.reason } : {}),
         });
+        if (rivals.length > 0) {
+          rec.status = "conflicted";
+          rec.conflicts = [...new Set([...rec.conflicts, ...rivals.map((r) => r.event), ev.id])].sort();
+        }
         break;
       }
       case "contested": {

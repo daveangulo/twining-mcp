@@ -20,55 +20,12 @@
  * reporting `unknown` is the honest answer until it lands — not `complete`.
  */
 import type { EventStore } from "../events/event-store.js";
-import type { TransportHealth } from "../contracts/store-api.js";
+import type { ExchangeGap, ExchangeStatus, ExchangeStatusOptions, TransportHealth } from "../contracts/store-api.js";
 
-export interface ExchangeGap {
-  kind: "checkout_behind_journal" | "cursor_fork" | "pending_import" | "pending_parents" | "uncertain_transfer" | "open_erasure_obligation";
-  detail: string;
-  ids: string[];
-}
-
-export interface ExchangeStatus {
-  generated_at: string;
-  store: {
-    twining_dir: string;
-    events_held: number;
-    admitted: number;
-    projected: number;
-    checkout: "ok" | "checkout_behind_journal";
-  };
-  /** Producer side: what has not left this host yet, per transport. */
-  outbox: {
-    depth: number;
-    oldest_pending_age_ms: number | null;
-    oldest_pending_id: string | null;
-    retries: number;
-    uncertain: string[];
-    by_transport: Array<{ transport: string; queued: number; transferred: number; uncertain: number; attempts: number }>;
-  };
-  /** Consumer side: what arrived but has not been applied. */
-  inbound: {
-    received: number;
-    pending_parents: Array<{ id: string; waiting_on: string[] }>;
-  };
-  rejected: { count: number; by_reason: Record<string, number> };
-  quarantined: { count: number; retryable: number; by_reason: Record<string, number> };
-  ingest_attempts: { count: number; retries: number; by_disposition: Record<string, number>; by_reason: Record<string, number> };
-  cursors: Array<{ principal: string; transport: string; position: string; last_admitted?: string }>;
-  cursor_forks: Array<{ principal: string; positions: string[] }>;
-  transports: Array<{ id: string } & TransportHealth>;
-  gaps: ExchangeGap[];
-  /** Keys revoked after events they signed were admitted — history kept, flagged. */
-  revoked_credentials: Array<{ event_id: string; principal: string }>;
-  migration: { state: "unknown"; note: string };
-}
-
-export interface ExchangeStatusOptions {
-  /** Live carriers to probe. Probing is optional: a status call must work offline. */
-  transports?: Array<{ id(): string; health(): Promise<TransportHealth> }>;
-  /** Injected clock for age arithmetic (audit only — never an ordering input). */
-  now?: () => number;
-}
+// The shapes moved into the contract at draft.3 so lanes 03 and 04 can consume
+// them without importing an implementation module. Re-exported here because
+// this module is still where they are produced.
+export type { ExchangeGap, ExchangeStatus, ExchangeStatusOptions };
 
 function tally(values: string[]): Record<string, number> {
   const out: Record<string, number> = {};

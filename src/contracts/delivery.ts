@@ -48,5 +48,19 @@ export const QUARANTINE_REASONS = [
   "attachment_missing",
   "signer_unknown", // retryable: the principal record may still be in flight
   "no_policy_yet", // retryable: capability cannot be judged until the membership arrives
+  "signer_untrusted", // retryable: the key resolves but is outside this store's chain of trust (ADR §7, C12)
 ] as const;
-export const REJECT_REASONS = ["schema", "digest_mismatch", "conflicting_duplicate", "cycle", "class_not_allowed", "unauthorized"] as const;
+export const REJECT_REASONS = [
+  "schema",
+  "digest_mismatch",
+  "conflicting_duplicate",
+  "cycle",
+  "class_not_allowed",
+  "unauthorized",
+  /** The signing key was revoked before this event; terminal, never retried. */
+  "credential_revoked",
+  /** producer.principal is not the principal the signing key is bound to (R03/R17). */
+  "author_assertion_not_authenticated",
+  /** A parent was rejected, so this event can never become admissible (C18 A9, C28 A13). */
+  "parent_rejected",
+] as const;

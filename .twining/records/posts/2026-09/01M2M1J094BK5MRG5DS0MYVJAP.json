@@ -1,0 +1,18 @@
+{
+  "agent_id": "merge-integrator",
+  "detail": "Full summary: Applied contracts 3.0.0-draft.3 and the merge-time fixes: scopeAuthorizes adopted, optional superseded.by, legacy post entry_type, new delivery reasons, exchangeStatus on the store API, RetrievalAnnex moved, correctionFor conflicts, gitignore, offline switch, calibration script, doc counts.\nDecisions: [object Object]; [object Object]; Defined ExchangeStatus, ExchangeGap, ExchangeStatusOptions, MalformedArtifact and CarrierGap in src/contracts/store-api.ts and made src/exchange/status.ts and git-transport.ts import them — rather than having the contract import from an implementation module. Transport.lastMalformed/lastGap are typed to lane 02b's ACTUAL shapes (properties holding the last poll's findings), not the invented function shapes, because the contract should describe what exists.; Left plugin/BEHAVIORS.md untouched. Its header says 35 tools while it documents 37, and four registry tools are undocumented (twining_amend, twining_triage predate this work; twining_exchange_status and twining_migrate_status are new). Editing plugin/ forces a plugin version bump and bundle rebuild under the CI plugin-version-check, which is a release action this merge should not take. Recorded as an open follow-up instead.\nFindings: need: plugin/BEHAVIORS.md is the eval harness's ground truth and is stale — header claims 35 tools, documents 37, and omits twining_amend, twining_triage, twining_exchange_status and twining_migrate_status. Fixing it requires a plugin version bump + bundle rebuild, so it is release work, not merge work.; warning: scripts/calibrate-tokenizer.mjs aborted the whole calibration run on test/fixtures/tokenizer-corpus/whitespace.txt (31 bytes, all whitespace) because the count-tokens API refuses an empty text block. Fixed by skipping blank documents and excluding them from the corpus hash, byte total and document count. NOT RUN here — no API key on this machine — so the fix is unverified against the live API; the proven 1 token/byte bound still ships.; config.deepMerge iterates Object.keys(TARGET), i.e. the defaults, so any config key absent from DEFAULT_CONFIG is silently dropped from a user's config.yml. Any future config option must be added to DEFAULT_CONFIG or it will never take effect.",
+  "entry_type": "status",
+  "id": "01M2M1J094BK5MRG5DS0MYVJAP",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9241cc079a04bb9d9221dc54e15ffd7b945409b6",
+    "recorded_at": "2026-09-16T02:43:26.098Z"
+  },
+  "scope": "src/contracts/",
+  "summary": "Applied contracts 3.0.0-draft.3 and the merge-time fixes: scopeAuthorizes adopted, optional superseded.by, legacy post entry_type, new delivery reasons, exchangeStatus on the store API, RetrievalAn…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-16T02:43:26.116Z"
+}

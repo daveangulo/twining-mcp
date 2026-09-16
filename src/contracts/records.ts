@@ -56,9 +56,18 @@ export const decisionBodySchema = z
   })
   .passthrough();
 
+/**
+ * `"decision"` is a LEGACY entry_type (draft.3).
+ *
+ * 2.x blackboard entries could carry entry_type "decision"; v3 models a
+ * decision as its own record type, so the value must be representable for
+ * migration to import old bytes faithfully — but it must NOT be producible by
+ * a live client, which would fork the decision surface in two. The schema
+ * admits it; validate.ts rejects it on every ingress except `migration`.
+ */
 export const postBodySchema = z
   .object({
-    entry_type: z.enum(["need", "offer", "finding", "constraint", "question", "answer", "status", "artifact", "warning"]),
+    entry_type: z.enum(["need", "offer", "finding", "constraint", "question", "answer", "status", "artifact", "warning", "decision"]),
     summary: z.string().min(1).max(200),
     detail: z.string().optional(),
     tags: z.array(z.string()).optional(),

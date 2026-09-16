@@ -161,7 +161,7 @@ answer you need.
 
 `surface` (`"default"` | `"full"`) says which **MCP tool surface** the command
 appears on: `"full"` means an MCP peer sees it only with config
-`tools.full_surface: true`, which hides 25 of the 40 commands.
+`tools.full_surface: true`, which hides 25 of the 41 commands.
 
 `requires_mode: "full"` is the **second, independent** MCP gate — config
 `tools.mode`. A `"lite"` install registers no lifecycle or graph tools at all,
@@ -301,7 +301,7 @@ Small, and all deliberate:
 
 | | MCP server | CLI |
 | --- | --- | --- |
-| tool/command surface | `tools.full_surface` hides 24 commands; `tools.mode: "lite"` hides 7 more | every command dispatchable; `surface` + `requires_mode` reported in `capabilities` |
+| tool/command surface | `tools.full_surface` hides 25 of 41 commands; `tools.mode: "lite"` hides 7 more | every command dispatchable; `surface` + `requires_mode` reported in `capabilities` |
 | embedding model | downloads on first use if absent | never downloads; keyword fallback |
 | pending-queue drain | on startup + every 60s | skipped (left to the server) |
 | dashboard, telemetry | started / initialized | never |

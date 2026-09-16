@@ -92,8 +92,30 @@ const observedMax = {};
 const corpusHash = createHash("sha256");
 let totalBytes = 0;
 
+const skipped = [];
+
 for (const file of files) {
   const text = fs.readFileSync(file, "utf8");
+
+  /**
+   * A whitespace-only (or empty) document cannot be counted: the API refuses
+   * the request with `400 text content blocks must contain non-whitespace
+   * text`, which aborts the whole run — one blank fixture file is enough to
+   * make calibration impossible (found 2026-09-15; it is why the first
+   * calibration pass failed and the proven 1 token/byte bound shipped instead).
+   *
+   * Skipping is the right answer rather than padding: such a document carries
+   * no bytes of any class, so it cannot tighten a ratio, and padding it would
+   * measure text the corpus does not actually contain. Skipped documents are
+   * excluded from the corpus hash and byte total too, so the recorded corpus
+   * describes what was measured.
+   */
+  if (text.trim() === "") {
+    console.log(`  skip (blank): ${path.basename(file)}`);
+    skipped.push(path.basename(file));
+    continue;
+  }
+
   corpusHash.update(text);
   totalBytes += Buffer.byteLength(text, "utf8");
 
@@ -128,8 +150,9 @@ const table = {
   provenance: "measured",
   reference: `anthropic-count-tokens/${MODEL}`,
   corpus: {
+    skipped_blank: skipped,
     name: path.basename(CORPUS),
-    documents: files.length,
+    documents: files.length - skipped.length,
     bytes: totalBytes,
     sha256: `sha256:${corpusHash.digest("hex")}`,
   },

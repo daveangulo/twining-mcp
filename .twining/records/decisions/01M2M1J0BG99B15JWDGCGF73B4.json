@@ -1,0 +1,29 @@
+{
+  "affected_files": [
+    "src/events/projection.ts",
+    "test/acceptance/cases/c22.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "merge-integrator",
+  "alternatives": [],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Applied contracts 3.0.0-draft.3 and the merge-time fixes: scopeAuthorizes adopted, optional superseded.by, legacy post entry_type, new delivery reasons, exchangeStatus on the store API, RetrievalAnnex moved, correctionFor conflicts, gitignore, offline switch, calibration script, doc counts.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M2M1J0BG99B15JWDGCGF73B4",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9241cc079a04bb9d9221dc54e15ffd7b945409b6",
+    "recorded_at": "2026-09-16T02:43:26.172Z"
+  },
+  "rationale": "It was `corrections.find(...)`, so competing corrections were separated by array order — append order, ULID order, the producer's clock. That is an invented resolution (C22 INV-11): the store reported one of two equally-authorized statements as governing with nothing in the evidence to justify the choice. The two tie-breaks that ARE properties of the statements now apply first (higher class wins per ADR §4.3 rule 1; among equals the narrower scope wins, because a correction scoped src/auth/ is a narrower claim than one scoped src/), and genuine ties become conflicts: both corrections retained, both on rec.conflicts, status conflicted, currentUseClaim refusing, correctionFor returning nothing. Mutation-checked — restoring array order fails all three new tests. The c22 it.todo is removed and replaced by real tests including a reversed-delivery-order pair.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/contracts/",
+  "status": "active",
+  "summary": "correctionFor resolves by evidence class, then by scope specificity, and returns undefined when equal-class corrections share identical coverage; the reducer marks those records conflicted",
+  "timestamp": "2026-09-16T02:43:26.194Z"
+}

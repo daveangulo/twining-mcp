@@ -3,8 +3,8 @@
   "id": "01M2KFYG1WJ05KX9YDYS338YPA",
   "name": "src/contracts/store-api.ts",
   "properties": {
-    "scope": "src/events/"
+    "scope": "src/contracts/,src/events/"
   },
   "type": "file",
-  "updated_at": "2026-09-15T21:35:41.347Z"
+  "updated_at": "2026-09-16T02:43:26.431Z"
 }

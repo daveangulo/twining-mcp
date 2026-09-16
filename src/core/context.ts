@@ -42,6 +42,17 @@ import type { TwiningConfig } from "../utils/types.js";
 import type { ServerIdentity } from "./commands/lifecycle.js";
 import { PKG_VERSION } from "../version.js";
 
+/**
+ * `TWINING_OFFLINE` is truthy for "1", "true" and "yes" (any case) and false
+ * for everything else including "0", "false" and the empty string — so
+ * exporting it empty does not silently turn the switch on.
+ */
+export function offlineFromEnvironment(env: NodeJS.ProcessEnv = process.env): boolean {
+  const raw = env.TWINING_OFFLINE;
+  if (raw === undefined) return false;
+  return ["1", "true", "yes"].includes(raw.trim().toLowerCase());
+}
+
 export interface TwiningContextOptions {
   /**
    * Run fire-and-forget background work: the startup pending-queue drain, its
@@ -57,6 +68,11 @@ export interface TwiningContextOptions {
    * absent the embedder goes straight to keyword fallback instead of letting
    * @huggingface/transformers attempt a download. Required in sandboxes
    * (Codex runs shell commands with no network).
+   *
+   * Passing `true` forces offline. Leaving it undefined does NOT mean online:
+   * `TWINING_OFFLINE` and config `embeddings.offline` still apply, so the
+   * long-lived MCP server honours the operator's setting without every caller
+   * having to thread it (R18).
    */
   offline?: boolean;
 }
@@ -153,10 +169,18 @@ export function createTwiningContext(
     db,
   } = createStores(twiningDir, config);
 
+  /**
+   * Offline is the OR of three sources, because each answers a different
+   * question: the caller ("this process must not use the network" — the CLI),
+   * the environment ("this shell has no network" — a Codex/CI sandbox), and
+   * the config ("this installation never downloads a model"). Before this, the
+   * MCP server path read only the caller, so an operator who set either of the
+   * other two still got a download attempt on first use.
+   */
+  const offline = options.offline === true || offlineFromEnvironment() || config.embeddings?.offline === true;
+
   // Create embedding layer (lazy-loaded — no ONNX init cost at startup)
-  const embedder = Embedder.getInstance(twiningDir, {
-    offline: options.offline ?? false,
-  });
+  const embedder = Embedder.getInstance(twiningDir, { offline });
   const searchEngine = new SearchEngine(embedder, indexManager);
 
   // W2.3 phase 2 (sqlite only): embed what the startup ingest inserted, and

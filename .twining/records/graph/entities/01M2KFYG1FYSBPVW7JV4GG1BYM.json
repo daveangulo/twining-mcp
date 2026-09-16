@@ -3,8 +3,8 @@
   "id": "01M2KFYG1FYSBPVW7JV4GG1BYM",
   "name": "src/events/projection.ts",
   "properties": {
-    "scope": "src/events/,src/migrate/"
+    "scope": "src/contracts/,src/events/,src/migrate/"
   },
   "type": "file",
-  "updated_at": "2026-09-15T22:40:34.240Z"
+  "updated_at": "2026-09-16T02:43:26.434Z"
 }

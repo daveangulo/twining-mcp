@@ -65,6 +65,61 @@ export interface Cursor {
   last_admitted?: string;
 }
 
+/**
+ * Exchange observability (R20) — the shape `exchangeStatus()` returns.
+ *
+ * Defined here rather than in src/exchange because it is part of the store API
+ * lanes 03 and 04 consume, and a contract must not depend on an implementation
+ * module. src/exchange/status.ts imports these and is the only implementation.
+ */
+export interface ExchangeGap {
+  kind: "checkout_behind_journal" | "cursor_fork" | "pending_import" | "pending_parents" | "uncertain_transfer" | "open_erasure_obligation";
+  detail: string;
+  ids: string[];
+}
+
+export interface ExchangeStatus {
+  generated_at: string;
+  store: {
+    twining_dir: string;
+    events_held: number;
+    admitted: number;
+    projected: number;
+    checkout: "ok" | "checkout_behind_journal";
+  };
+  /** Producer side: what has not left this host yet, per transport. */
+  outbox: {
+    depth: number;
+    oldest_pending_age_ms: number | null;
+    oldest_pending_id: string | null;
+    retries: number;
+    uncertain: string[];
+    by_transport: Array<{ transport: string; queued: number; transferred: number; uncertain: number; attempts: number }>;
+  };
+  /** Consumer side: what arrived but has not been applied. */
+  inbound: {
+    received: number;
+    pending_parents: Array<{ id: string; waiting_on: string[] }>;
+  };
+  rejected: { count: number; by_reason: Record<string, number> };
+  quarantined: { count: number; retryable: number; by_reason: Record<string, number> };
+  ingest_attempts: { count: number; retries: number; by_disposition: Record<string, number>; by_reason: Record<string, number> };
+  cursors: Array<{ principal: string; transport: string; position: string; last_admitted?: string }>;
+  cursor_forks: Array<{ principal: string; positions: string[] }>;
+  transports: Array<{ id: string } & TransportHealth>;
+  gaps: ExchangeGap[];
+  /** Keys revoked after events they signed were admitted — history kept, flagged. */
+  revoked_credentials: Array<{ event_id: string; principal: string }>;
+  migration: { state: "unknown"; note: string };
+}
+
+export interface ExchangeStatusOptions {
+  /** Live carriers to probe. Probing is optional: a status call must work offline. */
+  transports?: Array<{ id(): string; health(): Promise<TransportHealth> }>;
+  /** Injected clock for age arithmetic (audit only — never an ordering input). */
+  now?: () => number;
+}
+
 export interface EventStore {
   /** Validate for the given ingress, sign with the host key when available, journal, write the event file. */
   append(raw: unknown, ingress: Ingress): Promise<AppendResult | { ok: false; validation: ValidationResult }>;
@@ -86,6 +141,12 @@ export interface EventStore {
 
   /** Drop the derived database and rebuild it from events; returns the projection digest for equality checks. */
   rebuild(): Promise<{ projection_digest: string }>;
+
+  /**
+   * "What is this replica uncertain about?" (R20). Read-only, offline-safe,
+   * never runs git; probing live carriers is opt-in through `opts.transports`.
+   */
+  exchangeStatus(opts?: ExchangeStatusOptions): Promise<ExchangeStatus>;
 }
 
 export interface PublishReceipt {
@@ -101,8 +162,38 @@ export interface TransportHealth {
   credential_state?: "ok" | "expired" | "revoked" | "unknown";
 }
 
+/** An artifact a carrier delivered that could not be decoded (C17). */
+export interface MalformedArtifact {
+  carrier_id: string;
+  path: string;
+  /** The undecodable bytes, retained as evidence. */
+  bytes: string;
+  observed_bytes: number;
+  reason: "unparseable" | "conflict_markers" | "truncated";
+}
+
+/** A discontinuity in a carrier's own sequence, as the carrier saw it. */
+export interface CarrierGap {
+  gap: boolean;
+  reason?: string;
+  /** The cursor position the carrier could no longer resolve. */
+  unreachable_from?: string;
+}
+
 export interface Transport {
   id(): string;
+  /**
+   * What the LAST poll could not account for. Optional: a carrier that cannot
+   * detect either says nothing rather than reporting a reassuring zero (R20,
+   * C17, C18). Both are read by `exchangeStatus()` to populate `gaps`.
+   *
+   * `lastMalformed` — artifacts the poll could not decode; retained as bytes,
+   * never dropped, so an operator can see what arrived unreadable.
+   * `lastGap` — whether the poll found its own cursor unreachable (a rewind or
+   * a force-push on the carrier), with the position it could not resolve from.
+   */
+  lastMalformed?: ReadonlyArray<MalformedArtifact>;
+  lastGap?: CarrierGap;
   /** Idempotent by event id + digest; a retry after a lost ack reconciles the same operation. */
   publish(events: EventEnvelope[]): Promise<PublishReceipt>;
   poll(cursor: Cursor | null): Promise<{ events: EventEnvelope[]; cursor: Cursor }>;

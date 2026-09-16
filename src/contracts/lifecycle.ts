@@ -37,8 +37,13 @@ const reason = { reason: z.string().min(1).optional() };
 export const lifecyclePayloadSchemas: Record<LifecycleKind, z.ZodTypeAny> = {
   promoted: z.object({ ...target }).strict(),
   reconsidered: z.object({ ...target, ...reason }).strict(),
+  /**
+   * `by` is OPTIONAL (draft.3): a legacy store can record that a decision was
+   * superseded without preserving which record superseded it, and migration
+   * must be able to say so rather than invent a successor or drop the fact.
+   */
   superseded: z
-    .object({ ...target, by: ulidSchema, parts: z.array(z.string().min(1)).min(1).optional(), ...reason })
+    .object({ ...target, by: ulidSchema.optional(), parts: z.array(z.string().min(1)).min(1).optional(), ...reason })
     .strict(),
   overridden: z.object({ ...target, replacement: ulidSchema.optional(), parts: z.array(z.string().min(1)).min(1).optional(), reason: z.string().min(1) }).strict(),
   corrected: z

@@ -99,6 +99,19 @@ export function validateEvent(raw: unknown, opts: ValidateOptions): ValidationRe
       const issue = body.error.issues[0];
       return fail("SCHEMA", `payload.${issue?.path.join(".") ?? ""}: ${issue?.message ?? "invalid body"}`, "payload");
     }
+    /**
+     * post.entry_type "decision" is representable so MIGRATION can import 2.x
+     * blackboard bytes without rewriting them, and rejected everywhere else so
+     * a live client cannot fork the decision surface in two (draft.3, D30). A
+     * decision is its own record type in v3.
+     */
+    if (ev.record.type === "post" && (ev.payload as { entry_type?: string }).entry_type === "decision" && opts.ingress !== "migration") {
+      return fail(
+        "RECORD_TYPE_CLASS_MISMATCH",
+        'post.entry_type "decision" is a legacy value accepted only from the migration ingress — record a decision as a decision record',
+        "payload.entry_type",
+      );
+    }
   } else if (ev.kind === "receipt") {
     const p = receiptPayloadSchema.safeParse(ev.payload);
     if (!p.success) {

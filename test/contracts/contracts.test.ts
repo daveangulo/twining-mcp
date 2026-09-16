@@ -23,6 +23,10 @@ import {
   mintKeyId,
   mintRepoId,
   ENVELOPE_V,
+  CONTRACT_VERSION,
+  scopeAuthorizes,
+  QUARANTINE_REASONS,
+  REJECT_REASONS,
   type EventInput,
 } from "../../src/contracts/index.js";
 
@@ -248,5 +252,122 @@ describe("precedence and delivery", () => {
     expect(canTransition("rejected", "admitted")).toBe(false);
     expect(canTransition("injected", "injected")).toBe(true);
     expect(canTransition("quarantined", "admitted")).toBe(true);
+  });
+});
+
+/**
+ * Contracts 3.0.0-draft.3 — the additive changes applied at the foundation
+ * merge. Each one exists because a lane needed it; each test names the lane.
+ */
+describe("contracts draft.3", () => {
+  it("is version 3.0.0-draft.3", () => {
+    expect(CONTRACT_VERSION).toBe("3.0.0-draft.3");
+  });
+
+  /**
+   * Lane 04's third scope operation. Read visibility is unidirectional like
+   * authority, but NOT revision-bound: an entitlement granted at one head does
+   * not evaporate when HEAD moves.
+   */
+  it("scopeAuthorizes is unidirectional, identity-exact, and has no revision clause", () => {
+    const B = mintRepoId();
+    // Unidirectional on path: broad covers narrow, never the reverse.
+    expect(scopeAuthorizes({ repo: REPO, path: "src/" }, { repo: REPO, path: "src/auth/" })).toBe(true);
+    expect(scopeAuthorizes({ repo: REPO, path: "src/auth/" }, { repo: REPO, path: "src/" })).toBe(false);
+    // Segment boundaries, not string prefixes.
+    expect(scopeAuthorizes({ repo: REPO, path: "src/auth" }, { repo: REPO, path: "src/authz" })).toBe(false);
+    // Identity is exact; repo identity is a hard wall.
+    expect(scopeAuthorizes({ repo: REPO }, { repo: B })).toBe(false);
+    expect(scopeAuthorizes({ repo: REPO, task: "T1" }, { repo: REPO, task: "T2" })).toBe(false);
+    // Deny by default: an envelope silent on repo authorizes nothing unless global.
+    expect(scopeAuthorizes({ path: "src/" } as never, { repo: REPO, path: "src/auth/" })).toBe(false);
+    expect(scopeAuthorizes({ global: true }, { repo: REPO, path: "src/auth/" })).toBe(true);
+    // A store-global record is readable by anyone authorized in the store.
+    expect(scopeAuthorizes({ repo: REPO }, { global: true })).toBe(true);
+    // THE DIFFERENCE FROM scopeGoverns: no revision clause.
+    const at = { repo: REPO, revision: { head: SHA } };
+    const elsewhere = { repo: REPO, revision: { head: "b".repeat(40) } };
+    expect(scopeGoverns(at, elsewhere)).toBe(false);
+    expect(scopeAuthorizes(at, elsewhere)).toBe(true);
+  });
+
+  /**
+   * Lane 02c: a legacy store can record THAT a decision was superseded without
+   * preserving WHICH record superseded it. Migration must be able to say so
+   * rather than invent a successor or drop the fact.
+   */
+  it("a superseded event may omit `by`", () => {
+    const target = mintEventId();
+    const withoutBy = base({
+      kind: "superseded",
+      record: { type: "decision", id: target },
+      evidence_class: "legacy_unverified",
+      legacy: { derived_from_legacy_snapshot: true },
+      payload: { target, reason: "the legacy index recorded no successor" },
+    } as never);
+    const ok = validateEvent(withoutBy, { ingress: "migration" });
+    expect(ok.ok, ok.ok ? "" : `${ok.code}: ${ok.message}`).toBe(true);
+
+    // And still rejects a `by` that is not a ULID, so optional is not "anything".
+    const bad = base({
+      kind: "superseded",
+      record: { type: "decision", id: target },
+      payload: { target, by: "not-a-ulid" },
+    } as never);
+    const refused = validateEvent(bad, { ingress: "mcp" });
+    expect(refused.ok).toBe(false);
+  });
+
+  /**
+   * Lane 02c: 2.x blackboard entries could carry entry_type "decision". The
+   * value is representable so migration imports old bytes faithfully, and
+   * refused everywhere else so a live client cannot fork the decision surface.
+   */
+  it('post entry_type "decision" is accepted from migration and refused from every live ingress', () => {
+    const mk = (): Record<string, unknown> => {
+      const id = mintEventId();
+      return base({
+        id,
+        record: { type: "post", id },
+        evidence_class: "legacy_unverified",
+        legacy: { derived_from_legacy_snapshot: true },
+        payload: { entry_type: "decision", summary: "a 2.x blackboard decision entry" },
+      } as never);
+    };
+    const migrated = validateEvent(mk(), { ingress: "migration" });
+    expect(migrated.ok, migrated.ok ? "" : `${migrated.code}: ${migrated.message}`).toBe(true);
+
+    for (const ingress of ["mcp", "cli", "adapter", "import", "connector"] as const) {
+      const ev = base({
+        record: { type: "post", id: "" },
+        evidence_class: ingress === "connector" ? "verified_observation" : "proposal",
+        payload: { entry_type: "decision", summary: "a live client trying the legacy value" },
+      } as never);
+      // record.id must equal the event id for a created event.
+      (ev.record as { id: string }).id = ev.id as string;
+      ev.digest = computeEventDigest(ev);
+      const out = validateEvent(ev, { ingress });
+      expect(out.ok, `ingress ${ingress} must refuse the legacy entry_type`).toBe(false);
+      expect(out.ok === false && out.message).toContain("legacy value");
+    }
+
+    // A live post with an ordinary entry_type is unaffected.
+    const fine = base({
+      record: { type: "post", id: "" },
+      payload: { entry_type: "finding", summary: "an ordinary finding" },
+    } as never);
+    (fine.record as { id: string }).id = fine.id as string;
+    fine.digest = computeEventDigest(fine);
+    expect(validateEvent(fine, { ingress: "mcp" }).ok).toBe(true);
+  });
+
+  /** Lane 02b emits all four of these; draft.3 names them in the contract. */
+  it("names the delivery reasons lane 02b's admission actually produces", () => {
+    expect(QUARANTINE_REASONS).toContain("signer_untrusted");
+    for (const r of ["credential_revoked", "author_assertion_not_authenticated", "parent_rejected"]) {
+      expect(REJECT_REASONS, `${r} must be a named reject reason`).toContain(r);
+    }
+    // A reject reason is never also a quarantine reason: one is terminal.
+    for (const r of REJECT_REASONS) expect(QUARANTINE_REASONS).not.toContain(r as never);
   });
 });

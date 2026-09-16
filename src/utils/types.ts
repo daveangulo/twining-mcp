@@ -3,6 +3,7 @@
  * Matches TWINING-DESIGN-SPEC.md section 3 exactly.
  */
 import type { Provenance } from "./provenance.js";
+import type { RetrievalMode } from "../retrieval/select.js";
 
 // Blackboard entry types — all 10 from spec section 3.1
 export const ENTRY_TYPES = [
@@ -334,6 +335,17 @@ export interface TwiningConfig {
     };
   };
   conflict_resolution: string;
+  /**
+   * Embedding behaviour. `offline: true` is the persistent form of the
+   * TWINING_OFFLINE environment switch: the embedder never reaches the network
+   * for a model, and goes straight to keyword fallback when the local model is
+   * absent. Required wherever there is no network (Codex shells, CI sandboxes,
+   * air-gapped installs) and wherever a first-run model download would be a
+   * surprise. Default: false.
+   */
+  embeddings?: {
+    offline?: boolean;
+  };
   agents?: {
     liveness: {
       idle_after_ms: number;
@@ -786,4 +798,70 @@ export interface TriageResult {
       by_kind: { decision: number; artifact: number };
     };
   };
+}
+
+/**
+ * Lane 04 additive annex on AssembledContext (moved here from
+ * src/engine/context-assembler.ts at merge, per the lane's own proposal).
+ *
+ * Every field is additive — 2.x consumers that read only `briefing`,
+ * `decisions_count` and friends are unaffected.
+ */
+export interface RetrievalAnnex {
+  /** How the candidate pool was authorized and filtered, before any ranking. */
+  selection: {
+    mode: RetrievalMode;
+    /** The repo identity every record in this store carries (R01/R13). */
+    repo: string;
+    repo_identity_source: "store.json" | "derived-from-path";
+    authorized_digest: string;
+    /** Counts by denial reason. Opaque reasons are counted, never named. */
+    suppressed: Record<string, number>;
+    /** Suppressions safe to name: authorized but not relevant to this query. */
+    suppressed_visible: Array<{ id: string; reason: string }>;
+    outcome: "ok" | "no_in_scope_evidence" | "scope_mode_denied";
+    missing_entitlement?: string;
+  };
+  /** Everything a second run would need to reproduce this result. */
+  versions: {
+    ranking: string;
+    index: string;
+    embedding_model: string;
+    tokenizer: string;
+    lifecycle_resolver: "event-projection" | "legacy-status-field";
+  };
+  /** Freshness and authority of what was returned. */
+  trust: {
+    /** 2.x records carry no authorship proof; nothing here qualifies an action. */
+    evidence_class: string;
+    qualifies_action: boolean;
+    /** Why not, when not. */
+    qualification_refused_because?: string;
+  };
+  /** Budget accounting over the EMITTED briefing, not the selected items. */
+  token_usage: {
+    budget: number;
+    emitted_tokens: number;
+    tokenizer_id: string;
+    table_id: string;
+    conservative_fallback: boolean;
+    /** Decisions selected but not rendered into the briefing. */
+    rendered_decisions: number;
+    selected_decisions: number;
+    /**
+     * True when the EMITTED briefing exceeds `budget`.
+     *
+     * Selection and emission are now costed in the SAME currency (the declared
+     * tokenizer), so this comparison is meaningful; before, selection spent
+     * chars/4 while emission reported a ~4x-larger conservative bound and
+     * nothing compared them. An explicit flag also replaces the old
+     * "token_estimate ≈ max_tokens means truncation" heuristic, which was a
+     * numeric coincidence rather than a signal.
+     */
+    over_budget: boolean;
+    /** Decisions selected but not rendered into the briefing. */
+    omitted_decisions: number;
+  };
+  /** sha256 over the exact briefing bytes; links a receipt to this assembly. */
+  emitted_bytes_sha256?: string;
 }

@@ -39,7 +39,7 @@
  */
 import { describe, expect, it, afterAll } from "vitest";
 
-import { currentUseClaim } from "../../../src/events/projection.js";
+import { correctionFor, currentUseClaim } from "../../../src/events/projection.js";
 import type { EventStore } from "../../../src/events/event-store.js";
 import {
   admitAndProject,
@@ -610,10 +610,116 @@ describe("C22 — receipts and operator surfaces", () => {
   });
 });
 
+/**
+ * C22 A11 via the `corrected` KIND (INV-11, closed at the foundation merge).
+ *
+ * `correctionFor` used to be `corrections.find(...)`, so two competing
+ * corrections over the same scope were separated by array order — which is
+ * append order, which is ULID order, which is the producer's clock. That is an
+ * invented resolution: the store would report one of two equally-authorized
+ * statements as governing, with nothing in the evidence to justify the choice.
+ */
+describe("C22 A11 — competing scoped corrections of equal class", () => {
+  /** A `corrected` event over R160 from `by`, applying to `path`. */
+  const correction = (w: C22World, target: string, by: Identity, path: string, note: string, parents: string[]) =>
+    buildEvent({
+      kind: "corrected",
+      record: { type: "ruling", id: target },
+      scope: { repo: w.repo, path },
+      producer: { principal: by.principal, kind: "human", host: by.host },
+      parents,
+      evidence_class: "human_ruling",
+      payload: {
+        target,
+        correction: { statement: note },
+        applies_to: { repo: w.repo, path },
+        reason: note,
+      },
+      signWith: { keyId: by.keyId, kp: by.kp },
+    });
+
+  it("are BOTH retained, the record is conflicted, and nothing governs the contested scope", async () => {
+    const w = c22World();
+    const f = fixture(w);
+    const target = f.R160.id as string;
+    // ada and dmitri hold EQUAL standing in INVOICES and neither correction
+    // descends from the other: concurrent, equal-class, identical coverage.
+    const cAda = correction(w, target, w.ada, INVOICES, "ceiling is 3 attempts", [target, ...f.infraIds]);
+    const cDmitri = correction(w, target, w.dmitri, INVOICES, "ceiling is 5 attempts", [target, ...f.infraIds]);
+    const store = await replica(w, [...f.infra, ...f.seed, cAda, cDmitri]);
+    try {
+      const rec = (await store.get(target))!;
+
+      // Both byte streams are retained — nothing is dropped.
+      const events = rec.corrections.map((c) => c.event);
+      expect(events).toContain(cAda.id as string);
+      expect(events).toContain(cDmitri.id as string);
+
+      // The contest is recorded as a contest.
+      expect(rec.status).toBe("conflicted");
+      expect(rec.conflicts).toContain(cAda.id as string);
+      expect(rec.conflicts).toContain(cDmitri.id as string);
+
+      // Nothing governs: `correctionFor` refuses to pick, in EITHER delivery
+      // order (the point of the fix — the answer cannot depend on arrival).
+      expect(correctionFor(rec, { repo: w.repo, path: INVOICES })).toBeUndefined();
+      expect(currentUseClaim(rec, { repo: w.repo, path: INVOICES }).ok).toBe(false);
+      expect(currentUseClaim(rec, { repo: w.repo, path: INVOICES }).reason).toBe("conflicted");
+    } finally {
+      store.close();
+    }
+  });
+
+  it("reversing delivery order changes nothing", async () => {
+    const w = c22World();
+    const f = fixture(w);
+    const target = f.R160.id as string;
+    const cAda = correction(w, target, w.ada, INVOICES, "ceiling is 3 attempts", [target, ...f.infraIds]);
+    const cDmitri = correction(w, target, w.dmitri, INVOICES, "ceiling is 5 attempts", [target, ...f.infraIds]);
+
+    const forward = await replica(w, [...f.infra, ...f.seed, cAda, cDmitri], tempDir("c22-fwd"));
+    const reverse = await replica(w, [...f.infra, ...f.seed, cDmitri, cAda], tempDir("c22-rev"));
+    try {
+      const a = (await forward.get(target))!;
+      const b = (await reverse.get(target))!;
+      expect(a.status).toBe(b.status);
+      expect([...a.conflicts].sort()).toEqual([...b.conflicts].sort());
+      expect(correctionFor(a, { repo: w.repo, path: INVOICES })).toBeUndefined();
+      expect(correctionFor(b, { repo: w.repo, path: INVOICES })).toBeUndefined();
+    } finally {
+      forward.close();
+      reverse.close();
+    }
+  });
+
+  it("a NARROWER correction of the same class still governs — specificity is a property of the statement", async () => {
+    const w = c22World();
+    const f = fixture(w);
+    // The target is the BILLING-scoped ruling, so a correction may apply at
+    // BILLING or at the narrower INVOICES; a correction may never WIDEN, which
+    // the store refuses as unauthorized_cross_scope.
+    const target = f.R120.id as string;
+    const broad = correction(w, target, w.ada, BILLING, "billing-wide ceiling is 3", [target, ...f.infraIds]);
+    const narrow = correction(w, target, w.dmitri, INVOICES, "invoices ceiling is 5", [target, ...f.infraIds]);
+    const store = await replica(w, [...f.infra, ...f.seed, broad, narrow]);
+    try {
+      const rec = (await store.get(target))!;
+      // Different coverage, so this is not a contest.
+      expect(rec.status).not.toBe("conflicted");
+      expect(rec.corrections).toHaveLength(2);
+      // At the invoices scope BOTH cover it; the narrower statement wins, and
+      // it wins because it is narrower, not because of where it sits in the
+      // array — the broad one was delivered first.
+      expect(correctionFor(rec, { repo: w.repo, path: INVOICES })?.event).toBe(narrow.id as string);
+      // Outside invoices, only the broad one covers.
+      expect(correctionFor(rec, { repo: w.repo, path: BILLING })?.event).toBe(broad.id as string);
+    } finally {
+      store.close();
+    }
+  });
+});
+
 describe("C22 — not covered here", () => {
-  it.todo(
-    "C22 A11 via the `corrected` KIND: two overlapping scoped corrections of one record are both recorded, and `correctionFor` returns the FIRST by causal order — an invented resolution (INV-11). Fixing it is a projection-semantics change and belongs to the lane that owns projection.ts; the equal-class concurrent-successor path above satisfies the same invariant through the machinery the ADR actually specifies.",
-  );
   it.todo(
     "C22 A08/A13 (`R-170`, the model-authored record that claims a human confirmed the waiver): the evidence-class half is proved by C17 A14 and C18 N3 on this store; the C22 fixture's own probe wording is lane 05's to re-express.",
   );

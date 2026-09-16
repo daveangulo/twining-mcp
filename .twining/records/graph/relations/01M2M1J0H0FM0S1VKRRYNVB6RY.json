@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T02:43:26.368Z",
+  "id": "01M2M1J0H0FM0S1VKRRYNVB6RY",
+  "properties": {
+    "decision_summary": "Defined ExchangeStatus, ExchangeGap, ExchangeStatusOptions, MalformedArtifact and CarrierGap in src/contracts/store-api.ts and made src/exchange/status.ts and git-transport.ts import them",
+    "origin": "derived"
+  },
+  "source": "01M2KCECD6H1GK7604XZ63DD2P",
+  "target": "01M2M1J0GW6PBXHYXVYEQ4QZB6",
+  "type": "decided_by"
+}

@@ -37,7 +37,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { computeEventDigest, eventEnvelopeSchema, type EventEnvelope } from "../contracts/index.js";
-import type { Cursor, PublishReceipt, Transport, TransportHealth } from "../contracts/store-api.js";
+import type { CarrierGap, Cursor, MalformedArtifact, PublishReceipt, Transport, TransportHealth } from "../contracts/store-api.js";
 import type { TransportFaults } from "./fs-transport.js";
 import { LostReceiptError } from "./fs-transport.js";
 import {
@@ -70,13 +70,9 @@ export class UnionViolationError extends Error {
 }
 
 /** An artifact the carrier held but could not decode — surfaced, never swallowed (C17). */
-export interface MalformedArtifact {
-  carrier_id: string;
-  path: string;
-  bytes: string;
-  observed_bytes: number;
-  reason: "unparseable" | "conflict_markers" | "truncated";
-}
+// Moved into the contract at draft.3 (src/contracts/store-api.ts) so a status
+// reader can type the carrier's self-report without importing this module.
+export type { MalformedArtifact };
 
 /**
  * Strip userinfo from a remote before it becomes an identity.
@@ -160,12 +156,7 @@ function isCarriedArtifact(rel: string): boolean {
   return rel.endsWith(".json") && !rel.startsWith("cursors/");
 }
 
-interface PollGap {
-  gap: boolean;
-  reason?: string;
-  /** The cursor position the carrier could no longer resolve. */
-  unreachable_from?: string;
-}
+type PollGap = CarrierGap;
 
 export class GitTransport implements Transport {
   readonly faults: TransportFaults = {};
