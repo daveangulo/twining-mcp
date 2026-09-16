@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T21:39:51.072Z",
+  "id": "01M2KG6450QXEC4VRKY3QRPFKV",
+  "name": "01M2KG6446KS7MVKXZVMEVEWG6",
+  "properties": {
+    "scope": "test/cli/",
+    "summary": "test/cli/twining.test.ts bundles src/cli/twining.ts with esbuild into node_modules/.cache/twining-cli-test/ in beforeAll (packages external, __TWINING_VERSION__ define) instead of spawning dist/cli/twining.js"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-15T21:39:51.072Z"
+}

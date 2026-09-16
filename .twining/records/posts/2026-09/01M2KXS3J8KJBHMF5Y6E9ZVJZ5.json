@@ -1,0 +1,20 @@
+{
+  "agent_id": "lane-04-retrieval",
+  "detail": "The review found the budget was spent in two currencies: selection filled it with estimateTokens (chars/4) while annotateEmitted reported the conservative bound (~1 token/byte), and nothing compared them. That is fixed — selection, decisionTiers and the receipt now all use the declared tokenizer, and retrieval.token_usage.over_budget / omitted_decisions report truncation explicitly instead of the old \"token_estimate approximately equals max_tokens\" coincidence (whose documented heuristic had become false on every call; the tool description is updated).\n\nTHE CONSEQUENCE, stated plainly: a 4000-token budget now genuinely guarantees <= 4000 tokens, and buys roughly a quarter of the content it used to. Four existing tests had to be re-baselined for the unit change (two assembler budgets 30 -> ~150, a gap7 control 400 -> 1600, overhead thresholds 100/200 -> 400/800). The field's standing constraint is \"do not make assemble quieter\", which cuts the other way.\n\nThis is NOT inherent to the design — it is the price of the PROVEN table (1 token per UTF-8 byte). A calibrated table would put prose near 0.3 tokens/byte and the 4x would essentially vanish, restoring the old packing density while keeping the guarantee. scripts/calibrate-tokenizer.mjs and the corpus are ready; it needs one run with an ANTHROPIC_API_KEY.\n\nSo the tokenizer decision I escalated earlier is now load-bearing rather than cosmetic: ship proven (safe, 4x stingier briefings) or calibrate (same safety class, near-previous density). I did not pick unilaterally, and I did not fabricate ratios to make the number look better.",
+  "entry_type": "warning",
+  "id": "01M2KXS3J8KJBHMF5Y6E9ZVJZ5",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-16T01:37:24.531Z"
+  },
+  "scope": "src/retrieval/",
+  "summary": "Unifying the budget currency makes every 2.x briefing ~4x tighter for the same max_tokens — the visible cost of shipping an uncalibrated tokenizer table. Lead decision needed.",
+  "tags": [
+    "tokenizer",
+    "budget",
+    "R15",
+    "decision-needed"
+  ],
+  "timestamp": "2026-09-16T01:37:24.552Z"
+}

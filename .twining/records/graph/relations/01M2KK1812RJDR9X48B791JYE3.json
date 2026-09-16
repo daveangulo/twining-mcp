@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T22:29:36.930Z",
+  "id": "01M2KK1812RJDR9X48B791JYE3",
+  "properties": {
+    "decision_summary": "Lane 03 correctly skipped cherry-picking the parked Codex plugin carrier (dedaacc) because it edits shared files (ci.yml, README, package.json, AGENTS.md); the Codex real-host path is NOT TESTED until the plugin's hooks receive one-time interactive trust in Codex (`/hooks`), which is Dave's action on this machine",
+    "origin": "derived"
+  },
+  "source": "01M2KK17SKR9JNSVRNXZ8VWZQV",
+  "target": "01M2KK17Z9KQK4TASTHTR9CAFX",
+  "type": "decided_by"
+}

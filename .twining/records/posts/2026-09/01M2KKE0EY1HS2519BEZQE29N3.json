@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Lane 04 (retrieval) delivered on lane/04-retrieval: scope-first gate on every read path (scopeAuthorizes), resolver reuse, required-facts-first packet with a proven-bound tokenizer, explain packets + receipts, class-preserving rendering; gaps 3/6/7 flipped; C01–C05/C08/C12/C19/C25/C26 tests; measured leakage 0 with recall up.\nDecisions: [object Object]; [object Object]; [object Object]\nFindings: Lane 04 measured recall (synthetic, 24 docs, K=6): gating drives leakage from 4–5 records to 0 and RAISES in-scope recall (semantic 0.17→1.00, lexical 0.33→0.67) because ungated runs spent top-K slots on unreadable bait; scoped semantic beats scoped lexical (1.00 vs 0.67) and exact (0.17).; warning: liveness controls caught three vacuous passes in oracle-derived tests — readable tenant names, post bodies missing entry_type, and human_ruling on a decision record all FAIL ADMISSION SILENTLY, so exclusion assertions passed against records never in the store. Rule for every lane: assert the seed projected before scoring an exclusion.; Discovered need: computeResolvedIds must run over the AUTHORIZATION slice, not the query slice (decision 01KYB5EM805A90TR9MR9WK2E04: resolvers are posted cross-scope); gating them by query path made resolved needs resurface forever — caught by deep-review-regressions.; Lane 04 full suite: 2096 passed / 40 todo; two files (server-startup, telemetry-client) fail only because src/analytics/_generated-posthog-key.ts is missing in a fresh worktree (pretest injects it) — environmental, verify at merge.",
+  "entry_type": "status",
+  "id": "01M2KKE0EY1HS2519BEZQE29N3",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:36:35.140Z"
+  },
+  "scope": "src/retrieval/",
+  "summary": "Lane 04 (retrieval) delivered on lane/04-retrieval: scope-first gate on every read path (scopeAuthorizes), resolver reuse, required-facts-first packet with a proven-bound tokenizer, explain packets…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-15T22:36:35.166Z"
+}

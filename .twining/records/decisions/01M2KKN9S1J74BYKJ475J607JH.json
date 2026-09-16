@@ -1,0 +1,45 @@
+{
+  "affected_files": [
+    "src/migrate/v3-forward.ts",
+    "src/migrate/v3-rollback.ts",
+    "src/migrate/legacy-scan.ts",
+    "src/events/projection.ts",
+    "test/fixtures/legacy-stores/generate.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Replay the admission log verbatim on rebuild",
+      "pros": [],
+      "reason_rejected": "the admission log is per-replica evidence that may be lost; the rule must be derivable from the events themselves"
+    },
+    {
+      "cons": [],
+      "option": "Seed a migration-time membership",
+      "pros": [],
+      "reason_rejected": "locks policy to the migrator; lane 02c measured and reverted it"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Lane 02c (migration) delivered on lane/02c-migration: migrate --to 3 / rollback --to 2 / forward recovery per ADR §10 with legacy fixtures, SIGKILL interrupt tests, C21 named tests; part-level projections close C16 L1–L4; two contract gaps and a rebuild/capability defect reported.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01M2KKN9S1J74BYKJ475J607JH",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:40:34.057Z"
+  },
+  "rationale": "Lane 02c measured rebuild() losing an admitted event (acknowledged_events_lost: 1, rejected: unauthorized) after a membership was added post-migration; seeding a migration policy fixed the rebuild but locked the store's policy to the migrator forever, so it was reverted. Evaluating against the ancestor-projected membership is deterministic, order-independent, and consistent with appendix C interpretation 3 (a membership must be a causal ancestor of anything it authorizes). Assigned to lane 02b (owns admission).",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/migrate/",
+  "status": "active",
+  "summary": "Capability at admission is evaluated against the membership projected from the event's CAUSAL ANCESTORS (the membership event must precede it in the parents graph), and rebuild() replays that same evaluation — never the replica's latest policy — so a policy added later can neither drop already-admitted events nor make admission order-dependent",
+  "timestamp": "2026-09-15T22:40:34.081Z"
+}

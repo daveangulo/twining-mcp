@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Dave to open Codex interactively once on this machine, install the plugin from the repo marketplace (wip/codex-plugin carrier) and trust its hooks via /hooks, so lane 03's Codex real-host test can run; until then C15's second-backend half stays NOT TESTED.",
+  "entry_type": "need",
+  "id": "01M2KK183QNCWVA9NH9YRWSBQ5",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:29:36.993Z"
+  },
+  "scope": "src/adapters/",
+  "summary": "Dave to open Codex interactively once on this machine, install the plugin from the repo marketplace (wip/codex-plugin carrier) and trust its hooks via /hooks, so lane 03's Codex real-host test can …",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-15T22:29:37.016Z"
+}

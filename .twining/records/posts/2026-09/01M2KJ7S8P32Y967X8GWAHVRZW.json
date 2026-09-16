@@ -1,0 +1,21 @@
+{
+  "agent_id": "lane-02c",
+  "detail": "Defect caught during the forward → rollback → forward-recovery cycle, before any test existed for it.\n\n`rollback --to 2` regenerates records/ from the projection. Those view files necessarily differ byte-for-byte from the legacy originals (they carry legacy_view_of, v3_semantics_lost, a normalised status). A naive re-scan on the recovery run therefore sees two files declaring each id with different bytes and classifies EVERY migrated record as a duplicate-declared-id conflict: measured 23 conflicts and 24 rivals out of 23 records, with 88 derived events instead of 16.\n\nFIX SHIPPED: rollback writes `legacy/view-manifest.json` (rel path → sha256 of each file it generated); the scanner takes it as ScanOptions.viewManifest and returns those files in `scan.views` rather than `scan.records`. Forward recovery then compares each view against its recorded hash — unchanged is a no-op, changed is a genuine post-rollback write. Verified: recovery now produces exactly 1 post-rollback write for 1 edited file, and a second recovery produces 0.\n\nTwo consequences worth the lead's attention:\n- §10.8 says a changed records/ file \"becomes a new legacy event\". Events are immutable and the record id is already taken, so the changed body is recorded as its OWN record (derived id) and the original gets a `superseded` event pointing at it, flagged post_rollback_write_recorded_as_successor. Ids are still preserved for everything that existed before the rollback; a post-rollback write is a new statement, not a mutation. Alternative considered and rejected: an `amended` event (metadata-union only, cannot carry a changed body).\n- Migration verification must exempt those targets from the legacy-status comparison: the legacy file still says \"active\" while the projection correctly says \"superseded\". Without the exemption the recovery run fails verification for doing exactly what §10.8 requires.",
+  "entry_type": "finding",
+  "id": "01M2KJ7S8P32Y967X8GWAHVRZW",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:15:42.594Z"
+  },
+  "scope": "src/migrate/",
+  "summary": "Rollback must record the view bytes it writes, or forward recovery reads every regenerated 2.x view as a rival body for its own record",
+  "tags": [
+    "v3",
+    "migration",
+    "rollback",
+    "C21",
+    "projection"
+  ],
+  "timestamp": "2026-09-15T22:15:42.614Z"
+}

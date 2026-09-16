@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Lane 03 real-host evidence (Claude Code 2.1.272, temp synthetic project, TWINING_REAL_HOST=1): session_start + human_statement events and 3 receipts captured; the injected receipt's payload_hash equals sha256 of the bytes the hook printed. Claude Code: SessionStart/UserPromptSubmit/SubagentStart inject; PreCompact/SessionEnd cannot and say so; SubagentStop writes reported_result with finisher/stage/next_action and denies completion. Codex: 5 injecting events, 7 observe-only; hook trust blocks automated verification.",
+  "entry_type": "finding",
+  "id": "01M2KK1826S7045HRAMF5EJ1T9",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:29:36.943Z"
+  },
+  "scope": "src/adapters/",
+  "summary": "Lane 03 real-host evidence (Claude Code 2.1.272, temp synthetic project, TWINING_REAL_HOST=1): session_start + human_statement events and 3 receipts captured; the injected receipt's payload_hash eq…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-15T22:29:36.966Z"
+}

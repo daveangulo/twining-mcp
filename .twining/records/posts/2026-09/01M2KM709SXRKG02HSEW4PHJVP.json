@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: MCP server path builds the context with no offline flag, so a first-use Hugging Face download of Xenova/all-MiniLM-L6-v2 can happen from the server; no env or config surface exists to prevent it — R18's tested-local deployment needs TWINING_OFFLINE / embeddings.offline (add at merge).",
+  "entry_type": "finding",
+  "id": "01M2KM709SXRKG02HSEW4PHJVP",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:50:14.180Z"
+  },
+  "scope": "test/acceptance/",
+  "summary": "MCP server path builds the context with no offline flag, so a first-use Hugging Face download of Xenova/all-MiniLM-L6-v2 can happen from the server; no env or config surface exists to prevent it — …",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-15T22:50:14.201Z"
+}

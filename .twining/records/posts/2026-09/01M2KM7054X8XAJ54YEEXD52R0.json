@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Lane 05 prep delivered on lane/05-verification (harness + switchboard, oracle INDEX 1230 ids, C28 bundle + verifier, data-flow doc, 1k–16k measurements); all five lanes now committed on their branches; four reviews running; merge plan recorded.\nFindings: warning (lane 02b): an event whose causal parent was REJECTED stays pending_parents forever instead of terminating as rejected:parent_rejected — the C28 bundle's one failing row (C28 A13, C18 A9). Fix at merge.; warning (performance): EventStore.append p50 ≈ 0.323·n^0.5 ms (O(n^1.5) cumulative); p95 77.8 ms at 16k events and projected to cross the 100 ms local-capture target near ~35k on this machine; 100k not attempted (~3 h). Rebuild digest identical at every tier. Cause undiagnosed — month sharding and concurrent load ruled out; the 02b review is asked to locate it.; MCP server path builds the context with no offline flag, so a first-use Hugging Face download of Xenova/all-MiniLM-L6-v2 can happen from the server; no env or config surface exists to prevent it — R18's tested-local deployment needs TWINING_OFFLINE / embeddings.offline (add at merge).; Lane 05 switchboard: all six instrument-can-fail controls break their target assertion (scope_filter_off, trust_check_off, dedup_off, byte_preservation_off, class_rank_off, conflict_detection_off); three run in observe mode because src/ was not the lane's to edit, so they prove assertion sensitivity, not shipped enforcement. C28 bundle ran on ONE machine (12 pass / 1 fail / 21 not-tested) and is UNAVAILABLE until Dave runs it on the second computer; its verifier enforces that.",
+  "entry_type": "status",
+  "id": "01M2KM7054X8XAJ54YEEXD52R0",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:50:14.032Z"
+  },
+  "scope": "test/acceptance/",
+  "summary": "Lane 05 prep delivered on lane/05-verification (harness + switchboard, oracle INDEX 1230 ids, C28 bundle + verifier, data-flow doc, 1k–16k measurements); all five lanes now committed on their branc…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-15T22:50:14.052Z"
+}

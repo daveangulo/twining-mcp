@@ -1,0 +1,21 @@
+{
+  "agent_id": "lane-05-verification",
+  "detail": "Measured on an idle Apple M5 / 32 GB / node v26.8.2, five tiers, events spread over 24 month shards, via scripts/measure/corpus.ts. Full report: docs/reports/2026-09-resource-measurements.md.\n\n  tier   append p50   append p95   events/s\n  1,000   11.9 ms      13.1 ms      85.3\n  2,000   13.7 ms      22.2 ms      67.0\n  4,000   19.9 ms      31.2 ms      48.3\n  8,000   26.9 ms      55.6 ms      36.0\n 16,000   48.9 ms      77.8 ms      21.0\n\nLeast-squares log-log fit: p50 ≈ 0.323 × n^0.50. Per-append cost is a function of history length, so writing a corpus costs O(n^1.5), not O(n).\n\nConsequences:\n- C28 A25 targets p95 < 100 ms for durable local capture. Measured p95 at 16k is 77.8 ms. Using the measured p95/p50 ratio (1.59), the fit puts the crossing at roughly 35,000 events — reachable in ordinary use by a store that never truncates.\n- 100k was NOT attempted to completion: the fit projects p50 ≈ 108 ms and ≈ 3.0 hours single-threaded on this machine. The largest tier completed is 16,000. Reported as projected, never as measured.\n- Migration and bulk-import throughput inherit the same curve.\n\nRuled out as causes (do not re-derive):\n- Month sharding. The store shards by occurred_at.slice(0,7). Piling a whole corpus into ONE directory (--single-shard) was measured FASTER at 1k than spreading over 24 months (p50 10.9 ms vs 13.2 ms); spreading costs a little on append and a lot on rebuild. I initially wrote this up as a sharding finding and retracted it when the 1k control contradicted it.\n- Concurrent load. The reported run had the machine to itself; an earlier run alongside vitest/tsc was discarded.\n\nRemaining candidates for lane 02 to check: the per-event fsync (atomic temp-write + fsync + rename per event), the admission_log insert on every append, and anything on the append path that re-reads growing state.\n\nReproduce: npx tsx scripts/measure/corpus.ts --tiers 1000,2000,4000,8000,16000\nRe-render the doc without re-measuring: --from-json <raw.json>\n\nAlso in the report: storage is ~1.32 KB/event (pretty-printed JSON event files — an upper bound; a compact encoding would cut it materially), and rebuild from durable events reproduces the projection digest exactly at every tier.",
+  "entry_type": "warning",
+  "id": "01M2KM0QZW2WZK3E8FH25DKQJE",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:46:49.064Z"
+  },
+  "scope": "test/acceptance/",
+  "summary": "F-APPEND-GROWTH (lane 02): EventStore.append p50 grows as n^0.50 with corpus size — p95 crosses C28 A25's 100 ms durable-capture target at ~35k events",
+  "tags": [
+    "performance",
+    "lane-02",
+    "c28",
+    "r18",
+    "measurement"
+  ],
+  "timestamp": "2026-09-15T22:46:49.084Z"
+}

@@ -1,0 +1,33 @@
+{
+  "affected_files": [
+    "src/exchange/git-transport.ts",
+    "src/exchange/git.ts",
+    "src/exchange/status.ts",
+    "src/events/event-store.ts",
+    "src/events/db.ts",
+    "src/core/commands/exchange.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Lane 02b (exchange) delivered on lane/02-exchange: Git carrier (exchange ref, verified union, non-interference), C18 fault suite, C17/C22/C24 hardening, C20 deletion, exchange status, chain of trust, ancestor-membership capability; seven live slice defects fixed.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01M2KM4A4KFR77KH1RW59CN347",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:48:45.941Z"
+  },
+  "rationale": "Each names a fact the implementation already emits as a free string or duck-typed surface; naming them in the contract makes C17/C14/C24 surfaces contractual for lanes 03/04 and the operator docs.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/exchange/",
+  "status": "active",
+  "summary": "Contracts draft.3 also adopts lane 02b's additive proposals: quarantine reason signer_untrusted; reject reasons credential_revoked and author_assertion_not_authenticated; CONFLICTING_DUPLICATE already a ValidationCode; EventStore.exchangeStatus() + ExchangeStatus type; optional lastMalformed/lastGap on Transport",
+  "timestamp": "2026-09-15T22:48:45.971Z"
+}

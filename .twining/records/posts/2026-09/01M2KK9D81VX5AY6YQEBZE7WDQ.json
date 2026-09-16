@@ -1,0 +1,20 @@
+{
+  "agent_id": "lane-04-retrieval",
+  "detail": "twining-conservative-utf8/1.0.0, table proven-utf8-bytes/1, provenance \"proven-upper-bound\", envelope_overhead_tokens 8, every class ratio 1.0.\n\nWhy 1.0: in a byte-level BPE whose vocabulary holds all 256 single bytes, every token decodes to at least one byte, so tokens(s) <= utf8_byte_length(s). That is a proof, needs no model or network, and cannot undercount. It is also about 4x loose on English prose, which is a real cost: a 4000-token budget now genuinely guarantees <= 4000 tokens, but buys roughly a quarter of the prose it used to.\n\nThe machinery to tighten it with EVIDENCE is in place and unused: buildCalibrationTable() takes per-class observed maxima, multiplies by a safety factor, and CLAMPS to the proven bound (a measurement may only ever tighten, never loosen). scripts/calibrate-tokenizer.mjs measures against the Anthropic count-tokens API over test/fixtures/tokenizer-corpus/ and refuses to emit a table without a key. It is never run from tests.\n\nDECISION FOR THE LEAD: ship the proven bound as-is (safe, loose), or run one calibration pass with a key and ship a measured table. The corpus is 5 documents - enough to exercise the harness, not enough to bound production text. I did not fabricate ratios to close the gap.\n\nDEFECT FOUND AND FIXED while building: at a small budget the packet's own framing (incomplete banner + omission manifest) exceeded the budget, so the bound was violated exactly when it mattered. C26 section 6's second accepted terminal shape (refused_incomplete) is now the fallback, with budget_infeasible:true when even the refusal cannot fit — an honest overflow rather than an invisible one.",
+  "entry_type": "finding",
+  "id": "01M2KK9D81VX5AY6YQEBZE7WDQ",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:34:04.398Z"
+  },
+  "scope": "src/retrieval/",
+  "summary": "DP4 tokenizer ships a PROVEN bound (1 token/UTF-8 byte, ~4x loose) not a calibrated one — no API key here, and inventing ratios is the fabrication the bound exists to prevent",
+  "tags": [
+    "tokenizer",
+    "DP4",
+    "budget",
+    "C26"
+  ],
+  "timestamp": "2026-09-15T22:34:04.417Z"
+}

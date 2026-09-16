@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T22:29:36.679Z",
+  "id": "01M2KK17S7C25PHK1TSZAKJNFE",
+  "properties": {
+    "decision_summary": "On a v3 store the SessionStart hook injects ONLY the bounded working set (no 'Gate 1'/'Gate 2' instruction prose), while 2.x stores keep today's gate text; the gates on v3 are enforced by the hooks themselves (capture, commit gate, stop gate), not by prose the model must remember",
+    "origin": "derived"
+  },
+  "source": "01M2KK17S6Q1FZP2NQKVVD74SK",
+  "target": "01M2KK17S37FQY2JK1GH1DSEGE",
+  "type": "decided_by"
+}

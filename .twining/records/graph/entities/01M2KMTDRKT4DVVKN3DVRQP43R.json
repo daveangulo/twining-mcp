@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T23:00:50.579Z",
+  "id": "01M2KMTDRKT4DVVKN3DVRQP43R",
+  "name": "01M2KMTDR0ATQRX3W2RP008RC4",
+  "properties": {
+    "scope": "src/adapters/",
+    "summary": "Accepted lane 03's call to DELETE requalify's maxAgeMs/stale surface rather than implement it"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-15T23:00:50.579Z"
+}

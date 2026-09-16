@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T22:40:34.119Z",
+  "id": "01M2KKN9T7K7T35NJ7KXPC1D2X",
+  "properties": {
+    "decision_summary": "Capability at admission is evaluated against the membership projected from the event's CAUSAL ANCESTORS (the membership event must precede it in the parents graph), and rebuild() replays that same evaluation — never the replica's latest policy — so a policy added later can neither drop already-admitted events nor make admission order-dependent",
+    "origin": "derived"
+  },
+  "source": "01M2KKN9T66STMAR95Y6WBKYSG",
+  "target": "01M2KKN9T5Z750PF2WJMFCH6VB",
+  "type": "decided_by"
+}

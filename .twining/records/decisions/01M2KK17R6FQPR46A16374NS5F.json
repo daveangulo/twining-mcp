@@ -1,0 +1,41 @@
+{
+  "affected_files": [
+    "src/adapters/claude-code.ts",
+    "src/adapters/codex.ts",
+    "src/adapters/working-set.ts",
+    "src/cli/v3-verbs.ts",
+    "plugin/hooks/hooks.json",
+    "plugin/hooks/v3-capture-hook.sh",
+    "docs/operations/hosts-claude-code-capabilities.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Keep injecting the gate prose alongside the working set on v3",
+      "pros": [],
+      "reason_rejected": "fails the oracle and reintroduces instruction-only reliance the programme exists to remove"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Lane 03 (runtime) delivered on lane/03-runtime: v3 adapters (identity, ceremony, working set, receipts, Claude Code + Codex + library adapters, git connector), CLI v3 verbs, hooks incl. PreCompact and compact SessionStart; Claude real-host evidence captured; Codex not tested (hook trust); gaps 1/2/4 flipped.",
+  "depends_on": [],
+  "domain": "integration",
+  "id": "01M2KK17R6FQPR46A16374NS5F",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:29:36.616Z"
+  },
+  "rationale": "R10 requires capture and bounded injection without a prose instruction, and oracle C15 A2-NO-PROSE forbids the literal gate strings in any payload delivered to a model. This is the package's central outcome, so the lane's implementation stands; it is flagged for Dave because it changes what every v3 session sees at start. 2.x behavior is untouched so field users are unaffected until they migrate.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/adapters/",
+  "status": "active",
+  "summary": "On a v3 store the SessionStart hook injects ONLY the bounded working set (no 'Gate 1'/'Gate 2' instruction prose), while 2.x stores keep today's gate text; the gates on v3 are enforced by the hooks themselves (capture, commit gate, stop gate), not by prose the model must remember",
+  "timestamp": "2026-09-15T22:29:36.646Z"
+}

@@ -3,8 +3,8 @@
   "id": "01M2KF9R0DPNDWKQE8Y6HTBB2B",
   "name": "test/cli/twining.test.ts",
   "properties": {
-    "scope": "src/cli/"
+    "scope": "src/cli/,test/cli/"
   },
   "type": "file",
-  "updated_at": "2026-09-15T21:24:21.424Z"
+  "updated_at": "2026-09-15T21:39:51.116Z"
 }

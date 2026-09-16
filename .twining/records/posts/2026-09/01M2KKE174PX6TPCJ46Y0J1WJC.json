@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Lane 04 full suite: 2096 passed / 40 todo; two files (server-startup, telemetry-client) fail only because src/analytics/_generated-posthog-key.ts is missing in a fresh worktree (pretest injects it) — environmental, verify at merge.",
+  "entry_type": "finding",
+  "id": "01M2KKE174PX6TPCJ46Y0J1WJC",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:36:35.919Z"
+  },
+  "scope": "src/retrieval/",
+  "summary": "Lane 04 full suite: 2096 passed / 40 todo; two files (server-startup, telemetry-client) fail only because src/analytics/_generated-posthog-key.ts is missing in a fresh worktree (pretest injects it)…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-15T22:36:35.940Z"
+}

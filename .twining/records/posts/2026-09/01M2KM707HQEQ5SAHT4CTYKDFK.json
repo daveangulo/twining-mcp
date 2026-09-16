@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: warning (lane 02b): an event whose causal parent was REJECTED stays pending_parents forever instead of terminating as rejected:parent_rejected — the C28 bundle's one failing row (C28 A13, C18 A9). Fix at merge.",
+  "entry_type": "finding",
+  "id": "01M2KM707HQEQ5SAHT4CTYKDFK",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:50:14.109Z"
+  },
+  "scope": "test/acceptance/",
+  "summary": "warning (lane 02b): an event whose causal parent was REJECTED stays pending_parents forever instead of terminating as rejected:parent_rejected — the C28 bundle's one failing row (C28 A13, C18 A9). …",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-15T22:50:14.129Z"
+}

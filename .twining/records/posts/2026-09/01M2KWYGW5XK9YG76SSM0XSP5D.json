@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Confirmed blockers awaiting lane fixes: lane 04 assemble getByScope path bypasses the scope gate + twining_why file-match regression; lane 02c UTF-8 attachment corruption, archived-from-provisional unmigratable, raw NUL byte in v3-forward.ts, weak reinstated unpicks ruling parts, part events escalate to whole record; lane 02b lossy merge not rolled back, crash-poisoned publish idempotence, credentials in transport id/cursors, parent-rejected pending forever, O(n^1.5) append.",
+  "entry_type": "finding",
+  "id": "01M2KWYGW5XK9YG76SSM0XSP5D",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-16T01:22:53.425Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "Confirmed blockers awaiting lane fixes: lane 04 assemble getByScope path bypasses the scope gate + twining_why file-match regression; lane 02c UTF-8 attachment corruption, archived-from-provisional…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-16T01:22:53.445Z"
+}

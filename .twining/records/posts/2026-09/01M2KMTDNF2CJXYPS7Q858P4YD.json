@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Lane 03 review fixes applied and committed on lane/03-runtime: all 11 distinct findings closed incl. the mis-quoted legacy-hook guard blocker; requalify's inert staleness surface deleted; working-set cursor derived from emitted records only.\nDecisions: Accepted lane 03's call to DELETE requalify's maxAgeMs/stale surface rather than implement it — the age of a check that just ran is always zero, so the option enforced nothing; requalify now always runs the live check and refuses with unreachable, changed, or not_recorded (a check that succeeded but was not durably persisted must not qualify anything). Serving a cached observation with its age is lane 04's labelled `stale` retrieval, not a qualification.; Accepted deriving the working-set session cursor solely from the versions of records actually emitted (no store.events() scan), so the cursor cannot advance while any selected record remains budget-omitted — resolves the scoping concern by construction.\nFindings: warning: a v3 handoff guard written into two shell hooks through a Python heredoc used shell single-quote escaping, so the grep pattern contained literal quote marks and never matched; review-by-reading passed it because the escaping looks correct for a different writer. Lesson recorded: a test that flips a gap must exercise the path the OLD behaviour lived on (the legacy hooks), not only the new hook; test/hooks/legacy-v3-handoff.test.ts now does (red before, green after).; While fixing the stdout protocol check the lane added 2>/dev/null to the CLI invocation and silently swallowed every stderr diagnostic (the 'cannot inject' / 'could not parse' notes); two existing hook tests caught it and it was restored with a comment naming the trap.",
+  "entry_type": "status",
+  "id": "01M2KMTDNF2CJXYPS7Q858P4YD",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T23:00:50.459Z"
+  },
+  "scope": "src/adapters/",
+  "summary": "Lane 03 review fixes applied and committed on lane/03-runtime: all 11 distinct findings closed incl. the mis-quoted legacy-hook guard blocker; requalify's inert staleness surface deleted; working-s…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-15T23:00:50.479Z"
+}

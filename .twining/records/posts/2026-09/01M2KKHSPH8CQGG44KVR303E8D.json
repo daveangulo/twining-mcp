@@ -1,0 +1,23 @@
+{
+  "agent_id": "lane-02c",
+  "detail": "Branch lane/02c-migration. No commits (per brief). npx tsc --noEmit clean apart from the pre-existing generated-posthog-key stub.\n\nSHIPPED\n- test/fixtures/legacy-stores/{generate.ts, v1-file-store/, v2-records-tree/} — reproducible, committed-byte legacy stores (v1 file backend and v2 records tree without twining.db), carrying provisional/active/superseded-with-and-without-pointer/overridden-with-and-without/archived-with-and-without-archived_from/amended decisions, resolved and archived posts, acknowledged handoff, entities+relations, a malformed file, a git-conflict-marker file, a record whose id != filename, a duplicate-declared id with different bytes, and an index-desynced orphan.\n- src/migrate/legacy-scan.ts — byte-first scanner over both layouts; damage classified, never reconstructed.\n- src/migrate/v3-forward.ts — manifest / events / id-map / verify / finalize, each idempotent and resumable; ids preserved; attachments content-addressed; ambiguity preserved in legacy.legacy_ambiguity.\n- src/migrate/v3-rollback.ts — restricted 2.x view with legacy_view_of + per-record v3_semantics_lost; data-preservation and unavailable-functionality reported separately.\n- src/migrate/cli.ts — migrate --to 3 [--dry-run], rollback --to 2 [--dry-run], migrate-status, events ls|show.\n- src/core/commands/migrate.ts + src/tools/migrate-tools.ts — twining_migrate_status (read only; the verbs stay CLI-only).\n- src/events/projection.ts — per-part evidence class and version, revoked/overridden with parts, per-part class-rank rule, per-part reinstate rules. C16 L1-L4 todos removed and replaced with passing tests; C09 OQ-5 variant added.\n\nTESTS: v3-forward 29, v3-rollback 13, c21 37 (+2 explicit UNAVAILABLE todos), c16 19, c09 16, plus the untouched slices green.\n\nTWO DEFECTS FOUND AND FIXED IN PASSING: an unwritable attachment threw a raw errno from the middle of the event step (now reported, verification fails, config untouched); migrateStatus — a READ — threw on an unreadable directory (now tolerant).\n\nCROSS-LANE TOUCHES for the lead to merge carefully: src/cli/dispatch.ts + src/index.ts + src/cli/twining.ts (three new subcommands), src/server.ts + src/core/commands.ts (one tool registration), test/cli/dispatch.test.ts + test/core/command-registry.test.ts (pinned lists/counts 39 to 40), docs/CLI.md (the one quoted count).\n\nOPEN, POSTED SEPARATELY: two contract diffs (superseded.by should be optional; the post entry_type enum dropped 1.x's \"decision\") and one admission defect (rebuild re-evaluates capability against the latest membership and drops previously-admitted events).",
+  "entry_type": "status",
+  "id": "01M2KKHSPH8CQGG44KVR303E8D",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:38:39.293Z"
+  },
+  "scope": "src/migrate/",
+  "summary": "Lane 02c complete: v3 forward migration + rollback + forward recovery, part-level projections (C16 L1-L4 closed), C09 OQ-5 variant, C21 case — 111 tests green",
+  "tags": [
+    "v3",
+    "migration",
+    "rollback",
+    "C21",
+    "C16",
+    "C09",
+    "lane-02c"
+  ],
+  "timestamp": "2026-09-15T22:38:39.313Z"
+}

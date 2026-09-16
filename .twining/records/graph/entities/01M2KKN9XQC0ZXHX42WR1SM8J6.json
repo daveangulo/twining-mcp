@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T22:40:34.231Z",
+  "id": "01M2KKN9XQC0ZXHX42WR1SM8J6",
+  "name": "01M2KKN9V8QMFAYAX13QF69W2S",
+  "properties": {
+    "scope": "src/migrate/",
+    "summary": "Contracts draft.3 (at merge): `superseded.by` becomes optional (a legacy superseded record with no pointer in either direction is carried as superseded, not disguised as overridden), and post `entry_type` re-admits the 1.x value \"decision\" for legacy records only (migration ingress; any other ingress still rejects it)"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-15T22:40:34.231Z"
+}
