@@ -115,3 +115,52 @@ describe("migrate --to 3 after identity init", () => {
     expect(fs.readFileSync(path.join(tw, "store.json"), "utf8")).toBe(once);
   });
 });
+
+describe("a store migrated PRE-fix after identity init (pinned limitation)", () => {
+  // Before 591fcf63, resolveIdentity read only `repo_id`, found none in the
+  // identity-init descriptor, minted a path-seeded pair, and finalize
+  // overwrote store.json with it. That on-disk shape is reproduced on the
+  // fixed code by moving the init descriptor aside for the first run — the
+  // seed is the store path, so the pair is the one the old code minted, and
+  // store.json plus legacy/migration-state.json end up exactly as it left
+  // them: seeded pair everywhere, init ids gone. A rerun does NOT heal it:
+  // resolveIdentity honours the persisted migration identity first (rerun
+  // idempotency), and finalize can only union ids the CURRENT descriptor
+  // declares. Healing is a deliberate operator edit; `twining doctor` reports
+  // the shape as `repo_ids_undeclared`. If this case ever fails because the
+  // init ids came back, a rerun has started choosing which id a checkout
+  // cites — that is the design decision this test exists to keep explicit.
+  it("a rerun keeps the seeded pair; the init ids do not come back", async () => {
+    const root = copyStore(V1_FIXTURE, "v3idreuse");
+    const tw = twiningDirOf(root);
+    const { descriptor: init, repoId: initRepo } = ensureStoreDescriptor(tw);
+    fs.renameSync(path.join(tw, "store.json"), path.join(root, "store.json.init-aside"));
+
+    const first = await migrateToV3({ projectRoot: root });
+    expect(first.ok).toBe(true);
+    expect(first.state.identity.store_id).not.toBe(init.store_id);
+    expect(first.state.identity.repo_id).not.toBe(initRepo);
+    const seeded = storeJsonOf(tw);
+    expect(seeded.store_id).toBe(first.state.identity.store_id);
+    expect(seeded.repo_ids).toEqual([first.state.identity.repo_id]);
+
+    const rerun = await migrateToV3({ projectRoot: root });
+    expect(rerun.ok).toBe(true);
+    expect(rerun.state.identity).toEqual(first.state.identity);
+    expect(storeJsonOf(tw)).toEqual(seeded);
+    expect(storeJsonOf(tw).repo_ids).not.toContain(initRepo);
+    expect(migrateStatus(tw).store_id).toBe(first.state.identity.store_id);
+    expect(migrateStatus(tw).repo_id).toBe(first.state.identity.repo_id);
+
+    // Every migrated event cites the seeded id, which is why a heal cannot be
+    // a rewrite: the events are immutable and the choice of id is the operator's.
+    const store = new EventStore({ twiningDir: tw });
+    try {
+      const events = await store.events({});
+      expect(events.length).toBeGreaterThan(0);
+      for (const ev of events) expect(ev.scope.repo).toBe(first.state.identity.repo_id);
+    } finally {
+      store.close();
+    }
+  });
+});

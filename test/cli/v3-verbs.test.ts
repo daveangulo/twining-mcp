@@ -263,6 +263,45 @@ describe("twining doctor", () => {
     const r = out.result as { bindings: Record<string, unknown>; honest_limits: string[] };
     expect(r.bindings.v3_enabled).toBe(false);
     expect(r.honest_limits.join(" ")).toMatch(/2\.x format/);
+    expect(r.bindings.repo_ids_cited).toEqual([]);
+    expect(r.bindings.repo_ids_undeclared).toEqual([]);
+  });
+
+  it("reports the repo ids the journal cites and names any the descriptor no longer declares", async () => {
+    await runIdentity(["init"], fx.projectRoot, fx.env);
+    const initRepo = readStoreDescriptor(fx.twiningDir)!.repo_ids[0]!;
+    const runtime = runtimeFor(fx);
+    await seedDecision(runtime, "cites the identity-init repo id");
+    runtime.close();
+
+    type Doctor = { bindings: Record<string, unknown>; honest_limits: string[] };
+    const healthy = (await runDoctor([], fx.projectRoot, fx.env)).result as Doctor;
+    expect(healthy.bindings.repo_ids).toEqual([initRepo]);
+    expect(healthy.bindings.repo_ids_cited).toEqual([initRepo]);
+    expect(healthy.bindings.repo_ids_undeclared).toEqual([]);
+    expect(healthy.honest_limits.join(" ")).not.toMatch(/does not declare/);
+
+    // The shape a pre-591fcf63 `migrate --to 3` left behind on a store that
+    // had run `identity init` and written events: store.json rewritten with a
+    // path-seeded pair, the id every earlier event cites gone from it. A
+    // migrate rerun cannot heal it, so doctor must say so.
+    const file = path.join(fx.twiningDir, "store.json");
+    const raw = JSON.parse(fs.readFileSync(file, "utf-8")) as Record<string, unknown>;
+    const seededRepo = "r_DM8D0ZQ293HXW6A8GGJPPCTPHB";
+    fs.writeFileSync(
+      file,
+      JSON.stringify({ ...raw, store_id: "s_PTRD5KQ6B3D310B579EP3YBY0D", repo_id: seededRepo, repo_ids: [seededRepo] }, null, 2) + "\n",
+    );
+
+    const out = await runDoctor([], fx.projectRoot, fx.env);
+    expect(out.exitCode).toBe(0);
+    const r = out.result as Doctor;
+    expect(r.bindings.repo_ids).toEqual([seededRepo]);
+    expect(r.bindings.repo_ids_cited).toEqual([initRepo]);
+    expect(r.bindings.repo_ids_undeclared).toEqual([initRepo]);
+    const limits = r.honest_limits.join(" ");
+    expect(limits).toContain(initRepo);
+    expect(limits).toMatch(/rerun does not heal/);
   });
 });
 

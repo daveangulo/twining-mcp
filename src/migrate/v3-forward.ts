@@ -261,6 +261,18 @@ function writeJson(file: string, value: unknown): void {
  * The migration's own identity. Minted once and persisted, so a resumed or
  * repeated run produces byte-identical events (and therefore duplicate-
  * suppressed appends) rather than a second parallel history.
+ *
+ * Precedence is persisted state, then the descriptor, then a path-seeded
+ * pair — and the first rule is deliberately NOT a heal. A store that ran
+ * `identity init` and was then migrated by a pre-591fcf63 run (which read
+ * only `repo_id`, minted a seeded pair and overwrote store.json with it)
+ * keeps the seeded pair on every rerun: the init ids are gone from store.json,
+ * so finalize's union cannot restore them, while the events minted before
+ * that migration (and the ceremony membership) still cite the init repo id.
+ * Healing means choosing which id the checkout cites from now on — a
+ * deliberate edit of store.json and legacy/migration-state.json, not a call a
+ * rerun may make on its own. `twining doctor` reports the shape as
+ * `repo_ids_undeclared`.
  */
 function resolveIdentity(twiningDir: string, prior: MigrationState | null): MigrationIdentity {
   if (prior?.identity) return prior.identity;
