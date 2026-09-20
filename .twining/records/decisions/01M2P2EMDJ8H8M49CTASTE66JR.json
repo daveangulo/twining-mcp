@@ -1,0 +1,46 @@
+{
+  "affected_files": [
+    "src/adapters/working-set.ts",
+    "test/adapters/working-set-render.test.ts"
+  ],
+  "affected_symbols": [
+    "oneLine",
+    "normalise",
+    "renderResult",
+    "renderRecord",
+    "isHookBookkeeping",
+    "buildWorkingSet"
+  ],
+  "agent_id": "wf_e59d869d-75f-4-review-fix",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Commit on a detached HEAD and report the sha",
+      "pros": [],
+      "reason_rejected": "violates 'commit on the same branch' and leaves the commit unreachable from any ref if the worktree is cleaned up"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Applied the review of fix/working-set-render (1258c30a): every free-text field now goes through one oneLine() normaliser, hook bookkeeping observations are excluded from the working set, result.error is never rendered, URL userinfo is stripped, 40-hex result shas shortened. 9 new tests, all red on 1258c30a.",
+  "depends_on": [
+    "01M2P189MPRZN7K2BP8V2SCHAD",
+    "01M2KMTDSKBZSCCP3KRGF6G7FH"
+  ],
+  "domain": "process",
+  "id": "01M2P2EMDJ8H8M49CTASTE66JR",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T21:37:33.085Z"
+  },
+  "rationale": "The orchestrator required the commit on the same branch and `git branch -f` refuses a branch checked out elsewhere. Consequence: the -1 worktree's HEAD now points at the new commit while its files stay at 1258c30a, so `git status` there shows this commit's changes as reverse modifications until it is reset or pruned.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/adapters/working-set.ts",
+  "status": "active",
+  "summary": "Chose `git checkout --ignore-other-worktrees fix/working-set-render` to commit on the branch the orchestrator named while sibling worktree wf_e59d869d-75f-1 still had it checked out",
+  "timestamp": "2026-09-16T21:37:33.106Z"
+}

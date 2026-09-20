@@ -1,0 +1,18 @@
+{
+  "agent_id": "wf_e59d869d-75f-4-review-fix",
+  "detail": "Full summary: Applied the review of fix/working-set-render (1258c30a): every free-text field now goes through one oneLine() normaliser, hook bookkeeping observations are excluded from the working set, result.error is never rendered, URL userinfo is stripped, 40-hex result shas shortened. 9 new tests, all red on 1258c30a.\nDecisions: [object Object]; [object Object]; [object Object]; [object Object]\nFindings: warning: src/adapters/connectors/git.ts still PERSISTS a credentialed remote URL in check_method, result.remote and result.error (git.ts:55-66) — the working-set renderer now redacts userinfo and drops `error`, but the store does not; redact at the connector before checkRemoteRef/recordObservation gets a production caller; finding: handleUserPromptSubmit writes the human_statement post BEFORE building the delta, so every prompt turn injects the model's own just-typed prompt back as '[human statement] status: <prompt>' plus a receipt — pre-existing lane-03 behaviour, unchanged by the review fixes, costs bytes and a receipt per turn; finding: `work` records written by SubagentStart carry evidence_class verified_observation and render as a bare record id at class rank 2 — the same shape as the observation defect this branch fixed, not among the review's findings, left as is; finding: the 11 review findings collapse to 6 distinct defects (bookkeeping crowd-out reported 3x, blank summary 2x, unbounded/forgeable summary 3x); none refuted — every one reproduced or followed from code reading; finding: all 9 new and 2 modified tests verified red against 1258c30a (11/19 failing) and green after; review-fixes, claude-code, codex, oracles-lane03 and library suites unchanged green",
+  "entry_type": "status",
+  "id": "01M2P2EKTSA48SFYTS3EEZJY0X",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T21:37:32.483Z"
+  },
+  "scope": "src/adapters/working-set.ts",
+  "summary": "Applied the review of fix/working-set-render (1258c30a): every free-text field now goes through one oneLine() normaliser, hook bookkeeping observations are excluded from the working set, result.err…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-16T21:37:32.505Z"
+}

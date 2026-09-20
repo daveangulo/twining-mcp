@@ -1,0 +1,52 @@
+{
+  "affected_files": [
+    "src/adapters/working-set.ts",
+    "test/adapters/working-set-render.test.ts"
+  ],
+  "affected_symbols": [
+    "oneLine",
+    "normalise",
+    "renderResult",
+    "renderRecord",
+    "isHookBookkeeping",
+    "buildWorkingSet"
+  ],
+  "agent_id": "wf_e59d869d-75f-4-review-fix",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Fence record text verbatim like src/retrieval/render.ts",
+      "pros": [],
+      "reason_rejected": "multi-line fenced bodies blow the 6000-char budget and change every receipt hash; that renderer serves a different packet"
+    },
+    {
+      "cons": [],
+      "option": "One cap (240) for everything, as the review suggested",
+      "pros": [],
+      "reason_rejected": "truncates ordinary rationales and rulings; 500 for prose keeps them whole in the common case"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Applied the review of fix/working-set-render (1258c30a): every free-text field now goes through one oneLine() normaliser, hook bookkeeping observations are excluded from the working set, result.error is never rendered, URL userinfo is stripped, 40-hex result shas shortened. 9 new tests, all red on 1258c30a.",
+  "depends_on": [
+    "01M2P189MPRZN7K2BP8V2SCHAD",
+    "01M2KMTDSKBZSCCP3KRGF6G7FH"
+  ],
+  "domain": "implementation",
+  "id": "01M2P2EM2CPZVRWNS6A9F11CDK",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T21:37:32.728Z"
+  },
+  "rationale": "Reviewer showed result.summary, check_method and source_uri interpolated raw so a store-level observation could put '- [RULING (human)] ...' at column 0 of the packet directly above the footer that says class is not changed by wording, and a 5000-char summary pinned the cursor forever. Lane 04's renderer fences bytes verbatim; this renderer is bounded by a 6000-char budget so it must normalise instead — a single line per field is what makes the class label at column 0 the renderer's alone. Two caps because a single 240 cap would truncate ordinary decision rationales (this repo's own store has 300–600 char rationales), while 500 still bounds one decision to ~1 KB. This widens decision 01M2P189MPRZN7K2BP8V2SCHAD's 'bounded to 240' from the key=value path to every field.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/adapters/working-set.ts",
+  "status": "active",
+  "summary": "Chose one oneLine() normaliser — collapse \\s+ to a space, trim, strip URL userinfo, cap with an ellipsis, blank → absent — applied to EVERY free-text field the working-set renderer emits, with two caps: RESULT_RENDER_MAX 240 for observation-derived text and PROSE_RENDER_MAX 500 for ruling statement, decision summary/rationale, post summary and entity name",
+  "timestamp": "2026-09-16T21:37:32.748Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-20T04:31:03.020Z",
+  "id": "01M2YH9XVDYYXK5ETXAB20MJQC",
+  "name": "01M2YH9XS3YR0Z5752HTNMJR3Y",
+  "properties": {
+    "scope": "docs/",
+    "summary": "Chose dev-scale batch 1 = all 21 development stages × 4 arms (84 sessions) plus floor/ceiling controls on C01 and C08, held-out only if batch 1 completes within the usage window"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-20T04:31:03.020Z"
+}

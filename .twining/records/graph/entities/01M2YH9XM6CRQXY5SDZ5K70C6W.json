@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-20T04:31:02.790Z",
+  "id": "01M2YH9XM6CRQXY5SDZ5K70C6W",
+  "name": "01M2YH9XGSZP79Q1FGEW4HZB4S",
+  "properties": {
+    "scope": "docs/",
+    "summary": "Chose to run the v3 trial arm from a detached built worktree of foundation/v3 (.claude/worktrees/v3-trial) rather than building the main checkout"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-20T04:31:02.790Z"
+}

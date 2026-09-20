@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-20T04:31:03.415Z",
+  "id": "01M2YH9Y7QC1NYTQWW1M0K361B",
+  "name": "01M2YH9Y486SMPC8XFGE3GK0XT",
+  "properties": {
+    "scope": "docs/",
+    "summary": "Chose not to add an estimate-vs-measured validation to scripts/calibrate-tokenizer.mjs despite the per-class attribution caveat"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-20T04:31:03.415Z"
+}

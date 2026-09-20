@@ -1,0 +1,20 @@
+{
+  "agent_id": "main",
+  "detail": "scripts/calibrate-tokenizer.mjs:132-152 computes ratio = tokens/bytes per document and assigns it to the dominant (≥80%) class; prose-en.txt's ~20% inter-word spaces therefore already contributed zero tokens to the ascii_alnum ratio. If a future whitespace document measures ascii_space at ~0.03 tokens/byte, prose could be estimated at 0.263×0.8 + 0.03×0.2 ≈ 0.22 tokens/byte, below the 0.229 measured for prose-en (safety 1.15 restores it only partially). Mitigation prepared, not coded: test/fixtures/tokenizer-corpus/padded-whitespace.txt is briefing-shaped (indentation runs + single inter-word spaces, ~85% whitespace) rather than pathological, and the corpus README now says to compare the emitted table's estimate against every document's measured count before shipping. Adding that validation to the script was NOT done here because nothing on this machine can execute it (no API key) and the script already carries one unverified fix (DN32). Recommended when the second calibration runs.",
+  "entry_type": "finding",
+  "id": "01M2NEXD0WKM1NMXHHVM44D2MG",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T15:56:05.510Z"
+  },
+  "scope": "scripts/",
+  "summary": "Calibrator method caveat: a document's whole token count is attributed to its dominant class, so a class measured on an extreme document (long space runs) can price mixed prose below its real count",
+  "tags": [
+    "foundation-programme",
+    "tokenizer",
+    "calibration",
+    "DP4"
+  ],
+  "timestamp": "2026-09-16T15:56:05.532Z"
+}

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-16T21:37:01.531Z",
+  "id": "01M2P2DNJVGXHYXJPMKBDZT0ZF",
+  "name": "renderRevision",
+  "properties": {
+    "scope": "src/adapters/working-set.ts"
+  },
+  "type": "function",
+  "updated_at": "2026-09-16T21:37:01.531Z"
+}

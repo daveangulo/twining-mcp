@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Chose dev-scale batch 1 = all 21 development stages × 4 arms (84 sessions) plus floor/ceiling controls on C01 and C08, held-out only if batch 1 completes within the usage window\" relates to:\n- 01M08AXR867FVQ4142J4GZVA6G: \"Chose to classify the report's ask 0a (publish >=2.13.0 to npm) as field-environment-only\"\n- 01M0XGQGZVDZ9HQEB7V5M4GPYW: \"Chose to append the memo errata (the plan's recommended option) with a fifth item\"\n- 01M21M2S3Q8FCQNQ050D0WBNEF: \"Chose a lazily built claimant map (one get per index entry, only at retired dead-ends, ≤20 hidden rows) for the lineage reverse scan over projecting `supersedes` into DecisionIndexEntry this wave\"",
+  "entry_type": "finding",
+  "id": "01M2YH9XSR4VBM89MT9Z3V84HN",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-20T04:31:02.948Z"
+  },
+  "scope": "docs/",
+  "summary": "Related decisions in scope: 3 existing decision(s) overlap",
+  "tags": [
+    "performance"
+  ],
+  "timestamp": "2026-09-20T04:31:02.968Z"
+}

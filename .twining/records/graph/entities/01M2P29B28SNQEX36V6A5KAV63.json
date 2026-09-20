@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T21:34:39.688Z",
+  "id": "01M2P29B28SNQEX36V6A5KAV63",
+  "name": "01M2P29B032QPDB0B947SPWZB1",
+  "properties": {
+    "scope": "docs/plans/",
+    "summary": "Prompts carry the reason-code list and decision words literally (frozen bytes = seen bytes) with exactly two run-time placeholders {{arm_pointer}} and {{ceiling_inline}}; build-specs asserts each prompt names every code, word, (qid), action, now and answer file"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-16T21:34:39.688Z"
+}

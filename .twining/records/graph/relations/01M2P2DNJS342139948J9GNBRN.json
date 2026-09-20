@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T21:37:01.529Z",
+  "id": "01M2P2DNJS342139948J9GNBRN",
+  "properties": {
+    "decision_summary": "Chose revision tokens `base..head` / `@head` / `since base` with `revision <token>` on the scope line and `over <range>` on the observed line, replacing the `..head` / `base..` forms",
+    "origin": "derived"
+  },
+  "source": "01M2KK17S7C25PHK1TSZAKJNFF",
+  "target": "01M2P2DNJRN28SWFS501QJZN69",
+  "type": "decided_by"
+}

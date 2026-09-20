@@ -1,0 +1,17 @@
+{
+  "agent_id": "wf-working-set-render",
+  "detail": "New decision \"Chose to export renderRecord for unit tests rather than mint rulings through the ceremony\" relates to:\n- 01M2M0CYR0NBNB78KZM833QFZZ: \"Widened C25's fixture grant from R_GW to every repo it seeds (R_GW, R_LED, R_BILL)\"",
+  "entry_type": "finding",
+  "id": "01M2P189Q01Z4M1CN70TGE791S",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T21:16:36.941Z"
+  },
+  "scope": "src/adapters/",
+  "summary": "Related decisions in scope: 1 existing decision(s) overlap",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-09-16T21:16:36.960Z"
+}

@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: The earlier push failures ('Could not read from remote repository') were transient — the SSH agent recovered; foundation/v3 is pushed through 9b0afafd. Next session: twining_assemble on src/, read the handoff, then run the matched trial (RB5) under Max auth before writing docs/reports/2026-09-foundation-final.md.",
+  "entry_type": "finding",
+  "id": "01M2M85GJM8290X19DQJDR56ZW",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T04:38:56.832Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "The earlier push failures ('Could not read from remote repository') were transient — the SSH agent recovered; foundation/v3 is pushed through 9b0afafd. Next session: twining_assemble on src/, read …",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-16T04:38:56.852Z"
+}

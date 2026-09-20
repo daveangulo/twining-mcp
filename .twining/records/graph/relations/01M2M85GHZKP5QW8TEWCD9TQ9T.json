@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T04:38:56.831Z",
+  "id": "01M2M85GHZKP5QW8TEWCD9TQ9T",
+  "properties": {
+    "decision_summary": "Chose a dedicated handoff document (reading order, branch/PR table, remaining work in order, owner items, standing rules) over relying on the log + memory alone",
+    "origin": "derived"
+  },
+  "source": "01M2M85GHYAWGA8D4ATW8QFGH4",
+  "target": "01M2M85GHYAWGA8D4ATW8QFGH3",
+  "type": "decided_by"
+}

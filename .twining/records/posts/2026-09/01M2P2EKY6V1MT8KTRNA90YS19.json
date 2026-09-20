@@ -1,0 +1,17 @@
+{
+  "agent_id": "wf_e59d869d-75f-4-review-fix",
+  "detail": "New decision \"Chose to EXCLUDE the hooks' own session_start / compaction / post_compaction observations from the working set (alongside principal, membership, receipt) rather than render them compactly or rank them below proposals\" relates to:\n- 01M2P2DNHYXMKK2H492Y46KHZA: \"Chose revision tokens `base..head` / `@head` / `since base` with `revision <token>` on the scope line and `over <range>` on the observed line, replacing the `..head` / `base..` forms\"",
+  "entry_type": "finding",
+  "id": "01M2P2EKY6V1MT8KTRNA90YS19",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T21:37:32.595Z"
+  },
+  "scope": "src/adapters/working-set.ts",
+  "summary": "Related decisions in scope: 1 existing decision(s) overlap",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-09-16T21:37:32.614Z"
+}

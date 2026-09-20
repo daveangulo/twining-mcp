@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "a human_ruling stating the archival",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Contracts builder (harness foundation-trial): wrote spec.schema.json, types.ts, class-map.json, reason-codes.json, build-specs.mjs (dependency-free validator + byte materialisation + TELL-SCAN), the C01.dev worked example (spec, 4 stage prompts, golden + adversarial answer sets) and README under twining-benchmark-harness/src/scenarios/foundation-trial/. build-specs --check passes; types.ts compiles under the repo's strict flags; a throwaway reference scorer shows golden PASS 56/56 and adversarial FAIL 56/56. No files in twining-mcp changed.",
+  "depends_on": [],
+  "domain": "security",
+  "id": "01M2P29AMP3S5W7AQ6W4RJ3CAE",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T21:34:39.232Z"
+  },
+  "rationale": "chose this over a human_ruling stating the archival because ceremony admits only human_ruling and human_ruling is reserved for ruling records (validate.ts RECORD_TYPE_CLASS_MISMATCH), so a ruling would misrepresent an archival as an authority act; fallback to the ruling form only if SEED-DRY refuses, decided before the freeze. Consequence recorded: archived records are excluded from EventStore.query and the working set unless include_archived, so C04 vacuity must query include_archived and packet coverage will show the archived target as not delivered.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/plans/",
+  "status": "active",
+  "summary": "U-9 resolved: EV-A10/EV-K20 (authenticated_human_action archive) map to a v3 lifecycle event kind `archived` on the target, ingress adapter, class human_statement, producer = the acting human, signed with the human key (capability write)",
+  "timestamp": "2026-09-16T21:34:39.254Z"
+}

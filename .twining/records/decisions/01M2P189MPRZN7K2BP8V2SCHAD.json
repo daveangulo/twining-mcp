@@ -1,0 +1,47 @@
+{
+  "affected_files": [
+    "src/adapters/working-set.ts",
+    "test/adapters/working-set-render.test.ts"
+  ],
+  "affected_symbols": [
+    "renderRecord",
+    "renderResult",
+    "renderRange",
+    "buildWorkingSet"
+  ],
+  "agent_id": "wf-working-set-render",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "JSON.stringify or insertion-order rendering",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "Sorting result keys is preferred to insertion order because determinism across replicas matters more than the author's key order",
+    "The trial seeder writes observations with a strict body and no result.summary, so the key=value fallback is the common case"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [
+    "D51: ordering, class labels, budget accounting and truncation must stay identical; 2.x stores untouched",
+    "worktree isolation: no dist build, single vitest process, tsc last"
+  ],
+  "context": "D51/DP-0: working-set renderRecord now renders observation substance (source_kind [uri] via check_method · at observed_at · volatile · base..head, head = result.summary or sorted scalar key=value ≤240) and 'revision base..head' (8-hex) on every scope line; 10 tests added (red on old renderer); repo_id/repo_ids mismatch assessed, not fixed.",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01M2P189MPRZN7K2BP8V2SCHAD",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T21:16:36.866Z"
+  },
+  "rationale": "sorted keys keep payload_hash replay-stable across replicas, scalars-only keeps one line per fact, and the bound stops one verbose check from eating the 6000-char budget",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/adapters/",
+  "status": "active",
+  "summary": "Chose to render an observation's result as sorted top-level scalar key=value pairs (bounded to 240 chars, whitespace collapsed, nested values skipped) when result.summary is absent, over JSON.stringify or insertion-order rendering",
+  "timestamp": "2026-09-16T21:16:36.887Z"
+}

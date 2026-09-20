@@ -1,0 +1,19 @@
+{
+  "agent_id": "main",
+  "detail": "The handoff table said \"2 commits ahead of origin — push failed (SSH agent dropped)\"; the previous session's final push evidently succeeded after the handoff was written (git fetch 2026-09-16 confirms). Draft PRs #48 (feat/cli-2.17 → main) and #49 (foundation/v3 → main) are open. The two red jobs are fixed only by scripts/bump-plugin-version.sh at release. Recorded as DN33 in the programme log.",
+  "entry_type": "finding",
+  "id": "01M2NEMGW7J57PT4413S7Z8C1Z",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T15:51:14.543Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "Handoff item 1 already done: origin/foundation/v3 == 9b0afafd. CI there: build-and-test green (Node 22/24), token budget green; plugin-version-check + bundle-freshness red = owner release work",
+  "tags": [
+    "foundation-programme",
+    "ci",
+    "handoff"
+  ],
+  "timestamp": "2026-09-16T15:51:14.567Z"
+}

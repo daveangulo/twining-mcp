@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T21:37:32.672Z",
+  "id": "01M2P2EM00JH9Q6G32RBEFPSH2",
+  "name": "01M2P2EKXE8574ER9W9Q9EXBF1",
+  "properties": {
+    "scope": "src/adapters/working-set.ts",
+    "summary": "Chose to EXCLUDE the hooks' own session_start / compaction / post_compaction observations from the working set (alongside principal, membership, receipt) rather than render them compactly or rank them below proposals"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-16T21:37:32.672Z"
+}

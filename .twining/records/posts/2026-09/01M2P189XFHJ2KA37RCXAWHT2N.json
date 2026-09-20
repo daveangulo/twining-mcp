@@ -1,0 +1,17 @@
+{
+  "agent_id": "wf-working-set-render",
+  "detail": "New decision \"Chose NOT to fix store-identity.ts reading repo_id while ensureStoreDescriptor writes repo_ids\" relates to:\n- 01M2P189MPRZN7K2BP8V2SCHAD: \"Chose to render an observation's result as sorted top-level scalar key=value pairs (bounded to 240 chars, whitespace collapsed, nested values skipped) when result.summary is absent, over JSON.stringify or insertion-order rendering\"",
+  "entry_type": "finding",
+  "id": "01M2P189XFHJ2KA37RCXAWHT2N",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T21:16:37.149Z"
+  },
+  "scope": "src/adapters/",
+  "summary": "Related decisions in scope: 1 existing decision(s) overlap",
+  "tags": [
+    "data-model"
+  ],
+  "timestamp": "2026-09-16T21:16:37.167Z"
+}

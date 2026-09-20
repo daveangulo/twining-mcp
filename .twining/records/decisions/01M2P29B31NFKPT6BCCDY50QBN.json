@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "entries in records[]",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Contracts builder (harness foundation-trial): wrote spec.schema.json, types.ts, class-map.json, reason-codes.json, build-specs.mjs (dependency-free validator + byte materialisation + TELL-SCAN), the C01.dev worked example (spec, 4 stage prompts, golden + adversarial answer sets) and README under twining-benchmark-harness/src/scenarios/foundation-trial/. build-specs --check passes; types.ts compiles under the repo's strict flags; a throwaway reference scorer shows golden PASS 56/56 and adversarial FAIL 56/56. No files in twining-mcp changed.",
+  "depends_on": [],
+  "domain": "security",
+  "id": "01M2P29B31NFKPT6BCCDY50QBN",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T21:34:39.691Z"
+  },
+  "rationale": "avoids duplicating the authority table the v3 membership is built from.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/plans/",
+  "status": "active",
+  "summary": "Policy and principal authorities are top-level spec objects (policy, identities) rendered by every seeder as two records (policy.record_id, identities.record_id) signed by a synthetic steward human in v3, rather than entries in records[]",
+  "timestamp": "2026-09-16T21:34:39.713Z"
+}

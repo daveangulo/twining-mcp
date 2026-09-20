@@ -1,0 +1,46 @@
+{
+  "affected_files": [
+    "src/adapters/working-set.ts",
+    "test/adapters/working-set-render.test.ts"
+  ],
+  "affected_symbols": [
+    "renderRevision",
+    "renderRecord"
+  ],
+  "agent_id": "wf_e59d869d-75f-4-review-fix",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Keep `..head` / `base..` (decision 01M2P189SSQBV56SFY1ZM68D6S)",
+      "pros": [],
+      "reason_rejected": "reads as a git range; ambiguous against the scope revision"
+    },
+    {
+      "cons": [],
+      "option": "`head ffffffff` / `revision @ffffffff` wording from the review",
+      "pros": [],
+      "reason_rejected": "chose the shorter `@` prefix for the same meaning; 'at' was already taken by observed_at on the same line"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Working-set revision rendering changed to self-labelling tokens: base..head for a range, @head for a single commit, since base for an open base; scope line says 'revision <token>', observed line says 'over <range>'.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M2P2DNHYXMKK2H492Y46KHZA",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T21:37:01.481Z"
+  },
+  "rationale": "Review finding: in git syntax `..X` means `HEAD..X`, a range, while src/contracts/scope.ts binds a head-only revision to exactly one commit, so the old form mis-stated what a ruling was bound to; and the observed line's range was unlabelled beside a differently-valued scope revision in the same chunk. `@head` reads as one commit, `since base` as open-ended, and `over` names what the check ran across versus what the record is bound to. Tests pin all three forms and the two-ranges-in-one-chunk case.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/adapters/working-set.ts",
+  "status": "active",
+  "summary": "Chose revision tokens `base..head` / `@head` / `since base` with `revision <token>` on the scope line and `over <range>` on the observed line, replacing the `..head` / `base..` forms",
+  "supersedes": "01M2P189SSQBV56SFY1ZM68D6S",
+  "timestamp": "2026-09-16T21:37:01.502Z"
+}

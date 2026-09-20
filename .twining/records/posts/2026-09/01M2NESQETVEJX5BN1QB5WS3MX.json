@@ -1,0 +1,20 @@
+{
+  "agent_id": "main",
+  "detail": "Harness ~/code/twining-benchmark-harness HEAD 279edb6: agent sessions run via @anthropic-ai/claude-agent-sdk query() (Max login works); the evaluator client is constructed only when ANTHROPIC_API_KEY is set (src/runner/orchestrator.ts:164-169). Conditions pin the server via TWINING_MCP_SPEC and the plugin via TWINING_PLUGIN_PATH / ~/.claude/plugins/installed_plugins.json. The nearest analogue of the package's \"native memory plus journals/handoffs\" arm is shared-markdown. Oracles supply dev variants for C01–C09 and held-out variants for C01–C08 (17 total). A detached built worktree of foundation/v3 HEAD at .claude/worktrees/v3-trial serves the v3 arm (A11); note its package.json still says 2.16.1 (RB7's 3.0.0-alpha.N stamp was never applied; `npm version` rebuilds and stages the plugin bundle, so it is coupled to the owner's plugin release) — trial metadata must identify arms by commit/spec, not by reported version. Decisions D45–D48 in the programme log; workflow trial-understand-design writes docs/plans/2026-09-16-dev-scale-trial-design.md.",
+  "entry_type": "warning",
+  "id": "01M2NESQETVEJX5BN1QB5WS3MX",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T15:54:05.123Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "Dev-scale trial constraints: no ANTHROPIC_API_KEY (harness judge unavailable, score deterministically); no native-journals condition; 2 oracle variants per case; Max usage shared with this session",
+  "tags": [
+    "foundation-programme",
+    "trial",
+    "RB5",
+    "A14"
+  ],
+  "timestamp": "2026-09-16T15:54:05.146Z"
+}

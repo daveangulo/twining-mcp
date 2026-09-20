@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Prompts carry the reason-code list and decision words literally (frozen bytes = seen bytes) with exactly two run-time placeholders {{arm_pointer}} and {{ceiling_inline}}; build-specs asserts each prompt names every code, word, (qid), action, now and answer file\" relates to:\n- 01M08Y6N4FWH2B7V41KMTJTA1B: \"Chose to add a first-class exact-match mode (mode: semantic|exact on search_decisions/twining_query) as a Wave 2 rider over leaving keyword search as fallback-only\"\n- 01M2KF04PDF60DR8VF5K80GS5B: \"Chose to prune the eight Stage 0 reproduction worktrees immediately after confirming their gap tests were already committed on foundation/v3\"",
+  "entry_type": "finding",
+  "id": "01M2P29B0SG3DJ5PCMCA9VRXFK",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T21:34:39.620Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "Related decisions in scope: 2 existing decision(s) overlap",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-09-16T21:34:39.641Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-20T04:31:03.280Z",
+  "id": "01M2YH9Y3G52Z5RJA5Y75YS7A9",
+  "name": "01M2YH9Y07TG6J7F22PA83N002",
+  "properties": {
+    "scope": "docs/",
+    "summary": "Chose to fill operator docs only from executed runs in scratch stores against the built worktree, verified by re-execution, with unavailable evidence left marked UNAVAILABLE (D48)"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-20T04:31:03.280Z"
+}

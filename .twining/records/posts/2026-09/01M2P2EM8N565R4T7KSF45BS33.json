@@ -1,0 +1,17 @@
+{
+  "agent_id": "wf_e59d869d-75f-4-review-fix",
+  "detail": "New decision \"Chose a denylist (result.error, result.summary) plus URL-userinfo stripping in the renderer over a per-source_kind allowlist of result keys\" relates to:\n- 01M2P2DNHYXMKK2H492Y46KHZA: \"Chose revision tokens `base..head` / `@head` / `since base` with `revision <token>` on the scope line and `over <range>` on the observed line, replacing the `..head` / `base..` forms\"\n- 01M2P2EKXE8574ER9W9Q9EXBF1: \"Chose to EXCLUDE the hooks' own session_start / compaction / post_compaction observations from the working set (alongside principal, membership, receipt) rather than render them compactly or rank them below proposals\"\n- 01M2P2EM2CPZVRWNS6A9F11CDK: \"Chose one oneLine() normaliser — collapse \\s+ to a space, trim, strip URL userinfo, cap with an ellipsis, blank → absent — applied to EVERY free-text field the working-set renderer emits, with two caps: RESULT_RENDER_MAX 240 for observation-derived text and PROSE_RENDER_MAX 500 for ruling statement, decision summary/rationale, post summary and entity name\"",
+  "entry_type": "finding",
+  "id": "01M2P2EM8N565R4T7KSF45BS33",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T21:37:32.931Z"
+  },
+  "scope": "src/adapters/working-set.ts",
+  "summary": "Related decisions in scope: 3 existing decision(s) overlap",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-09-16T21:37:32.949Z"
+}

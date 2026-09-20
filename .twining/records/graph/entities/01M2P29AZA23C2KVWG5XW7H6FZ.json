@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T21:34:39.594Z",
+  "id": "01M2P29AZA23C2KVWG5XW7H6FZ",
+  "name": "01M2P29AVXPN1G3KKQ0VAPB49D",
+  "properties": {
+    "scope": "docs/plans/",
+    "summary": "A16 write_forbidden is scoped to stages 0 and 1 rather than the design example's stage \"*\""
+  },
+  "type": "concept",
+  "updated_at": "2026-09-16T21:34:39.594Z"
+}

@@ -3,8 +3,8 @@
   "id": "01M2KK17S7C25PHK1TSZAKJNFF",
   "name": "src/adapters/working-set.ts",
   "properties": {
-    "scope": "src/adapters/"
+    "scope": "src/adapters/,src/adapters/working-set.ts"
   },
   "type": "file",
-  "updated_at": "2026-09-15T22:29:36.898Z"
+  "updated_at": "2026-09-16T21:37:33.140Z"
 }

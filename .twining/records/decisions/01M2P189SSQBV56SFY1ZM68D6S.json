@@ -1,0 +1,42 @@
+{
+  "affected_files": [
+    "src/adapters/working-set.ts",
+    "test/adapters/working-set-render.test.ts"
+  ],
+  "affected_symbols": [
+    "renderRecord",
+    "renderResult",
+    "renderRange",
+    "buildWorkingSet"
+  ],
+  "agent_id": "wf-working-set-render",
+  "alternatives": [],
+  "assembled_before": true,
+  "assumptions": [
+    "Sorting result keys is preferred to insertion order because determinism across replicas matters more than the author's key order",
+    "The trial seeder writes observations with a strict body and no result.summary, so the key=value fallback is the common case"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [
+    "D51: ordering, class labels, budget accounting and truncation must stay identical; 2.x stores untouched",
+    "worktree isolation: no dist build, single vitest process, tsc last"
+  ],
+  "context": "D51/DP-0: working-set renderRecord now renders observation substance (source_kind [uri] via check_method · at observed_at · volatile · base..head, head = result.summary or sorted scalar key=value ≤240) and 'revision base..head' (8-hex) on every scope line; 10 tests added (red on old renderer); repo_id/repo_ids mismatch assessed, not fixed.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M2P189SSQBV56SFY1ZM68D6S",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T21:16:37.029Z"
+  },
+  "rationale": "Chose to always render 'volatile: yes|no' (not only when true) so absent and false stay distinguishable, and to render the observation body's base/head on the observed line while scope.revision renders on the scope line, both as 8-hex base..head with one side allowed absent (..head, base..)",
+  "rationale_source": "derived",
+  "reversible": true,
+  "scope": "src/adapters/",
+  "status": "superseded",
+  "summary": "Chose to always render 'volatile: yes|no' (not only when true) so absent and false stay distinguishable, and to render the observation body's base/head on the observed line while scope.revision renders on the scope line, both as 8-hex base..head with one side allowed absent (..head, base..)",
+  "superseded_by": "01M2P2DNHYXMKK2H492Y46KHZA",
+  "timestamp": "2026-09-16T21:16:37.049Z"
+}

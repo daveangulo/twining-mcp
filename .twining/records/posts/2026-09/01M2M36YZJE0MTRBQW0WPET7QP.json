@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Calibration incompleteness: ascii_space keeps the proven ratio 1.0 because the whitespace-only corpus document is refused by count-tokens, and whitespace is ~15% of briefing bytes; a corpus document ≥80% whitespace but not blank would let a second calibration run land near 0.28 tokens/byte instead of 0.42.",
+  "entry_type": "finding",
+  "id": "01M2M36YZJE0MTRBQW0WPET7QP",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "31f8d45a3c09a87c743dea8384a931a7f6cb7304",
+    "recorded_at": "2026-09-16T03:12:21.470Z"
+  },
+  "scope": "src/retrieval/",
+  "summary": "Calibration incompleteness: ascii_space keeps the proven ratio 1.0 because the whitespace-only corpus document is refused by count-tokens, and whitespace is ~15% of briefing bytes; a corpus documen…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-16T03:12:21.490Z"
+}

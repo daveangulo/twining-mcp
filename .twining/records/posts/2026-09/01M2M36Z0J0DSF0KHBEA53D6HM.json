@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: the committed plugin bundle (plugin/server/twining-server.mjs, 1,385,871 bytes) is stale against the merged tree (fresh build 1,641,873 bytes); CI's bundle-freshness job is red on foundation/v3 and feat/cli-2.17 until scripts/bump-plugin-version.sh rebuilds it at release — owner action, deliberately not done here.",
+  "entry_type": "warning",
+  "id": "01M2M36Z0J0DSF0KHBEA53D6HM",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "31f8d45a3c09a87c743dea8384a931a7f6cb7304",
+    "recorded_at": "2026-09-16T03:12:21.504Z"
+  },
+  "scope": "src/retrieval/",
+  "summary": "the committed plugin bundle (plugin/server/twining-server.mjs, 1,385,871 bytes) is stale against the merged tree (fresh build 1,641,873 bytes); CI's bundle-freshness job is red on foundation/v3 and…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-16T03:12:21.522Z"
+}
