@@ -166,6 +166,48 @@ export function derivedId(seed: string): string {
 
 const prefixedId = (prefix: string, seed: string): string => `${prefix}_${derivedId(seed)}`;
 
+// ---------------------------------------------------------------- store.json
+
+/**
+ * What `.twining/store.json` may carry. Two writers, two shapes: `twining
+ * identity init` (ensureStoreDescriptor) writes `store_id`, `repo_ids`,
+ * `format`, `created_at` and NO `repo_id`; finalize below writes both keys.
+ */
+interface StoreJsonShape {
+  store_id?: unknown;
+  repo_id?: unknown;
+  repo_ids?: unknown;
+  format?: unknown;
+  created_at?: unknown;
+  migrated_from?: unknown;
+}
+
+const nonEmptyString = (v: unknown): v is string => typeof v === "string" && v.length > 0;
+
+/** The parsed descriptor, or null when the file is absent, unreadable or not an object. */
+function readStoreJson(twiningDir: string): StoreJsonShape | null {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(storeJsonPath(twiningDir), "utf8")) as unknown;
+    return parsed !== null && typeof parsed === "object" ? (parsed as StoreJsonShape) : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The repo id a descriptor declares: `repo_id` when present, else the first of
+ * `repo_ids` — first declared wins, as `repoIdFor` (adapter runtime) and
+ * `readStoreIdentity` (retrieval) resolve it, so a migration run AFTER
+ * `identity init` adopts the id every event already cites instead of minting
+ * a second one. Mirrors src/retrieval/store-identity.ts's rule rather than
+ * importing across layers.
+ */
+function declaredRepoId(store: StoreJsonShape): string | undefined {
+  if (nonEmptyString(store.repo_id)) return store.repo_id;
+  if (Array.isArray(store.repo_ids) && nonEmptyString(store.repo_ids[0])) return store.repo_ids[0];
+  return undefined;
+}
+
 // ------------------------------------------------------------------- paths
 
 const legacyDir = (twiningDir: string): string => path.join(twiningDir, "legacy");
@@ -222,18 +264,17 @@ function writeJson(file: string, value: unknown): void {
  */
 function resolveIdentity(twiningDir: string, prior: MigrationState | null): MigrationIdentity {
   if (prior?.identity) return prior.identity;
-  try {
-    const store = JSON.parse(fs.readFileSync(storeJsonPath(twiningDir), "utf8")) as { store_id?: string; repo_id?: string };
-    if (store.store_id && store.repo_id) {
-      return {
-        store_id: store.store_id,
-        repo_id: store.repo_id,
-        principal: prefixedId("p", `${store.store_id}:migrator`),
-        host: prefixedId("h", `${store.store_id}:migrator-host`),
-      };
-    }
-  } catch {
-    /* no store.json yet — mint below */
+  // An existing descriptor — `identity init` ran first, or a finalize did —
+  // already owns the ids events cite. Adopt them; never mint a rival pair.
+  const store = readStoreJson(twiningDir);
+  const declared = store ? declaredRepoId(store) : undefined;
+  if (store && nonEmptyString(store.store_id) && declared !== undefined) {
+    return {
+      store_id: store.store_id,
+      repo_id: declared,
+      principal: prefixedId("p", `${store.store_id}:migrator`),
+      host: prefixedId("h", `${store.store_id}:migrator-host`),
+    };
   }
   // Seeded from the store path so two runs against one store agree, and two
   // different stores never collide.
@@ -1091,13 +1132,22 @@ export async function migrateToV3(opts: MigrateV3Options): Promise<MigrateV3Repo
     }
 
     // ---- step 5: finalize ----------------------------------------------
+    // An existing descriptor (`identity init` ran first, or this is a rerun)
+    // is EXTENDED, never replaced: every repo id it declares survives (a
+    // shared store's second checkout already cites its own), its created_at
+    // stands, and migrated_from keeps the first run's observation — a rerun
+    // sees records/RECORDS-FROZEN.md and would otherwise re-read a v1 store
+    // as v2. identity.store_id / repo_id are already the descriptor's own
+    // (resolveIdentity adopted them), so the ids events cite never move.
+    const existing = readStoreJson(twiningDir);
+    const declaredRepoIds = Array.isArray(existing?.repo_ids) ? existing.repo_ids.filter(nonEmptyString) : [];
     writeJson(storeJsonPath(twiningDir), {
       store_id: identity.store_id,
       repo_id: identity.repo_id,
-      repo_ids: [identity.repo_id],
+      repo_ids: [identity.repo_id, ...declaredRepoIds.filter((id) => id !== identity.repo_id)],
       format: STORE_FORMAT_VERSION,
-      created_at: state.started_at,
-      migrated_from: scan.layouts.includes("v2") ? 2 : 1,
+      created_at: nonEmptyString(existing?.created_at) ? existing.created_at : state.started_at,
+      migrated_from: typeof existing?.migrated_from === "number" ? existing.migrated_from : scan.layouts.includes("v2") ? 2 : 1,
     });
     ensureDir(path.join(twiningDir, "records"));
     atomicWriteFileSync(path.join(twiningDir, "records", "RECORDS-FROZEN.md"), RECORDS_FROZEN);
@@ -1320,13 +1370,11 @@ export function migrateStatus(twiningDir: string): MigrateStatus {
   let format = 1;
   let storeId: string | null = null;
   let repoId: string | null = null;
-  try {
-    const store = JSON.parse(fs.readFileSync(storeJsonPath(twiningDir), "utf8")) as { store_id?: string; repo_id?: string; format?: number };
-    storeId = store.store_id ?? null;
-    repoId = store.repo_id ?? null;
-    format = store.format ?? 1;
-  } catch {
-    /* no store.json — pre-v3 */
+  const store = readStoreJson(twiningDir); // null: no store.json — pre-v3
+  if (store) {
+    storeId = typeof store.store_id === "string" ? store.store_id : null;
+    repoId = declaredRepoId(store) ?? null;
+    format = typeof store.format === "number" ? store.format : 1;
   }
   const completed = state?.completed_steps ?? [];
   return {
