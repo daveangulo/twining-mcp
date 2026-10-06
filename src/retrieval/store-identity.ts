@@ -4,10 +4,14 @@
  * The gate needs a repo id for every record. Where it comes from depends on
  * what the store is:
  *
- *  - **v3** (`.twining/store.json` at `format: 3`): `repo_id` is minted once by
+ *  - **v3** (`.twining/store.json` at `format: 3`): identity is minted once by
  *    `twining identity init` and survives renames and relocated clones. A
- *    shared store holds one `store_id` and several `repo_id`s; `repo_ids` lists
- *    them and `repo_id` names this checkout's.
+ *    shared store holds one `store_id` and several repo ids: `repo_ids` lists
+ *    them and `repo_id`, when present, names this checkout's. `identity init`
+ *    writes only `repo_ids`; `migrate --to 3` finalize writes both. Without a
+ *    `repo_id` the first declared id wins, exactly as `repoIdFor` resolves it
+ *    for every event the adapter runtime mints, so the gate and the events
+ *    agree on `scope.repo`.
  *  - **2.x** (no `store.json`, or an older format): there is no minted
  *    identity. A stable synthetic one is derived from the store's real path, so
  *    two different stores on one machine can never be confused for each other
@@ -50,6 +54,20 @@ export function deriveRepoId(twiningDir: string): string {
   return `r_${digest}`;
 }
 
+const nonEmptyString = (v: unknown): v is string => typeof v === "string" && v.length > 0;
+
+/**
+ * The repo id a `store.json` declares for this checkout: `repo_id` when the
+ * file carries one (migrate finalize writes it), else the first of `repo_ids`
+ * (`identity init` writes only the list). Undefined when neither is usable, so
+ * the caller falls back to the derived id rather than trusting a blank.
+ */
+export function declaredRepoId(raw: { repo_id?: unknown; repo_ids?: unknown }): string | undefined {
+  if (nonEmptyString(raw.repo_id)) return raw.repo_id;
+  if (Array.isArray(raw.repo_ids) && nonEmptyString(raw.repo_ids[0])) return raw.repo_ids[0];
+  return undefined;
+}
+
 export function readStoreIdentity(twiningDir: string): StoreIdentity {
   const file = path.join(twiningDir, "store.json");
   try {
@@ -58,10 +76,11 @@ export function readStoreIdentity(twiningDir: string): StoreIdentity {
       repo_id?: string;
       store_id?: string;
       repo_ids?: string[];
-    };
-    if (raw && typeof raw.repo_id === "string" && raw.repo_id.length > 0) {
+    } | null;
+    const repo = raw ? declaredRepoId(raw) : undefined;
+    if (raw && repo !== undefined) {
       return {
-        repo: raw.repo_id,
+        repo,
         ...(raw.store_id ? { store_id: raw.store_id } : {}),
         ...(Array.isArray(raw.repo_ids) ? { repo_ids: raw.repo_ids } : {}),
         format: typeof raw.format === "number" ? raw.format : 3,

@@ -614,12 +614,24 @@ export async function runDoctor(args: string[], projectRoot: string, env: NodeJS
   const hooksInstalled = installedHookProvenance(env);
 
   let events: { total: number; admitted: number; quarantined: number; rejected: number } | null = null;
+  // Every repo id the journal's events cite, held against the ids store.json
+  // declares. They can disagree: a store that ran `identity init`, wrote
+  // events, and was then migrated by a pre-591fcf63 `migrate --to 3` had its
+  // descriptor overwritten with a path-seeded pair, so the events minted
+  // before that migration (and the ceremony membership) cite a repo id the
+  // descriptor no longer declares — and the retrieval gate, which authorizes
+  // by the declared id, no longer sees them. A migrate rerun cannot heal that
+  // shape (resolveIdentity honours legacy/migration-state.json first), so it
+  // is reported here for a deliberate repair rather than carried silently.
+  const declaredRepoIds = descriptor?.repo_ids ?? [];
+  const citedRepoIds = new Set<string>();
   if (v3) {
     const runtime = openRuntime({ projectRoot, env });
     try {
       const store = runtime.store;
       if (store) {
         const rows = store.journalRows();
+        for (const r of rows) if (r.scope.repo !== undefined) citedRepoIds.add(r.scope.repo);
         events = {
           total: rows.length,
           admitted: rows.filter((r) => r.state === "admitted" || r.state === "projected").length,
@@ -631,6 +643,7 @@ export async function runDoctor(args: string[], projectRoot: string, env: NodeJS
       runtime.close();
     }
   }
+  const undeclaredRepoIds = [...citedRepoIds].filter((id) => !declaredRepoIds.includes(id)).sort();
 
   return {
     exitCode: 0,
@@ -644,7 +657,11 @@ export async function runDoctor(args: string[], projectRoot: string, env: NodeJS
         source,
         store_format: descriptor?.format ?? "2 (no store.json)",
         store_id: descriptor?.store_id ?? null,
-        repo_ids: descriptor?.repo_ids ?? [],
+        repo_ids: declaredRepoIds,
+        // What the journal actually cites, and which of those the descriptor
+        // has lost. Non-empty `repo_ids_undeclared` is a store to repair by hand.
+        repo_ids_cited: [...citedRepoIds].sort(),
+        repo_ids_undeclared: undeclaredRepoIds,
         v3_enabled: v3,
       },
       identity: {
@@ -665,6 +682,9 @@ export async function runDoctor(args: string[], projectRoot: string, env: NodeJS
         "coverage above describes what the ADAPTER captures, not that a host is currently installed",
         "an unsupported host event is reported as a gap and is never covered by another host's evidence",
         v3 ? null : "this store is on the 2.x format: no events are being written; 2.x behavior is unchanged",
+        undeclaredRepoIds.length > 0
+          ? `events cite repo id(s) store.json does not declare (${undeclaredRepoIds.join(", ")}): the retrieval gate authorizes by the declared id, so those events are outside it; a pre-fix migrate --to 3 after identity init leaves this shape and a rerun does not heal it — repair is a deliberate edit of store.json and legacy/migration-state.json`
+          : null,
       ].filter(Boolean),
     },
   };
