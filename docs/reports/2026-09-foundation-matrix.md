@@ -99,12 +99,15 @@ Characterization tests: green while the gap exists, and **flipped** by the lane 
 6. **The dev-scale trial has not been run** (A14), so R20's benefit half and R14's recall-quality half are open. Nothing here reports trial evidence. A design (`docs/plans/2026-09-16-dev-scale-trial-design.md`) and a partial harness build exist; see the final report §7.
 7. **`plugin/BEHAVIORS.md` is stale** — its header says 35 tools, it documents 37, and it omits `twining_amend`, `twining_triage`, `twining_exchange_status` and `twining_migrate_status`. It is the eval harness's ground truth, so this matters; fixing it requires a plugin version bump and bundle rebuild, which is release work rather than merge work.
 
-## Operator-surface findings (2026-10-06, programme log DN46)
+## Operator-surface findings (2026-10-06, programme log DN46 and DN48)
 
 Found by filling the operator documentation only from executed commands, and re-executed independently. Reproductions are in `docs/operations/recovery-and-rollback.md`; the final report §5 lists owners and correction batches.
 
 | Finding | Rows it qualifies |
 |---|---|
+| A store finalized by `migrate --to 3` refuses every registry write from the same build (`FORMAT_VERSION_TOO_NEW`); the MCP refusal carries no `isError` | R19; C21 |
+| `SessionStart` with source `compact` injects only the delta since the session's last injection, and nothing when nothing is new (hook shim, synthetic payloads) | R10; C27 |
+| As installed, the capture shim finds no CLI unless the project has `./node_modules/twining-mcp` or `TWINING_CLI_JS` is set; the installed plugin 1.34.1 has no v3 hooks. Gap 1 is closed in the tree, not in the installed plugin | R10; C15 |
 | `twining sync --remote` never constructs the Git carrier (positional arguments to an options-object constructor, error swallowed) and falls back to a directory inside the same store while reporting success | R08, R09; C13, C14 Git arm, C28 |
 | No CLI or MCP caller for `EventStore.rebuild()`; a deleted `store/events.db` reads as an empty, healthy store | R19; C21 recovery assertions hold at the API only |
 | `migrate --to 3` does not finalize on a legacy store that carries non-ULID (1.x hook-era) ids; the dry run does not predict it | R19; C21 |

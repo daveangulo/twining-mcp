@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Committed and pushed fd9c241c (final report draft, four rewritten operator guides, matrix operator-surface section, programme log DN45–DN49 / D58–D61); updated the project memory file. Still running: recovery-doc-finalize (rewrite of docs/operations/recovery-and-rollback.md, which is modified and uncommitted in the working tree) and final-report-claim-check. Next: reconcile the report with both, commit, push. Trial scope decision is with Dave.\nFindings: docs/operations/recovery-and-rollback.md in the working tree is still the 1351-line audit notebook being rewritten by a background agent; do not commit it until recovery-doc-finalize reports and its verifier has run; The final report at fd9c241c has not yet been through its claim check; treat its numbers as draft until final-report-claim-check findings are applied",
+  "entry_type": "status",
+  "id": "01M49E4NJR6T8FKR9TCD7W36V0",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "fd9c241c02a357e4cf4a2dd62431943f51128cf5",
+    "recorded_at": "2026-10-06T20:23:05.537Z"
+  },
+  "scope": "docs/",
+  "summary": "Committed and pushed fd9c241c (final report draft, four rewritten operator guides, matrix operator-surface section, programme log DN45–DN49 / D58–D61); updated the project memory file. Still runnin…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-10-06T20:23:05.560Z"
+}

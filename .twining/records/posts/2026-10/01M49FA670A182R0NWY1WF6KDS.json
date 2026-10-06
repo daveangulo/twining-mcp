@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Real-host Claude Code capture test re-run at 0f9fd985 on Claude Code 2.1.291: 3 passed, 1 skipped (Codex). Final report updated with that result and the claim-check corrections; log gained D63, DN50, DN51. Recovery doc rewrite is at 457 lines with its verifier still running, so that file stays uncommitted.\nFindings: A nested headless claude session authenticates and runs from inside a controller Claude Code session once the CLAUDECODE* environment variables are unset — settles two unknowns for the deferred trial; The real-host suite does not exercise compaction or resume, so the compaction defect (SessionStart compact injects only the delta) remains shown only through the hook shim",
+  "entry_type": "status",
+  "id": "01M49FA670A182R0NWY1WF6KDS",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "fd9c241c02a357e4cf4a2dd62431943f51128cf5",
+    "recorded_at": "2026-10-06T20:43:34.982Z"
+  },
+  "scope": "docs/reports/",
+  "summary": "Real-host Claude Code capture test re-run at 0f9fd985 on Claude Code 2.1.291: 3 passed, 1 skipped (Codex). Final report updated with that result and the claim-check corrections; log gained D63, DN5…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-10-06T20:43:35.008Z"
+}

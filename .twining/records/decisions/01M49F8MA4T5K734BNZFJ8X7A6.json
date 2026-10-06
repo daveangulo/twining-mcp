@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "scheduling the batches first",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Applied 30 claim-check findings to the final report (two Opus skeptics): corrected go/no-go statuses to distinguish library, operator and model level; moved runnable-but-unrun items from unavailable to not-tested; strengthened the simpler-baseline case; recommendation now asks the field question before the correction batches. Matrix gained three operator-surface rows. Real-host Claude Code test launched once at 2.1.291. Uncommitted: report, matrix, log, recovery doc (verifier still running).",
+  "depends_on": [],
+  "domain": "performance",
+  "id": "01M49F8MA4T5K734BNZFJ8X7A6",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "fd9c241c02a357e4cf4a2dd62431943f51128cf5",
+    "recorded_at": "2026-10-06T20:42:43.887Z"
+  },
+  "rationale": "the skeptic showed the earlier order committed material v3 work before the question that could make it moot; Dave's trial-after-fixes ruling is unaffected",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/reports/",
+  "status": "active",
+  "summary": "Chose to recommend asking the field whether concurrent conflicting writers are a present problem before investing in correction batches A–C, over scheduling the batches first",
+  "timestamp": "2026-10-06T20:42:43.908Z"
+}
