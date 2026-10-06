@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Chose a dynamic directory walk (.json/.jsonl only, sqlite skipped) over literal paths for .twining/records/** and .twining/events/**\" relates to:\n- 01M2YJ3ZVZDFEF7CCZY1QASJ3F: \"Chose to resolve TRIAL_* env in TwiningTrialCondition.setup() rather than the constructor\"",
+  "entry_type": "finding",
+  "id": "01M2YJ4004S95PVYS0MYMM1AP4",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T04:45:17.169Z"
+  },
+  "scope": "docs/plans/2026-09-16-dev-scale-trial-design.md",
+  "summary": "Related decisions in scope: 1 existing decision(s) overlap",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-09-20T04:45:17.188Z"
+}

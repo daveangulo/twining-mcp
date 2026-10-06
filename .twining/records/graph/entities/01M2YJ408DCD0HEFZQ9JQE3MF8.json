@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-20T04:45:17.453Z",
+  "id": "01M2YJ408DCD0HEFZQ9JQE3MF8",
+  "name": "01M2YJ3ZZHPSY42TW4WJJEZH15",
+  "properties": {
+    "scope": "docs/plans/2026-09-16-dev-scale-trial-design.md",
+    "summary": "Chose a dynamic directory walk (.json/.jsonl only, sqlite skipped) over literal paths for .twining/records/** and .twining/events/**"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-20T04:45:17.453Z"
+}

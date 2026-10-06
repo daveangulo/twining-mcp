@@ -1,0 +1,31 @@
+{
+  "affected_files": [
+    "src/migrate/v3-forward.ts",
+    "src/cli/v3-verbs.ts",
+    "test/migrate/v3-identity-reuse.test.ts",
+    "test/cli/v3-verbs.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Review finding on fix/repo-ids CONFIRMED, not refuted: a store that ran identity init and was then migrated by a pre-591fcf63 `migrate --to 3` keeps the path-seeded store_id/repo_id on every rerun (resolveIdentity returns legacy/migration-state.json's identity first; finalize can only union ids the CURRENT store.json declares, and the init ids were overwritten out of it). Reproduced on the fixed code by moving the init descriptor aside for the first run (the seed is the store path, so the pair is the one the old code minted) and pinned as a test in test/migrate/v3-identity-reuse.test.ts. No heal path added — the reviewer's own fix says none is required for this commit and the heal is a design choice (see decisions). Applied the exact detection the reviewer asked for: `twining doctor` now reports bindings.repo_ids_cited (every scope.repo the journal cites), bindings.repo_ids_undeclared (cited but absent from store.json repo_ids) and an honest_limits line naming the ids when the set is non-empty; two doctor cases added in test/cli/v3-verbs.test.ts. resolveIdentity's doc comment names the limitation. Tests: v3-identity-reuse 5/5, v3-verbs 27/27, tsc clean.",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01M2Z2WVVN4GKG8TP5Z320G7BZ",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T09:38:29.345Z"
+  },
+  "rationale": "the events minted before that migration cite the init repo id and the ~45 migration events cite the seeded one, both immutable, so healing means choosing which id the checkout cites from now on (and whether repo_ids[0] flips, which changes what every new event cites); that is an operator decision to make once and deliberately, not one a rerun may make on its own. Alternatives weighed: (a) resolveIdentity preferring the descriptor over prior.identity — breaks rerun idempotency for every normal store; (b) finalize unioning repo ids cited by events into repo_ids — silently legitimises a split-brain store and still has to pick a primary. Would be invalidated by: a ruling that the init ids always win, at which point a `twining doctor --heal`/migrate flag can implement that rule against this pinned test.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/migrate/",
+  "status": "active",
+  "summary": "Chose NOT to add a migrate heal path for stores migrated pre-591fcf63 after identity init",
+  "timestamp": "2026-09-20T09:38:29.365Z"
+}

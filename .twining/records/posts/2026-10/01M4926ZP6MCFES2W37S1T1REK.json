@@ -1,0 +1,19 @@
+{
+  "agent_id": "main",
+  "detail": "Read at 0f9fd985: log 2026-09-16 (trial design, DP-0 ruling D51, scale D52–D55), 2026-09-19 (DN43 outage recovery, D56 working-set render fix, DN44 repo ids), 2026-10-06 (DN45 second outage + scratchpad wiped; D58 identity fix merged; DN46 six operator-surface failures: `twining sync --remote` never uses the Git carrier, rebuild() has no caller, migrate does not finalize on this repo's own legacy store, rollback leaves format 3, no tombstone/purge/forget surface, smaller items; D59 operator docs being rewritten by workflow operator-docs-finalize; D60 order changed to docs → final report with the trial stated not-yet-run; trial paused at 6/17 specs on harness branch foundation-trial; the reduced-trial-now-vs-after-fixes question is returned to Dave). Uncommitted in the main checkout (docs/CLI.md, docs/operations/*.md, the log, AGENTS.md) belongs to the active peer session twining-mcp-66 (started 9 min ago, busy). 15 worktrees present. This session must not touch the checkout concurrently.",
+  "entry_type": "status",
+  "id": "01M4926ZP6MCFES2W37S1T1REK",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "0f9fd985df6890a34240cf644d16081a0a2cf680",
+    "recorded_at": "2026-10-06T16:54:38.511Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "Original lead session re-oriented 2026-10-06: programme already resumed by peer session twining-mcp-66 (busy; log D41–D60); standing down — no parallel work, context exhausted",
+  "tags": [
+    "foundation-programme",
+    "handoff",
+    "status"
+  ],
+  "timestamp": "2026-10-06T16:54:38.534Z"
+}

@@ -1,0 +1,19 @@
+{
+  "agent_id": "scorer-builder",
+  "detail": "Assumptions in force: (1) authority_changing follows types.ts AUTHORITY_CHANGING_KINDS literally (severity gates decision/cited_exclude/write_forbidden/reason_code_forbidden) and is computed on pre-VOID statuses; (2) vacuity failure at any stage makes the whole case NOT_TESTED for that arm (design §3.3 'run aborts early'); (3) evidence_class_named FAILs on an empty cited list (a required recall fact must not pass vacuously; matches the contracts builder's reference scoring of the adversarial set); (4) RawStoreView keys must contain the oracle id or manifest stored_id so byte_identical can map records to files — a convention the scenario builder must honour; (5) seeders' interface is not defined in the README — seed-dry and SEED-PARITY probe for exported seedStage/render functions and mark todo when absent; (6) the 1.34.1 bundle does not read TWINING_OFFLINE (grep: only TWINING_DISABLED/DASHBOARD/AUTO_MIGRATE/PROJECT/WORKTREE_LOCAL/INSTRUCTIONS) — seed-dry sets it anyway plus TWINING_DASHBOARD=false and polls twining.db row counts to detect ingest completion.",
+  "entry_type": "status",
+  "id": "01M2YJ43GDRVQJCZ9RBN0Z4DV9",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T04:45:20.761Z"
+  },
+  "scope": "docs/plans/2026-09-16-dev-scale-trial-design.md",
+  "summary": "SCORER builder started: score.ts/controls.ts/liveness.ts + tests + report/freeze/seed-dry/run-batch in harness foundation-trial branch; coding against contracts builder's types.ts",
+  "tags": [
+    "foundation-trial",
+    "scorer",
+    "harness"
+  ],
+  "timestamp": "2026-09-20T04:45:20.781Z"
+}

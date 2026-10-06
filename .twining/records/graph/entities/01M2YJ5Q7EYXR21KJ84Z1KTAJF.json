@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-20T04:46:13.742Z",
+  "id": "01M2YJ5Q7EYXR21KJ84Z1KTAJF",
+  "name": "migrateToV3",
+  "properties": {
+    "scope": "src/migrate/v3-forward.ts"
+  },
+  "type": "function",
+  "updated_at": "2026-09-20T04:46:13.742Z"
+}

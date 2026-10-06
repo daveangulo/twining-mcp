@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-20T04:46:13.740Z",
+  "id": "01M2YJ5Q7C8SE3ZR6MK2DG0DTV",
+  "name": "01M2YJ5Q5HPWHWE3V6AW8GBDK7",
+  "properties": {
+    "scope": "src/migrate/v3-forward.ts",
+    "summary": "Chose to have finalize EXTEND an existing store.json (repo_ids union with the migration's id first, created_at kept, migrated_from kept from the first run) instead of the previous full rewrite"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-20T04:46:13.740Z"
+}

@@ -1,0 +1,18 @@
+{
+  "agent_id": "fix-repo-ids",
+  "detail": "Full summary: a store ALREADY migrated with the pre-fix minted pair is not healed by this fix — resolveIdentity honours legacy/migration-state.json's identity first (rerun idempotency), so a store where identity init ran, then a pre-fix migrate overwrote store.json, keeps the seeded store_id/repo_id; the ceremony membership and pre-migration events still cite the original repo_ids[0]. Healing needs a deliberate state edit, not a rerun. Check the frozen trial arm's store for this shape before trusting its annex.",
+  "entry_type": "warning",
+  "id": "01M2YJ56WJ2R2F70ERB5WMX00W",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T04:45:56.990Z"
+  },
+  "scope": "src/retrieval/store-identity.ts",
+  "summary": "a store ALREADY migrated with the pre-fix minted pair is not healed by this fix — resolveIdentity honours legacy/migration-state.json's identity first (rerun idempotency), so a store where identity…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-20T04:45:57.010Z"
+}

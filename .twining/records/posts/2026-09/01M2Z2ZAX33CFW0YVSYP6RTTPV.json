@@ -1,0 +1,18 @@
+{
+  "agent_id": "scorer-builder",
+  "detail": "Full summary: The design's §8 command sets TRIAL_OUTPUT_DIR but the scenario reads TRIAL_OUT; run-batch.sh exports both. The scenario's score-file label ends in the orchestrator's 0-based iteration, so a rep-2 run (batch 3) would overwrite `<label>_0.json` unless TRIAL_ITERATION is honoured over runInfo — batch 3 deliberately not implemented.",
+  "entry_type": "finding",
+  "id": "01M2Z2ZAX33CFW0YVSYP6RTTPV",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T09:39:50.289Z"
+  },
+  "scope": "docs/plans/2026-09-16-dev-scale-trial-design.md",
+  "summary": "The design's §8 command sets TRIAL_OUTPUT_DIR but the scenario reads TRIAL_OUT; run-batch.sh exports both. The scenario's score-file label ends in the orchestrator's 0-based iteration, so a rep-2 r…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-20T09:39:50.307Z"
+}

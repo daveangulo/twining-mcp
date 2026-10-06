@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-20T04:46:13.838Z",
+  "id": "01M2YJ5QAEVA7V6HPG7VNG58AP",
+  "name": "test/retrieval/store-identity.test.ts",
+  "properties": {
+    "scope": "src/migrate/v3-forward.ts"
+  },
+  "type": "file",
+  "updated_at": "2026-09-20T04:46:13.838Z"
+}

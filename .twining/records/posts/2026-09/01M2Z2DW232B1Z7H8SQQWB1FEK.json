@@ -1,0 +1,18 @@
+{
+  "agent_id": "reviewer-591fcf63",
+  "detail": "Full summary: Confirmed empirically (old-code migrate then new-code rerun on the same store): a store migrated PRE-fix after identity init is NOT healed — legacy/migration-state.json identity wins and the identity-init ids are absent from store.json entirely (not even in repo_ids). Detector for the trial arm: distinct scope.repo values across events/ vs store.json repo_id; a state identity store_id without the ULID timestamp prefix (s_01M…) is path-seeded.",
+  "entry_type": "finding",
+  "id": "01M2Z2DW232B1Z7H8SQQWB1FEK",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T09:30:18.031Z"
+  },
+  "scope": "src/retrieval/store-identity.ts",
+  "summary": "Confirmed empirically (old-code migrate then new-code rerun on the same store): a store migrated PRE-fix after identity init is NOT healed — legacy/migration-state.json identity wins and the identi…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-20T09:30:18.051Z"
+}

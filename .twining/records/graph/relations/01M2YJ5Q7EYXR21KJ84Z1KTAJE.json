@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-20T04:46:13.742Z",
+  "id": "01M2YJ5Q7EYXR21KJ84Z1KTAJE",
+  "properties": {
+    "decision_summary": "Chose to have finalize EXTEND an existing store.json (repo_ids union with the migration's id first, created_at kept, migrated_from kept from the first run) instead of the previous full rewrite",
+    "origin": "derived"
+  },
+  "source": "01M2KKN9T66STMAR95Y6WBKYSG",
+  "target": "01M2YJ5Q7C8SE3ZR6MK2DG0DTV",
+  "type": "decided_by"
+}

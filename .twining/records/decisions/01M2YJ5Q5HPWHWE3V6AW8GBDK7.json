@@ -1,0 +1,43 @@
+{
+  "affected_files": [
+    "src/migrate/v3-forward.ts"
+  ],
+  "affected_symbols": [
+    "migrateToV3"
+  ],
+  "agent_id": "fix-repo-ids",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Only reuse ids; leave finalize's rewrite untouched",
+      "pros": [],
+      "reason_rejected": "Would still truncate repo_ids on a shared store — the same orphaning class the fix exists to close."
+    },
+    {
+      "cons": [],
+      "option": "Fix the layout heuristic in legacy-scan so migrated_from is stable at the source",
+      "pros": [],
+      "reason_rejected": "Touches a different file and changes legacy/manifest.json's layouts across reruns; recorded as a need instead."
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Implementation choices for the repo_ids fix: private declaredRepoId helper in v3-forward (no cross-layer import), finalize extends an existing store.json rather than replacing it, and the migrate cases live in a new single test file.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M2YJ5Q5HPWHWE3V6AW8GBDK7",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T04:46:13.660Z"
+  },
+  "rationale": "resolveIdentity now adopts the descriptor's ids, but the old finalize still wrote repo_ids: [repo_id] and created_at: state.started_at, which would drop a shared store's second checkout id and restamp the store's creation time. migrated_from is preserved because a rerun's legacy-scan sees records/RECORDS-FROZEN.md and reports v2, so the value flipped 1 -> 2 on every rerun (caught by the new byte-stability case, which failed pre-fix for that reason alone). All three are one read of the existing file, no new failure modes: an absent or malformed descriptor falls back to exactly the old values.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/migrate/v3-forward.ts",
+  "status": "active",
+  "summary": "Chose to have finalize EXTEND an existing store.json (repo_ids union with the migration's id first, created_at kept, migrated_from kept from the first run) instead of the previous full rewrite",
+  "timestamp": "2026-09-20T04:46:13.681Z"
+}

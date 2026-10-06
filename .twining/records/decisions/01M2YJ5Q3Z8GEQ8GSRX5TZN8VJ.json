@@ -1,0 +1,45 @@
+{
+  "affected_files": [
+    "src/migrate/v3-forward.ts",
+    "src/retrieval/store-identity.ts"
+  ],
+  "affected_symbols": [
+    "declaredRepoId",
+    "readStoreJson"
+  ],
+  "agent_id": "fix-repo-ids",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Import declaredRepoId from ../retrieval/store-identity.js",
+      "pros": [],
+      "reason_rejected": "New migrate -> retrieval dependency for three lines."
+    },
+    {
+      "cons": [],
+      "option": "Use readStoreDescriptor/repoIdFor from ../adapters/identity.js",
+      "pros": [],
+      "reason_rejected": "Its type discards repo_id, so resolveIdentity would take repo_ids[0] over repo_id — equal on finalize-written files today, but a silent precedence change."
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Implementation choices for the repo_ids fix: private declaredRepoId helper in v3-forward (no cross-layer import), finalize extends an existing store.json rather than replacing it, and the migrate cases live in a new single test file.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M2YJ5Q3Z8GEQ8GSRX5TZN8VJ",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T04:46:13.606Z"
+  },
+  "rationale": "src/migrate imports only events/contracts/storage/migrate today; pulling in src/retrieval (or src/adapters/identity, whose readStoreDescriptor drops repo_id from its type and would silently flip precedence to repo_ids[0]) adds a layering edge for a three-line rule. Each copy names the other and the rule (repo_id, else first of repo_ids) so drift is visible at both sites.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/migrate/v3-forward.ts",
+  "status": "active",
+  "summary": "Chose a private declaredRepoId/readStoreJson helper pair inside v3-forward.ts that mirrors the exported declaredRepoId in retrieval/store-identity.ts, over importing it across layers",
+  "timestamp": "2026-09-20T04:46:13.631Z"
+}

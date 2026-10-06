@@ -1,0 +1,21 @@
+{
+  "agent_id": "fix-repo-ids",
+  "detail": "Full summary: Fixed store.json readers to accept identity-init's repo_ids-only shape: readStoreIdentity, v3-forward resolveIdentity and migrateStatus now fall back to repo_ids[0], so an identity-init v3 store reads as format 3 / source store.json and migrate reuses its ids.\nDecisions: [object Object]\nFindings: warning: a store ALREADY migrated with the pre-fix minted pair is not healed by this fix — resolveIdentity honours legacy/migration-state.json's identity first (rerun idempotency), so a store where identity init ran, then a pre-fix migrate overwrote store.json, keeps the seeded store_id/repo_id; the ceremony membership and pre-migration events still cite the original repo_ids[0]. Healing needs a deliberate state edit, not a rerun. Check the frozen trial arm's store for this shape before trusting its annex.; need: legacy-scan reports layout v2 for ANY file under records/, so a migrate rerun on a v1 store sees records/RECORDS-FROZEN.md (written by finalize) and reads the store as v1+v2 — migrated_from flipped 1 -> 2 on every rerun and legacy/manifest.json's layouts is likewise unstable across reruns. finalize now preserves the first run's migrated_from from the existing store.json; the manifest instability is untouched (root-cause fix belongs in legacy-scan: exclude RECORDS-FROZEN.md, or a non-.json file, from the v2 heuristic).; finalize used to truncate a shared store's repo_ids to [repo_id] and overwrite created_at with the migration start — identity init on a second checkout would have lost its declared id at migrate time. Now: repo_ids is the union (migration's id first), created_at stands. Pinned by test/migrate/v3-identity-reuse.test.ts.; the defect was confined to the three named functions: src/cli/v3-verbs.ts already resolves repo_ids[0] via readStoreDescriptor, and no other src reader of store.json takes repo_id only (grep over src/ for repo_id|repo_ids|store.json).; no existing test pinned the derived-from-path reading of an identity-init store, so the flip to minted broke nothing; the six store.json-reading suites (migrate/v3-forward, v3-rollback, cli, cli/v3-verbs, acceptance c21, context-assembler) all pass unchanged.",
+  "entry_type": "status",
+  "id": "01M2YJ56QX4RP3RCSRTEV9NP40",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T04:45:56.841Z"
+  },
+  "relates_to": [
+    "01M2P189ZBYBFAKPNV0G2X2AHH"
+  ],
+  "scope": "src/retrieval/store-identity.ts",
+  "summary": "Fixed store.json readers to accept identity-init's repo_ids-only shape: readStoreIdentity, v3-forward resolveIdentity and migrateStatus now fall back to repo_ids[0], so an identity-init v3 store re…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-20T04:45:56.861Z"
+}

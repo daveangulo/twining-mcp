@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-20T04:45:56.985Z",
+  "id": "01M2YJ56VS2EZ4H0ATFNFK5C0S",
+  "name": "declaredRepoId",
+  "properties": {
+    "scope": "src/migrate/v3-forward.ts,src/retrieval/store-identity.ts"
+  },
+  "type": "function",
+  "updated_at": "2026-09-20T04:46:13.655Z"
+}

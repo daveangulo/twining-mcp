@@ -2,7 +2,7 @@
 
 Living document. Status vocabulary is the package's: **passed** / **failed** / **unavailable** / **waived-by-explicit-ruling** / **not-tested**; plus **baseline-evidence** (gap reproduced at `d7860e0` with a positive control) and **partial** (some assertions pass, named gaps remain). Nothing unavailable is ever reported as passed.
 
-**Last update: 2026-09-15, after the five-lane merge into `foundation/v3`.** Counts below are measured from the merged tree (`npx vitest run test/acceptance`), not copied from lane reports. `todo` counts are `it.todo` entries: assertions whose surface no lane built. They are neither passes nor failures, and the owning lane or the reason is named in each one.
+**Last update: 2026-10-06, at `0f9fd985`** (full suite 181 files / 2744 passed / 6 skipped / 62 todo / 0 failed). Counts below were measured from the merged tree on 2026-09-15 (`npx vitest run test/acceptance`), not copied from lane reports, and re-checked against the 2026-10-06 run. **Read the operator-surface section at the end before relying on any `passed` or `partial` row for R08, R09 or R19:** those rows are scored from library-level tests, and the commands an operator runs do not deliver the same guarantees. `todo` counts are `it.todo` entries: assertions whose surface no lane built. They are neither passes nor failures, and the owning lane or the reason is named in each one.
 
 Sources: package `acceptance-cases.md` coverage map; `test/contracts/`, `test/acceptance/baseline/`, `test/acceptance/oracles/` (28 cases, dev + held-out for 23), `test/acceptance/slice/`, `test/acceptance/cases/`, `test/acceptance/harness/`, plus the lanes' own suites under `test/adapters/`, `test/cli/`, `test/exchange/`, `test/migrate/`, `test/retrieval/`.
 
@@ -28,7 +28,7 @@ Sources: package `acceptance-cases.md` coverage map; `test/contracts/`, `test/ac
 | R16 | Explain and prove injection | C07 C10 C15 C18 C26 | `src/retrieval/{explain,receipts}.ts`; `lifecycle.ts` receipt payload; emitted-bytes hash | gap7 FLIPPED; c26 12/2; `test/retrieval/*` | **partial** |
 | R17 | Instruction and permission isolation | C02 C08 C12 C25 | `src/contracts/validate.ts` (class from ingress, rulings signed); `src/retrieval/render.ts` (imperatives gated on class); `checkCredential` author-assertion binding | `test/contracts`; c08 12/4; c25 14/3; gap6 FLIPPED | **passed** |
 | R18 | Data handling and access | C12 C19 C23 C24 C28 + data-flow | `src/contracts/signing.ts`; membership + chain of trust; the offline switch (`TWINING_OFFLINE` / `embeddings.offline`); `docs/operations/` data-flow | `test/contracts` signing; `test/core/offline-switch.test.ts`; c19 12/4; c12 10/3 | **partial** — C23 and C28 not executable here |
-| R19 | Portability, deletion, upgrades | C14 C16 C17 C20 C21 C28 | `src/migrate/{v3-forward,v3-rollback,legacy-scan}.ts` — `migrate --to 3`, `rollback --to 2`, forward recovery, old-client refusal | c21 37 pass / 2 UNAVAILABLE; c20 16/3; c17 16/3; `test/migrate/*` | **partial** — `gap8-export-ingest` still reproduces (file-wins reverts lifecycle), a named open design decision |
+| R19 | Portability, deletion, upgrades (**failed at the operator surface — see the last section**) | C14 C16 C17 C20 C21 C28 | `src/migrate/{v3-forward,v3-rollback,legacy-scan}.ts` — `migrate --to 3`, `rollback --to 2`, forward recovery, old-client refusal | c21 37 pass / 2 UNAVAILABLE; c20 16/3; c17 16/3; `test/migrate/*` | **partial** — `gap8-export-ingest` still reproduces (file-wins reverts lifecycle), a named open design decision |
 | R20 | Observability and benefit | C15 C18 C23 C26 C27 C28 + trial | `src/exchange/status.ts` + `twining_exchange_status`; `twining_migrate_status`; `twining doctor`; `scripts/measure/` | `test/exchange/exchange-status.test.ts`; c18 13/4; c26 12/2 | **partial** — the *benefit* half needs the trial, which has **not been run** (A14) |
 
 ## Cases
@@ -44,6 +44,7 @@ Counts are from the merged tree. "todo" is `it.todo`: an assertion whose surface
 | C05 | finding recurs after accepted no-patch | `C05.oracle.md` + held-out | `cases/c05.test.ts` 10 pass / 4 todo | **partial** |
 | C06 | worker returns while review pending | `C06.oracle.md` + held-out | `adapters/oracles-lane03.test.ts` C06 arm; gap2 FLIPPED | **partial** — 3 todos belong to lanes 02/04 and the qualification engine |
 | C07 | header/BOM/newline encodings | `C07.oracle.md` + held-out | `test/contracts` three-hash separation only | **not-tested** as a case — no `c07.test.ts` exists |
+| C08 | imported text claims a human approved a forbidden action | `C08.oracle.md` + held-out | `cases/c08.test.ts` 12 pass / 4 todo | **partial** (row was missing from this table until 2026-10-06) |
 | C09 | correction for Story A only | `C09.oracle.md` (14 inv, 12 OQ) | `slice/c09.test.ts` 16 pass / 1 todo | **partial** |
 | C10 | repeat/reorder/redeliver, lost ack, correction before predecessor | `C10.oracle.md` (20 inv, 12 OQ) | `slice/c10.test.ts` 12 pass / 1 todo (injection half) | **partial** |
 | C11 | disconnected incompatible successors | `C11.oracle.md` (18 inv, 10 OQ) | `slice/c11.test.ts` 11 pass, both orders + skews, mutation-checked | **passed** |
@@ -95,5 +96,20 @@ Characterization tests: green while the gap exists, and **flipped** by the lane 
 3. **C07, C13 and C23 have no executable case test.** C13's original blocker (the Git carrier) has since merged, so it is a coverage gap rather than a dependency; C23 needs a queue/backpressure surface no lane built; C07 is covered only by the contracts' three-hash separation.
 4. **Gaps 5 and 8 still reproduce.** Remote/social staleness signals, and file-wins precedence on ingest. Both are deliberate: gap 8 in particular is a named open design decision, not an oversight.
 5. **The tokenizer's calibration is measured but incomplete.** `src/retrieval/calibration.json` was produced by `scripts/calibrate-tokenizer.mjs` against the count-tokens API on 2026-09-16 (D40) and wired as the default table in `3687984a`; it tightens `ascii_alnum`, `latin1_supp` and `multibyte`. `ascii_space` is still the proven 1.0 because the whitespace-only corpus document is refused by the API and is skipped, and whitespace is roughly 15% of briefing bytes; `ascii_punct` is 1.0 by clamp (measured × 1.15 exceeded the proven bound). A second run with a ≥80%-whitespace, non-blank corpus document (`test/fixtures/tokenizer-corpus/padded-whitespace.txt`, added 2026-09-16) needs an `ANTHROPIC_API_KEY`, which this machine does not have (DN35).
-6. **The dev-scale trial has not been run** (A14), so R20's benefit half and R14's recall-quality half are open. Nothing here reports trial evidence.
+6. **The dev-scale trial has not been run** (A14), so R20's benefit half and R14's recall-quality half are open. Nothing here reports trial evidence. A design (`docs/plans/2026-09-16-dev-scale-trial-design.md`) and a partial harness build exist; see the final report §7.
 7. **`plugin/BEHAVIORS.md` is stale** — its header says 35 tools, it documents 37, and it omits `twining_amend`, `twining_triage`, `twining_exchange_status` and `twining_migrate_status`. It is the eval harness's ground truth, so this matters; fixing it requires a plugin version bump and bundle rebuild, which is release work rather than merge work.
+
+## Operator-surface findings (2026-10-06, programme log DN46)
+
+Found by filling the operator documentation only from executed commands, and re-executed independently. Reproductions are in `docs/operations/recovery-and-rollback.md`; the final report §5 lists owners and correction batches.
+
+| Finding | Rows it qualifies |
+|---|---|
+| `twining sync --remote` never constructs the Git carrier (positional arguments to an options-object constructor, error swallowed) and falls back to a directory inside the same store while reporting success | R08, R09; C13, C14 Git arm, C28 |
+| No CLI or MCP caller for `EventStore.rebuild()`; a deleted `store/events.db` reads as an empty, healthy store | R19; C21 recovery assertions hold at the API only |
+| `migrate --to 3` does not finalize on a legacy store that carries non-ULID (1.x hook-era) ids; the dry run does not predict it | R19; C21 |
+| Rollback leaves `store.json` at format 3; a write made while rolled back becomes two records after forward recovery | R19, R07 |
+| No operator command for tombstone, purge or forget | R19; C20 holds at the store API only |
+| The assemble packet's repository id is a per-process constant (context built without the store directory) | R01, R16 |
+
+Fixed on this branch since the merge: the working set now renders observation bodies and revision ranges (`afe8f34d`, R14/R16); store readers accept `repo_ids` and migrate after `identity init` reuses ids (`0f9fd985`, R01/R19).

@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "committing the audit notebooks",
+      "pros": []
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "2026-10-06: merged fix/repo-ids as 0f9fd985 and rebuilt the trial worktree there; confirmed from source that `twining sync --remote` never reaches the Git carrier; recorded the operator-surface defect list (DN46) as go/no-go failures to report, not fix; launched operator-docs-finalize to turn the audit notebooks into self-contained guides; paused the trial build with the harness WIP committed on branch foundation-trial; reordered to docs then final report.",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01M4923P41CZH9TM1H41BBG2R2",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "0f9fd985df6890a34240cf644d16081a0a2cf680",
+    "recorded_at": "2026-10-06T16:52:50.411Z"
+  },
+  "rationale": "their evidence citations pointed at a wiped scratchpad and an operator cannot act on 1300 lines of pass narrative (D59)",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/",
+  "status": "active",
+  "summary": "Chose to rewrite the five operator docs as self-contained guides over committing the audit notebooks",
+  "timestamp": "2026-10-06T16:52:50.433Z"
+}

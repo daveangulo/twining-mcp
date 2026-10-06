@@ -9,7 +9,11 @@
     "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
     "recorded_at": "2026-09-16T21:16:37.207Z"
   },
+  "resolution_note": "Resolved by session record: Fixed store.json readers to accept identity-init's repo_ids-only shape: readStoreIdentity, v3-forward resolveIdentity and migrateStatus now fall back to repo_ids[0], so an identity-init v3 store re…",
+  "resolved_at": "2026-09-20T04:45:56.839Z",
+  "resolved_by": "fix-repo-ids",
   "scope": "src/adapters/",
+  "status": "resolved",
   "summary": "src/retrieval/store-identity.ts readStoreIdentity requires store.json `repo_id` but ensureStoreDescriptor (identity init, adapter test fixtures, the trial seeder) writes only `repo_ids`; only migra…",
   "tags": [
     "session-finding"

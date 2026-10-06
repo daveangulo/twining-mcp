@@ -1,0 +1,18 @@
+{
+  "agent_id": "reviewer-591fcf63",
+  "detail": "Full summary: Review 591fcf63 verified by running the new suites against the PARENT source (git checkout HEAD~1 -- the two src files): retrieval 3 failed/5 passed, migrate 4 failed/0 passed with the exact assertions the implementer reported; fixed source 8/8 and 4/4; v3-forward 35/35, v3-rollback 19/19, migrate/cli 14+1 skipped, context-assembler 47/47; tsc exit 0 run last.",
+  "entry_type": "finding",
+  "id": "01M2Z2DW0XEKJ4DWABZQ6052Y6",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T09:30:17.992Z"
+  },
+  "scope": "src/retrieval/store-identity.ts",
+  "summary": "Review 591fcf63 verified by running the new suites against the PARENT source (git checkout HEAD~1 -- the two src files): retrieval 3 failed/5 passed, migrate 4 failed/0 passed with the exact assert…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-20T09:30:18.013Z"
+}

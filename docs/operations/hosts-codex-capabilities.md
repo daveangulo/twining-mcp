@@ -1,140 +1,150 @@
-# Codex CLI (OpenAI) — /opt/homebrew/bin/codex → /opt/homebrew/Caskroom/codex/0.154.0/bin/codex (Mach-O arm64, Homebrew cask) — codex-cli 0.154.0
+# Codex CLI host: hook capabilities and the Twining adapter
 
-Hook capability matrix gathered in Stage 0 (workflow wf_f80a3b3b-ac2, 2026-09-15). Read-only survey of the installed host plus official docs; no model sessions were run. Lane 03 must re-verify every row in the real host before relying on it.
+**What this covers.** What the installed Codex CLI lets a hook observe and inject, what Twining's `codex` adapter does with each event, how to check both on your own machine, and what is still unproven. **Commit described:** `foundation/v3` at `0f9fd985` (`twining --version` → `twining 2.16.1`; the v3 build has no 3.x version stamp yet). **Host described:** `codex-cli 0.154.0`, Homebrew cask, `/opt/homebrew/bin/codex -> /opt/homebrew/Caskroom/codex/0.154.0/bin/codex` (Mach-O arm64, sha256 `4f85982624b3898c8991cb80c0981b2aa71070e3537046c9a95950318a95afcc`).
 
-# Codex CLI 0.154.0 — Hook & Injection Capability Matrix
+Commands below use `CLI="node <checkout>/dist/cli/twining.js"` on a built checkout of `0f9fd985`, `TWINING_OFFLINE=1`, and a throwaway `HOME` / `TWINING_IDENTITY_HOME` so nothing touches your real identity. `<P>` is a scratch project directory.
 
-Verified two ways: (1) the official docs at `https://learn.chatgpt.com/docs/hooks` (`https://developers.openai.com/codex/hooks` 308-redirects there), and (2) the **JSON Schemas embedded in the installed binary itself** (`strings` over `/opt/homebrew/Caskroom/codex/0.154.0/bin/codex`, schema titles `<event>.command.input` / `<event>.command.output`). Where the two disagree, **the binary is authoritative and is what is recorded below**. No Codex session was started; nothing calling a model was run.
+## Real-host verification status — NOT VERIFIED
 
-## Event inventory — exactly 12
+**Twining's capture has not been observed working on a real Codex host.** Claude Code's working capture is not evidence about Codex. Everything under "What the adapter does" below pipes hand-written payloads into the CLI; no Codex process ran.
 
-The binary's `HookEventName` enum and the set of embedded schemas both yield the same 12 and no more:
+- The only real-host attempt is recorded in the programme log as **DN19** (`docs/plans/2026-09-15-foundation-programme-log.md`): `codex exec --dangerously-bypass-hook-trust` printed `hook: SessionStart Completed`, the hook command produced no filesystem effect (no log, no marker, no events), and `UserPromptSubmit` never fired in exec mode. No command output or transcript of that run survives; it is **reported, not reproduced**. The matrix report carries the Codex arms of R10/R11 as unavailable for the same reason.
+- **Reproduction — UNAVAILABLE.** It needs a real Codex session (calls a model) with owner-granted hook trust, and the owner has not trusted any Twining hook. `~/.codex/config.toml` trusts only the two gsd hooks in `~/.codex/hooks.json`:
+  ```
+  $ grep -n '^\[hooks.state\|trusted_hash\|^\[features\|^hooks *=' ~/.codex/config.toml
+  115:[hooks.state]
+  117:[hooks.state."/Users/dave/.codex/hooks.json:post_tool_use:0:0"]
+  118:trusted_hash = "sha256:5d1b871c854e20393d10b7adc5931fff451968ee020e56705b8e5a200929d849"
+  120:[hooks.state."/Users/dave/.codex/hooks.json:session_start:0:0"]
+  121:trusted_hash = "sha256:2602b6c050ea166814f5c5130d65a433c1ac6f79bf18656f960b002ac4c052a4"
+  ```
+  That is the complete output: no `[features]`, no `hooks =` kill switch. The persisted trust key is `<hooks.json path>:<event>:<group>:<hook>` with only `trusted_hash`.
+- Open questions only a real session can settle: whether `--dangerously-bypass-hook-trust` lets a hook run but leaves it sandboxed without a writable filesystem (consistent with the binary string *"Hooks can run outside the sandbox after you trust them."*, not demonstrated); whether it also bypasses **project** trust (the binary says *"config, hooks, and exec policies are disabled in the following folders until the project is trusted, but skills still load."*); whether `codex exec` ever fires `UserPromptSubmit`; and which `tool_name` (`Bash` or `unified_exec`) a tool event carries. **UNAVAILABLE on this machine; not attempted.**
 
-`PreToolUse`, `PermissionRequest`, `PostToolUse`, `PreCompact`, `PostCompact`, `SessionStart`, `SessionEnd`, `UserPromptSubmit`, `SubagentStart`, `SubagentStop`, `Stop`, `Interrupt`
+## Known defects and limits at this commit
 
-## The matrix
-
-| Event | Input fields (required unless noted) | Inject context? | Channel | Block / deny? |
+| # | What the operator sees | Reproduce | Impact | Workaround |
 |---|---|---|---|---|
-| **SessionStart** | `session_id`, `transcript_path` (nullable), `cwd`, `hook_event_name`, `model`, `permission_mode`, `source` ∈ `startup\|resume\|clear\|compact` | **YES** | `hookSpecificOutput.additionalContext` | No |
-| **SessionEnd** | `session_id`, `transcript_path` (nullable), `cwd`, `hook_event_name`, `reason` (const `other`) | **NO** | — (no output schema exists at all) | No |
-| **UserPromptSubmit** | `session_id`, `transcript_path`, `cwd`, `hook_event_name`, `model`, `permission_mode`, `turn_id`, `prompt`; optional `agent_id`, `agent_type` | **YES** | `hookSpecificOutput.additionalContext` | **YES** — `decision:"block"` + `reason`, or exit 2 |
-| **PreToolUse** | `session_id`, `transcript_path`, `cwd`, `hook_event_name`, `model`, `permission_mode`, `turn_id`, `tool_name`, `tool_use_id`, `tool_input`; optional `agent_id`, `agent_type` | **YES** | `hookSpecificOutput.additionalContext` | **YES** — `hookSpecificOutput.permissionDecision` ∈ `allow\|deny\|ask`, or top-level `decision` ∈ `approve\|block`, or exit 2. Also **mutates** via `hookSpecificOutput.updatedInput` |
-| **PermissionRequest** | `session_id`, `transcript_path`, `cwd`, `hook_event_name`, `model`, `permission_mode`, `turn_id`, `tool_name`, `tool_input`; optional `agent_id`, `agent_type` | **NO** | `hookSpecificOutput` exists but holds only `hookEventName` + `decision` — **no `additionalContext` member** | **YES** — `hookSpecificOutput.decision.behavior` ∈ `allow\|deny` (+ `message`). Any `deny` wins across hooks |
-| **PostToolUse** | `session_id`, `transcript_path`, `cwd`, `hook_event_name`, `model`, `permission_mode`, `turn_id`, `tool_name`, `tool_use_id`, `tool_input`, `tool_response` | **YES** | `hookSpecificOutput.additionalContext` | **YES** — `decision:"block"` + `reason`, or exit 2. Also **mutates** via `hookSpecificOutput.updatedMCPToolOutput` |
-| **PreCompact** | `session_id`, `transcript_path`, `cwd`, `hook_event_name`, `model`, `turn_id`, `trigger` ∈ `manual\|auto`; optional `agent_id`, `agent_type` | **NO** | — (**output schema has no `hookSpecificOutput` member**) | Halt-only — `continue:false` + `stopReason` |
-| **PostCompact** | `session_id`, `transcript_path`, `cwd`, `hook_event_name`, `model`, `turn_id`, `trigger` ∈ `manual\|auto`; optional `agent_id`, `agent_type` | **NO** | — (**output schema has no `hookSpecificOutput` member**) | Halt-only — `continue:false` + `stopReason` |
-| **SubagentStart** | `session_id`, `transcript_path`, `cwd`, `hook_event_name`, `model`, `permission_mode`, `turn_id`, `agent_id`, `agent_type` | **YES** | `hookSpecificOutput.additionalContext` | No (`continue:false` parses but is not honored) |
-| **SubagentStop** | above **plus** `agent_transcript_path` (nullable), `stop_hook_active` (bool), `last_assistant_message` (nullable) | **NO** | — (no `hookSpecificOutput` member) | `decision:"block"` + `reason`, or exit 2 — semantics are *continue the subagent*, not reject |
-| **Stop** | `session_id`, `transcript_path`, `cwd`, `hook_event_name`, `model`, `permission_mode`, `turn_id`, `stop_hook_active`, `last_assistant_message` | **NO** | — (no `hookSpecificOutput` member) | `decision:"block"` + `reason`, or exit 2 — tells Codex to **continue**, does not reject the turn |
-| **Interrupt** | `session_id`, `transcript_path`, `cwd`, `hook_event_name`, `model`, `permission_mode`, `turn_id` | **NO** | — output schema is **`systemMessage` only** | No — purely advisory; 1–3 s budget |
+| 1 | Real-host Codex capture unproven | see section above | Codex arm of capture/recall untested | none |
+| 2 | Nothing captured in a Codex session: no Codex registration ships | `ls <repo>/.codex` → No such file; `grep -c 'v3-capture-hook.sh' plugin/hooks/hooks.json` → 7, all `claude-code` | Codex sessions write no Twining events | hand-register the shim (see "Registering by hand"); untested on a real host |
+| 3 | Generated matrix and `doctor` say Twining injects on `PreToolUse`/`PostToolUse`; it does nothing there | `printf '{…"hook_event_name":"PreToolUse"…}' \| $CLI hook codex PreToolUse --project <P>` → stdout empty, stderr `codex adapter has no handler for PreToolUse` | `capture_coverage.codex.injects_on` overstates; no Codex commit gate exists | read those rows as host capability, not adapter behaviour |
+| 4 | Generated `Interrupt` row lists captured fields; adapter captures nothing | same with `Interrupt` → `no handler for Interrupt` | row is wrong | none needed |
+| 5 | Generated captured-field columns for SessionStart/PreCompact/PostCompact are approximate | `$CLI events show <id>` on the observation (see the adapter table below) | `model`, `permission_mode`, `transcript_path` are not recorded on SessionStart; compaction records `transcript` basename, never `model` | none needed |
+| 6 | The newest event stays `NOT_ADMITTED` until the next **hook** run; a session's final `SessionEnd` receipt stays unadmitted | `$CLI decide …` then `$CLI events show <its id>` → exit 1 `NOT_ADMITTED` | `events ls` omits it and `events show` refuses it (after the 12-call run below, `doctor` counts total 12 / admitted 11); the last flush stays invisible until the next session | run any hook (e.g. `hook codex Stop`) to admit; none for the last event of the last session |
+| 7 | A direct `twining hook codex SessionStart` registration on a 2.x store injects the 2.x "Gate 1 / Gate 2" prose | `$CLI hook codex SessionStart --project <dir with empty .twining>` → 993-byte gate prose, stderr `store is not v3-enabled…` | 2.x prose that v3 forbids (`FORBIDDEN_PROSE_REMINDERS`) | register through `v3-capture-hook.sh`, which exits silently on a 2.x store |
+| 8 | `PostCompact` stderr begins with `PreCompact cannot inject context on this host…` | `hook codex PostCompact` | misleading log line only | ignore the first line |
+| 9 | A subagent's own assignment appears in working sets as `- [verified observation] <bare id>` with no content | `hook codex SubagentStart` then read its `additionalContext` | the dispatched worker is told nothing about its assignment | none (`src/adapters/working-set.ts:renderRecord` has no branch for `work` records) |
+| 10 | `twining migrate` on a store that was never 2.x exits 2 with a raw ENOENT; `migrate-status` says `not_started` | `$CLI identity init --project <P>`, two hook calls, then `$CLI migrate --project <P>` (or `--dry-run`) → exit 2, stderr `migrate: ENOENT: no such file or directory, open '<P>/.twining/decisions/index.json'`; `store.json` ids unchanged | confusing on a v3-native hook-capture store | do not run `migrate` on a store created by `identity init` |
+| 11 | Real-host test passes vacuously | from source, not a run: `test/adapters/real-host.test.ts` returns after printing `NOT TESTED on Codex` when no events are written | a green suite does not mean Codex was tested | read stderr; see "Next step" |
+| 12 | Without the shim, `producer.turn` is absent; CLI-ingress events take provenance from the shell's cwd, not `--project` | see "Turn and provenance" | events attribute to the wrong repo/branch if the CLI runs elsewhere | run CLI writes from inside the project; use the shim for hooks |
+| 13 | The generated block names the host version only, not the Twining commit that rendered it | inspect the `BEGIN GENERATED` marker | staleness after a `CODEX_MATRIX` change is invisible without the pin test | run `npx vitest run test/adapters/host-matrix-docs.test.ts` (not run for this page) |
 
-All input schemas are `draft-07`, `additionalProperties: false`. `permission_mode` enum is `default | acceptEdits | plan | dontAsk | bypassPermissions`. `turn_id` is documented in-schema as *"Codex extension: expose the active turn id to internal turn-scoped hooks."*
+At this commit the `UserPromptSubmit` delta does not list the SessionStart bookkeeping observation (hook bookkeeping observations are left out of working sets), and `doctor` reports `repo_ids_cited` / `repo_ids_undeclared`.
 
-## Stated plainly: which events observe without injecting
+## Check the installed host
 
-**Five events can inject**, all through the single field `hookSpecificOutput.additionalContext` (string): `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `SubagentStart`. These are exactly the five `*HookSpecificOutputWire` definitions in the binary that declare an `additionalContext` property.
+```
+$ ls -l /opt/homebrew/bin/codex; codex --version
+… /opt/homebrew/bin/codex -> /opt/homebrew/Caskroom/codex/0.154.0/bin/codex
+codex-cli 0.154.0
+$ codex --help | grep -A2 'dangerously-bypass-hook-trust'
+      --dangerously-bypass-hook-trust
+          Run enabled hooks without requiring persisted hook trust for this invocation. DANGEROUS.
+          Intended only for automation that already vets hook sources
+$ codex plugin --help        # Commands: add, list, marketplace, remove, help
+$ ls ~/.codex/plugins/cache/ # claude-plugins-official openai-bundled openai-curated-remote openai-primary-runtime
+$ ls ~/.agents/plugins/marketplace.json   # No such file or directory
+```
 
-**Seven events observe only** — they cannot put text in front of the model: `PermissionRequest`, `PreCompact`, `PostCompact`, `SessionEnd`, `Stop`, `SubagentStop`, `Interrupt`.
+`--dangerously-bypass-hook-trust` (env `BYPASS_HOOK_TRUST`) is separate from `--dangerously-bypass-approvals-and-sandbox`: bypassing the sandbox does not bypass hook trust.
 
-### Pre/post-compaction is not an injection channel — verified
+## The host's hook surface (from the installed binary)
 
-The package's claim is **correct**, and it holds at the schema level, not merely by convention:
+The binary embeds one draft-07 JSON Schema per `<event>.command.input|output` — 23 in all; `session-end.command.output` does not exist. List them:
 
-- The docs state outright, under *Output Constraints*: *"Events Cannot Inject Context: `PermissionRequest`, `PreCompact`, `PostCompact`, `SessionEnd`, `Stop`, `Interrupt`, `SubagentStop`."*
-- The binary corroborates structurally. `pre-compact.command.output` and `post-compact.command.output` are `additionalProperties: false` objects whose **entire** property set is `continue`, `stopReason`, `suppressOutput`, `systemMessage`. There is no `hookSpecificOutput` member and no `PreCompactHookSpecificOutputWire`/`PostCompactHookSpecificOutputWire` definition anywhere in the binary. A compaction hook returning `additionalContext` would be rejected by its own output schema.
+```
+$ strings -n 8 <codex binary> | grep -o '"title": *"[a-z-]*\.command\.\(input\|output\)"' | sort | uniq -c
+```
 
-The practical consequence: a hook can *watch* compaction happen (and can abort it with `continue:false`), but **the outcome of compaction cannot be fed back to the model by the hook**. To get text in after a compaction you must ride `SessionStart` with `source == "compact"`, which is a genuine injection channel. That is the supported re-seeding path.
+To read field sets, parse each title's enclosing JSON object (brace-match outward from the title, keep the object whose `title` matches):
 
-`systemMessage` on the non-injecting events surfaces to the **user/transcript**, not as model context — do not mistake it for an injection channel.
+```js
+// node extract.mjs <codex binary> <outdir>
+import fs from 'node:fs'; const [bin,out]=process.argv.slice(2); const b=fs.readFileSync(bin).toString('latin1');
+const end=(s,i)=>{let d=0,q=false,e=false;for(let j=i;j<i+2e5;j++){const c=s[j];if(q){if(e)e=false;else if(c==='\\')e=true;else if(c==='"')q=false;continue}
+ if(c==='"')q=true;else if(c==='{')d++;else if(c==='}'&&--d===0)return j}return -1};
+for(const m of b.matchAll(/"title": *"([a-z-]+\.command\.(?:input|output))"/g))for(let k=m.index;k>m.index-2e5;k--){if(b[k]!=='{')continue;
+ const e=end(b,k);if(e<m.index)continue;try{const o=JSON.parse(b.slice(k,e+1));if(o.title===m[1]){fs.writeFileSync(`${out}/${m[1]}.json`,JSON.stringify(o,null,1));break}}catch{}}
+```
 
-## Notable divergences: shipped binary vs. published docs
+Result: 23 parsed, every one `additionalProperties: false`. Exactly 12 events: `PreToolUse`, `PermissionRequest`, `PostToolUse`, `PreCompact`, `PostCompact`, `SessionStart`, `SessionEnd`, `UserPromptSubmit`, `SubagentStart`, `SubagentStop`, `Stop`, `Interrupt`.
 
-Recorded because they are load-bearing if you write hooks against the doc page:
+| Event | Input fields (required; optional in *italics*) | Can inject? | Block / deny (schema) |
+|---|---|---|---|
+| SessionStart | `session_id`, `transcript_path`, `cwd`, `hook_event_name`, `model`, `permission_mode`, `source` ∈ startup\|resume\|clear\|compact | **yes** | no |
+| SessionEnd | `session_id`, `transcript_path`, `cwd`, `hook_event_name`, `reason` (const `other`) — no `model`, no `permission_mode` | no — no output schema at all | no |
+| UserPromptSubmit | common¹ + `turn_id`, `prompt`; *`agent_id`, `agent_type`* | **yes** | `decision:"block"` + `reason` |
+| PreToolUse | common¹ + `turn_id`, `tool_name`, `tool_use_id`, `tool_input`; *`agent_id`, `agent_type`* | **yes** | `permissionDecision` ∈ allow\|deny\|ask; `decision` ∈ approve\|block; `updatedInput` |
+| PermissionRequest | common¹ + `turn_id`, `tool_name`, `tool_input`; *`agent_id`, `agent_type`* | no (`hookSpecificOutput` has no `additionalContext`) | `decision.behavior` ∈ allow\|deny |
+| PostToolUse | common¹ + `turn_id`, `tool_name`, `tool_use_id`, `tool_input`, `tool_response`; *`agent_id`, `agent_type`* | **yes** | `decision:"block"`; schema also has `updatedMCPToolOutput` |
+| PreCompact / PostCompact | `session_id`, `transcript_path`, `cwd`, `hook_event_name`, `model`, `turn_id`, `trigger` ∈ manual\|auto; *`agent_id`, `agent_type`* — no `permission_mode` | no — output is only `continue`, `stopReason`, `suppressOutput`, `systemMessage` | halt only (`continue:false`) |
+| SubagentStart | common¹ + `turn_id`, `agent_id`, `agent_type` | **yes** | no |
+| SubagentStop | common¹ + `turn_id`, `agent_id`, `agent_type`, `agent_transcript_path`, `stop_hook_active`, `last_assistant_message` | no | `decision:"block"` |
+| Stop | common¹ + `turn_id`, `stop_hook_active`, `last_assistant_message` | no | `decision:"block"` |
+| Interrupt | common¹ + `turn_id` | no — output is `systemMessage` only | no |
 
-1. **`SessionEnd` has no `model` and no `permission_mode`.** The docs list both. The binary's required set is only `cwd`, `hook_event_name`, `reason`, `session_id`, `transcript_path`. `SessionEnd` also has **no output schema at all** — it is pure fire-and-forget, and separately cannot use `mcp_tool` handlers and always runs synchronously even when `async: true`.
-2. **`PreCompact`/`PostCompact` have no `permission_mode`.** The docs list it; the binary does not.
-3. **`PreToolUse.permissionDecision` has three values, not two**: `allow | deny | ask`. The docs show only `deny|allow`. There is additionally a distinct top-level `decision` enum `approve | block`.
-4. **`PostToolUse` has an undocumented mutation field**: `hookSpecificOutput.updatedMCPToolOutput` — it can rewrite an MCP tool's result before the model sees it. This is a second, more powerful channel than `additionalContext` and is absent from the doc page.
-5. **`PermissionRequest` has three reserved fields that fail closed**: `interrupt`, `updatedInput`, `updatedPermissions`. The schema descriptions say verbatim *"PermissionRequest hooks currently fail closed if this field is present"* (and if `interrupt` is `true`). Emitting them denies the action.
-6. **`Interrupt`'s output is `systemMessage` only** — it lacks even `continue`/`suppressOutput`, narrower than the docs imply.
+¹ common = `session_id`, `transcript_path`, `cwd`, `hook_event_name`, `model`, `permission_mode` (`permission_mode` ∈ default\|acceptEdits\|plan\|dontAsk\|bypassPermissions).
 
-## Tool coverage — apply_patch and exec_command
+**Five events inject**, all through `hookSpecificOutput.additionalContext`: SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, SubagentStart. **Seven observe only:** PermissionRequest, PreCompact, PostCompact, SessionEnd, Stop, SubagentStop, Interrupt. A compaction hook can watch (and halt) compaction but cannot feed text back; re-seeding after compaction rides `SessionStart` with `source: "compact"` and the next `UserPromptSubmit`. `systemMessage` on observe-only events goes to the user/transcript, not the model.
 
-There are no dedicated per-tool events. File edits and shell execution are reached by **matching on `tool_name` within `PreToolUse`/`PostToolUse`/`PermissionRequest`**. Documented `tool_name` values are `Bash`, `apply_patch`, or an MCP tool name, and for `apply_patch` the matcher also accepts the aliases `Edit` and `Write`. Note the binary's own internal tool identifiers are `apply_patch` and `unified_exec` — `Bash`/`Edit`/`Write` are Claude-compatibility names presented at the hook boundary. Verify the exact `tool_name` string your build emits by logging one `PreToolUse` payload before hard-coding a matcher.
+`PermissionRequest` reserves `interrupt`, `updatedInput`, `updatedPermissions`; its schema says *"PermissionRequest hooks currently fail closed if this field is present"* (2 hits: `strings -n 8 <codex binary> | grep -oF '<that sentence>' | wc -l` → 2, and `LC_ALL=C grep -aoF` on the raw binary → 2).
 
-## Handlers, matchers, limits
+**`mcp_server{name,source}` is not observable on this installed host.** No Codex 0.154.0 hook input schema declares it (`grep -l mcp_server <outdir>/*.json` → nothing; the quoted `"mcp_server"` has 0 hits in the binary), and every input schema rejects unknown properties. It is a Claude Code field; nothing here tests it on Claude Code.
 
-- **Two handler types.** `type: "command"` (fields `command`, `timeout` default 600 s, `async`, `statusMessage`, `additionalContextLimit`, plus a `Windows` variant) and `type: "mcp_tool"` (fields `server`, `tool`, `input` with `${field.nested}` placeholders, `timeout`, `statusMessage`). MCP-tool hooks run synchronously, request no tool approval, and trigger no further hooks. `SessionEnd` does not support `mcp_tool`.
-- **Matcher targets.** `tool_name` for the three tool events; `trigger` for `PreCompact`/`PostCompact`; `source` for `SessionStart`; `agent_type` for `SubagentStart`/`SubagentStop`. Matchers are **ignored** for `UserPromptSubmit`, `Stop`, `Interrupt`.
-- **Injection budget.** ~2,500 tokens per hook by default, tunable per handler via `additionalContextLimit`. Overflow spills to `<temp_dir>/hook_outputs/<session_id>/<uuid>.txt` and the model receives a head-and-tail preview. The binary carries the string `ignoring additionalContextLimit for …`, so the cap is silently dropped for handlers where it does not apply.
-- **Background hooks.** `async: true`; max **8 concurrent** per session; cannot block; output is delivered "at the next safe point in the conversation."
-- **Discovery/precedence.** `~/.codex/hooks.json` → `~/.codex/config.toml` → `<repo>/.codex/hooks.json` → `<repo>/.codex/config.toml`. TOML inline form is `[[hooks.EventName]]` / `[[hooks.EventName.hooks]]`. Kill switch: `[features] hooks = false`.
+**Tool names.** There are no per-tool events; shell and patch tools are reached by matching `tool_name` on PreToolUse/PostToolUse/PermissionRequest. The binary's internal names are `apply_patch` and `unified_exec` (71 hits); the docs say to match `Bash`, `apply_patch` or an MCP tool name, and that `Edit`/`Write` also match `apply_patch` (`Edit|Write` has 0 hits in the binary). **Which string a real session emits is NOT VERIFIED** — log one `PreToolUse` payload before writing a matcher.
 
-## Plugins: install, trust, and PLUGIN_ROOT
+### What the docs add (docs-stated, NOT demonstrated)
 
-**Install.** Via `codex plugin add|list|remove` and `codex plugin marketplace` (confirmed in `codex plugin --help` on this machine). Marketplaces are `marketplace.json` files at **repo scope** `$REPO_ROOT/.agents/plugins/marketplace.json` and **personal scope** `~/.agents/plugins/marketplace.json` — both paths are present as literal strings in the binary. Entry `source` types: `local`, `url`, `git-subdir`, `npm`. `policy.installation` ∈ `AVAILABLE | INSTALLED_BY_DEFAULT | NOT_AVAILABLE`. Installs cache to `~/.codex/plugins/cache/$MARKETPLACE_NAME/$PLUGIN_NAME/$VERSION/`. A plugin may carry skills (`skills/<name>/SKILL.md`), MCP servers (`mcp.json`), hooks, assets, and app mappings (`.app.json`); the portable manifest is `plugin.json` (`$schema: https://agent-plugins.org/schemas/1.0.0/plugin.schema.json`) with an optional Codex overlay at `.codex-plugin/plugin.json`. When `extensions.com.openai` is an object it **replaces** that overlay wholesale — the two are not merged.
+From `https://learn.chatgpt.com/docs/hooks` (`https://developers.openai.com/codex/hooks` answers `HTTP/2 308` to it); each quotation below is on the page as served on 2026-10-06. No run here exercised any of it, and the schemas do not encode it.
 
-**Hooks need separate trust — yes, definitively.** Two independent gates:
+- `SubagentStart`: *"continue: false is parsed for compatibility, but it doesn't stop the subagent from starting."* `Stop`: `decision:"block"` *"doesn't reject the turn"* — it makes Codex continue. `SubagentStop`: `decision:"block"` asks Codex to continue the subagent.
+- PreToolUse: *`permissionDecision: "ask"`, legacy `decision: "approve"`, `continue: false`, `stopReason` and `suppressOutput` are "parsed but not supported yet"*. PostToolUse: *"updatedMCPToolOutput and suppressOutput are parsed but not supported yet."*
+- Handlers: `command` and `mcp_tool`; *"prompt and agent handlers are parsed but skipped."* Default timeout 600 s; `Interrupt` 1 s default, 3 s maximum. `SessionEnd` does not support MCP tool hooks and always runs synchronously.
+- Matchers target `tool_name`, `trigger`, `source` or `agent_type`, and are ignored on `UserPromptSubmit`, `Stop`, `Interrupt`.
+- Injection budget roughly 2,500 tokens per hook-output message (`additionalContextLimit`), excess spilled to a temp file with a head-and-tail preview; up to eight background (`async`) hooks per session, which cannot block, approve or rewrite.
+- Hook sources are additive: *"Higher-precedence config layers don't replace lower-precedence hooks."* Project `.codex/` hooks load only in a trusted project. Kill switch `[features] hooks = false`.
 
-1. *Project trust.* The binary states: *"config, hooks, and exec policies are disabled in the following folders until the project is trusted, but skills still load."* Note the asymmetry — **skills load in an untrusted project, hooks do not**.
-2. *Per-hook trust, by content hash.* Codex records trust against the hook definition's hash (`HookStateToml { enabled, trusted_hash }`, persisted under `hooks.state`). `HookTrustStatus` is `managed | trusted | untrusted | modified`. The TUI carries the strings *"New hook - review required"*, *"Modified since last trusted - review required"*, *"Hooks need review"*, *"Hooks can run outside the sandbox after you trust them."*, *"Trust all and continue"*, *"Continue without trusting (hooks won't run)"*. **Editing a trusted hook re-arms the gate** — the hash no longer matches and it reverts to `modified`. Manage with `/hooks` in the CLI.
+Where the docs and binary differ: `SessionEnd` has no `model` in the binary; `PreToolUse` accepts `ask`; `PostToolUse` carries `updatedMCPToolOutput` (documented as unsupported); `Interrupt` output is `systemMessage` only. The binary wins for field sets.
 
-**Installing a plugin does not trust its hooks.** Docs, verbatim: *"Installing or enabling a plugin doesn't automatically trust its hooks. Plugin-bundled hooks are non-managed hooks, so Codex skips them until the user reviews and trusts the current hook definition."* The binary carries the matching runtime paths: `failed to trust materialized plugin hooks`, `skipping materialized plugin hook trust after account changed`, `(plugin hook trust update was cancelled: …)`. **Changing accounts re-arms plugin hook trust.**
+## Plugins and trust
 
-**Bypass and enterprise override.** `--dangerously-bypass-hook-trust` (env `BYPASS_HOOK_TRUST`) runs enabled hooks without persisted trust for one invocation: *"DANGEROUS. Intended only for automation that already vets hook sources."* Note this is a **separate flag** from `--dangerously-bypass-approvals-and-sandbox` — bypassing the sandbox does not bypass hook trust. Managed hooks (system/MDM/cloud/`requirements.toml`) are trusted by policy and **cannot be disabled**; admins pin them with `[hooks] allow_managed_hooks_only = true` and `managed_dir` (binary also exposes `hooks.managed_dir` and `hooks.windows_managed_dir`).
+- **Install** with `codex plugin add|list|remove|marketplace`. Marketplaces: `<repo>/.agents/plugins/marketplace.json` and `~/.agents/plugins/marketplace.json`; installs cache under `~/.codex/plugins/cache/<marketplace>/<plugin>/<version>/`. A plugin's hooks default to `hooks/hooks.json`; hook commands see `${PLUGIN_ROOT}`, `${PLUGIN_DATA}` and the aliases `CLAUDE_PLUGIN_ROOT` / `CLAUDE_PLUGIN_DATA` (all present in the binary and the plugin docs).
+- **Installing does not trust hooks.** Plugin docs: *"Installing or enabling a plugin doesn't automatically trust its hooks. Plugin-bundled hooks are non-managed hooks…"* Trust is per hook, by content hash (`trusted_hash`); `HookTrustStatus` is managed\|trusted\|untrusted\|modified, so editing a trusted hook re-arms review. Review with `/hooks` in the TUI. The binary carries `skipping materialized plugin hook trust after account changed` — that a changed account re-arms trust is inferred from that string, NOT demonstrated.
+- **Managed hooks** (system/MDM/`requirements.toml`) are trusted by policy; `allow_managed_hooks_only` and `managed_dir` exist in the binary.
+- **Twining's Codex plugin is parked, not on this branch.** `git ls-tree -r --name-only HEAD -- plugins | wc -l` → `0`. It lives at `dedaaccf` on `wip/codex-plugin` only (`git branch -a --contains dedaaccf`). Its `plugins/twining/.codex-plugin/plugin.json` declares `skills` and `mcpServers` and no `hooks`; its `hooks/hooks.json` runs the **2.x** scripts (`session-start-context.sh`, `pre-commit-hook.sh`, `stop-hook.sh`, …) and never the v3 adapter (`git grep -n 'hook codex\|v3-capture\|twining hook' dedaaccf -- plugins/` → exit 1). It is right for a 2.x store and wrong for a v3 one.
 
-**PLUGIN_ROOT.** A plugin's hooks live at `hooks/hooks.json` under the plugin root by default; the manifest can override with a `hooks` entry (e.g. `{"name": "repo-policy", "hooks": "./hooks/hooks.json"}`). Paths in `extensions.com.openai` or a compatibility manifest must be **relative to the plugin root and start with `./`**. Files are addressed at runtime through:
+## Installed Twining hooks for Codex: none
 
-- `${PLUGIN_ROOT}` — installed plugin root directory
-- `${PLUGIN_DATA}` — plugin's writable data directory
-- `CLAUDE_PLUGIN_ROOT` / `CLAUDE_PLUGIN_DATA` — legacy compatibility aliases
+- `plugin/hooks/hooks.json` registers `v3-capture-hook.sh` seven times, every one `bash "${CLAUDE_PLUGIN_ROOT}/hooks/v3-capture-hook.sh" claude-code <Event>`.
+- No repo `.codex/` directory; `git grep -n 'hook codex\|codex SessionStart\|\.codex/hooks.json' HEAD -- . ':!docs/operations/hosts-codex-capabilities.md'` → exit 1.
+- `~/.codex/hooks.json` holds only the owner's two gsd hooks; `doctor` with the real `HOME` reports `{"scope":"codex-user","file":"/Users/dave/.codex/hooks.json",…,"mentions_twining":false}`.
+- The only Codex registration in the tree is the one `test/adapters/real-host.test.ts` writes into a fresh temp project, for SessionStart, UserPromptSubmit, SubagentStop and Stop only — not PreCompact, PostCompact, SubagentStart or SessionEnd, which the adapter handles (from source, not a run).
 
-All four names are present in the 0.154.0 binary. Codex refuses MCP configs that escape the root: *"Agent Plugins MCP config resolves outside the plugin root; disabling MCP."*
+**Registering by hand (untested on a real host).** The shim is host-agnostic: its first argument is the host. A Codex entry would read `bash "<plugin>/hooks/v3-capture-hook.sh" codex <Event>` for SessionStart, UserPromptSubmit, PreCompact, PostCompact, SubagentStart, SubagentStop, Stop and SessionEnd, followed by per-hook trust in `/hooks`. Offline, the shim does what it should (with `TWINING_CLI_JS` pointing at the built CLI):
 
-## Caveats on this matrix
+```
+$ printf '{"session_id":"codex-shim",…,"turn_id":"shim-turn-7","prompt":"via shim"}' \
+  | TWINING_PROJECT=<2.x project> bash plugin/hooks/v3-capture-hook.sh codex SessionStart
+exit 0, stdout 0 bytes, stderr 0 bytes, .twining still empty          # inert on a 2.x store
+$ … | TWINING_PROJECT=<P> bash plugin/hooks/v3-capture-hook.sh codex UserPromptSubmit
+exit 0, stdout {"hookSpecificOutput":{"hookEventName":"UserPromptSubmit","additionalContext":"## Twining — working set…
+```
 
-- Everything above is from static inspection plus the official docs. **No hook was actually fired**, because exercising one requires a Codex session that calls a model, which was out of scope. Wire-schema evidence is strong for field names, types, and the presence/absence of injection channels; it is *not* evidence of runtime ordering, dedup, or failure semantics.
-- The six divergences listed above mean the doc page should not be treated as exact for 0.154.0. Log one real payload per event before depending on a field.
-- `Bash` vs `unified_exec` as the emitted `tool_name` is the single item I would confirm empirically first — it determines whether existing matchers fire at all.
+The post it wrote carries `producer.turn: "shim-turn-7"` and attachment `anchor: "prompt:shim-turn-7"`: the shim copies the payload `turn_id` into `TWINING_TURN_ID`.
 
-## Cannot inject / unsupported
+## What the adapter claims (generated)
 
-- Notification — no such hook event exists in Codex 0.154.0 (the binary's HookEventName enum has exactly 12 variants and Notification is not one of them); this is a Claude Code event with no Codex counterpart
-- SessionResume as a distinct event — folded into SessionStart and discriminated by `source == "resume"`; matchers filter on `source` (startup|resume|clear|compact)
-- TurnStart / TurnEnd — no dedicated turn-boundary events. `turn_id` is exposed on 10 of the 12 events (schema comment: 'Codex extension: expose the active turn id to internal turn-scoped hooks') but there is no event that fires at turn start or turn end. UserPromptSubmit is the closest proxy for turn start; Stop for turn end
-- Dedicated apply_patch / exec_command events — no per-tool events exist. Both are reached only by matching on `tool_name` inside PreToolUse / PostToolUse / PermissionRequest
-- SessionEnd output — the binary contains `session-end.command.input` but NO `session-end.command.output` schema, so SessionEnd hooks have no structured return channel of any kind
-- SessionEnd with mcp_tool handlers — explicitly unsupported per docs; SessionEnd also always runs synchronously even when async:true
-- Context injection from PermissionRequest, PreCompact, PostCompact, SessionEnd, Stop, SubagentStop, Interrupt — no additionalContext member exists in any of their output schemas
-- PermissionRequest input rewriting — `updatedInput` and `updatedPermissions` are reserved and FAIL CLOSED if present; `interrupt` fails closed if true
-- Blocking from SessionStart, SubagentStart, SessionEnd, Interrupt — SubagentStart parses continue:false but does not honor it
-- Matchers on UserPromptSubmit, Stop, Interrupt — matcher field is accepted but ignored
-- Hook handler types beyond two — only `command` and `mcp_tool` exist (binary: HookHandlerConfig::Command with 6 elements, HookHandlerConfig::McpTool with 5 elements; TUI labels them Command / MCP Server)
-
-## Sources
-
-- https://learn.chatgpt.com/docs/hooks — official Codex hooks documentation; https://developers.openai.com/codex/hooks returns HTTP 308 Permanent Redirect to this URL
-- https://developers.openai.com/plugins/build/plugins — official plugin build documentation (install, marketplaces, trust, PLUGIN_ROOT, manifest schema)
-- Local binary: /opt/homebrew/bin/codex -> /opt/homebrew/Caskroom/codex/0.154.0/bin/codex (Mach-O 64-bit executable arm64); `codex --version` => 'codex-cli 0.154.0'
-- Local binary embedded JSON Schemas (draft-07), extracted via `strings`: titles session-start|session-end|user-prompt-submit|pre-tool-use|permission-request|post-tool-use|pre-compact|post-compact|subagent-start|subagent-stop|stop|interrupt .command.input/.output — 23 schemas total (session-end has input only). AUTHORITATIVE where it differs from the doc page.
-- Local binary serde type names: HookEventName enum (12 variants), HookTrustStatus (managed|trusted|untrusted|modified), HookStateToml {enabled, trusted_hash}, HookHandlerConfig::{Command,McpTool}, PreToolUseHookSpecificOutputWire (5 elements), PostToolUseHookSpecificOutputWire (3 elements incl. updatedMCPToolOutput), SessionStart/SubagentStart/UserPromptSubmit HookSpecificOutputWire (2 elements each), PermissionRequestHookSpecificOutputWire (2 elements, no additionalContext)
-- `zsh -lc 'codex --help'` — documents --dangerously-bypass-hook-trust ('Run enabled hooks without requiring persisted hook trust for this invocation. DANGEROUS. Intended only for automation that already vets hook sources'), distinct from --dangerously-bypass-approvals-and-sandbox
-- `zsh -lc 'codex plugin --help'` — subcommands add | list | marketplace | remove
-- Local binary trust-flow strings: 'New hook - review required', 'Modified since last trusted - review required', 'Hooks need review', 'Hooks can run outside the sandbox after you trust them.', 'Trust all and continue', 'Continue without trusting (hooks won't run)', 'failed to write hook trust:', 'hooks.state', 'config/batchWrite failed while updating hook trust in TUI'
-- Local binary plugin-trust strings: 'failed to trust materialized plugin hooks', 'skipping materialized plugin hook trust after account changed', '(plugin hook trust update was cancelled:', 'Agent Plugins MCP config resolves outside the plugin root; disabling MCP', 'BYPASS_HOOK_TRUST'
-- Local binary project-trust string: 'config, hooks, and exec policies are disabled in the following folders until the project is trusted, but skills still load.'
-- Local binary config keys: hooks.managed_dir, hooks.windows_managed_dir, allow_managed_hooks_only, and marketplace paths ~/.agents/plugins/marketplace.json and <repo-root>/.agents/plugins/marketplace.json, .codex-plugin/plugin.json
-
----
-
-# Lane 03 — what the Twining adapter actually does on this host
-
-Added 2026-09-15 by lane 03 (runtime integration). Generated from
-`src/adapters/codex.ts` (`CODEX_MATRIX`) and pinned by
-`test/adapters/host-matrix-docs.test.ts`.
-
-Active only on a **v3-enabled store** (`.twining/store.json` with `"format": 3`).
+The block below is rendered from `CODEX_MATRIX` (`src/adapters/codex.ts`); do not hand-edit it. `test/adapters/host-matrix-docs.test.ts` is meant to pin it. That test was not run for this page. What was checked instead: at `0f9fd985`, `renderMatrixTable(CODEX_MATRIX)` from the built `dist/` appears verbatim in this file, and the file contains the headings and rows the test looks for. Its PreToolUse, PostToolUse, Interrupt and captured-field claims are wrong about the adapter — defects 3–5.
 
 <!-- BEGIN GENERATED: codex@0.154.0 — source of record is src/adapters/host-capability.ts consumers -->
 
@@ -180,67 +190,121 @@ Active only on a **v3-enabled store** (`.twining/store.json` with `"format": 3`)
 
 <!-- END GENERATED -->
 
+## What the adapter does (offline, no Codex process)
+
+Setup on a fresh scratch store, launched from a non-git directory:
+
+```
+$ $CLI identity init --project <P>
+→ exit 0; result.store {"store_id":"s_…","repo_id":"r_…","format":3,"created":true,"file":"<P>/.twining/store.json"}
+$ cat <P>/.twining/store.json        # {"store_id":"s_…","repo_ids":["r_…"],"format":3,"created_at":"…"}
+$ TWINING_INGRESS=cli $CLI decide --project <P> --json '{"domain":"architecture","scope":"src/","summary":"PLUTONIUM-3 is the agreed retry ceiling (synthetic seed)","context":"codex hook demo","rationale":"seeded so a SessionStart working set has one record to inject"}'
+→ exit 0; stderr: No local embedding model at … — using keyword search (offline mode: no download attempted).
+```
+
+Each hook call: `printf '%s' '<payload>' | TWINING_SESSION_ID=codex-demo-1 TWINING_TURN_ID=<turn> $CLI hook codex <Event> --project <P>`, with a payload carrying exactly the binary's required fields. Every exit code was 0. Stderr is shown without the `[twining] ` prefix.
+
+| Event | stdout | stderr | Events written |
+|---|---|---|---|
+| SessionStart | `additionalContext` (below) | none | observation (`check_method: "codex SessionStart hook"`) + receipt `injected` (events: the seed decision, turn `startup:0`) |
+| UserPromptSubmit | `additionalContext` (below) | none | post `human_statement` (`entry_type: status`, tags `human-statement, codex`) + receipt `injected` (events: that post only) |
+| PreCompact | empty | `PreCompact cannot inject context on this host — additionalContext is discarded. Re-seeding rides SessionStart(source=compact).` / `codex PreCompact cannot inject context (no additionalContext member in its output schema); the captured records reach the model at the next SessionStart or UserPromptSubmit instead` | observation `result: {kind: compaction, trigger: auto, last_injected_event, last_payload_hash, turns: 2, transcript: "rollout.jsonl", injects: false, injection_channel: null}` |
+| PostCompact | empty | the same two lines, the first still saying `PreCompact` (defect 8) | observation, `result.kind: post_compaction`, otherwise as PreCompact |
+| SubagentStart | `additionalContext` (below) | `SubagentStart injects into the SUBAGENT, never the parent session.` | work `assignment` (`external_id: worker-1`, `stage: dispatched`, `agent_type: explorer`, `authority: "reference only; this record grants nothing"`, `producer.asserted_actor: worker-1`) + receipt `injected` (3 events, session `codex-demo-1/worker-1`) |
+| SubagentStop | empty | `a worker return is a reported_result — it is not completion, merge or acceptance` / `codex SubagentStop cannot inject context …` | post `reported_result` (`stage: worker_returned_review_pending`, `task_completion_state: not_complete`, `acceptance_state: none_recorded`, `merge_state: not_merged`) |
+| PreToolUse, PostToolUse, Interrupt, PermissionRequest | empty | `codex adapter has no handler for <Event>; nothing captured, nothing claimed` | none (raw event files 10 before and 10 after the four calls) |
+| Stop | empty | `codex Stop cannot inject context …` | receipt `projected`, `cursor.position` = newest event |
+| SessionEnd | empty | `SessionEnd discards all hook output on this host; flush only.` / `codex SessionEnd cannot inject …` | receipt `projected` — written but not admitted (defect 6) |
+
+Injected texts (a few hundred bytes each on a store this size):
+
+```
+SessionStart:
+## Twining — working set for this scope
+
+- [proposal] PLUTONIUM-3 is the agreed retry ceiling (synthetic seed)
+  scope: src
+  why: seeded so a SessionStart working set has one record to inject
+  (does not authorize action on its own)
+
+Evidence class is stated per item and is NOT changed by the wording of the item. Only a RULING carries human authority; everything else is a claim.
+
+UserPromptSubmit:  ## Twining — new since your last injected context
+                   - [human statement] status: Reply with the single word OK.  (+ scope, disclaimer, footer)
+SubagentStart:     ## Twining — working set for this scope
+                   - [verified observation] <work id>   ← the worker's own assignment, bare id (defect 9)
+                   then the human statement and the seed proposal, as above
+```
+
+No v3 payload contains "Gate 1 / Gate 2" prose. The SessionStart observation records only `{kind: session_start, host: codex, session, start_source, cwd}` (defect 5).
+
+After the run, there are 12 raw events: the seed `decide` plus 2+2+1+1+2+1+0+1+1 from the hooks, as in the last column above.
+
+```
+$ $CLI events ls --project <P> --limit 50        → result.total 11, shown 11, all signed: true
+$ ls <P>/.twining/events/*/ | wc -l              → 12
+$ $CLI events show <12th id, the SessionEnd receipt> --project <P>
+→ exit 1 {"ok":false,…,"error":{"code":"NOT_ADMITTED","message":"event … exists in state \"local_persisted\" but is not admitted"}}
+$ $CLI doctor --project <P>
+→ bindings: store_format 3, v3_enabled true, repo_ids ["r_…"], repo_ids_cited ["r_…"], repo_ids_undeclared []
+  events {"total":12,"admitted":11,"quarantined":0,"rejected":0}; hooks [] (scratch HOME)
+  capture_coverage.codex {required_lifecycle_points:7, captured:7, gaps:[], cross_backend_substitution_claims:[],
+                          injects_on:["SessionStart","UserPromptSubmit","PreToolUse","PostToolUse","SubagentStart"]}
+  honest_limits: "coverage above describes what the ADAPTER captures, not that a host is currently installed", …
+$ jq -c . <P>/.twining/adapters/sessions/codex-demo-1.json      # file is pretty-printed; compacted here
+→ {"session_id":"codex-demo-1","last_injected_event":"<the human_statement>","last_receipt_id":"<its receipt>","last_payload_hash":"sha256:…","updated_at":"…","turns":2}
+$ $CLI migrate-status --project <P>
+→ {"format":3,"migration":"not_started",…,"remaining_steps":["manifest","events","idmap","verify","finalize"],"events":12,…}   # bare JSON, no envelope
+```
+
+### Admission lag (defect 6)
+
+On a fresh store, launched from a non-git directory:
+
+```
+decide                        → events ls total 0, raw 1; events show <decide> → exit 1 NOT_ADMITTED
+hook codex SessionEnd         → total 1, raw 2; the decide now shows (exit 0); the SessionEnd receipt NOT_ADMITTED
+decide (second)               → total 1, raw 3; both the receipt and the new decide NOT_ADMITTED
+hook codex Stop               → total 3, raw 4; both admitted; the Stop receipt NOT_ADMITTED
+```
+
+A CLI `decide` admits nothing; read-only commands admit nothing; the next hook run admits everything before it. From source, not a run: the hook handlers call `runtime.store.admit()` before appending their own receipt.
+
+### Turn and provenance (defect 12)
+
+- `hook codex UserPromptSubmit` with `TWINING_TURN_ID=env-turn-X` and payload `"turn_id":"payload-turn-Y"`: the post has `producer.turn: "env-turn-X"` and attachment `anchor: "prompt:payload-turn-Y"`; the receipt has `producer.turn: "env-turn-X"`, `payload.turn: "payload-turn-Y"`. With `TWINING_TURN_ID` unset (`env -u`) and `"turn_id":"payload-turn-Z"`: **no** `producer.turn`; the anchor and `payload.turn` still say `payload-turn-Z`. Through the shim the two agree (see above).
+- Hook-path provenance follows the payload `cwd`; CLI-path provenance follows the shell's cwd. With a one-commit stand-in git repo `<G>` and the store in non-git `<P>`: `hook codex SessionStart` launched from a non-git dir with payload `cwd` = `<G>` records `source: {repo, worktree, branch: "main", commit, dirty: false}`; launched from `<G>` with payload `cwd` = `<P>` it records `{repo, worktree}` only. `decide` launched from `<G>` records branch/commit/dirty; launched from a non-git dir, worktree only. `doctor` reports `bindings.source_cwd` = the launch directory.
+
+### On a 2.x store (defect 7)
+
+```
+$ printf '{"session_id":"codex-v2",…,"hook_event_name":"SessionStart",…,"source":"startup"}' \
+  | $CLI hook codex SessionStart --project <dir whose .twining has no store.json>
+exit 0; stdout 993 bytes {"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"## Coordination — Twining Lifecycle Gates\n\n… Gate 1 — Context Assembly … Gate 2 — Record …"}}
+stderr: [twining] store is not v3-enabled; emitting the 2.x lifecycle-gate context unchanged
+```
+
+No files are written. The shim's guard (`[[ -f "$STORE_JSON" ]] || exit 0` and a `"format": 3` grep in `plugin/hooks/v3-capture-hook.sh`) runs before the CLI, so only the shim is silent on a 2.x store.
+
 ## Honest limits on this host
 
-- **Seven of twelve events observe only.** `PermissionRequest`, `PreCompact`,
-  `PostCompact`, `SessionEnd`, `Stop`, `SubagentStop` and `Interrupt` have no
-  `additionalContext` member in their output schemas. The adapter captures on
-  those it is registered for and emits nothing on stdout; it never returns a
-  field the host's own schema would reject and then count the event as covered.
-- **Compaction recovery rides `SessionStart(source=resume|compact)` and the next
-  `UserPromptSubmit`.** Those are the only injecting events after a compaction.
-- **`SessionEnd` has no output schema at all**, is always synchronous even with
-  `async: true`, and does not support `mcp_tool` handlers.
-- **Hooks need separate trust.** Installing the plugin does not trust its hooks:
-  Codex records trust by content hash, and editing a trusted hook re-arms the
-  gate. Changing accounts re-arms plugin hook trust. Until a hook is trusted it
-  does not run, and Twining captures nothing — this is reported as an uncaptured
-  gap, never papered over with another host's evidence.
-- **Verify `tool_name` before relying on a matcher.** The binary's internal tool
-  identifiers are `apply_patch` and `unified_exec`; `Bash`/`Edit`/`Write` are
-  Claude-compatibility names presented at the hook boundary.
+- **Seven of twelve events observe only** (PermissionRequest, PreCompact, PostCompact, SessionEnd, Stop, SubagentStop, Interrupt). The adapter emits nothing on stdout for those it handles and never returns a field the host's schema would reject.
+- **Compaction recovery rides `SessionStart(source=resume|compact)` and the next `UserPromptSubmit`.**
+- **`SessionEnd` has no output schema at all.**
+- **Hooks need separate trust.** Until a Twining hook is trusted it does not run and Twining captures nothing — reported as a gap, never filled with another host's evidence.
+- **`tool_name` is unverified** (`Bash` vs `unified_exec`); confirm before relying on a matcher.
+- **No Twining Codex registration ships** (defect 2), so a Codex session today captures nothing.
 
 ## Cross-backend honesty
 
-`codexCoverage().cross_backend_substitution_claims` is always `[]`, and a test
-asserts it. Where this host cannot do something, the gap is reported as a gap.
-Claude Code's ability to do the same thing is never offered as evidence that
-Codex did it.
+`capture_coverage.codex.cross_backend_substitution_claims` was `[]` in every `doctor` run above. That it is always `[]` is from source, not a run: `codexCoverage()` returns a literal `[]` typed `never[]`. Claude Code's ability to do something is never offered as evidence that Codex did it.
 
-## Real-host verification status (lane 03, 2026-09-15) — NOT VERIFIED
+## Next step for real-host verification
 
-Stated plainly, because C15 D2 makes substituting evidence a defect rather than
-a rounding error: **Twining's capture has not been observed working on a real
-Codex host.** Claude Code's working capture is not evidence about Codex.
+The test cannot work as written: Codex keys trust by hooks.json **path** + event + index + content hash, and `test/adapters/real-host.test.ts` writes its `.codex/hooks.json` into a new `mkdtemp` project every run, so one interactive trust never matches the next run (from source, not a run). Either register the probe at a stable path (`~/.codex/hooks.json`, or a fixed project listed under `[projects]` in `~/.codex/config.toml`), trust it once via `/hooks`, and point the test there; or change the test to reuse a fixed directory. Then run `TWINING_REAL_HOST=1 npx vitest run test/adapters/real-host.test.ts -t Codex` and treat a `NOT TESTED on Codex` stderr line as a failure, not a pass (defect 11). From source, not a run: without `TWINING_REAL_HOST` the file's 4 tests (3 Claude Code, 1 Codex) sit inside `describe.skipIf(!REAL)` and should be reported as skipped. No vitest run for this page checked that. **The run itself is UNAVAILABLE here: it is a real Codex session calling a model, and the owner has not granted hook trust to any Twining hook.**
 
-What was actually run (Codex 0.154.0, Homebrew cask, macOS 25.6.0), in a
-temporary synthetic project with `.codex/hooks.json` registering a probe hook
-and a v3-enabled `.twining` store:
+## Sources
 
-```
-zsh -lc "cd <temp project> && codex exec --dangerously-bypass-hook-trust \
-         --skip-git-repo-check 'Reply with OK'"
-```
-
-Observed:
-
-- Codex printed `hook: SessionStart` and `hook: SessionStart Completed`, so the
-  hook was **registered and dispatched**.
-- The hook command produced **no filesystem effect at all** — no log file, no
-  marker file, no Twining events — with the target inside the workspace and
-  again with it outside.
-- `UserPromptSubmit` never appeared in the run output. `codex exec` may not
-  fire it at all in non-interactive mode; that is a second open question.
-
-Most likely explanation, consistent with the strings in the shipped binary
-("Hooks can run outside the sandbox **after you trust them**"):
-`--dangerously-bypass-hook-trust` permits an untrusted hook to RUN but does not
-lift the sandbox, so a capture hook has no writable filesystem. If that is
-right, unattended Codex capture requires either a **managed** hook (system/MDM/
-`requirements.toml`, trusted by policy) or a one-time interactive trust through
-`/hooks` in the TUI — neither of which an automated test can perform.
-
-Next step for whoever picks this up: trust the hook once interactively in a TUI
-session, then re-run `TWINING_REAL_HOST=1 npx vitest run
-test/adapters/real-host.test.ts -t Codex`. The test is written and will pass or
-fail honestly; it currently reports **NOT TESTED** rather than passing vacuously.
+- Installed binary `/opt/homebrew/Caskroom/codex/0.154.0/bin/codex` (sha256 above): embedded schemas, serde names (`HookEventName`, `HookTrustStatus`, `HookStateToml { enabled, trusted_hash }`, `HookHandlerConfig::{Command, McpTool}`), trust and plugin strings. Authoritative for field sets.
+- `https://learn.chatgpt.com/docs/hooks` and `https://developers.openai.com/plugins/build/plugins` — runtime semantics, docs-stated only. The hooks page itself says to *"use this page as the release behavior reference"*; this guide pins field sets to the installed binary instead.
+- Programme log DN19 and the foundation matrix report (R10/R11) for the unreproduced real-host attempt.

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Chose an import-time length assertion for the lexical system prompt (388 chars == TWINING_TRIAL_GATE_PROMPT) over a comment\" relates to:\n- 01M2YJ3ZVZDFEF7CCZY1QASJ3F: \"Chose to resolve TRIAL_* env in TwiningTrialCondition.setup() rather than the constructor\"\n- 01M2YJ3ZZHPSY42TW4WJJEZH15: \"Chose a dynamic directory walk (.json/.jsonl only, sqlite skipped) over literal paths for .twining/records/** and .twining/events/**\"\n- 01M2YJ4095C24QRQF8ADC2PMS6: \"Chose to inherit baseline's description in OracleInContextCondition\"\n- 01M2YJ40CQBC36YX0ATZ0838P8: \"Chose to add the DP-3 TRIAL_PLUGIN_SERVER_ONLY env switch (default off) instead of leaving DP-3 as a mid-trial code edit\"\n- 01M2YJ40FTRQRG76TGXHD546KJ: \"Chose to keep the twining-2161 env exactly {TWINING_SERVER_JS, TWINING_PLUGIN_PATH} as the design states and not add TWINING_PROJECT\"",
+  "entry_type": "finding",
+  "id": "01M2YJ40KM70W193NGC58MSG64",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T04:45:17.792Z"
+  },
+  "scope": "docs/plans/2026-09-16-dev-scale-trial-design.md",
+  "summary": "Related decisions in scope: 5 existing decision(s) overlap",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-09-20T04:45:17.812Z"
+}

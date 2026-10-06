@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: A store finalized by migrate --to 3 refuses every registry write from the same build with FORMAT_VERSION_TOO_NEW (lead-reproduced on a one-record store at 0f9fd985); only identity-init stores accept writes, so the upgrade path yields a store the product cannot write to",
+  "entry_type": "finding",
+  "id": "01M497HYVJZR0PNS4HWJZB6XTK",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "0f9fd985df6890a34240cf644d16081a0a2cf680",
+    "recorded_at": "2026-10-06T18:28:00.989Z"
+  },
+  "scope": "docs/",
+  "summary": "A store finalized by migrate --to 3 refuses every registry write from the same build with FORMAT_VERSION_TOO_NEW (lead-reproduced on a one-record store at 0f9fd985); only identity-init stores accep…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-10-06T18:28:01.010Z"
+}

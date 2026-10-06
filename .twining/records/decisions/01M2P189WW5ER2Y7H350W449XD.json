@@ -35,7 +35,8 @@
   "rationale_source": "authored",
   "reversible": true,
   "scope": "src/adapters/",
-  "status": "active",
+  "status": "superseded",
   "summary": "Chose NOT to fix store-identity.ts reading repo_id while ensureStoreDescriptor writes repo_ids",
+  "superseded_by": "01M2YJ56TFYVPXQJ69Y45BAY99",
   "timestamp": "2026-09-16T21:16:37.148Z"
 }

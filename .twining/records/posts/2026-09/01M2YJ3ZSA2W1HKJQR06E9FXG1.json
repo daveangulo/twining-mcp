@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: CONDITIONS builder for the dev-scale trial (harness repo, branch foundation-trial, uncommitted): wrote src/conditions/twining-trial.ts (TwiningTrialCondition for twining-2161/twining-v3: TRIAL_* env resolved at setup with existence checks, node <server> --project, plugin dir, empty allowedTools, per-arm env incl. v3 identity home/TWINING_PROJECT/TWINING_OFFLINE, DP-3 TRIAL_PLUGIN_SERVER_ONLY switch, metadata with resolved paths, dynamic walk of .twining/records|events|adapters/sessions for coordination snapshots, teardown rm .twining + .trial-identity), src/conditions/lexical-store.ts (CLAUDE.md pointer + 388-char system prompt equal to the gate prompt, shared-markdown tool list), src/conditions/oracle-in-context.ts (extends baseline, name only), four registry entries and four ConditionName members. tsc exit 0; runtime exercise of all conditions passed; agent-visible text tell-scan clean.\nDecisions: Chose to resolve TRIAL_* env in TwiningTrialCondition.setup() rather than the constructor — getCondition(name).create() runs for every name in `--condition all` (run.ts:275), so a throwing constructor would break unrelated runs; setup() still fails before any agent session and the orchestrator surfaces it as a run failure; Chose to delete .twining (and .trial-identity for v3) in doTeardown — the orchestrator runs saveTwiningStoreSnapshot → runTests → scenario.score → condition.teardown → workingDir.cleanup, so the scenario's doScore has already copied the raw store; nothing depends on .twining surviving teardown; Chose a dynamic directory walk (.json/.jsonl only, sqlite skipped) over literal paths for .twining/records/** and .twining/events/** — BaseCondition.snapshotCoordinationFiles reads literal relative paths with no glob support, and files created during a session are absent from the pre-snapshot so they surface as changes; Chose to inherit baseline's description in OracleInContextCondition — BaselineCondition declares description as a readonly literal, TS2416 refuses a different text in a subclass, and baseline.ts stays untouched per design §5; the distinctive description lives on the registry entry; Chose to add the DP-3 TRIAL_PLUGIN_SERVER_ONLY env switch (default off) instead of leaving DP-3 as a mid-trial code edit — makes the plugin-server-only fallback a recorded toggle in ConditionContext.metadata; both Twining arms read the same variable; Chose to keep the twining-2161 env exactly {TWINING_SERVER_JS, TWINING_PLUGIN_PATH} as the design states and not add TWINING_PROJECT — the direct server gets --project and the plugin's rung-0a server binds cwd = workingDir; flagged as an open question rather than widened silently; Chose an import-time length assertion for the lexical system prompt (388 chars == TWINING_TRIAL_GATE_PROMPT) over a comment — a wording change to either prompt cannot silently unbalance the arms",
+  "entry_type": "status",
+  "id": "01M2YJ3ZSA2W1HKJQR06E9FXG1",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T04:45:16.947Z"
+  },
+  "scope": "docs/plans/2026-09-16-dev-scale-trial-design.md",
+  "summary": "CONDITIONS builder for the dev-scale trial (harness repo, branch foundation-trial, uncommitted): wrote src/conditions/twining-trial.ts (TwiningTrialCondition for twining-2161/twining-v3: TRIAL_* en…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-20T04:45:16.970Z"
+}

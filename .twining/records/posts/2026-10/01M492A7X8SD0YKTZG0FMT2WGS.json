@@ -1,0 +1,18 @@
+{
+  "agent_id": "Turn the five audit-notebook operator docs into self-contained operator guides at the merged commit, re-verify by execution, and return the defect list",
+  "detail": "",
+  "entry_type": "status",
+  "id": "01M492A7X8SD0YKTZG0FMT2WGS",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "0f9fd985df6890a34240cf644d16081a0a2cf680",
+    "recorded_at": "2026-10-06T16:56:25.214Z"
+  },
+  "scope": "project",
+  "summary": "Subagent completed: Turn the five audit-notebook operator docs into self-contained operator guides at the merged commit, re-verify by execution, and return the defect list",
+  "tags": [
+    "subagent-stop",
+    "hook-generated"
+  ],
+  "timestamp": "2026-10-06T16:56:25.256Z"
+}

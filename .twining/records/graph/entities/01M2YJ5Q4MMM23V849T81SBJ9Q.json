@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-20T04:46:13.652Z",
+  "id": "01M2YJ5Q4MMM23V849T81SBJ9Q",
+  "name": "01M2YJ5Q3Z8GEQ8GSRX5TZN8VJ",
+  "properties": {
+    "scope": "src/migrate/v3-forward.ts",
+    "summary": "Chose a private declaredRepoId/readStoreJson helper pair inside v3-forward.ts that mirrors the exported declaredRepoId in retrieval/store-identity.ts, over importing it across layers"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-20T04:46:13.652Z"
+}

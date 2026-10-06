@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "finding",
+  "id": "01M497HYXJG4SKC81WK6VKFJ5W",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "0f9fd985df6890a34240cf644d16081a0a2cf680",
+    "recorded_at": "2026-10-06T18:28:01.055Z"
+  },
+  "scope": "docs/",
+  "summary": "As installed the plugin capture shim resolves no CLI (no bundled CLI, nothing on PATH), so v3 capture silently never happens unless TWINING_CLI_JS is set",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-10-06T18:28:01.074Z"
+}
