@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "finding",
+  "id": "01M4AARE4GQ572BGSJFAN0WJN7",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "98226d81e87150f79eba58de090c4715379b99d0",
+    "recorded_at": "2026-10-07T04:43:13.404Z"
+  },
+  "scope": "docs/operations/",
+  "summary": "assemble/why on a v3 store label signed native events legacy_unverified and tell the model they were migrated with no authorship proof (K11) — a wrong trust class on the read path, R03/R17",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-10-07T04:43:13.424Z"
+}

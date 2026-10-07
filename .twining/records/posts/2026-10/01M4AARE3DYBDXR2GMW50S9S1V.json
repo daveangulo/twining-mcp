@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Over sync --path a peer's events stay quarantined signature_required and no verb trusts a peer key, so no CLI carrier delivers records across replicas (recovery guide K6) — exchange works at the byte level only",
+  "entry_type": "finding",
+  "id": "01M4AARE3DYBDXR2GMW50S9S1V",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "98226d81e87150f79eba58de090c4715379b99d0",
+    "recorded_at": "2026-10-07T04:43:13.368Z"
+  },
+  "scope": "docs/operations/",
+  "summary": "Over sync --path a peer's events stay quarantined signature_required and no verb trusts a peer key, so no CLI carrier delivers records across replicas (recovery guide K6) — exchange works at the by…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-10-07T04:43:13.389Z"
+}
