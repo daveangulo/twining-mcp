@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: docs/operations/recovery-and-rollback.md in the working tree is still the 1351-line audit notebook being rewritten by a background agent; do not commit it until recovery-doc-finalize reports and its verifier has run",
+  "entry_type": "finding",
+  "id": "01M49E4NN2E5PYZCAGQGMXSG9G",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "fd9c241c02a357e4cf4a2dd62431943f51128cf5",
+    "recorded_at": "2026-10-06T20:23:05.611Z"
+  },
+  "scope": "docs/",
+  "summary": "docs/operations/recovery-and-rollback.md in the working tree is still the 1351-line audit notebook being rewritten by a background agent; do not commit it until recovery-doc-finalize reports and it…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-10-06T20:23:05.634Z"
+}

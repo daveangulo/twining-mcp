@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-20T04:45:17.871Z",
+  "id": "01M2YJ40NFRG89YWN1EZ3NB64B",
+  "name": "01M2YJ40K0J38Z14AYVX0X0W3X",
+  "properties": {
+    "scope": "docs/plans/2026-09-16-dev-scale-trial-design.md",
+    "summary": "Chose an import-time length assertion for the lexical system prompt (388 chars == TWINING_TRIAL_GATE_PROMPT) over a comment"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-20T04:45:17.871Z"
+}

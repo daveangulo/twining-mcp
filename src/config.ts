@@ -43,6 +43,11 @@ export const DEFAULT_CONFIG: TwiningConfig = {
     export_records: true,    // sqlite only: maintain committable .twining/records/ tree + ingest on startup
     auto_migrate: false,     // opt-in: auto-run `twining-mcp migrate` at startup on legacy projects (or TWINING_AUTO_MIGRATE=1)
   },
+  embeddings: {
+    // Never download an embedding model. Also settable per-process with
+    // TWINING_OFFLINE=1; createTwiningContext ORs the two with its own option.
+    offline: false,
+  },
   archive: {
     auto_archive_on_commit: true,
     auto_archive_on_context_switch: true,

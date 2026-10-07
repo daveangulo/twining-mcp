@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-16T02:43:26.227Z",
+  "id": "01M2M1J0CKX2HVMC1B6ECBBWVD",
+  "name": "test/acceptance/cases/c22.test.ts",
+  "properties": {
+    "scope": "src/contracts/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-16T02:43:26.227Z"
+}

@@ -1,0 +1,48 @@
+{
+  "affected_files": [
+    "src/retrieval/store-identity.ts",
+    "src/migrate/v3-forward.ts"
+  ],
+  "affected_symbols": [
+    "readStoreIdentity",
+    "declaredRepoId",
+    "resolveIdentity",
+    "migrateStatus"
+  ],
+  "agent_id": "fix-repo-ids",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Make identity init also write repo_id",
+      "pros": [],
+      "reason_rejected": "Fixes only new stores; every existing identity-init store.json in the field would still read as derived, and the shared-store semantics (one repo_ids list, first declared wins) would gain a second source of truth to keep in sync."
+    },
+    {
+      "cons": [],
+      "option": "Keep the derived fallback and leave the annex misreporting (the D51 disposition)",
+      "pros": [],
+      "reason_rejected": "D51 deferred it only because the change was outside that lane's remit; the migrate-after-init overwrite is a data-integrity defect, not a cosmetic one."
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Fixed store.json readers to accept identity-init's repo_ids-only shape: readStoreIdentity, v3-forward resolveIdentity and migrateStatus now fall back to repo_ids[0], so an identity-init v3 store reads as format 3 / source store.json and migrate reuses its ids.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M2YJ56TFYVPXQJ69Y45BAY99",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T04:45:56.922Z"
+  },
+  "rationale": "identity init (ensureStoreDescriptor) writes {store_id, repo_ids, format, created_at} with no repo_id; only migrate finalize writes both. Reading only repo_id made the RetrievalAnnex report an identity-init v3 store as format 2 / derived-from-path while every event the runtime minted cited repo_ids[0] (repoIdFor), and let migrate run AFTER identity init mint a path-seeded store_id/repo_id and overwrite store.json, orphaning ids the ceremony membership and events already cited. First-declared-wins matches repoIdFor exactly, so the gate and the events now agree on scope.repo. This is the dedicated fix the D51 implementer deferred as out of remit (warning 01M2P189ZBYBFAKPNV0G2X2AHH); it deliberately flips the annex's repo_identity_source/format for identity-init stores from derived to minted, which is the correct reading.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/retrieval/store-identity.ts",
+  "status": "active",
+  "summary": "Chose to fix readStoreIdentity, resolveIdentity and migrateStatus to fall back to repo_ids[0] when repo_id is absent (repo_id still preferred when present), reporting source 'store.json' and the file's format",
+  "supersedes": "01M2P189WW5ER2Y7H350W449XD",
+  "timestamp": "2026-09-20T04:45:56.943Z"
+}

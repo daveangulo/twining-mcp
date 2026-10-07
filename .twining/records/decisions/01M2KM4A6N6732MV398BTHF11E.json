@@ -1,0 +1,33 @@
+{
+  "affected_files": [
+    "src/exchange/git-transport.ts",
+    "src/exchange/git.ts",
+    "src/exchange/status.ts",
+    "src/events/event-store.ts",
+    "src/events/db.ts",
+    "src/core/commands/exchange.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Lane 02b (exchange) delivered on lane/02-exchange: Git carrier (exchange ref, verified union, non-interference), C18 fault suite, C17/C22/C24 hardening, C20 deletion, exchange status, chain of trust, ancestor-membership capability; seven live slice defects fixed.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01M2KM4A6N6732MV398BTHF11E",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:48:46.013Z"
+  },
+  "rationale": "ADR §4.3 rule 3: absent a declared policy rule, equal-class concurrent contradictions stay visible as conflicted; ULID order is for deterministic replay only, never precedence.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/exchange/",
+  "status": "active",
+  "summary": "Competing scoped corrections of equal class in the same scope must project as CONFLICTED, never resolved by array/ULID order — lane 02b found correctionFor resolves by array order (an invented resolution under C22 INV-11); the lead fixes projection.ts at merge and removes the todo",
+  "timestamp": "2026-09-15T22:48:46.037Z"
+}

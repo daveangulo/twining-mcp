@@ -1,0 +1,21 @@
+{
+  "agent_id": "lane-05-verification",
+  "detail": "src/embeddings/embedder.ts downloads Xenova/all-MiniLM-L6-v2 from huggingface.co on first semantic use when .twining/models/ is empty. The `offline` flag that prevents it has exactly ONE caller that sets it: src/cli/twining.ts:420 (the hook path). src/server.ts:48 calls createTwiningContext(projectRoot) with no options, so offline defaults to false on the MCP server path.\n\nThe only env vars src/** reads are CI, DO_NOT_TRACK, POSTHOG_API_KEY, TWINING_AUTO_MIGRATE, TWINING_DISABLED, VITEST. There is no TWINING_OFFLINE and no config key. An operator on an air-gapped or policy-restricted machine cannot turn the download off without editing code.\n\nR18 asks for a tested configuration for a local/approved-provider deployment; there is no configuration surface to test. C28 A24 requires every outbound destination and first-use model download be confirmed by observed traffic — the destination is confirmed by source reading (docs/operations/data-flow.md path 1) but the control does not exist.\n\nSuggested fix (owner: whoever owns src/core/context.ts): read TWINING_OFFLINE and a config.embeddings.offline key in createTwiningContext, and default offline to true when the model cache is absent and there is no interactive consent.\n\nRelated, lower severity: F-TELEMETRY-KEY — a PostHog project key is baked into the build by scripts/inject-posthog-key.mjs, so \"no telemetry\" rests on a runtime flag rather than on the absence of a credential. Inert while config.telemetry.enabled is false, but worth stating in the operator docs.",
+  "entry_type": "warning",
+  "id": "01M2KJCA9Q2FM77MFMHHVGV8X3",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:18:11.108Z"
+  },
+  "scope": "test/acceptance/",
+  "summary": "F-OFFLINE: the MCP server path cannot disable the first-use Hugging Face model download — no env var, no config key, offline defaults to false",
+  "tags": [
+    "data-flow",
+    "r18",
+    "c28",
+    "embeddings",
+    "operations"
+  ],
+  "timestamp": "2026-09-15T22:18:11.127Z"
+}

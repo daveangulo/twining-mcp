@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Handoff execution session (2026-09-16..19): verified the push (origin == 9b0afafd) and CI state; corrected the stale R15/known-gap-5 matrix text (calibration IS measured); prepared the padded-whitespace calibration corpus doc + README (item 5 cannot run: no API key); built a detached v3 trial worktree; ran a 6-reader/3-design/judge workflow that produced docs/plans/2026-09-16-dev-scale-trial-design.md; ruled DP-0 (fix the v3 working-set renderer before the trial — branch fix/working-set-render reviewed, 10 new tests); dispatched the operator-docs fill-from-runs workflow (5 docs rewritten, verify/fix in progress) and the harness build (contracts stage done, builders resuming after a usage-limit outage). Programme log carries DN33–DN42 and D45–D55.\nDecisions: Chose deterministic oracle-derived scoring (required facts / forbidden claims / forbidden actions with instrument-can-fail controls) over the harness LLM judge for the dev-scale trial — no ANTHROPIC_API_KEY on this machine and the package states correctness as fact recovery (D45); Chose to run the v3 trial arm from a detached built worktree of foundation/v3 (.claude/worktrees/v3-trial) rather than building the main checkout — the npm link would make v3 serve v2 stores for every session on this machine (D46, A11); Chose to fix the v3 working-set renderer (observation body + revision range) BEFORE the trial and record the new SHA as the object under test, over measuring v3 as shipped — as shipped v3 renders a verified_observation as a bare id and would spend ~100 sessions measuring a rendering omission (D51 / DP-0); Chose dev-scale batch 1 = all 21 development stages × 4 arms (84 sessions) plus floor/ceiling controls on C01 and C08, held-out only if batch 1 completes within the usage window — supersedes the 36-session figure in D47 (D52); Chose to leave RB7's 3.0.0-alpha.N version stamp unapplied — npm version rebuilds and stages the plugin bundle, the release step the previous lead deferred to the owner; trial arms are identified by commit and spec, never by reported version (DN38); Chose to fill operator docs only from executed runs in scratch stores against the built worktree, verified by re-execution, with unavailable evidence left marked UNAVAILABLE (D48); Chose not to add an estimate-vs-measured validation to scripts/calibrate-tokenizer.mjs despite the per-class attribution caveat — nothing on this machine can execute it and the script already carries one unverified fix; the corpus README states the check instead (D50)",
+  "entry_type": "status",
+  "id": "01M2YH9XANEB8FCBDTB96H4AAA",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-20T04:31:02.465Z"
+  },
+  "scope": "docs/",
+  "summary": "Handoff execution session (2026-09-16..19): verified the push (origin == 9b0afafd) and CI state; corrected the stale R15/known-gap-5 matrix text (calibration IS measured); prepared the padded-white…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-20T04:31:02.485Z"
+}

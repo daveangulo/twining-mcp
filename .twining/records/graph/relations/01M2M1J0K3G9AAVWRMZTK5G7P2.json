@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T02:43:26.435Z",
+  "id": "01M2M1J0K3G9AAVWRMZTK5G7P2",
+  "properties": {
+    "decision_summary": "Left plugin/BEHAVIORS.md untouched. Its header says 35 tools while it documents 37, and four registry tools are undocumented (twining_amend, twining_triage predate this work; twining_exchange_status and twining_migrate_status are new). Editing plugin/ forces a plugin version bump and bundle rebuild under the CI plugin-version-check, which is a release action this merge should not take. Recorded as an open follow-up instead.",
+    "origin": "derived"
+  },
+  "source": "01M2KFYG1FYSBPVW7JV4GG1BYM",
+  "target": "01M2M1J0JTK86RHXHT08YRMQVW",
+  "type": "decided_by"
+}

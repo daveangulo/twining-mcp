@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-16T02:28:45.207Z",
+  "id": "01M2M0Q40QHJEFV657H50AYKE6",
+  "name": "test/acceptance/harness/scenario-fixture.ts",
+  "properties": {
+    "scope": "test/acceptance/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-16T02:28:45.253Z"
+}

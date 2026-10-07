@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-15T21:24:21.126Z",
+  "id": "01M2KF9R06C76YRQKHRFPH8AZY",
+  "name": "src/core/commands/lifecycle.ts",
+  "properties": {
+    "scope": "src/cli/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-15T21:24:21.418Z"
+}

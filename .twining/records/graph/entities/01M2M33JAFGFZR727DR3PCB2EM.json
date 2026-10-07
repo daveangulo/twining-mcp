@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-16T03:10:30.223Z",
+  "id": "01M2M33JAFGFZR727DR3PCB2EM",
+  "name": "describeTable",
+  "properties": {
+    "scope": "src/retrieval/"
+  },
+  "type": "function",
+  "updated_at": "2026-09-16T03:10:30.670Z"
+}

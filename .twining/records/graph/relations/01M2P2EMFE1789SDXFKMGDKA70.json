@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T21:37:33.166Z",
+  "id": "01M2P2EMFE1789SDXFKMGDKA70",
+  "properties": {
+    "decision_summary": "Chose `git checkout --ignore-other-worktrees fix/working-set-render` to commit on the branch the orchestrator named while sibling worktree wf_e59d869d-75f-1 still had it checked out",
+    "origin": "derived"
+  },
+  "source": "01M2P189NGS4PMYSQFSJQKP8N9",
+  "target": "01M2P2EMEE1YDTJ7MMJEDAZVW3",
+  "type": "decided_by"
+}

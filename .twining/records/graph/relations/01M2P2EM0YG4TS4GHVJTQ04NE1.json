@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T21:37:32.702Z",
+  "id": "01M2P2EM0YG4TS4GHVJTQ04NE1",
+  "properties": {
+    "decision_summary": "Chose to EXCLUDE the hooks' own session_start / compaction / post_compaction observations from the working set (alongside principal, membership, receipt) rather than render them compactly or rank them below proposals",
+    "origin": "derived"
+  },
+  "source": "01M2P2EM0X302FD127DQ5DFA0N",
+  "target": "01M2P2EM00JH9Q6G32RBEFPSH2",
+  "type": "decided_by"
+}

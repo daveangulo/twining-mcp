@@ -1,0 +1,41 @@
+{
+  "affected_files": [
+    "src/events/event-store.ts",
+    "src/events/projection.ts",
+    "src/events/db.ts",
+    "src/exchange/fs-transport.ts",
+    "src/exchange/relay.ts",
+    "src/exchange/inbox.ts",
+    "src/exchange/outbox.ts",
+    "src/contracts/records.ts",
+    "src/contracts/lifecycle.ts",
+    "src/contracts/delivery.ts",
+    "src/contracts/store-api.ts",
+    "docs/adr/2026-09-foundation-contracts.md",
+    "docs/adr/2026-09-foundation-contracts.appendix-c-slice-interpretations.md",
+    "docs/reports/2026-09-foundation-matrix.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Stage 0 closed: lane 02 vertical slice green (95 assertions + 12 todo under contracts draft.2), ADR ACCEPTED (draft 2) with §12/§4.3.1/§4.4/§7 corrections and appendix C, 23 more implementation-blind oracles written; matrix + log updated.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01M2KFYG2XTN3SKA4A76GSYQ50",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "d862f6ce8b8216ee51145fd1ba7864516492f3cc",
+    "recorded_at": "2026-09-15T21:35:41.125Z"
+  },
+  "rationale": "The slice builder showed §12 step 4 contradicted §4.3 rule 1 as implemented; letting a class-4 event govern over a class-5 ruling would be an authority-changing error, the package's rejection condition. The wording was the defect.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/events/",
+  "status": "active",
+  "summary": "Corrected ADR §12: the governing scoped correction in the slice scenario is authored by the ruling's own human principal (class human_ruling); a verified_observation correction of a ruling is contested, not governing — the class-rank mechanism is right and the draft-1 wording was wrong",
+  "timestamp": "2026-09-15T21:35:41.149Z"
+}

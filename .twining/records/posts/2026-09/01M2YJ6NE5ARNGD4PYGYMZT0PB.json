@@ -1,0 +1,21 @@
+{
+  "agent_id": "specs-builder-c",
+  "detail": "Plan-time assumptions: (1) C07 D/retry and C08 E2-dup/H4-replay are store-level and not seeded as records (duplicate ids are rejected by build-specs); A07/A08/A14 declared not_tested. (2) C07 twin seeded in its own tenant+repo (fixture) rather than the C04/C05 same-tenant rule; exclusion attributable to either identity. (3) C09 revisions c0a1..c0a4 are not 40-hex so scope.revision is omitted and anchors live in structured/summary; value facts use token match. (4) Reason-code mapping: C07 supplied_bytes_match_no_admitted_evidence_in_scope -> not_received_at_this_store | caller_asserted_field_non_authorizing; C08 no_authenticated_human_authorization -> evidence_class_insufficient | unverified_import | principal_lacks_authority. (5) A reference scorer in the scratchpad checks golden PASS-all / adversarial FAIL-all before handing over; the real score.ts is another builder's.",
+  "entry_type": "status",
+  "id": "01M2YJ6NE5ARNGD4PYGYMZT0PB",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T04:46:44.655Z"
+  },
+  "scope": "docs/plans/2026-09-16-dev-scale-trial-design.md",
+  "summary": "SPECS builder C started: C07.dev/heldout, C08.dev/heldout, C09.dev specs+prompts+golden+adversarial in the harness repo, coded against the contracts builder's C01.dev shapes",
+  "tags": [
+    "foundation-trial",
+    "specs",
+    "C07",
+    "C08",
+    "C09"
+  ],
+  "timestamp": "2026-09-20T04:46:44.677Z"
+}

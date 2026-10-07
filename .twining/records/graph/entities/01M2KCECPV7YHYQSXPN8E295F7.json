@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T20:34:27.675Z",
+  "id": "01M2KCECPV7YHYQSXPN8E295F7",
+  "name": "01M2KCECHHYB9Z6EK9S5HYSS7V",
+  "properties": {
+    "scope": "src/contracts/",
+    "summary": "Canonical form for digests is compact JSON with recursively sorted keys, arrays in order, undefined dropped, UTF-8, no Unicode normalization; the digest covers the envelope minus digest and sig and is recomputed from the PARSED object so on-disk pretty-printing never matters; file bytes, canonical bytes and attachment source bytes are three distinct hashes"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-15T20:34:27.675Z"
+}

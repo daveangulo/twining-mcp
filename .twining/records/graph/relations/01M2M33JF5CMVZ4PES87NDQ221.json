@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-16T03:10:30.373Z",
+  "id": "01M2M33JF5CMVZ4PES87NDQ221",
+  "properties": {
+    "origin": "derived"
+  },
+  "source": "01M2M33JE1ZMD4EZS1NR5J55GH",
+  "target": "01M2KKE0TN8WRNEAZDE29B9DMW",
+  "type": "depends_on"
+}

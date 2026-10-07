@@ -1,0 +1,5 @@
+version: 2
+project_name: quarrystone
+storage:
+  backend: sqlite
+  export_records: true

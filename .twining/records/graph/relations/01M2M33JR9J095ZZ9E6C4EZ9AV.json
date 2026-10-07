@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T03:10:30.665Z",
+  "id": "01M2M33JR9J095ZZ9E6C4EZ9AV",
+  "properties": {
+    "decision_summary": "Re-baselined SIX lane-04 budget/density baselines down to measured-table units, each to a MEASURED band rather than a scaled guess, restoring the pre-lane-04 numbers where the measured table brings them back",
+    "origin": "derived"
+  },
+  "source": "01M2M33JA92A0EBE18F06PGR2Q",
+  "target": "01M2M33JQR5VS69AKZ9ZFTHF3T",
+  "type": "decided_by"
+}

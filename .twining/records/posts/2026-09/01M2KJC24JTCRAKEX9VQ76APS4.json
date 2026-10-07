@@ -1,0 +1,21 @@
+{
+  "agent_id": "lane-05-verification",
+  "detail": "Reproduced by scripts/qualify/c28-remote (assert phase, C28 A13) on both replicas. Setup: boris holds read-only in svc/ledger/; his successor record E21-rec is correctly rejected with reason `unauthorized`, but the `superseded` event E21 that cites it settles to state `pending_parents` with reason \"waiting on <two ids>\" and never terminates — on store-A (producer, direct append) and store-B (consumer, over the carrier).\n\nWhy it matters: C28 A13 requires \"the rejection is a receipt state, not an absence\". C18 A9 requires every incomplete effect to be enumerable with a state, an age and a reason, and the enumerated count to equal the count derivable from the delivery view. An event waiting on a parent that can never arrive is a permanent, unbounded entry in any gap report, and the producer never learns its claim was refused.\n\nSmallest reproduction: npx tsx scripts/qualify/c28-remote/c28-scenario.ts seed|publish|poll|assert --work <dir> --carrier fs — A13 reports fail with the final state printed.\n\nSuggested disposition (lane 02 owns src/events/event-store.ts): when settling an event to `pending_parents`, check whether any id in pending_on is already terminal-rejected in the journal; if so settle to `rejected` with a reason naming the rejected parent. The separable half already works and is asserted as A13-auth.",
+  "entry_type": "warning",
+  "id": "01M2KJC24JTCRAKEX9VQ76APS4",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:18:02.718Z"
+  },
+  "scope": "test/acceptance/",
+  "summary": "F-PENDING (lane 02): an event whose causal parent is REJECTED stays pending_parents forever instead of terminating in a refusal with a reason",
+  "tags": [
+    "defect",
+    "lane-02",
+    "c28",
+    "c18",
+    "admission"
+  ],
+  "timestamp": "2026-09-15T22:18:02.770Z"
+}

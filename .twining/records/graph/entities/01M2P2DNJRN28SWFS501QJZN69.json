@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T21:37:01.528Z",
+  "id": "01M2P2DNJRN28SWFS501QJZN69",
+  "name": "01M2P2DNHYXMKK2H492Y46KHZA",
+  "properties": {
+    "scope": "src/adapters/working-set.ts",
+    "summary": "Chose revision tokens `base..head` / `@head` / `since base` with `revision <token>` on the scope line and `over <range>` on the observed line, replacing the `..head` / `base..` forms"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-16T21:37:01.528Z"
+}

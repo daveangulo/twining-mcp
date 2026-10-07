@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T02:15:33.591Z",
+  "id": "01M2KZYYYQFSAKK07X6YMGWB3S",
+  "properties": {
+    "decision_summary": "On the `twining` CLI, `events` routes to lane 03's JSON-envelope v3 verb; on `twining-mcp` it stays lane 02c's database-free archive reader, and the v3 verb names that reader when the store is rolled back",
+    "origin": "derived"
+  },
+  "source": "01M2KK17S80ZRY1TNWNS9Z56Z3",
+  "target": "01M2KZYYYHNFJP6XGGDSE3WF4Q",
+  "type": "decided_by"
+}

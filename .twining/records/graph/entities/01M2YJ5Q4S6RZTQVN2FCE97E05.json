@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-20T04:46:13.657Z",
+  "id": "01M2YJ5Q4S6RZTQVN2FCE97E05",
+  "name": "readStoreJson",
+  "properties": {
+    "scope": "src/migrate/v3-forward.ts"
+  },
+  "type": "function",
+  "updated_at": "2026-09-20T04:46:13.657Z"
+}

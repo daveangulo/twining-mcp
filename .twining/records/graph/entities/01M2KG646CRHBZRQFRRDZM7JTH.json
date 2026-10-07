@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T21:39:51.116Z",
+  "id": "01M2KG646CRHBZRQFRRDZM7JTH",
+  "name": "01M2KG645R1K0SN69ZDM14J5A5",
+  "properties": {
+    "scope": "test/cli/",
+    "summary": "Opened draft PRs early per RB7: #48 feat/cli-2.17 → main (2.17.0 CLI; owner bumps plugin, tags, publishes) and #49 foundation/v3 → main (marked do-not-merge; carries S1–S4 before any merge decision); merged the CLI core into foundation/v3 so v3 host adapters build on it"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-15T21:39:51.116Z"
+}

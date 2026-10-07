@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-16T03:10:30.208Z",
+  "id": "01M2M33JA0TACNTT7MY4TGKC18",
+  "name": "tsconfig.json",
+  "properties": {
+    "scope": "src/retrieval/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-16T03:10:30.655Z"
+}

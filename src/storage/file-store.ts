@@ -57,8 +57,14 @@ function assertWritable(): void {
  * rename over the target. Rename is atomic on POSIX, so readers observe
  * either the old content or the new content — never a torn write, even if
  * the process is killed mid-write.
+ *
+ * `content` may be a Buffer. Callers holding BYTES must pass the Buffer:
+ * `buffer.toString("utf8")` replaces every invalid sequence with U+FFFD, so a
+ * content-addressed blob written that way no longer hashes to its own
+ * filename. The v3 migration stores legacy records verbatim and depends on
+ * that invariant (C21 A-REC-01).
  */
-export function atomicWriteFileSync(filePath: string, content: string): void {
+export function atomicWriteFileSync(filePath: string, content: string | Buffer): void {
   assertWritable();
   const tmpPath = `${filePath}.${process.pid}.${Math.random()
     .toString(36)

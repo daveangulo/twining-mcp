@@ -33,6 +33,14 @@ const GITIGNORE_ENTRIES = [
   // atomic-write siblings (file-store.ts atomicWriteFileSync); a commit racing
   // an export must never stage them (2.16.1)
   "records/**/*.tmp",
+  // v3 derived + carrier state (v3 foundation). `store/` holds the journal
+  // database and the outbox cursor, both DERIVED from events/ and both
+  // machine-local; `exchange/` is the Git carrier's own worktree, which is a
+  // checkout of the exchange ref and must never be committed into the repo it
+  // is exchanging. events/ itself is deliberately NOT ignored: the event files
+  // are the durable record.
+  "store/",
+  "exchange/",
 ];
 
 /**

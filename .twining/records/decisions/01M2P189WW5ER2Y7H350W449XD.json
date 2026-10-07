@@ -1,0 +1,42 @@
+{
+  "affected_files": [
+    "src/adapters/working-set.ts",
+    "test/adapters/working-set-render.test.ts"
+  ],
+  "affected_symbols": [
+    "renderRecord",
+    "renderResult",
+    "renderRange",
+    "buildWorkingSet"
+  ],
+  "agent_id": "wf-working-set-render",
+  "alternatives": [],
+  "assembled_before": true,
+  "assumptions": [
+    "Sorting result keys is preferred to insertion order because determinism across replicas matters more than the author's key order",
+    "The trial seeder writes observations with a strict body and no result.summary, so the key=value fallback is the common case"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [
+    "D51: ordering, class labels, budget accounting and truncation must stay identical; 2.x stores untouched",
+    "worktree isolation: no dist build, single vitest process, tsc last"
+  ],
+  "context": "D51/DP-0: working-set renderRecord now renders observation substance (source_kind [uri] via check_method · at observed_at · volatile · base..head, head = result.summary or sorted scalar key=value ≤240) and 'revision base..head' (8-hex) on every scope line; 10 tests added (red on old renderer); repo_id/repo_ids mismatch assessed, not fixed.",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01M2P189WW5ER2Y7H350W449XD",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T21:16:37.128Z"
+  },
+  "rationale": "the fix is two lines (fall back to repo_ids[0]) but it would change the frozen trial arm's MCP-path repo id from derived to minted and flip the RetrievalAnnex repo_identity_source/format for every identity-init store, a behaviour change outside D51's remit; recorded as a finding with the fix candidate",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/adapters/",
+  "status": "superseded",
+  "summary": "Chose NOT to fix store-identity.ts reading repo_id while ensureStoreDescriptor writes repo_ids",
+  "superseded_by": "01M2YJ56TFYVPXQJ69Y45BAY99",
+  "timestamp": "2026-09-16T21:16:37.148Z"
+}

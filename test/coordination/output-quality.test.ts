@@ -298,9 +298,16 @@ describe("constraints and rejected alternatives in decisions", () => {
 
     const ctx = await kit.assembler.assemble("add notification", "src/");
     const text = ContextAssembler.formatForLLM(ctx);
-    expect(text).toContain("MUST:");
+    // SUPERSEDED BY LANE 04 (gap 6, render side). These briefings render 2.x
+    // records, every one of which is `legacy_unverified` — nothing has verified
+    // who wrote them. Imperatives ("MUST:", "DO NOT:", "Follow this decision
+    // exactly") are now emitted only for a class that can actually qualify an
+    // action; below that rank the same CONTENT is emitted under non-imperative
+    // labels. The content assertions are unchanged and still the point of these
+    // tests; only the label changed.
+    expect(text).toContain("Constraint stated by the author (unverified):");
     expect(text).toContain("EventBus.emit()");
-    expect(text).toContain("DO NOT:");
+    expect(text).toContain("Alternatives the author rejected (unverified):");
     expect(text).toContain("Direct service calls");
     expect(text).toContain("Tight coupling");
   });
@@ -433,9 +440,16 @@ describe("assumptions: prescriptive when assumptions hold", () => {
     const ctx = await kit.assembler.assemble("add notification", "src/");
     expect(ctx.active_decisions[0]!.assumptions_status).toBe("hold");
     const text = ContextAssembler.formatForLLM(ctx);
+    // SUPERSEDED BY LANE 04 (gap 6, render side). These briefings render 2.x
+    // records, every one of which is `legacy_unverified` — nothing has verified
+    // who wrote them. Imperatives ("MUST:", "DO NOT:", "Follow this decision
+    // exactly") are now emitted only for a class that can actually qualify an
+    // action; below that rank the same CONTENT is emitted under non-imperative
+    // labels. The content assertions are unchanged and still the point of these
+    // tests; only the label changed.
     expect(text).toContain("Assumes:");
     expect(text).toContain("loose coupling");
-    expect(text).toContain("Follow this decision exactly");
+    expect(text).toContain("Assumptions stated by the author; nothing has verified them.");
   });
 
   it("decisions without assumptions omit Assumes: line", async () => {
@@ -560,7 +574,14 @@ describe("assumption validation: challenged vs hold", () => {
     expect(ctx.active_decisions[0]!.challenged_assumptions).toBeUndefined();
 
     const text = ContextAssembler.formatForLLM(ctx);
-    expect(text).toContain("Follow this decision exactly");
+    // SUPERSEDED BY LANE 04 (gap 6, render side). These briefings render 2.x
+    // records, every one of which is `legacy_unverified` — nothing has verified
+    // who wrote them. Imperatives ("MUST:", "DO NOT:", "Follow this decision
+    // exactly") are now emitted only for a class that can actually qualify an
+    // action; below that rank the same CONTENT is emitted under non-imperative
+    // labels. The content assertions are unchanged and still the point of these
+    // tests; only the label changed.
+    expect(text).toContain("Assumptions stated by the author; nothing has verified them.");
     expect(text).not.toContain("RECONSIDER");
   });
 

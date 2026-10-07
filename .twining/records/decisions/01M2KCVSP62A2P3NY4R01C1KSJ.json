@@ -1,0 +1,40 @@
+{
+  "affected_files": [
+    "docs/adr/2026-09-foundation-contracts.md",
+    "docs/reports/2026-09-foundation-matrix.md",
+    "docs/plans/2026-09-15-lane-briefs.md",
+    "docs/plans/2026-09-15-foundation-programme-log.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "converting them to xfail-style expectations",
+      "pros": []
+    },
+    {
+      "cons": [],
+      "option": "a silent expectation change",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Committed Stage 0 docs on foundation/v3 (6f18727): ADR §9.1 steelman verdicts + C20 correction, requirements/cases matrix skeleton, lane 02–05 dispatch briefs, programme log; memory updated. Three background lanes in flight (slice, oracle rulings, CLI).",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01M2KCVSP62A2P3NY4R01C1KSJ",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:41:46.829Z"
+  },
+  "rationale": "each lane must flip its gap tests deliberately and keep the positive controls green, which makes closure an observable event in CI rather than a silent expectation change.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/",
+  "status": "active",
+  "summary": "Chose to keep the baseline gap reproductions as characterization tests (green while the gap exists, red when a lane closes it) rather than converting them to xfail-style expectations",
+  "timestamp": "2026-09-15T20:41:46.950Z"
+}

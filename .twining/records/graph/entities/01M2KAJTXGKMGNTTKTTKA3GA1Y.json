@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T20:01:56.144Z",
+  "id": "01M2KAJTXGKMGNTTKTTKA3GA1Y",
+  "name": "01M2KAJTVMH24C8A8YKNPTZZ27",
+  "properties": {
+    "scope": "docs/plans/",
+    "summary": "RB1 ruled: the field-urgent twining CLI ships in PARALLEL with the foundation programme — a CLI lane on branch feat/cli-2.17 from main (2.x line, releases as 2.17.0 under Dave's tag) sharing one transport-agnostic command core with the v3 host adapters; foundation/v3 rebases on it when it lands"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-15T20:01:56.144Z"
+}

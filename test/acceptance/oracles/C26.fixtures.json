@@ -1,0 +1,483 @@
+{
+  "fixture_set": "C26-dev",
+  "case_id": "C26",
+  "derived_from": [
+    "acceptance-cases.md#C26",
+    "requirements.md#R15",
+    "requirements.md#R16"
+  ],
+  "tokenizer": {
+    "id": "tk-bluefin",
+    "version": "3.2",
+    "fallback_allowed": true,
+    "fallback_must_overestimate": true
+  },
+  "framing_constants": {
+    "packet_preamble_tokens": 120,
+    "per_record_header_tokens": 40,
+    "packet_footer_tokens": 20,
+    "omission_manifest_base_tokens": 25,
+    "omission_manifest_per_entry_tokens": 15
+  },
+  "identities": {
+    "tenant": "tn-larkspur",
+    "team": "tm-quarry-core",
+    "human_principal": "u-harriet.voss",
+    "agent_principal": "ap-scribe-01",
+    "hosts": [
+      "host-nimbus-a",
+      "host-nimbus-b"
+    ],
+    "sessions": [
+      {
+        "id": "sess-N7A-1142",
+        "host": "host-nimbus-a",
+        "turn": "turn-0009"
+      },
+      {
+        "id": "sess-N7B-0431",
+        "host": "host-nimbus-b",
+        "turn": "turn-0003"
+      }
+    ],
+    "store": "store-alpha",
+    "repositories": [
+      {
+        "id": "repo-quarry",
+        "revision": "rev-9f3c1a",
+        "in_scope": true
+      },
+      {
+        "id": "repo-thicket",
+        "revision": "rev-11d0e5",
+        "in_scope": false
+      }
+    ],
+    "receiving_model": "model-cirrus-8",
+    "action": {
+      "name": "publish-release-notes",
+      "target": "repo-quarry@rev-9f3c1a"
+    }
+  },
+  "records": [
+    {
+      "id": "rec-ga-0001",
+      "version": 2,
+      "alias": "REQ-A",
+      "role": "required",
+      "evidence_class": "authenticated_human_authorization",
+      "author": "u-harriet.voss",
+      "scope": {
+        "tenant": "tn-larkspur",
+        "repository": "repo-quarry"
+      },
+      "body_tokens": 2400,
+      "source_bytes_sha256": "sha256:seed-reqa-2f9c",
+      "byte_traits": [
+        "utf8_bom",
+        "crlf_line_endings"
+      ],
+      "normalized_text_sha256": "sha256:norm-reqa-8b41"
+    },
+    {
+      "id": "rec-cp-0002",
+      "version": 1,
+      "alias": "REQ-B",
+      "role": "required",
+      "evidence_class": "verified_observation",
+      "scope": {
+        "tenant": "tn-larkspur",
+        "repository": "repo-quarry"
+      },
+      "body_tokens": 1900,
+      "source_bytes_sha256": "sha256:seed-reqb-70ad",
+      "reachable_via": [
+        "prerequisite_path",
+        "related_lessons_path"
+      ]
+    },
+    {
+      "id": "rec-rv-0003",
+      "version": 3,
+      "alias": "REQ-C",
+      "role": "required",
+      "evidence_class": "verified_observation",
+      "scope": {
+        "tenant": "tn-larkspur",
+        "repository": "repo-quarry",
+        "revision": "rev-9f3c1a"
+      },
+      "body_tokens": 900,
+      "source_bytes_sha256": "sha256:seed-reqc-c1e2"
+    },
+    {
+      "id": "rec-ls-0004",
+      "version": 1,
+      "alias": "OPT-D",
+      "role": "optional",
+      "evidence_class": "prior_counterexample",
+      "scope": {
+        "tenant": "tn-larkspur",
+        "repository": "repo-quarry"
+      },
+      "body_tokens": 1500,
+      "source_bytes_sha256": "sha256:seed-optd-4419"
+    },
+    {
+      "id": "rec-tr-0005",
+      "version": 1,
+      "alias": "OPT-E",
+      "role": "optional",
+      "evidence_class": "tool_recipe",
+      "scope": {
+        "tenant": "tn-larkspur",
+        "repository": "repo-quarry"
+      },
+      "body_tokens": 700,
+      "source_bytes_sha256": "sha256:seed-opte-9d06"
+    },
+    {
+      "id": "rec-if-0007",
+      "version": 1,
+      "alias": "INF",
+      "role": "optional",
+      "evidence_class": "model_inference",
+      "scope": {
+        "tenant": "tn-larkspur",
+        "repository": "repo-quarry"
+      },
+      "body_tokens": 300,
+      "text": "The publication authorization for this release line is on file from the July review; the outstanding consumer prerequisite was satisfied at that time.",
+      "self_labels_as_inference": false,
+      "source_bytes_sha256": "sha256:seed-inf-5ac3"
+    },
+    {
+      "id": "rec-xs-0006",
+      "version": 1,
+      "alias": "XS",
+      "role": "decoy_out_of_scope",
+      "evidence_class": "verified_observation",
+      "scope": {
+        "tenant": "tn-larkspur",
+        "repository": "repo-thicket",
+        "revision": "rev-11d0e5"
+      },
+      "body_tokens": 600,
+      "lexical_and_semantic_match": "high",
+      "source_bytes_sha256": "sha256:seed-xs-6e88"
+    }
+  ],
+  "requester_priority": {
+    "required": [
+      "rec-ga-0001",
+      "rec-rv-0003",
+      "rec-cp-0002"
+    ],
+    "optional": [
+      "rec-ls-0004",
+      "rec-tr-0005"
+    ],
+    "inference": [
+      "rec-if-0007"
+    ]
+  },
+  "attempts": [
+    {
+      "id": "A1",
+      "packet_id": "pkt-A1-0001",
+      "budget_tokens": 4000,
+      "host": "host-nimbus-a",
+      "session": "sess-N7A-1142",
+      "turn": "turn-0009",
+      "fault_injected": null,
+      "expected": {
+        "selected": [
+          "rec-ga-0001@2",
+          "rec-rv-0003@3",
+          "rec-if-0007@1"
+        ],
+        "emitted": [
+          "rec-ga-0001@2",
+          "rec-rv-0003@3",
+          "rec-if-0007@1"
+        ],
+        "delivered": [
+          "rec-ga-0001@2",
+          "rec-rv-0003@3",
+          "rec-if-0007@1"
+        ],
+        "omissions": [
+          {
+            "id": "rec-cp-0002@1",
+            "role": "required",
+            "reason": "does_not_fit"
+          },
+          {
+            "id": "rec-ls-0004@1",
+            "role": "optional",
+            "reason": "does_not_fit"
+          },
+          {
+            "id": "rec-tr-0005@1",
+            "role": "optional",
+            "reason": "does_not_fit"
+          }
+        ],
+        "delivered_token_count": 3930,
+        "token_arithmetic": "120 + (2400+40) + (900+40) + (300+40) + (25+15*3) + 20 = 3930",
+        "budget_respected": true,
+        "delivery_state": "acknowledged",
+        "emitted_bytes_sha256": "<computed>",
+        "constraint": "emitted_bytes_sha256 == host_received_sha256",
+        "action_gate": {
+          "decision": "blocked",
+          "missing_required": [
+            "rec-cp-0002@1"
+          ],
+          "basis": []
+        }
+      },
+      "accepted_alternative_shape": {
+        "name": "refused_incomplete",
+        "emitted": [],
+        "delivered_token_count": 0,
+        "action_gate": {
+          "decision": "blocked",
+          "missing_required": [
+            "rec-cp-0002@1"
+          ]
+        }
+      }
+    },
+    {
+      "id": "A2",
+      "packet_id": "pkt-A2-0002",
+      "budget_tokens": 6000,
+      "host": "host-nimbus-a",
+      "session": "sess-N7A-1142",
+      "turn": "turn-0009",
+      "fault_injected": {
+        "kind": "formatter_drop",
+        "detail": "prerequisite render template emits at most 2 required records; drops rec-cp-0002 after selection reported the set complete"
+      },
+      "expected": {
+        "selected": [
+          "rec-ga-0001@2",
+          "rec-rv-0003@3",
+          "rec-cp-0002@1",
+          "rec-if-0007@1"
+        ],
+        "emitted": [
+          "rec-ga-0001@2",
+          "rec-rv-0003@3",
+          "rec-if-0007@1"
+        ],
+        "delivered": [
+          "rec-ga-0001@2",
+          "rec-rv-0003@3",
+          "rec-if-0007@1"
+        ],
+        "omissions": [
+          {
+            "id": "rec-cp-0002@1",
+            "role": "required",
+            "reason": "formatter_drop"
+          },
+          {
+            "id": "rec-ls-0004@1",
+            "role": "optional",
+            "reason": "does_not_fit"
+          },
+          {
+            "id": "rec-tr-0005@1",
+            "role": "optional",
+            "reason": "does_not_fit"
+          }
+        ],
+        "delivered_token_count": 3930,
+        "selection_claimed_complete": true,
+        "receipt_must_contradict_selection_claim": true,
+        "delivery_state": "acknowledged",
+        "action_gate": {
+          "decision": "blocked",
+          "missing_required": [
+            "rec-cp-0002@1"
+          ],
+          "basis": []
+        }
+      }
+    },
+    {
+      "id": "A3",
+      "packet_id": "pkt-A3-0003",
+      "budget_tokens": 6000,
+      "host": "host-nimbus-a",
+      "session": "sess-N7A-1142",
+      "turn": "turn-0009",
+      "fault_injected": null,
+      "role": "positive_control",
+      "expected": {
+        "selected": [
+          "rec-ga-0001@2",
+          "rec-rv-0003@3",
+          "rec-cp-0002@1",
+          "rec-if-0007@1"
+        ],
+        "emitted": [
+          "rec-ga-0001@2",
+          "rec-rv-0003@3",
+          "rec-cp-0002@1",
+          "rec-if-0007@1"
+        ],
+        "delivered": [
+          "rec-ga-0001@2",
+          "rec-rv-0003@3",
+          "rec-cp-0002@1",
+          "rec-if-0007@1"
+        ],
+        "omissions": [
+          {
+            "id": "rec-ls-0004@1",
+            "role": "optional",
+            "reason": "does_not_fit"
+          },
+          {
+            "id": "rec-tr-0005@1",
+            "role": "optional",
+            "reason": "does_not_fit"
+          }
+        ],
+        "delivered_token_count": 5855,
+        "token_arithmetic": "120 + 2440 + 940 + 1940 + 340 + (25+15*2) + 20 = 5855",
+        "rec_cp_0002_emitted_once": true,
+        "delivery_state": "acknowledged",
+        "action_gate": {
+          "decision": "qualified",
+          "basis": [
+            "rec-ga-0001@2",
+            "rec-cp-0002@1",
+            "rec-rv-0003@3"
+          ],
+          "basis_excludes": [
+            "rec-if-0007@1"
+          ],
+          "missing_required": []
+        }
+      }
+    },
+    {
+      "id": "A4",
+      "packet_id": "pkt-A3-0003",
+      "budget_tokens": 6000,
+      "host": "host-nimbus-b",
+      "session": "sess-N7B-0431",
+      "turn": "turn-0003",
+      "fault_injected": {
+        "kind": "ack_lost_after_remote_success",
+        "then": "retry_same_packet_id"
+      },
+      "expected": {
+        "after_first_emission": {
+          "delivery_state": "unknown",
+          "counted_as_delivered": false,
+          "action_gate": {
+            "decision": "blocked",
+            "reason": "delivery_unknown"
+          }
+        },
+        "after_retry": {
+          "delivery_state": "acknowledged",
+          "delivery_records": 1,
+          "emission_attempts": 2,
+          "delivered": [
+            "rec-ga-0001@2",
+            "rec-rv-0003@3",
+            "rec-cp-0002@1",
+            "rec-if-0007@1"
+          ],
+          "delivered_token_count": 5855,
+          "duplicate_semantic_delivery": false
+        }
+      }
+    }
+  ],
+  "expected_end_state": {
+    "S1_records": "all 7 seed records unchanged, original bytes and hashes preserved",
+    "S2_current_applicable_view": {
+      "repo-quarry@rev-9f3c1a": [
+        "rec-ga-0001@2",
+        "rec-cp-0002@1",
+        "rec-rv-0003@3",
+        "rec-ls-0004@1",
+        "rec-tr-0005@1",
+        "rec-if-0007@1"
+      ],
+      "unchanged_by_budget_outcomes": true
+    },
+    "S3_receipts": [
+      "pkt-A1-0001: acknowledged, 3930",
+      "pkt-A2-0002: acknowledged, 3930",
+      "pkt-A3-0003@host-nimbus-a: acknowledged, 5855",
+      "pkt-A3-0003@host-nimbus-b: acknowledged after retry, 5855, one delivery record"
+    ],
+    "S4_historical_view": "A1 and A2 receipts, omission manifests and blocked decisions byte-identical to their values at first observation",
+    "S5_action_gate_log": [
+      {
+        "attempt": "A1",
+        "decision": "blocked"
+      },
+      {
+        "attempt": "A2",
+        "decision": "blocked"
+      },
+      {
+        "attempt": "A3",
+        "decision": "qualified"
+      },
+      {
+        "attempt": "A4-pre-ack",
+        "decision": "blocked"
+      }
+    ],
+    "scope_denials": [
+      {
+        "record": "rec-xs-0006@1",
+        "attempts": [
+          "A1",
+          "A2",
+          "A3",
+          "A4"
+        ],
+        "selected": false,
+        "emitted": false,
+        "budget_consumed": 0
+      }
+    ]
+  },
+  "assertions": [
+    "C26-A01",
+    "C26-A02",
+    "C26-A03",
+    "C26-A04",
+    "C26-A05",
+    "C26-A06",
+    "C26-A07",
+    "C26-A08",
+    "C26-A09",
+    "C26-A10",
+    "C26-A11",
+    "C26-A12",
+    "C26-A13",
+    "C26-A14",
+    "C26-A15",
+    "C26-A16",
+    "C26-A17",
+    "C26-A18"
+  ],
+  "negative_assertions": [
+    "C26-A07",
+    "C26-A10",
+    "C26-A05"
+  ],
+  "positive_control": "A3"
+}

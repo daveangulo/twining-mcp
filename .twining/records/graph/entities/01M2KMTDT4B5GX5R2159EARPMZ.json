@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T23:00:50.628Z",
+  "id": "01M2KMTDT4B5GX5R2159EARPMZ",
+  "name": "01M2KMTDSKBZSCCP3KRGF6G7FH",
+  "properties": {
+    "scope": "src/adapters/",
+    "summary": "Accepted deriving the working-set session cursor solely from the versions of records actually emitted (no store.events() scan), so the cursor cannot advance while any selected record remains budget-omitted"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-15T23:00:50.628Z"
+}

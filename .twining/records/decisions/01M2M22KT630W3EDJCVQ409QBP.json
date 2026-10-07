@@ -1,0 +1,26 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Merge integrator delivered: foundation/v3 = 92093f8c (all five lanes merged, contracts draft.3, correctionFor conflicts, gitignore, offline switch, matrix rebuilt), 179 files / 2674 passed / 0 failed, pushed to origin (PR #49). Tokenizer calibration table produced; wiring dispatched.",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01M2M22KT630W3EDJCVQ409QBP",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "92093f8c902437e8f85cc2fb4f24064ee965e297",
+    "recorded_at": "2026-09-16T02:52:30.385Z"
+  },
+  "rationale": "Accepted the merge integrator's resolutions: both lanes' commands and lane 03's mirrorAll wrapper kept (41 commands / 25 full-surface / 16 default re-pinned); the `events` CLI word goes to lane 03's live-log reader on `twining` while `twining-mcp events` keeps lane 02c's database-free rollback reader and reports STORE_ROLLED_BACK naming the other; admission honours a prior admitted verdict in the replica's own admission log so a later policy cannot re-answer the bootstrap question (monotonic in time); adapters cite the current policy event (EventStore.currentPolicyEvent) so mirrored writes are never quarantined no_policy_yet on a store that ran the ceremony.",
+  "rationale_source": "derived",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "Accepted the merge integrator's resolutions: both lanes' commands and lane 03's mirrorAll wrapper kept (41 commands / 25 full-surface / 16 default re-pinned); the `events` CLI word goes to lane 03's live-log reader on `twining` while `twining-mcp events` keeps lane 02c's database-free rollback reader and reports STORE_ROLLED_BACK naming the other; admission honours a prior admitted verdict in the replica's own admission log so a later policy cannot re-answer the bootstrap question (monotonic in time); adapters cite the current policy event (EventStore.currentPolicyEvent) so mirrored writes are never quarantined no_policy_yet on a store that ran the ceremony.",
+  "timestamp": "2026-09-16T02:52:30.406Z"
+}

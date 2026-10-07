@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T21:16:36.916Z",
+  "id": "01M2P189NMS3NVJZRZK7TMTYTJ",
+  "properties": {
+    "decision_summary": "Chose to render an observation's result as sorted top-level scalar key=value pairs (bounded to 240 chars, whitespace collapsed, nested values skipped) when result.summary is absent, over JSON.stringify or insertion-order rendering",
+    "origin": "derived"
+  },
+  "source": "01M2P189NMS3NVJZRZK7TMTYTH",
+  "target": "01M2P189NARDWTWRPER7KFPAGT",
+  "type": "decided_by"
+}

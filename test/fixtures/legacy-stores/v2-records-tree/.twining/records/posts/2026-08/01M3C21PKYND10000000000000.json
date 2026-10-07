@@ -1,0 +1,10 @@
+{
+  "agent_id": "agent-scribe",
+  "detail": "",
+  "entry_type": "decision",
+  "id": "01M3C21PKYND10000000000000",
+  "scope": "src/catalog/",
+  "summary": "posted as a decision-kind entry by a 1.x client",
+  "tags": [],
+  "timestamp": "2026-08-08T09:00:00.000Z"
+}

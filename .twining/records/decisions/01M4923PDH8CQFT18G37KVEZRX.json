@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "the session model",
+      "pros": []
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "2026-10-06: merged fix/repo-ids as 0f9fd985 and rebuilt the trial worktree there; confirmed from source that `twining sync --remote` never reaches the Git carrier; recorded the operator-surface defect list (DN46) as go/no-go failures to report, not fix; launched operator-docs-finalize to turn the audit notebooks into self-contained guides; paused the trial build with the harness WIP committed on branch foundation-trial; reordered to docs then final report.",
+  "depends_on": [],
+  "domain": "data-model",
+  "id": "01M4923PDH8CQFT18G37KVEZRX",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "0f9fd985df6890a34240cf644d16081a0a2cf680",
+    "recorded_at": "2026-10-06T16:52:50.713Z"
+  },
+  "rationale": "the Fable usage limit killed agents mid-run twice (2026-09-16, 2026-09-20)",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/",
+  "status": "active",
+  "summary": "Chose Opus for workflow agents over the session model",
+  "timestamp": "2026-10-06T16:52:50.737Z"
+}

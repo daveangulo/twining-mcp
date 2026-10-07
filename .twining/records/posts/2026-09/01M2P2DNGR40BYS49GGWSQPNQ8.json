@@ -1,0 +1,18 @@
+{
+  "agent_id": "wf_e59d869d-75f-4-review-fix",
+  "detail": "Full summary: Working-set revision rendering changed to self-labelling tokens: base..head for a range, @head for a single commit, since base for an open base; scope line says 'revision <token>', observed line says 'over <range>'.\nDecisions: [object Object]",
+  "entry_type": "status",
+  "id": "01M2P2DNGR40BYS49GGWSQPNQ8",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T21:37:01.444Z"
+  },
+  "scope": "src/adapters/working-set.ts",
+  "summary": "Working-set revision rendering changed to self-labelling tokens: base..head for a range, @head for a single commit, since base for an open base; scope line says 'revision <token>', observed line sa…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-16T21:37:01.465Z"
+}

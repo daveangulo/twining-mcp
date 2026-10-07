@@ -1,0 +1,32 @@
+{
+  "affected_files": [
+    "src/migrate/v3-forward.ts",
+    "src/migrate/v3-rollback.ts",
+    "src/migrate/legacy-scan.ts",
+    "src/events/projection.ts",
+    "test/fixtures/legacy-stores/generate.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Lane 02c (migration) delivered on lane/02c-migration: migrate --to 3 / rollback --to 2 / forward recovery per ADR §10 with legacy fixtures, SIGKILL interrupt tests, C21 named tests; part-level projections close C16 L1–L4; two contract gaps and a rebuild/capability defect reported.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01M2KKN9V8QMFAYAX13QF69W2S",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:40:34.127Z"
+  },
+  "rationale": "Both gaps were found by migrating real fixture shapes; disguising a status or coercing a type would violate the lossless-migration requirement (R19) that the package makes non-negotiable.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/migrate/",
+  "status": "active",
+  "summary": "Contracts draft.3 (at merge): `superseded.by` becomes optional (a legacy superseded record with no pointer in either direction is carried as superseded, not disguised as overridden), and post `entry_type` re-admits the 1.x value \"decision\" for legacy records only (migration ingress; any other ingress still rejects it)",
+  "timestamp": "2026-09-15T22:40:34.152Z"
+}

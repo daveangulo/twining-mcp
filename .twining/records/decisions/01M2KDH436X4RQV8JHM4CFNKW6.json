@@ -1,0 +1,34 @@
+{
+  "affected_files": [
+    "src/core/command-def.ts",
+    "src/core/commands.ts",
+    "src/core/context.ts",
+    "src/cli/twining.ts",
+    "src/server.ts",
+    "src/tools/record-tools.ts",
+    "src/embeddings/embedder.ts",
+    "package.json",
+    "docs/CLI.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "CLI lane delivered on feat/cli-2.17 (worktree): shared command core (src/core/*, 39 commands moved verbatim, MCP adapter loop), createTwiningContext extracted from createServer, `twining` bin with JSON envelope/exit codes/capabilities/STORE_UNWRITABLE, docs/CLI.md, CHANGELOG unreleased 2.17.0; 123 git-dependent tests pass with working git; tsc clean.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M2KDH436X4RQV8JHM4CFNKW6",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:53:25.612Z"
+  },
+  "rationale": "Each keeps MCP behavior byte-identical (verified by the lane against the shipped 2.16.1 bundle: all 39 descriptions and schema keys match) while giving the field a usable offline CLI now; the deferred items are ergonomics, not correctness, and belong to the v3 runtime lane that will rework hooks and packaging anyway.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/cli/",
+  "status": "active",
+  "summary": "CLI lane rulings on its five open questions: (1) the plugin keeps shipping only the MCP server bundle for now — the CLI reaches Codex via `npm i -D twining-mcp` + `npx twining` (a plugin cannot put a command on PATH anyway); a plugin-carried CLI bundle is a lane-03 follow-up; (2) the once-per-process record quality nudge firing on every CLI call is accepted and documented, persisted-sentinel fix deferred to lane 03; (3) the CLI dispatches full-surface commands regardless of tools.full_surface, reporting `surface` in capabilities — the gate exists to shorten an LLM's tool list, a shell has none; (4) server_version is the real package version, no literal dev string; (5) --version/--help print plain text, machine-readable version lives in `twining capabilities`",
+  "timestamp": "2026-09-15T20:53:25.734Z"
+}

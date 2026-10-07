@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-20T04:45:17.145Z",
+  "id": "01M2YJ3ZYSR2RFD4WW854GP1HV",
+  "name": "01M2YJ3ZXQRCBFSFYN9BEV8DY3",
+  "properties": {
+    "scope": "docs/plans/2026-09-16-dev-scale-trial-design.md",
+    "summary": "Chose to delete .twining (and .trial-identity for v3) in doTeardown"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-20T04:45:17.145Z"
+}

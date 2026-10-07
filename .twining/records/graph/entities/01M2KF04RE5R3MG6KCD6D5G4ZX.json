@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T21:19:06.510Z",
+  "id": "01M2KF04RE5R3MG6KCD6D5G4ZX",
+  "name": "01M2KF04PDF60DR8VF5K80GS5B",
+  "properties": {
+    "scope": "docs/plans/",
+    "summary": "Chose to prune the eight Stage 0 reproduction worktrees immediately after confirming their gap tests were already committed on foundation/v3"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-15T21:19:06.510Z"
+}

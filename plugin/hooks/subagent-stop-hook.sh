@@ -75,6 +75,16 @@ if [[ -z "$TWINING_DIR" ]]; then
   exit 0
 fi
 
+# v3 handoff: when the store is on the v3 format the capture hook
+# (v3-capture-hook.sh) owns this event, and emitting the 2.x text as well would
+# put BOTH payloads in front of the model — including the prose reminders that
+# a v3 payload must not contain (ADR lane 03; oracle C15 A2-NO-PROSE). On a 2.x
+# store nothing below changes.
+if [[ -f "$TWINING_DIR/store.json" ]] &&
+   grep -q '"format"[[:space:]]*:[[:space:]]*3' "$TWINING_DIR/store.json" 2>/dev/null; then
+  exit 0
+fi
+
 # Queue a pending status post for the MCP server's PendingProcessor.
 # Never write blackboard.jsonl directly — the server writes it under a
 # lock this hook cannot take; pending-posts.jsonl is the unlocked drop

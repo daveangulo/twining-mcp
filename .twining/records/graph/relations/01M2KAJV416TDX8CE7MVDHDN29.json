@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T20:01:56.353Z",
+  "id": "01M2KAJV416TDX8CE7MVDHDN29",
+  "properties": {
+    "decision_summary": "RB3/RB4/RB5 ruled: C28 multi-computer qualification runs on Dave's other computer via a scripted bundle I prepare; Codex CLI 0.154.0 is installed locally (Homebrew, 2026-09-15) so lane 03 tests the real Codex host with synthetic projects; the matched trial runs at development scale here under the Claude Max login (flat cost) and the full-scale 360-trial run is deferred to Dave's machine once the solution has earned it — reported as not-yet-run until then",
+    "origin": "derived"
+  },
+  "source": "01M2K97AA49AT6SZN9BQJTA75P",
+  "target": "01M2KAJV40KRCD7AYSHVQMZW6F",
+  "type": "decided_by"
+}

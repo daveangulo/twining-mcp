@@ -1,0 +1,38 @@
+{
+  "affected_files": [
+    "src/contracts/version.ts",
+    "src/contracts/scope.ts",
+    "src/contracts/lifecycle.ts",
+    "src/contracts/delivery.ts",
+    "src/contracts/store-api.ts",
+    "src/contracts/records.ts",
+    "src/contracts/validate.ts",
+    "src/events/projection.ts",
+    "src/core/context.ts",
+    "src/storage/init.ts",
+    "scripts/calibrate-tokenizer.mjs"
+  ],
+  "affected_symbols": [],
+  "agent_id": "merge-integrator",
+  "alternatives": [],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Applied contracts 3.0.0-draft.3 and the merge-time fixes: scopeAuthorizes adopted, optional superseded.by, legacy post entry_type, new delivery reasons, exchangeStatus on the store API, RetrievalAnnex moved, correctionFor conflicts, gitignore, offline switch, calibration script, doc counts.",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01M2M1J0HZ4B97Y1XMEJH8Q60T",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9241cc079a04bb9d9221dc54e15ffd7b945409b6",
+    "recorded_at": "2026-09-16T02:43:26.380Z"
+  },
+  "rationale": "Left plugin/BEHAVIORS.md untouched. Its header says 35 tools while it documents 37, and four registry tools are undocumented (twining_amend, twining_triage predate this work; twining_exchange_status and twining_migrate_status are new). Editing plugin/ forces a plugin version bump and bundle rebuild under the CI plugin-version-check, which is a release action this merge should not take. Recorded as an open follow-up instead.",
+  "rationale_source": "derived",
+  "reversible": true,
+  "scope": "src/contracts/",
+  "status": "active",
+  "summary": "Left plugin/BEHAVIORS.md untouched. Its header says 35 tools while it documents 37, and four registry tools are undocumented (twining_amend, twining_triage predate this work; twining_exchange_status and twining_migrate_status are new). Editing plugin/ forces a plugin version bump and bundle rebuild under the CI plugin-version-check, which is a release action this merge should not take. Recorded as an open follow-up instead.",
+  "timestamp": "2026-09-16T02:43:26.400Z"
+}

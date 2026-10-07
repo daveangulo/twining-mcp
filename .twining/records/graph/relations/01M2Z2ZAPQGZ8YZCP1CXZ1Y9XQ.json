@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-20T09:39:50.103Z",
+  "id": "01M2Z2ZAPQGZ8YZCP1CXZ1Y9XQ",
+  "properties": {
+    "decision_summary": "run-batch.sh treats a missing spec file as MISSING (logged, counted, non-zero exit) rather than an ERROR, so DP-7 backoff is reserved for run-time failures; seeded shuffle = sort by sha256(seed:tuple) so the order is reproducible per seed (IC-ORDER).",
+    "origin": "derived"
+  },
+  "source": "01M2Z2ZAF779EVKER22NY3VZGV",
+  "target": "01M2Z2ZAPMF01VXPZPKABWN5GS",
+  "type": "decided_by"
+}

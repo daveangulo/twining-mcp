@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Chose deterministic oracle-derived scoring (required facts / forbidden claims / forbidden actions with instrument-can-fail controls) over the harness LLM judge for the dev-scale trial\" relates to:\n- 01KWMNHR281RW7F8WB9SVQ55DV: \"Chose lazy TTL-gated git-HEAD probe on tool dispatch over fs.watch on .twining/records/ for live re-ingest\"\n- 01KZZ18D93ADAR2XPTGJ23S4A9: \"Chose to structure the memo as an ACTION cover letter (retirements, behavior changes, request-back) referencing the disposition doc rather than restating it\"",
+  "entry_type": "finding",
+  "id": "01M2YH9XEF8ASKZRA2H1J76Y38",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-20T04:31:02.587Z"
+  },
+  "scope": "docs/",
+  "summary": "Related decisions in scope: 2 existing decision(s) overlap",
+  "tags": [
+    "api-design"
+  ],
+  "timestamp": "2026-09-20T04:31:02.607Z"
+}

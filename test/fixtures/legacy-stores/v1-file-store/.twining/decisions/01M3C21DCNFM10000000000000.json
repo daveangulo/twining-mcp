@@ -1,0 +1,13 @@
+<<<<<<< HEAD
+{
+  "id": "01M3C21DCNFM10000000000000",
+  "summary": "ours",
+  "status": "active"
+}
+=======
+{
+  "id": "01M3C21DCNFM10000000000000",
+  "summary": "theirs",
+  "status": "superseded"
+}
+>>>>>>> feature/catalog

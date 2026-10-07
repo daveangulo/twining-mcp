@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T02:15:33.464Z",
+  "id": "01M2KZYYTRJEBEZ4E53RVQ0YE3",
+  "properties": {
+    "decision_summary": "Made the signing ceremony cite the membership it establishes as a causal parent of the ruling it mints",
+    "origin": "derived"
+  },
+  "source": "01M2KK17S80ZRY1TNWNS9Z56Z3",
+  "target": "01M2KZYYTN7RSP9W19WGSVR06V",
+  "type": "decided_by"
+}

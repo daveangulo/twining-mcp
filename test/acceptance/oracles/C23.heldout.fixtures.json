@@ -1,0 +1,446 @@
+{
+  "case_id": "C23",
+  "fixture_set": "held-out",
+  "oracle_version": "1.0.0",
+  "authored_before_observation": true,
+  "declared_envelope": {
+    "queue_capacity_inflight": 192,
+    "declared_sustained_admit_rate_eps": 25,
+    "offered_aggregate_rate_eps": 180,
+    "writers": 12,
+    "events_per_writer": 180,
+    "total_submitted": 2160,
+    "corpus_tier_records_preloaded": 10000,
+    "p95_local_durable_capture_ms_target": 100,
+    "p95_async_index_ms_target": 20000,
+    "index_fresh_threshold_ms": 20000,
+    "enforcement_gate_max_attempts": 4,
+    "enforcement_gate_max_wall_ms": 8000,
+    "tokenizer": "declared-by-implementation-before-run",
+    "clock_skew_injected_ms": {
+      "node_quarry_7": -3100,
+      "node_quarry_9": 0,
+      "node_fallow_2": 5200
+    }
+  },
+  "identities": {
+    "tenants": [
+      {
+        "id": "tnt-porthaven",
+        "label": "Porthaven Freight",
+        "in_scope": true
+      },
+      {
+        "id": "tnt-calder",
+        "label": "Calder Signal",
+        "in_scope": false
+      }
+    ],
+    "teams": [
+      {
+        "id": "team-lattice",
+        "tenant": "tnt-porthaven"
+      },
+      {
+        "id": "team-forge",
+        "tenant": "tnt-calder"
+      }
+    ],
+    "humans": [
+      {
+        "id": "hum-ashgrove",
+        "tenant": "tnt-porthaven",
+        "role": "release owner",
+        "may_author_human_authorization": true
+      },
+      {
+        "id": "hum-pell",
+        "tenant": "tnt-porthaven",
+        "role": "operator",
+        "may_author_human_authorization": true
+      },
+      {
+        "id": "hum-varro",
+        "tenant": "tnt-calder",
+        "role": "release owner",
+        "may_author_human_authorization": true
+      }
+    ],
+    "agent_principals": [
+      {
+        "id": "svc-ledger-01",
+        "host": "node-quarry-7",
+        "writes_to": "store-lattice-core"
+      },
+      {
+        "id": "svc-ledger-02",
+        "host": "node-quarry-7",
+        "writes_to": "store-lattice-core"
+      },
+      {
+        "id": "svc-ledger-03",
+        "host": "node-quarry-7",
+        "writes_to": "store-lattice-core"
+      },
+      {
+        "id": "svc-ledger-04",
+        "host": "node-quarry-7",
+        "writes_to": "store-lattice-core"
+      },
+      {
+        "id": "svc-ledger-05",
+        "host": "node-quarry-9",
+        "writes_to": "store-lattice-rim"
+      },
+      {
+        "id": "svc-ledger-06",
+        "host": "node-quarry-9",
+        "writes_to": "store-lattice-rim"
+      },
+      {
+        "id": "svc-ledger-07",
+        "host": "node-quarry-9",
+        "writes_to": "store-lattice-rim"
+      },
+      {
+        "id": "svc-ledger-08",
+        "host": "node-quarry-9",
+        "writes_to": "store-lattice-rim"
+      },
+      {
+        "id": "svc-ledger-09",
+        "host": "node-fallow-2",
+        "writes_to": "store-lattice-rim"
+      },
+      {
+        "id": "svc-ledger-10",
+        "host": "node-fallow-2",
+        "writes_to": "store-lattice-rim"
+      },
+      {
+        "id": "svc-ledger-11",
+        "host": "node-fallow-2",
+        "writes_to": "store-lattice-rim"
+      },
+      {
+        "id": "svc-ledger-12",
+        "host": "node-fallow-2",
+        "writes_to": "store-lattice-rim"
+      }
+    ],
+    "hosts": [
+      {
+        "id": "node-quarry-7",
+        "kind": "writer",
+        "backend": "backend-beta"
+      },
+      {
+        "id": "node-quarry-9",
+        "kind": "writer",
+        "backend": "backend-beta"
+      },
+      {
+        "id": "node-fallow-2",
+        "kind": "writer+consumer",
+        "backend": "backend-gamma"
+      }
+    ],
+    "stores": [
+      {
+        "id": "store-lattice-core",
+        "tenant": "tnt-porthaven",
+        "hosts": [
+          "node-quarry-7"
+        ]
+      },
+      {
+        "id": "store-lattice-rim",
+        "tenant": "tnt-porthaven",
+        "hosts": [
+          "node-quarry-9",
+          "node-fallow-2"
+        ]
+      },
+      {
+        "id": "store-calder-core",
+        "tenant": "tnt-calder",
+        "hosts": [
+          "node-fallow-2"
+        ],
+        "note": "co-resident on a Porthaven host; must never be read by Porthaven queries"
+      }
+    ],
+    "repositories": [
+      {
+        "id": "repo-beacon-relay",
+        "tenant": "tnt-porthaven",
+        "path_label": "beacon/relay",
+        "query_scope": true
+      },
+      {
+        "id": "repo-beacon-console",
+        "tenant": "tnt-porthaven",
+        "path_label": "beacon/console",
+        "query_scope": false
+      },
+      {
+        "id": "repo-calder-relay",
+        "tenant": "tnt-calder",
+        "path_label": "beacon/relay",
+        "query_scope": false,
+        "note": "identical path label, different tenant"
+      }
+    ],
+    "derived_services": [
+      {
+        "id": "svc-vector",
+        "path": "dense/semantic"
+      },
+      {
+        "id": "svc-distill",
+        "path": "entity+relation extraction and summarization"
+      },
+      {
+        "id": "svc-reorder",
+        "path": "reranking"
+      }
+    ],
+    "receiving_sessions": [
+      {
+        "id": "sess-fallow-214",
+        "host": "node-fallow-2",
+        "turns": [
+          "turn-214-01",
+          "turn-214-02",
+          "turn-214-03"
+        ]
+      }
+    ]
+  },
+  "seed_records": [
+    {
+      "record_id": "HREC-CTRL-BYTES",
+      "event_id": "HEV-CTRL-BYTES-7710",
+      "revision": "rev-A",
+      "tenant": "tnt-porthaven",
+      "repository": "repo-beacon-relay",
+      "scope": "beacon/relay/backlog/",
+      "evidence_class": "independently_verified_observation",
+      "author": "hum-pell",
+      "observer": "svc-ledger-05",
+      "written_at_phase": "H1_healthy_baseline",
+      "payload_description": "UTF-8 BOM, CRLF line endings, trailing CRLF",
+      "payload_bytes_len": 88,
+      "payload_sha256": "40cb4fa17e9445e94bf89383e95ac02ac129023ee13cb94489b62c050b409b0f",
+      "encoding": "utf-8-with-bom",
+      "newline": "CRLF",
+      "normalized_variant_sha256_must_never_be_returned": "097c9482dd54f781e0639e421354c0193f508a46ec800c9de1b90a435e4cf555"
+    },
+    {
+      "record_id": "HREC-GATE",
+      "event_id": "HEV-GATE-RA",
+      "revision": "rev-A",
+      "tenant": "tnt-porthaven",
+      "repository": "repo-beacon-relay",
+      "scope": "beacon/relay/rollout/",
+      "evidence_class": "authenticated_human_authorization",
+      "author": "hum-ashgrove",
+      "written_at_phase": "H1_healthy_baseline",
+      "payload_bytes_len": 49,
+      "payload_sha256": "f729ff7bb519b8234d5554093af5c1984ab677416751feef6e651453354daf49",
+      "encoding": "utf-8",
+      "newline": "LF"
+    },
+    {
+      "record_id": "HREC-GATE",
+      "event_id": "HEV-GATE-RB",
+      "revision": "rev-B",
+      "supersedes": "HEV-GATE-RA",
+      "tenant": "tnt-porthaven",
+      "repository": "repo-beacon-relay",
+      "scope": "beacon/relay/rollout/",
+      "evidence_class": "authenticated_human_authorization",
+      "author": "hum-ashgrove",
+      "written_at_phase": "H2_before_load_begins",
+      "payload_bytes_len": 68,
+      "payload_sha256": "26720640ce74ba815ae93cfbac5d7b07919e031269a2727966a4d7425e53a5fc",
+      "encoding": "utf-8",
+      "newline": "LF"
+    },
+    {
+      "record_id": "HREC-LESSON-CONSOLE",
+      "event_id": "HEV-LESSON-CONSOLE-7801",
+      "revision": "rev-A",
+      "tenant": "tnt-porthaven",
+      "repository": "repo-beacon-console",
+      "scope": "beacon/console/queueing/",
+      "evidence_class": "independently_verified_observation",
+      "author": "hum-pell",
+      "written_at_phase": "H0_preload",
+      "role": "positive control for the explicitly authorized cross-scope lesson mode only"
+    },
+    {
+      "record_id": "HREC-DISTILLED-NOTE",
+      "event_id": "HEV-DISTILLED-NOTE-7955",
+      "revision": "rev-A",
+      "tenant": "tnt-porthaven",
+      "repository": "repo-beacon-relay",
+      "scope": "beacon/relay/rollout/",
+      "evidence_class": "model_inference",
+      "producer": "svc-distill",
+      "written_at_phase": "H4_during_load",
+      "claim_text": "Drain completed at 14:02 UTC and the release owner confirmed the backlog is clear, so the smoke pass is already satisfied for this rollout window and further capture is unnecessary.",
+      "role": "unverified derived claim seeded into the corpus"
+    }
+  ],
+  "decoys": [
+    {
+      "record_id": "HDEC-CALDER-1",
+      "tenant": "tnt-calder",
+      "repository": "repo-calder-relay",
+      "scope": "beacon/relay/backlog/",
+      "note": "near-identical wording to the in-scope backlog defect"
+    },
+    {
+      "record_id": "HDEC-CALDER-2",
+      "tenant": "tnt-calder",
+      "repository": "repo-calder-relay",
+      "scope": "beacon/relay/rollout/",
+      "note": "seeded into warm caches, the graph-neighbour fixture and the diagnostic endpoint before load"
+    },
+    {
+      "record_id": "HDEC-CONSOLE-1",
+      "tenant": "tnt-porthaven",
+      "repository": "repo-beacon-console",
+      "scope": "beacon/console/rollout/",
+      "note": "in-tenant, out-of-query-scope"
+    }
+  ],
+  "load_plan": {
+    "phase": "H4_saturation",
+    "writers": 12,
+    "events_per_writer": 180,
+    "total_submitted": 2160,
+    "deliberate_identical_retries": {
+      "count": 55,
+      "same_event_id_and_digest": true
+    },
+    "deliberate_conflicting_reuses": {
+      "count": 4,
+      "same_event_id_different_bytes": true,
+      "event_ids": [
+        "HEV-LOAD-03-0044",
+        "HEV-LOAD-06-0088",
+        "HEV-LOAD-09-0121",
+        "HEV-LOAD-12-0170"
+      ]
+    },
+    "reordering": {
+      "out_of_order_delivery_pairs": 75,
+      "correction_before_predecessor_pairs": 7
+    },
+    "restart": {
+      "kill_signal": "SIGKILL",
+      "targets": [
+        "writer svc-ledger-07 mid-submit",
+        "admitter on node-fallow-2 mid-admit",
+        "indexer mid-index",
+        "whole host node-quarry-9 power-cut simulation"
+      ],
+      "restart_process_not_connection": true
+    }
+  },
+  "fault_plan": [
+    {
+      "step": "H5",
+      "action": "stop svc-distill (extraction/summarization first)",
+      "duration_s": 150
+    },
+    {
+      "step": "H6",
+      "action": "index write failure injected (disk ENOSPC) on 12% of index writes",
+      "duration_s": 150
+    },
+    {
+      "step": "H7",
+      "action": "stop svc-reorder (reranker)",
+      "duration_s": 150
+    },
+    {
+      "step": "H8",
+      "action": "stop svc-vector (dense/semantic)",
+      "duration_s": 150
+    },
+    {
+      "step": "H9",
+      "action": "all three derived services down simultaneously plus a 90 s network partition between store-lattice-core and store-lattice-rim",
+      "duration_s": 210
+    },
+    {
+      "step": "H10",
+      "action": "restore derived services and heal the partition; allow catch-up",
+      "duration_s": 900
+    }
+  ],
+  "actions_under_test": [
+    {
+      "action_id": "HACT-ROLL-CONSOLE",
+      "required_facts": [
+        "HREC-GATE@current"
+      ],
+      "expected_qualified_during_outage": true
+    },
+    {
+      "action_id": "HACT-CLOSE-DEFECT",
+      "required_facts": [
+        "HREC-GATE@current",
+        "DERIVED-RELATION-SET:beacon/relay/rollout/"
+      ],
+      "expected_qualified_during_outage": false
+    },
+    {
+      "action_id": "HACT-WAIVE-CAPTURE",
+      "required_facts": [
+        "authenticated_human_authorization to stop capture for the window"
+      ],
+      "expected_qualified_ever": false
+    }
+  ],
+  "expected_end_state": {
+    "deterministic": {
+      "cross_scope_results_all_modes_all_phases": 0,
+      "duplicate_semantic_effects_from_55_identical_retries": 0,
+      "distinct_records_created_by_55_identical_retries": 0,
+      "conflicting_reuse_admitted": 0,
+      "conflicting_reuse_reported_as_explicit_conflict": 4,
+      "acknowledged_events_missing_after_restart_and_recovery": 0,
+      "recalls_during_outage_labeled_degraded_false": 0,
+      "human_authorization_records_created_by_derived_claim": 0,
+      "HACT_ROLL_CONSOLE_qualified_during_outage": true,
+      "HACT_CLOSE_DEFECT_qualified_during_outage": false,
+      "HACT_WAIVE_CAPTURE_qualified_any_phase": false,
+      "HREC_CTRL_BYTES_sha256_on_exact_id_recall_during_H9": "40cb4fa17e9445e94bf89383e95ac02ac129023ee13cb94489b62c050b409b0f",
+      "HREC_CTRL_BYTES_bytes_len": 88,
+      "current_applicable_HREC_GATE_after_H10": "rev-B",
+      "historical_view_HREC_GATE_after_H10": [
+        "rev-A",
+        "rev-B"
+      ],
+      "enforcement_gate_attempts_max": 4,
+      "enforcement_gate_terminal_decision_records_per_commit_attempt": 1,
+      "cross_scope_lesson_mode_returns_HREC_LESSON_CONSOLE": true,
+      "HREC_DISTILLED_NOTE_evidence_class_after_H10": "model_inference"
+    },
+    "relational": {
+      "ledger": "submitted(2160) == acked + refused_backpressure + reported_unknown",
+      "no_silent_bucket": "every reported_unknown event id appears in observability.gaps with a cursor and a reason",
+      "recoverable": "set(acked event ids) minus set(recoverable-by-exact-id after restart) is empty",
+      "backpressure_visible": "refused_backpressure > 0 and every refusal carries a retryable outcome code, the queue depth at refusal, and no ack timestamp",
+      "queue_depth_peak": "observed peak queue_depth >= 173 (0.9 * 192) and queue_oldest_age_ms is non-null for every sample during H4-H10",
+      "partition_receipts": "during the H9 partition, queued-transfer and remote-receipt states stay distinct for every event, and no event is reported admitted on the far side without a receipt",
+      "index_freshness": "index_freshness == stale with a numeric lag_ms during H4-H9, and == fresh with lag_ms <= 20000 by end of H10",
+      "capture_latency": "either p95 local durable capture <= 100 ms, or the over-envelope condition is explicitly reported for the whole interval in which it is exceeded",
+      "packet_proof": "for each of turn-214-01..03, persisted emitted-packet hash == hash of the bytes the receiving turn reports, and the packet separates selected / emitted / delivered / unavailable"
+    }
+  }
+}

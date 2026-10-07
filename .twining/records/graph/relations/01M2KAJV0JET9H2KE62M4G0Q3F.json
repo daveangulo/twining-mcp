@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T20:01:56.242Z",
+  "id": "01M2KAJV0JET9H2KE62M4G0Q3F",
+  "properties": {
+    "decision_summary": "RB2 ruled: the drafted W2/2.17.0 and 2.17.1 implementation plans are ABSORBED into the foundation programme (superseded as plans of record; their items map onto R07/R08/R15/R16/R19 work in S1/S3/S4) rather than executed first on the 2.x line",
+    "origin": "derived"
+  },
+  "source": "01M2KAJTXK8739C571ZV120DT4",
+  "target": "01M2KAJV0F6SVVA2V8KVPEXS2P",
+  "type": "decided_by"
+}

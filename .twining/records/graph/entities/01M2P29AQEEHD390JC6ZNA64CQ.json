@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T21:34:39.342Z",
+  "id": "01M2P29AQEEHD390JC6ZNA64CQ",
+  "name": "01M2P29AMP3S5W7AQ6W4RJ3CAE",
+  "properties": {
+    "scope": "docs/plans/",
+    "summary": "U-9 resolved: EV-A10/EV-K20 (authenticated_human_action archive) map to a v3 lifecycle event kind `archived` on the target, ingress adapter, class human_statement, producer = the acting human, signed with the human key (capability write)"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-16T21:34:39.342Z"
+}

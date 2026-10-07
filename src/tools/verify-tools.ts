@@ -1,68 +1,19 @@
 /**
- * MCP tool handler for the twining_verify verification tool.
+ * MCP registration for twining_verify.
+ * Handler lives in src/core/commands/verify.ts (2.17.0).
+ *
+ * The whole module is gated at the call site (`if (fullSurface)` in
+ * createServer), matching the pre-2.17 shape.
  */
-import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { VerifyEngine } from "../engine/verify.js";
-import { toolResult, toolError, TwiningError } from "../utils/errors.js";
+import { registerCommands } from "../core/command-def.js";
+import { verifyCommands, type VerifyCtx } from "../core/commands/verify.js";
 
 export function registerVerifyTools(
   server: McpServer,
   verifyEngine: VerifyEngine,
 ): void {
-  server.registerTool(
-    "twining_verify",
-    {
-      description:
-        "Check decision hygiene on a scope: unresolved warnings, assembly-before-decision tracking, and drift detection. Recommended for complex tasks before handoff.",
-      inputSchema: {
-        scope: z.string().describe("Scope to verify (e.g., \"src/auth/\" or \"project\")"),
-        checks: z
-          .array(
-            z.enum([
-              "test_coverage",
-              "warnings",
-              "drift",
-              "assembly",
-              "constraints",
-            ]),
-          )
-          .optional()
-          .describe(
-            "Specific checks to run (default: all). Options: test_coverage, warnings, drift, assembly, constraints",
-          ),
-        agent_id: z
-          .string()
-          .optional()
-          .describe(
-            "Filter assembly check to a specific agent (default: all agents)",
-          ),
-        fail_on: z
-          .array(z.string())
-          .optional()
-          .describe(
-            "Check names that should cause a failure status if they don't pass",
-          ),
-      },
-    },
-    async (args) => {
-      try {
-        const result = await verifyEngine.verify({
-          scope: args.scope,
-          checks: args.checks,
-          agent_id: args.agent_id,
-          fail_on: args.fail_on,
-        });
-        return toolResult(result);
-      } catch (e) {
-        if (e instanceof TwiningError) {
-          return toolError(e.message, e.code);
-        }
-        return toolError(
-          e instanceof Error ? e.message : "Unknown error",
-          "INTERNAL_ERROR",
-        );
-      }
-    },
-  );
+  const ctx: VerifyCtx = { verifyEngine };
+  registerCommands(server, ctx, verifyCommands, { fullSurface: true });
 }

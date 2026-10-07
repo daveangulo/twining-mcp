@@ -1,0 +1,49 @@
+{
+  "affected_files": [
+    "src/contracts/canonical.ts",
+    "src/contracts/event.ts",
+    "src/contracts/evidence.ts",
+    "src/contracts/validate.ts",
+    "src/contracts/scope.ts",
+    "src/contracts/lifecycle.ts",
+    "src/contracts/records.ts",
+    "src/contracts/signing.ts",
+    "src/contracts/delivery.ts",
+    "src/contracts/ids.ts",
+    "docs/adr/2026-09-foundation-contracts.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Trust a caller-supplied evidence_class and audit it later",
+      "pros": [],
+      "reason_rejected": "the audit would be an instruction, not a wall; the field measured that instruction-only gates leak"
+    },
+    {
+      "cons": [],
+      "option": "Decide class in the engine from the record type",
+      "pros": [],
+      "reason_rejected": "the same record type (a decision) legitimately arrives as proposal from MCP and as human_statement from an adapter; only the ingress knows"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Wrote the v3 foundation ADR (docs/adr/2026-09-foundation-contracts.md, PROPOSED) and executable contracts in src/contracts (event envelope, canonical digest, ids, evidence classes, scope algebra, lifecycle payloads, delivery states, Ed25519 signing, ingress validation); 21 contract tests green, tsc clean.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01M2KCECC0ZY7SQHV70CG2ANYQ",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:34:27.202Z"
+  },
+  "rationale": "R03/R17 forbid caller-controlled actor/active/promoted_by fields from establishing authority; the 2.x gap 6 is exactly that. Putting the class decision in validateEvent (pure, per ingress) makes every path enforce the same boundary and makes a forged ruling a schema-level rejection (CLASS_NOT_ALLOWED_ON_INGRESS / SIGNATURE_REQUIRED / SIGNATURE_INVALID) rather than a label.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/contracts/",
+  "status": "active",
+  "summary": "Evidence class is decided by the INGRESS that produced the event (ceremony/adapter/connector/mcp/cli/import/migration), validated before storage, never taken from a caller field; human_ruling is producible only by the signing ceremony or an import carrying a valid signature by a known HUMAN key",
+  "timestamp": "2026-09-15T20:34:27.328Z"
+}

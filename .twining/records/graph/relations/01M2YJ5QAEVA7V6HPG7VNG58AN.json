@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-20T04:46:13.838Z",
+  "id": "01M2YJ5QAEVA7V6HPG7VNG58AN",
+  "properties": {
+    "decision_summary": "Chose a new test/migrate/v3-identity-reuse.test.ts (identity-init via the real ensureStoreDescriptor, then migrateStatus / migrate --to 3 / shared-store / rerun) plus test/retrieval/store-identity.test.ts, over extending v3-forward.test.ts",
+    "origin": "derived"
+  },
+  "source": "01M2YJ5QAD3728RCS16GRH2RCC",
+  "target": "01M2YJ5QAD3728RCS16GRH2RCB",
+  "type": "decided_by"
+}

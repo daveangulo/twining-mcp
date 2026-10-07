@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-20T09:39:49.867Z",
+  "id": "01M2Z2ZAFBT0E3QCVNFJFF97FK",
+  "properties": {
+    "decision_summary": "SEED-DRY boots the 1.34.1 bundle with TWINING_DASHBOARD=0 and a symlinked copy of the harness's own .twining/models embedding cache",
+    "origin": "derived"
+  },
+  "source": "01M2Z2ZAFAR98WT7SFARKKJ5C5",
+  "target": "01M2Z2ZAF4HEF2X5GCGBJKGZ9N",
+  "type": "decided_by"
+}

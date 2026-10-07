@@ -1,0 +1,477 @@
+{
+  "fixture_set": "C26-heldout",
+  "case_id": "C26",
+  "derived_from": [
+    "acceptance-cases.md#C26",
+    "requirements.md#R15",
+    "requirements.md#R16"
+  ],
+  "tokenizer": {
+    "id": "tk-coalfish",
+    "version": "1.8",
+    "fallback_allowed": true,
+    "fallback_must_overestimate": true
+  },
+  "framing_constants": {
+    "packet_preamble_tokens": 90,
+    "per_record_header_tokens": 55,
+    "packet_footer_tokens": 15,
+    "omission_manifest_base_tokens": 30,
+    "omission_manifest_per_entry_tokens": 12
+  },
+  "identities": {
+    "tenant": "tn-marram",
+    "team": "tm-sandpiper-audit",
+    "human_principal": "u-ines.bergqvist",
+    "agent_principal": "ap-ledger-04",
+    "hosts": [
+      "host-tidewater-c",
+      "host-fernrow-e"
+    ],
+    "sessions": [
+      {
+        "id": "sess-TWC-8830",
+        "host": "host-tidewater-c",
+        "turn": "turn-0031"
+      },
+      {
+        "id": "sess-FRE-2207",
+        "host": "host-fernrow-e",
+        "turn": "turn-0004"
+      }
+    ],
+    "store": "store-delta",
+    "repositories": [
+      {
+        "id": "repo-sandpiper",
+        "revision": "rev-4d81c0",
+        "in_scope": true
+      },
+      {
+        "id": "repo-belfry",
+        "revision": "rev-77aa12",
+        "in_scope": false
+      }
+    ],
+    "receiving_model": "model-slatewing-3",
+    "action": {
+      "name": "close-audit-finding",
+      "target": "repo-sandpiper@rev-4d81c0"
+    }
+  },
+  "records": [
+    {
+      "id": "rec-au-7701",
+      "version": 4,
+      "alias": "P-1",
+      "role": "required",
+      "evidence_class": "authenticated_human_authorization",
+      "author": "u-ines.bergqvist",
+      "scope": {
+        "tenant": "tn-marram",
+        "repository": "repo-sandpiper"
+      },
+      "body_tokens": 1850,
+      "source_bytes_sha256": "sha256:seed-p1-0be7",
+      "byte_traits": [
+        "nbsp_u00a0_in_heading",
+        "no_trailing_newline"
+      ],
+      "normalized_text_sha256": "sha256:norm-p1-51cd"
+    },
+    {
+      "id": "rec-cq-7702",
+      "version": 2,
+      "alias": "P-2",
+      "role": "required",
+      "evidence_class": "verified_observation",
+      "scope": {
+        "tenant": "tn-marram",
+        "repository": "repo-sandpiper"
+      },
+      "body_tokens": 1400,
+      "source_bytes_sha256": "sha256:seed-p2-a390",
+      "reachable_via": [
+        "prerequisite_path",
+        "graph_neighbor_path"
+      ]
+    },
+    {
+      "id": "rec-sb-7703",
+      "version": 1,
+      "alias": "P-3",
+      "role": "required",
+      "evidence_class": "verified_observation",
+      "scope": {
+        "tenant": "tn-marram",
+        "repository": "repo-sandpiper",
+        "revision": "rev-4d81c0"
+      },
+      "body_tokens": 780,
+      "source_bytes_sha256": "sha256:seed-p3-77f1"
+    },
+    {
+      "id": "rec-lx-7704",
+      "version": 1,
+      "alias": "O-1",
+      "role": "optional",
+      "evidence_class": "prior_counterexample",
+      "scope": {
+        "tenant": "tn-marram",
+        "repository": "repo-sandpiper"
+      },
+      "body_tokens": 1200,
+      "source_bytes_sha256": "sha256:seed-o1-2d45"
+    },
+    {
+      "id": "rec-rc-7705",
+      "version": 3,
+      "alias": "O-2",
+      "role": "optional",
+      "evidence_class": "tool_recipe",
+      "scope": {
+        "tenant": "tn-marram",
+        "repository": "repo-sandpiper"
+      },
+      "body_tokens": 640,
+      "source_bytes_sha256": "sha256:seed-o2-b8e0"
+    },
+    {
+      "id": "rec-in-7707",
+      "version": 1,
+      "alias": "I-1",
+      "role": "optional",
+      "evidence_class": "model_inference",
+      "scope": {
+        "tenant": "tn-marram",
+        "repository": "repo-sandpiper"
+      },
+      "body_tokens": 260,
+      "text": "Audit closure for this lane was signed off during the 2026-08 review window, and the remaining consumer prerequisite was cleared at the same time. Proceeding with closure is consistent with how the prior two findings in this lane were handled.",
+      "self_labels_as_inference": false,
+      "hedging_markers": [],
+      "source_bytes_sha256": "sha256:seed-i1-3417"
+    },
+    {
+      "id": "rec-zz-7706",
+      "version": 2,
+      "alias": "X-1",
+      "role": "decoy_out_of_scope",
+      "evidence_class": "verified_observation",
+      "scope": {
+        "tenant": "tn-marram",
+        "repository": "repo-belfry",
+        "revision": "rev-77aa12"
+      },
+      "body_tokens": 520,
+      "lexical_and_semantic_match": "high",
+      "source_bytes_sha256": "sha256:seed-x1-ee29"
+    }
+  ],
+  "requester_priority": {
+    "required": [
+      "rec-cq-7702",
+      "rec-sb-7703",
+      "rec-au-7701"
+    ],
+    "optional": [
+      "rec-lx-7704",
+      "rec-rc-7705"
+    ],
+    "inference": [
+      "rec-in-7707"
+    ]
+  },
+  "attempts": [
+    {
+      "id": "B1",
+      "packet_id": "pkt-B1-0101",
+      "budget_tokens": 3200,
+      "host": "host-tidewater-c",
+      "session": "sess-TWC-8830",
+      "turn": "turn-0031",
+      "fault_injected": null,
+      "expected": {
+        "selected": [
+          "rec-cq-7702@2",
+          "rec-sb-7703@1",
+          "rec-in-7707@1"
+        ],
+        "emitted": [
+          "rec-cq-7702@2",
+          "rec-sb-7703@1",
+          "rec-in-7707@1"
+        ],
+        "delivered": [
+          "rec-cq-7702@2",
+          "rec-sb-7703@1",
+          "rec-in-7707@1"
+        ],
+        "omissions": [
+          {
+            "id": "rec-au-7701@4",
+            "role": "required",
+            "reason": "does_not_fit"
+          },
+          {
+            "id": "rec-lx-7704@1",
+            "role": "optional",
+            "reason": "does_not_fit"
+          },
+          {
+            "id": "rec-rc-7705@3",
+            "role": "optional",
+            "reason": "does_not_fit"
+          }
+        ],
+        "delivered_token_count": 2776,
+        "token_arithmetic": "90 + (1400+55) + (780+55) + (260+55) + (30+12*3) + 15 = 2776",
+        "budget_respected": true,
+        "delivery_state": "acknowledged",
+        "action_gate": {
+          "decision": "blocked",
+          "missing_required": [
+            "rec-au-7701@4"
+          ],
+          "basis": [],
+          "inference_did_not_substitute": true
+        }
+      },
+      "accepted_alternative_shape": {
+        "name": "refused_incomplete",
+        "emitted": [],
+        "action_gate": {
+          "decision": "blocked",
+          "missing_required": [
+            "rec-au-7701@4"
+          ]
+        }
+      }
+    },
+    {
+      "id": "B2",
+      "packet_id": "pkt-B2-0102",
+      "budget_tokens": 5200,
+      "host": "host-tidewater-c",
+      "session": "sess-TWC-8830",
+      "turn": "turn-0031",
+      "fault_injected": {
+        "kind": "formatter_drop",
+        "detail": "prerequisite block renders only the first two required entries; rec-sb-7703 discarded after selection reported completeness"
+      },
+      "expected": {
+        "selected": [
+          "rec-au-7701@4",
+          "rec-cq-7702@2",
+          "rec-sb-7703@1",
+          "rec-in-7707@1"
+        ],
+        "emitted": [
+          "rec-au-7701@4",
+          "rec-cq-7702@2",
+          "rec-in-7707@1"
+        ],
+        "delivered": [
+          "rec-au-7701@4",
+          "rec-cq-7702@2",
+          "rec-in-7707@1"
+        ],
+        "omissions": [
+          {
+            "id": "rec-sb-7703@1",
+            "role": "required",
+            "reason": "formatter_drop"
+          },
+          {
+            "id": "rec-lx-7704@1",
+            "role": "optional",
+            "reason": "does_not_fit"
+          },
+          {
+            "id": "rec-rc-7705@3",
+            "role": "optional",
+            "reason": "does_not_fit"
+          }
+        ],
+        "delivered_token_count": 3846,
+        "token_arithmetic": "90 + (1850+55) + (1400+55) + (260+55) + (30+12*3) + 15 = 3846",
+        "selection_claimed_complete": true,
+        "receipt_must_contradict_selection_claim": true,
+        "delivery_state": "acknowledged",
+        "action_gate": {
+          "decision": "blocked",
+          "missing_required": [
+            "rec-sb-7703@1"
+          ],
+          "basis": []
+        }
+      }
+    },
+    {
+      "id": "B3",
+      "packet_id": "pkt-B3-0103",
+      "budget_tokens": 5200,
+      "host": "host-tidewater-c",
+      "session": "sess-TWC-8830",
+      "turn": "turn-0031",
+      "fault_injected": null,
+      "role": "positive_control",
+      "expected": {
+        "selected": [
+          "rec-au-7701@4",
+          "rec-cq-7702@2",
+          "rec-sb-7703@1",
+          "rec-in-7707@1"
+        ],
+        "emitted": [
+          "rec-au-7701@4",
+          "rec-cq-7702@2",
+          "rec-sb-7703@1",
+          "rec-in-7707@1"
+        ],
+        "delivered": [
+          "rec-au-7701@4",
+          "rec-cq-7702@2",
+          "rec-sb-7703@1",
+          "rec-in-7707@1"
+        ],
+        "omissions": [
+          {
+            "id": "rec-lx-7704@1",
+            "role": "optional",
+            "reason": "does_not_fit"
+          },
+          {
+            "id": "rec-rc-7705@3",
+            "role": "optional",
+            "reason": "does_not_fit"
+          }
+        ],
+        "delivered_token_count": 4669,
+        "token_arithmetic": "90 + 1905 + 1455 + 835 + 315 + (30+12*2) + 15 = 4669",
+        "rec_cq_7702_emitted_once": true,
+        "delivery_state": "acknowledged",
+        "action_gate": {
+          "decision": "qualified",
+          "basis": [
+            "rec-au-7701@4",
+            "rec-cq-7702@2",
+            "rec-sb-7703@1"
+          ],
+          "basis_excludes": [
+            "rec-in-7707@1"
+          ],
+          "missing_required": []
+        }
+      }
+    },
+    {
+      "id": "B4",
+      "packet_id": "pkt-B3-0103",
+      "budget_tokens": 5200,
+      "host": "host-fernrow-e",
+      "session": "sess-FRE-2207",
+      "turn": "turn-0004",
+      "fault_injected": {
+        "kind": "ack_lost_after_remote_success",
+        "then": "retry_same_packet_id"
+      },
+      "expected": {
+        "after_first_emission": {
+          "delivery_state": "unknown",
+          "counted_as_delivered": false,
+          "action_gate": {
+            "decision": "blocked",
+            "reason": "delivery_unknown"
+          }
+        },
+        "after_retry": {
+          "delivery_state": "acknowledged",
+          "delivery_records": 1,
+          "emission_attempts": 2,
+          "delivered": [
+            "rec-au-7701@4",
+            "rec-cq-7702@2",
+            "rec-sb-7703@1",
+            "rec-in-7707@1"
+          ],
+          "delivered_token_count": 4669,
+          "duplicate_semantic_delivery": false
+        }
+      }
+    }
+  ],
+  "expected_end_state": {
+    "S1_records": "all 7 seed records unchanged; rec-au-7701 U+00A0 and absent trailing newline preserved",
+    "S2_current_applicable_view": {
+      "repo-sandpiper@rev-4d81c0": [
+        "rec-au-7701@4",
+        "rec-cq-7702@2",
+        "rec-sb-7703@1",
+        "rec-lx-7704@1",
+        "rec-rc-7705@3",
+        "rec-in-7707@1"
+      ],
+      "unchanged_by_budget_outcomes": true
+    },
+    "S3_receipts": [
+      "pkt-B1-0101: acknowledged, 2776",
+      "pkt-B2-0102: acknowledged, 3846",
+      "pkt-B3-0103@host-tidewater-c: acknowledged, 4669",
+      "pkt-B3-0103@host-fernrow-e: acknowledged after retry, 4669, one delivery record"
+    ],
+    "S4_historical_view": "B1 and B2 receipts, omission manifests and blocked decisions unchanged after B3 succeeds",
+    "S5_action_gate_log": [
+      {
+        "attempt": "B1",
+        "decision": "blocked"
+      },
+      {
+        "attempt": "B2",
+        "decision": "blocked"
+      },
+      {
+        "attempt": "B3",
+        "decision": "qualified"
+      },
+      {
+        "attempt": "B4-pre-ack",
+        "decision": "blocked"
+      }
+    ],
+    "scope_denials": [
+      {
+        "record": "rec-zz-7706@2",
+        "attempts": [
+          "B1",
+          "B2",
+          "B3",
+          "B4"
+        ],
+        "selected": false,
+        "emitted": false,
+        "budget_consumed": 0
+      }
+    ]
+  },
+  "assertions": [
+    "H01",
+    "H02",
+    "H03",
+    "H04",
+    "H05",
+    "H06",
+    "H07",
+    "H08",
+    "H09",
+    "H10",
+    "H11",
+    "H12"
+  ],
+  "negative_assertions": [
+    "H04",
+    "H05",
+    "H07"
+  ],
+  "positive_control": "B3"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T21:37:32.855Z",
+  "id": "01M2P2EM5QYAP4Z3FEG4XRYKTQ",
+  "properties": {
+    "decision_summary": "Chose one oneLine() normaliser — collapse \\s+ to a space, trim, strip URL userinfo, cap with an ellipsis, blank → absent — applied to EVERY free-text field the working-set renderer emits, with two caps: RESULT_RENDER_MAX 240 for observation-derived text and PROSE_RENDER_MAX 500 for ruling statement, decision summary/rationale, post summary and entity name",
+    "origin": "derived"
+  },
+  "source": "01M2P2EM0DM0084DKHXGFPMB7S",
+  "target": "01M2P2EM56JC8A8TWHNP30PZ6R",
+  "type": "decided_by"
+}

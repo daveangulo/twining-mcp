@@ -3,8 +3,8 @@
   "id": "01KJD595NE5JW9DEJ3VGCB4MMD",
   "name": "src/storage/init.ts",
   "properties": {
-    "scope": "plugin/hooks/,src/storage/init.ts"
+    "scope": "plugin/hooks/,src/contracts/,src/storage/init.ts"
   },
   "type": "file",
-  "updated_at": "2026-09-07T22:28:03.847Z"
+  "updated_at": "2026-09-16T02:43:26.437Z"
 }

@@ -1,0 +1,15 @@
+{
+  "agent_id": "agent-scribe",
+  "detail": "",
+  "entry_type": "finding",
+  "id": "01M3C21PRETS10000000000000",
+  "relates_to": [
+    "01M3C21P0PENW0000000000000"
+  ],
+  "scope": "src/catalog/",
+  "summary": "the skip is an empty-shard guard, not a bug",
+  "tags": [
+    "catalog"
+  ],
+  "timestamp": "2026-08-07T09:00:00.000Z"
+}

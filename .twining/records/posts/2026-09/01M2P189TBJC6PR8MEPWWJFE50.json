@@ -1,0 +1,17 @@
+{
+  "agent_id": "wf-working-set-render",
+  "detail": "New decision \"Chose to always render 'volatile: yes|no' (not only when true) so absent and false stay distinguishable, and to render the observation body's base/head on the observed line while scope.revision renders on the scope line, both as 8-hex base..head with one side allowed absent (..head, base..)\" relates to:\n- 01M2KMTDSKBZSCCP3KRGF6G7FH: \"Accepted deriving the working-set session cursor solely from the versions of records actually emitted (no store.events() scan), so the cursor cannot advance while any selected record remains budget-omitted\"\n- 01M2M0CYJX5B15YNXQTSFJPZKV: \"Every event minted through the adapter runtime now cites this replica's current membership as a causal parent, via a new EventStore.currentPolicyEvent()\"\n- 01M2M0CYNH8H4ZVX49ZXKZCA37: \"Fixed the lane-04 acceptance fixtures to link the policy rather than relaxing the admission rule, adding citeParents()/deliverUnderPolicy() to the slice harness\"",
+  "entry_type": "finding",
+  "id": "01M2P189TBJC6PR8MEPWWJFE50",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T21:16:37.049Z"
+  },
+  "scope": "src/adapters/",
+  "summary": "Related decisions in scope: 3 existing decision(s) overlap",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-09-16T21:16:37.067Z"
+}

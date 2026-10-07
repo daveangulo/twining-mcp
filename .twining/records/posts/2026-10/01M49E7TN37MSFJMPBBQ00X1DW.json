@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Dave ruled the matched trial runs after the operator-surface fixes; logged as D62 and reflected in the final report's owner-decision list. Trial build stays parked on the harness branch foundation-trial @ f09523a.\nDecisions: Chose to run the designed matched trial after correction batches A–C rather than a reduced three-case trial now — Dave's ruling 2026-10-06; the migration/operations gate fails either way and results would need re-running once the code changes (D62)",
+  "entry_type": "status",
+  "id": "01M49E7TN37MSFJMPBBQ00X1DW",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "fd9c241c02a357e4cf4a2dd62431943f51128cf5",
+    "recorded_at": "2026-10-06T20:24:49.037Z"
+  },
+  "scope": "docs/",
+  "summary": "Dave ruled the matched trial runs after the operator-surface fixes; logged as D62 and reflected in the final report's owner-decision list. Trial build stays parked on the harness branch foundation-…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-10-06T20:24:49.059Z"
+}

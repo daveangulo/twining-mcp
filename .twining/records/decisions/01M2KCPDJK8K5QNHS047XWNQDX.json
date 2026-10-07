@@ -1,0 +1,38 @@
+{
+  "affected_files": [
+    "docs/adr/2026-09-foundation-contracts.md",
+    "docs/adr/2026-09-foundation-contracts.appendix-a-steelman.md",
+    "test/acceptance/baseline",
+    "test/acceptance/oracles",
+    "docs/operations/hosts-claude-code-capabilities.md",
+    "docs/operations/hosts-codex-capabilities.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Adopt the smallest evolution and ship it as 2.17.x",
+      "pros": [],
+      "reason_rejected": "fails five acceptance cases and two requirements by construction; only detects losses after the fact and only on a host that kept the losing side in a gitignored, rebuildable db"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Stage 0 evidence landed at 474dfac on foundation/v3: all 8 supplied gaps reproduced with positive controls, 5 implementation-blind oracles (C09/C10/C11/C14/C16), steelman of the smallest evolution FAILS C10/C11/C14/C16/C22 + R05/R08, host hook matrices for Claude Code 2.1.272 and Codex 0.154.0.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01M2KCPDJK8K5QNHS047XWNQDX",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:38:50.576Z"
+  },
+  "rationale": "01-foundation.md required the failing case before committing to a foundational change and a preference for the smaller evolution if it works. The Stage 0 steelman (opus, read-only, designed revision chains + conflict sidecars + idempotency keys + tombstones + prerequisite deferral) scored it honestly and its own strongest objection is decisive. Plan correction folded in: the steelman shows tombstone records DO satisfy C20, which the lead had predicted as a failure — the justification rests on C10/C11/C14/C16/C22, not deletion.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/adr/",
+  "status": "active",
+  "summary": "The foundational change (immutable event log + derived projections) is now JUSTIFIED by evidence, not hypothesis: the strongest one-release evolution of the current per-record export + file-wins design fails C10, C11, C14, C16, C22 and R05/R08 because the record file is simultaneously current state, history and merge unit, so git merge decides authority before Twining sees the bytes; the ADR stays PROPOSED until the vertical slice passes its independent oracles",
+  "timestamp": "2026-09-15T20:38:50.707Z"
+}

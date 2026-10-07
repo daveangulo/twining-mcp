@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Programme state at session end: foundation/v3 = 3687984a + 31f8d45a (2711 tests, 0 failed; PR #49 draft do-not-merge); feat/cli-2.17 = d2e96ad (PR #48, 2.17.0 under Dave's tag). Remaining: dev-scale matched trial (RB5), final report docs/reports/2026-09-foundation-final.md with go/no-go table, operator docs completion; owner items: BEHAVIORS.md + bundle at release, Codex hook trust, C28 on the second machine, file-wins precedence (gap 8), remote-staleness owner (gap 5).",
+  "entry_type": "finding",
+  "id": "01M2M36Z1MBDAJKYEW3JA42T49",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "31f8d45a3c09a87c743dea8384a931a7f6cb7304",
+    "recorded_at": "2026-09-16T03:12:21.538Z"
+  },
+  "scope": "src/retrieval/",
+  "summary": "Programme state at session end: foundation/v3 = 3687984a + 31f8d45a (2711 tests, 0 failed; PR #49 draft do-not-merge); feat/cli-2.17 = d2e96ad (PR #48, 2.17.0 under Dave's tag). Remaining: dev-scal…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-16T03:12:21.556Z"
+}

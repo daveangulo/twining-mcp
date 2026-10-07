@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-15T21:35:41.103Z",
+  "id": "01M2KFYG1FYSBPVW7JV4GG1BYM",
+  "name": "src/events/projection.ts",
+  "properties": {
+    "scope": "src/contracts/,src/events/,src/migrate/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-16T02:43:26.434Z"
+}

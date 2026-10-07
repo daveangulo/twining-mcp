@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-20T04:31:02.656Z",
+  "id": "01M2YH9XG098GPJ8VFQ85W6X5J",
+  "name": "01M2YH9XDV223FVGS2HSGGV6TT",
+  "properties": {
+    "scope": "docs/",
+    "summary": "Chose deterministic oracle-derived scoring (required facts / forbidden claims / forbidden actions with instrument-can-fail controls) over the harness LLM judge for the dev-scale trial"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-20T04:31:02.656Z"
+}

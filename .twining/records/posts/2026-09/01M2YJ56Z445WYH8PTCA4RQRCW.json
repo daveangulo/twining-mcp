@@ -1,0 +1,18 @@
+{
+  "agent_id": "fix-repo-ids",
+  "detail": "Full summary: finalize used to truncate a shared store's repo_ids to [repo_id] and overwrite created_at with the migration start — identity init on a second checkout would have lost its declared id at migrate time. Now: repo_ids is the union (migration's id first), created_at stands. Pinned by test/migrate/v3-identity-reuse.test.ts.",
+  "entry_type": "finding",
+  "id": "01M2YJ56Z445WYH8PTCA4RQRCW",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T04:45:57.071Z"
+  },
+  "scope": "src/retrieval/store-identity.ts",
+  "summary": "finalize used to truncate a shared store's repo_ids to [repo_id] and overwrite created_at with the migration start — identity init on a second checkout would have lost its declared id at migrate ti…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-20T04:45:57.092Z"
+}

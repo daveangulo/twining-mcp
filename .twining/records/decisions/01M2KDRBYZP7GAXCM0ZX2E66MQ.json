@@ -1,0 +1,47 @@
+{
+  "affected_files": [
+    "src/contracts/lifecycle.ts",
+    "test/contracts/contracts.test.ts",
+    "docs/adr/2026-09-foundation-contracts.md",
+    "docs/adr/2026-09-foundation-contracts.appendix-b-oracle-rulings.md",
+    "test/acceptance/oracles/C09.oracle.md",
+    "test/acceptance/oracles/C10.oracle.md",
+    "test/acceptance/oracles/C11.oracle.md",
+    "test/acceptance/oracles/C14.oracle.md",
+    "test/acceptance/oracles/C16.oracle.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Let `restored` also reinstate superseded records",
+      "pros": [],
+      "reason_rejected": "would let an archive round-trip resurrect superseded authority — exactly the C16 anti-resurrection failure"
+    },
+    {
+      "cons": [],
+      "option": "Model reinstatement as a new `created` successor citing the old record",
+      "pros": [],
+      "reason_rejected": "loses the record identity C14 requires to survive"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Ruled on the oracle-rulings appendix: 7 lead decisions + 7 conflicts resolved; added the `reinstated` lifecycle kind (rule capability, class-ranked) for C14 intentional restoration; ADR §2.3/§4.1/§4.3/§4.4/§12/§13 updated; oracle files gained their missing structured open-question sections.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01M2KDRBYZP7GAXCM0ZX2E66MQ",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:57:23.044Z"
+  },
+  "rationale": "C14 requires intentional restoration to be explicit and distinct from a historical view; the C14 oracle's positive control P1 restores a superseded record, which no existing kind allowed without contradicting §4.4's 'a restored superseded stays superseded' (which C16 depends on). A separate, rule-gated, class-ranked kind satisfies both cases without weakening either.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/adr/",
+  "status": "active",
+  "summary": "Added a `reinstated` lifecycle kind (target, reason; requires `rule` capability; class-ranked against the SUPERSEDING event's class) as the only path by which a superseded or overridden record becomes applicable again; `restored` (from archive) keeps ADR §4.4 semantics and never implies `promoted`",
+  "timestamp": "2026-09-15T20:57:23.169Z"
+}

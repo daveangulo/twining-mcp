@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-20T04:45:17.666Z",
+  "id": "01M2YJ40F23CNABJD91JDCYVEP",
+  "name": "01M2YJ40CQBC36YX0ATZ0838P8",
+  "properties": {
+    "scope": "docs/plans/2026-09-16-dev-scale-trial-design.md",
+    "summary": "Chose to add the DP-3 TRIAL_PLUGIN_SERVER_ONLY env switch (default off) instead of leaving DP-3 as a mid-trial code edit"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-20T04:45:17.666Z"
+}

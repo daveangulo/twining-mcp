@@ -1,0 +1,22 @@
+{
+  "agent_id": "main",
+  "detail": "src/adapters/working-set.ts renderRecord prints ruling.statement, decision.summary, post summary, else body.summary ?? body.name ?? record_id; the strict verified_observation body (src/contracts/records.ts) has no summary and its facts live under result. scope.revision is never rendered, so a revision-bound ruling is indistinguishable from an unbound one unless its statement repeats the range. twining_assemble/twining_why read only 2.x records on a v3 store. Found by the trial design readers (workflow trial-understand-design). D51: fix before the trial (render observation body + revision range, unit tests, two refuters — workflow dp0-working-set-fix), record the new SHA as the object under test. Related, recorded not fixed (DN42): store-identity.ts reads repo_id while ensureStoreDescriptor writes repo_ids; DEFAULT_WORKING_SET_BUDGET not wired from the hook CLI; MCP gate prose still injected on v3 stores by src/server.ts.",
+  "entry_type": "warning",
+  "id": "01M2P0S3TKV7XE22DXT659C6AV",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T21:08:19.391Z"
+  },
+  "scope": "src/adapters/",
+  "summary": "v3 working set renders verified_observation as a bare record id and never renders scope.revision — at 9b0afafd v3 cannot deliver observation facts to a model (DN41; lead ruling D51: fix pre-trial)",
+  "tags": [
+    "foundation-programme",
+    "v3",
+    "working-set",
+    "R14",
+    "R16",
+    "DP-0"
+  ],
+  "timestamp": "2026-09-16T21:08:19.411Z"
+}

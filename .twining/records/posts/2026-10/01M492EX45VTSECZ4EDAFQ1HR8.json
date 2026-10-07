@@ -1,0 +1,15 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "finding",
+  "id": "01M492EX45VTSECZ4EDAFQ1HR8",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "0f9fd985df6890a34240cf644d16081a0a2cf680",
+    "recorded_at": "2026-10-06T16:58:58.036Z"
+  },
+  "scope": "src/",
+  "summary": "rate limiter shares the auth cache",
+  "tags": [],
+  "timestamp": "2026-10-06T16:58:58.054Z"
+}

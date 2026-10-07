@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "Archive summary: 500 entries archived. status: 468 entries (Merged lane/03-runtime into foundation/v3; resolved the events-verb collision between lanes 02c and 03, and fixed the signing ceremony producing rulings its own admission rule quarantined.; Subagent completed: general-purpose; Subagent completed: general-purpose). finding: 31 entries (C21 A-REC-10 (derived-index rebuild is not data loss) is the assertion that catches admission non-monotonicity end-to-end; it passed in both lanes separately and only failed once 02b and 02c were m…; Related decisions in scope: 7 existing decision(s) overlap; At merge: add exchange/ to GITIGNORE_ENTRIES in src/storage/init.ts (canonical fix for stores that track .twining); the lane's .git/info/exclude write is belt-and-braces for pre-existing stores.). artifact: 1 entries (Lane 05 preparatory phase: shared acceptance harness + instrument-can-fail switchboard (6/6 controls proven to fail), oracle INDEX.md, C28 remote bundle, data-flow + recovery docs).",
+  "entry_type": "finding",
+  "id": "01M2YJ407B014ZE9Q5E7H3HY89",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T04:45:17.398Z"
+  },
+  "scope": "project",
+  "summary": "Archive: 500 entries archived",
+  "tags": [
+    "archive"
+  ],
+  "timestamp": "2026-09-20T04:45:17.419Z"
+}

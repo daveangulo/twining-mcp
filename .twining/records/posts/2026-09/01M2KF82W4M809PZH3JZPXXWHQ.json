@@ -1,0 +1,21 @@
+{
+  "agent_id": "cli-2.17-lane",
+  "detail": "Confirmed 3/3 then fixed, then proven 3/3 red-on-revert. With a real .twining/models/Xenova/all-MiniLM-L6-v2 cache present (the normal state after the MCP server has run once), `node dist/cli/twining.js post ...` exited 134 with `libc++abi: terminating due to uncaught exception of type std::__1::system_error: mutex lock failed: Invalid argument` — AFTER the command had fully succeeded and written its envelope. Cause: process.exit(code) tears the process down underneath onnxruntime-node's live native thread pool.\n\nThree things worth carrying forward:\n1. The fix is process.exitCode = code plus closing what you opened (sqlite handle, timers). Measured 5/5 exit 0 in ~0.3s — nothing keeps the loop alive, so no watchdog timer was needed. It is also strictly SAFER than process.exit: an in-flight async embedding write now keeps the loop alive until it finishes instead of being truncated.\n2. A placeholder model directory does NOT reproduce it. transformers.js fails at tokenizer.json before any ONNX session exists, so the thread pool never spins up and the process exits 0. Any regression test built on a fake cache is green against the bug. The real guard needs a real model cache; ours symlinks the repo's (following the worktree->main redirect) and skips where absent, so it is live on dev machines and skipped on CI.\n3. Not CLI-specific in principle: any short-lived process that loads the embedder and then calls process.exit() is exposed. src/index.ts calls process.exit in its --version path (before any embedder) and in the 3s shutdown watchdog (after the drain) — both currently fine, but the shutdown timer is the one to watch if that drain ever starts loading the embedder.",
+  "entry_type": "warning",
+  "id": "01M2KF82W4M809PZH3JZPXXWHQ",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "d862f6ce8b8216ee51145fd1ba7864516492f3cc",
+    "recorded_at": "2026-09-15T21:23:26.704Z"
+  },
+  "scope": "src/cli/",
+  "summary": "process.exit() in any short-lived Twining entry point SIGABRTs (134) once the ONNX model is cached — use process.exitCode and let the loop drain",
+  "tags": [
+    "2.17.0",
+    "cli",
+    "onnx",
+    "exit-code",
+    "field-defect"
+  ],
+  "timestamp": "2026-09-15T21:23:26.724Z"
+}

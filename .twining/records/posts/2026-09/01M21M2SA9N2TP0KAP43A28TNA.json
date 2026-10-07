@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: the W2 plan's DD-9 floor value (0.15 vs 0.2) and the J-7 AUTO-SAFE widening are decided by executed evidence at TDD time (dogfood dry-run script, merge-matrix test) — both carry decidable criteria in the plan; Dave's review should confirm the +20% tool-description allowance (A3) and the two-file split",
+  "entry_type": "need",
+  "id": "01M21M2SA9N2TP0KAP43A28TNA",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d7860e060ddf79e9cca2cc8a0bd9179985c04eee",
+    "recorded_at": "2026-09-08T23:01:36.182Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "the W2 plan's DD-9 floor value (0.15 vs 0.2) and the J-7 AUTO-SAFE widening are decided by executed evidence at TDD time (dogfood dry-run script, merge-matrix test) — both carry decidable criteria …",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-08T23:01:36.201Z"
+}

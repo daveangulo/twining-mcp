@@ -7,6 +7,37 @@
         "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start-context.sh\"",
         "timeout": 5
       }]
+    }, {
+      "matcher": "startup|resume|clear|compact|fork",
+      "hooks": [{
+        "type": "command",
+        "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/v3-capture-hook.sh\" claude-code SessionStart",
+        "timeout": 15
+      }]
+    }],
+    "UserPromptSubmit": [{
+      "matcher": "*",
+      "hooks": [{
+        "type": "command",
+        "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/v3-capture-hook.sh\" claude-code UserPromptSubmit",
+        "timeout": 15
+      }]
+    }],
+    "PreCompact": [{
+      "matcher": "manual|auto",
+      "hooks": [{
+        "type": "command",
+        "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/v3-capture-hook.sh\" claude-code PreCompact",
+        "timeout": 10
+      }]
+    }],
+    "SubagentStart": [{
+      "matcher": "*",
+      "hooks": [{
+        "type": "command",
+        "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/v3-capture-hook.sh\" claude-code SubagentStart",
+        "timeout": 15
+      }]
     }],
     "PreToolUse": [{
       "matcher": "Bash",
@@ -30,6 +61,10 @@
         "type": "command",
         "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/stop-hook.sh\"",
         "timeout": 10
+      }, {
+        "type": "command",
+        "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/v3-capture-hook.sh\" claude-code Stop",
+        "timeout": 15
       }]
     }],
     "SubagentStop": [{
@@ -38,6 +73,18 @@
         "type": "command",
         "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/subagent-stop-hook.sh\"",
         "timeout": 10
+      }, {
+        "type": "command",
+        "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/v3-capture-hook.sh\" claude-code SubagentStop",
+        "timeout": 15
+      }]
+    }],
+    "SessionEnd": [{
+      "matcher": "*",
+      "hooks": [{
+        "type": "command",
+        "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/v3-capture-hook.sh\" claude-code SessionEnd",
+        "timeout": 5
       }]
     }]
   }

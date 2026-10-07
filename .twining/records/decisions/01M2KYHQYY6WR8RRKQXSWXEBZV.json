@@ -1,0 +1,26 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Lane 02b review fixes committed 0290566: lossy merges rolled back with a sticky push gate, carrier-decided publish idempotence, credential redaction, rejected-parent termination, append cost flat in corpus size. All five lanes review-fixed and committed; merge into foundation/v3 is next.",
+  "depends_on": [],
+  "domain": "deployment",
+  "id": "01M2KYHQYY6WR8RRKQXSWXEBZV",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-16T01:50:51.850Z"
+  },
+  "rationale": "Accepted lane 02b's partial refutations: redaction of remote credentials happens at construction (the id is committed into cursors, so print-time redaction is too late); cross-replica add/add conflicts are resolved keep-ours-and-retain-theirs (never checkout --ours, which loses a side); same-digest/different-signature duplicates are decided by which signature verifies (no timing input), not by a widened journal primary key that would break existing rows.",
+  "rationale_source": "derived",
+  "reversible": true,
+  "scope": "src/exchange/",
+  "status": "active",
+  "summary": "Accepted lane 02b's partial refutations: redaction of remote credentials happens at construction (the id is committed into cursors, so print-time redaction is too late); cross-replica add/add conflicts are resolved keep-ours-and-retain-theirs (never checkout --ours, which loses a side); same-digest/different-signature duplicates are decided by which signature verifies (no timing input), not by a widened journal primary key that would break existing rows.",
+  "timestamp": "2026-09-16T01:50:51.870Z"
+}

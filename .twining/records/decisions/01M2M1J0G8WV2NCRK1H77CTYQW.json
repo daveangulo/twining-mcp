@@ -1,0 +1,44 @@
+{
+  "affected_files": [
+    "src/contracts/version.ts",
+    "src/contracts/scope.ts",
+    "src/contracts/lifecycle.ts",
+    "src/contracts/delivery.ts",
+    "src/contracts/store-api.ts",
+    "src/contracts/records.ts",
+    "src/contracts/validate.ts",
+    "src/events/projection.ts",
+    "src/core/context.ts",
+    "src/storage/init.ts",
+    "scripts/calibrate-tokenizer.mjs"
+  ],
+  "affected_symbols": [],
+  "agent_id": "merge-integrator",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "having the contract import from an implementation module. Transport.lastMalformed/lastGap are typed to lane 02b's ACTUAL shapes (properties holding the last poll's findings), not the invented function shapes",
+      "pros": []
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Applied contracts 3.0.0-draft.3 and the merge-time fixes: scopeAuthorizes adopted, optional superseded.by, legacy post entry_type, new delivery reasons, exchangeStatus on the store API, RetrievalAnnex moved, correctionFor conflicts, gitignore, offline switch, calibration script, doc counts.",
+  "depends_on": [],
+  "domain": "api-design",
+  "id": "01M2M1J0G8WV2NCRK1H77CTYQW",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9241cc079a04bb9d9221dc54e15ffd7b945409b6",
+    "recorded_at": "2026-09-16T02:43:26.324Z"
+  },
+  "rationale": "rather than having the contract import from an implementation module. Transport.lastMalformed/lastGap are typed to lane 02b's ACTUAL shapes (properties holding the last poll's findings), not the invented function shapes, because the contract should describe what exists.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/contracts/",
+  "status": "active",
+  "summary": "Defined ExchangeStatus, ExchangeGap, ExchangeStatusOptions, MalformedArtifact and CarrierGap in src/contracts/store-api.ts and made src/exchange/status.ts and git-transport.ts import them",
+  "timestamp": "2026-09-16T02:43:26.344Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T21:39:51.117Z",
+  "id": "01M2KG646DQNN73M594K6D35TD",
+  "properties": {
+    "decision_summary": "Opened draft PRs early per RB7: #48 feat/cli-2.17 → main (2.17.0 CLI; owner bumps plugin, tags, publishes) and #49 foundation/v3 → main (marked do-not-merge; carries S1–S4 before any merge decision); merged the CLI core into foundation/v3 so v3 host adapters build on it",
+    "origin": "derived"
+  },
+  "source": "01M2KF9R0DPNDWKQE8Y6HTBB2B",
+  "target": "01M2KG646CRHBZRQFRRDZM7JTH",
+  "type": "decided_by"
+}

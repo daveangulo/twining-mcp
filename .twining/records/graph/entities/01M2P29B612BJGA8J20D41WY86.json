@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T21:34:39.809Z",
+  "id": "01M2P29B612BJGA8J20D41WY86",
+  "name": "01M2P29B31NFKPT6BCCDY50QBN",
+  "properties": {
+    "scope": "docs/plans/",
+    "summary": "Policy and principal authorities are top-level spec objects (policy, identities) rendered by every seeder as two records (policy.record_id, identities.record_id) signed by a synthetic steward human in v3, rather than entries in records[]"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-16T21:34:39.809Z"
+}

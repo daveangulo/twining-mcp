@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-15T20:34:27.369Z",
+  "id": "01M2KCECD9SHTQ7P9S342T2V8Z",
+  "name": "src/contracts/delivery.ts",
+  "properties": {
+    "scope": "src/contracts/,src/events/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-16T02:43:26.430Z"
+}

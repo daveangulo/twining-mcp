@@ -1,0 +1,16 @@
+{
+  "//": "Type-check lane 05's own files. The project tsconfig.json excludes test/ and restricts include to src/**, so `npx tsc --noEmit` never sees the harness, the qualification scripts or the measurement scripts. Run: npx tsc -p scripts/qualify/tsconfig.lane05.json",
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": "../..",
+    "types": ["node"],
+    "typeRoots": ["../../node_modules/@types"]
+  },
+  "include": [
+    "../../test/acceptance/harness/**/*.ts",
+    "../../scripts/qualify/**/*.ts",
+    "../../scripts/measure/**/*.ts"
+  ],
+  "exclude": []
+}

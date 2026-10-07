@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Recovery-and-rollback operator guide finished (480 lines, 95 commands re-run at 0f9fd985, independently re-executed, two timing claims corrected); final report gained rows for peer events quarantined over the filesystem carrier, identity-init stores duplicated by migrate, and signed native events labelled legacy_unverified by the read path. All five operator docs and the report are now complete; committing and pushing.\nFindings: Over sync --path a peer's events stay quarantined signature_required and no verb trusts a peer key, so no CLI carrier delivers records across replicas (recovery guide K6) — exchange works at the byte level only; assemble/why on a v3 store label signed native events legacy_unverified and tell the model they were migrated with no authorship proof (K11) — a wrong trust class on the read path, R03/R17; migrate --to 3 on an identity-init store re-imports the 2.x mirror of each native write as a second legacy_unverified record (K9), then the store is read-only (K1); The real migration of this repo's ~30 MB legacy store took 13–17 minutes in two runs and did not finalize; the writer's first 73-minute figure was contention, not the code",
+  "entry_type": "status",
+  "id": "01M4AARE1DA90N4SPGDK9Y077B",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "98226d81e87150f79eba58de090c4715379b99d0",
+    "recorded_at": "2026-10-07T04:43:13.305Z"
+  },
+  "scope": "docs/operations/",
+  "summary": "Recovery-and-rollback operator guide finished (480 lines, 95 commands re-run at 0f9fd985, independently re-executed, two timing claims corrected); final report gained rows for peer events quarantin…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-10-07T04:43:13.325Z"
+}

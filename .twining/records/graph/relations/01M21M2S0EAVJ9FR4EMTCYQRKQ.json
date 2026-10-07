@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-08T23:01:35.886Z",
+  "id": "01M21M2S0EAVJ9FR4EMTCYQRKQ",
+  "properties": {
+    "decision_summary": "Chose to read every code anchor myself rather than fan out mapper agents",
+    "origin": "derived"
+  },
+  "source": "01M21M2RWX6H4GZWT3TRR69ZSW",
+  "target": "01M21M2S0CEZVKJ5NV07RN7G7T",
+  "type": "decided_by"
+}

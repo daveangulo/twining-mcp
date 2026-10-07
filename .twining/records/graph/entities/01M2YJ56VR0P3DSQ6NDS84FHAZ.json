@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-20T04:45:56.984Z",
+  "id": "01M2YJ56VR0P3DSQ6NDS84FHAZ",
+  "name": "readStoreIdentity",
+  "properties": {
+    "scope": "src/retrieval/store-identity.ts"
+  },
+  "type": "function",
+  "updated_at": "2026-09-20T04:45:56.984Z"
+}

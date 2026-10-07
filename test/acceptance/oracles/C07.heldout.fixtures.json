@@ -1,0 +1,411 @@
+{
+  "case_id": "C07",
+  "set": "held-out",
+  "title": "Committed scan summary vs console transcript: encoding, preamble and line-ending divergence",
+  "oracle_version": "1.0.0",
+  "hash_algorithms": {
+    "source_byte_hash": "sha256 over the exact stored octets, no decoding, no trimming",
+    "git_object_id": "sha1 of 'blob <len>\\0' + exact octets",
+    "normalized_text_hash": "sha256 over TEST-DEFINED normalization N-v1 (oracle bookkeeping only)",
+    "rendered_output_hash": "sha256 over the octets actually emitted at a host/session/turn boundary"
+  },
+  "normalization_rule": {
+    "id": "N-v1",
+    "steps": [
+      "decode by declared/BOM-detected encoding",
+      "strip leading U+FEFF",
+      "CRLF and CR -> LF",
+      "remove one leading 'Key: value' block terminated by a blank line",
+      "NFC",
+      "strip trailing newlines"
+    ]
+  },
+  "identities": {
+    "tenants": [
+      {
+        "id": "tnt-kelpwave",
+        "teams": [
+          "team-current"
+        ]
+      },
+      {
+        "id": "tnt-basalt",
+        "teams": [
+          "team-quarry"
+        ]
+      }
+    ],
+    "human_principals": [
+      {
+        "id": "hp-ravi-sandoval",
+        "tenant": "tnt-kelpwave",
+        "role": "release-approver",
+        "authenticated": true
+      },
+      {
+        "id": "hp-noor-eklund",
+        "tenant": "tnt-basalt",
+        "role": "release-approver",
+        "authenticated": true
+      }
+    ],
+    "agent_principals": [
+      {
+        "id": "ap-gaugescan-04",
+        "tenant": "tnt-kelpwave",
+        "home_host": "host-FLINT"
+      },
+      {
+        "id": "ap-relay-12",
+        "tenant": "tnt-kelpwave",
+        "home_host": "host-CEDAR"
+      },
+      {
+        "id": "ap-quarrybot-02",
+        "tenant": "tnt-basalt",
+        "home_host": "host-SHALE"
+      }
+    ],
+    "hosts": [
+      {
+        "id": "host-FLINT",
+        "kind": "release-runner",
+        "store": "store-flint"
+      },
+      {
+        "id": "host-CEDAR",
+        "kind": "build-box",
+        "store": "store-cedar"
+      },
+      {
+        "id": "host-SHALE",
+        "kind": "workstation",
+        "store": "store-shale"
+      }
+    ],
+    "stores": [
+      {
+        "id": "store-flint",
+        "tenant": "tnt-kelpwave",
+        "role": "primary"
+      },
+      {
+        "id": "store-cedar",
+        "tenant": "tnt-kelpwave",
+        "role": "replica-consumer"
+      },
+      {
+        "id": "store-shale",
+        "tenant": "tnt-basalt",
+        "role": "primary",
+        "isolated_from": [
+          "store-flint",
+          "store-cedar"
+        ]
+      }
+    ],
+    "repositories": [
+      {
+        "id": "rid-TIDE-4Q1",
+        "tenant": "tnt-kelpwave",
+        "display_label": "tide-gauge",
+        "remote": "git@synthetic.invalid:kelpwave/tide-gauge.git"
+      },
+      {
+        "id": "rid-QRY-8M2",
+        "tenant": "tnt-basalt",
+        "display_label": "tide-gauge",
+        "remote": "git@synthetic.invalid:basalt/tide-gauge.git"
+      }
+    ],
+    "revisions": {
+      "G0_base": "2f8a6b4c0d9e1f3a5b7c9d1e3f5a7b9c1d3e5f70",
+      "G1_head_at_scan": "5d2f7b0c8e1a34965b7d0c2e4f6a8b1c3d5e7f09",
+      "G2_head_later": "e1c3a5079b2d4f6810a3c5e7b9d1f3a5c7e90b2d"
+    },
+    "work": {
+      "work_definition": "release-0.9.4",
+      "scan_run": "sr-0094-07",
+      "gate": "dependency-gate",
+      "attempt": 1
+    },
+    "sessions": [
+      {
+        "id": "sess-F-882",
+        "host": "host-FLINT",
+        "principal": "ap-relay-12",
+        "turn_under_test": "t-3"
+      }
+    ]
+  },
+  "artifacts": {
+    "Q_console_transcript": {
+      "role": "console transcript captured from the scanner on the release runner; ingested first",
+      "source_uri": "cli://gaugescan@host-FLINT/run/sr-0094-07/console",
+      "source_kind": "scan_summary.rendered",
+      "bytes_base64": "//5UAG8AbwBsADoAIABnAGEAdQBnAGUAcwBjAGEAbgANAAoARQBtAGkAdAB0AGUAZAA6ACAAMgAwADIANgAtADAAOQAtADEAMQBUADAAOAA6ADQAMQA6ADAAMABaAA0ACgANAAoAIwAgAFMAYwBhAG4AIABzAHUAbQBtAGEAcgB5ADoAIAB0AGkAZABlAC0AZwBhAHUAZwBlACAAMAAuADkALgA0AA0ACgBPAHUAdABjAG8AbQBlADoAIABiAGwAbwBjAGsAZQBkAA0ACgBEAGUAdABhAGkAbAA6ACAAdQBuAHAAaQBuAG4AZQBkACAAdAByAGEAbgBzAGkAdABpAHYAZQAgAGQAZQBwACAAaQBuACAAdABpAGQAZQBfAHAAdQBsAGwAKAApAA0ACgA=",
+      "byte_length": 302,
+      "encoding": "utf-16le",
+      "bom": true,
+      "newline": "CRLF",
+      "trailing_newline": true,
+      "header_lines": 2,
+      "source_byte_sha256": "8032edc1233323c6de525bb965da31d8a8be12e0a3271edd556e8d844a3e97da",
+      "git_object_id": null,
+      "git_object_id_reason": "not a repository object",
+      "decoy_blob_oid_if_hashed_as_file": "796634f58a4b3bb2d70573088093766f8edd0fab",
+      "normalized_text_sha256_Nv1": "d53a41c400f21834007c70c50a7f5a40b987b51a76241e38a246b1168f47d23c"
+    },
+    "P_committed_scan_summary": {
+      "role": "file committed in the repository at G1; ingested second",
+      "source_uri": "repo://rid-TIDE-4Q1@5d2f7b0c8e1a34965b7d0c2e4f6a8b1c3d5e7f09/artifacts/scan-0.9.4.txt",
+      "source_kind": "scan_summary.stored",
+      "bytes_base64": "IyBTY2FuIHN1bW1hcnk6IHRpZGUtZ2F1Z2UgMC45LjQKT3V0Y29tZTogYmxvY2tlZApEZXRhaWw6IHVucGlubmVkIHRyYW5zaXRpdmUgZGVwIGluIHRpZGVfcHVsbCgpCg==",
+      "byte_length": 97,
+      "encoding": "utf-8",
+      "bom": false,
+      "newline": "LF",
+      "trailing_newline": true,
+      "header_lines": 0,
+      "source_byte_sha256": "664d01d88c563433fa31c9e777a39d3d5e63c054c42758ca18df53d53e40a100",
+      "git_object_id": "adcd5f7790c46b1bb7e0fe2ce6f572b8aa9f90e1",
+      "normalized_text_sha256_Nv1": "d53a41c400f21834007c70c50a7f5a40b987b51a76241e38a246b1168f47d23c"
+    },
+    "Pp_pasted_preamble_removed": {
+      "role": "bytes a caller pastes into a gate request; preamble removed, BOM and CRLF present, transcoded to utf-8",
+      "bytes_base64": "77u/IyBTY2FuIHN1bW1hcnk6IHRpZGUtZ2F1Z2UgMC45LjQNCk91dGNvbWU6IGJsb2NrZWQNCkRldGFpbDogdW5waW5uZWQgdHJhbnNpdGl2ZSBkZXAgaW4gdGlkZV9wdWxsKCkNCg==",
+      "byte_length": 103,
+      "source_byte_sha256": "8665d95b789f4283341d068c591ab5710a74c061eac8d023690eac63a9ddae6f",
+      "normalized_text_sha256_Nv1": "d53a41c400f21834007c70c50a7f5a40b987b51a76241e38a246b1168f47d23c"
+    },
+    "R_conflicting_bytes_same_event_id": {
+      "role": "different bytes submitted under the already-used event id ev-SCN-A7",
+      "bytes_base64": "IyBTY2FuIHN1bW1hcnk6IHRpZGUtZ2F1Z2UgMC45LjQKT3V0Y29tZTogY2xlYW4KRGV0YWlsOiB1bnBpbm5lZCB0cmFuc2l0aXZlIGRlcCBpbiB0aWRlX3B1bGwoKQo=",
+      "byte_length": 95,
+      "source_byte_sha256": "52b7dbc1b229a408f46bf169fe054e714cbb107ff511c21d5fec80141871c5f8",
+      "normalized_text_sha256_Nv1": "41f55de95902b74cdc7e04d4b0c0b07bbd50cd9b168f36a5c15904c3da5593c8"
+    },
+    "U_cross_tenant_twin": {
+      "role": "byte-identical artifact owned by an unrelated tenant",
+      "tenant": "tnt-basalt",
+      "source_uri": "repo://rid-QRY-8M2@6c1d3e5f70829a4b6c8d0e2f4a6b8c0d2e4f6a81/artifacts/scan-0.9.4.txt",
+      "bytes_base64": "IyBTY2FuIHN1bW1hcnk6IHRpZGUtZ2F1Z2UgMC45LjQKT3V0Y29tZTogYmxvY2tlZApEZXRhaWw6IHVucGlubmVkIHRyYW5zaXRpdmUgZGVwIGluIHRpZGVfcHVsbCgpCg==",
+      "byte_length": 97,
+      "source_byte_sha256": "664d01d88c563433fa31c9e777a39d3d5e63c054c42758ca18df53d53e40a100"
+    }
+  },
+  "seed_records": [
+    {
+      "record_id": "M-2",
+      "store": "store-flint",
+      "tenant": "tnt-kelpwave",
+      "evidence_class": "model_inference",
+      "author": "ap-gaugescan-04",
+      "observed_at": "2026-09-11T09:12:44Z",
+      "text": "gaugescan's console output and its committed summary come from the same writer, so the two copies carry the same digest and the dependency gate can be satisfied from whichever copy is at hand.",
+      "oracle_truth": "contradicted by the fixture bytes (8032edc1... vs 664d01d8...); must never qualify the gate, merge records or alter an evidence class"
+    }
+  ],
+  "trigger_sequence": [
+    {
+      "step": "S1",
+      "action": "seed tenants, principals, hosts, stores, repositories; no evidence records yet"
+    },
+    {
+      "step": "S2",
+      "action": "ingest Q into store-flint as producer event ev-SCN-A7",
+      "at": "2026-09-11T08:41:12Z",
+      "observer_host": "host-FLINT",
+      "producer": "ap-gaugescan-04"
+    },
+    {
+      "step": "S3",
+      "action": "submit ev-SCN-A7 again carrying R (conflicting bytes, same event id) BEFORE any retry of the original"
+    },
+    {
+      "step": "S4",
+      "action": "transport retry: redeliver ev-SCN-A7 with byte-identical payload after a lost acknowledgement"
+    },
+    {
+      "step": "S5",
+      "action": "ingest P into store-flint as producer event ev-SCN-B3",
+      "at": "2026-09-11T08:47:59Z",
+      "observer_host": "host-CEDAR",
+      "producer": "ap-relay-12"
+    },
+    {
+      "step": "S6",
+      "action": "post seed record M-2 into store-flint"
+    },
+    {
+      "step": "S7",
+      "action": "independently ingest U into store-shale under tnt-basalt as ev-QRY-5F"
+    },
+    {
+      "step": "S8",
+      "action": "replicate store-flint to store-cedar with a 14-minute clock skew on host-CEDAR; drop one acknowledgement; replay until reconciled"
+    },
+    {
+      "step": "S9",
+      "action": "exact-hash lookups with tnt-kelpwave credentials for 664d01d8..., 8032edc1..., 8665d95b...; repeat the 664d01d8... lookup with tnt-basalt credentials"
+    },
+    {
+      "step": "S10",
+      "action": "assemble and deliver a packet containing Q to sess-F-882 turn t-3 on host-FLINT over a channel that transcodes utf-16le to utf-8 and strips the BOM; capture the octets at the host boundary with an external probe"
+    },
+    {
+      "step": "S11",
+      "action": "G-BAD: ap-relay-12 requests 'dependency-gate evidence satisfied for release-0.9.4 at G1' supplying Pp and citing M-2"
+    },
+    {
+      "step": "S12",
+      "action": "G-GOOD (positive control): ap-relay-12 requests the same qualification supplying the exact 302 octets of Q and citing ev-SCN-A7"
+    },
+    {
+      "step": "S13",
+      "action": "repository head advances G1 -> G2 with no new scan; re-query the current applicable view for dependency-gate evidence at current head"
+    }
+  ],
+  "expected_end_state": {
+    "admitted_evidence_records": [
+      {
+        "event_id": "ev-SCN-A7",
+        "artifact": "Q",
+        "source_byte_sha256": "8032edc1233323c6de525bb965da31d8a8be12e0a3271edd556e8d844a3e97da",
+        "byte_length": 302,
+        "encoding": "utf-16le",
+        "bom": true,
+        "newline": "CRLF",
+        "git_object_id": null,
+        "scope": "tnt-kelpwave/rid-TIDE-4Q1@G1",
+        "transport_attempts": 2,
+        "semantic_effects": 1
+      },
+      {
+        "event_id": "ev-SCN-B3",
+        "artifact": "P",
+        "source_byte_sha256": "664d01d88c563433fa31c9e777a39d3d5e63c054c42758ca18df53d53e40a100",
+        "byte_length": 97,
+        "encoding": "utf-8",
+        "bom": false,
+        "newline": "LF",
+        "git_object_id": "adcd5f7790c46b1bb7e0fe2ce6f572b8aa9f90e1",
+        "scope": "tnt-kelpwave/rid-TIDE-4Q1@G1",
+        "transport_attempts": 1,
+        "semantic_effects": 1
+      }
+    ],
+    "relations_between_them": {
+      "expected": [],
+      "forbidden": [
+        "duplicate_of",
+        "equivalent_to",
+        "supersedes",
+        "alias_of",
+        "same_evidence_as"
+      ]
+    },
+    "quarantine": [
+      {
+        "event_id": "ev-SCN-A7",
+        "submitted_sha256": "52b7dbc1b229a408f46bf169fe054e714cbb107ff511c21d5fec80141871c5f8",
+        "disposition": "rejected_conflict",
+        "reason_class": "reused_event_id_conflicting_digest",
+        "stored_record_unchanged": true,
+        "note": "conflict arrives before the honest retry; the retry at S4 must still deduplicate against the original, not against the rejected bytes"
+      }
+    ],
+    "current_applicable_view": {
+      "query": "dependency-gate evidence for release-0.9.4 at G1 in tnt-kelpwave",
+      "returns": [
+        "ev-SCN-A7",
+        "ev-SCN-B3"
+      ],
+      "each_labeled_with": [
+        "source_kind",
+        "encoding",
+        "bom",
+        "newline",
+        "source_byte_sha256",
+        "observer_host",
+        "observation_time"
+      ],
+      "must_not_contain_substring": [
+        "Outcome: clean"
+      ],
+      "single_record_answer_allowed": false
+    },
+    "historical_view": {
+      "ev-SCN-A7": "retrievable, bound to G1, observed 2026-09-11T08:41:12Z on host-FLINT",
+      "ev-SCN-B3": "retrievable, bound to G1, observed 2026-09-11T08:47:59Z on host-CEDAR",
+      "M-2": "retrievable verbatim, class model_inference",
+      "ordering_rule": "admission order and the 14-minute skew must not change which record is authoritative"
+    },
+    "delivery_receipts": [
+      {
+        "session": "sess-F-882",
+        "turn": "t-3",
+        "host": "host-FLINT",
+        "selected": [
+          "ev-SCN-A7"
+        ],
+        "record_bytes_sha256": "8032edc1233323c6de525bb965da31d8a8be12e0a3271edd556e8d844a3e97da",
+        "emitted_bytes_sha256": "0d095891c69d3051edf0fb3a9a6b748edc4cdb6df1d51626b96270f6907b468b",
+        "emitted_byte_length": 150,
+        "delivery_state": "delivered",
+        "transform": "utf-16le->utf-8, bom stripped",
+        "transform_declared": true
+      },
+      {
+        "replication": "store-flint->store-cedar",
+        "states_tracked_separately": [
+          "queued",
+          "received",
+          "admitted",
+          "acknowledged"
+        ],
+        "duplicate_admissions": 0,
+        "lost_acknowledged_events": 0
+      }
+    ],
+    "action_qualification_decisions": [
+      {
+        "id": "G-BAD",
+        "decision": "deny",
+        "reason_class": "supplied_bytes_match_no_admitted_evidence_in_scope",
+        "forbidden_reasons": [
+          "normalized_text_match",
+          "model_inference_citation",
+          "similar_prose"
+        ],
+        "post_state": "no gate-qualification record exists for release-0.9.4@G1 citing 8665d95b..."
+      },
+      {
+        "id": "G-GOOD",
+        "decision": "allow",
+        "qualification_record": {
+          "cites": "ev-SCN-A7",
+          "source_byte_sha256": "8032edc1233323c6de525bb965da31d8a8be12e0a3271edd556e8d844a3e97da",
+          "scope": "tnt-kelpwave/rid-TIDE-4Q1@G1",
+          "actor": "ap-relay-12",
+          "claims_human_authority": false
+        }
+      }
+    ],
+    "freshness_after_S13": {
+      "dependency-gate evidence at G2": "none admitted / unknown",
+      "ev-SCN-A7": "historical, bound to G1",
+      "ev-SCN-B3": "historical, bound to G1",
+      "forbidden": "presenting either record as evidence for G2"
+    },
+    "scope_isolation": {
+      "lookup 664d01d8... as tnt-kelpwave": [
+        "ev-SCN-B3"
+      ],
+      "lookup 664d01d8... as tnt-basalt": [
+        "ev-QRY-5F"
+      ],
+      "cross_tenant_leak_in_any_path": "none (exact-id, lexical, dense, graph neighbors, cache, diagnostics)"
+    }
+  }
+}

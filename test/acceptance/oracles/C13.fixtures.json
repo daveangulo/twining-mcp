@@ -1,0 +1,811 @@
+{
+  "case_id": "C13",
+  "variant": "development",
+  "oracle_version": "1.0.0",
+  "authored_before_observing_implementation": true,
+  "requirements_covered": [
+    "R01",
+    "R09",
+    "R04",
+    "R07",
+    "R13",
+    "R16",
+    "R17"
+  ],
+  "abstract_store_model": {
+    "events": "append-only producer events: {event_id, payload_digest, bytes_sha256, producer{principal,agent,host,installation,session,turn}, source{repo_identity,worktree_identity,submodule_of,revision,revision_state,worktree_state_digest,labels{display_name,remote_url,abs_path,branch}}, store_identity, scope, evidence_class, observed_at}",
+    "records": "admitted records derived 1:1 from admitted events",
+    "current_applicable_view": "function(query{repo_identity,worktree_identity,scope,revision,include_submodules,mode}) -> ordered record list + explain{excluded_by_scope[], ranked[]}",
+    "delivery_receipts": "{record_id, target{host,session,turn}, state in [selected,emitted,delivered,unavailable,not_selected], emitted_bytes_sha256}",
+    "historical_view": "function(record_id) -> versions + label observations with original observation times and staleness marks",
+    "action_decisions": "{request_id, requested_action, decision in [allowed,denied,deferred,proposed_only], authority_basis, executed:boolean}",
+    "source_mutations": "harness-observed log of commit/reset/checkout/stash/clean/index-write/submodule-update performed against any source repository by the system under test"
+  },
+  "identities": {
+    "tenant": "tenant-northwind",
+    "team": "team-ledger",
+    "humans": [
+      {
+        "id": "human:pcheng",
+        "display": "Priya Cheng",
+        "home_host": "host-alpha"
+      },
+      {
+        "id": "human:mokoye",
+        "display": "Musa Okoye",
+        "home_host": "host-beta"
+      }
+    ],
+    "agents": [
+      {
+        "id": "agent:scribe-1",
+        "runs_on": "host-alpha",
+        "operator": "human:pcheng"
+      },
+      {
+        "id": "agent:scribe-2",
+        "runs_on": "host-beta",
+        "operator": "human:mokoye"
+      }
+    ],
+    "hosts": [
+      {
+        "id": "host-alpha",
+        "installation": "inst-A1"
+      },
+      {
+        "id": "host-beta",
+        "installation": "inst-B7"
+      }
+    ],
+    "stores": [
+      {
+        "id": "store-shared-01",
+        "kind": "shared",
+        "reachable_from": [
+          "host-alpha",
+          "host-beta"
+        ]
+      },
+      {
+        "id": "store-side-02",
+        "kind": "export-target",
+        "reachable_from": [
+          "host-alpha"
+        ]
+      }
+    ]
+  },
+  "seed": {
+    "repositories": [
+      {
+        "repo_identity": "repo-7f3a",
+        "labels": {
+          "display_name": "ledger-core",
+          "remote_url": "git@example.invalid:northwind/ledger-core.git",
+          "abs_path": "/srv/work/ledger",
+          "branch": "main"
+        },
+        "host": "host-alpha",
+        "head_revision": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+      },
+      {
+        "repo_identity": "repo-9c21",
+        "labels": {
+          "display_name": "ledger-core",
+          "remote_url": "git@example.invalid:contoso/ledger-core.git",
+          "abs_path": "/srv/work/ledger",
+          "branch": "main"
+        },
+        "host": "host-beta",
+        "head_revision": "e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5",
+        "note": "identical abs_path, identical display_name and identical branch name to repo-7f3a; unrelated history"
+      },
+      {
+        "repo_identity": "repo-2d55",
+        "labels": {
+          "display_name": "ledger-core",
+          "remote_url": "git@example.invalid:fabrikam/ledger-core.git",
+          "abs_path": "/srv/work/ledger",
+          "branch": "main"
+        },
+        "host": "host-beta",
+        "head_revision": "f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6",
+        "appears_at_trigger": "T9",
+        "note": "replaces repo-9c21 at the identical path (path reuse)"
+      },
+      {
+        "repo_identity": "repo-4e88",
+        "labels": {
+          "display_name": "fx-rates",
+          "remote_url": "git@example.invalid:northwind/fx-rates.git",
+          "abs_path": "/srv/work/ledger/vendor/fx-rates",
+          "branch": "main"
+        },
+        "host": "host-alpha",
+        "head_revision": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+        "role": "submodule of repo-7f3a at vendor/fx-rates"
+      },
+      {
+        "repo_identity": "repo-6b10",
+        "labels": {
+          "display_name": "fx-rates",
+          "remote_url": "git@example.invalid:contoso/fx-rates.git",
+          "abs_path": "/srv/work/ledger/vendor/fx-rates",
+          "branch": "main"
+        },
+        "host": "host-beta",
+        "head_revision": "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+        "role": "submodule of repo-9c21 at the identical submodule path vendor/fx-rates"
+      }
+    ],
+    "worktrees": [
+      {
+        "worktree_identity": "wt:R1-main",
+        "repo_identity": "repo-7f3a",
+        "abs_path": "/srv/work/ledger",
+        "branch": "main",
+        "head": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "kind": "primary",
+        "clean": true
+      },
+      {
+        "worktree_identity": "wt:R1-hotfix",
+        "repo_identity": "repo-7f3a",
+        "abs_path": "/srv/work/ledger-wt/hotfix",
+        "branch": "hotfix/ledger-rounding",
+        "head": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+        "kind": "linked",
+        "clean": false,
+        "shares_object_store_with": "wt:R1-main"
+      },
+      {
+        "worktree_identity": "wt:R2-main",
+        "repo_identity": "repo-9c21",
+        "abs_path": "/srv/work/ledger",
+        "branch": "main",
+        "head": "e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5",
+        "kind": "primary",
+        "clean": true
+      }
+    ],
+    "dirty_state": {
+      "worktree_identity": "wt:R1-hotfix",
+      "base_revision": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+      "modified_tracked": [
+        {
+          "path": "src/rounding.ts",
+          "byte_length": 145,
+          "bytes_sha256": "776247b192c065d516deb8dc17803542aa072d7cc9d5dc9e10a39b20707cff29",
+          "content_literal_escaped": "export function roundTotal(cents: number): number {\\n  // half-to-even per DEC-1191   \\n  const scaled = cents / 100;\\r\\n  return Math.round(scaled);",
+          "normalization_traps": [
+            "three trailing spaces on line 2",
+            "CRLF on line 3",
+            "no trailing newline at EOF"
+          ],
+          "normalized_sha256_if_instrument_broken": "fabcca0669b0aa703d0c8e2e7d37f71e2728fc94a4bcb407745b7a18a5a4c426"
+        }
+      ],
+      "untracked": [
+        {
+          "path": "notes/rounding-scratch.md",
+          "byte_length": 51,
+          "bytes_sha256": "b84873ae432ee091c376519173bde1d2e57d280486816d0bf45100b18659d36f",
+          "content_literal_escaped": "\\ufeffscratch: confirm banker's rounding vs half-up  \\n",
+          "normalization_traps": [
+            "UTF-8 BOM",
+            "two trailing spaces"
+          ],
+          "normalized_sha256_if_instrument_broken": "7b4ba71d47ef488c585951c5d7e7c84019958b6830df17d701cfd6d4da555b22"
+        }
+      ]
+    },
+    "work_definitions": [
+      {
+        "id": "WD-418",
+        "title": "Ledger rounding correction",
+        "native_assignee": "human:mokoye",
+        "native_code_writer": "agent:scribe-2",
+        "owned_by": "external work tracker (not the memory store)",
+        "observed_at": "2026-09-10T08:00:00Z",
+        "observer": "agent:scribe-2",
+        "evidence_class": "reported_observation"
+      }
+    ],
+    "pre_existing_records": []
+  },
+  "triggers": [
+    {
+      "id": "T1",
+      "host": "host-alpha",
+      "principal": "agent:scribe-1",
+      "session": "sess-A-01",
+      "turn": 3,
+      "cwd": "/srv/work/ledger",
+      "bound_worktree": "wt:R1-main",
+      "action": "record_event",
+      "event_id": "E1",
+      "scope": "src/",
+      "evidence_class": "model_inference",
+      "text": "Rounding rule for ledger totals: round half-to-even on the cent.",
+      "store": "store-shared-01"
+    },
+    {
+      "id": "T2",
+      "host": "host-beta",
+      "principal": "agent:scribe-2",
+      "session": "sess-B-01",
+      "turn": 2,
+      "cwd": "/srv/work/ledger",
+      "bound_worktree": "wt:R2-main",
+      "action": "record_event",
+      "event_id": "E2",
+      "scope": "src/",
+      "evidence_class": "model_inference",
+      "text": "Rounding rule for ledger totals: round half-up on the cent.",
+      "store": "store-shared-01"
+    },
+    {
+      "id": "T3",
+      "action": "observe",
+      "note": "E1 and E2 are both admitted into the SAME store store-shared-01"
+    },
+    {
+      "id": "T4",
+      "host": "host-alpha",
+      "principal": "agent:scribe-1",
+      "session": "sess-A-01",
+      "turn": 5,
+      "cwd": "/srv/work/ledger-wt/hotfix",
+      "bound_worktree": "wt:R1-hotfix",
+      "action": "record_event",
+      "event_id": "E3",
+      "scope": "src/",
+      "evidence_class": "verified_observation",
+      "text": "Uncommitted rounding change under review in the hotfix worktree.",
+      "attaches_evidence": [
+        "src/rounding.ts",
+        "notes/rounding-scratch.md"
+      ],
+      "store": "store-shared-01"
+    },
+    {
+      "id": "T5",
+      "host": "host-alpha",
+      "principal": "agent:scribe-1",
+      "session": "sess-A-01",
+      "turn": 7,
+      "cwd": "/srv/work/ledger/vendor/fx-rates",
+      "bound_repo": "repo-4e88",
+      "action": "record_event",
+      "event_id": "E4",
+      "scope": "src/",
+      "evidence_class": "model_inference",
+      "text": "FX rate table rounds to 6 decimal places before ledger conversion.",
+      "store": "store-shared-01"
+    },
+    {
+      "id": "T6",
+      "host": "host-beta",
+      "principal": "agent:scribe-2",
+      "session": "sess-B-02",
+      "turn": 1,
+      "cwd": "/srv/work/ledger",
+      "bound_worktree": "wt:R2-main",
+      "action": "assemble_query",
+      "query_id": "Q-BETA",
+      "query_text": "what is the rounding rule for ledger totals?",
+      "scope": "src/",
+      "mode": "strict",
+      "include_submodules": false
+    },
+    {
+      "id": "T7",
+      "host": "host-alpha",
+      "principal": "agent:scribe-1",
+      "session": "sess-A-02",
+      "turn": 1,
+      "cwd": "/srv/work/ledger-wt/hotfix",
+      "bound_worktree": "wt:R1-hotfix",
+      "action": "assemble_query",
+      "query_id": "Q-ALPHA",
+      "query_text": "what is the rounding rule for ledger totals?",
+      "scope": "src/",
+      "mode": "strict",
+      "include_submodules": false
+    },
+    {
+      "id": "T8",
+      "host": "host-alpha",
+      "principal": "agent:scribe-1",
+      "session": "sess-A-02",
+      "turn": 2,
+      "action": "request_source_mutations",
+      "request_ids": [
+        "RQ-COMMIT",
+        "RQ-RESET",
+        "RQ-CHECKOUT"
+      ],
+      "requested": [
+        "commit wt:R1-hotfix so capture has a clean anchor",
+        "reset wt:R1-hotfix to a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "checkout branch main in wt:R1-hotfix"
+      ],
+      "claimed_basis": "capture hygiene"
+    },
+    {
+      "id": "T9",
+      "host": "host-beta",
+      "action": "path_reuse",
+      "detail": "repo-9c21 checkout removed; repo-2d55 cloned to the identical path /srv/work/ledger",
+      "then": {
+        "host": "host-beta",
+        "principal": "agent:scribe-2",
+        "session": "sess-B-03",
+        "action": "record_event",
+        "event_id": "E5",
+        "scope": "src/",
+        "text": "Rounding rule for ledger totals: truncate toward zero.",
+        "store": "store-shared-01"
+      }
+    },
+    {
+      "id": "T9b",
+      "host": "host-alpha",
+      "action": "remote_relabel",
+      "detail": "human:pcheng repoints repo-7f3a origin to git@example.invalid:northwind/ledger-core-v2.git; no history change"
+    },
+    {
+      "id": "T10",
+      "action": "retry_after_lost_ack",
+      "detail": "T1 is re-sent verbatim (same event_id E1, same payload digest) because the acknowledgement was lost in transit"
+    },
+    {
+      "id": "T11",
+      "action": "conflicting_id_reuse",
+      "detail": "an event reusing event_id E3 with different bytes is submitted to store-shared-01"
+    },
+    {
+      "id": "T12",
+      "action": "export",
+      "detail": "E1's record is exported from store-shared-01 into store-side-02"
+    },
+    {
+      "id": "T13",
+      "action": "read_work_definition",
+      "detail": "WD-418 native assignee and code-writer are re-read from the external work tracker after T12"
+    }
+  ],
+  "expected_end_state": {
+    "events": [
+      {
+        "event_id": "E1",
+        "repo_identity": "repo-7f3a",
+        "worktree_identity": "wt:R1-main",
+        "revision": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "revision_state": "published",
+        "store_identity": "store-shared-01",
+        "submodule_of": null,
+        "label_snapshot": {
+          "abs_path": "/srv/work/ledger",
+          "display_name": "ledger-core",
+          "remote_url": "git@example.invalid:northwind/ledger-core.git",
+          "branch": "main"
+        },
+        "evidence_class": "model_inference"
+      },
+      {
+        "event_id": "E2",
+        "repo_identity": "repo-9c21",
+        "worktree_identity": "wt:R2-main",
+        "revision": "e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5",
+        "revision_state": "published",
+        "store_identity": "store-shared-01",
+        "submodule_of": null,
+        "label_snapshot": {
+          "abs_path": "/srv/work/ledger",
+          "display_name": "ledger-core",
+          "remote_url": "git@example.invalid:contoso/ledger-core.git",
+          "branch": "main"
+        },
+        "evidence_class": "model_inference"
+      },
+      {
+        "event_id": "E3",
+        "repo_identity": "repo-7f3a",
+        "worktree_identity": "wt:R1-hotfix",
+        "revision": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+        "revision_state": "dirty",
+        "worktree_state_digest": "distinct-from-revision",
+        "store_identity": "store-shared-01",
+        "evidence_bytes": [
+          {
+            "path": "src/rounding.ts",
+            "bytes_sha256": "776247b192c065d516deb8dc17803542aa072d7cc9d5dc9e10a39b20707cff29",
+            "tracked": true
+          },
+          {
+            "path": "notes/rounding-scratch.md",
+            "bytes_sha256": "b84873ae432ee091c376519173bde1d2e57d280486816d0bf45100b18659d36f",
+            "tracked": false
+          }
+        ]
+      },
+      {
+        "event_id": "E4",
+        "repo_identity": "repo-4e88",
+        "worktree_identity": "wt:S1-main",
+        "revision": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+        "revision_state": "published",
+        "store_identity": "store-shared-01",
+        "submodule_of": {
+          "repo_identity": "repo-7f3a",
+          "path": "vendor/fx-rates",
+          "gitlink_revision": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+          "relation_kind": "contained_by_gitlink"
+        }
+      },
+      {
+        "event_id": "E5",
+        "repo_identity": "repo-2d55",
+        "revision": "f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6",
+        "revision_state": "published",
+        "store_identity": "store-shared-01"
+      },
+      {
+        "event_id": "E1",
+        "duplicate_of_T10": true,
+        "admitted_records": 1,
+        "retry_count": 1,
+        "new_semantic_effects": 0
+      },
+      {
+        "event_id": "E3-conflict",
+        "outcome": "rejected_as_identity_conflict",
+        "original_preserved": true
+      }
+    ],
+    "current_applicable_view": {
+      "Q-BETA": {
+        "member_record_ids": [
+          "E2"
+        ],
+        "member_count": 1,
+        "must_not_contain": [
+          "E1",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "explain": {
+          "excluded_by_scope": [
+            "E1",
+            "E3",
+            "E4"
+          ],
+          "excluded_before_ranking": true,
+          "payload_bytes_disclosed_for_excluded": false
+        }
+      },
+      "Q-ALPHA": {
+        "member_record_ids": [
+          "E1",
+          "E3"
+        ],
+        "member_count": 2,
+        "must_not_contain": [
+          "E2",
+          "E4",
+          "E5"
+        ],
+        "explain": {
+          "excluded_by_scope": [
+            "E2",
+            "E5"
+          ],
+          "excluded_by_submodule_boundary": [
+            "E4"
+          ]
+        }
+      },
+      "Q-ALPHA-SUBMODULES-ON": {
+        "query": "same as Q-ALPHA with include_submodules=true",
+        "member_record_ids": [
+          "E1",
+          "E3",
+          "E4"
+        ],
+        "E4_label": "cross-repo-by-gitlink:repo-4e88"
+      },
+      "Q-SUB-BETA": {
+        "query": "{repo_identity: repo-6b10, scope: src/}",
+        "member_record_ids": [],
+        "must_not_contain": [
+          "E4"
+        ]
+      }
+    },
+    "delivery_receipts": [
+      {
+        "record_id": "E2",
+        "target": {
+          "host": "host-beta",
+          "session": "sess-B-02",
+          "turn": 1
+        },
+        "state": "delivered",
+        "emitted_bytes_sha256": "recorded_and_linked_to_turn"
+      },
+      {
+        "record_id": "E1",
+        "target": {
+          "host": "host-beta",
+          "session": "sess-B-02",
+          "turn": 1
+        },
+        "state": "not_selected",
+        "reason": "out_of_repo_scope",
+        "must_not_be": "unavailable"
+      },
+      {
+        "record_id": "E1",
+        "target": {
+          "host": "host-alpha",
+          "session": "sess-A-02",
+          "turn": 1
+        },
+        "state": "delivered",
+        "emitted_bytes_sha256": "recorded_and_linked_to_turn"
+      },
+      {
+        "record_id": "E3",
+        "target": {
+          "host": "host-alpha",
+          "session": "sess-A-02",
+          "turn": 1
+        },
+        "state": "delivered"
+      },
+      {
+        "record_id": "E1",
+        "target": {
+          "host": "host-alpha",
+          "session": "sess-A-02",
+          "turn": 1
+        },
+        "duplicate_receipts_after_T10": 0
+      }
+    ],
+    "historical_view": {
+      "E2": {
+        "repo_identity": "repo-9c21",
+        "label_observations": [
+          {
+            "abs_path": "/srv/work/ledger",
+            "host": "host-beta",
+            "observed_at": "T2",
+            "current_binding": "stale_or_unknown"
+          }
+        ],
+        "rebound_to_repo_2d55": false
+      },
+      "repo-7f3a": {
+        "remote_url_observations": [
+          {
+            "value": "git@example.invalid:northwind/ledger-core.git",
+            "observed_at": "T1"
+          },
+          {
+            "value": "git@example.invalid:northwind/ledger-core-v2.git",
+            "observed_at": "T9b"
+          }
+        ],
+        "repo_identity_changed": false
+      }
+    },
+    "action_decisions": [
+      {
+        "request_id": "RQ-COMMIT",
+        "requested_action": "commit_source",
+        "decision": "denied",
+        "executed": false,
+        "authority_basis": "no authenticated human authorization for source mutation; capture hygiene is not an authority"
+      },
+      {
+        "request_id": "RQ-RESET",
+        "requested_action": "reset_source",
+        "decision": "denied",
+        "executed": false
+      },
+      {
+        "request_id": "RQ-CHECKOUT",
+        "requested_action": "checkout_branch",
+        "decision": "denied",
+        "executed": false
+      },
+      {
+        "request_id": "RQ-CAPTURE-E3",
+        "requested_action": "record_event_from_dirty_worktree",
+        "decision": "allowed",
+        "executed": true,
+        "note": "capture succeeds without any source mutation"
+      }
+    ],
+    "source_mutations": [],
+    "worktree_end_state": {
+      "wt:R1-hotfix": {
+        "head": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+        "branch": "hotfix/ledger-rounding",
+        "src/rounding.ts.sha256": "776247b192c065d516deb8dc17803542aa072d7cc9d5dc9e10a39b20707cff29",
+        "notes/rounding-scratch.md.present": true,
+        "index_mtime_changed": false
+      }
+    },
+    "work_definitions_end_state": [
+      {
+        "id": "WD-418",
+        "native_assignee": "human:mokoye",
+        "native_code_writer": "agent:scribe-2",
+        "changed_by_memory_operations": false
+      }
+    ],
+    "relations": {
+      "must_exist": [
+        {
+          "from": "E4",
+          "to": "repo-7f3a",
+          "kind": "contained_by_gitlink"
+        }
+      ],
+      "must_not_exist": [
+        {
+          "from": "E1",
+          "to": "E2",
+          "kind": "supersedes"
+        },
+        {
+          "from": "E2",
+          "to": "E1",
+          "kind": "supersedes"
+        },
+        {
+          "from": "E1",
+          "to": "E2",
+          "kind": "contested_pair"
+        },
+        {
+          "from": "repo-7f3a",
+          "to": "repo-9c21",
+          "kind": "same_as"
+        },
+        {
+          "from": "wt:R1-hotfix",
+          "to": "repo-9c21",
+          "kind": "belongs_to"
+        }
+      ]
+    },
+    "export_end_state": {
+      "store-side-02": [
+        {
+          "record_id": "E1",
+          "repo_identity": "repo-7f3a",
+          "store_identity": "store-side-02",
+          "source_provenance_unchanged": true
+        }
+      ]
+    }
+  },
+  "assertions": [
+    {
+      "id": "A1",
+      "kind": "positive",
+      "statement": "E1.repo_identity != E2.repo_identity despite identical abs_path, display_name and branch."
+    },
+    {
+      "id": "A2",
+      "kind": "positive",
+      "statement": "After T9 and T9b, E2.repo_identity is still repo-9c21 and repo-7f3a's identity is unchanged; E5.repo_identity is repo-2d55."
+    },
+    {
+      "id": "A3",
+      "kind": "positive",
+      "statement": "store_identity and repo_identity are independent fields; the T12 export changes store_identity only."
+    },
+    {
+      "id": "A4",
+      "kind": "negative",
+      "statement": "Q-BETA's applicable view contains exactly [E2]; E1, E3, E4 are absent and have no delivery receipt of state selected/emitted/delivered for sess-B-02."
+    },
+    {
+      "id": "A5",
+      "kind": "positive_control",
+      "statement": "Q-ALPHA's applicable view contains E1, which was authored in the sibling worktree wt:R1-main."
+    },
+    {
+      "id": "A6",
+      "kind": "positive",
+      "statement": "wt:R1-main and wt:R1-hotfix carry distinct worktree identities under one repo identity; E3 is not attributed to wt:R1-main."
+    },
+    {
+      "id": "A7",
+      "kind": "positive",
+      "statement": "E4.repo_identity is repo-4e88 with submodule containment recorded as a relation, not as producing-repo identity."
+    },
+    {
+      "id": "A8",
+      "kind": "negative",
+      "statement": "A query scoped to repo-6b10 returns no E4, despite the identical submodule path vendor/fx-rates."
+    },
+    {
+      "id": "A9",
+      "kind": "negative",
+      "statement": "Q-ALPHA with include_submodules=false returns no E4; only the explicit include_submodules=true query returns it, labeled cross-repo."
+    },
+    {
+      "id": "A10",
+      "kind": "positive",
+      "statement": "E3.revision_state is dirty with a worktree_state_digest distinct from revision b2b2...; E3 is not reported as anchored to a published revision."
+    },
+    {
+      "id": "A11",
+      "kind": "positive",
+      "statement": "E3's stored evidence hashes equal the original byte hashes 776247b1... and b84873ae..., and the untracked file is marked untracked."
+    },
+    {
+      "id": "A12",
+      "kind": "negative",
+      "statement": "source_mutations is empty across T1-T13 and wt:R1-hotfix end state is byte-identical to its T4 state."
+    },
+    {
+      "id": "A13",
+      "kind": "negative",
+      "statement": "RQ-COMMIT, RQ-RESET and RQ-CHECKOUT are each denied or proposed_only with executed=false."
+    },
+    {
+      "id": "A14",
+      "kind": "positive",
+      "statement": "Capture of E3 succeeds from a dirty tree without writing to the worktree or its index; any refusal is explicit and leaves the tree untouched."
+    },
+    {
+      "id": "A15",
+      "kind": "negative",
+      "statement": "WD-418 native_assignee and native_code_writer are unchanged; the store holds only a dated reference with an observer, not an assignment."
+    },
+    {
+      "id": "A16",
+      "kind": "positive",
+      "statement": "Delivery receipts distinguish selected/emitted/delivered/not_selected/unavailable; E1 for sess-B-02 is not_selected (out of scope), never unavailable."
+    },
+    {
+      "id": "A17",
+      "kind": "positive",
+      "statement": "historical_view(E2) retains the original /srv/work/ledger label with its T2 observation time and marks present path binding stale/unknown."
+    },
+    {
+      "id": "A18",
+      "kind": "negative",
+      "statement": "No supersession, correction or contested-pair relation is created between E1 and E2."
+    },
+    {
+      "id": "A19",
+      "kind": "negative",
+      "statement": "For Q-BETA, E1 is excluded before ranking and the explain output names it as excluded_by_scope without disclosing its payload bytes."
+    },
+    {
+      "id": "A20",
+      "kind": "positive",
+      "statement": "Sharing store-shared-01 does not authorize sess-B-02 to read repo-7f3a records; the exclusion is an explicit authorization decision, not an empty result by accident."
+    },
+    {
+      "id": "A21",
+      "kind": "positive",
+      "statement": "The T10 verbatim retry yields exactly one admitted record, one applicable-view entry and one delivery receipt per target, flagged as a retry."
+    },
+    {
+      "id": "A22",
+      "kind": "positive",
+      "statement": "The T11 reuse of event_id E3 with different bytes is rejected as an explicit identity conflict; E3's original bytes and hash remain retrievable."
+    }
+  ]
+}

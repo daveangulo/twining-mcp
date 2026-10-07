@@ -1,0 +1,18 @@
+{
+  "agent_id": "merge-integrator",
+  "detail": "Full summary: the ancestor-membership rule has now produced three separate defects at the 02b seam (ceremony rulings, adapter/mirror writes, acceptance fixtures). Anything that mints an event should be audited for whether it cites the policy it will be judged under; the adapter runtime now does it centrally, but appendRaw callers bypass that path.",
+  "entry_type": "warning",
+  "id": "01M2M0CYT5BV4WYZM094B8WMEM",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "e9b4817f9645b9627706a6181a37e579f035961f",
+    "recorded_at": "2026-09-16T02:23:12.179Z"
+  },
+  "scope": "src/adapters/",
+  "summary": "the ancestor-membership rule has now produced three separate defects at the 02b seam (ceremony rulings, adapter/mirror writes, acceptance fixtures). Anything that mints an event should be audited f…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-16T02:23:12.197Z"
+}

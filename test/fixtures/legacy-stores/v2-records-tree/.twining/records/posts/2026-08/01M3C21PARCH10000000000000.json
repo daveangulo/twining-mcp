@@ -1,0 +1,10 @@
+{
+  "agent_id": "agent-scribe",
+  "detail": "",
+  "entry_type": "status",
+  "id": "01M3C21PARCH10000000000000",
+  "scope": "src/catalog/",
+  "summary": "swept into the archive by the 1.x archiver",
+  "tags": [],
+  "timestamp": "2026-08-02T09:00:00.000Z"
+}

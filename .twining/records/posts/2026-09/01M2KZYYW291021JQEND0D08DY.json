@@ -1,0 +1,17 @@
+{
+  "agent_id": "merge-integrator",
+  "detail": "New decision \"On the `twining` CLI, `events` routes to lane 03's JSON-envelope v3 verb; on `twining-mcp` it stays lane 02c's database-free archive reader, and the v3 verb names that reader when the store is rolled back\" relates to:\n- 01M1Z0QD4ZGR19KCDHX7WG6CEY: \"Chose to classify only argv[2] (undefined or flag-first = server; known word = subcommand with argv.slice(3); any other word = refused exit 2) over a full argv parser\"\n- 01M2KDH436X4RQV8JHM4CFNKW6: \"CLI lane rulings on its five open questions: (1) the plugin keeps shipping only the MCP server bundle for now — the CLI reaches Codex via `npm i -D twining-mcp` + `npx twining` (a plugin cannot put a command on PATH anyway); a plugin-carried CLI bundle is a lane-03 follow-up; (2) the once-per-process record quality nudge firing on every CLI call is accepted and documented, persisted-sentinel fix deferred to lane 03; (3) the CLI dispatches full-surface commands regardless of tools.full_surface, reporting `surface` in capabilities — the gate exists to shorten an LLM's tool list, a shell has none; (4) server_version is the real package version, no literal dev string; (5) --version/--help print plain text, machine-readable version lives in `twining capabilities`\"\n- 01M2KDH4D8A9DTQEDEGNGP5DQG: \"Accepted the lane's per-command `errors: \"internal-only\"` flag to preserve the nine handlers whose catch blocks never mapped TwiningError (twining_why, twining_triage, read/query/recent, three housekeeping tools, all coordination tools) rather than centralising error mapping and silently widening their error codes\"\n- 01M2KF9QWRRKAXD7G05PRQX5M0: \"CLI exits by setting process.exitCode and letting the event loop drain (sqlite handle and drain timer closed in finally) instead of calling process.exit — the latter raced onnxruntime-node's thread pool and aborted with SIGABRT (exit 134) on every successful run with a cached embedding model\"\n- 01M2KF9R1BRKGRGRF05JE67WXA: \"Accepted the CLI lane's three extensions of the unknown-flag rejection — bare positional payloads refused, `capabilities` accepts only --project, a value flag with no value is refused — all exit 2 with USAGE naming the token\"\n- 01M2KF9R5Y014A8YA3SSAVYT1N: \"Embedder.getInstance upgrades a cached instance to offline when a later caller asks for it, never downgrades\"\n- 01M2KZYYQQDF0R5DFNK714WGFS: \"Made the signing ceremony cite the membership it establishes as a causal parent of the ruling it mints\"",
+  "entry_type": "finding",
+  "id": "01M2KZYYW291021JQEND0D08DY",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "b7b1c88a37a0fbcddea846256de458c25a9657fc",
+    "recorded_at": "2026-09-16T02:15:33.488Z"
+  },
+  "scope": "src/cli/",
+  "summary": "Related decisions in scope: 7 existing decision(s) overlap",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-09-16T02:15:33.506Z"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Chose a dedicated handoff document (reading order, branch/PR table, remaining work in order, owner items, standing rules) over relying on the log + memory alone\" relates to:\n- 01M08AXRF0271R20DDPFZ5XMPJ: \"Chose to keep the named design decisions (file-wins precedence DD-8, verify content-hash DD-1, agent_id model DD-4, bundle embeddings DD-2, PKG_SPEC pin DD-3, record INVALID_INPUT DD-5 pending field error distribution, full read-only mode DD-6, archive retrieval DD-7, assemble floor size DD-9) OUT of the waves as explicit owner calls\"\n- 01M08Y6N78S6MA4TVR4NECECBH: \"Explicitly deferred the embedding-model swap (bge-small/EmbeddingGemma class) with recorded reconsideration criteria\"",
+  "entry_type": "finding",
+  "id": "01M2M85GGQ3K9SWMHJZV01XYN6",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T04:38:56.773Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "Related decisions in scope: 2 existing decision(s) overlap",
+  "tags": [
+    "data-model"
+  ],
+  "timestamp": "2026-09-16T04:38:56.791Z"
+}

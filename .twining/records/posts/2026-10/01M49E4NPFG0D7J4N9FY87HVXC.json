@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "finding",
+  "id": "01M49E4NPFG0D7J4N9FY87HVXC",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "fd9c241c02a357e4cf4a2dd62431943f51128cf5",
+    "recorded_at": "2026-10-06T20:23:05.654Z"
+  },
+  "scope": "docs/",
+  "summary": "The final report at fd9c241c has not yet been through its claim check; treat its numbers as draft until final-report-claim-check findings are applied",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-10-06T20:23:05.679Z"
+}

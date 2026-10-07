@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T02:43:26.228Z",
+  "id": "01M2M1J0CM5SS04YNDY06ACE96",
+  "properties": {
+    "decision_summary": "correctionFor resolves by evidence class, then by scope specificity, and returns undefined when equal-class corrections share identical coverage; the reducer marks those records conflicted",
+    "origin": "derived"
+  },
+  "source": "01M2M1J0CKX2HVMC1B6ECBBWVD",
+  "target": "01M2M1J0CFN57VFS8CC4NCQK8D",
+  "type": "decided_by"
+}

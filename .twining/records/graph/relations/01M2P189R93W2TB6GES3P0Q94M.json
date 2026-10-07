@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T21:16:37.001Z",
+  "id": "01M2P189R93W2TB6GES3P0Q94M",
+  "properties": {
+    "decision_summary": "Chose to export renderRecord for unit tests rather than mint rulings through the ceremony",
+    "origin": "derived"
+  },
+  "source": "01M2P189NGS4PMYSQFSJQKP8N9",
+  "target": "01M2P189R2H0FSY6TQ7PTX6CHR",
+  "type": "decided_by"
+}

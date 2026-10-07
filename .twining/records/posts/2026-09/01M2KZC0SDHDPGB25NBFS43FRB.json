@@ -1,0 +1,18 @@
+{
+  "agent_id": "merge-integrator",
+  "detail": "Full summary: EventStore.rebuild() re-journals every event with ingress hard-coded to 'import' (src/events/event-store.ts step 1 of rebuild), losing the originating ingress. Today ingress only feeds the journal reason string, so nothing depends on it — but any future rule keyed on ingress will silently differ between first admission and rebuild. The journal has no ingress column.",
+  "entry_type": "warning",
+  "id": "01M2KZC0SDHDPGB25NBFS43FRB",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "28402bb3f65df5d85da08d2d74b4121f17766060",
+    "recorded_at": "2026-09-16T02:05:12.858Z"
+  },
+  "scope": "src/events/",
+  "summary": "EventStore.rebuild() re-journals every event with ingress hard-coded to 'import' (src/events/event-store.ts step 1 of rebuild), losing the originating ingress. Today ingress only feeds the journal …",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-16T02:05:12.877Z"
+}

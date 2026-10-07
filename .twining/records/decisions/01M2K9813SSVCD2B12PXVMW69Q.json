@@ -1,0 +1,41 @@
+{
+  "affected_files": [
+    "docs/plans/2026-09-15-foundation-programme-plan.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Evolve the current per-record export + file-wins ingest with a revision stamp and conflict files",
+      "pros": [],
+      "reason_rejected": "still a last-writer rule with a single copy; expected to fail C14/C16/C20 by construction — kept alive as the required stress test, and it wins if the failing case does not materialize"
+    },
+    {
+      "cons": [],
+      "option": "Authenticated relay service as the live transport",
+      "pros": [],
+      "reason_rejected": "best freshness/revocation but adds a service, credentials and operator burden; built only as an in-process reference so the delivery state machine and fault suite run against both transports"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Recorded the plan's architecture hypothesis (event log + projections; Git-as-protocol default with reference relay) after the first attempt was rejected for carrying a status field.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01M2K9813SSVCD2B12PXVMW69Q",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d7860e060ddf79e9cca2cc8a0bd9179985c04eee",
+    "recorded_at": "2026-09-15T19:38:33.446Z"
+  },
+  "rationale": "R05/R07/R14 and C14/C16/C20/C21 cannot be met when a status rewrite is the only copy and a checkout rewind silently revokes; the cross-host plan V5 measured the same-record conflict and lifecycle_reverts is the visible residue. The package requires the smaller-evolution stress test (§3.4) and the three-way transport comparison before committing, so this is a hypothesis Stage 0 must confirm with the failing case. Flip conditions recorded: lost-ack reconciliation over Git needing a live counterpart, or a field need for sub-minute propagation or per-record confidentiality, would move live exchange to the relay with Git as export/audit.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/plans/",
+  "status": "active",
+  "summary": "Plan hypothesis (not yet committed): one foundational change — an immutable event log with derived projections — is justified by measured failures of in-place record mutation; Git stays the default transport evolved into an explicit protocol, with a reference relay behind the same Transport interface built but not deployed",
+  "timestamp": "2026-09-15T19:38:33.465Z"
+}

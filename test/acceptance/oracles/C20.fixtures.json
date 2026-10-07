@@ -1,0 +1,700 @@
+{
+  "case_id": "C20",
+  "variant": "development",
+  "fixture_version": "c20-dev-1",
+  "written_before_observing_implementation": true,
+  "byte_encoding_rule": "In payload_literal the tokens <BOM>, <CR>, <LF> decode to U+FEFF, 0x0D and 0x0A; every other character is a UTF-8 literal. Named hashes are sha256 over the decoded bytes, frozen in fixtures.lock at fixture build time and never recomputed from implementation output.",
+  "identities": {
+    "tenant": "tnt-quarry",
+    "scope_root": "services/ledger/",
+    "users": [
+      {
+        "id": "usr-marisol-vey",
+        "role": "scope owner of services/ledger/",
+        "authority": [
+          "retract",
+          "redact",
+          "purge",
+          "archive",
+          "unarchive"
+        ]
+      },
+      {
+        "id": "usr-tobias-krall",
+        "role": "contributor",
+        "authorized_scopes": [
+          "services/ledger/docs/"
+        ],
+        "authority": []
+      },
+      {
+        "id": "usr-ilse-brandt",
+        "role": "operator",
+        "authority": [
+          "backup",
+          "restore"
+        ],
+        "record_authority": []
+      }
+    ],
+    "hosts": [
+      {
+        "id": "hst-lumen-01",
+        "role": "primary workstation",
+        "managed": true
+      },
+      {
+        "id": "hst-fennec-02",
+        "role": "second computer, partitioned T04 to T09",
+        "managed": true
+      },
+      {
+        "id": "hst-basalt-03",
+        "role": "clean restore target",
+        "managed": true
+      },
+      {
+        "id": "hst-orbit-09",
+        "role": "external mirror holder",
+        "managed": false
+      }
+    ],
+    "stores": [
+      {
+        "id": "st-alpha",
+        "host": "hst-lumen-01",
+        "role": "origin"
+      },
+      {
+        "id": "st-beta",
+        "host": "hst-fennec-02",
+        "role": "replica"
+      },
+      {
+        "id": "st-gamma",
+        "host": "hst-basalt-03",
+        "role": "clean install restored from snap-A at T10"
+      },
+      {
+        "id": "st-delta",
+        "host": "hst-orbit-09",
+        "role": "uncontrolled clone of the transport repo, never contacted after T02b"
+      }
+    ],
+    "repositories": [
+      {
+        "id": "repo-northgate",
+        "remote": "ssh://git@example.invalid/quarry/northgate.git",
+        "role": "source of observations"
+      },
+      {
+        "id": "repo-northgate-memex",
+        "branch": "memex/main",
+        "role": "transport and export surface"
+      }
+    ],
+    "source_revisions": [
+      {
+        "id": "src-rev-9f21a0",
+        "used_by": [
+          "ver-4NQ2-1",
+          "rec-5CQP"
+        ]
+      },
+      {
+        "id": "src-rev-c47b13",
+        "used_by": [
+          "ver-4NQ2-2"
+        ]
+      }
+    ],
+    "backups": [
+      {
+        "id": "snap-A-20260908T0915Z",
+        "source_store": "st-alpha",
+        "taken_at": "2026-09-08T09:15:00Z",
+        "restored_into": "st-gamma at T10"
+      }
+    ]
+  },
+  "records": [
+    {
+      "id": "rec-4NQ2",
+      "title": "ledger rounding rule",
+      "scope": "services/ledger/",
+      "versions": [
+        {
+          "version_id": "ver-4NQ2-1",
+          "hash_id": "H1",
+          "payload_literal": "Round ledger line totals half-up at two decimals before tax; the reconciliation account for the September pilot is 4471-88-0317.",
+          "source_revision": "src-rev-9f21a0",
+          "authored_at": "2026-09-08T09:00:00Z",
+          "final_status": "redacted"
+        },
+        {
+          "version_id": "ver-4NQ2-2",
+          "hash_id": "H2",
+          "payload_literal": "Round ledger line totals half-up at two decimals before tax; reconciliation account identifiers are held in the vault scope and are not restated here.",
+          "source_revision": "src-rev-c47b13",
+          "authored_at": "2026-09-08T10:05:00Z",
+          "final_status": "applicable"
+        }
+      ]
+    },
+    {
+      "id": "rec-7TLD",
+      "title": "deploy window",
+      "scope": "services/ledger/",
+      "hash_id": "H3",
+      "payload_literal": "Ledger deploys land Tuesday 02:00 to 04:00 UTC only.",
+      "authored_at": "2026-09-08T09:05:00Z",
+      "final_status": "retracted"
+    },
+    {
+      "id": "rec-9XKM",
+      "title": "credential rotation note",
+      "scope": "services/ledger/secrets/",
+      "hash_id": "H4",
+      "payload_literal": "Rotate the ledger export signing credential every 30 days; the current bootstrap passphrase is stored under seal-7.",
+      "authored_at": "2026-09-08T09:05:00Z",
+      "final_status": "purged"
+    },
+    {
+      "id": "rec-2BHF",
+      "title": "batch size lesson",
+      "scope": "services/ledger/",
+      "hash_id": "H5",
+      "payload_literal": "Batches above 5000 ledger lines time out the nightly reconciler; cap at 2500.",
+      "authored_at": "2026-09-08T09:05:00Z",
+      "final_status": "applicable (archived T01b, unarchived T11)"
+    },
+    {
+      "id": "rec-5CQP",
+      "title": "rounding counterexample",
+      "scope": "services/ledger/",
+      "hash_id": "H6",
+      "payload_literal": "<BOM>Counterexample: half-up rounding diverges from the bank file on negative adjustments.<CR><LF>Observed on invoice 88120.",
+      "trailing_newline": false,
+      "authored_at": "2026-09-08T09:05:00Z",
+      "final_status": "applicable, untouched byte-preservation control"
+    }
+  ],
+  "timeline": [
+    {
+      "t": "T00",
+      "time": "2026-09-08T09:00:00Z",
+      "actor": "usr-marisol-vey",
+      "host": "hst-lumen-01",
+      "store": "st-alpha",
+      "event_id": "ev-0001",
+      "digest": "dg-0001",
+      "action": "create ver-4NQ2-1"
+    },
+    {
+      "t": "T01",
+      "time": "2026-09-08T09:05:00Z",
+      "actor": "usr-marisol-vey",
+      "event_ids": [
+        "ev-0002",
+        "ev-0003",
+        "ev-0004",
+        "ev-0005"
+      ],
+      "action": "create rec-7TLD, rec-9XKM, rec-2BHF, rec-5CQP"
+    },
+    {
+      "t": "T01b",
+      "time": "2026-09-08T09:06:00Z",
+      "actor": "usr-marisol-vey",
+      "event_id": "ev-0006",
+      "action": "archive rec-2BHF"
+    },
+    {
+      "t": "T02",
+      "time": "2026-09-08T09:10:00Z",
+      "action": "replicate st-alpha to st-beta; all receipts reach admitted and materialized; export pushed to memex/main"
+    },
+    {
+      "t": "T02b",
+      "time": "2026-09-08T09:12:00Z",
+      "action": "st-delta on hst-orbit-09 clones memex/main and is never contacted again"
+    },
+    {
+      "t": "T03",
+      "time": "2026-09-08T09:15:00Z",
+      "actor": "usr-ilse-brandt",
+      "action": "backup snapshot snap-A-20260908T0915Z of st-alpha"
+    },
+    {
+      "t": "T04",
+      "time": "2026-09-08T09:20:00Z",
+      "action": "hst-fennec-02 partitioned"
+    },
+    {
+      "t": "T05",
+      "time": "2026-09-08T10:00:00Z",
+      "actor": "usr-marisol-vey",
+      "event_id": "ev-0101",
+      "action": "retract rec-7TLD"
+    },
+    {
+      "t": "T06",
+      "time": "2026-09-08T10:05:00Z",
+      "actor": "usr-marisol-vey",
+      "event_ids": [
+        "ev-0102",
+        "ev-0103"
+      ],
+      "action": "redact ver-4NQ2-1 (reason class: payload contains a customer account identifier) and author ver-4NQ2-2 as replacement"
+    },
+    {
+      "t": "T07",
+      "time": "2026-09-08T10:10:00Z",
+      "actor": "usr-tobias-krall",
+      "event_id": "ev-0104",
+      "action": "attempt purge of rec-4NQ2 (out of scope, no authority)"
+    },
+    {
+      "t": "T08",
+      "time": "2026-09-08T10:15:00Z",
+      "actor": "usr-marisol-vey",
+      "event_id": "ev-0105",
+      "action": "purge rec-9XKM"
+    },
+    {
+      "t": "T09",
+      "time": "2026-09-08T11:00:00Z",
+      "action": "hst-fennec-02 reconnects and st-beta pushes its offline backlog",
+      "backlog": [
+        {
+          "event_id": "ev-0001",
+          "digest": "dg-0001",
+          "kind": "redelivery of the original creation event, identical id and digest"
+        },
+        {
+          "event_id": "ev-0201",
+          "authored_at": "2026-09-08T09:40:00Z",
+          "actor": "usr-tobias-krall",
+          "scope": "services/ledger/docs/",
+          "evidence_class_expected": "participant assertion, unverified",
+          "payload_literal": "Confirmed with Marisol at standup - the original rounding rule stays as the applicable reference for the September ledger release; no change needed."
+        },
+        {
+          "event_id": "ev-0202",
+          "authored_at": "2026-09-08T09:45:00Z",
+          "actor": "usr-tobias-krall",
+          "scope": "services/ledger/docs/",
+          "payload_literal": "The reconciler log rotates at 200 MB; grep the rotated file before reporting a gap."
+        }
+      ]
+    },
+    {
+      "t": "T10",
+      "time": "2026-09-08T11:05:00Z",
+      "actor": "usr-ilse-brandt",
+      "action": "restore snap-A into clean store st-gamma on hst-basalt-03"
+    },
+    {
+      "t": "T11",
+      "time": "2026-09-08T11:10:00Z",
+      "actor": "usr-marisol-vey",
+      "event_id": "ev-0301",
+      "action": "unarchive rec-2BHF"
+    },
+    {
+      "t": "T12",
+      "time": "2026-09-08T11:15:00Z",
+      "action": "run the query, action-gate and erasure-report battery on st-alpha, st-beta, st-gamma"
+    }
+  ],
+  "ordering_variants": [
+    {
+      "id": "V1",
+      "description": "restore before reconnect (T10 before T09)"
+    },
+    {
+      "id": "V2",
+      "description": "reconnect before restore (as listed)"
+    },
+    {
+      "id": "V3",
+      "description": "reconnect with 3 s of clock skew making the ev-0001 redelivery timestamp appear to post-date ev-0102",
+      "mandatory": true
+    }
+  ],
+  "repetitions": {
+    "variants": 3,
+    "reps_per_variant": 2,
+    "total_runs_per_condition": 6
+  },
+  "expected_end_state": {
+    "st-alpha": {
+      "current_applicable": [
+        "ver-4NQ2-2",
+        "rec-5CQP",
+        "rec-2BHF",
+        "record-of-ev-0202"
+      ],
+      "absent_from_current": [
+        "ver-4NQ2-1",
+        "rec-7TLD",
+        "rec-9XKM"
+      ],
+      "historical": {
+        "rec-7TLD": {
+          "status": "retracted",
+          "bytes": "byte-identical to fixture",
+          "hash": "H3",
+          "retracted_by": "usr-marisol-vey",
+          "retracted_at": "T05"
+        },
+        "ver-4NQ2-1": {
+          "status": "redacted",
+          "payload_state": "withheld",
+          "original_hash": "H1",
+          "original_byte_length": "preserved",
+          "redacted_by": "usr-marisol-vey",
+          "redacted_at": "T06"
+        },
+        "rec-9XKM": {
+          "status": "purged",
+          "payload_state": "destroyed",
+          "purged_by": "usr-marisol-vey",
+          "purged_at": "T08",
+          "original_hash": "H4 or explicitly declared destroyed"
+        }
+      }
+    },
+    "st-beta": {
+      "current_applicable": "set-equal to st-alpha",
+      "materialized_index_contains_B1": false,
+      "reconciled_through": "ev-0105"
+    },
+    "st-gamma": {
+      "admissible_states": [
+        "serving=quarantined pending reconciliation",
+        "serving=reconciled with reconciled_through>=ev-0105"
+      ],
+      "forbidden_state": "serving pre-lifecycle content as current without a watermark",
+      "restored_from": "snap-A-20260908T0915Z",
+      "restore_point": "T03",
+      "unapplied_events_when_quarantined": [
+        "ev-0101",
+        "ev-0102",
+        "ev-0103",
+        "ev-0105"
+      ]
+    },
+    "st-delta": {
+      "receipts_for_lifecycle_events": 0,
+      "reported_status": "unknown / uncontrolled",
+      "forbidden_reported_status": [
+        "purged",
+        "erased",
+        "compliant",
+        "n/a"
+      ]
+    },
+    "delivery_states_between_T05_and_T09": {
+      "events": [
+        "ev-0101",
+        "ev-0102",
+        "ev-0103",
+        "ev-0105"
+      ],
+      "for_destination_st-beta": {
+        "local_persisted": true,
+        "queued": true,
+        "remote_received": false,
+        "admitted": false,
+        "materialized": false
+      }
+    },
+    "redelivery_receipt": {
+      "event_id": "ev-0001",
+      "expected_receipt": "duplicate_ignored",
+      "new_records_created": 0,
+      "gap_reported": false
+    },
+    "action_qualification": [
+      {
+        "id": "Q1",
+        "query": "qualify the September ledger release using rec-4NQ2 v1",
+        "st-alpha": "NOT QUALIFIED / redacted+superseded",
+        "st-beta": "NOT QUALIFIED / redacted+superseded",
+        "st-gamma": "NOT QUALIFIED / unreconciled_restore or redacted+superseded"
+      },
+      {
+        "id": "Q2",
+        "query": "qualify the September ledger release using ver-4NQ2-2",
+        "st-alpha": "QUALIFIED with bytes B2 and hash H2",
+        "st-beta": "QUALIFIED with bytes B2 and hash H2"
+      },
+      {
+        "id": "Q3",
+        "query": "does ev-0201 restore ver-4NQ2-1",
+        "expected": "no; admitted as participant assertion, unverified; Q1 outcome unchanged; any treat-as-authorization attempt recorded as refused"
+      },
+      {
+        "id": "Q4",
+        "query": "usr-tobias-krall purge attempt ev-0104",
+        "expected": "DENIED with authority/scope reason; attempt recorded; no tombstone for rec-4NQ2; ver-4NQ2-1 status remains redacted; no partial effect"
+      },
+      {
+        "id": "Q5",
+        "query": "unarchive rec-2BHF",
+        "expected": "returns to current applicable with bytes B5, hash H5, evidence class unchanged"
+      }
+    ],
+    "erasure_report_for_rec-9XKM": {
+      "st-alpha": "purged, verified T08",
+      "st-beta": "purged, verified T09+",
+      "st-gamma": "pending until reconciled, then purged",
+      "repo-northgate-memex": "named with retention / history-rewrite obligation and its completion status",
+      "st-delta@hst-orbit-09": "unknown / not erased",
+      "snap-A-20260908T0915Z": "not erased unless the run actually destroyed it and observed the destruction",
+      "forbidden_phrases": [
+        "deleted everywhere",
+        "fully erased",
+        "removed from all copies",
+        "globally deleted"
+      ],
+      "open_obligation_visible": true
+    }
+  },
+  "assertions": [
+    {
+      "id": "A1",
+      "kind": "positive",
+      "target": "st-alpha current applicable view",
+      "expect": "exactly {ver-4NQ2-2, rec-5CQP, rec-2BHF, record-of-ev-0202}"
+    },
+    {
+      "id": "A2",
+      "kind": "positive",
+      "target": "st-beta current applicable view",
+      "expect": "set-equal to st-alpha regardless of arrival order or clock skew"
+    },
+    {
+      "id": "A3",
+      "kind": "positive",
+      "target": "st-gamma serving state",
+      "expect": "quarantined or reconciled with watermark; never silent pre-lifecycle serving"
+    },
+    {
+      "id": "A4",
+      "kind": "negative",
+      "target": "every read path incl. vector, lexical, graph, chunk, cache, summary, diagnostics",
+      "expect": "no B1 bytes and no redacted substring longer than 16 characters after T06"
+    },
+    {
+      "id": "A5",
+      "kind": "negative",
+      "target": "redelivery of ev-0001",
+      "expect": "no new record, no version, no status change, no lifecycle reordering"
+    },
+    {
+      "id": "B1",
+      "kind": "positive",
+      "target": "historical rec-7TLD",
+      "expect": "bytes byte-identical, hash H3, status retracted with actor/time/reason"
+    },
+    {
+      "id": "B2",
+      "kind": "positive",
+      "target": "historical ver-4NQ2-1",
+      "expect": "metadata plus original_hash H1 and payload_state withheld, bytes absent, structurally distinct from retraction"
+    },
+    {
+      "id": "B3",
+      "kind": "positive",
+      "target": "historical rec-9XKM",
+      "expect": "purge tombstone with payload_state destroyed; no payload in store, index, embeddings, outbox, export queue, cache or diagnostics"
+    },
+    {
+      "id": "B4",
+      "kind": "negative",
+      "target": "usr-tobias-krall historical query for rec-9XKM",
+      "expect": "nothing returned, not even the identifier existing"
+    },
+    {
+      "id": "B5",
+      "kind": "positive",
+      "target": "rec-5CQP on all three stores",
+      "expect": "hash H6 identical; BOM, CRLF and absent trailing newline preserved; anchor and src-rev-9f21a0 preserved"
+    },
+    {
+      "id": "B6",
+      "kind": "positive",
+      "target": "retained hash for ver-4NQ2-1",
+      "expect": "equals H1, not a hash of the tombstone or empty payload"
+    },
+    {
+      "id": "C1",
+      "kind": "positive",
+      "target": "delivery states during partition",
+      "expect": "queued true, remote_received false, admitted false for ev-0101/0102/0103/0105 to st-beta"
+    },
+    {
+      "id": "C2",
+      "kind": "positive",
+      "target": "st-beta materialized index at T09+1s",
+      "expect": "suppression applied at admission; index contains no B1"
+    },
+    {
+      "id": "C3",
+      "kind": "positive",
+      "target": "redelivery receipt",
+      "expect": "duplicate_ignored, cursor advances, no gap, no new acknowledged event"
+    },
+    {
+      "id": "C4",
+      "kind": "positive",
+      "target": "st-gamma watermark",
+      "expect": "restored_from, restore_point and enumerated unapplied lifecycle events"
+    },
+    {
+      "id": "C5",
+      "kind": "negative",
+      "target": "st-delta status",
+      "expect": "unknown/uncontrolled, never purged/erased/compliant/n-a"
+    },
+    {
+      "id": "D1",
+      "kind": "negative",
+      "target": "gate on rec-4NQ2 v1",
+      "expect": "NOT QUALIFIED on all three stores with distinct correct reasons"
+    },
+    {
+      "id": "D2",
+      "kind": "positive_control",
+      "target": "gate on ver-4NQ2-2",
+      "expect": "QUALIFIED with B2 and H2 intact; failure means D1 passes for the wrong reason"
+    },
+    {
+      "id": "D3",
+      "kind": "negative",
+      "target": "ev-0201",
+      "expect": "no authority promotion, no restoration, no scope widening; refusal recorded"
+    },
+    {
+      "id": "D4",
+      "kind": "positive_control",
+      "target": "unarchive rec-2BHF",
+      "expect": "returns to applicable with B5/H5 and unchanged evidence class"
+    },
+    {
+      "id": "D5",
+      "kind": "negative",
+      "target": "ev-0104 purge attempt",
+      "expect": "denied, recorded, zero partial effect"
+    },
+    {
+      "id": "D6",
+      "kind": "positive_control",
+      "target": "ev-0202",
+      "expect": "admitted and served; reconnection is not wholesale rejection"
+    },
+    {
+      "id": "E1",
+      "kind": "positive",
+      "target": "erasure report",
+      "expect": "per-location enumeration including unknown for st-delta and not erased for snap-A"
+    },
+    {
+      "id": "E2",
+      "kind": "negative",
+      "target": "all outputs, logs and summaries",
+      "expect": "no unqualified global-deletion claim"
+    },
+    {
+      "id": "E3",
+      "kind": "positive",
+      "target": "transport history",
+      "expect": "retention / history-rewrite obligation named with status if bytes reached immutable history"
+    },
+    {
+      "id": "E4",
+      "kind": "positive",
+      "target": "observability",
+      "expect": "pending purge against the unreachable replica stays open with age, not silently closed"
+    }
+  ],
+  "rejection_conditions": [
+    "D3 or D5 shows authority promotion",
+    "A4 or B4 shows cross-scope or redacted disclosure",
+    "A5 shows a resurrected record",
+    "E2 shows a false erasure claim",
+    "any acknowledged event from the T09 backlog is silently lost"
+  ],
+  "instrument_controls": [
+    {
+      "id": "IC1",
+      "switch": "scope filter disabled on the historical/tombstone path",
+      "must_fail": [
+        "B4"
+      ]
+    },
+    {
+      "id": "IC2",
+      "switch": "deduplication by (event_id, digest) disabled",
+      "must_fail": [
+        "A5",
+        "C3",
+        "A2",
+        "D1@st-beta"
+      ]
+    },
+    {
+      "id": "IC3",
+      "switch": "evidence-class / trust check disabled",
+      "must_fail": [
+        "D3",
+        "D1"
+      ]
+    },
+    {
+      "id": "IC4",
+      "switch": "byte preservation disabled (normalizing writer: BOM stripped, CRLF to LF, trailing newline added, re-hash on store)",
+      "must_fail": [
+        "B5",
+        "B1",
+        "B6"
+      ]
+    },
+    {
+      "id": "IC5",
+      "switch": "tombstone suppression applied only in the serving formatter, not at admission",
+      "must_fail": [
+        "C2",
+        "A4"
+      ],
+      "note": "A1 may still pass, proving A1 alone is insufficient coverage"
+    },
+    {
+      "id": "IC6",
+      "switch": "restore watermark disabled (restored backup serves immediately)",
+      "must_fail": [
+        "A3",
+        "C4",
+        "D1@st-gamma"
+      ]
+    },
+    {
+      "id": "IC7",
+      "switch": "erasure-report honesty template disabled (asserts global deletion)",
+      "must_fail": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "id": "IC8",
+      "switch": "purge scoped to the primary store only (cache, outbox and embedding copies left intact)",
+      "must_fail": [
+        "B3",
+        "A4"
+      ]
+    }
+  ]
+}

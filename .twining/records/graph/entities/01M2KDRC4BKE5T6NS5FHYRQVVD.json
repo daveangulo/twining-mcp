@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T20:57:23.338Z",
+  "id": "01M2KDRC4BKE5T6NS5FHYRQVVD",
+  "name": "01M2KDRBYZP7GAXCM0ZX2E66MQ",
+  "properties": {
+    "scope": "docs/adr/",
+    "summary": "Added a `reinstated` lifecycle kind (target, reason; requires `rule` capability; class-ranked against the SUPERSEDING event's class) as the only path by which a superseded or overridden record becomes applicable again; `restored` (from archive) keeps ADR §4.4 semantics and never implies `promoted`"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-15T20:57:23.338Z"
+}

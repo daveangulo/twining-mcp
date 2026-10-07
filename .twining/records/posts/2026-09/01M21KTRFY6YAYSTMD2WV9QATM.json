@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: config keys archive.auto_archive_on_commit and archive.auto_archive_on_context_switch are INERT at HEAD d7860e0 — no reader in src/ or plugin/hooks (only config.ts:47 default + types.ts:309); nothing shipped writes pending-actions.jsonl (pending-processor.ts:95 drains it, only the user-authored post-commit hook in docs/hooks.md:34-45 writes it). The real sqlite archive trigger is the post-time threshold in BlackboardEngine.post (blackboard.ts:181-202: >=500 archivable beyond retain 200) plus twining_archive and housekeeping archive:true. config.yml advertises a behavior that does not exist.",
+  "entry_type": "warning",
+  "id": "01M21KTRFY6YAYSTMD2WV9QATM",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d7860e060ddf79e9cca2cc8a0bd9179985c04eee",
+    "recorded_at": "2026-09-08T22:57:13.194Z"
+  },
+  "scope": ".twining/",
+  "summary": "config keys archive.auto_archive_on_commit and archive.auto_archive_on_context_switch are INERT at HEAD d7860e0 — no reader in src/ or plugin/hooks (only config.ts:47 default + types.ts:309); nothi…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-08T22:57:13.214Z"
+}

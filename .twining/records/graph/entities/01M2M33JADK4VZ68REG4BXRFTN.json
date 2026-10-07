@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-16T03:10:30.221Z",
+  "id": "01M2M33JADK4VZ68REG4BXRFTN",
+  "name": "validateCalibrationTable",
+  "properties": {
+    "scope": "src/retrieval/"
+  },
+  "type": "function",
+  "updated_at": "2026-09-16T03:10:30.667Z"
+}

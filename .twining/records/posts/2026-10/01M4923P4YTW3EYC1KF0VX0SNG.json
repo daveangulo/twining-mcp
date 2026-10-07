@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Chose to rewrite the five operator docs as self-contained guides over committing the audit notebooks\" relates to:\n- 01KWX0NM8DY4QATJ6ASY4GGWGQ: \"Chose to put the deprecation note only in server docs (README.md, docs/TWINING-REFERENCE.md, docs/UPGRADE-v2.md), not plugin/BEHAVIORS.md or plugin skills\"\n- 01KY7347KPH60QWVK6RKWE1H5P: \"Chose a two-bucket taxonomy (open/recent) keyed on exit semantics over the field draft's three buckets\"\n- 01KYXA3B7GFWVWEC2NRY9YANFV: \"Chose to document twining_record as the default-surface substitute for twining_decide/link_commit/override rather than recommend enabling full_surface\"\n- 01KZZ2QASRDPYA0R4N76V97DA0: \"Chose to disclose the three unshipped commitments (per-decision supersedes, D13 ask-2 neighbors reduced form, record-time diff capture) in the memo's follow-ups list rather than shipping them pre-send or staying silent\"\n- 01M0XGQGWDXBV76J7D0EN1H9C3: \"Chose to prepare the four routing GitHub issues (bodies, maintainer comments, gh commands in docs/field-responses/2026-08-23-routing-issues-prepared.md) but NOT file them under the 'execute plan' instruction\"\n- 01M0Y695SR739X5NMFPS84FXN5: \"Chose to draft Doc 2 in the controller session (Bash heredoc from the plan's verified §1 findings + fresh HEAD cites) over a fifth workflow resume\"\n- 01M21M2RWD02PFJ2DZ9N4CBC1E: \"Chose two plan files (2.17.0 = W2, 2.17.1 = the pre-decided follow-on) over one combined breakdown\"\n- 01M21M2RXNQ4TY13E22G8YF4DJ: \"Chose to pull the tool-description byte measurement (cross-host plan §4.4, scheduled for W4) forward into W2 as Task 0\"",
+  "entry_type": "finding",
+  "id": "01M4923P4YTW3EYC1KF0VX0SNG",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "0f9fd985df6890a34240cf644d16081a0a2cf680",
+    "recorded_at": "2026-10-06T16:52:50.443Z"
+  },
+  "scope": "docs/",
+  "summary": "Related decisions in scope: 8 existing decision(s) overlap",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-10-06T16:52:50.462Z"
+}

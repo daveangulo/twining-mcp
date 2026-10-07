@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T02:52:30.646Z",
+  "id": "01M2M22M1P1Y97PCT7P71R5XNK",
+  "name": "01M2M22KYZ3AE0ZAYFXXG6SFTN",
+  "properties": {
+    "scope": "src/",
+    "summary": "plugin/BEHAVIORS.md left stale on purpose (says 35 tools, omits the new ones): editing plugin/ forces a version bump + bundle rebuild, which is release work under Dave's authority"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-16T02:52:30.646Z"
+}

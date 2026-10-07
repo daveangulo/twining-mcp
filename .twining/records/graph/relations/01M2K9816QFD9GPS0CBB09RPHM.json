@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T19:38:33.559Z",
+  "id": "01M2K9816QFD9GPS0CBB09RPHM",
+  "properties": {
+    "decision_summary": "Plan hypothesis (not yet committed): one foundational change — an immutable event log with derived projections — is justified by measured failures of in-place record mutation; Git stays the default transport evolved into an explicit protocol, with a reference relay behind the same Transport interface built but not deployed",
+    "origin": "derived"
+  },
+  "source": "01M2K97AA49AT6SZN9BQJTA75P",
+  "target": "01M2K9816N0C7NRWVM4NE4BP3X",
+  "type": "decided_by"
+}

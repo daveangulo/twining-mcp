@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "measuring v3 as shipped",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Handoff execution session (2026-09-16..19): verified the push (origin == 9b0afafd) and CI state; corrected the stale R15/known-gap-5 matrix text (calibration IS measured); prepared the padded-whitespace calibration corpus doc + README (item 5 cannot run: no API key); built a detached v3 trial worktree; ran a 6-reader/3-design/judge workflow that produced docs/plans/2026-09-16-dev-scale-trial-design.md; ruled DP-0 (fix the v3 working-set renderer before the trial — branch fix/working-set-render reviewed, 10 new tests); dispatched the operator-docs fill-from-runs workflow (5 docs rewritten, verify/fix in progress) and the harness build (contracts stage done, builders resuming after a usage-limit outage). Programme log carries DN33–DN42 and D45–D55.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01M2YH9XN1W2HS8FMMK9ECTMSA",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-20T04:31:02.794Z"
+  },
+  "rationale": "as shipped v3 renders a verified_observation as a bare id and would spend ~100 sessions measuring a rendering omission (D51 / DP-0)",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/",
+  "status": "active",
+  "summary": "Chose to fix the v3 working-set renderer (observation body + revision range) BEFORE the trial and record the new SHA as the object under test, over measuring v3 as shipped",
+  "timestamp": "2026-09-20T04:31:02.817Z"
+}

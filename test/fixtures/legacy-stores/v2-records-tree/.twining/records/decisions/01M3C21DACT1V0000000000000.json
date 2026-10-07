@@ -1,0 +1,43 @@
+{
+  "affected_files": [
+    "src/catalog/index.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "agent-scribe",
+  "alternatives": [
+    {
+      "cons": [
+        "noisy"
+      ],
+      "option": "publish on every merge",
+      "pros": [
+        "fresher"
+      ],
+      "reason_rejected": "too noisy for consumers"
+    }
+  ],
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [
+    "publication waits for the index rebuild"
+  ],
+  "context": "the 2026 catalog review",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01M3C21DACT1V0000000000000",
+  "promoted_at": "2026-08-02T09:00:00.000Z",
+  "promoted_by": "agent-ratifier",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "recorded_at": "2026-08-01T09:00:00.000Z"
+  },
+  "rationale": "recorded during the catalog review",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/catalog/",
+  "status": "active",
+  "summary": "catalog output publishes from the nightly build",
+  "supersedes": "01M3C21DSPSN10000000000000",
+  "timestamp": "2026-08-01T09:00:00.000Z"
+}

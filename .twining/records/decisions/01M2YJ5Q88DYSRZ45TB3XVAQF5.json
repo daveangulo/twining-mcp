@@ -1,0 +1,29 @@
+{
+  "affected_files": [
+    "test/migrate/v3-identity-reuse.test.ts",
+    "test/retrieval/store-identity.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "fix-repo-ids",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Implementation choices for the repo_ids fix: private declaredRepoId helper in v3-forward (no cross-layer import), finalize extends an existing store.json rather than replacing it, and the migrate cases live in a new single test file.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M2YJ5Q88DYSRZ45TB3XVAQF5",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T04:46:13.746Z"
+  },
+  "rationale": "v3-forward.test.ts is 650+ lines with a SIGKILL harness; a dedicated file keeps the four reuse cases in one vitest process as the task asked, and calling ensureStoreDescriptor rather than hand-writing JSON pins the real producer shape (asserted: no repo_id key) so a future writer change is caught here.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/migrate/v3-forward.ts",
+  "status": "active",
+  "summary": "Chose a new test/migrate/v3-identity-reuse.test.ts (identity-init via the real ensureStoreDescriptor, then migrateStatus / migrate --to 3 / shared-store / rerun) plus test/retrieval/store-identity.test.ts, over extending v3-forward.test.ts",
+  "timestamp": "2026-09-20T04:46:13.768Z"
+}

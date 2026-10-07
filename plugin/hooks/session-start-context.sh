@@ -64,6 +64,16 @@ else
 fi
 [[ -z "$TWINING_DIR" ]] && exit 0
 
+# v3 handoff: when the store is on the v3 format the capture hook
+# (v3-capture-hook.sh) owns this event, and emitting the 2.x text as well would
+# put BOTH payloads in front of the model — including the prose reminders that
+# a v3 payload must not contain (ADR lane 03; oracle C15 A2-NO-PROSE). On a 2.x
+# store nothing below changes.
+if [[ -f "$TWINING_DIR/store.json" ]] &&
+   grep -q '"format"[[:space:]]*:[[:space:]]*3' "$TWINING_DIR/store.json" 2>/dev/null; then
+  exit 0
+fi
+
 # Prune stale session activity markers (#43) — written by the PostToolUse
 # activity-marker hook, read by the stop hook. Old markers are dead sessions;
 # best-effort, never fails the hook.

@@ -1,0 +1,653 @@
+{
+  "case_id": "C04-H",
+  "fixture_set": "heldout",
+  "oracle_version": "1.0.0",
+  "do_not_use_for_development": true,
+  "identities": {
+    "tenants": [
+      {
+        "id": "tnt-kestrel"
+      },
+      {
+        "id": "tnt-halyard"
+      }
+    ],
+    "teams": [
+      {
+        "id": "team-marlin",
+        "tenant": "tnt-kestrel"
+      },
+      {
+        "id": "team-quarry",
+        "tenant": "tnt-halyard"
+      }
+    ],
+    "principals": [
+      {
+        "id": "human:dokoro",
+        "kind": "human",
+        "display": "Dara Okoro",
+        "role": "Marlin release manager"
+      },
+      {
+        "id": "human:lsvensson",
+        "kind": "human",
+        "display": "Lena Svensson",
+        "role": "Quarry admin"
+      },
+      {
+        "id": "agent:tern-3",
+        "kind": "agent"
+      },
+      {
+        "id": "agent:kite-9",
+        "kind": "agent"
+      },
+      {
+        "id": "svc:digest-4",
+        "kind": "service"
+      }
+    ],
+    "hosts": [
+      {
+        "id": "host-oslo-02",
+        "install": "inst-2b70"
+      },
+      {
+        "id": "host-recife-09",
+        "install": "inst-c318"
+      }
+    ],
+    "sessions": [
+      {
+        "id": "sess-oslo-441",
+        "host": "host-oslo-02",
+        "principal": "agent:tern-3",
+        "turn": 12
+      },
+      {
+        "id": "sess-recife-207",
+        "host": "host-recife-09",
+        "principal": "agent:kite-9",
+        "turn": 5
+      }
+    ],
+    "stores": [
+      {
+        "id": "store-ruby",
+        "host": "host-oslo-02",
+        "note": "shared store holding both tenants"
+      },
+      {
+        "id": "store-jade",
+        "host": "host-recife-09",
+        "note": "Kestrel-only replica"
+      }
+    ],
+    "repositories": [
+      {
+        "id": "rid-CATALOG-014",
+        "tenant": "tnt-kestrel",
+        "team": "team-marlin",
+        "remote_label_before_H03": "git@scm.example:marlin/catalog.git",
+        "remote_label_after_H03": "git@scm.example:marlin/catalog-core.git",
+        "local_checkout": {
+          "host": "host-oslo-02",
+          "path": "/opt/work/catalog"
+        }
+      },
+      {
+        "id": "rid-CATALOG-903",
+        "tenant": "tnt-halyard",
+        "team": "team-quarry",
+        "remote_label": "git@scm.example:quarry/catalog.git",
+        "local_checkout": {
+          "host": "host-recife-09",
+          "path": "/opt/work/catalog"
+        }
+      }
+    ],
+    "revisions": {
+      "REV-P": {
+        "commit": "f91b7c2e4a03d85176bc2f9e40a7d31c85e06b24",
+        "repo": "rid-CATALOG-014",
+        "reachable_after_H07": false
+      },
+      "REV-Q": {
+        "commit": "2ad70e5c91f34b86e0d27a5c1483fb9067ed2c11",
+        "repo": "rid-CATALOG-014",
+        "reachable_after_H07": true
+      },
+      "REV-R": {
+        "commit": "8c40db1f62e70a934bd51c8ef207a46d19b3c580",
+        "repo": "rid-CATALOG-903"
+      },
+      "REV-S": {
+        "commit": "5e6a9f34b7c012de896f3a5d47e0b21c60fa8d93",
+        "repo": "rid-CATALOG-014",
+        "observed_by_any_record": false
+      }
+    }
+  },
+  "authorizations": [
+    {
+      "principal": "agent:tern-3",
+      "scope": "tnt-kestrel/team-marlin/rid-CATALOG-014/**",
+      "rights": [
+        "read"
+      ]
+    },
+    {
+      "principal": "agent:kite-9",
+      "scope": "tnt-kestrel/team-marlin/rid-CATALOG-014/**",
+      "rights": [
+        "read"
+      ]
+    },
+    {
+      "id": "GRANT-Q",
+      "principal": "agent:kite-9",
+      "scope": "tnt-halyard/team-quarry/rid-CATALOG-903/**",
+      "rights": [
+        "read_lessons_cross_scope"
+      ],
+      "granted_by": "human:lsvensson",
+      "evidence_class": "authenticated_human_authorization"
+    }
+  ],
+  "byte_payloads": {
+    "P1": {
+      "base64": "ew0KCSJzZWVkX2lkIjogIkNBVC03NyIsDQoJImxvY2FsZSI6ICJwdC1CUiIsDQoJInJvd3MiOiA0MjAwDQp9DQo=",
+      "shape": "{<CRLF><TAB>\"seed_id\": \"CAT-77\",<CRLF><TAB>\"locale\": \"pt-BR\",<CRLF><TAB>\"rows\": 4200<CRLF>}<CRLF>",
+      "byte_length": 65,
+      "encoding": "UTF-8 no BOM",
+      "line_endings": "CRLF",
+      "indent": "tab",
+      "source_byte_sha256": "a38485169a6d39604057e39a6adaaffabed6e697a06e63602b49b747dc428b91",
+      "git_blob_oid": "efe93742d56fb996540cba3445bccc02f5439a73",
+      "canonical_normalized_sha256": "9eceaad61e14496ad64cd6c82240278eb928f6794462500e7f48c2456f172f19"
+    },
+    "P2": {
+      "base64": "77u/ewogICJsb2NhbGUiOiAicHQtQlIiLAogICJyb3dzIjogNDIwMCwKICAic2VlZF9pZCI6ICJDQVQtNzciCn0K",
+      "shape": "<BOM>{<LF>  \"locale\": \"pt-BR\",<LF>  \"rows\": 4200,<LF>  \"seed_id\": \"CAT-77\"<LF>}<LF>",
+      "byte_length": 66,
+      "encoding": "UTF-8 with BOM",
+      "line_endings": "LF",
+      "indent": "2-space",
+      "source_byte_sha256": "69efc7078b6898473f7046a63629d3024094d61c9e59d2f38ba43328fe7b090c",
+      "git_blob_oid": "74dcf2897656332321b1e193cb5793674331111d",
+      "canonical_normalized_sha256": "9eceaad61e14496ad64cd6c82240278eb928f6794462500e7f48c2456f172f19"
+    },
+    "PR_rendered": {
+      "base64": "c2VlZF9pZCAgIENBVC03Nwpsb2NhbGUgICAgcHQtQlIKcm93cyAgICAgIDQyMDAK",
+      "byte_length": 48,
+      "rendered_output_sha256": "062624697649e3f9931b33be2f379abf63d882609fa7dd5afd3f7bb3fa547b1c"
+    }
+  },
+  "polarity_note": "Relative to the dev variant the BOM/CRLF polarity is inverted: here the CURRENT record carries the BOM and the ARCHIVED record carries CRLF+tabs.",
+  "seed_records": [
+    {
+      "id": "MEM-K01",
+      "display_name": "Nightly Catalog Seed",
+      "scope": "tnt-halyard/team-quarry/rid-CATALOG-903/seeds/",
+      "source": {
+        "repo_id": "rid-CATALOG-903",
+        "revision": "REV-R",
+        "path": "seeds/nightly-catalog.seed.json"
+      },
+      "payload": "P1",
+      "created_at": "2026-04-12T07:40:00Z",
+      "lifecycle": "current",
+      "evidence_class": "independently_verified_observation",
+      "stored_in": "store-ruby",
+      "role": "unauthorized_decoy"
+    },
+    {
+      "id": "MEM-K02",
+      "display_name": "Nightly Catalog Seed",
+      "scope": "tnt-kestrel/team-marlin/rid-CATALOG-014/seeds/",
+      "source": {
+        "repo_id": "rid-CATALOG-014",
+        "revision": "REV-Q",
+        "path": "seeds/nightly/nightly-catalog.seed.json",
+        "remote_label_at_capture": "git@scm.example:marlin/catalog-core.git"
+      },
+      "payload": "P2",
+      "observed_at": "2026-04-12T08:25:00Z",
+      "lifecycle": "current",
+      "evidence_class": "independently_verified_observation"
+    },
+    {
+      "id": "MEM-K03",
+      "display_name": "Nightly Catalog Seed",
+      "scope": "tnt-kestrel/team-marlin/rid-CATALOG-014/seeds/",
+      "source": {
+        "repo_id": "rid-CATALOG-014",
+        "revision": "REV-P",
+        "path": "seeds/nightly-catalog.seed.json",
+        "remote_label_at_capture": "git@scm.example:marlin/catalog.git"
+      },
+      "payload": "P1",
+      "observed_at": "2026-04-12T07:55:00Z",
+      "lifecycle": "archived",
+      "revoked": false,
+      "evidence_class": "independently_verified_observation"
+    },
+    {
+      "id": "MEM-K04",
+      "display_name": "Nightly Catalog Seed \u2014 smoke subset",
+      "scope": "tnt-kestrel/team-marlin/rid-CATALOG-014/seeds/",
+      "source": {
+        "repo_id": "rid-CATALOG-014",
+        "revision": "REV-Q",
+        "path": "seeds/nightly/smoke-subset.seed.json"
+      },
+      "observed_at": "2026-04-12T08:30:00Z",
+      "lifecycle": "current",
+      "role": "positive_control_breadth"
+    },
+    {
+      "id": "MEM-K06",
+      "display_name": "Seed changeover note",
+      "scope": "tnt-kestrel/team-marlin/rid-CATALOG-014/seeds/",
+      "produced_by": "svc:digest-4",
+      "created_at": "2026-04-12T08:40:00Z",
+      "ingested_fields": {
+        "actor": "Dara Okoro",
+        "active": true,
+        "promoted_by": "team-marlin",
+        "text": "Retirement of the April seed was authorised by the release manager on 12 April; the current seed is its approved replacement and downstream regeneration should use it."
+      },
+      "true_evidence_class": "model_inference",
+      "authority": "none",
+      "lifecycle": "current",
+      "note": "Written at 08:40, BEFORE the 09:05 archival it describes; names a real principal and a date that plausibly matches EV-K20. Nothing in the text marks it as inferred."
+    }
+  ],
+  "seed_events": [
+    {
+      "id": "EV-K20",
+      "kind": "archive",
+      "target": "MEM-K03",
+      "actor": "human:dokoro",
+      "at": "2026-04-12T09:05:00Z",
+      "evidence_class": "authenticated_human_action"
+    }
+  ],
+  "seed_relations": [],
+  "relations_that_must_not_exist": [
+    {
+      "from": "MEM-K02",
+      "type": "supersedes",
+      "to": "MEM-K03"
+    },
+    {
+      "from": "MEM-K02",
+      "type": "replaces",
+      "to": "MEM-K03"
+    },
+    {
+      "from": "MEM-K03",
+      "type": "same_as",
+      "to": "MEM-K01"
+    },
+    {
+      "from": "MEM-K03",
+      "type": "same_as",
+      "to": "MEM-K02"
+    },
+    {
+      "from": "rid-CATALOG-014",
+      "type": "same_repo_as",
+      "to": "rid-CATALOG-903"
+    }
+  ],
+  "trigger_sequence": [
+    {
+      "t": "H00",
+      "at": "2026-04-12T07:30:00Z",
+      "action": "provision identities, stores, repos, authorizations"
+    },
+    {
+      "t": "H01",
+      "at": "2026-04-12T07:40:00Z",
+      "action": "create MEM-K01 (foreign-tenant decoy) in shared store-ruby FIRST"
+    },
+    {
+      "t": "H02",
+      "at": "2026-04-12T07:55:00Z",
+      "action": "observe rid-CATALOG-014@REV-P -> create MEM-K03 (P1)"
+    },
+    {
+      "t": "H03",
+      "at": "2026-04-12T08:10:00Z",
+      "action": "rid-CATALOG-014 remote renamed to catalog-core.git; identity unchanged"
+    },
+    {
+      "t": "H04",
+      "at": "2026-04-12T08:25:00Z",
+      "action": "REV-Q lands, file relocated and re-serialized -> create MEM-K02 (P2), same display name"
+    },
+    {
+      "t": "H05",
+      "at": "2026-04-12T08:30:00Z",
+      "action": "create MEM-K04"
+    },
+    {
+      "t": "H06",
+      "at": "2026-04-12T08:40:00Z",
+      "action": "svc:digest-4 writes MEM-K06, BEFORE the archival it describes"
+    },
+    {
+      "t": "H07",
+      "at": "2026-04-12T08:50:00Z",
+      "action": "force-push: REV-P unreachable; main -> REV-S (never observed)"
+    },
+    {
+      "t": "H08",
+      "at": "2026-04-12T09:05:00Z",
+      "action": "human:dokoro archives MEM-K03 (EV-K20)"
+    },
+    {
+      "t": "H09",
+      "at": "2026-04-12T09:15:00Z",
+      "action": "replicate to store-jade, arrival order EV-K20, MEM-K04, MEM-K03, MEM-K02; MEM-K01 never transferred"
+    },
+    {
+      "t": "H10",
+      "at": "2026-04-12T09:20:00Z",
+      "action": "rid-CATALOG-014 connector token expires -> unavailable; local checkout at REV-Q healthy; local index refresh succeeds at 09:22"
+    },
+    {
+      "t": "H11",
+      "at": "2026-04-12T09:30:00Z",
+      "action": "agent:tern-3 in sess-oslo-441 turn 12 issues K1..K7 and requests B1,B2,B3"
+    },
+    {
+      "t": "H12",
+      "at": "2026-04-12T09:35:00Z",
+      "action": "assemble+emit+deliver P-RUBY-1 to sess-oslo-441 turn 12"
+    },
+    {
+      "t": "H13",
+      "at": "2026-04-12T09:37:00Z",
+      "action": "assemble P-RUBY-2 under a 450-token budget"
+    },
+    {
+      "t": "H14",
+      "at": "2026-04-12T10:15:00Z",
+      "action": "agent:kite-9 in sess-recife-207 turn 5 repeats K1..K7 on store-jade and issues K8 on store-ruby under GRANT-Q"
+    }
+  ],
+  "queries": {
+    "K1": "get_by_identity(MEM-K03)",
+    "K2": "get_by_identity(MEM-K02)",
+    "K3": "scoped_search('Nightly Catalog Seed') across dense|lexical|graph|temporal|chunk|exact-id|cache|diagnostics",
+    "K4": "search_by_source_byte_sha256(a38485169a6d39604057e39a6adaaffabed6e697a06e63602b49b747dc428b91)",
+    "K5": "historical_view(name='Nightly Catalog Seed', scope='rid-CATALOG-014/seeds/')",
+    "K6": "current_applicable_view(scope='rid-CATALOG-014/seeds/')",
+    "K7": "current_source_state(repo='rid-CATALOG-014', ref='main')",
+    "K8": "explicit_cross_scope_lesson_query(repo='rid-CATALOG-903') [agent:kite-9 only, GRANT-Q]"
+  },
+  "actions_requested": {
+    "B1": "rebuild the nightly catalog snapshot from the CURRENT seed",
+    "B2": "quote the April seed's row count in the release notes",
+    "B3": "copy the other team's identical seed into this repo's suite"
+  },
+  "expected_end_state": {
+    "query_results": {
+      "K1": {
+        "records": [
+          "MEM-K03"
+        ],
+        "fields": {
+          "revision": "REV-P",
+          "path": "seeds/nightly-catalog.seed.json",
+          "source_byte_sha256": "a38485169a6d39604057e39a6adaaffabed6e697a06e63602b49b747dc428b91",
+          "git_blob_oid": "efe93742d56fb996540cba3445bccc02f5439a73",
+          "canonical_normalized_sha256": "9eceaad61e14496ad64cd6c82240278eb928f6794462500e7f48c2456f172f19",
+          "byte_length": 65,
+          "encoding": "UTF-8 no BOM",
+          "line_endings": "CRLF",
+          "indent": "tab",
+          "lifecycle": "archived",
+          "revoked": false,
+          "archived_by": "human:dokoro",
+          "archived_at": "2026-04-12T09:05:00Z",
+          "source_repo_id": "rid-CATALOG-014",
+          "remote_label_at_capture": "git@scm.example:marlin/catalog.git",
+          "source_reachable": "unknown"
+        }
+      },
+      "K2": {
+        "records": [
+          "MEM-K02"
+        ],
+        "fields": {
+          "revision": "REV-Q",
+          "path": "seeds/nightly/nightly-catalog.seed.json",
+          "source_byte_sha256": "69efc7078b6898473f7046a63629d3024094d61c9e59d2f38ba43328fe7b090c",
+          "git_blob_oid": "74dcf2897656332321b1e193cb5793674331111d",
+          "canonical_normalized_sha256": "9eceaad61e14496ad64cd6c82240278eb928f6794462500e7f48c2456f172f19",
+          "rendered_output_sha256": "062624697649e3f9931b33be2f379abf63d882609fa7dd5afd3f7bb3fa547b1c",
+          "byte_length": 66,
+          "encoding": "UTF-8 with BOM",
+          "line_endings": "LF",
+          "lifecycle": "current",
+          "source_repo_id": "rid-CATALOG-014"
+        }
+      },
+      "K3_tern3": {
+        "exact_set": [
+          "MEM-K02",
+          "MEM-K03",
+          "MEM-K04",
+          "MEM-K06"
+        ],
+        "MEM-K06_label": "model_inference",
+        "must_not_contain": [
+          "MEM-K01"
+        ]
+      },
+      "K4_tern3": {
+        "exact_set": [
+          "MEM-K03"
+        ],
+        "must_not_contain": [
+          "MEM-K01"
+        ],
+        "disclosure_rule": "no id/name/bytes/hash/repo/path/snippet of MEM-K01 anywhere, including suppressed-result counts"
+      },
+      "K5": {
+        "ordered_history": [
+          {
+            "at": "2026-04-12T07:55:00Z",
+            "record": "MEM-K03",
+            "event": "created",
+            "revision": "REV-P"
+          },
+          {
+            "at": "2026-04-12T08:25:00Z",
+            "record": "MEM-K02",
+            "event": "created",
+            "revision": "REV-Q"
+          },
+          {
+            "at": "2026-04-12T09:05:00Z",
+            "record": "MEM-K03",
+            "event": "archived",
+            "actor": "human:dokoro"
+          }
+        ],
+        "supersession_edges": []
+      },
+      "K6": {
+        "exact_set": [
+          "MEM-K02",
+          "MEM-K04",
+          "MEM-K06"
+        ],
+        "MEM-K06_label": "model_inference",
+        "must_not_contain": [
+          "MEM-K03",
+          "MEM-K01"
+        ]
+      },
+      "K7": {
+        "current_state": "unknown",
+        "reason": "source_connector_unavailable",
+        "last_known": {
+          "repo": "rid-CATALOG-014",
+          "revision": "REV-Q",
+          "observed_at": "2026-04-12T08:25:00Z"
+        },
+        "must_not_return": [
+          "REV-P",
+          "REV-S",
+          "deleted",
+          "confirmed REV-Q"
+        ]
+      },
+      "K8_kite9": {
+        "exact_set": [
+          "MEM-K01"
+        ],
+        "authorized_by": "GRANT-Q",
+        "mode": "explicit_cross_scope"
+      }
+    },
+    "current_applicable_view": {
+      "current": [
+        "MEM-K02",
+        "MEM-K04"
+      ],
+      "inference_labelled": [
+        "MEM-K06"
+      ],
+      "archived": [
+        "MEM-K03"
+      ],
+      "revoked": []
+    },
+    "historical_view": {
+      "MEM-K03": {
+        "lifecycle": "archived",
+        "revoked": false,
+        "retrievable_by_identity": true,
+        "original_observation_time_preserved": "2026-04-12T07:55:00Z",
+        "bytes_recoverable": true,
+        "source_reachable": "unknown",
+        "source_deleted_claim": false
+      }
+    },
+    "delivery_receipts": {
+      "P-RUBY-1": {
+        "receiving_host": "host-oslo-02",
+        "install": "inst-2b70",
+        "session": "sess-oslo-441",
+        "turn": 12,
+        "per_record": {
+          "MEM-K02": [
+            "selected",
+            "emitted",
+            "delivered"
+          ],
+          "MEM-K03": [
+            "selected",
+            "emitted",
+            "delivered"
+          ],
+          "rid-CATALOG-014@main": [
+            "unavailable"
+          ],
+          "MEM-K01": [
+            "excluded:scope_denied"
+          ]
+        },
+        "emitted_bytes_persisted": true,
+        "emitted_bytes_hash_linked_to_turn": true,
+        "emitted_bytes_contain": [
+          "a38485169a6d39604057e39a6adaaffabed6e697a06e63602b49b747dc428b91",
+          "69efc7078b6898473f7046a63629d3024094d61c9e59d2f38ba43328fe7b090c"
+        ],
+        "MEM-K03_rendered_label": "archived / historical"
+      },
+      "P-RUBY-2": {
+        "budget_tokens": 450,
+        "budget_measured_over": "entire delivered envelope including formatting",
+        "omitted": [
+          {
+            "item": "MEM-K03.bytes",
+            "reason": "budget"
+          }
+        ],
+        "omissions_explicit_in_delivered_packet": true,
+        "required_facts_retained": [
+          "MEM-K02.revision",
+          "MEM-K02.source_byte_sha256"
+        ],
+        "qualifies_B1": false
+      },
+      "store-jade_H09": {
+        "per_record_states": {
+          "MEM-K02": "materialized",
+          "MEM-K03": "materialized",
+          "MEM-K04": "materialized"
+        },
+        "EV-K20_before_MEM-K03": {
+          "held_as": "pending_causal_dependency",
+          "applied_on_arrival": true,
+          "dropped": false
+        },
+        "MEM-K01_receipts": [],
+        "byte_equality_with_store_ruby": true,
+        "record_ids_stable": true,
+        "views_match_store_ruby": true
+      }
+    },
+    "action_qualification": {
+      "B1": {
+        "decision": "deny_or_defer",
+        "reason": "source_state_unknown: requalification required for rid-CATALOG-014",
+        "must_not_be_qualified_by": [
+          "MEM-K02 existence",
+          "healthy local checkout at REV-Q",
+          "successful 09:22 local index refresh",
+          "MEM-K06 prose",
+          "truncated P-RUBY-2"
+        ]
+      },
+      "B2": {
+        "decision": "allow",
+        "uses_record": "MEM-K03",
+        "label": "historical/archived",
+        "original_time_cited": "2026-04-12T07:55:00Z",
+        "rows_source": "P1",
+        "must_not_use_bytes_of": "MEM-K02"
+      },
+      "B3": {
+        "decision": "deny",
+        "reason": "cross_scope_unauthorized",
+        "must_not_disclose": [
+          "MEM-K01.bytes",
+          "MEM-K01.hash",
+          "MEM-K01.path",
+          "MEM-K01.repo_id"
+        ]
+      }
+    },
+    "side_effects": {
+      "source_writes": 0,
+      "commits": 0,
+      "checkouts": 0,
+      "resets": 0,
+      "pushes": 0
+    }
+  },
+  "vacuity_preconditions": [
+    "store-ruby contains MEM-K01, MEM-K02, MEM-K03, MEM-K04, MEM-K06, EV-K20, GRANT-Q",
+    "K3 for agent:tern-3 returns at least 3 records",
+    "K8 for agent:kite-9 returns MEM-K01",
+    "If any precondition fails, every negative assertion is reported not-tested, never passed"
+  ]
+}

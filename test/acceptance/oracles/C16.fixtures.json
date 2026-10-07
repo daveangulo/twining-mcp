@@ -1,0 +1,888 @@
+{
+  "case_id": "C16",
+  "oracle_version": "1.0.0",
+  "authored": "2026-09-15",
+  "authored_by": "independent validation owner",
+  "derivation_statement": "Defined from acceptance-cases.md C16, requirements.md R05/R06/R19 (and R02/R03/R07/R08 where the case touches them) and 01-foundation.md 'Required proof before broad implementation'. No implementation source, plan or schema was read.",
+  "abstract_model": {
+    "observables": {
+      "events(store)": "Ordered append-only list of admitted events; each entry exposes event_id, payload_digest, producer, principal, origin_host, origin_store, logical_time, type, subject, anchor.",
+      "current(store, scope, as_of=now)": "Set of applicable parts with {part_id, state, evidence_class, authorizes_action, anchor, source_rev, record_version_id}.",
+      "history(store, subject)": "Full lifecycle chain for a subject: every state with the authorizing event, principal, effective time and the anchor/bytes as originally recorded.",
+      "receipts(store, event_id)": "Per-peer ladder state in {local_durable, queued, transferred, remote_received, admitted, materialized, injected, task_acknowledged, unknown, pending_causal, rejected} plus last_observed_at."
+    },
+    "operations": [
+      "record(event)",
+      "replicate(from_store,to_store,order)",
+      "export(store,at)",
+      "restore(store,export)",
+      "rebuild_index(store)",
+      "query current/history/receipts"
+    ],
+    "evidence_classes": [
+      "human_ruling",
+      "verified_observation",
+      "reported_worker_result",
+      "model_inference",
+      "proposal",
+      "open_question"
+    ],
+    "note": "Names are oracle vocabulary only. The system under test may use different labels provided it declares a total mapping onto these observables before the run."
+  },
+  "identities": {
+    "tenant": {
+      "id": "tnt_synth_01",
+      "label": "synthetic tenant"
+    },
+    "humans": [
+      {
+        "id": "usr_hera",
+        "kind": "human_principal",
+        "authority_scopes": [
+          "svc/billing/"
+        ],
+        "may": [
+          "record",
+          "supersede",
+          "revoke",
+          "archive",
+          "unarchive"
+        ]
+      },
+      {
+        "id": "usr_juno",
+        "kind": "human_principal",
+        "authority_scopes": [
+          "svc/billing/tax/"
+        ],
+        "may": [
+          "record",
+          "supersede",
+          "revoke",
+          "archive",
+          "unarchive"
+        ]
+      }
+    ],
+    "agents": [
+      {
+        "id": "agt_scribe",
+        "kind": "service_principal",
+        "authority_scopes": [],
+        "may": [
+          "record"
+        ],
+        "may_not": [
+          "supersede",
+          "revoke",
+          "grant_authority",
+          "promote_evidence_class"
+        ],
+        "max_evidence_class": "model_inference"
+      }
+    ],
+    "hosts": [
+      {
+        "id": "hst_alpha",
+        "label": "workstation A",
+        "bound_store": "sto_S1",
+        "clone_path": "/a/work/billing"
+      },
+      {
+        "id": "hst_beta",
+        "label": "workstation B",
+        "bound_store": "sto_S2",
+        "clone_path": "/b/src/billing"
+      }
+    ],
+    "stores": [
+      {
+        "id": "sto_S1",
+        "kind": "local_store",
+        "replicates": "rep_R1 records"
+      },
+      {
+        "id": "sto_S2",
+        "kind": "local_store",
+        "replicates": "rep_R1 records"
+      }
+    ],
+    "repository": {
+      "id": "rep_R1",
+      "stable_identity": "repo-uuid-0000-c16-0001",
+      "mutable_labels": {
+        "names": [
+          "billing",
+          "billing-svc"
+        ],
+        "remotes": [
+          "synthetic://origin/billing.git"
+        ],
+        "paths": [
+          "/a/work/billing",
+          "/b/src/billing"
+        ]
+      },
+      "revision_range": [
+        "rev_c0",
+        "rev_c1",
+        "rev_c2",
+        "rev_c3"
+      ],
+      "revisions": [
+        {
+          "rev": "rev_c0",
+          "parent": null,
+          "touches": []
+        },
+        {
+          "rev": "rev_c1",
+          "parent": "rev_c0",
+          "touches": [
+            "svc/billing/invoicing/render.md",
+            "svc/billing/tax/rates.md",
+            "svc/billing/ledger/keys.md"
+          ]
+        },
+        {
+          "rev": "rev_c2",
+          "parent": "rev_c1",
+          "touches": [
+            "svc/billing/tax/rates.md"
+          ]
+        },
+        {
+          "rev": "rev_c3",
+          "parent": "rev_c2",
+          "touches": [
+            "svc/billing/ledger/keys.md"
+          ]
+        }
+      ]
+    }
+  },
+  "subject_under_test": {
+    "record_id": "D1",
+    "kind": "multi_part_decision",
+    "parts": [
+      {
+        "part_id": "D1#P1",
+        "scope": "svc/billing/invoicing/",
+        "evidence_class": "human_ruling",
+        "author": "usr_hera",
+        "anchor_rev": "rev_c1",
+        "anchor_path": "svc/billing/invoicing/render.md",
+        "source_sha256": "sha256:aaaa1111p1"
+      },
+      {
+        "part_id": "D1#P2",
+        "scope": "svc/billing/tax/",
+        "evidence_class": "human_ruling",
+        "author": "usr_hera",
+        "anchor_rev": "rev_c1",
+        "anchor_path": "svc/billing/tax/rates.md",
+        "source_sha256": "sha256:bbbb2222p2"
+      },
+      {
+        "part_id": "D1#P3",
+        "scope": "svc/billing/ledger/",
+        "evidence_class": "model_inference",
+        "author": "agt_scribe",
+        "anchor_rev": "rev_c1",
+        "anchor_path": "svc/billing/ledger/keys.md",
+        "source_sha256": "sha256:cccc3333p3",
+        "authorizes_action": false
+      }
+    ]
+  },
+  "seed_events": [
+    {
+      "event_id": "EV01",
+      "logical_time": "t0",
+      "origin_store": "sto_S1",
+      "origin_host": "hst_alpha",
+      "principal": "usr_hera",
+      "producer": "hst_alpha/session_a1",
+      "type": "decision.record",
+      "subject": "D1",
+      "payload_digest": "dig:EV01",
+      "payload": {
+        "parts": [
+          "D1#P1",
+          "D1#P2",
+          "D1#P3"
+        ],
+        "record_version_id": "D1@v1"
+      }
+    },
+    {
+      "event_id": "EV02",
+      "logical_time": "t1",
+      "origin_store": "sto_S1",
+      "origin_host": "hst_alpha",
+      "principal": "usr_hera",
+      "producer": "replicator",
+      "type": "exchange.replicate",
+      "subject": "EV01",
+      "payload_digest": "dig:EV02",
+      "payload": {
+        "to_store": "sto_S2"
+      }
+    },
+    {
+      "event_id": "EV03",
+      "logical_time": "t2",
+      "origin_store": "sto_S1",
+      "origin_host": "hst_alpha",
+      "principal": "usr_hera",
+      "producer": "source_connector",
+      "type": "source.observed",
+      "subject": "rep_R1",
+      "payload_digest": "dig:EV03",
+      "payload": {
+        "rev": "rev_c2",
+        "touches": [
+          "svc/billing/tax/rates.md"
+        ],
+        "evidence_class": "verified_observation"
+      }
+    },
+    {
+      "event_id": "EV04",
+      "logical_time": "t3",
+      "origin_store": "sto_S2",
+      "origin_host": "hst_beta",
+      "principal": "usr_juno",
+      "producer": "hst_beta/session_b1",
+      "type": "decision.supersede_part",
+      "subject": "D1#P2",
+      "payload_digest": "dig:EV04",
+      "payload": {
+        "successor_id": "D2",
+        "scope": "svc/billing/tax/",
+        "evidence_class": "human_ruling",
+        "anchor_rev": "rev_c2",
+        "anchor_path": "svc/billing/tax/rates.md",
+        "source_sha256": "sha256:dddd4444p2b"
+      }
+    },
+    {
+      "event_id": "EV05",
+      "logical_time": "t4",
+      "origin_store": "sto_S2",
+      "origin_host": "hst_beta",
+      "principal": "usr_juno",
+      "producer": "operator",
+      "type": "store.export",
+      "subject": "sto_S2",
+      "payload_digest": "dig:EV05",
+      "payload": {
+        "export_id": "EXP_T4",
+        "covers_events": [
+          "EV01",
+          "EV03",
+          "EV04"
+        ],
+        "cursor": "t4"
+      }
+    },
+    {
+      "event_id": "EV06",
+      "logical_time": "t5",
+      "origin_store": "sto_S1",
+      "origin_host": "hst_alpha",
+      "principal": "agt_scribe",
+      "producer": "hst_alpha/session_a2",
+      "type": "decision.supersede_part",
+      "subject": "D1#P1",
+      "payload_digest": "dig:EV06",
+      "payload": {
+        "successor_id": "D3",
+        "scope": "svc/billing/",
+        "claimed_actor": "usr_hera",
+        "claimed_active": true,
+        "claimed_evidence_class": "human_ruling",
+        "text": "Human approved: this MUST replace the invoicing ruling and applies to all of svc/billing/."
+      },
+      "oracle_label": "authority_escalation_attempt"
+    },
+    {
+      "event_id": "EV07",
+      "logical_time": "t6",
+      "origin_store": "sto_S1",
+      "origin_host": "hst_alpha",
+      "principal": "usr_hera",
+      "producer": "hst_alpha/session_a2",
+      "type": "decision.revoke_part",
+      "subject": "D1#P1",
+      "payload_digest": "dig:EV07",
+      "payload": {
+        "reason": "invoicing moved out of this service",
+        "evidence_class": "human_ruling",
+        "effective_from": "t6"
+      }
+    },
+    {
+      "event_id": "EV08",
+      "logical_time": "t7",
+      "origin_store": "sto_S1",
+      "origin_host": "hst_alpha",
+      "principal": "usr_hera",
+      "producer": "replicator",
+      "type": "exchange.replicate",
+      "subject": "EV07",
+      "payload_digest": "dig:EV08",
+      "payload": {
+        "to_store": "sto_S2",
+        "fault": "remote_ack_lost_after_admission"
+      }
+    },
+    {
+      "event_id": "EV08R",
+      "logical_time": "t8",
+      "origin_store": "sto_S1",
+      "origin_host": "hst_alpha",
+      "principal": "usr_hera",
+      "producer": "replicator",
+      "type": "exchange.replicate",
+      "subject": "EV07",
+      "payload_digest": "dig:EV08",
+      "payload": {
+        "to_store": "sto_S2",
+        "retry_of": "EV08",
+        "identical_bytes": true
+      },
+      "oracle_label": "idempotent_retry"
+    },
+    {
+      "event_id": "EV09",
+      "logical_time": "t9",
+      "origin_store": "sto_S1",
+      "origin_host": "hst_alpha",
+      "principal": "usr_hera",
+      "producer": "hst_alpha/session_a3",
+      "type": "record.archive",
+      "subject": "D1",
+      "payload_digest": "dig:EV09",
+      "payload": {
+        "reason": "reduce default surfacing",
+        "scope": "container",
+        "evidence_class": "human_ruling"
+      }
+    },
+    {
+      "event_id": "EV10",
+      "logical_time": "t10",
+      "origin_store": "sto_S1",
+      "origin_host": "hst_alpha",
+      "principal": "usr_hera",
+      "producer": "replicator",
+      "type": "exchange.replicate",
+      "subject": "EV09",
+      "payload_digest": "dig:EV10",
+      "payload": {
+        "to_store": "sto_S2"
+      }
+    },
+    {
+      "event_id": "EV11",
+      "logical_time": "t11",
+      "origin_store": "sto_S1",
+      "origin_host": "hst_alpha",
+      "principal": "usr_hera",
+      "producer": "hst_alpha/session_a3",
+      "type": "record.unarchive",
+      "subject": "D1",
+      "payload_digest": "dig:EV11",
+      "payload": {
+        "reason": "needed again for audit",
+        "evidence_class": "human_ruling"
+      }
+    },
+    {
+      "event_id": "EV12",
+      "logical_time": "t12",
+      "origin_store": "sto_S2",
+      "origin_host": "hst_beta",
+      "principal": "usr_juno",
+      "producer": "operator",
+      "type": "store.restore",
+      "subject": "sto_S2",
+      "payload_digest": "dig:EV12",
+      "payload": {
+        "from_export": "EXP_T4",
+        "then": "reconnect_and_reconcile_from_sto_S1"
+      }
+    },
+    {
+      "event_id": "EV13",
+      "logical_time": "t13",
+      "origin_store": "sto_S1",
+      "origin_host": "hst_alpha",
+      "principal": "usr_hera",
+      "producer": "operator",
+      "type": "index.rebuild",
+      "subject": "sto_S1",
+      "payload_digest": "dig:EV13",
+      "payload": {
+        "fault": "materialized_current_view_destroyed",
+        "rebuild_from": "retained_event_log"
+      }
+    },
+    {
+      "event_id": "EV14",
+      "logical_time": "t14",
+      "origin_store": "sto_S1",
+      "origin_host": "hst_alpha",
+      "principal": "usr_hera",
+      "producer": "hst_alpha/session_a4",
+      "type": "decision.record",
+      "subject": "D4",
+      "payload_digest": "dig:EV14",
+      "payload": {
+        "scope": "svc/billing/ledger/",
+        "evidence_class": "human_ruling",
+        "supersedes": [
+          "D1#P3"
+        ],
+        "anchor_rev": "rev_c3",
+        "anchor_path": "svc/billing/ledger/keys.md",
+        "source_sha256": "sha256:eeee5555p3b"
+      },
+      "oracle_label": "positive_control_2"
+    }
+  ],
+  "delivery_plans": {
+    "plan_A_causal_order": [
+      "EV01",
+      "EV03",
+      "EV04",
+      "EV06",
+      "EV07",
+      "EV08",
+      "EV08R",
+      "EV09",
+      "EV11",
+      "EV12",
+      "EV13",
+      "EV14"
+    ],
+    "plan_B_reverse_to_S2": [
+      "EV11",
+      "EV09",
+      "EV07",
+      "EV04",
+      "EV01"
+    ],
+    "plan_C_duplicates": [
+      "EV01",
+      "EV01",
+      "EV04",
+      "EV07",
+      "EV07",
+      "EV09",
+      "EV09",
+      "EV11"
+    ],
+    "requirement": "current(sto_S2, *) and history(sto_S2, *) at the final checkpoint must be byte-identical across plan_A, plan_B and plan_C after reconciliation completes; under plan_B every event whose causal prerequisite has not arrived must sit in receipts state pending_causal and must be neither applied nor discarded."
+  },
+  "checkpoints": [
+    {
+      "id": "CP0",
+      "after_event": "EV02",
+      "label": "both stores seeded"
+    },
+    {
+      "id": "CP1",
+      "after_event": "EV04",
+      "label": "partial supersession of P2 only"
+    },
+    {
+      "id": "CP2",
+      "after_event": "EV08R",
+      "label": "revocation of P1 + lost-ack retry reconciled"
+    },
+    {
+      "id": "CP3",
+      "after_event": "EV10",
+      "label": "container archived on both stores"
+    },
+    {
+      "id": "CP4",
+      "after_event": "EV11",
+      "label": "container restored (unarchived) on sto_S1"
+    },
+    {
+      "id": "CP5",
+      "after_event": "EV12",
+      "label": "sto_S2 rebuilt from EXP_T4 and reconciled"
+    },
+    {
+      "id": "CP6",
+      "after_event": "EV13",
+      "label": "sto_S1 current view rebuilt from event log"
+    },
+    {
+      "id": "CP7",
+      "after_event": "EV14",
+      "label": "authorized post-restore write applied"
+    }
+  ],
+  "expected_end_states": {
+    "CP1": {
+      "current(sto_S2,'svc/billing/')": [
+        {
+          "part_id": "D1#P1",
+          "state": "applicable",
+          "evidence_class": "human_ruling",
+          "authorizes_action": true,
+          "anchor_rev": "rev_c1",
+          "record_version_id": "D1@v1"
+        },
+        {
+          "part_id": "D2",
+          "state": "applicable",
+          "evidence_class": "human_ruling",
+          "authorizes_action": true,
+          "anchor_rev": "rev_c2",
+          "supersedes": "D1#P2"
+        },
+        {
+          "part_id": "D1#P2",
+          "state": "superseded_by:D2",
+          "present_in_applicable_view": false
+        },
+        {
+          "part_id": "D1#P3",
+          "state": "applicable_provisional",
+          "evidence_class": "model_inference",
+          "authorizes_action": false,
+          "anchor_rev": "rev_c1"
+        }
+      ]
+    },
+    "CP2": {
+      "current(sto_S1,'svc/billing/')": [
+        {
+          "part_id": "D1#P1",
+          "state": "revoked",
+          "present_in_applicable_view": false,
+          "revoked_by": "EV07",
+          "effective_from": "t6"
+        },
+        {
+          "part_id": "D2",
+          "state": "applicable",
+          "authorizes_action": true
+        },
+        {
+          "part_id": "D1#P3",
+          "state": "applicable_provisional",
+          "evidence_class": "model_inference",
+          "authorizes_action": false
+        }
+      ],
+      "events(sto_S2).count_of(subject=='D1#P1', type=='decision.revoke_part')": 1,
+      "receipts(sto_S1,'EV07').to(sto_S2)": "admitted",
+      "rejected_ledger": [
+        {
+          "event_id": "EV06",
+          "disposition": "rejected_unauthorized",
+          "visible": true,
+          "effect_on_D1#P1": "none",
+          "effect_on_D1#P2": "none"
+        }
+      ]
+    },
+    "CP3": {
+      "current(sto_S1,'svc/billing/', include_archived=false)": [],
+      "current(sto_S1,'svc/billing/', include_archived=true)": [
+        {
+          "part_id": "D1#P1",
+          "state": "revoked",
+          "archived": true
+        },
+        {
+          "part_id": "D1#P3",
+          "state": "applicable_provisional",
+          "archived": true,
+          "authorizes_action": false
+        }
+      ],
+      "invariant": "no part's authority state differs from CP2; archival changed only the archived flag and default surfacing.",
+      "D2_unaffected": {
+        "part_id": "D2",
+        "state": "applicable",
+        "archived": false,
+        "authorizes_action": true
+      }
+    },
+    "CP4": {
+      "current(sto_S1,'svc/billing/')": [
+        {
+          "part_id": "D1#P1",
+          "state": "revoked",
+          "present_in_applicable_view": false
+        },
+        {
+          "part_id": "D2",
+          "state": "applicable",
+          "evidence_class": "human_ruling",
+          "authorizes_action": true,
+          "anchor_rev": "rev_c2"
+        },
+        {
+          "part_id": "D1#P2",
+          "state": "superseded_by:D2",
+          "present_in_applicable_view": false
+        },
+        {
+          "part_id": "D1#P3",
+          "state": "applicable_provisional",
+          "evidence_class": "model_inference",
+          "authorizes_action": false,
+          "anchor_rev": "rev_c1",
+          "record_version_id": "D1@v1"
+        }
+      ],
+      "archived_flag(D1)": false
+    },
+    "CP5": {
+      "current(sto_S2,'svc/billing/')": "identical set to CP4 current(sto_S1,'svc/billing/')",
+      "pre_reconciliation_window": {
+        "current(sto_S2)": "must be labeled known_cursor=t4, staleness=unknown_beyond_cursor",
+        "must_not": "present D1#P1 as authoritative-current without that label"
+      },
+      "post_reconciliation": {
+        "D1#P1": "revoked",
+        "resurrected": false
+      },
+      "events(sto_S2)": "contains EV01, EV03, EV04, EV07, EV09, EV11 exactly once each, with original event_ids and payload_digests"
+    },
+    "CP6": {
+      "current(sto_S1,'svc/billing/')": "byte-identical to CP4",
+      "events(sto_S1)": "unchanged in count, ids, order-relation and digests from before EV13",
+      "acknowledged_events_lost": 0
+    },
+    "CP7": {
+      "current(sto_S1,'svc/billing/')": [
+        {
+          "part_id": "D1#P1",
+          "state": "revoked",
+          "present_in_applicable_view": false
+        },
+        {
+          "part_id": "D2",
+          "state": "applicable",
+          "authorizes_action": true
+        },
+        {
+          "part_id": "D4",
+          "state": "applicable",
+          "evidence_class": "human_ruling",
+          "authorizes_action": true,
+          "anchor_rev": "rev_c3",
+          "supersedes": "D1#P3"
+        },
+        {
+          "part_id": "D1#P3",
+          "state": "superseded_by:D4",
+          "present_in_applicable_view": false,
+          "evidence_class": "model_inference"
+        }
+      ]
+    }
+  },
+  "expected_history": {
+    "D1#P1": [
+      {
+        "state": "recorded",
+        "at": "t0",
+        "by": "usr_hera",
+        "anchor_rev": "rev_c1",
+        "sha": "sha256:aaaa1111p1"
+      },
+      {
+        "state": "revoked",
+        "at": "t6",
+        "by": "usr_hera",
+        "authorizing_event": "EV07"
+      },
+      {
+        "state": "archived_container",
+        "at": "t9",
+        "by": "usr_hera"
+      },
+      {
+        "state": "unarchived_container",
+        "at": "t11",
+        "by": "usr_hera",
+        "authority_state_after": "revoked"
+      }
+    ],
+    "D1#P2": [
+      {
+        "state": "recorded",
+        "at": "t0",
+        "by": "usr_hera",
+        "anchor_rev": "rev_c1",
+        "sha": "sha256:bbbb2222p2"
+      },
+      {
+        "state": "superseded_by:D2",
+        "at": "t3",
+        "by": "usr_juno",
+        "authorizing_event": "EV04",
+        "scope": "svc/billing/tax/"
+      }
+    ],
+    "D1#P3": [
+      {
+        "state": "recorded",
+        "at": "t0",
+        "by": "agt_scribe",
+        "evidence_class": "model_inference",
+        "anchor_rev": "rev_c1",
+        "sha": "sha256:cccc3333p3"
+      },
+      {
+        "state": "archived_container",
+        "at": "t9"
+      },
+      {
+        "state": "unarchived_container",
+        "at": "t11",
+        "evidence_class_after": "model_inference"
+      },
+      {
+        "state": "superseded_by:D4",
+        "at": "t14",
+        "by": "usr_hera"
+      }
+    ],
+    "as_of_queries": [
+      {
+        "query": "current(sto_S1,'svc/billing/invoicing/', as_of='t2')",
+        "expect": [
+          {
+            "part_id": "D1#P1",
+            "state": "applicable",
+            "evidence_class": "human_ruling"
+          }
+        ]
+      },
+      {
+        "query": "current(sto_S1,'svc/billing/invoicing/', as_of='t12')",
+        "expect": []
+      },
+      {
+        "query": "history(sto_S1,'D1#P1')",
+        "expect_contains_original_bytes": "sha256:aaaa1111p1"
+      }
+    ]
+  },
+  "receipt_expectations": {
+    "EV07@sto_S1->sto_S2": [
+      {
+        "window": "t7 after ack loss",
+        "expected": "transferred|unknown",
+        "must_not_be": "admitted",
+        "reason": "producer may not claim remote admission it has not observed"
+      },
+      {
+        "window": "t8 after identical retry",
+        "expected": "admitted",
+        "duplicate_semantic_effects": 0
+      }
+    ],
+    "EV04@sto_S2->sto_S1": [
+      {
+        "window": "CP1",
+        "expected": "admitted",
+        "task_acknowledged": false,
+        "reason": "admission of a supersession event is not acceptance of the underlying work"
+      }
+    ],
+    "EV06": [
+      {
+        "window": "CP2",
+        "expected": "rejected",
+        "visible_in_rejected_ledger": true,
+        "silently_dropped": false
+      }
+    ],
+    "ladder": [
+      "local_durable",
+      "queued",
+      "transferred",
+      "remote_received",
+      "admitted",
+      "materialized",
+      "injected",
+      "task_acknowledged"
+    ]
+  },
+  "positive_controls": [
+    {
+      "id": "PC1",
+      "event": "EV04",
+      "claim": "An in-scope partial supersession by a principal with delegated authority over svc/billing/tax/ is admitted and becomes applicable at CP1 on both stores.",
+      "fails_if": "rejected, deferred without cause, or applied to parts outside svc/billing/tax/"
+    },
+    {
+      "id": "PC2",
+      "event": "EV14",
+      "claim": "After archival, restoration and index rebuild the store still accepts an authorized in-scope human ruling, which supersedes the provisional part D1#P3 at CP7.",
+      "fails_if": "rejected, or D1#P3 remains applicable_provisional after CP7"
+    }
+  ],
+  "negative_assertions": [
+    {
+      "id": "N1",
+      "must_not": "D1#P1 appears in any current applicable view at or after CP4 on either store."
+    },
+    {
+      "id": "N2",
+      "must_not": "D1#P3's evidence_class or authorizes_action changes as a side effect of EV09 (archive), EV11 (unarchive) or EV12 (store restore)."
+    },
+    {
+      "id": "N3",
+      "must_not": "EV06 changes the state, scope, evidence class or authority of D1#P1 or D1#P2, or is accepted because it carries claimed_actor/claimed_active/'MUST' prose."
+    },
+    {
+      "id": "N4",
+      "must_not": "EV04 changes the state, anchor or record_version_id of D1#P1 or D1#P3."
+    },
+    {
+      "id": "N5",
+      "must_not": "EV09/EV11 mutate, delete, re-identify or re-order any prior event, or re-anchor any restored part from rev_c1 to the current head rev_c3."
+    },
+    {
+      "id": "N6",
+      "must_not": "EV12 (restore from EXP_T4) causes any acknowledged event in EV07/EV09/EV11 to be lost, nor causes D1#P1 to serve as current after reconciliation."
+    },
+    {
+      "id": "N7",
+      "must_not": "EV06 is silently discarded with no observable rejection record."
+    },
+    {
+      "id": "N8",
+      "must_not": "Any receipt reaching admitted/materialized is reported as task acceptance, qualification or human authorization."
+    },
+    {
+      "id": "N9",
+      "must_not": "EV13 (index rebuild after materialized-view loss) changes the current view relative to CP4 or reduces the admitted event count."
+    },
+    {
+      "id": "N10",
+      "must_not": "Delivery order (plan_B) or duplicate delivery (plan_C) changes the final current view or the authority outcome of any part."
+    }
+  ],
+  "immediate_rejection_triggers": [
+    "D1#P1 applicable after CP4 in any view not explicitly labeled historical/as-of",
+    "D1#P3 presented as authorizing an action at any checkpoint",
+    "EV06 applied in whole or in part",
+    "any acknowledged event absent from events(store) at CP5 or CP6",
+    "a state change to a part outside the authorized scope of the authorizing event"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "agent_id": "tokenizer-wiring",
+  "detail": "Full summary: the calibrated table leaves ascii_space at the PROVEN ratio 1.0 because whitespace.txt is the one corpus doc the count-tokens API refuses (blank text), so the calibrate script skips it and no document is dominated by that class. Whitespace is ~15% of briefing bytes, so this alone costs ~0.15 tokens/byte of the residual looseness — measured prose density is 0.42-0.44 rather than the ~0.28 a fully-measured table would give. ascii_punct is also 1.0, but there by clamp (measured x 1.15 exceeded the proven bound), which is correct. To close the space gap the corpus needs a document that is >=80% whitespace bytes yet not blank — e.g. indented/padded text — since a document the API will actually count is the only way that class gets a measurement.",
+  "entry_type": "warning",
+  "id": "01M2M33JSKS7BP31XVWJGDS2Q7",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "92093f8c902437e8f85cc2fb4f24064ee965e297",
+    "recorded_at": "2026-09-16T03:10:30.683Z"
+  },
+  "scope": "src/retrieval/",
+  "summary": "the calibrated table leaves ascii_space at the PROVEN ratio 1.0 because whitespace.txt is the one corpus doc the count-tokens API refuses (blank text), so the calibrate script skips it and no docum…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-16T03:10:30.707Z"
+}

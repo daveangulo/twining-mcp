@@ -1,0 +1,31 @@
+{
+  "affected_files": [
+    "src/core/context.ts",
+    "src/config.ts",
+    "src/utils/types.ts",
+    "test/core/offline-switch.test.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "merge-integrator",
+  "alternatives": [],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Applied contracts 3.0.0-draft.3 and the merge-time fixes: scopeAuthorizes adopted, optional superseded.by, legacy post entry_type, new delivery reasons, exchangeStatus on the store API, RetrievalAnnex moved, correctionFor conflicts, gitignore, offline switch, calibration script, doc counts.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M2M1J0DA0HH8Z1RKKF1P76V7",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9241cc079a04bb9d9221dc54e15ffd7b945409b6",
+    "recorded_at": "2026-09-16T02:43:26.231Z"
+  },
+  "rationale": "src/server.ts calls createTwiningContext(projectRoot) with no options, so the MCP server read only the caller and ignored both the environment and the config — an operator who had said 'never download a model' still got a download attempt on first use (DN25). Each source answers a different question: the caller ('this process must not use the network' — the CLI), the environment ('this shell has no network' — Codex, CI), the config ('this installation never downloads'). OR is right because offline is strictly the more conservative mode, so offline:false must not override an operator's TWINING_OFFLINE=1. TWINING_OFFLINE parses only 1/true/yes as affirmative, so exporting it empty is not a switch. embeddings.offline had to be added to DEFAULT_CONFIG as well: deepMerge iterates the DEFAULTS' keys, so a config key absent from DEFAULT_CONFIG is silently dropped.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/contracts/",
+  "status": "active",
+  "summary": "The offline switch is the OR of caller option, TWINING_OFFLINE and config embeddings.offline, resolved once in createTwiningContext",
+  "timestamp": "2026-09-16T02:43:26.251Z"
+}

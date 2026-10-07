@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T22:48:46.002Z",
+  "id": "01M2KM4A5JNJTDVV3TSK9JH87K",
+  "properties": {
+    "decision_summary": "Contracts draft.3 also adopts lane 02b's additive proposals: quarantine reason signer_untrusted; reject reasons credential_revoked and author_assertion_not_authenticated; CONFLICTING_DUPLICATE already a ValidationCode; EventStore.exchangeStatus() + ExchangeStatus type; optional lastMalformed/lastGap on Transport",
+    "origin": "derived"
+  },
+  "source": "01M2KM4A5H9FS65XRDCVG9ECRY",
+  "target": "01M2KM4A5GQHSWKRB69MFVQGDP",
+  "type": "decided_by"
+}

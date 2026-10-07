@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-20T04:46:13.837Z",
+  "id": "01M2YJ5QAD3728RCS16GRH2RCB",
+  "name": "01M2YJ5Q88DYSRZ45TB3XVAQF5",
+  "properties": {
+    "scope": "src/migrate/v3-forward.ts",
+    "summary": "Chose a new test/migrate/v3-identity-reuse.test.ts (identity-init via the real ensureStoreDescriptor, then migrateStatus / migrate --to 3 / shared-store / rerun) plus test/retrieval/store-identity.test.ts, over extending v3-forward.test.ts"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-20T04:46:13.837Z"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "cli-2.17-lane",
+  "detail": "`git init` and `git diff` exit 69 with \"You have not agreed to the Xcode license agreements\" — /usr/bin/git is the Xcode shim and no other git is on this machine's PATH (/opt/homebrew/bin/git and /usr/local/bin/git do not exist). Affected in the cli-2.17 worktree: test/tools.test.ts 3 failures (the twining_commits git-repo describe block, beforeAll git init) and test/integration/tools/housekeeping-tools.test.ts all 15 failures (gitInit in beforeEach). Both fail at git invocation before any Twining code runs, so they are NOT caused by the 2.17.0 extraction — but neither can they be shown green from here. Anything else that shells out to git (twining_record scope inference, twining_commits existence probe, RecordSyncManager.headSha) is equally untestable in this sandbox, which is also why the new CLI tests deliberately avoid git.",
+  "entry_type": "warning",
+  "id": "01M2KD50QTEHAC245AP14BPPQJ",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:46:48.972Z"
+  },
+  "scope": "src/cli/",
+  "summary": "git is UNUSABLE in this agent sandbox (Xcode license shim) — 18 git-dependent tests fail environmentally; controller must re-run them",
+  "tags": [
+    "environment",
+    "testing",
+    "sandbox"
+  ],
+  "timestamp": "2026-09-15T20:46:49.082Z"
+}

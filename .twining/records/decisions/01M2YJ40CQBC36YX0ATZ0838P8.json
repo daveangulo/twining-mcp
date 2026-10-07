@@ -1,0 +1,32 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "leaving DP-3 as a mid-trial code edit",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "CONDITIONS builder for the dev-scale trial (harness repo, branch foundation-trial, uncommitted): wrote src/conditions/twining-trial.ts (TwiningTrialCondition for twining-2161/twining-v3: TRIAL_* env resolved at setup with existence checks, node <server> --project, plugin dir, empty allowedTools, per-arm env incl. v3 identity home/TWINING_PROJECT/TWINING_OFFLINE, DP-3 TRIAL_PLUGIN_SERVER_ONLY switch, metadata with resolved paths, dynamic walk of .twining/records|events|adapters/sessions for coordination snapshots, teardown rm .twining + .trial-identity), src/conditions/lexical-store.ts (CLAUDE.md pointer + 388-char system prompt equal to the gate prompt, shared-markdown tool list), src/conditions/oracle-in-context.ts (extends baseline, name only), four registry entries and four ConditionName members. tsc exit 0; runtime exercise of all conditions passed; agent-visible text tell-scan clean.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M2YJ40CQBC36YX0ATZ0838P8",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T04:45:17.570Z"
+  },
+  "rationale": "makes the plugin-server-only fallback a recorded toggle in ConditionContext.metadata; both Twining arms read the same variable",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/plans/2026-09-16-dev-scale-trial-design.md",
+  "status": "active",
+  "summary": "Chose to add the DP-3 TRIAL_PLUGIN_SERVER_ONLY env switch (default off) instead of leaving DP-3 as a mid-trial code edit",
+  "timestamp": "2026-09-20T04:45:17.591Z"
+}

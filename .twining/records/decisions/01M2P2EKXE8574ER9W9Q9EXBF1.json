@@ -1,0 +1,55 @@
+{
+  "affected_files": [
+    "src/adapters/working-set.ts",
+    "test/adapters/working-set-render.test.ts"
+  ],
+  "affected_symbols": [
+    "oneLine",
+    "normalise",
+    "renderResult",
+    "renderRecord",
+    "isHookBookkeeping",
+    "buildWorkingSet"
+  ],
+  "agent_id": "wf_e59d869d-75f-4-review-fix",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Render kind in {session_start, compaction} as a one-token head and drop cwd/session/hash keys",
+      "pros": [],
+      "reason_rejected": "still budget-competing at rank 2; the cursor stall returns at ~60 sessions"
+    },
+    {
+      "cons": [],
+      "option": "Rank bookkeeping below proposals",
+      "pros": [],
+      "reason_rejected": "they still consume budget and still pin the cursor once the store is long-lived"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "No host needs 'another session is active on this scope' facts inside the injected working set; if one does, render an allowlisted subset instead of excluding"
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Applied the review of fix/working-set-render (1258c30a): every free-text field now goes through one oneLine() normaliser, hook bookkeeping observations are excluded from the working set, result.error is never rendered, URL userinfo is stripped, 40-hex result shas shortened. 9 new tests, all red on 1258c30a.",
+  "depends_on": [
+    "01M2P189MPRZN7K2BP8V2SCHAD",
+    "01M2KMTDSKBZSCCP3KRGF6G7FH"
+  ],
+  "domain": "implementation",
+  "id": "01M2P2EKXE8574ER9W9Q9EXBF1",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T21:37:32.570Z"
+  },
+  "rationale": "Reviewer measured on a fixture store: 25 SessionStarts + 10 decisions at the default 6000 budget left 2/10 decisions delivered and the delta cursor pinned, so every UserPromptSubmit re-injected the full ~6.7 KB set. These observations carry cwd, session id, transcript name and injection cursors — plumbing about the injection machinery, the same ground on which receipts were already excluded. A compact one-token render still spends ~95 bytes per session at class rank 2 and stalls the cursor later rather than never; ranking below proposals keeps them competing for budget. Detection is structural: record_type observation, source_kind 'other', result.kind in the named set. New test: 25 sessions (SessionStart + PreCompact each) + 10 decisions → all decisions emitted, nothing omitted, cursor written, both prompt turns are deltas.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/adapters/working-set.ts",
+  "status": "active",
+  "summary": "Chose to EXCLUDE the hooks' own session_start / compaction / post_compaction observations from the working set (alongside principal, membership, receipt) rather than render them compactly or rank them below proposals",
+  "timestamp": "2026-09-16T21:37:32.590Z"
+}

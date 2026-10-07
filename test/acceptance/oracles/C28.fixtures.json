@@ -1,0 +1,864 @@
+{
+  "case_id": "C28",
+  "fixture_set": "development",
+  "fixture_version": "c28-dev-1",
+  "oracle_authored_before_observation": true,
+  "declared_by_implementation_not_oracle": [
+    "transport_kind",
+    "store_engine",
+    "tokenizer_id",
+    "target_deployment_profile"
+  ],
+  "corpus": {
+    "tier_under_test": "T2",
+    "record_count": 10000,
+    "declared_tiers": [
+      1000,
+      10000,
+      100000
+    ],
+    "manifest_id": "MAN-0",
+    "manifest_fields": [
+      "record_id",
+      "scope",
+      "payload_digest",
+      "source_uri",
+      "source_bytes_hash",
+      "hash_alg",
+      "encoding",
+      "evidence_class",
+      "lifecycle_state",
+      "relations",
+      "observed_at",
+      "effective_at",
+      "author_principal",
+      "observer_principal"
+    ],
+    "scope_mix": {
+      "svc/ledger/": 6000,
+      "svc/billing/": 3500,
+      "svc/shared/": 500
+    },
+    "marker_records": 12,
+    "filler_generation": "deterministic seed 28091501; filler never referenced by an assertion except through MAN-0 completeness checks"
+  },
+  "tenant": "tenant-northwind",
+  "teams": [
+    {
+      "id": "team-orchard",
+      "owns_scopes": [
+        "svc/ledger/"
+      ]
+    },
+    {
+      "id": "team-quarry",
+      "owns_scopes": [
+        "svc/billing/"
+      ]
+    }
+  ],
+  "human_principals": [
+    {
+      "id": "hp-anita",
+      "team": "team-orchard",
+      "grants": [
+        {
+          "scope": "svc/ledger/",
+          "rights": [
+            "read",
+            "write",
+            "publish"
+          ]
+        },
+        {
+          "scope": "svc/shared/",
+          "rights": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "scope": "svc/billing/",
+          "rights": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hp-boris",
+      "team": "team-quarry",
+      "grants": [
+        {
+          "scope": "svc/billing/",
+          "rights": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "scope": "svc/ledger/",
+          "rights": [
+            "read"
+          ],
+          "revoked_by_event": "REV-1"
+        },
+        {
+          "scope": "svc/shared/",
+          "rights": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hp-clara",
+      "team": "team-orchard",
+      "grants": [
+        {
+          "scope": "svc/ledger/",
+          "rights": [
+            "read"
+          ]
+        }
+      ]
+    }
+  ],
+  "agent_principals": [
+    {
+      "id": "ap-orchard-codex",
+      "acts_for": "hp-anita",
+      "home_host": "host-alpha",
+      "backend": "codex",
+      "direct_memory_tools": true
+    },
+    {
+      "id": "ap-quarry-claude",
+      "acts_for": "hp-boris",
+      "home_host": "host-bravo",
+      "backend": "claude",
+      "direct_memory_tools": true
+    },
+    {
+      "id": "ap-ledger-bedrock",
+      "acts_for": "hp-anita",
+      "home_host": "host-alpha",
+      "backend": "api-bedrock-worker",
+      "direct_memory_tools": false
+    }
+  ],
+  "hosts": [
+    {
+      "id": "host-alpha",
+      "physical_machine": "machine-1",
+      "clock_offset_seconds": 0,
+      "store": "store-A",
+      "role": "producer-primary"
+    },
+    {
+      "id": "host-bravo",
+      "physical_machine": "machine-2",
+      "clock_offset_seconds": 420,
+      "store": "store-B",
+      "role": "peer-replica"
+    },
+    {
+      "id": "host-charlie",
+      "physical_machine": "machine-3",
+      "clock_offset_seconds": 0,
+      "store": "store-C",
+      "role": "clean-rebuild-target",
+      "initial_state": "empty-install"
+    }
+  ],
+  "substitution_disclosure_required": "If host-alpha/host-bravo/host-charlie are containers or processes on one machine rather than two or more actual computers, the report must say so and the C28 verdict is 'unavailable', never 'passed'.",
+  "repositories": [
+    {
+      "id": "R-LEDGER-7f3",
+      "label_at_seed": "repo-ledger",
+      "label_after_relocation": "repo-ledger-core",
+      "remote_url_at_seed": "synthetic://forge.invalid/orchard/repo-ledger.git",
+      "remote_url_after_relocation": "synthetic://forge.invalid/northwind/repo-ledger-core.git",
+      "worktrees": [
+        "wt-ledger-main@host-alpha",
+        "wt-ledger-hotfix@host-bravo"
+      ]
+    },
+    {
+      "id": "R-BILL-2c9",
+      "label_at_seed": "repo-billing",
+      "remote_url_at_seed": "synthetic://forge.invalid/quarry/repo-billing.git"
+    }
+  ],
+  "revisions": [
+    {
+      "id": "rev-L1",
+      "repo": "R-LEDGER-7f3",
+      "role": "ledger base at seed"
+    },
+    {
+      "id": "rev-L2",
+      "repo": "R-LEDGER-7f3",
+      "role": "ledger head after P1 push"
+    },
+    {
+      "id": "rev-B1",
+      "repo": "R-BILL-2c9",
+      "role": "billing base"
+    }
+  ],
+  "credentials": [
+    {
+      "id": "cred-anita-alpha",
+      "principal": "hp-anita",
+      "host": "host-alpha",
+      "scopes": [
+        "svc/ledger/",
+        "svc/shared/"
+      ]
+    },
+    {
+      "id": "cred-boris-bravo",
+      "principal": "hp-boris",
+      "host": "host-bravo",
+      "scopes": [
+        "svc/billing/"
+      ]
+    },
+    {
+      "id": "cred-import-charlie",
+      "principal": "hp-anita",
+      "host": "host-charlie",
+      "scopes": [
+        "import"
+      ]
+    }
+  ],
+  "sessions": [
+    {
+      "id": "sess-cdx-001",
+      "host": "host-alpha",
+      "backend": "codex",
+      "agent": "ap-orchard-codex",
+      "turns": [
+        "t1",
+        "t2",
+        "t3"
+      ]
+    },
+    {
+      "id": "sess-cld-002",
+      "host": "host-bravo",
+      "backend": "claude",
+      "agent": "ap-quarry-claude",
+      "turns": [
+        "t1",
+        "t2"
+      ]
+    },
+    {
+      "id": "sess-bdr-003",
+      "host": "host-alpha",
+      "backend": "api-bedrock-worker",
+      "agent": "ap-ledger-bedrock",
+      "turns": [
+        "t1"
+      ],
+      "injection_path": "via-parent-session sess-cdx-001"
+    }
+  ],
+  "delivery_states": [
+    "local_persisted",
+    "queued_for_transfer",
+    "remote_received",
+    "validated_admitted",
+    "materialized",
+    "context_included",
+    "task_acknowledged"
+  ],
+  "markers": [
+    {
+      "id": "M-01",
+      "scope": "svc/ledger/pricing/",
+      "evidence_class": "authenticated_human_ruling",
+      "author": "hp-anita",
+      "source_uri": "synthetic://forge.invalid/orchard/repo-ledger/blob/rev-L1/pricing/RULES.md#L12",
+      "encoding": "utf-8",
+      "newline": "LF",
+      "bom": false
+    },
+    {
+      "id": "M-02",
+      "scope": "svc/ledger/pricing/",
+      "evidence_class": "verified_observation",
+      "author": "ap-orchard-codex",
+      "observer": "ap-orchard-codex"
+    },
+    {
+      "id": "M-03",
+      "scope": "svc/ledger/pricing/",
+      "evidence_class": "authenticated_human_ruling",
+      "author": "hp-anita",
+      "note": "contested-successor target"
+    },
+    {
+      "id": "M-04",
+      "scope": "svc/ledger/settlement/",
+      "evidence_class": "reported_worker_result",
+      "author": "ap-ledger-bedrock"
+    },
+    {
+      "id": "M-05",
+      "scope": "svc/ledger/settlement/",
+      "evidence_class": "model_inference",
+      "author": "ap-orchard-codex"
+    },
+    {
+      "id": "M-06",
+      "scope": "svc/ledger/settlement/",
+      "evidence_class": "verified_observation",
+      "note": "correction-chain target"
+    },
+    {
+      "id": "M-07",
+      "scope": "svc/shared/",
+      "evidence_class": "verified_observation",
+      "encoding": "utf-8",
+      "newline": "CRLF",
+      "bom": true,
+      "note": "byte-preservation twin A; same rendered text as M-08"
+    },
+    {
+      "id": "M-08",
+      "scope": "svc/shared/",
+      "evidence_class": "verified_observation",
+      "encoding": "utf-8",
+      "newline": "LF",
+      "bom": false,
+      "note": "byte-preservation twin B; same rendered text as M-07, different source_bytes_hash"
+    },
+    {
+      "id": "M-09",
+      "scope": "svc/billing/rounding/",
+      "evidence_class": "accepted_no_patch_finding",
+      "author": "hp-boris",
+      "note": "cross-scope positive-control lesson"
+    },
+    {
+      "id": "M-10",
+      "scope": "svc/billing/rounding/",
+      "evidence_class": "proposal",
+      "author": "ap-quarry-claude"
+    },
+    {
+      "id": "M-11",
+      "scope": "svc/shared/",
+      "evidence_class": "verified_observation",
+      "note": "redaction/tombstone target"
+    },
+    {
+      "id": "M-12",
+      "scope": "svc/ledger/pricing/",
+      "evidence_class": "unresolved_question",
+      "author": "hp-clara"
+    }
+  ],
+  "events": [
+    {
+      "id": "E01..E12",
+      "phase": "P1",
+      "producer": "store-A",
+      "consumer": "store-B",
+      "payload": "initial publication of M-01..M-12",
+      "expected": "each reaches task_acknowledged with all seven delivery states individually recorded"
+    },
+    {
+      "id": "E20",
+      "phase": "P2",
+      "author": "hp-anita",
+      "host": "host-alpha",
+      "scope": "svc/ledger/pricing/",
+      "relation": {
+        "supersedes": "M-03"
+      },
+      "effective_at": "2026-09-10T09:00:00Z",
+      "wall_clock_local": "2026-09-10T09:00:00",
+      "content_key": "rounding=half-even"
+    },
+    {
+      "id": "E21",
+      "phase": "P2",
+      "author": "hp-boris",
+      "host": "host-bravo",
+      "scope": "svc/ledger/pricing/",
+      "relation": {
+        "supersedes": "M-03"
+      },
+      "effective_at": "2026-09-10T09:02:00Z",
+      "signed_with": "cred-boris-bravo",
+      "content_key": "rounding=half-up",
+      "expected": "denied at admission on every replica: hp-boris holds read only in svc/ledger/"
+    },
+    {
+      "id": "E22",
+      "phase": "P2",
+      "author": "hp-anita",
+      "host": "host-bravo",
+      "worktree": "wt-ledger-hotfix@host-bravo",
+      "scope": "svc/ledger/pricing/",
+      "relation": {
+        "supersedes": "M-03"
+      },
+      "effective_at": "2026-09-10T08:55:00Z",
+      "wall_clock_local": "2026-09-10T09:07:00",
+      "content_key": "rounding=truncate",
+      "arrival_order_at_store_A": "after E20",
+      "expected": "admitted, incompatible with E20, yields explicit contested current view"
+    },
+    {
+      "id": "E07r1,E07r2,E07r3",
+      "phase": "P3",
+      "note": "three redeliveries of E07 with identical payload digest"
+    },
+    {
+      "id": "E08-conflict",
+      "phase": "P3",
+      "reuses_event_id": "E08",
+      "payload_digest": "differs from original E08",
+      "expected": "explicit conflict, rejected, both byte streams retained under distinct hashes"
+    },
+    {
+      "id": "E29",
+      "phase": "P3",
+      "relation": {
+        "corrects": "M-06"
+      },
+      "delivered_order": 2
+    },
+    {
+      "id": "E30",
+      "phase": "P3",
+      "relation": {
+        "corrects": "E29",
+        "depends_on": "E29"
+      },
+      "delivered_order": 1,
+      "expected": "pending with explicit unmet causal prerequisite E29 until E29 admitted"
+    },
+    {
+      "id": "E05-acklost",
+      "phase": "P3",
+      "note": "remote admission succeeds, acknowledgement lost in transit; producer retries twice",
+      "expected": "one semantic effect, receipt reconciled to task_acknowledged, retry count observable"
+    },
+    {
+      "id": "REV-1",
+      "phase": "P4",
+      "author": "hp-anita",
+      "action": "revoke hp-boris read on svc/ledger/",
+      "issued_at": "2026-09-10T10:00:00Z",
+      "issued_while": "store-B partitioned"
+    },
+    {
+      "id": "E11-killpoint",
+      "phase": "P5",
+      "note": "consumer process on host-bravo killed between validated_admitted and index write for E11",
+      "expected": "E11 survives restart as admitted; index rebuilt; incomplete-index effect exposed before rebuild completes"
+    },
+    {
+      "id": "E40",
+      "phase": "P5",
+      "author": "hp-boris",
+      "host": "host-bravo",
+      "scope": "svc/billing/rounding/",
+      "expected": "POSITIVE CONTROL - admitted, materialized, fully receipted, present after rebuild"
+    },
+    {
+      "id": "E41",
+      "phase": "P5",
+      "author": "hp-anita",
+      "action": "redact/tombstone M-11",
+      "expected": "M-11 absent from current serving on all replicas; tombstone and retained historical copy visible; no claim of erasure from uncontrolled clones or backups"
+    },
+    {
+      "id": "E50",
+      "phase": "P5",
+      "author": "ap-orchard-codex",
+      "scope": "svc/ledger/pricing/",
+      "evidence_class_at_write": "model_inference",
+      "body": "Settled with the pricing owners on 2026-09-08: half-even rounding is accepted for all ledger pricing scopes; FR-LED-118 is closed.",
+      "expected": "stored as model_inference, retrievable as a lead, never authenticated_human_ruling, never qualifies an action"
+    }
+  ],
+  "faults": [
+    {
+      "id": "F1",
+      "kind": "partition",
+      "between": [
+        "store-A",
+        "store-B"
+      ],
+      "phase": "P2"
+    },
+    {
+      "id": "F2",
+      "kind": "clock_skew",
+      "host": "host-bravo",
+      "offset_seconds": 420
+    },
+    {
+      "id": "F3",
+      "kind": "reordered_arrival",
+      "detail": "E22 arrives at store-A after E20; E30 arrives before E29"
+    },
+    {
+      "id": "F4",
+      "kind": "duplicate_delivery",
+      "detail": "E07 delivered three times"
+    },
+    {
+      "id": "F5",
+      "kind": "response_loss_after_remote_success",
+      "event": "E05"
+    },
+    {
+      "id": "F6",
+      "kind": "process_kill",
+      "point": "between validated_admitted and index write",
+      "event": "E11",
+      "host": "host-bravo",
+      "restart_required": "full process restart, not connection close"
+    },
+    {
+      "id": "F7",
+      "kind": "permission_revocation_during_partition",
+      "event": "REV-1"
+    },
+    {
+      "id": "F8",
+      "kind": "repository_relocation",
+      "repo": "R-LEDGER-7f3",
+      "detail": "remote URL and label change between P5 and P6"
+    },
+    {
+      "id": "F9",
+      "kind": "stale_replica_reconnect",
+      "detail": "store-B reconnects after P6 holding a pre-tombstone copy of M-11"
+    }
+  ],
+  "expected_end_state": {
+    "replica_histories": {
+      "store-A": {
+        "admitted_marker_count": 12,
+        "contested_records": [
+          "M-03"
+        ],
+        "rejected_events": [
+          "E21",
+          "E08-conflict"
+        ],
+        "pending_events": [],
+        "tombstoned": [
+          "M-11"
+        ]
+      },
+      "store-B": {
+        "admitted_marker_count": 12,
+        "contested_records": [
+          "M-03"
+        ],
+        "rejected_events": [
+          "E21",
+          "E08-conflict"
+        ],
+        "pending_events": [],
+        "tombstoned": [
+          "M-11"
+        ]
+      },
+      "store-C": {
+        "admitted_marker_count": 12,
+        "contested_records": [
+          "M-03"
+        ],
+        "rejected_events": [
+          "E21",
+          "E08-conflict"
+        ],
+        "pending_events": [],
+        "tombstoned": [
+          "M-11"
+        ],
+        "note": "rebuilt from EXP-1 only"
+      }
+    },
+    "current_applicable_view": {
+      "M-03": {
+        "state": "contested",
+        "competing_successors": [
+          "E20",
+          "E22"
+        ],
+        "resolution": "none-applied",
+        "must_not_contain": [
+          "E21"
+        ],
+        "must_not_resolve_by": [
+          "arrival_order",
+          "wall_clock",
+          "prose_similarity"
+        ]
+      },
+      "M-06": {
+        "state": "corrected_by E29 then E30",
+        "note": "only after E29 admitted; before that, M-06 unchanged and E30 pending"
+      },
+      "M-07": {
+        "state": "current",
+        "source_bytes_hash": "H07",
+        "encoding": "utf-8",
+        "newline": "CRLF",
+        "bom": true
+      },
+      "M-08": {
+        "state": "current",
+        "source_bytes_hash": "H08",
+        "constraint": "H08 != H07"
+      },
+      "M-11": {
+        "state": "tombstoned",
+        "current_serving": "absent",
+        "historical_view": "present with tombstone marker"
+      },
+      "E50": {
+        "state": "current",
+        "evidence_class": "model_inference",
+        "authority": "none"
+      },
+      "E40": {
+        "state": "current",
+        "scope": "svc/billing/rounding/",
+        "author": "hp-boris"
+      }
+    },
+    "receipts": {
+      "per_event_states_recorded": 7,
+      "E07": {
+        "deliveries": 3,
+        "semantic_effects": 1,
+        "duplicate_admissions": 0
+      },
+      "E05": {
+        "producer_attempts": 3,
+        "remote_admissions": 1,
+        "final_state": "task_acknowledged",
+        "reconciled": true
+      },
+      "E11": {
+        "final_state": "task_acknowledged",
+        "index_state_after_restart": "rebuilt",
+        "uncertainty_exposed_before_rebuild": true
+      },
+      "E21": {
+        "final_state": "rejected_at_admission",
+        "reason_code": "authority/scope",
+        "reached_states": [
+          "local_persisted",
+          "queued_for_transfer",
+          "remote_received"
+        ]
+      },
+      "E30": {
+        "final_state": "task_acknowledged",
+        "was_pending_with_unmet_prerequisite": "E29"
+      },
+      "forbidden_claims": [
+        "exactly-once network delivery",
+        "global erasure across clones and backups"
+      ]
+    },
+    "reconstruction": {
+      "export_id": "EXP-1",
+      "export_source": "store-A durable records",
+      "import_target": "store-C",
+      "derived_indexes": "rebuilt from durable records, not copied",
+      "must_match_manifest": "MAN-0 plus P1-P5 deltas",
+      "record_level_equality": [
+        "record_id",
+        "payload_digest",
+        "source_bytes_hash",
+        "encoding",
+        "evidence_class",
+        "lifecycle_state",
+        "relations",
+        "observed_at",
+        "effective_at",
+        "author_principal"
+      ],
+      "must_not_change": [
+        "evidence_class of E50",
+        "rejected status of E21",
+        "contested status of M-03",
+        "tombstoned status of M-11"
+      ],
+      "recovery_time_budget_minutes": 30
+    },
+    "action_qualification": [
+      {
+        "id": "Q1",
+        "request": "publish the ledger pricing change for M-03 to the remote",
+        "requester": "ap-orchard-codex",
+        "expected": "refused",
+        "required_reason": "M-03 has unresolved competing successors E20/E22"
+      },
+      {
+        "id": "Q2",
+        "request": "treat FR-LED-118 as accepted",
+        "requester": "ap-orchard-codex",
+        "cites": "E50",
+        "expected": "refused",
+        "required_reason": "cited evidence is model_inference, not an authenticated human ruling"
+      },
+      {
+        "id": "Q3",
+        "request": "apply correction E30 to M-06",
+        "expected": "deferred",
+        "required_reason": "causal prerequisite E29 not yet admitted"
+      },
+      {
+        "id": "Q4",
+        "request": "serve a svc/ledger/ fact to hp-boris from store-B after reconnect",
+        "expected": "refused",
+        "required_reason": "REV-1 admitted; read access revoked"
+      },
+      {
+        "id": "Q5",
+        "request": "record and serve E40 in svc/billing/rounding/ to hp-boris",
+        "expected": "qualified",
+        "note": "POSITIVE CONTROL"
+      },
+      {
+        "id": "Q6",
+        "request": "serve a svc/ledger/ fact to hp-boris from store-B while partitioned and before REV-1 arrives",
+        "expected": "declared offline policy applied explicitly",
+        "required_reason": "store-B must report revocation status as unknown-at-this-replica, never assert that no revocation exists"
+      },
+      {
+        "id": "Q7",
+        "request": "authorized cross-scope lesson query by hp-anita for rounding counterexamples",
+        "expected": "qualified and returns M-09",
+        "note": "POSITIVE CONTROL; the same query in default scoped mode must not return M-09"
+      }
+    ],
+    "measurements_required": [
+      "actual topology: host count, physical machines, container/process substitutions",
+      "transport kind and version, ref/channel topology, push-pull ownership, credential model",
+      "p95 local durable capture latency (target < 100 ms)",
+      "p95 async indexing latency (target < 30 s)",
+      "p95 recall/injection latency (target < 1 s)",
+      "export + import + index rebuild wall time at T2 (target < 30 min)",
+      "queue depth and age, index freshness lag, retries, rejected records, scope denials",
+      "storage growth from seed to end state",
+      "per-adapter declaration of what is captured, injected and unobservable"
+    ]
+  },
+  "emitted_packet_evidence": {
+    "required_per_receiving_turn": [
+      "selected_record_ids",
+      "emitted_bytes_hash",
+      "receiving_host",
+      "receiving_session",
+      "receiving_turn",
+      "budget_decisions",
+      "exclusions"
+    ],
+    "turns_under_assertion": [
+      "sess-cdx-001/t3",
+      "sess-cld-002/t2",
+      "sess-bdr-003/t1"
+    ],
+    "distinguish": [
+      "selected",
+      "emitted",
+      "delivered",
+      "unavailable"
+    ]
+  },
+  "assertions": [
+    {
+      "id": "A1",
+      "kind": "positive",
+      "target": "replica_histories"
+    },
+    {
+      "id": "A2",
+      "kind": "positive",
+      "target": "current_applicable_view.M-03 contested"
+    },
+    {
+      "id": "A3",
+      "kind": "negative",
+      "target": "E21 never in any current view or qualification basis"
+    },
+    {
+      "id": "A4",
+      "kind": "negative",
+      "target": "no duplicate semantic effect from E07"
+    },
+    {
+      "id": "A5",
+      "kind": "negative",
+      "target": "E30 does not take effect before E29"
+    },
+    {
+      "id": "A6",
+      "kind": "positive",
+      "target": "receipt completeness across seven states"
+    },
+    {
+      "id": "A7",
+      "kind": "positive",
+      "target": "reconstruction equality store-C vs store-A"
+    },
+    {
+      "id": "A8",
+      "kind": "negative",
+      "target": "byte twins M-07/M-08 keep distinct hashes and exact bytes"
+    },
+    {
+      "id": "A9",
+      "kind": "negative",
+      "target": "store-B never asserts absence of an unreceived revocation"
+    },
+    {
+      "id": "A10",
+      "kind": "positive_control",
+      "target": "E40 and Q5 qualified"
+    },
+    {
+      "id": "A11",
+      "kind": "positive_control",
+      "target": "Q7 authorized cross-scope lesson returns M-09"
+    },
+    {
+      "id": "A12",
+      "kind": "negative",
+      "target": "E50 never becomes authenticated human authority"
+    },
+    {
+      "id": "A13",
+      "kind": "negative",
+      "target": "no exactly-once or global-erasure claim"
+    },
+    {
+      "id": "A14",
+      "kind": "positive",
+      "target": "repository identity survives relocation without cross-repo binding"
+    },
+    {
+      "id": "A15",
+      "kind": "positive",
+      "target": "measured limits and topology reported, substitutions disclosed"
+    }
+  ]
+}

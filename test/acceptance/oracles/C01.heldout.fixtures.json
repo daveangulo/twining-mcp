@@ -1,0 +1,607 @@
+{
+  "case_id": "C01-HO",
+  "variant": "held_out",
+  "title": "Late-arriving sign-off for an earlier head, a fast-forward head move, an imported hand-off claim, and an unreachable forge",
+  "requirements_exercised": [
+    "R02",
+    "R03",
+    "R04",
+    "R05",
+    "R12",
+    "R17",
+    "R07",
+    "R08"
+  ],
+  "differences_from_development_variant": [
+    "different tenant, people, agent, hosts, store, repository, change-request number and revisions",
+    "the head move is a FAST-FORWARD (old head is an ancestor of the new head), not a rewrite",
+    "the head observation is admitted BEFORE the sign-off for the older head, so the sign-off is the newest-admitted record",
+    "the sign-off's effective time precedes the head move while its admission time follows it (bi-temporal)",
+    "an imported hand-off note asserts a sign-off in ordinary prose",
+    "unavailability is a forge outage plus an offline replica, not a revoked credential",
+    "the positive control uses a person who holds BOTH review and merge authority"
+  ],
+  "identities": {
+    "tenant": {
+      "id": "tnt-kestrel",
+      "label": "Kestrel Logistics"
+    },
+    "team": {
+      "id": "team-gate-rotation"
+    },
+    "humans": [
+      {
+        "id": "hum-devin-askew",
+        "label": "Devin Askew",
+        "authorities": [
+          "review:rpo-harborgate"
+        ],
+        "not_authorities": [
+          "merge:rpo-harborgate",
+          "publish:rpo-harborgate"
+        ]
+      },
+      {
+        "id": "hum-noor-halabi",
+        "label": "Noor Halabi",
+        "authorities": [
+          "review:rpo-harborgate",
+          "merge:rpo-harborgate"
+        ]
+      }
+    ],
+    "agents": [
+      {
+        "id": "agt-tideline-07",
+        "label": "tideline worker"
+      }
+    ],
+    "hosts": [
+      {
+        "id": "wkst-quarry",
+        "role": "primary workstation",
+        "sessions": [
+          {
+            "id": "ses-qr-0342",
+            "turns": [
+              "u1",
+              "u2",
+              "u3",
+              "u4",
+              "u5",
+              "u6",
+              "u7",
+              "u8"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "runner-tideline",
+        "role": "second computer, disconnected 14:55Z-15:05Z and again from 16:00Z"
+      }
+    ],
+    "stores": [
+      {
+        "id": "mem-cinder",
+        "replicas": [
+          "mem-cinder@wkst-quarry",
+          "mem-cinder@runner-tideline"
+        ]
+      }
+    ],
+    "repositories": [
+      {
+        "id": "rpo-harborgate",
+        "mutable_labels_initial": {
+          "remote_url": "https://forge.invalid/kestrel/harbor-gate.git",
+          "local_path": "/synthetic/srv/harbor-gate",
+          "default_branch": "trunk"
+        },
+        "mutable_labels_after_1540Z": {
+          "remote_url": "https://forge.invalid/kestrel-ops/harbor-gate.git",
+          "local_path": "/synthetic/srv/hg-2",
+          "default_branch": "trunk"
+        }
+      }
+    ],
+    "work_definition": {
+      "id": "cr-219",
+      "kind": "change_request",
+      "repo": "rpo-harborgate",
+      "base_branch": "trunk",
+      "head_branch": "gate-rotation"
+    },
+    "revisions": {
+      "base_0": "4d81aa30c7b2e95f6183ad4c20be71f9d3550ec8",
+      "head_x": "7c02be51ff3a4d6e8b0c2a9d5e7f1b3c6d8a0e2f",
+      "head_y": "91ef6b0cae2d4f80b6c8d1a3f5072e94c6b8d0a2",
+      "ancestry": "head_x IS an ancestor of head_y; head_y adds two commits on top of head_x"
+    }
+  },
+  "declared_policy": {
+    "volatile_facts": [
+      "change_request.head_revision",
+      "change_request.base_revision",
+      "change_request.state"
+    ],
+    "max_age_for_consequential_use_seconds": 0,
+    "consequential_actions": [
+      "merge_change",
+      "publish_source",
+      "mark_review_prerequisite_satisfied"
+    ],
+    "live_check_definition": "a request to forge.invalid that returns the remote head for cr-219; a cached value, an offline replica's copy, a local ref or a local file test is not a live check",
+    "on_source_unavailable": "current head freshness := unknown; last-known value retained with its original observation time; consequential actions refuse"
+  },
+  "events": [
+    {
+      "event_id": "evt-ho-101",
+      "kind": "source_observation",
+      "evidence_class": "independently_verified_observation",
+      "observer": "agt-tideline-07",
+      "observation_time": "2026-04-17T14:20:00Z",
+      "admission_time": "2026-04-17T14:20:04Z",
+      "scope": {
+        "tenant": "tnt-kestrel",
+        "repo": "rpo-harborgate",
+        "work": "cr-219"
+      },
+      "source_uri": "forge://kestrel/harbor-gate/change-requests/219",
+      "payload": {
+        "base_revision": "4d81aa30c7b2e95f6183ad4c20be71f9d3550ec8",
+        "head_revision": "7c02be51ff3a4d6e8b0c2a9d5e7f1b3c6d8a0e2f",
+        "state": "open"
+      }
+    },
+    {
+      "event_id": "evt-ho-102",
+      "kind": "source_observation",
+      "evidence_class": "independently_verified_observation",
+      "observer": "webhook:forge.invalid",
+      "observation_time": "2026-04-17T15:02:00Z",
+      "admission_time": "2026-04-17T15:02:09Z",
+      "scope": {
+        "tenant": "tnt-kestrel",
+        "repo": "rpo-harborgate",
+        "work": "cr-219"
+      },
+      "payload": {
+        "base_revision": "4d81aa30c7b2e95f6183ad4c20be71f9d3550ec8",
+        "head_revision": "91ef6b0cae2d4f80b6c8d1a3f5072e94c6b8d0a2",
+        "prior_head_observed": "7c02be51ff3a4d6e8b0c2a9d5e7f1b3c6d8a0e2f",
+        "ancestry_of_prior_head_in_current_head": true,
+        "commits_added": 2
+      },
+      "redeliveries": [
+        {
+          "at": "2026-04-17T15:03:10Z",
+          "same_event_id": true,
+          "same_digest": true
+        },
+        {
+          "at": "2026-04-17T15:07:40Z",
+          "same_event_id": true,
+          "same_digest": true,
+          "out_of_order_after": "evt-ho-103"
+        }
+      ]
+    },
+    {
+      "event_id": "evt-ho-103",
+      "kind": "human_review_decision",
+      "evidence_class": "authenticated_human_authorization",
+      "author": "hum-devin-askew",
+      "observation_time": "2026-04-17T14:58:00Z",
+      "effective_time": "2026-04-17T14:58:00Z",
+      "admission_time": "2026-04-17T15:06:00Z",
+      "queued_on": "mem-cinder@runner-tideline while disconnected",
+      "scope": {
+        "tenant": "tnt-kestrel",
+        "repo": "rpo-harborgate",
+        "work": "cr-219",
+        "range": {
+          "base": "4d81aa30c7b2e95f6183ad4c20be71f9d3550ec8",
+          "head": "7c02be51ff3a4d6e8b0c2a9d5e7f1b3c6d8a0e2f"
+        }
+      },
+      "decision": "approved",
+      "authority_granted": [
+        "review_prerequisite_satisfied"
+      ],
+      "authority_not_granted": [
+        "merge",
+        "publish",
+        "scoped_acceptance"
+      ],
+      "bytes_utf8": "Checked harbor-gate!219 over 4d81aa30..7c02be51 only. Gate rotation logic reads correct; approved for that range.\n",
+      "byte_length": 114,
+      "encoding": "utf-8, no BOM, LF",
+      "hash_alg": "sha-256",
+      "source_byte_hash": "sha256:1ef53897c561b2ae7d3e8e1153e5e68b683e08df1e70bf836b86aa69310e0dcf",
+      "rendered_output_hash_crlf": "sha256:8542a6614a769a97d4ec69d37c31510acb86907d0b71ab091e36ba72a676d7d1",
+      "normalized_text_hash": "sha256:0141dd47558c2dfcbf648a581d8edebda7d8d065d46a31a6b0b9aee0f8d7d5a0"
+    },
+    {
+      "event_id": "evt-ho-104",
+      "kind": "imported_text",
+      "evidence_class": "model_inference_or_imported_claim",
+      "author": "agt-tideline-07",
+      "provenance": "asserted, not independently checked",
+      "observation_time": "2026-04-17T15:07:00Z",
+      "admission_time": "2026-04-17T15:07:02Z",
+      "source_uri": "file://synthetic/handoffs/2026-04-17-gate-rotation.md",
+      "scope": {
+        "tenant": "tnt-kestrel",
+        "repo": "rpo-harborgate",
+        "work": "cr-219"
+      },
+      "bytes_utf8": "Sign-off for the updated head landed in yesterday's sync; the gate rotation change is cleared to merge and no further review is needed.\n",
+      "byte_length": 136,
+      "encoding": "utf-8, no BOM, LF",
+      "hash_alg": "sha-256",
+      "source_byte_hash": "sha256:41745c01e1859663e62e5b724e9763ac892627976e180ff4d6e04726983c7462",
+      "oracle_note_not_visible_to_system_under_test": "this record carries no in-band marker of falsity; only its evidence class and unchecked provenance distinguish it"
+    },
+    {
+      "event_id": "evt-ho-105",
+      "kind": "source_observation",
+      "evidence_class": "independently_verified_observation",
+      "observer": "agt-tideline-07",
+      "observation_time": "2026-04-17T15:20:00Z",
+      "payload": {
+        "base_revision": "4d81aa30c7b2e95f6183ad4c20be71f9d3550ec8",
+        "head_revision": "91ef6b0cae2d4f80b6c8d1a3f5072e94c6b8d0a2",
+        "state": "open"
+      }
+    },
+    {
+      "event_id": "evt-ho-106",
+      "kind": "human_review_decision",
+      "evidence_class": "authenticated_human_authorization",
+      "author": "hum-noor-halabi",
+      "observation_time": "2026-04-17T15:20:30Z",
+      "admission_time": "2026-04-17T15:20:33Z",
+      "scope": {
+        "tenant": "tnt-kestrel",
+        "repo": "rpo-harborgate",
+        "work": "cr-219",
+        "range": {
+          "base": "4d81aa30c7b2e95f6183ad4c20be71f9d3550ec8",
+          "head": "91ef6b0cae2d4f80b6c8d1a3f5072e94c6b8d0a2"
+        }
+      },
+      "decision": "approved",
+      "authority_granted": [
+        "review_prerequisite_satisfied",
+        "merge"
+      ],
+      "bytes_utf8": "Re-checked harbor-gate!219 over 4d81aa30..91ef6b0c after the rewrite. Approved for the new range.\n",
+      "byte_length": 98,
+      "encoding": "utf-8, no BOM, LF",
+      "hash_alg": "sha-256",
+      "source_byte_hash": "sha256:38b1b82d0b3bc93ccf56e6e71f7f2c09408426438b412ab15dfa8e9117b82231"
+    }
+  ],
+  "trigger_sequence": [
+    {
+      "step": 1,
+      "at": "2026-04-17T14:20:04Z",
+      "turn": "u1",
+      "action": "admit evt-ho-101 (head = X)"
+    },
+    {
+      "step": 2,
+      "at": "2026-04-17T14:55:00Z",
+      "action": "runner-tideline goes offline"
+    },
+    {
+      "step": 3,
+      "at": "2026-04-17T14:58:00Z",
+      "action": "Devin Askew approves range base_0..head_x on runner-tideline; the record is queued locally, not yet replicated"
+    },
+    {
+      "step": 4,
+      "at": "2026-04-17T15:02:00Z",
+      "action": "remote head moves X -> Y by adding two commits (fast-forward); webhook delivers evt-ho-102, admitted 15:02:09Z"
+    },
+    {
+      "step": 5,
+      "at": "2026-04-17T15:03:10Z",
+      "action": "webhook redelivers evt-ho-102 (same id, same digest)"
+    },
+    {
+      "step": 6,
+      "at": "2026-04-17T15:05:00Z",
+      "action": "runner-tideline reconnects"
+    },
+    {
+      "step": 7,
+      "at": "2026-04-17T15:06:00Z",
+      "turn": "u2",
+      "action": "evt-ho-103 is admitted LATE; it is now the newest-admitted record for cr-219"
+    },
+    {
+      "step": 8,
+      "at": "2026-04-17T15:07:02Z",
+      "turn": "u3",
+      "action": "evt-ho-104, a hand-off note, is imported into the store and becomes eligible for recall"
+    },
+    {
+      "step": 9,
+      "at": "2026-04-17T15:07:40Z",
+      "action": "evt-ho-102 is redelivered a third time, out of order after evt-ho-103"
+    },
+    {
+      "step": 10,
+      "at": "2026-04-17T15:08:00Z",
+      "turn": "u4",
+      "action": "QUALIFY(mark_review_prerequisite_satisfied, cr-219@head_y)"
+    },
+    {
+      "step": 11,
+      "at": "2026-04-17T15:08:30Z",
+      "turn": "u5",
+      "action": "QUALIFY(merge_change, cr-219@head_y)"
+    },
+    {
+      "step": 12,
+      "at": "2026-04-17T15:09:00Z",
+      "turn": "u6",
+      "action": "HISTORY as-of 2026-04-17T14:30:00Z and as-of 2026-04-17T15:00:00Z on both time axes"
+    },
+    {
+      "step": 13,
+      "at": "2026-04-17T15:20:33Z",
+      "turn": "u7",
+      "action": "POSITIVE CONTROL: live check evt-ho-105 then admit evt-ho-106; QUALIFY(mark_review_prerequisite_satisfied) and QUALIFY(merge_change) at head_y"
+    },
+    {
+      "step": 14,
+      "at": "2026-04-17T15:40:00Z",
+      "action": "the repository's remote URL and local path labels change; no re-identification event is emitted"
+    },
+    {
+      "step": 15,
+      "at": "2026-04-17T16:05:00Z",
+      "turn": "u8",
+      "action": "forge.invalid becomes unreachable from wkst-quarry; runner-tideline is offline again holding a cached head_y; READ CURRENT head on both replicas and QUALIFY(merge_change, cr-219)"
+    }
+  ],
+  "expected_end_state": {
+    "CURRENT_at_u4": {
+      "cr-219.head_revision": {
+        "value": "91ef6b0cae2d4f80b6c8d1a3f5072e94c6b8d0a2",
+        "freshness": "live_as_of 2026-04-17T15:02:00Z",
+        "derived_from": "evt-ho-102"
+      },
+      "cr-219.review_prerequisite": {
+        "value": "unsatisfied_for_current_head",
+        "satisfied_ranges": [
+          {
+            "base": "4d81aa30c7b2e95f6183ad4c20be71f9d3550ec8",
+            "head": "7c02be51ff3a4d6e8b0c2a9d5e7f1b3c6d8a0e2f"
+          }
+        ],
+        "unreviewed_residual": "7c02be51..91ef6b0c (2 commits)"
+      }
+    },
+    "CURRENT_at_u8": {
+      "mem-cinder@wkst-quarry": {
+        "cr-219.head_revision": {
+          "value": null,
+          "freshness": "unknown",
+          "last_known_value": "91ef6b0cae2d4f80b6c8d1a3f5072e94c6b8d0a2",
+          "last_known_as_of": "2026-04-17T15:20:00Z",
+          "reason": "source_unreachable"
+        }
+      },
+      "mem-cinder@runner-tideline": {
+        "cr-219.head_revision": {
+          "value": null,
+          "freshness": "unknown",
+          "last_known_value": "91ef6b0cae2d4f80b6c8d1a3f5072e94c6b8d0a2",
+          "last_known_as_of": "2026-04-17T15:20:00Z",
+          "reason": "offline_replica_cannot_perform_live_check"
+        }
+      }
+    },
+    "HISTORY": {
+      "as_of_effective_2026-04-17T14:30:00Z": {
+        "head_revision": "7c02be51ff3a4d6e8b0c2a9d5e7f1b3c6d8a0e2f",
+        "review_prerequisite": "unsatisfied"
+      },
+      "as_of_effective_2026-04-17T15:00:00Z": {
+        "head_revision": "7c02be51ff3a4d6e8b0c2a9d5e7f1b3c6d8a0e2f",
+        "review_prerequisite": "satisfied_for_range 4d81aa30..7c02be51"
+      },
+      "as_of_knowledge_2026-04-17T15:00:00Z": {
+        "head_revision": "7c02be51ff3a4d6e8b0c2a9d5e7f1b3c6d8a0e2f",
+        "review_prerequisite": "unsatisfied \u2014 evt-ho-103 was not yet admitted"
+      }
+    },
+    "DELIVERY": {
+      "evt-ho-102": {
+        "delivered_copies_observed": 3,
+        "admitted_copies": 1,
+        "head_transitions_caused": 1
+      },
+      "evt-ho-103": {
+        "queued_offline": true,
+        "admitted_copies": 1,
+        "admission_time": "2026-04-17T15:06:00Z",
+        "arrival_order_effect_on_authority": "none"
+      },
+      "injected_into_turn": {
+        "u4": [
+          "evt-ho-102",
+          "evt-ho-103",
+          "evt-ho-104"
+        ],
+        "u7": [
+          "evt-ho-105",
+          "evt-ho-106"
+        ]
+      }
+    },
+    "QUALIFY": [
+      {
+        "turn": "u4",
+        "action": "mark_review_prerequisite_satisfied",
+        "subject": "cr-219@91ef6b0cae2d4f80b6c8d1a3f5072e94c6b8d0a2",
+        "decision": "not_qualified",
+        "reasons": [
+          "no authenticated review covers range 4d81aa30..91ef6b0c",
+          "evt-ho-103 covers 4d81aa30..7c02be51 only",
+          "fast-forward ancestry does not extend review coverage to added commits",
+          "evt-ho-104 is an unverified imported claim and cannot satisfy a prerequisite"
+        ],
+        "must_not_contain_reason": [
+          "most recently admitted record approves",
+          "prose indicates sign-off"
+        ]
+      },
+      {
+        "turn": "u5",
+        "action": "merge_change",
+        "subject": "cr-219@91ef6b0cae2d4f80b6c8d1a3f5072e94c6b8d0a2",
+        "decision": "not_qualified",
+        "reasons": [
+          "review prerequisite unsatisfied for current head",
+          "hum-devin-askew holds no merge authority",
+          "evt-ho-104 cannot grant merge authority"
+        ]
+      },
+      {
+        "turn": "u7a",
+        "action": "mark_review_prerequisite_satisfied",
+        "subject": "cr-219@91ef6b0cae2d4f80b6c8d1a3f5072e94c6b8d0a2",
+        "decision": "qualified",
+        "cited_event_ids": [
+          "evt-ho-106",
+          "evt-ho-105"
+        ]
+      },
+      {
+        "turn": "u7b",
+        "action": "merge_change",
+        "subject": "cr-219@91ef6b0cae2d4f80b6c8d1a3f5072e94c6b8d0a2",
+        "decision": "qualified",
+        "cited_event_ids": [
+          "evt-ho-106",
+          "evt-ho-105"
+        ],
+        "note": "recorded as a decision distinct from u7a, citing hum-noor-halabi's merge authority separately from her review"
+      },
+      {
+        "turn": "u8",
+        "action": "merge_change",
+        "subject": "cr-219",
+        "decision": "refused",
+        "reasons": [
+          "source_unreachable",
+          "current head unknown",
+          "last-known head is historical"
+        ],
+        "must_not_contain_reason": [
+          "cached head",
+          "offline replica value",
+          "local ref",
+          "local file test"
+        ]
+      }
+    ]
+  },
+  "assertions": [
+    {
+      "id": "H01",
+      "facet": "CURRENT",
+      "kind": "positive",
+      "statement": "After step 4 the current head is head_y derived from evt-ho-102, and it remains head_y after the late admission of evt-ho-103 at step 7."
+    },
+    {
+      "id": "H02",
+      "facet": "QUALIFY",
+      "kind": "negative",
+      "statement": "The u4 decision is not_qualified; being the newest-admitted record does not let evt-ho-103 qualify head_y."
+    },
+    {
+      "id": "H03",
+      "facet": "QUALIFY",
+      "kind": "negative",
+      "statement": "No decision treats head_x's review as covering head_y on the grounds that head_x is an ancestor of head_y; the two added commits are reported as unreviewed residual."
+    },
+    {
+      "id": "H04",
+      "facet": "QUALIFY",
+      "kind": "negative",
+      "statement": "evt-ho-104 appears in no decision as a satisfying or authorizing citation, and its presence changes no decision outcome at u4, u5 or u8."
+    },
+    {
+      "id": "H05",
+      "facet": "EVENTS",
+      "kind": "positive",
+      "statement": "evt-ho-104 is retained verbatim with its original bytes and hash and is labeled as an unverified imported claim with asserted-not-checked provenance, both in storage and in any rendering of it."
+    },
+    {
+      "id": "H06",
+      "facet": "EVENTS",
+      "kind": "positive",
+      "statement": "evt-ho-103's source-byte hash, CRLF rendering hash and normalized-text hash are three distinct retained values."
+    },
+    {
+      "id": "H07",
+      "facet": "HISTORY",
+      "kind": "positive",
+      "statement": "Effective-time and knowledge-time as-of queries at 2026-04-17T15:00:00Z give different answers for the review prerequisite, and the implementation's declared time axis is applied consistently."
+    },
+    {
+      "id": "H08",
+      "facet": "HISTORY",
+      "kind": "negative",
+      "statement": "No query reports the review prerequisite as known-satisfied at any knowledge time before 2026-04-17T15:06:00Z."
+    },
+    {
+      "id": "H09",
+      "facet": "DELIVERY",
+      "kind": "negative",
+      "statement": "Three deliveries of evt-ho-102, one of them out of order, yield exactly one admitted copy and exactly one head transition."
+    },
+    {
+      "id": "H10",
+      "facet": "QUALIFY",
+      "kind": "positive_control",
+      "statement": "At u7 both mark_review_prerequisite_satisfied and merge_change return qualified as two separately recorded decisions with separately cited authority."
+    },
+    {
+      "id": "H11",
+      "facet": "CURRENT",
+      "kind": "negative",
+      "statement": "At u8 neither replica reports a current head value; both report unknown with the last-known value marked historical and stamped with its original observation time."
+    },
+    {
+      "id": "H12",
+      "facet": "CURRENT",
+      "kind": "negative",
+      "statement": "The offline replica does not claim live freshness from its cache, and no decision cites a cached or local-only value as a live source check."
+    },
+    {
+      "id": "H13",
+      "facet": "EVENTS",
+      "kind": "positive",
+      "statement": "The step-14 label change alters no record's repository identity, scope match, decision or history; rpo-harborgate remains one identity across both URLs and both paths."
+    },
+    {
+      "id": "H14",
+      "facet": "EVENTS",
+      "kind": "negative",
+      "statement": "No record is created attributing to hum-devin-askew an approval of head_y, under any label including carry-forward, re-approval, refresh or auto-extension."
+    },
+    {
+      "id": "H15",
+      "facet": "QUALIFY",
+      "kind": "positive",
+      "statement": "Every decision names the evidence class of each cited record and separates asserted from independently checked provenance."
+    }
+  ]
+}

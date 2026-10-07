@@ -1,0 +1,52 @@
+{
+  "affected_files": [
+    "src/catalog/index.ts",
+    "src/billing/invoice.ts"
+  ],
+  "affected_symbols": [
+    "renderInvoice"
+  ],
+  "agent_id": "agent-scribe",
+  "alternatives": [],
+  "amendments": [
+    {
+      "added_files": [
+        "src/billing/invoice.ts"
+      ],
+      "added_symbols": [],
+      "amended_at": "2026-08-03T09:00:00.000Z",
+      "amended_by": "agent-scribe",
+      "reason": "found the real call site"
+    },
+    {
+      "added_files": [],
+      "added_symbols": [
+        "renderInvoice"
+      ],
+      "amended_at": "2026-08-04T09:00:00.000Z",
+      "amended_by": "agent-auditor",
+      "reason": "symbol-level precision"
+    }
+  ],
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "the 2026 catalog review",
+  "depends_on": [
+    "01M3C21DACT1V0000000000000"
+  ],
+  "domain": "architecture",
+  "id": "01M3C21DAMND10000000000000",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "recorded_at": "2026-08-01T09:00:00.000Z"
+  },
+  "rationale": "recorded during the catalog review",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/catalog/",
+  "status": "active",
+  "summary": "invoice numbering uses the vendor sequence",
+  "timestamp": "2026-08-01T09:00:00.000Z"
+}

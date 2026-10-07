@@ -3,23 +3,20 @@
  * Twining MCP Server entry point.
  * Connects via stdio transport — never use console.log (corrupts JSON-RPC).
  */
-import { createRequire } from "node:module";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { createServer } from "./server.js";
+import { PKG_VERSION } from "./version.js";
 import { startDashboard } from "./dashboard/http-server.js";
 import { TelemetryClient } from "./analytics/telemetry-client.js";
 import { resolveProjectRoot } from "./utils/project-root.js";
 import { classifyArgv, CLI_USAGE } from "./cli/dispatch.js";
 
-// Handle --version / -v before starting the MCP server.
-// __TWINING_VERSION__ is baked in by the bundle build (relocation-safe);
-// the tsc build falls back to the package.json lookup relative to dist/.
+// Handle --version / -v before starting the MCP server. PKG_VERSION is the
+// one resolution of the running version (src/version.ts), shared with
+// createServer and the twining CLI — three copies of the bundle-constant
+// fallback was two too many.
 if (process.argv.includes("--version") || process.argv.includes("-v")) {
-  const version =
-    typeof __TWINING_VERSION__ !== "undefined"
-      ? __TWINING_VERSION__
-      : (createRequire(import.meta.url)("../package.json") as { version: string }).version;
-  console.log(`twining-mcp ${version}`);
+  console.log(`twining-mcp ${PKG_VERSION}`);
   process.exit(0);
 }
 
@@ -35,6 +32,18 @@ if (dispatch.kind === "unknown") {
 if (dispatch.kind === "subcommand" && dispatch.name === "migrate") {
   const { runMigrateCli } = await import("./migrate/cli.js");
   process.exit(await runMigrateCli(dispatch.args));
+}
+if (dispatch.kind === "subcommand" && dispatch.name === "rollback") {
+  const { runRollbackCli } = await import("./migrate/cli.js");
+  process.exit(await runRollbackCli(dispatch.args));
+}
+if (dispatch.kind === "subcommand" && dispatch.name === "migrate-status") {
+  const { runMigrateStatusCli } = await import("./migrate/cli.js");
+  process.exit(runMigrateStatusCli(dispatch.args));
+}
+if (dispatch.kind === "subcommand" && dispatch.name === "events") {
+  const { runEventsCli } = await import("./migrate/cli.js");
+  process.exit(runEventsCli(dispatch.args));
 }
 if (dispatch.kind === "subcommand" && dispatch.name === "validate-records") {
   const { runValidateRecordsCli } = await import("./cli/validate-records.js");

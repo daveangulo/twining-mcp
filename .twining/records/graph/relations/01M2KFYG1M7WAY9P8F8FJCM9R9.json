@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T21:35:41.108Z",
+  "id": "01M2KFYG1M7WAY9P8F8FJCM9R9",
+  "properties": {
+    "decision_summary": "ADR docs/adr/2026-09-foundation-contracts.md ACCEPTED (draft 2): the immutable event log + deterministic projections + delivery state machine + ingress-decided evidence classes are the v3 foundation; amendments after acceptance are recorded as supersessions in the programme log",
+    "origin": "derived"
+  },
+  "source": "01M2KFYG1KD82WMXJZSA7Y1R62",
+  "target": "01M2KFYG1DM83NV91PNWGY1GAG",
+  "type": "decided_by"
+}

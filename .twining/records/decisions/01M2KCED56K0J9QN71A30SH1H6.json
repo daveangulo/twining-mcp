@@ -1,0 +1,36 @@
+{
+  "affected_files": [
+    "src/contracts/canonical.ts",
+    "src/contracts/event.ts",
+    "src/contracts/evidence.ts",
+    "src/contracts/validate.ts",
+    "src/contracts/scope.ts",
+    "src/contracts/lifecycle.ts",
+    "src/contracts/records.ts",
+    "src/contracts/signing.ts",
+    "src/contracts/delivery.ts",
+    "src/contracts/ids.ts",
+    "docs/adr/2026-09-foundation-contracts.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Wrote the v3 foundation ADR (docs/adr/2026-09-foundation-contracts.md, PROPOSED) and executable contracts in src/contracts (event envelope, canonical digest, ids, evidence classes, scope algebra, lifecycle payloads, delivery states, Ed25519 signing, ingress validation); 21 contract tests green, tsc clean.",
+  "depends_on": [],
+  "domain": "architecture",
+  "id": "01M2KCED56K0J9QN71A30SH1H6",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:34:28.012Z"
+  },
+  "rationale": "R19/C21: old clients must not corrupt unknown semantics and new semantics must not be silently flattened; a strict envelope makes a newer producer's event a visible quarantine on an older consumer, while passthrough bodies let record fields evolve without an envelope bump.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/contracts/",
+  "status": "active",
+  "summary": "Envelope and lifecycle payloads are STRICT (unknown keys rejected) while created-record bodies pass unknown fields through; unknown kinds and newer envelope versions are distinct rejection codes so ingest can quarantine rather than half-apply",
+  "timestamp": "2026-09-15T20:34:28.134Z"
+}

@@ -1,0 +1,500 @@
+{
+  "case_id": "C18",
+  "fixture_set": "development",
+  "version": "1.0.0",
+  "digest_algorithm": "sha-256",
+  "declared_inputs_required_before_run": {
+    "durable_ack_boundary": {
+      "admissible_values": [
+        "D1+D2_atomic",
+        "D2"
+      ],
+      "note": "Implementation must declare one before the run; branch assertions A10 differ. No declaration = fail."
+    },
+    "transport_disposition": {
+      "admissible_values": [
+        "git",
+        "alternative"
+      ],
+      "note": "If alternative, the report must still explain the disposition of the promised Git adapter (acceptance-cases.md line on C13/C14/C17)."
+    },
+    "topology_reality": {
+      "admissible_values": [
+        "two_physical_hosts",
+        "two_vms",
+        "containers_substitute",
+        "single_host_two_processes"
+      ],
+      "note": "Anything other than two real computers must be reported as a substitution, never as a pass."
+    }
+  },
+  "identities": {
+    "tenant": "tenant-larkspur",
+    "humans": [
+      {
+        "id": "u.rowan.mbele",
+        "role": "producer-side operator",
+        "grants": [
+          "repo-quarry-service:src/ingest/:write"
+        ]
+      },
+      {
+        "id": "u.imani.frost",
+        "role": "consumer-side operator",
+        "grants": [
+          "repo-quarry-service:src/ingest/:read"
+        ]
+      }
+    ],
+    "services": [
+      {
+        "id": "svc.forge-writer@anvil",
+        "host": "host-anvil-01",
+        "store": "store-anvil-local",
+        "credential": "cred-anvil-w1"
+      },
+      {
+        "id": "svc.ledger-reader@basalt",
+        "host": "host-basalt-02",
+        "store": "store-basalt-local",
+        "credential": "cred-basalt-r1"
+      }
+    ],
+    "hosts": [
+      {
+        "id": "host-anvil-01",
+        "role": "producer",
+        "computer": "A"
+      },
+      {
+        "id": "host-basalt-02",
+        "role": "consumer",
+        "computer": "B"
+      }
+    ],
+    "stores": [
+      {
+        "id": "store-anvil-local",
+        "host": "host-anvil-01",
+        "connected_to": []
+      },
+      {
+        "id": "store-basalt-local",
+        "host": "host-basalt-02",
+        "connected_to": []
+      }
+    ],
+    "channel": {
+      "id": "chan-quarry",
+      "producer": "svc.forge-writer@anvil",
+      "consumer": "svc.ledger-reader@basalt"
+    },
+    "repositories": [
+      {
+        "id": "repo-quarry-service",
+        "scopes": [
+          "repo-quarry-service:src/ingest/"
+        ],
+        "revisions": [
+          "r-91ac",
+          "r-c40d"
+        ],
+        "head": "r-c40d"
+      },
+      {
+        "id": "repo-mesa-billing",
+        "scopes": [
+          "repo-mesa-billing:src/rating/"
+        ],
+        "revisions": [
+          "r-7b18"
+        ],
+        "head": "r-7b18",
+        "consumer_grant": false
+      }
+    ],
+    "sessions": [
+      {
+        "id": "sess-A7",
+        "host": "host-anvil-01",
+        "phase": "pre-restart"
+      },
+      {
+        "id": "sess-A8",
+        "host": "host-anvil-01",
+        "phase": "post-restart"
+      },
+      {
+        "id": "sess-B3",
+        "host": "host-basalt-02",
+        "phase": "pre-restart"
+      },
+      {
+        "id": "sess-B4",
+        "host": "host-basalt-02",
+        "phase": "post-restart"
+      }
+    ]
+  },
+  "durable_steps": {
+    "D1": "source write committed in producer store",
+    "D2": "outbox entry committed",
+    "D3": "export bytes materialized durably with digest",
+    "D4": "commit/transfer accepted by transport",
+    "D5": "consumer admission committed (validated + stored)",
+    "D6": "consumer derived index updated",
+    "D7": "producer receipt recorded"
+  },
+  "delivery_state_vocabulary": [
+    "recorded_local",
+    "queued",
+    "exported",
+    "transfer_unknown",
+    "transferred",
+    "admitted",
+    "indexed",
+    "acknowledged",
+    "conflicted",
+    "rejected",
+    "abandoned_incomplete"
+  ],
+  "events": [
+    {
+      "event_id": "E-01",
+      "author": "svc.forge-writer@anvil",
+      "on_behalf_of": "u.rowan.mbele",
+      "evidence_class": "reported_worker_result",
+      "scope": "repo-quarry-service:src/ingest/",
+      "revision": "r-c40d",
+      "byte_len": 128,
+      "payload_digest": "sha256:ab62fed231e726a8d8116e08dd4f6ddd0cf7746755d9f8216032e0edd82a2da2",
+      "bytes_escaped": "{\"kind\":\"finding\",\"scope\":\"repo-quarry-service:src/ingest/\",\"rev\":\"r-c40d\",\"text\":\"batch reader drops the final partial frame\"}\\n"
+    },
+    {
+      "event_id": "E-02",
+      "author": "svc.forge-writer@anvil",
+      "on_behalf_of": "u.rowan.mbele",
+      "evidence_class": "reported_worker_result",
+      "scope": "repo-quarry-service:src/ingest/",
+      "revision": "r-c40d",
+      "byte_len": 129,
+      "payload_digest": "sha256:5ad31b33abc4b63e6cfbb94be0582122842d9f2a6c6f3ade00d10515d75ffd7a",
+      "bytes_escaped": "{\"kind\":\"decision\",\"scope\":\"repo-quarry-service:src/ingest/\",\"rev\":\"r-c40d\",\"text\":\"retry frames at the reader, not the parser\"}\\n"
+    },
+    {
+      "event_id": "E-03",
+      "author": "svc.forge-writer@anvil",
+      "on_behalf_of": "u.rowan.mbele",
+      "evidence_class": "verified_observation",
+      "scope": "repo-quarry-service:src/ingest/",
+      "revision": "r-c40d",
+      "byte_len": 127,
+      "payload_digest": "sha256:85c54116462e69c8499d4058b8e80823a896a4e9d6674cadabc5036968377e37",
+      "bytes_escaped": "\\ufeff{\"kind\":\"review\",\"scope\":\"repo-quarry-service:src/ingest/\",\"rev\":\"r-c40d\",\"text\":\"header row is CRLF terminated upstream\"}\\r\\n",
+      "byte_quirks": [
+        "utf8_bom",
+        "crlf_terminator"
+      ]
+    },
+    {
+      "event_id": "E-04",
+      "author": "svc.forge-writer@anvil",
+      "on_behalf_of": "u.rowan.mbele",
+      "evidence_class": "reported_worker_result",
+      "scope": "repo-quarry-service:src/ingest/",
+      "revision": "r-c40d",
+      "byte_len": 119,
+      "payload_digest": "sha256:26ad06352684137d0b15c28d5061afd33f8a74f7a9db8083cb424c7c8b630c76",
+      "bytes_escaped": "{\"kind\":\"finding\",\"scope\":\"repo-quarry-service:src/ingest/\",\"rev\":\"r-c40d\",\"text\":\"frame counter resets on reconnect\"}\\n"
+    },
+    {
+      "event_id": "E-05",
+      "author": "svc.forge-writer@anvil",
+      "on_behalf_of": "u.rowan.mbele",
+      "evidence_class": "reported_worker_result",
+      "scope": "repo-quarry-service:src/ingest/",
+      "revision": "r-c40d",
+      "byte_len": 119,
+      "payload_digest": "sha256:60481b0c746f7f14a05d77c35e05b0798bae764a3ccee21e4e95f53c58134b56",
+      "bytes_escaped": "{\"kind\":\"decision\",\"scope\":\"repo-quarry-service:src/ingest/\",\"rev\":\"r-c40d\",\"text\":\"counter is monotonic per channel\"}\\n"
+    },
+    {
+      "event_id": "E-06",
+      "author": "svc.forge-writer@anvil",
+      "on_behalf_of": "u.rowan.mbele",
+      "evidence_class": "reported_worker_result",
+      "scope": "repo-quarry-service:src/ingest/",
+      "revision": "r-c40d",
+      "byte_len": 114,
+      "payload_digest": "sha256:6b468c847ad089b69adc3c367efb6e5cff0acd7319022ce41f04bc17e527ac28",
+      "bytes_escaped": "{\"kind\":\"finding\",\"scope\":\"repo-quarry-service:src/ingest/\",\"rev\":\"r-c40d\",\"text\":\"index writer swallows ENOSPC\"}\\n"
+    },
+    {
+      "event_id": "E-07",
+      "author": "svc.forge-writer@anvil",
+      "on_behalf_of": "u.rowan.mbele",
+      "evidence_class": "verified_observation",
+      "scope": "repo-quarry-service:src/ingest/",
+      "revision": "r-c40d",
+      "byte_len": 116,
+      "payload_digest": "sha256:a9e3a2c1cfefa2a263d0e183b34ff88c1624e5249050fd45b0ebd23c64afdc1d",
+      "bytes_escaped": "{\"kind\":\"review\",\"scope\":\"repo-quarry-service:src/ingest/\",\"rev\":\"r-c40d\",\"text\":\"ack path lacks a durable cursor\"}\\n"
+    },
+    {
+      "event_id": "E-08",
+      "author": "svc.forge-writer@anvil",
+      "on_behalf_of": "u.rowan.mbele",
+      "evidence_class": "reported_worker_result",
+      "scope": "repo-quarry-service:src/ingest/",
+      "revision": "r-c40d",
+      "byte_len": 134,
+      "payload_digest": "sha256:215a9bf9fcf0a92076bd77b83fab9fc4b7b5e91ee4991c309327eeab0651b0bf",
+      "bytes_escaped": "{\"kind\":\"decision\",\"scope\":\"repo-quarry-service:src/ingest/\",\"rev\":\"r-c40d\",\"text\":\"cursor commits with the record, one transaction\"}\\n"
+    },
+    {
+      "event_id": "E-09",
+      "reuses_event_id_of": "E-03",
+      "submitted_as_event_id": "E-03",
+      "author": "svc.forge-writer@anvil",
+      "evidence_class": "verified_observation",
+      "scope": "repo-quarry-service:src/ingest/",
+      "revision": "r-c40d",
+      "byte_len": 125,
+      "payload_digest": "sha256:dbfc06809658a6ecfb51d66dbb5295ab3b40caf5119b91a6644834f3c3799b3f",
+      "bytes_escaped": "\\ufeff{\"kind\":\"review\",\"scope\":\"repo-quarry-service:src/ingest/\",\"rev\":\"r-c40d\",\"text\":\"header row is LF terminated upstream\"}\\r\\n"
+    },
+    {
+      "event_id": "E-10",
+      "author": "svc.forge-writer@anvil",
+      "evidence_class": "reported_worker_result",
+      "scope": "repo-mesa-billing:src/rating/",
+      "revision": "r-7b18",
+      "byte_len": 112,
+      "payload_digest": "sha256:bac649ac81f14c2b76975f51ddc5f41163889eb3e7a22d9ca297aa8901502a8f",
+      "bytes_escaped": "{\"kind\":\"finding\",\"scope\":\"repo-mesa-billing:src/rating/\",\"rev\":\"r-7b18\",\"text\":\"proration rounds toward zero\"}\\n",
+      "consumer_authorized": false
+    },
+    {
+      "event_id": "E-11",
+      "author": "svc.forge-writer@anvil",
+      "on_behalf_of": "u.rowan.mbele",
+      "evidence_class": "reported_worker_result",
+      "scope": "repo-quarry-service:src/ingest/",
+      "revision": "r-c40d",
+      "byte_len": 115,
+      "payload_digest": "sha256:20e01d2a8647e061be3b3165052582584c7af37262ea3d05ea4780dab84261bc",
+      "bytes_escaped": "{\"kind\":\"decision\",\"scope\":\"repo-quarry-service:src/ingest/\",\"rev\":\"r-c40d\",\"text\":\"reader owns frame reassembly\"}\\n",
+      "role": "positive_control"
+    },
+    {
+      "event_id": "E-12",
+      "author": "svc.forge-writer@anvil",
+      "evidence_class": "model_inference",
+      "human_authenticated": false,
+      "scope": "repo-quarry-service:src/ingest/",
+      "revision": "r-c40d",
+      "byte_len": 148,
+      "payload_digest": "sha256:b98f4f67f5ca327ee2d87b15ed7286c3c9787af0d3950497ca4eaae01cd0fd7a",
+      "bytes_escaped": "{\"kind\":\"note\",\"scope\":\"repo-quarry-service:src/ingest/\",\"rev\":\"r-c40d\",\"text\":\"Sync finished for every queued item at 14:02; nothing is pending.\"}\\n"
+    }
+  ],
+  "kill_plan": [
+    {
+      "scenario": "KS-1",
+      "event": "E-01",
+      "target": "producer",
+      "after_step": "D1",
+      "before_step": "D2",
+      "method": "SIGKILL + cold restart"
+    },
+    {
+      "scenario": "KS-2",
+      "event": "E-02",
+      "target": "producer",
+      "after_step": "D2",
+      "before_step": "D3",
+      "method": "SIGKILL + cold restart"
+    },
+    {
+      "scenario": "KS-3",
+      "event": "E-03",
+      "target": "producer",
+      "after_step": "D3",
+      "before_step": "D4",
+      "method": "SIGKILL + cold restart"
+    },
+    {
+      "scenario": "KS-4",
+      "event": "E-04",
+      "target": "producer",
+      "during_step": "D4",
+      "condition": "remote side durably received; producer killed before learning outcome",
+      "method": "SIGKILL + cold restart"
+    },
+    {
+      "scenario": "KS-5",
+      "event": "E-05",
+      "target": "consumer",
+      "during_step": "D5",
+      "condition": "mid-admission torn write",
+      "method": "SIGKILL + cold restart"
+    },
+    {
+      "scenario": "KS-6",
+      "event": "E-06",
+      "target": "consumer",
+      "after_step": "D5",
+      "before_step": "D6",
+      "method": "SIGKILL + cold restart"
+    },
+    {
+      "scenario": "KS-7",
+      "event": "E-07",
+      "target": "consumer",
+      "after_step": "D6",
+      "before_step": "D7",
+      "method": "SIGKILL + cold restart"
+    },
+    {
+      "scenario": "KS-8",
+      "event": "E-08",
+      "target": "producer",
+      "after_step": "D7",
+      "method": "SIGKILL + cold restart",
+      "expectation": "restart is a no-op"
+    },
+    {
+      "scenario": "KS-9",
+      "event": "E-04",
+      "target": "none",
+      "action": "replay 3x byte-identical from sess-A8 into the live consumer"
+    },
+    {
+      "scenario": "KS-10",
+      "event": "E-09",
+      "target": "none",
+      "action": "submit conflicting bytes under E-03's event id"
+    },
+    {
+      "scenario": "KS-11",
+      "event": "E-10",
+      "target": "none",
+      "action": "deliver out-of-scope event while consumer drains recovery backlog"
+    },
+    {
+      "scenario": "KS-12",
+      "event": "E-11",
+      "target": "none",
+      "action": "clean end-to-end run"
+    },
+    {
+      "scenario": "KS-3c",
+      "event": "E-03b",
+      "target": "producer",
+      "after_step": "D3",
+      "before_step": "D4",
+      "method": "close transport connection only, process continues",
+      "role": "restart-vs-close discriminator"
+    }
+  ],
+  "expected_end_states": {
+    "E-01": {
+      "producer_state_if_boundary_D1D2atomic": "acknowledged",
+      "producer_state_if_boundary_D2": "recorded_local",
+      "consumer_records_if_boundary_D1D2atomic": 1,
+      "consumer_records_if_boundary_D2": 0,
+      "must_appear_in_gaps_if_boundary_D2": true,
+      "qualify_verdict_if_recorded_local": "deny",
+      "history_attempts_min": 1
+    },
+    "E-02": {
+      "producer_state": "acknowledged",
+      "consumer_records": 1,
+      "digest_match": true,
+      "history_shows_interrupted_attempt": true
+    },
+    "E-03": {
+      "producer_state": "acknowledged",
+      "consumer_records": 1,
+      "consumer_byte_len": 127,
+      "consumer_digest": "sha256:85c54116462e69c8499d4058b8e80823a896a4e9d6674cadabc5036968377e37",
+      "bom_preserved": true,
+      "crlf_preserved": true
+    },
+    "E-04": {
+      "transient_state_after_restart": "transfer_unknown",
+      "final_producer_state": "acknowledged",
+      "consumer_records": 1,
+      "semantic_effect_count": 1,
+      "delivery_attempts_in_history": 4,
+      "duplicate_suppressed_outcomes": 3,
+      "receipt_identity_stable_across_replays": true,
+      "qualify_verdict_while_transfer_unknown": "deny"
+    },
+    "E-05": {
+      "consumer_record_state_allowed": [
+        "absent_and_redrivable",
+        "present_and_complete"
+      ],
+      "forbidden": "present_with_digest_mismatch_reported_admitted",
+      "final_producer_state": "acknowledged",
+      "consumer_records_final": 1
+    },
+    "E-06": {
+      "consumer_record_visible_after_restart": true,
+      "index_may_be_stale": true,
+      "index_lag_or_rebuild_reported": true,
+      "final_producer_state": "acknowledged",
+      "consumer_records": 1
+    },
+    "E-07": {
+      "final_producer_state": "acknowledged",
+      "consumer_records": 1,
+      "receipt_reissued_without_duplicate_admission": true
+    },
+    "E-08": {
+      "producer_state_before_kill": "acknowledged",
+      "producer_state_after_restart": "acknowledged",
+      "new_attempts_created_by_restart": 0,
+      "receipt_ref_changed": false
+    },
+    "E-09": {
+      "terminal_state": "conflicted",
+      "consumer_record_for_E-03_unchanged": true,
+      "both_digests_retrievable_in_history": true,
+      "appears_in_ops_rejected": true
+    },
+    "E-10": {
+      "admitted": false,
+      "in_consumer_current_view": false,
+      "in_any_consumer_index_cache_or_diagnostic": false,
+      "appears_in_ops_scope_denials": true
+    },
+    "E-11": {
+      "producer_state": "acknowledged",
+      "consumer_state": "indexed",
+      "consumer_records": 1,
+      "digest_match": true,
+      "qualify_verdict": "allow",
+      "role": "positive_control_run_void_if_fails"
+    },
+    "E-12": {
+      "evidence_class_after_storage": "model_inference",
+      "delivery_states_changed_by_it": 0,
+      "gaps_cleared_by_it": 0,
+      "qualify_verdicts_influenced": 0
+    }
+  },
+  "global_end_state_assertions": {
+    "acknowledged_without_consumer_record": 0,
+    "acknowledged_events_lost_across_restart": 0,
+    "cross_scope_records_in_consumer_store": 0,
+    "exactly_once_network_delivery_claims_in_output": 0,
+    "producer_event_id_set_preserved_across_every_restart": true,
+    "ops_report_incomplete_effect_count_equals_derived_from_delivery_view": true
+  },
+  "quiescence_definition": {
+    "no_state_change_window_seconds": 120,
+    "max_wall_clock_per_scenario_seconds": 900
+  }
+}

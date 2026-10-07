@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T21:37:33.060Z",
+  "id": "01M2P2EMC4J9WWPQ26CHBWFBCE",
+  "properties": {
+    "decision_summary": "Chose a denylist (result.error, result.summary) plus URL-userinfo stripping in the renderer over a per-source_kind allowlist of result keys",
+    "origin": "derived"
+  },
+  "source": "01M2P2EM0X302FD127DQ5DFA0N",
+  "target": "01M2P2EMAR0AZKT708HX9RFF5Y",
+  "type": "decided_by"
+}

@@ -1,0 +1,1141 @@
+{
+  "case_id": "C14",
+  "oracle_version": "1.0.0",
+  "oracle_authored_by": "independent validation owner",
+  "derived_from": [
+    "acceptance-cases.md C14",
+    "requirements.md R02,R03,R04,R05,R07,R08,R09,R12,R19",
+    "01-foundation.md Required proof before broad implementation"
+  ],
+  "implementation_neutral": true,
+  "notes": "All identities, hashes, revisions and times are synthetic. Revision ids are 40-char placeholders, not real git objects.",
+  "identities": {
+    "tenant": {
+      "id": "tnt-orion",
+      "label": "Orion"
+    },
+    "humans": [
+      {
+        "id": "usr-ava",
+        "display": "Ava Okonkwo",
+        "role": "maintainer, may author rulings in src/pay/ and src/ledger/"
+      },
+      {
+        "id": "usr-bo",
+        "display": "Bo Lindqvist",
+        "role": "contributor, may author proposals and observations only"
+      }
+    ],
+    "agent_principals": [
+      {
+        "id": "agt-scribe-a",
+        "operated_by": "usr-ava",
+        "host": "hst-alpha",
+        "sessions": [
+          "ses-a1",
+          "ses-a2"
+        ]
+      },
+      {
+        "id": "agt-scribe-b",
+        "operated_by": "usr-bo",
+        "host": "hst-beta",
+        "sessions": [
+          "ses-b1"
+        ]
+      }
+    ],
+    "hosts": [
+      {
+        "id": "hst-alpha",
+        "installation": "inst-a7",
+        "clock_offset_seconds": 0
+      },
+      {
+        "id": "hst-beta",
+        "installation": "inst-b3",
+        "clock_offset_seconds": 2220,
+        "note": "+37 min skew, deliberate"
+      }
+    ],
+    "stores": [
+      {
+        "id": "str-alpha",
+        "bound_host": "hst-alpha",
+        "placement": "inside the repository working tree at .exchange/",
+        "durable_evidence_location": "append-only event log + committed event blobs"
+      },
+      {
+        "id": "str-beta",
+        "bound_host": "hst-beta",
+        "placement": "inside the repository working tree at .exchange/",
+        "durable_evidence_location": "append-only event log + committed event blobs"
+      }
+    ],
+    "repository": {
+      "id": "repo-lumen",
+      "project": "prj-lumen",
+      "canonical_remote": "git@example.invalid:orion/lumen.git",
+      "clones": [
+        {
+          "host": "hst-alpha",
+          "worktree": "wt-a-main",
+          "path": "/w/a/lumen",
+          "branch": "main"
+        },
+        {
+          "host": "hst-beta",
+          "worktree": "wt-b-main",
+          "path": "/w/b/lumen-renamed",
+          "branch": "main",
+          "note": "different local path and directory name; label, not identity"
+        }
+      ]
+    }
+  },
+  "revision_range": {
+    "initial_main": [
+      "c0aa000000000000000000000000000000000000",
+      "c1aa000000000000000000000000000000000000",
+      "c2aa000000000000000000000000000000000000",
+      "c3aa000000000000000000000000000000000000"
+    ],
+    "after_rebase_force_push": [
+      "c0aa000000000000000000000000000000000000",
+      "c1aa000000000000000000000000000000000000",
+      "c2bb000000000000000000000000000000000000",
+      "c3bb000000000000000000000000000000000000"
+    ],
+    "after_cherry_pick": [
+      "c0aa000000000000000000000000000000000000",
+      "c1aa000000000000000000000000000000000000",
+      "c2bb000000000000000000000000000000000000",
+      "c3bb000000000000000000000000000000000000",
+      "c4bb000000000000000000000000000000000000"
+    ],
+    "final_head": "c5bb000000000000000000000000000000000000",
+    "rewritten_pairs": [
+      {
+        "old": "c2aa000000000000000000000000000000000000",
+        "new": "c2bb000000000000000000000000000000000000",
+        "patch_identical": true
+      },
+      {
+        "old": "c3aa000000000000000000000000000000000000",
+        "new": "c3bb000000000000000000000000000000000000",
+        "patch_identical": true
+      }
+    ],
+    "cherry_pick": {
+      "source": "c3aa000000000000000000000000000000000000",
+      "result": "c4bb000000000000000000000000000000000000",
+      "patch_identical": true
+    },
+    "unreachable_after_force_push": [
+      "c2aa000000000000000000000000000000000000",
+      "c3aa000000000000000000000000000000000000"
+    ],
+    "file_under_test": {
+      "path": "src/pay/settle.ts",
+      "hash_at_c1": "sha256:aa01",
+      "hash_at_c2": "sha256:aa02",
+      "hash_at_c3": "sha256:aa03",
+      "hash_at_c2p": "sha256:aa02",
+      "hash_at_c5": "sha256:bb05",
+      "note": "c2 and c2p have identical bytes but different revision identity; c5 differs in bytes"
+    }
+  },
+  "abstract_store_model": {
+    "read_surfaces_required": {
+      "list_events": "list_events(store, filter?) -> ordered immutable event envelopes",
+      "current_view": "current_view(store, scope, as_of) -> applicable records with lifecycle state, authorizing event, evidence class, qualification",
+      "receipts": "receipts(store, event_id) -> independent delivery/lifecycle states per destination",
+      "history": "history(store, record_id) -> full ordered lifecycle with prior applicability windows",
+      "rebuild": "rebuild_from_durable(store) -> reconstruct current_view and indexes from retained durable evidence only"
+    },
+    "event_envelope_fields": [
+      "event_id",
+      "payload_digest",
+      "kind",
+      "record_id",
+      "scope",
+      "evidence_class",
+      "authored_by",
+      "observed_by",
+      "producer",
+      "source",
+      "effective_at",
+      "recorded_at",
+      "causal_deps",
+      "representations"
+    ],
+    "evidence_classes": [
+      "human_authorization",
+      "verified_observation",
+      "worker_report",
+      "model_inference",
+      "proposal",
+      "open_question"
+    ],
+    "receipt_states_independent": [
+      "local_durable",
+      "queued",
+      "remote_received",
+      "admitted",
+      "materialized",
+      "injected",
+      "task_ack"
+    ],
+    "qualification_states": [
+      "qualified",
+      "stale",
+      "unknown",
+      "source_unreachable"
+    ],
+    "lifecycle_states": [
+      "applicable",
+      "superseded",
+      "revoked",
+      "archived",
+      "contested",
+      "restored_applicable"
+    ]
+  },
+  "seed_events": [
+    {
+      "event_id": "ev-001",
+      "payload_digest": "pd-9f01",
+      "kind": "record.create",
+      "record_id": "rec-050",
+      "scope": "src/pay/",
+      "evidence_class": "human_authorization",
+      "authored_by": "usr-ava",
+      "observed_by": "agt-scribe-a",
+      "producer": {
+        "host": "hst-alpha",
+        "store": "str-alpha",
+        "session": "ses-a1"
+      },
+      "source": {
+        "repo": "repo-lumen",
+        "revision": "c1aa000000000000000000000000000000000000",
+        "path": "src/pay/settle.ts",
+        "anchor": "L10-L42",
+        "source_hash": "sha256:aa01"
+      },
+      "body": "Payment retries are capped at 3 for src/pay/.",
+      "effective_at": "2026-09-01T10:00:00Z",
+      "recorded_at": "2026-09-01T10:00:01Z",
+      "causal_deps": [],
+      "representations": [
+        {
+          "transport": "git",
+          "commit": "c1aa000000000000000000000000000000000000",
+          "path": ".exchange/events/ev-001.json"
+        }
+      ]
+    },
+    {
+      "event_id": "ev-002",
+      "payload_digest": "pd-9f02",
+      "kind": "record.create",
+      "record_id": "rec-300",
+      "scope": "src/pay/",
+      "evidence_class": "human_authorization",
+      "authored_by": "usr-ava",
+      "observed_by": "agt-scribe-a",
+      "producer": {
+        "host": "hst-alpha",
+        "store": "str-alpha",
+        "session": "ses-a1"
+      },
+      "source": {
+        "repo": "repo-lumen",
+        "revision": "c1aa000000000000000000000000000000000000",
+        "path": "src/pay/settle.ts",
+        "anchor": "L60-L71",
+        "source_hash": "sha256:aa01"
+      },
+      "body": "Settlement tests may use the vendor sandbox key.",
+      "effective_at": "2026-09-01T10:05:00Z",
+      "recorded_at": "2026-09-01T10:05:01Z",
+      "causal_deps": [],
+      "representations": [
+        {
+          "transport": "git",
+          "commit": "c1aa000000000000000000000000000000000000",
+          "path": ".exchange/events/ev-002.json"
+        }
+      ]
+    },
+    {
+      "event_id": "ev-003",
+      "payload_digest": "pd-9f03",
+      "kind": "record.supersede",
+      "record_id": "rec-100",
+      "supersedes": [
+        "rec-050"
+      ],
+      "scope": "src/pay/",
+      "evidence_class": "human_authorization",
+      "authored_by": "usr-ava",
+      "observed_by": "agt-scribe-a",
+      "producer": {
+        "host": "hst-alpha",
+        "store": "str-alpha",
+        "session": "ses-a1"
+      },
+      "source": {
+        "repo": "repo-lumen",
+        "revision": "c2aa000000000000000000000000000000000000",
+        "path": "src/pay/settle.ts",
+        "anchor": "L10-L44",
+        "source_hash": "sha256:aa02"
+      },
+      "body": "Payment retries are capped at 5 for src/pay/. Replaces the cap of 3.",
+      "effective_at": "2026-09-02T09:00:00Z",
+      "recorded_at": "2026-09-02T09:00:01Z",
+      "causal_deps": [
+        "ev-001"
+      ],
+      "representations": [
+        {
+          "transport": "git",
+          "commit": "c2aa000000000000000000000000000000000000",
+          "path": ".exchange/events/ev-003.json"
+        }
+      ]
+    },
+    {
+      "event_id": "ev-004",
+      "payload_digest": "pd-9f04",
+      "kind": "record.create",
+      "record_id": "rec-200",
+      "scope": "src/pay/",
+      "evidence_class": "model_inference",
+      "authored_by": "agt-scribe-b",
+      "observed_by": "agt-scribe-b",
+      "producer": {
+        "host": "hst-beta",
+        "store": "str-beta",
+        "session": "ses-b1"
+      },
+      "source": {
+        "repo": "repo-lumen",
+        "revision": "c3aa000000000000000000000000000000000000",
+        "path": "src/pay/settle.ts",
+        "anchor": "L10-L44",
+        "source_hash": "sha256:aa03"
+      },
+      "body": "Inference: the retry cap probably ought to be 10 given vendor timeouts.",
+      "effective_at": "2026-09-03T08:00:00Z",
+      "recorded_at": "2026-09-03T08:37:00Z",
+      "causal_deps": [
+        "ev-003"
+      ],
+      "representations": [
+        {
+          "transport": "git",
+          "commit": "c3aa000000000000000000000000000000000000",
+          "path": ".exchange/events/ev-004.json"
+        }
+      ]
+    },
+    {
+      "event_id": "ev-005",
+      "payload_digest": "pd-9f05",
+      "kind": "record.revoke",
+      "record_id": "rec-300",
+      "scope": "src/pay/",
+      "evidence_class": "human_authorization",
+      "authored_by": "usr-ava",
+      "observed_by": "agt-scribe-a",
+      "producer": {
+        "host": "hst-alpha",
+        "store": "str-alpha",
+        "session": "ses-a1"
+      },
+      "source": {
+        "repo": "repo-lumen",
+        "revision": "c3aa000000000000000000000000000000000000",
+        "path": "src/pay/settle.ts",
+        "anchor": "L60-L71",
+        "source_hash": "sha256:aa03"
+      },
+      "body": "The vendor sandbox key is revoked; it must not be used in settlement tests.",
+      "effective_at": "2026-09-03T11:00:00Z",
+      "recorded_at": "2026-09-03T11:00:01Z",
+      "causal_deps": [
+        "ev-002"
+      ],
+      "representations": [
+        {
+          "transport": "git",
+          "commit": "c3aa000000000000000000000000000000000000",
+          "path": ".exchange/events/ev-005.json"
+        }
+      ]
+    },
+    {
+      "event_id": "ev-006",
+      "payload_digest": "pd-9f06",
+      "kind": "source.observation",
+      "record_id": null,
+      "scope": "src/pay/",
+      "evidence_class": "verified_observation",
+      "authored_by": "agt-scribe-a",
+      "observed_by": "agt-scribe-a",
+      "producer": {
+        "host": "hst-alpha",
+        "store": "str-alpha",
+        "session": "ses-a1"
+      },
+      "source": {
+        "repo": "repo-lumen",
+        "revision": "c3aa000000000000000000000000000000000000",
+        "path": "src/pay/settle.ts",
+        "anchor": "file",
+        "source_hash": "sha256:aa03"
+      },
+      "body": "Observed settle.ts at c3aa.",
+      "effective_at": "2026-09-03T11:05:00Z",
+      "recorded_at": "2026-09-03T11:05:01Z",
+      "causal_deps": [],
+      "representations": [
+        {
+          "transport": "git",
+          "commit": "c3aa000000000000000000000000000000000000",
+          "path": ".exchange/events/ev-006.json"
+        }
+      ]
+    }
+  ],
+  "seed_receipts": [
+    {
+      "event_id": "ev-001",
+      "destination": "str-beta",
+      "local_durable": true,
+      "queued": "done",
+      "remote_received": true,
+      "admitted": true,
+      "materialized": true,
+      "injected_turns": 1,
+      "task_ack": "none",
+      "delivery_attempts": 1,
+      "admitted_effects": 1
+    },
+    {
+      "event_id": "ev-002",
+      "destination": "str-beta",
+      "local_durable": true,
+      "queued": "done",
+      "remote_received": true,
+      "admitted": true,
+      "materialized": true,
+      "injected_turns": 0,
+      "task_ack": "none",
+      "delivery_attempts": 1,
+      "admitted_effects": 1
+    },
+    {
+      "event_id": "ev-003",
+      "destination": "str-beta",
+      "local_durable": true,
+      "queued": "done",
+      "remote_received": true,
+      "admitted": true,
+      "materialized": true,
+      "injected_turns": 1,
+      "task_ack": "none",
+      "delivery_attempts": 1,
+      "admitted_effects": 1
+    },
+    {
+      "event_id": "ev-004",
+      "destination": "str-alpha",
+      "local_durable": true,
+      "queued": "done",
+      "remote_received": true,
+      "admitted": true,
+      "materialized": true,
+      "injected_turns": 0,
+      "task_ack": "none",
+      "delivery_attempts": 1,
+      "admitted_effects": 1
+    },
+    {
+      "event_id": "ev-005",
+      "destination": "str-beta",
+      "local_durable": true,
+      "queued": "done",
+      "remote_received": true,
+      "admitted": true,
+      "materialized": true,
+      "injected_turns": 0,
+      "task_ack": "none",
+      "delivery_attempts": 1,
+      "admitted_effects": 1
+    },
+    {
+      "event_id": "ev-006",
+      "destination": "str-beta",
+      "local_durable": true,
+      "queued": "done",
+      "remote_received": true,
+      "admitted": true,
+      "materialized": true,
+      "injected_turns": 0,
+      "task_ack": "none",
+      "delivery_attempts": 1,
+      "admitted_effects": 1
+    }
+  ],
+  "current_view_at_K0": {
+    "store": "both",
+    "scope": "src/pay/",
+    "records": [
+      {
+        "record_id": "rec-050",
+        "state": "superseded",
+        "superseded_by": "rec-100",
+        "authorizing_event": "ev-003",
+        "evidence_class": "human_authorization",
+        "qualified_as_of": "c1aa000000000000000000000000000000000000",
+        "current_qualification": "qualified"
+      },
+      {
+        "record_id": "rec-100",
+        "state": "applicable",
+        "authorizing_event": "ev-003",
+        "evidence_class": "human_authorization",
+        "qualified_as_of": "c2aa000000000000000000000000000000000000",
+        "current_qualification": "qualified"
+      },
+      {
+        "record_id": "rec-200",
+        "state": "applicable",
+        "authorizing_event": "ev-004",
+        "evidence_class": "model_inference",
+        "qualified_as_of": "c3aa000000000000000000000000000000000000",
+        "current_qualification": "qualified",
+        "note": "applicable as an inference only; cannot authorize action and does not compete with rec-100"
+      },
+      {
+        "record_id": "rec-300",
+        "state": "revoked",
+        "authorizing_event": "ev-005",
+        "evidence_class": "human_authorization",
+        "qualified_as_of": "c3aa000000000000000000000000000000000000",
+        "current_qualification": "qualified"
+      }
+    ]
+  },
+  "triggers": [
+    {
+      "id": "T1",
+      "checkpoint_after": "K1",
+      "actor": "usr-ava",
+      "host": "hst-alpha",
+      "action": "git checkout --detach c1aa (working tree, including .exchange/, rewinds to the c1 content)",
+      "class": "ref checkout"
+    },
+    {
+      "id": "T2",
+      "checkpoint_after": "K2",
+      "actor": "usr-ava",
+      "host": "hst-alpha",
+      "action": "git reset --hard c1aa on main, then delete the materialized index/database of str-alpha, then invoke rebuild_from_durable(str-alpha)",
+      "class": "ref reset + derived-index loss"
+    },
+    {
+      "id": "T3",
+      "checkpoint_after": "K3",
+      "actor": "usr-ava",
+      "host": "hst-alpha",
+      "action": "git rebase rewriting c2aa,c3aa into c2bb,c3bb (identical patches, new object ids), then git push --force; c2aa and c3aa become unreachable on the remote",
+      "class": "rebase + force-push"
+    },
+    {
+      "id": "T4",
+      "checkpoint_after": "K3",
+      "actor": "agt-scribe-b",
+      "host": "hst-beta",
+      "action": "fetch the rewritten history; the same event bytes for ev-003/ev-004/ev-005/ev-006 arrive under new commit ids and a changed on-disk layout (.exchange/events/ -> .exchange/v2/events/); ev-004 is redelivered twice and one remote acknowledgement for ev-003 is lost in transit",
+      "class": "transport representation change + redelivery + lost ack"
+    },
+    {
+      "id": "T5",
+      "checkpoint_after": "K4",
+      "actor": "usr-ava",
+      "host": "hst-alpha",
+      "action": "git cherry-pick c3aa onto head, producing c4bb with an identical patch and re-carrying the ev-004/ev-005 bytes",
+      "class": "cherry-pick"
+    },
+    {
+      "id": "T6",
+      "checkpoint_after": "K5",
+      "actor": "usr-bo",
+      "host": "hst-beta",
+      "action": "while hst-beta is disconnected, restore str-beta wholesale from an exchange snapshot taken before ev-003/ev-005 arrived (the non-Git equivalent of a snapshot rewind); hst-beta clock is +37 min",
+      "class": "exchange snapshot rewind, offline"
+    },
+    {
+      "id": "T7",
+      "checkpoint_after": "K5",
+      "actor": "agt-scribe-b",
+      "host": "hst-beta",
+      "action": "hst-beta reconnects; replay resumes from producer/consumer cursors",
+      "class": "reconnect + replay"
+    },
+    {
+      "id": "T8",
+      "checkpoint_after": "K6",
+      "actor": "usr-ava",
+      "host": "hst-alpha",
+      "action": "issue an explicit authorized lifecycle.restore for rec-050 (ev-020); issue a lifecycle.restore for rec-300 (ev-021, MUST be refused); agt-scribe-b attempts lifecycle.supersede of rec-100 by rec-200 citing the rewind (ev-022, MUST be refused)",
+      "class": "intentional restoration + two refusals"
+    },
+    {
+      "id": "T9",
+      "checkpoint_after": "K6",
+      "actor": "usr-ava",
+      "host": "hst-alpha",
+      "action": "normal fast-forward commit c5bb carrying a new human_authorization record rec-400 in scope src/ledger/ (ev-030)",
+      "class": "positive control: pipeline still works"
+    },
+    {
+      "id": "T10",
+      "checkpoint_after": "K6",
+      "actor": "agt-scribe-a",
+      "host": "hst-alpha",
+      "action": "record a fresh verified source observation of src/pay/settle.ts at head c5bb (ev-031)",
+      "class": "positive control: explicit requalification"
+    }
+  ],
+  "expected_end_states": {
+    "K1_after_checkout": {
+      "event_list": {
+        "store": "str-alpha",
+        "event_ids": [
+          "ev-001",
+          "ev-002",
+          "ev-003",
+          "ev-004",
+          "ev-005",
+          "ev-006",
+          "ev-010"
+        ],
+        "note": "ev-010 is the recorded source.checkout observation; no event is removed"
+      },
+      "new_events_permitted": [
+        {
+          "event_id": "ev-010",
+          "kind": "source.checkout",
+          "evidence_class": "verified_observation",
+          "records_head": "c1aa000000000000000000000000000000000000"
+        }
+      ],
+      "new_events_forbidden_kinds": [
+        "record.create",
+        "record.supersede",
+        "record.revoke",
+        "record.restore",
+        "record.archive"
+      ],
+      "current_view": {
+        "scope": "src/pay/",
+        "records": [
+          {
+            "record_id": "rec-050",
+            "state": "superseded"
+          },
+          {
+            "record_id": "rec-100",
+            "state": "applicable"
+          },
+          {
+            "record_id": "rec-200",
+            "state": "applicable"
+          },
+          {
+            "record_id": "rec-300",
+            "state": "revoked"
+          }
+        ]
+      },
+      "working_tree_head": "c1aa000000000000000000000000000000000000"
+    },
+    "K2_after_reset_and_rebuild": {
+      "event_list": {
+        "store": "str-alpha",
+        "event_ids": [
+          "ev-001",
+          "ev-002",
+          "ev-003",
+          "ev-004",
+          "ev-005",
+          "ev-006",
+          "ev-010",
+          "ev-011"
+        ],
+        "note": "ev-011 is the recorded source.reset observation"
+      },
+      "event_payload_digests_unchanged": true,
+      "current_view_equals": "K1_after_checkout.current_view",
+      "rebuild": {
+        "succeeded": true,
+        "acknowledged_events_lost": 0,
+        "derived_index_rebuilt": true
+      },
+      "gap_reporting": {
+        "required": true,
+        "field": "capture_gap",
+        "expected": "none"
+      }
+    },
+    "K3_after_rebase_force_push_and_fetch": {
+      "event_list": {
+        "store": "str-beta",
+        "event_ids": [
+          "ev-001",
+          "ev-002",
+          "ev-003",
+          "ev-004",
+          "ev-005",
+          "ev-006",
+          "ev-012"
+        ],
+        "note": "ev-012 is the recorded source.history_rewrite observation; no event duplicated despite new commit ids and changed paths"
+      },
+      "event_identity": [
+        {
+          "event_id": "ev-003",
+          "payload_digest": "pd-9f03",
+          "representations": [
+            {
+              "transport": "git",
+              "commit": "c2aa000000000000000000000000000000000000",
+              "path": ".exchange/events/ev-003.json",
+              "reachable": false
+            },
+            {
+              "transport": "git",
+              "commit": "c2bb000000000000000000000000000000000000",
+              "path": ".exchange/v2/events/ev-003.json",
+              "reachable": true
+            }
+          ],
+          "instances_in_event_list": 1
+        },
+        {
+          "event_id": "ev-004",
+          "payload_digest": "pd-9f04",
+          "instances_in_event_list": 1,
+          "delivery_attempts": 3,
+          "admitted_effects": 1
+        }
+      ],
+      "current_view": {
+        "scope": "src/pay/",
+        "records": [
+          {
+            "record_id": "rec-050",
+            "state": "superseded",
+            "qualified_as_of": "c1aa000000000000000000000000000000000000",
+            "current_qualification": "qualified",
+            "source_revision_reachable": true
+          },
+          {
+            "record_id": "rec-100",
+            "state": "applicable",
+            "qualified_as_of": "c2aa000000000000000000000000000000000000",
+            "current_qualification": "unknown",
+            "source_revision_reachable": false
+          },
+          {
+            "record_id": "rec-200",
+            "state": "applicable",
+            "qualified_as_of": "c3aa000000000000000000000000000000000000",
+            "current_qualification": "unknown",
+            "source_revision_reachable": false
+          },
+          {
+            "record_id": "rec-300",
+            "state": "revoked",
+            "qualified_as_of": "c3aa000000000000000000000000000000000000",
+            "current_qualification": "unknown",
+            "source_revision_reachable": false
+          }
+        ]
+      },
+      "receipts": [
+        {
+          "event_id": "ev-003",
+          "destination": "str-beta",
+          "remote_received": true,
+          "admitted": true,
+          "admitted_effects": 1,
+          "ack_reconciled": true,
+          "task_ack": "none"
+        },
+        {
+          "event_id": "ev-004",
+          "destination": "str-alpha",
+          "admitted_effects": 1,
+          "delivery_attempts": 3,
+          "task_ack": "none"
+        }
+      ]
+    },
+    "K4_after_cherry_pick": {
+      "event_identity": [
+        {
+          "event_id": "ev-004",
+          "instances_in_event_list": 1,
+          "representations_include_commit": "c4bb000000000000000000000000000000000000"
+        },
+        {
+          "event_id": "ev-005",
+          "instances_in_event_list": 1,
+          "representations_include_commit": "c4bb000000000000000000000000000000000000"
+        }
+      ],
+      "current_view_changes_vs_K3": "none",
+      "requalification_from_patch_equivalence": {
+        "permitted": false,
+        "expected_records_requalified": 0
+      }
+    },
+    "K5_after_snapshot_rewind_and_replay": {
+      "during_offline": {
+        "store": "str-beta",
+        "view_completeness_label": "incomplete",
+        "known_missing_cursor_gap": true,
+        "serves_view_as_complete": false,
+        "claims_knowledge_of_revocations_not_received": false
+      },
+      "after_replay": {
+        "event_list": {
+          "store": "str-beta",
+          "event_ids": [
+            "ev-001",
+            "ev-002",
+            "ev-003",
+            "ev-004",
+            "ev-005",
+            "ev-006",
+            "ev-010",
+            "ev-011",
+            "ev-012",
+            "ev-013"
+          ],
+          "note": "ev-013 is the recorded store.snapshot_rewind observation"
+        },
+        "current_view": {
+          "scope": "src/pay/",
+          "records": [
+            {
+              "record_id": "rec-050",
+              "state": "superseded"
+            },
+            {
+              "record_id": "rec-100",
+              "state": "applicable"
+            },
+            {
+              "record_id": "rec-200",
+              "state": "applicable"
+            },
+            {
+              "record_id": "rec-300",
+              "state": "revoked"
+            }
+          ]
+        },
+        "order_and_skew_independence": {
+          "replay_orders_tested": [
+            "forward",
+            "reverse",
+            "interleaved"
+          ],
+          "expected_current_view_identical_across_orders": true
+        },
+        "duplicate_effects": 0
+      }
+    },
+    "K6_final": {
+      "event_list": {
+        "store": "both",
+        "event_ids": [
+          "ev-001",
+          "ev-002",
+          "ev-003",
+          "ev-004",
+          "ev-005",
+          "ev-006",
+          "ev-010",
+          "ev-011",
+          "ev-012",
+          "ev-013",
+          "ev-020",
+          "ev-021",
+          "ev-022",
+          "ev-030",
+          "ev-031"
+        ],
+        "immutable_prefix_unchanged": true
+      },
+      "refusals": [
+        {
+          "event_id": "ev-021",
+          "kind": "record.restore",
+          "record_id": "rec-300",
+          "outcome": "refused",
+          "recorded_as": "rejected_request",
+          "reason_class": "restore_cannot_resurrect_revoked_authority",
+          "effect_on_current_view": "none"
+        },
+        {
+          "event_id": "ev-022",
+          "kind": "record.supersede",
+          "record_id": "rec-100",
+          "by": "rec-200",
+          "outcome": "refused",
+          "recorded_as": "rejected_request",
+          "reason_class": "insufficient_evidence_class_model_inference_vs_human_authorization",
+          "effect_on_current_view": "none"
+        }
+      ],
+      "current_view": {
+        "scope": "src/pay/",
+        "records": [
+          {
+            "record_id": "rec-050",
+            "state": "restored_applicable",
+            "authorizing_event": "ev-020",
+            "evidence_class": "human_authorization",
+            "evidence_class_changed": false,
+            "qualified_as_of": "c1aa000000000000000000000000000000000000",
+            "current_qualification": "stale"
+          },
+          {
+            "record_id": "rec-100",
+            "state": "applicable",
+            "authorizing_event": "ev-003",
+            "evidence_class": "human_authorization",
+            "qualified_as_of": "c5bb000000000000000000000000000000000000",
+            "current_qualification": "qualified",
+            "requalified_by": "ev-031"
+          },
+          {
+            "record_id": "rec-200",
+            "state": "applicable",
+            "evidence_class": "model_inference",
+            "can_authorize_action": false,
+            "qualified_as_of": "c3aa000000000000000000000000000000000000",
+            "current_qualification": "unknown"
+          },
+          {
+            "record_id": "rec-300",
+            "state": "revoked",
+            "authorizing_event": "ev-005",
+            "current_qualification": "unknown"
+          }
+        ]
+      },
+      "contested_marking": {
+        "records": [
+          "rec-050",
+          "rec-100"
+        ],
+        "expected": "contested_or_scoped_precedence_recorded_explicitly",
+        "note": "rec-050 restored while rec-100 remains applicable in the same scope is a visible contradiction that must be surfaced, not silently ordered"
+      },
+      "current_view_scope_src_ledger": [
+        {
+          "record_id": "rec-400",
+          "state": "applicable",
+          "authorizing_event": "ev-030",
+          "evidence_class": "human_authorization",
+          "qualified_as_of": "c5bb000000000000000000000000000000000000",
+          "current_qualification": "qualified"
+        }
+      ],
+      "receipts_final": [
+        {
+          "event_id": "ev-003",
+          "destination": "str-beta",
+          "local_durable": true,
+          "queued": "done",
+          "remote_received": true,
+          "admitted": true,
+          "materialized": true,
+          "task_ack": "none"
+        },
+        {
+          "event_id": "ev-020",
+          "destination": "str-beta",
+          "local_durable": true,
+          "remote_received": true,
+          "admitted": true,
+          "materialized": true,
+          "task_ack": "none"
+        },
+        {
+          "event_id": "ev-030",
+          "destination": "str-beta",
+          "local_durable": true,
+          "remote_received": true,
+          "admitted": true,
+          "materialized": true,
+          "task_ack": "none"
+        }
+      ],
+      "historical_view": {
+        "rec-050": [
+          "created ev-001 @c1aa (applicable)",
+          "superseded ev-003 @c2aa",
+          "restored ev-020 @c5bb (explicit, human_authorization)"
+        ],
+        "rec-100": [
+          "created ev-003 @c2aa (applicable)",
+          "source revision c2aa unreachable after ev-012",
+          "requalified ev-031 @c5bb"
+        ],
+        "rec-300": [
+          "created ev-002 @c1aa",
+          "revoked ev-005 @c3aa",
+          "restore refused ev-021"
+        ],
+        "rec-200": [
+          "created ev-004 @c3aa (model_inference)",
+          "supersede attempt refused ev-022"
+        ]
+      },
+      "store_convergence": {
+        "compare": [
+          "str-alpha",
+          "str-beta"
+        ],
+        "canonical_projection_fields": [
+          "record_id",
+          "state",
+          "evidence_class",
+          "authorizing_event",
+          "qualified_as_of",
+          "current_qualification"
+        ],
+        "expected": "identical"
+      },
+      "rebuild_from_durable_only": {
+        "stores": [
+          "str-alpha",
+          "str-beta"
+        ],
+        "expected_current_view_equals": "K6_final.current_view",
+        "acknowledged_events_lost": 0
+      }
+    }
+  },
+  "negative_assertions": [
+    {
+      "id": "N1",
+      "statement": "rec-050 MUST NOT appear as applicable at any checkpoint K1-K5 (any point before the explicit restoration ev-020).",
+      "severity": "immediate_rejection",
+      "surface": "current_view"
+    },
+    {
+      "id": "N2",
+      "statement": "rec-300 MUST NOT return to any applicable state at any checkpoint, including after the snapshot rewind and after the refused restore ev-021.",
+      "severity": "immediate_rejection",
+      "surface": "current_view"
+    },
+    {
+      "id": "N3",
+      "statement": "No event_id present at K0 may be absent from either store's event list at any later checkpoint, and no payload_digest may change.",
+      "severity": "immediate_rejection",
+      "surface": "event_list"
+    },
+    {
+      "id": "N4",
+      "statement": "No git operation (checkout, reset, rebase, force-push, cherry-pick) may itself produce a record.create/supersede/revoke/restore/archive event.",
+      "severity": "high",
+      "surface": "event_list"
+    },
+    {
+      "id": "N5",
+      "statement": "rec-100 MUST NOT be automatically requalified against c2bb or c4bb on the basis of identical patch or identical file bytes, without a recorded fresh verified observation.",
+      "severity": "high",
+      "surface": "current_view"
+    },
+    {
+      "id": "N6",
+      "statement": "Redelivery of ev-004 (3 attempts) and the cherry-picked re-carry MUST NOT produce more than one admitted effect or more than one instance in the event list.",
+      "severity": "immediate_rejection",
+      "surface": "event_list + receipts"
+    },
+    {
+      "id": "N7",
+      "statement": "The model_inference record rec-200 MUST NOT supersede, weaken or reorder the human_authorization record rec-100, and the refusal must not silently drop the request.",
+      "severity": "immediate_rejection",
+      "surface": "current_view + event_list"
+    },
+    {
+      "id": "N8",
+      "statement": "While str-beta is offline on a rewound snapshot, it MUST NOT present its current view as complete, and MUST NOT assert knowledge of any revocation it has not received.",
+      "severity": "high",
+      "surface": "current_view"
+    },
+    {
+      "id": "N9",
+      "statement": "No receipt state (remote_received, admitted, materialized) may be reported as, or upgraded into, task_ack / acceptance at any checkpoint.",
+      "severity": "immediate_rejection",
+      "surface": "receipts"
+    },
+    {
+      "id": "N10",
+      "statement": "The system MUST NOT perform any unsolicited source-repository write (commit, reset, checkout, push, ref move) in response to any rewind trigger.",
+      "severity": "high",
+      "surface": "repository"
+    },
+    {
+      "id": "N11",
+      "statement": "The restoration ev-020 MUST NOT change rec-050's evidence class, author, original effective time or original qualification revision.",
+      "severity": "immediate_rejection",
+      "surface": "history"
+    }
+  ],
+  "positive_controls": [
+    {
+      "id": "P1",
+      "statement": "The explicit authorized restoration ev-020 succeeds: rec-050 becomes restored_applicable, with the supersession by rec-100 preserved in history and the contradiction surfaced.",
+      "surface": "current_view + history"
+    },
+    {
+      "id": "P2",
+      "statement": "The fresh verified observation ev-031 at c5bb requalifies rec-100 to qualified_as_of c5bb while the historical qualification at c2aa remains retrievable with its original time.",
+      "surface": "current_view + history"
+    },
+    {
+      "id": "P3",
+      "statement": "The ordinary fast-forward commit c5bb carrying ev-030 admits end-to-end on both stores (rec-400 applicable in src/ledger/), proving the rewind handling did not wedge the normal pipeline.",
+      "surface": "event_list + current_view + receipts"
+    }
+  ],
+  "requirement_coverage": {
+    "primary": [
+      "R05",
+      "R09",
+      "R12",
+      "R19"
+    ],
+    "secondary": [
+      "R02",
+      "R03",
+      "R04",
+      "R07",
+      "R08",
+      "R16"
+    ]
+  }
+}

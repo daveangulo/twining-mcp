@@ -1,0 +1,18 @@
+{
+  "agent_id": "merge-integrator",
+  "detail": "Full summary: plugin/BEHAVIORS.md is the eval harness's ground truth and is stale — header claims 35 tools, documents 37, and omits twining_amend, twining_triage, twining_exchange_status and twining_migrate_status. Fixing it requires a plugin version bump + bundle rebuild, so it is release work, not merge work.",
+  "entry_type": "need",
+  "id": "01M2M1J0KTQB42DG1AYQ2FF2EG",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9241cc079a04bb9d9221dc54e15ffd7b945409b6",
+    "recorded_at": "2026-09-16T02:43:26.439Z"
+  },
+  "scope": "src/contracts/",
+  "summary": "plugin/BEHAVIORS.md is the eval harness's ground truth and is stale — header claims 35 tools, documents 37, and omits twining_amend, twining_triage, twining_exchange_status and twining_migrate_stat…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-16T02:43:26.458Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T21:16:37.205Z",
+  "id": "01M2P189YNYZZFKNTDZVW8EFBR",
+  "properties": {
+    "decision_summary": "Chose NOT to fix store-identity.ts reading repo_id while ensureStoreDescriptor writes repo_ids",
+    "origin": "derived"
+  },
+  "source": "01M2P189NJTCEGWM052PBGNJBE",
+  "target": "01M2P189YF7276DY8XZZSQZ728",
+  "type": "decided_by"
+}

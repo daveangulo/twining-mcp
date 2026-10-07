@@ -1,0 +1,18 @@
+{
+  "agent_id": "wf_e59d869d-75f-4-review-fix",
+  "detail": "Full summary: finding: handleUserPromptSubmit writes the human_statement post BEFORE building the delta, so every prompt turn injects the model's own just-typed prompt back as '[human statement] status: <prompt>' plus a receipt — pre-existing lane-03 behaviour, unchanged by the review fixes, costs bytes and a receipt per turn",
+  "entry_type": "finding",
+  "id": "01M2P2EMJ3TSXE2JF1S1A7F571",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T21:37:33.230Z"
+  },
+  "scope": "src/adapters/working-set.ts",
+  "summary": "finding: handleUserPromptSubmit writes the human_statement post BEFORE building the delta, so every prompt turn injects the model's own just-typed prompt back as '[human statement] status: <prompt>…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-16T21:37:33.251Z"
+}

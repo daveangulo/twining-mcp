@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T03:10:30.210Z",
+  "id": "01M2M33JA2Z8ERXP97FXD2TEHH",
+  "properties": {
+    "decision_summary": "Loaded calibration.json with a STATIC import (`with { type: \"json\" }` + tsconfig resolveJsonModule) rather than createRequire, and kept validation at module load anyway",
+    "origin": "derived"
+  },
+  "source": "01M2M33JA1RBQJ9F9P7W458QA9",
+  "target": "01M2M33J9SQXZMTFSVDQ2REF3E",
+  "type": "decided_by"
+}

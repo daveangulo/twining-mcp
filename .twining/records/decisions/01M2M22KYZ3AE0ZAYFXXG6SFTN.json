@@ -1,0 +1,26 @@
+{
+  "affected_files": [],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Merge integrator delivered: foundation/v3 = 92093f8c (all five lanes merged, contracts draft.3, correctionFor conflicts, gitignore, offline switch, matrix rebuilt), 179 files / 2674 passed / 0 failed, pushed to origin (PR #49). Tokenizer calibration table produced; wiring dispatched.",
+  "depends_on": [],
+  "domain": "security",
+  "id": "01M2M22KYZ3AE0ZAYFXXG6SFTN",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "92093f8c902437e8f85cc2fb4f24064ee965e297",
+    "recorded_at": "2026-09-16T02:52:30.538Z"
+  },
+  "rationale": "recorded as an owner item, not silently done.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/",
+  "status": "active",
+  "summary": "plugin/BEHAVIORS.md left stale on purpose (says 35 tools, omits the new ones): editing plugin/ forces a version bump + bundle rebuild, which is release work under Dave's authority",
+  "timestamp": "2026-09-16T02:52:30.559Z"
+}

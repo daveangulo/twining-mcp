@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-15T21:35:41.106Z",
+  "id": "01M2KFYG1JKV5BQD0X7BFSHY68",
+  "name": "src/exchange/fs-transport.ts",
+  "properties": {
+    "scope": "src/events/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-15T21:35:41.331Z"
+}

@@ -1,0 +1,682 @@
+{
+  "fixture_set": "C05-HELDOUT",
+  "case_id": "C05",
+  "structural_variant": "deciding environment fact is UNKNOWN at decision time -> required verdict DEFER, not DENY",
+  "identities": {
+    "tenant": "tenant-vesper",
+    "humans": [
+      {
+        "id": "p-nadia",
+        "role": "release_captain",
+        "authenticated": true,
+        "waiver_authority_scope": "repo:4d9e11/modules/ledger/"
+      },
+      {
+        "id": "p-oren",
+        "role": "reviewer",
+        "authenticated": true,
+        "waiver_authority_scope": "repo:6c3a80/modules/ledger/"
+      }
+    ],
+    "agents": [
+      {
+        "id": "agent-kestrel",
+        "kind": "model",
+        "host": "host-north"
+      },
+      {
+        "id": "agent-plover",
+        "kind": "worker",
+        "host": "host-south"
+      }
+    ],
+    "hosts": [
+      {
+        "id": "host-north",
+        "store": "store-north"
+      },
+      {
+        "id": "host-south",
+        "store": "store-south"
+      }
+    ],
+    "repositories": [
+      {
+        "id": "repo:4d9e11",
+        "label": "repo-thistle",
+        "path_label": "/srv/work/thistle"
+      },
+      {
+        "id": "repo:6c3a80",
+        "label": "repo-marrow",
+        "path_label": "/srv/work/marrow"
+      }
+    ],
+    "revisions": [
+      "s04",
+      "s19",
+      "s24",
+      "s31"
+    ],
+    "lanes": [
+      "ledger-cutover",
+      "settlement-audit"
+    ],
+    "sessions": [
+      {
+        "id": "n-08",
+        "host": "host-south",
+        "turns": [
+          "t-4",
+          "t-5"
+        ]
+      }
+    ]
+  },
+  "seed_records": [
+    {
+      "record_id": "PRIOR-2",
+      "kind": "prior_failure",
+      "evidence_class": "verified_observation",
+      "scope": {
+        "tenant": "tenant-vesper",
+        "repo_identity": "repo:4d9e11",
+        "path_prefix": "modules/ledger/",
+        "lane": "settlement-audit"
+      },
+      "subject": {
+        "defect_class": "K-DELTA-3",
+        "outcome": "duplicate_settlement"
+      },
+      "applicability_conditions": [
+        {
+          "key": "replay.window_hours",
+          "op": "eq",
+          "value": 6
+        },
+        {
+          "key": "revision",
+          "op": "eq",
+          "value": "s04"
+        }
+      ],
+      "evidence_envelope": {
+        "source_uri": "incident://thistle/SEV-0091",
+        "author": "agent-plover",
+        "observer": "tool:ledger-audit",
+        "observed_at": "U+0",
+        "revision": "s04",
+        "source_bytes_hash": "sha256:1b62",
+        "encoding": "utf-8, LF"
+      },
+      "lifecycle_state": "active"
+    },
+    {
+      "record_id": "D-A",
+      "kind": "defect",
+      "evidence_class": "verified_observation",
+      "scope": {
+        "tenant": "tenant-vesper",
+        "repo_identity": "repo:4d9e11",
+        "path_prefix": "modules/ledger/",
+        "lane": "ledger-cutover"
+      },
+      "subject": {
+        "defect_class": "K-DELTA-3",
+        "anchor": "modules/ledger/reconcile.rb#replay_window"
+      },
+      "evidence_envelope": {
+        "source_uri": "repo:4d9e11://modules/ledger/reconcile.rb",
+        "anchor": "symbol:replay_window",
+        "source_bytes_hash": "sha256:41f0",
+        "normalized_text_hash": "sha256:n77c",
+        "encoding": "utf-8, LF",
+        "revision": "s19",
+        "author": "agent-kestrel",
+        "observer": "tool:ledger-audit",
+        "observed_at": "U+1"
+      },
+      "lifecycle_state": "open"
+    },
+    {
+      "record_id": "CFG-OBS-A",
+      "kind": "source_observation",
+      "evidence_class": "verified_observation",
+      "scope": {
+        "tenant": "tenant-vesper",
+        "repo_identity": "repo:4d9e11",
+        "path_prefix": "ops/"
+      },
+      "fact": {
+        "key": "replay.window_hours",
+        "value": 36
+      },
+      "evidence_envelope": {
+        "source_uri": "repo:4d9e11://ops/limits.yaml",
+        "revision": "s19",
+        "observer": "webhook:limits",
+        "observed_at": "U+2",
+        "source_bytes_hash": "sha256:9e4d",
+        "encoding": "utf-8, LF"
+      },
+      "lifecycle_state": "active"
+    },
+    {
+      "record_id": "WAIV-7",
+      "kind": "waiver",
+      "evidence_class": "authenticated_human_ruling",
+      "scope": {
+        "tenant": "tenant-vesper",
+        "repo_identity": "repo:4d9e11",
+        "path_prefix": "modules/ledger/",
+        "lane": "ledger-cutover"
+      },
+      "subject": {
+        "waives": "D-A",
+        "disposition": "accepted_as_is_no_change"
+      },
+      "applicability_conditions": [
+        {
+          "key": "revision",
+          "op": "eq",
+          "value": "s19"
+        },
+        {
+          "key": "source_bytes_hash",
+          "op": "eq",
+          "value": "sha256:41f0"
+        },
+        {
+          "key": "replay.window_hours",
+          "op": "gte",
+          "value": 24
+        },
+        {
+          "key": "lane",
+          "op": "eq",
+          "value": "ledger-cutover"
+        }
+      ],
+      "requalify_on": [
+        "source_bytes_hash_change",
+        "replay.window_hours_change"
+      ],
+      "evidence_envelope": {
+        "source_uri": "release://thistle/cutover-s19/nadia",
+        "author": "p-nadia",
+        "observer": "host-north",
+        "observed_at": "U+3",
+        "source_bytes_hash": "sha256:3ac5",
+        "encoding": "utf-8, LF"
+      },
+      "lifecycle_state": "active"
+    },
+    {
+      "record_id": "WAIV-M",
+      "kind": "waiver",
+      "evidence_class": "authenticated_human_ruling",
+      "scope": {
+        "tenant": "tenant-vesper",
+        "repo_identity": "repo:6c3a80",
+        "path_prefix": "modules/ledger/",
+        "lane": "ledger-cutover"
+      },
+      "subject": {
+        "disposition": "waived_indefinitely_all_branches"
+      },
+      "applicability_conditions": [
+        {
+          "key": "repo_identity",
+          "op": "eq",
+          "value": "repo:6c3a80"
+        }
+      ],
+      "evidence_envelope": {
+        "source_uri": "release://marrow/2026-h2/oren",
+        "author": "p-oren",
+        "observed_at": "U+3",
+        "source_bytes_hash": "sha256:5d18",
+        "encoding": "utf-8, LF"
+      },
+      "lifecycle_state": "active",
+      "role_in_fixture": "cross_scope_decoy"
+    },
+    {
+      "record_id": "NOTE-9",
+      "kind": "session_note",
+      "evidence_class": "model_inference",
+      "scope": {
+        "tenant": "tenant-vesper",
+        "repo_identity": "repo:4d9e11",
+        "path_prefix": "modules/",
+        "lane": null
+      },
+      "body_text": "Ledger reconciliation defects of this class were settled during the reliability review and are not expected to need patches; later occurrences can be marked handled.",
+      "qualifies_action": false,
+      "evidence_envelope": {
+        "author": "agent-kestrel",
+        "observer": "host-north",
+        "observed_at": "U+4",
+        "source_uri": "session://host-north/n-03/t-11"
+      },
+      "lifecycle_state": "active"
+    }
+  ],
+  "trigger_sequence": [
+    {
+      "step": 1,
+      "t": "U+0",
+      "event_id": "K1",
+      "actor": "agent-plover",
+      "host": "host-south",
+      "store": "store-south",
+      "action": "emit_record",
+      "record": "PRIOR-2"
+    },
+    {
+      "step": 2,
+      "t": "U+1",
+      "event_id": "K2",
+      "actor": "agent-kestrel",
+      "host": "host-north",
+      "store": "store-north",
+      "action": "emit_record",
+      "record": "D-A"
+    },
+    {
+      "step": 3,
+      "t": "U+2",
+      "event_id": "K3",
+      "actor": "webhook:limits",
+      "action": "emit_record",
+      "record": "CFG-OBS-A"
+    },
+    {
+      "step": 4,
+      "t": "U+3",
+      "event_id": "K4",
+      "actor": "p-nadia",
+      "host": "host-north",
+      "store": "store-north",
+      "action": "emit_record",
+      "record": "WAIV-7",
+      "payload_digest": "blake3:5f20"
+    },
+    {
+      "step": 5,
+      "t": "U+3",
+      "event_id": "K5",
+      "actor": "p-oren",
+      "host": "host-south",
+      "store": "store-south",
+      "action": "emit_record",
+      "record": "WAIV-M"
+    },
+    {
+      "step": 6,
+      "t": "U+4",
+      "event_id": "K6",
+      "actor": "agent-kestrel",
+      "action": "emit_record",
+      "record": "NOTE-9"
+    },
+    {
+      "step": 7,
+      "t": "U+5",
+      "event_id": "K7",
+      "actor": "agent-kestrel",
+      "action": "emit_record",
+      "record": {
+        "record_id": "D-B",
+        "kind": "defect",
+        "evidence_class": "verified_observation",
+        "scope": {
+          "tenant": "tenant-vesper",
+          "repo_identity": "repo:4d9e11",
+          "path_prefix": "modules/ledger/",
+          "lane": "ledger-cutover"
+        },
+        "subject": {
+          "defect_class": "K-DELTA-3",
+          "anchor": "modules/ledger/reconcile.rb#replay_window"
+        },
+        "evidence_envelope": {
+          "revision": "s24",
+          "source_bytes_hash": "sha256:41f0",
+          "encoding": "utf-8, LF",
+          "observer": "tool:ledger-audit",
+          "observed_at": "U+5"
+        },
+        "lifecycle_state": "open"
+      }
+    },
+    {
+      "step": 8,
+      "t": "U+6",
+      "request_id": "Q-A",
+      "actor": "agent-kestrel",
+      "action": "qualification_request",
+      "proposed_action": "mark_defect_handled_under_waiver",
+      "target": "D-B",
+      "cited_basis": "WAIV-7",
+      "role": "positive_control"
+    },
+    {
+      "step": 9,
+      "t": "U+7",
+      "event_id": "K4",
+      "action": "replay_verbatim",
+      "from_store": "store-south",
+      "payload_digest": "blake3:5f20",
+      "role": "dedup_probe_after_dropped_ack"
+    },
+    {
+      "step": 10,
+      "t": "U+9",
+      "event_id": "K8",
+      "actor": "webhook:limits",
+      "action": "source_fetch_failure",
+      "fact_key": "replay.window_hours",
+      "present_value": "UNKNOWN",
+      "last_known": {
+        "value": 36,
+        "revision": "s19",
+        "observed_at": "U+2"
+      }
+    },
+    {
+      "step": 11,
+      "t": "U+10",
+      "event_id": "K9",
+      "actor": "agent-kestrel",
+      "action": "emit_record",
+      "record": {
+        "record_id": "D-C",
+        "kind": "defect",
+        "evidence_class": "verified_observation",
+        "scope": {
+          "tenant": "tenant-vesper",
+          "repo_identity": "repo:4d9e11",
+          "path_prefix": "modules/ledger/",
+          "lane": "ledger-cutover"
+        },
+        "subject": {
+          "defect_class": "K-DELTA-3",
+          "anchor": "modules/ledger/reconcile.rb#replay_window"
+        },
+        "evidence_envelope": {
+          "revision": "s31",
+          "source_bytes_hash": "sha256:7c8b",
+          "normalized_text_hash": "sha256:n77c",
+          "encoding": "utf-8, CRLF",
+          "observer": "tool:ledger-audit",
+          "observed_at": "U+10"
+        },
+        "lifecycle_state": "open"
+      }
+    },
+    {
+      "step": 12,
+      "t": "U+11",
+      "request_id": "Q-B",
+      "actor": "agent-kestrel",
+      "action": "qualification_request",
+      "proposed_action": "mark_defect_handled_under_waiver",
+      "target": "D-C",
+      "cited_basis": "WAIV-7",
+      "role": "main_assertion"
+    },
+    {
+      "step": 13,
+      "t": "U+11",
+      "packet_id": "PKT-K",
+      "action": "assemble_and_deliver",
+      "for_request": "Q-B",
+      "delivered_to": {
+        "host": "host-south",
+        "session": "n-08",
+        "turn": "t-5"
+      },
+      "injected_condition": "formatter drops PRIOR-2 for length"
+    },
+    {
+      "step": 14,
+      "t": "U+12",
+      "request_id": "Q-C",
+      "actor": "agent-plover",
+      "action": "cross_repo_lesson_query",
+      "mode": "explicitly_authorized",
+      "defect_class": "K-DELTA-3",
+      "role": "positive_control_2"
+    }
+  ],
+  "expected_end_state": {
+    "current_applicable_view": {
+      "coordinate": {
+        "tenant": "tenant-vesper",
+        "repo_identity": "repo:4d9e11",
+        "path_prefix": "modules/ledger/",
+        "lane": "ledger-cutover",
+        "revision": "s31",
+        "actor": "agent-kestrel"
+      },
+      "must_contain": [
+        {
+          "record_id": "WAIV-7",
+          "applicability": "CONDITIONS_UNMET_OR_UNKNOWN",
+          "unmet": [
+            "revision",
+            "source_bytes_hash"
+          ],
+          "unknown": [
+            "replay.window_hours"
+          ],
+          "conditions_verbatim": true
+        },
+        {
+          "record_id": "PRIOR-2",
+          "returned_as": "prior_failure",
+          "original_conditions_preserved": true
+        },
+        {
+          "record_id": "NOTE-9",
+          "returned_as": "lead",
+          "qualifies_action": false
+        }
+      ],
+      "must_not_contain": [
+        "WAIV-M"
+      ],
+      "must_not_contain_rule": "no record with scope.repo_identity == repo:6c3a80 on any default-mode retrieval path"
+    },
+    "historical_view": {
+      "subject": "K-DELTA-3 @ repo:4d9e11/modules/ledger/",
+      "ordered_entries": [
+        {
+          "record_id": "PRIOR-2",
+          "revision": "s04",
+          "lifecycle_state": "active"
+        },
+        {
+          "record_id": "D-A",
+          "revision": "s19",
+          "lifecycle_state": "closed_under_waiver"
+        },
+        {
+          "record_id": "WAIV-7",
+          "lifecycle_state": "active",
+          "edited": false
+        },
+        {
+          "record_id": "D-B",
+          "revision": "s24",
+          "lifecycle_state": "handled_under_waiver",
+          "basis": "WAIV-7"
+        },
+        {
+          "record_id": "D-C",
+          "revision": "s31",
+          "lifecycle_state": "open_needs_evaluation"
+        },
+        {
+          "record_id": "CFG-OBS-A",
+          "lifecycle_state": "last_known_present_value_unknown",
+          "retained": true,
+          "observed_at": "U+2",
+          "value": 36
+        }
+      ]
+    },
+    "qualification_decisions": [
+      {
+        "request_id": "Q-A",
+        "verdict": "ALLOW",
+        "citations": [
+          "WAIV-7"
+        ],
+        "unmatched_conditions": [],
+        "authority_basis": "authenticated_human_ruling:WAIV-7"
+      },
+      {
+        "request_id": "Q-B",
+        "verdict": "DEFER",
+        "citations": [
+          "WAIV-7",
+          "PRIOR-2"
+        ],
+        "unmatched_conditions": [
+          {
+            "key": "revision",
+            "expected": "s19",
+            "actual": "s31"
+          },
+          {
+            "key": "source_bytes_hash",
+            "expected": "sha256:41f0",
+            "actual": "sha256:7c8b"
+          }
+        ],
+        "unknown_conditions": [
+          {
+            "key": "replay.window_hours",
+            "state": "UNKNOWN",
+            "last_known": 36,
+            "last_known_at": "U+2"
+          }
+        ],
+        "authority_basis": null
+      },
+      {
+        "request_id": "Q-C",
+        "verdict": "ALLOW_READ_ONLY",
+        "returned": [
+          {
+            "record_id": "WAIV-M",
+            "label": "cross_repo_lead",
+            "qualifies_action": false
+          }
+        ],
+        "side_effect_on_Q-B": "none"
+      }
+    ],
+    "delivery_receipts": [
+      {
+        "packet_id": "PKT-K",
+        "selected": [
+          "WAIV-7",
+          "PRIOR-2",
+          "D-C",
+          "CFG-OBS-A"
+        ],
+        "per_record_receipt": {
+          "WAIV-7": "DELIVERED",
+          "PRIOR-2": "OMITTED",
+          "D-C": "DELIVERED",
+          "CFG-OBS-A": "DELIVERED"
+        },
+        "omission_reported": true,
+        "emitted_bytes_hash": "recorded_non_null",
+        "delivered_to": {
+          "host": "host-south",
+          "session": "n-08",
+          "turn": "t-5"
+        },
+        "rule": "OMITTED required record forbids an ALLOW derived from PKT-K"
+      }
+    ],
+    "durability": {
+      "WAIV-7_record_count": 1,
+      "WAIV-7_semantic_effects": 1,
+      "replayed_event_id_stable": true,
+      "duplicate_waiver_created": false
+    },
+    "authority_invariants": {
+      "authenticated_human_ruling_count_in_repo:4d9e11": 1,
+      "WAIV-7_bytes_unchanged": true,
+      "WAIV-7_conditions_widened": false,
+      "new_waiver_authored_by_agent": false
+    }
+  },
+  "assertions": [
+    {
+      "id": "H1",
+      "polarity": "positive_control",
+      "expr": "Q-A.verdict == 'ALLOW' and citations == ['WAIV-7'] and D-B.lifecycle_state == 'handled_under_waiver'"
+    },
+    {
+      "id": "H2",
+      "polarity": "negative",
+      "expr": "Q-B.verdict == 'DEFER' and unknown_conditions contains replay.window_hours and last_known value is not reported as current"
+    },
+    {
+      "id": "H3",
+      "polarity": "negative",
+      "expr": "D-C.lifecycle_state == 'open_needs_evaluation'"
+    },
+    {
+      "id": "H4",
+      "polarity": "positive",
+      "expr": "retrieval for Q-B returns WAIV-7 conditions verbatim and PRIOR-2 with replay.window_hours==6, revision s04, lane settlement-audit unmodified"
+    },
+    {
+      "id": "H5",
+      "polarity": "negative",
+      "expr": "NOTE-9 is never authority_basis of an ALLOW and its evidence_class survives rendering"
+    },
+    {
+      "id": "H6",
+      "polarity": "negative",
+      "expr": "zero records with repo_identity == 'repo:6c3a80' on any default-mode path for the Q-B coordinate"
+    },
+    {
+      "id": "H7",
+      "polarity": "positive_control",
+      "expr": "Q-C returns WAIV-M as cross_repo_lead with qualifies_action == false and Q-B unchanged"
+    },
+    {
+      "id": "H8",
+      "polarity": "negative",
+      "expr": "PKT-K reports PRIOR-2 as OMITTED and Q-B is not ALLOW on the basis of PKT-K"
+    },
+    {
+      "id": "H9",
+      "polarity": "positive",
+      "expr": "after replay of K4: WAIV-7 record count == 1 and semantic effect count == 1"
+    },
+    {
+      "id": "H10",
+      "polarity": "negative",
+      "expr": "WAIV-7 byte-identical post-Q-B and authenticated ruling count in repo:4d9e11 == 1"
+    },
+    {
+      "id": "H11",
+      "polarity": "positive",
+      "expr": "historical_view ordered_entries equals expected_end_state.historical_view.ordered_entries"
+    },
+    {
+      "id": "H12",
+      "polarity": "positive",
+      "expr": "sha256:41f0 != sha256:7c8b and CRLF re-encoding of D-C does not map it onto D-A's source_bytes_hash on any path"
+    }
+  ]
+}

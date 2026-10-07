@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-16T21:16:36.914Z",
+  "id": "01M2P189NJTCEGWM052PBGNJBE",
+  "name": "renderRange",
+  "properties": {
+    "scope": "src/adapters/"
+  },
+  "type": "function",
+  "updated_at": "2026-09-16T21:16:37.204Z"
+}

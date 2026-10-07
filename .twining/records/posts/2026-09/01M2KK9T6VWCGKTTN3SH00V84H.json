@@ -1,0 +1,20 @@
+{
+  "agent_id": "lane-04-retrieval",
+  "detail": "1. SUPERSEDES field defect D12's mitigation. Two tests in test/context-assembler.test.ts asserted that an OFF-SCOPE semantically-similar entry was admitted and then dampened below in-scope material. Off-scope is now cut before ranking, so dampening it is unreachable — a dampened leak is still a leak. Both tests were rewritten to assert what survives (a scope-matched entry is admitted regardless of similarity; both in-scope warnings are kept and ordered), with the supersession explained in a comment at the site. A new test pins the hard cut. The SEARCH_NOISE_FLOOR constant and its use in search total_matched counting are untouched.\n\n2. DISCOVERED NEED, caught by test/deep-review-regressions.test.ts: computeResolvedIds must run over the AUTHORIZATION slice (same repo, ANY path), not the query slice. Decision 01KYB5EM805A90TR9MR9WK2E04 established that resolvers are frequently posted against a different scope; gating them by the query path made resolved needs resurface as REMAINING WORK forever. Resolution only ever REMOVES an in-scope obligation — the resolver's own text, id and scope never enter the briefing — so a cross-path read discloses nothing. Cross-REPO resolvers are still cut.\n\n3. The briefing's hard-coded 3-full + 2-summary decision ladder is now driven by the caller's budget (ContextAssembler.decisionTiers). With no budget (a hand-built AssembledContext) the historical 3+2 is returned unchanged, so nothing that does not opt in shifts shape. token_estimate is now the conservative bound over the EMITTED briefing, not the raw text of selected items.\n\n4. AssembledContext gained a `retrieval` annex. It is declared in context-assembler.ts (a subtype), NOT in src/utils/types.ts, to stay inside this lane's owned files. Proposed diff: move RetrievalAnnex into the shared type.\n\n5. The dashboard /api/index gained an optional `scope` parameter that was gated from birth. It had none before; absent the parameter behaviour is byte-identical.",
+  "entry_type": "warning",
+  "id": "01M2KK9T6VWCGKTTN3SH00V84H",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-15T22:34:17.673Z"
+  },
+  "scope": "src/retrieval/",
+  "summary": "Behaviour changes for 2.x consumers: off-scope semantic admissions are now CUT not dampened, and the briefing ladder is budget-driven — three existing tests rewritten, supersessions recorded inline",
+  "tags": [
+    "supersession",
+    "2.x-compat",
+    "D12",
+    "assemble"
+  ],
+  "timestamp": "2026-09-15T22:34:17.691Z"
+}

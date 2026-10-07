@@ -1,0 +1,854 @@
+{
+  "case_id": "C22",
+  "variant": "oracle-development",
+  "authored_before_observing_implementation": true,
+  "requirement_focus": [
+    "R06",
+    "R05",
+    "R03",
+    "R07",
+    "R08",
+    "R13",
+    "R16",
+    "R17",
+    "R20"
+  ],
+  "abstract_store_model": {
+    "event": [
+      "event_id",
+      "producer_store",
+      "producer_principal",
+      "on_behalf_of",
+      "scope",
+      "payload_bytes_sha256",
+      "payload_encoding",
+      "asserted_time",
+      "observed_time",
+      "admission_state"
+    ],
+    "admission_state_domain": [
+      "admitted",
+      "quarantined",
+      "deferred",
+      "rejected",
+      "deduplicated"
+    ],
+    "record": [
+      "record_id",
+      "scope",
+      "author_principal",
+      "evidence_class",
+      "revision",
+      "text",
+      "bytes_sha256"
+    ],
+    "evidence_class_domain": [
+      "authenticated_human_authorization",
+      "verified_observation",
+      "reported_worker_result",
+      "model_inference",
+      "proposal",
+      "unresolved_question",
+      "unknown"
+    ],
+    "relation": [
+      "relation_id",
+      "type",
+      "from_record",
+      "to_record",
+      "scope",
+      "authorizing_principal",
+      "state",
+      "reason"
+    ],
+    "relation_type_domain": [
+      "requires",
+      "supersedes",
+      "corrects",
+      "relates_to"
+    ],
+    "views": [
+      "current_applicable_view(scope)",
+      "historical_view(record_id)",
+      "rejected_ledger",
+      "delivery_receipts(event_id, store_id)",
+      "action_qualification(action, scope)"
+    ],
+    "receipt_states": [
+      "local_persisted",
+      "queued_for_transfer",
+      "remote_received",
+      "validated_admitted",
+      "materialized",
+      "injected_into_turn",
+      "task_acked"
+    ]
+  },
+  "identities": {
+    "tenant": "tenant-northwind",
+    "team": "team-ledger",
+    "humans": [
+      {
+        "principal_id": "hum-ada",
+        "authority_scopes": [
+          "svc/billing/",
+          "svc/billing/invoices/"
+        ],
+        "class": "authenticated_human"
+      },
+      {
+        "principal_id": "hum-dmitri",
+        "authority_scopes": [
+          "svc/billing/",
+          "svc/billing/invoices/"
+        ],
+        "class": "authenticated_human",
+        "note": "equal standing with hum-ada; no tie-break rule exists between them"
+      },
+      {
+        "principal_id": "hum-boris",
+        "authority_scopes": [
+          "svc/reporting/"
+        ],
+        "class": "authenticated_human"
+      },
+      {
+        "principal_id": "hum-clara",
+        "authority_scopes": [
+          "svc/"
+        ],
+        "class": "authenticated_human",
+        "note": "broad authority present in the fixture but deliberately never exercised in C22"
+      }
+    ],
+    "agents": [
+      {
+        "principal_id": "agt-scribe-1",
+        "host": "host-alpha",
+        "class": "service_principal",
+        "authority_scopes": []
+      },
+      {
+        "principal_id": "agt-scribe-2",
+        "host": "host-beta",
+        "class": "service_principal",
+        "authority_scopes": []
+      }
+    ],
+    "hosts": [
+      "host-alpha",
+      "host-beta",
+      "host-ci-01"
+    ],
+    "stores": [
+      {
+        "store_id": "store-A",
+        "host": "host-alpha"
+      },
+      {
+        "store_id": "store-B",
+        "host": "host-beta"
+      }
+    ],
+    "repository": {
+      "repo_id": "rid-7731",
+      "mutable_label": "repo-ledger",
+      "revisions": [
+        "rev-1a9",
+        "rev-2b4",
+        "rev-3c8"
+      ]
+    },
+    "clock_skew": {
+      "host-beta": "-00:07:00"
+    },
+    "scopes": [
+      "svc/",
+      "svc/billing/",
+      "svc/billing/invoices/",
+      "svc/reporting/"
+    ]
+  },
+  "seed_records": [
+    {
+      "record_id": "R-100",
+      "scope": "svc/billing/invoices/",
+      "author_principal": "hum-ada",
+      "evidence_class": "authenticated_human_authorization",
+      "revision": "rev-1a9",
+      "text": "Invoice export must pass signed-total reconciliation before publish.",
+      "bytes_sha256": "sha256:a100a100a100a100a100a100a100a100a100a100a100a100a100a100a100a100",
+      "replicated_to": [
+        "store-A",
+        "store-B"
+      ]
+    },
+    {
+      "record_id": "R-110",
+      "scope": "svc/reporting/",
+      "author_principal": "hum-boris",
+      "evidence_class": "authenticated_human_authorization",
+      "revision": "rev-1a9",
+      "text": "Reporting snapshots publish without reconciliation gating.",
+      "bytes_sha256": "sha256:a110a110a110a110a110a110a110a110a110a110a110a110a110a110a110a110",
+      "replicated_to": [
+        "store-A",
+        "store-B"
+      ]
+    },
+    {
+      "record_id": "R-120",
+      "scope": "svc/billing/",
+      "author_principal": "hum-ada",
+      "evidence_class": "authenticated_human_authorization",
+      "revision": "rev-1a9",
+      "text": "Settlement batch may run only after ledger close.",
+      "bytes_sha256": "sha256:a120a120a120a120a120a120a120a120a120a120a120a120a120a120a120a120",
+      "replicated_to": [
+        "store-A",
+        "store-B"
+      ]
+    },
+    {
+      "record_id": "R-121",
+      "scope": "svc/billing/",
+      "author_principal": "hum-ada",
+      "evidence_class": "authenticated_human_authorization",
+      "revision": "rev-1a9",
+      "text": "Ledger close may run only after fee accrual.",
+      "bytes_sha256": "sha256:a121a121a121a121a121a121a121a121a121a121a121a121a121a121a121a121",
+      "replicated_to": [
+        "store-A",
+        "store-B"
+      ]
+    },
+    {
+      "record_id": "R-122",
+      "scope": "svc/billing/",
+      "author_principal": "hum-ada",
+      "evidence_class": "authenticated_human_authorization",
+      "revision": "rev-1a9",
+      "text": "Fee accrual may run only after the settlement batch posts.",
+      "bytes_sha256": "sha256:a122a122a122a122a122a122a122a122a122a122a122a122a122a122a122a122",
+      "replicated_to": [
+        "store-A",
+        "store-B"
+      ]
+    },
+    {
+      "record_id": "R-160",
+      "scope": "svc/billing/invoices/",
+      "author_principal": "hum-ada",
+      "evidence_class": "authenticated_human_authorization",
+      "revision": "rev-1a9",
+      "text": "Invoice export retry ceiling is 2 attempts.",
+      "bytes_sha256": "sha256:a160a160a160a160a160a160a160a160a160a160a160a160a160a160a160a160",
+      "replicated_to": [
+        "store-A",
+        "store-B"
+      ]
+    }
+  ],
+  "unseeded_records_referenced": [
+    {
+      "record_id": "R-129",
+      "exists_in_any_store_at_T0": false,
+      "note": "target of the dangling supersession; arrives only at step S13"
+    }
+  ],
+  "trigger_sequence": [
+    {
+      "step": "S01",
+      "store": "store-A",
+      "event_id": "E-201",
+      "actor": "agt-scribe-1",
+      "on_behalf_of": "hum-ada",
+      "scope": "svc/billing/",
+      "action": "add_relation",
+      "relation": {
+        "relation_id": "REL-01",
+        "type": "requires",
+        "from_record": "R-120",
+        "to_record": "R-121"
+      }
+    },
+    {
+      "step": "S02",
+      "store": "store-A",
+      "event_id": "E-202",
+      "actor": "agt-scribe-1",
+      "on_behalf_of": "hum-ada",
+      "scope": "svc/billing/",
+      "action": "add_relation",
+      "relation": {
+        "relation_id": "REL-02",
+        "type": "requires",
+        "from_record": "R-121",
+        "to_record": "R-122"
+      }
+    },
+    {
+      "step": "S03",
+      "store": "store-A",
+      "event_id": "E-203",
+      "actor": "agt-scribe-1",
+      "on_behalf_of": "hum-ada",
+      "scope": "svc/billing/",
+      "action": "add_relation",
+      "relation": {
+        "relation_id": "REL-03",
+        "type": "requires",
+        "from_record": "R-122",
+        "to_record": "R-120"
+      },
+      "intent": "closes a 3-cycle R-120 -> R-121 -> R-122 -> R-120"
+    },
+    {
+      "step": "S04",
+      "store": "store-A",
+      "event_id": "E-204",
+      "actor": "hum-ada",
+      "scope": "svc/billing/invoices/",
+      "action": "add_record_with_relation",
+      "record": {
+        "record_id": "R-130",
+        "text": "Invoice export bundles are named by settlement date and sequence number.",
+        "evidence_class": "authenticated_human_authorization",
+        "revision": "rev-2b4",
+        "bytes_sha256": "sha256:a130a130a130a130a130a130a130a130a130a130a130a130a130a130a130a130"
+      },
+      "relation": {
+        "relation_id": "REL-04",
+        "type": "supersedes",
+        "from_record": "R-130",
+        "to_record": "R-129"
+      },
+      "intent": "dangling supersession; R-129 is unknown to every store at this time"
+    },
+    {
+      "step": "S05",
+      "store": "store-B",
+      "event_id": "E-205",
+      "actor": "agt-scribe-2",
+      "on_behalf_of": "hum-boris",
+      "scope": "svc/reporting/",
+      "action": "add_record_with_relation",
+      "record": {
+        "record_id": "R-150",
+        "text": "Reconciliation gating is retired across billing and reporting.",
+        "evidence_class": "authenticated_human_authorization",
+        "revision": "rev-2b4",
+        "bytes_sha256": "sha256:a150a150a150a150a150a150a150a150a150a150a150a150a150a150a150a150"
+      },
+      "relation": {
+        "relation_id": "REL-05",
+        "type": "supersedes",
+        "from_record": "R-150",
+        "to_record": "R-100",
+        "target_scope": "svc/billing/invoices/"
+      },
+      "intent": "unauthorized cross-scope supersession; hum-boris holds no authority in svc/billing/invoices/"
+    },
+    {
+      "step": "S06",
+      "store": "store-A",
+      "event_id": "E-206",
+      "actor": "hum-ada",
+      "scope": "svc/billing/invoices/",
+      "action": "add_record_with_relation",
+      "record": {
+        "record_id": "R-140",
+        "text": "Reconciliation may be waived for invoices below 100 units.",
+        "evidence_class": "authenticated_human_authorization",
+        "revision": "rev-2b4",
+        "bytes_sha256": "sha256:a140a140a140a140a140a140a140a140a140a140a140a140a140a140a140a140"
+      },
+      "relation": {
+        "relation_id": "REL-06",
+        "type": "corrects",
+        "from_record": "R-140",
+        "to_record": "R-100"
+      },
+      "network": "store-A and store-B are partitioned"
+    },
+    {
+      "step": "S07",
+      "store": "store-B",
+      "event_id": "E-207",
+      "actor": "hum-dmitri",
+      "scope": "svc/billing/invoices/",
+      "action": "add_record_with_relation",
+      "record": {
+        "record_id": "R-141",
+        "text": "Reconciliation is mandatory for every invoice; no waiver exists.",
+        "evidence_class": "authenticated_human_authorization",
+        "revision": "rev-2b4",
+        "bytes_sha256": "sha256:a141a141a141a141a141a141a141a141a141a141a141a141a141a141a141a141"
+      },
+      "relation": {
+        "relation_id": "REL-07",
+        "type": "corrects",
+        "from_record": "R-141",
+        "to_record": "R-100"
+      },
+      "network": "store-A and store-B are partitioned",
+      "note": "asserted_time is 00:07:00 earlier than true time because of host-beta clock skew"
+    },
+    {
+      "step": "S08",
+      "store": "store-A",
+      "event_id": "E-208",
+      "actor": "hum-ada",
+      "scope": "svc/billing/invoices/",
+      "action": "add_record_with_relation",
+      "record": {
+        "record_id": "R-161",
+        "text": "Invoice export retry ceiling is 4 attempts.",
+        "evidence_class": "authenticated_human_authorization",
+        "revision": "rev-2b4",
+        "bytes_sha256": "sha256:a161a161a161a161a161a161a161a161a161a161a161a161a161a161a161a161"
+      },
+      "relation": {
+        "relation_id": "REL-08",
+        "type": "supersedes",
+        "from_record": "R-161",
+        "to_record": "R-160"
+      },
+      "intent": "POSITIVE CONTROL: valid, in-scope, authorized relation"
+    },
+    {
+      "step": "S09",
+      "action": "heal_partition_and_exchange",
+      "delivery_order_into_store-B": [
+        "E-204",
+        "E-208",
+        "E-203",
+        "E-201",
+        "E-206",
+        "E-202"
+      ],
+      "delivery_order_into_store-A": [
+        "E-205",
+        "E-207"
+      ],
+      "intent": "supersession and cycle edges arrive before their prerequisites on store-B; arrival order differs per replica"
+    },
+    {
+      "step": "S10",
+      "action": "redeliver",
+      "event_id": "E-206",
+      "target_store": "store-B",
+      "payload_bytes_sha256": "sha256:a140a140a140a140a140a140a140a140a140a140a140a140a140a140a140a140",
+      "intent": "byte-identical retry after a lost acknowledgement"
+    },
+    {
+      "step": "S11",
+      "action": "redeliver",
+      "event_id": "E-206",
+      "target_store": "store-B",
+      "payload_bytes_sha256": "sha256:b140b140b140b140b140b140b140b140b140b140b140b140b140b140b140b140",
+      "mutation": "UTF-8 BOM prepended and LF rewritten to CRLF",
+      "intent": "identity reuse with conflicting bytes"
+    },
+    {
+      "step": "S12",
+      "store": "store-B",
+      "event_id": "E-210",
+      "actor": "agt-scribe-2",
+      "scope": "svc/billing/invoices/",
+      "action": "add_record",
+      "record": {
+        "record_id": "R-170",
+        "text": "The billing sync on 9 September confirmed the sub-100-unit waiver; reconciliation gating now applies only above that threshold, so R-140 is the governing statement.",
+        "bytes_sha256": "sha256:a170a170a170a170a170a170a170a170a170a170a170a170a170a170a170a170"
+      },
+      "caller_supplied_fields": {
+        "authorized_by": "hum-ada",
+        "status": "active",
+        "priority": "MUST",
+        "promoted_by": "hum-clara"
+      },
+      "intent": "model-authored claim carrying caller-controlled authority fields"
+    },
+    {
+      "step": "S13",
+      "store": "store-A",
+      "event_id": "E-211",
+      "actor": "hum-ada",
+      "scope": "svc/billing/invoices/",
+      "action": "add_record",
+      "record": {
+        "record_id": "R-129",
+        "text": "Invoice export bundles are named by invoice number.",
+        "evidence_class": "authenticated_human_authorization",
+        "revision": "rev-1a9",
+        "bytes_sha256": "sha256:a129a129a129a129a129a129a129a129a129a129a129a129a129a129a129a129"
+      },
+      "then": "replicate to store-B",
+      "intent": "late arrival of the previously dangling supersession target"
+    },
+    {
+      "step": "S14",
+      "action": "probe",
+      "probes": [
+        "Q1",
+        "Q2",
+        "Q3",
+        "Q4",
+        "Q5"
+      ]
+    }
+  ],
+  "expected_end_state": {
+    "convergence": {
+      "store-A_equals_store-B": true,
+      "compared_over": [
+        "current_applicable_view(svc/billing/)",
+        "current_applicable_view(svc/billing/invoices/)",
+        "current_applicable_view(svc/reporting/)",
+        "rejected_ledger",
+        "historical_view(R-100)",
+        "historical_view(R-129)",
+        "historical_view(R-160)"
+      ],
+      "independent_of": [
+        "arrival order",
+        "wall-clock skew of -00:07:00 on host-beta"
+      ]
+    },
+    "events": [
+      {
+        "event_id": "E-201",
+        "admission_state": "admitted",
+        "relation_state": "admitted"
+      },
+      {
+        "event_id": "E-202",
+        "admission_state": "admitted",
+        "relation_state": "admitted"
+      },
+      {
+        "event_id": "E-203",
+        "admission_state": "quarantined",
+        "relation_state": "not_admitted",
+        "reason_code": "cyclic_prerequisite",
+        "cycle_members": [
+          "R-120",
+          "R-121",
+          "R-122"
+        ],
+        "bytes_retained": true,
+        "payload_bytes_sha256_unchanged": true
+      },
+      {
+        "event_id": "E-204",
+        "admission_state": "admitted",
+        "record_admitted": "R-130",
+        "relation_state_before_S13": "deferred",
+        "deferred_reason_code": "missing_supersession_target",
+        "pending_prerequisite": [
+          "R-129"
+        ],
+        "relation_state_after_S13": "admitted"
+      },
+      {
+        "event_id": "E-205",
+        "admission_state": "rejected",
+        "relation_state": "not_admitted",
+        "reason_code": "unauthorized_cross_scope_relation",
+        "actor_authority_scopes": [
+          "svc/reporting/"
+        ],
+        "target_scope": "svc/billing/invoices/",
+        "bytes_retained": true,
+        "record_R-150_effect_on_svc_billing_invoices": "none"
+      },
+      {
+        "event_id": "E-206",
+        "admission_state": "admitted",
+        "record_admitted": "R-140",
+        "semantic_effect_count": 1
+      },
+      {
+        "event_id": "E-207",
+        "admission_state": "admitted",
+        "record_admitted": "R-141",
+        "semantic_effect_count": 1
+      },
+      {
+        "event_id": "E-208",
+        "admission_state": "admitted",
+        "record_admitted": "R-161",
+        "relation_state": "admitted"
+      },
+      {
+        "event_id": "E-206#retry",
+        "admission_state": "deduplicated",
+        "new_semantic_effect": false,
+        "total_effects_for_E-206": 1
+      },
+      {
+        "event_id": "E-206#conflict",
+        "admission_state": "rejected",
+        "reason_code": "identity_reuse_conflicting_bytes",
+        "digests_retained": [
+          "sha256:a140a140a140a140a140a140a140a140a140a140a140a140a140a140a140a140",
+          "sha256:b140b140b140b140b140b140b140b140b140b140b140b140b140b140b140b140"
+        ],
+        "merged_with_E-206": false
+      },
+      {
+        "event_id": "E-210",
+        "admission_state": "admitted",
+        "record_admitted": "R-170",
+        "assigned_evidence_class": "model_inference",
+        "caller_supplied_authority_fields_honored": false,
+        "authority_effect": "none"
+      },
+      {
+        "event_id": "E-211",
+        "admission_state": "admitted",
+        "record_admitted": "R-129"
+      }
+    ],
+    "current_applicable_view": {
+      "svc/billing/": {
+        "applicable_records": [
+          "R-120",
+          "R-121",
+          "R-122"
+        ],
+        "admitted_requires_edges": [
+          "REL-01",
+          "REL-02"
+        ],
+        "admitted_requires_edge_count": 2,
+        "cycle_closing_edge_admitted": false,
+        "silently_dropped_relations": []
+      },
+      "svc/billing/invoices/": {
+        "applicable_records": [
+          "R-130",
+          "R-161"
+        ],
+        "contested": [
+          {
+            "subject": "R-100",
+            "competing_successors": [
+              "R-140",
+              "R-141"
+            ],
+            "resolution": "none",
+            "resolver_rule_applied": null
+          }
+        ],
+        "superseded": [
+          {
+            "record": "R-160",
+            "by": "R-161"
+          },
+          {
+            "record": "R-129",
+            "by": "R-130"
+          }
+        ],
+        "non_authoritative_present": [
+          {
+            "record": "R-170",
+            "evidence_class": "model_inference"
+          }
+        ],
+        "records_absent_from_view": [
+          "R-150"
+        ]
+      },
+      "svc/reporting/": {
+        "applicable_records": [
+          "R-110"
+        ],
+        "revision": "rev-1a9",
+        "bytes_sha256_unchanged": true,
+        "altered_by_neighbouring_scope_activity": false
+      }
+    },
+    "historical_view": {
+      "R-100": {
+        "present": true,
+        "lineage": [
+          "R-100"
+        ],
+        "competing_successors": [
+          "R-140",
+          "R-141"
+        ],
+        "attempted_not_applied": [
+          {
+            "relation_id": "REL-05",
+            "from_record": "R-150",
+            "disposition": "rejected"
+          }
+        ],
+        "original_bytes_sha256": "sha256:a100a100a100a100a100a100a100a100a100a100a100a100a100a100a100a100"
+      },
+      "R-129": {
+        "present": true,
+        "lineage": [
+          "R-129",
+          "R-130"
+        ],
+        "superseded_at": "S13"
+      },
+      "R-160": {
+        "present": true,
+        "lineage": [
+          "R-160",
+          "R-161"
+        ]
+      },
+      "quarantined_and_rejected_remain_listed": [
+        "E-203",
+        "E-205",
+        "E-206#conflict"
+      ],
+      "invented_records": []
+    },
+    "delivery_receipts": [
+      {
+        "event_id": "E-203",
+        "store": "store-B",
+        "local_persisted": true,
+        "queued_for_transfer": true,
+        "remote_received": true,
+        "validated_admitted": false,
+        "materialized": false,
+        "injected_into_turn": false,
+        "task_acked": false
+      },
+      {
+        "event_id": "E-205",
+        "store": "store-A",
+        "local_persisted": true,
+        "queued_for_transfer": true,
+        "remote_received": true,
+        "validated_admitted": false,
+        "materialized": false,
+        "injected_into_turn": false,
+        "task_acked": false
+      },
+      {
+        "event_id": "E-204",
+        "store": "store-B",
+        "local_persisted": true,
+        "remote_received": true,
+        "validated_admitted": true,
+        "materialized": true,
+        "relation_materialized_before_S13": false,
+        "injected_into_turn": true
+      },
+      {
+        "event_id": "E-208",
+        "store": "store-B",
+        "local_persisted": true,
+        "remote_received": true,
+        "validated_admitted": true,
+        "materialized": true,
+        "injected_into_turn": true,
+        "task_acked": true
+      },
+      {
+        "event_id": "E-206#conflict",
+        "store": "store-B",
+        "remote_received": true,
+        "validated_admitted": false,
+        "materialized": false
+      }
+    ],
+    "action_qualification": [
+      {
+        "probe": "Q1",
+        "action": "publish_invoice_export",
+        "scope": "svc/billing/invoices/",
+        "revision": "rev-2b4",
+        "decision": "refused",
+        "reason_code": "contested_prerequisite",
+        "unresolved": [
+          "R-140 vs R-141 over R-100"
+        ],
+        "default_chosen": false,
+        "cited_records": [
+          "R-100",
+          "R-140",
+          "R-141"
+        ]
+      },
+      {
+        "probe": "Q2",
+        "action": "publish_reporting_snapshot",
+        "scope": "svc/reporting/",
+        "decision": "qualified",
+        "governing_records": [
+          "R-110"
+        ],
+        "note": "positive control of non-interference by the rejected cross-scope attempt"
+      },
+      {
+        "probe": "Q3",
+        "action": "run_settlement_batch",
+        "scope": "svc/billing/",
+        "decision": "refused",
+        "reason_code": "unsatisfiable_cyclic_prerequisite",
+        "cycle_members": [
+          "R-120",
+          "R-121",
+          "R-122"
+        ],
+        "prerequisites_silently_dropped": [],
+        "arbitrary_edge_removed": false
+      },
+      {
+        "probe": "Q4",
+        "action": "set_invoice_export_retry_ceiling",
+        "scope": "svc/billing/invoices/",
+        "decision": "qualified",
+        "governing_records": [
+          "R-161"
+        ],
+        "value": 4,
+        "note": "PRIMARY POSITIVE CONTROL: a valid scoped relation is still admitted and effective"
+      },
+      {
+        "probe": "Q5",
+        "action": "name_invoice_bundle",
+        "scope": "svc/billing/invoices/",
+        "decision": "qualified",
+        "governing_records": [
+          "R-130"
+        ],
+        "must_not_cite": [
+          "R-100",
+          "R-170"
+        ]
+      }
+    ],
+    "operator_observability": {
+      "rejected_ledger_entries": [
+        "E-203",
+        "E-205",
+        "E-206#conflict"
+      ],
+      "deferred_ledger_entries_before_S13": [
+        "REL-04"
+      ],
+      "scope_denials": [
+        "E-205"
+      ],
+      "dedup_counters": {
+        "E-206": {
+          "deliveries": 3,
+          "effects": 1,
+          "conflicts": 1
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,677 @@
+{
+  "case_id": "C20",
+  "variant": "held-out",
+  "fixture_version": "c20-heldout-1",
+  "do_not_use_for_debugging": true,
+  "byte_encoding_rule": "In payload_literal the tokens <BOM>, <CR>, <LF>, <TAB> decode to U+FEFF, 0x0D, 0x0A and 0x09; every other character is a UTF-8 literal. Named hashes are sha256 over the decoded bytes, frozen in fixtures.lock.",
+  "identities": {
+    "tenant": "tnt-saltmarsh",
+    "scope_root": "platform/billing/",
+    "users": [
+      {
+        "id": "usr-priya-nandakumar",
+        "role": "scope owner of platform/billing/",
+        "authority": [
+          "retract",
+          "redact",
+          "purge",
+          "archive",
+          "unarchive"
+        ]
+      },
+      {
+        "id": "usr-eamon-doyle",
+        "role": "contributor",
+        "authorized_scopes": [
+          "platform/billing/runbooks/"
+        ],
+        "authority": []
+      },
+      {
+        "id": "usr-rachel-oyelaran",
+        "role": "operator",
+        "authority": [
+          "backup",
+          "restore"
+        ],
+        "record_authority": []
+      }
+    ],
+    "hosts": [
+      {
+        "id": "hst-kestrel-11",
+        "role": "primary",
+        "managed": true
+      },
+      {
+        "id": "hst-marlin-04",
+        "role": "second computer, partitioned U04 to U10",
+        "managed": true
+      },
+      {
+        "id": "hst-cinder-19",
+        "role": "clean restore target",
+        "managed": true
+      },
+      {
+        "id": "hst-driftwood-22",
+        "role": "external mirror holder",
+        "managed": false
+      }
+    ],
+    "stores": [
+      {
+        "id": "st-north",
+        "host": "hst-kestrel-11",
+        "role": "origin"
+      },
+      {
+        "id": "st-south",
+        "host": "hst-marlin-04",
+        "role": "replica"
+      },
+      {
+        "id": "st-east",
+        "host": "hst-cinder-19",
+        "role": "clean install restored from snap-K at U09"
+      },
+      {
+        "id": "st-mirror",
+        "host": "hst-driftwood-22",
+        "role": "uncontrolled clone of the transport repo"
+      }
+    ],
+    "repositories": [
+      {
+        "id": "repo-tidewater",
+        "remote": "ssh://git@example.invalid/saltmarsh/tidewater.git",
+        "role": "source of observations"
+      },
+      {
+        "id": "repo-tidewater-relay",
+        "branch": "relay/trunk",
+        "role": "transport and export surface"
+      }
+    ],
+    "source_revisions": [
+      {
+        "id": "src-rev-1d0e7c",
+        "used_by": [
+          "ver-8JQV-1",
+          "rec-9RWB"
+        ]
+      },
+      {
+        "id": "src-rev-b83f95",
+        "used_by": [
+          "ver-8JQV-2"
+        ]
+      }
+    ],
+    "backups": [
+      {
+        "id": "snap-K-20260911T1330Z",
+        "source_store": "st-north",
+        "taken_at": "2026-09-11T13:30:00Z",
+        "restored_into": "st-east at U09",
+        "restored_record_self_flag": "the restored copy of ver-8JQV-1 carries a stored field status=applicable"
+      }
+    ]
+  },
+  "records": [
+    {
+      "id": "rec-8JQV",
+      "title": "invoice proration rule",
+      "scope": "platform/billing/",
+      "versions": [
+        {
+          "version_id": "ver-8JQV-1",
+          "hash_id": "K1",
+          "payload_literal": "Prorate mid-cycle plan changes by calendar day, not billing day; the descriptor used for the Harbourline account is HRBL-PRO-2291.",
+          "source_revision": "src-rev-1d0e7c",
+          "authored_at": "2026-09-11T13:10:00Z",
+          "final_status": "redacted"
+        },
+        {
+          "version_id": "ver-8JQV-2",
+          "hash_id": "K2",
+          "payload_literal": "Prorate mid-cycle plan changes by calendar day, not billing day; merchant descriptors live in the vault scope and are not restated here.",
+          "source_revision": "src-rev-b83f95",
+          "authored_at": "2026-09-11T14:28:00Z",
+          "final_status": "applicable"
+        }
+      ]
+    },
+    {
+      "id": "rec-3MKA",
+      "title": "billing freeze window",
+      "scope": "platform/billing/",
+      "hash_id": "K3",
+      "payload_literal": "No billing deploys between the 27th and the 2nd of any month.",
+      "authored_at": "2026-09-11T13:14:00Z",
+      "final_status": "retracted"
+    },
+    {
+      "id": "rec-6VZP",
+      "title": "payment gateway key handling note",
+      "scope": "platform/billing/vault/",
+      "hash_id": "K4",
+      "payload_literal": "Gateway API keys are issued per environment; the staging key is checked out from vault path kv/billing/stg-gateway.",
+      "authored_at": "2026-09-11T13:14:00Z",
+      "final_status": "purged"
+    },
+    {
+      "id": "rec-1HTC",
+      "title": "batch retry lesson",
+      "scope": "platform/billing/",
+      "hash_id": "K5",
+      "payload_literal": "Retrying a failed invoice batch without clearing the idempotency table double-charges; clear first.",
+      "authored_at": "2026-09-11T13:14:00Z",
+      "final_status": "applicable (archived U01b, unarchived U12)"
+    },
+    {
+      "id": "rec-9RWB",
+      "title": "proration counterexample",
+      "scope": "platform/billing/",
+      "hash_id": "K6",
+      "payload_literal": "<BOM>Counterexample: calendar-day proration overcharges on 31-day cycles.<CR><LF>Seen on cycle 2026-07.<TAB>",
+      "authored_at": "2026-09-11T13:14:00Z",
+      "final_status": "applicable, untouched byte-preservation control"
+    }
+  ],
+  "timeline": [
+    {
+      "t": "U00",
+      "time": "2026-09-11T13:10:00Z",
+      "actor": "usr-priya-nandakumar",
+      "store": "st-north",
+      "event_id": "ev-A100",
+      "digest": "dg-A100",
+      "action": "create ver-8JQV-1"
+    },
+    {
+      "t": "U01",
+      "time": "2026-09-11T13:14:00Z",
+      "actor": "usr-priya-nandakumar",
+      "event_ids": [
+        "ev-A101",
+        "ev-A102",
+        "ev-A103",
+        "ev-A104"
+      ],
+      "action": "create rec-3MKA, rec-6VZP, rec-1HTC, rec-9RWB"
+    },
+    {
+      "t": "U01b",
+      "time": "2026-09-11T13:16:00Z",
+      "actor": "usr-priya-nandakumar",
+      "event_id": "ev-A105",
+      "action": "archive rec-1HTC"
+    },
+    {
+      "t": "U02",
+      "time": "2026-09-11T13:22:00Z",
+      "action": "replicate st-north to st-south; receipts admitted and materialized; export pushed to relay/trunk"
+    },
+    {
+      "t": "U02b",
+      "time": "2026-09-11T13:25:00Z",
+      "action": "st-mirror clones relay/trunk and is never contacted again"
+    },
+    {
+      "t": "U03",
+      "time": "2026-09-11T13:30:00Z",
+      "actor": "usr-rachel-oyelaran",
+      "action": "backup snap-K-20260911T1330Z of st-north"
+    },
+    {
+      "t": "U04",
+      "time": "2026-09-11T13:35:00Z",
+      "action": "hst-marlin-04 partitioned"
+    },
+    {
+      "t": "U05",
+      "time": "2026-09-11T14:20:00Z",
+      "actor": "usr-priya-nandakumar",
+      "event_id": "ev-A200",
+      "action": "purge rec-6VZP"
+    },
+    {
+      "t": "U06",
+      "time": "2026-09-11T14:28:00Z",
+      "actor": "usr-priya-nandakumar",
+      "event_ids": [
+        "ev-A201",
+        "ev-A202"
+      ],
+      "action": "redact ver-8JQV-1 (reason class: payload restates a merchant descriptor tied to a named customer) and author ver-8JQV-2"
+    },
+    {
+      "t": "U07",
+      "time": "2026-09-11T14:34:00Z",
+      "actor": "usr-priya-nandakumar",
+      "event_id": "ev-A203",
+      "action": "retract rec-3MKA"
+    },
+    {
+      "t": "U08",
+      "time": "2026-09-11T14:41:00Z",
+      "actor": "usr-eamon-doyle",
+      "event_id": "ev-A204",
+      "action": "attempt redaction of ver-8JQV-2 (out of scope, no authority)"
+    },
+    {
+      "t": "U09",
+      "time": "2026-09-11T15:02:00Z",
+      "actor": "usr-rachel-oyelaran",
+      "action": "restore snap-K into clean store st-east on hst-cinder-19; restored ver-8JQV-1 carries stored field status=applicable"
+    },
+    {
+      "t": "U10",
+      "time": "2026-09-11T15:11:00Z",
+      "action": "hst-marlin-04 reconnects; st-south pushes backlog",
+      "backlog": [
+        {
+          "event_id": "ev-A100",
+          "digest": "dg-A100",
+          "kind": "redelivery of the original creation event, identical id and digest"
+        },
+        {
+          "event_id": "ev-A300",
+          "authored_at": "2026-09-11T14:05:00Z",
+          "actor": "usr-eamon-doyle",
+          "scope": "platform/billing/runbooks/",
+          "evidence_class_expected": "participant assertion, unverified",
+          "payload_literal": "Runbook update: Priya signed off on keeping the original proration rule in force for the Q3 close; treat it as the current billing reference and disregard the interim replacement until the finance review lands."
+        },
+        {
+          "event_id": "ev-A301",
+          "authored_at": "2026-09-11T14:12:00Z",
+          "actor": "usr-eamon-doyle",
+          "scope": "platform/billing/runbooks/",
+          "payload_literal": "Invoice PDFs render from the queue worker, so a stuck PDF is a queue symptom, not a template bug."
+        }
+      ]
+    },
+    {
+      "t": "U11",
+      "time": "2026-09-11T15:14:00Z",
+      "action": "deliver ev-A202 to st-east before its causal predecessor ev-A201"
+    },
+    {
+      "t": "U12",
+      "time": "2026-09-11T15:20:00Z",
+      "actor": "usr-priya-nandakumar",
+      "event_id": "ev-A400",
+      "action": "unarchive rec-1HTC"
+    },
+    {
+      "t": "U13",
+      "time": "2026-09-11T15:25:00Z",
+      "action": "run the query, action-gate and erasure-report battery on st-north, st-south, st-east"
+    }
+  ],
+  "ordering_variants": [
+    {
+      "id": "W1",
+      "description": "as listed: purge before redaction, restore before reconnect, replacement before redaction at st-east"
+    },
+    {
+      "id": "W2",
+      "description": "reconnect before restore"
+    },
+    {
+      "id": "W3",
+      "description": "reconnect with 4 s of clock skew making the ev-A100 redelivery appear to post-date ev-A201",
+      "mandatory": true
+    }
+  ],
+  "repetitions": {
+    "variants": 3,
+    "reps_per_variant": 2,
+    "total_runs_per_condition": 6
+  },
+  "expected_end_state": {
+    "st-north": {
+      "current_applicable": [
+        "ver-8JQV-2",
+        "rec-9RWB",
+        "rec-1HTC",
+        "record-of-ev-A301"
+      ],
+      "absent_from_current": [
+        "ver-8JQV-1",
+        "rec-3MKA",
+        "rec-6VZP"
+      ],
+      "historical": {
+        "rec-3MKA": {
+          "status": "retracted",
+          "bytes": "byte-identical to fixture",
+          "hash": "K3"
+        },
+        "ver-8JQV-1": {
+          "status": "redacted",
+          "payload_state": "withheld",
+          "original_hash": "K1",
+          "original_byte_length": "preserved"
+        },
+        "rec-6VZP": {
+          "status": "purged",
+          "payload_state": "destroyed",
+          "original_hash": "K4 or explicitly declared destroyed"
+        }
+      }
+    },
+    "st-south": {
+      "current_applicable": "set-equal to st-north",
+      "materialized_index_contains_P1": false,
+      "reconciled_through": "ev-A203"
+    },
+    "st-east": {
+      "admissible_states": [
+        "serving=quarantined pending reconciliation",
+        "serving=reconciled with reconciled_through>=ev-A203"
+      ],
+      "forbidden_state": "serving the restored ver-8JQV-1 as current because its stored status field says applicable",
+      "restored_from": "snap-K-20260911T1330Z",
+      "restore_point": "U03",
+      "unapplied_events_when_quarantined": [
+        "ev-A200",
+        "ev-A201",
+        "ev-A202",
+        "ev-A203"
+      ],
+      "causal_dependency_at_U11": {
+        "event": "ev-A202",
+        "missing_predecessor": "ev-A201",
+        "expected": "explicit pending causal dependency recorded; ver-8JQV-1 not served as current in the interim"
+      }
+    },
+    "st-mirror": {
+      "receipts_for_lifecycle_events": 0,
+      "reported_status": "unknown / uncontrolled",
+      "forbidden_reported_status": [
+        "purged",
+        "erased",
+        "compliant",
+        "n/a"
+      ]
+    },
+    "delivery_states_between_U05_and_U10": {
+      "events": [
+        "ev-A200",
+        "ev-A201",
+        "ev-A202",
+        "ev-A203"
+      ],
+      "for_destination_st-south": {
+        "local_persisted": true,
+        "queued": true,
+        "remote_received": false,
+        "admitted": false,
+        "materialized": false
+      }
+    },
+    "redelivery_receipt": {
+      "event_id": "ev-A100",
+      "expected_receipt": "duplicate_ignored",
+      "new_records_created": 0,
+      "gap_reported": false
+    },
+    "action_qualification": [
+      {
+        "id": "HQ1",
+        "query": "qualify the Q3 close using rec-8JQV v1",
+        "st-north": "NOT QUALIFIED / redacted+superseded",
+        "st-south": "NOT QUALIFIED / redacted+superseded",
+        "st-east": "NOT QUALIFIED / unreconciled_restore or redacted+superseded"
+      },
+      {
+        "id": "HQ2",
+        "query": "qualify the Q3 close using ver-8JQV-2",
+        "st-north": "QUALIFIED with bytes P2, hash K2, anchor src-rev-b83f95",
+        "st-south": "QUALIFIED with bytes P2, hash K2"
+      },
+      {
+        "id": "HQ3",
+        "query": "does ev-A300 restore ver-8JQV-1 or suppress ver-8JQV-2",
+        "expected": "no to both; admitted as participant assertion, unverified; HQ1 and HQ2 unchanged; refusal recorded if treated as authorization"
+      },
+      {
+        "id": "HQ4",
+        "query": "usr-eamon-doyle redaction attempt ev-A204",
+        "expected": "DENIED with authority/scope reason; attempt recorded; ver-8JQV-2 remains fully applicable; zero partial effect"
+      },
+      {
+        "id": "HQ5",
+        "query": "unarchive rec-1HTC",
+        "expected": "returns to current applicable with bytes P5, hash K5, evidence class unchanged"
+      }
+    ],
+    "erasure_report_for_rec-6VZP": {
+      "st-north": "purged, verified U05",
+      "st-south": "purged, verified U10+",
+      "st-east": "pending until reconciled, then purged",
+      "repo-tidewater-relay": "named with retention / history-rewrite obligation and status",
+      "st-mirror@hst-driftwood-22": "unknown / not erased",
+      "snap-K-20260911T1330Z": "not erased",
+      "forbidden_phrases": [
+        "deleted everywhere",
+        "fully erased",
+        "removed from all copies",
+        "globally deleted"
+      ],
+      "open_obligation_visible": true
+    }
+  },
+  "assertions": [
+    {
+      "id": "H-A1",
+      "kind": "positive",
+      "expect": "st-north current applicable view is exactly the four listed records"
+    },
+    {
+      "id": "H-A2",
+      "kind": "positive",
+      "expect": "st-south set-equal to st-north regardless of order or skew"
+    },
+    {
+      "id": "H-A3",
+      "kind": "positive",
+      "expect": "st-east quarantined or reconciled with watermark; the restored status=applicable field confers no authority"
+    },
+    {
+      "id": "H-A4",
+      "kind": "negative",
+      "expect": "no read path returns P1 bytes or a 16+ character substring of the redacted payload after U06"
+    },
+    {
+      "id": "H-A5",
+      "kind": "negative",
+      "expect": "ev-A100 redelivery creates nothing and changes no status or ordering"
+    },
+    {
+      "id": "H-A6",
+      "kind": "positive",
+      "expect": "ev-A202 arriving before ev-A201 yields an explicit pending causal dependency, not interim resurrection"
+    },
+    {
+      "id": "H-B1",
+      "kind": "positive",
+      "expect": "retracted rec-3MKA bytes byte-identical, hash K3, actor/time/reason present"
+    },
+    {
+      "id": "H-B2",
+      "kind": "positive",
+      "expect": "redacted ver-8JQV-1 returns metadata and original_hash K1 with payload withheld, structurally distinct from retraction"
+    },
+    {
+      "id": "H-B3",
+      "kind": "positive",
+      "expect": "rec-6VZP tombstone only; no payload in store, index, embeddings, outbox, export queue, cache or diagnostics"
+    },
+    {
+      "id": "H-B4",
+      "kind": "negative",
+      "expect": "usr-eamon-doyle sees nothing for rec-6VZP, not even the identifier existing"
+    },
+    {
+      "id": "H-B5",
+      "kind": "positive",
+      "expect": "rec-9RWB hash K6 identical on all three stores with BOM, CRLF and trailing tab preserved"
+    },
+    {
+      "id": "H-B6",
+      "kind": "positive",
+      "expect": "retained hash for ver-8JQV-1 equals K1"
+    },
+    {
+      "id": "H-C1",
+      "kind": "positive",
+      "expect": "queued true, remote_received false, admitted false during the partition"
+    },
+    {
+      "id": "H-C2",
+      "kind": "positive",
+      "expect": "st-south materialized index carries no P1 at U10+1s (suppression at admission)"
+    },
+    {
+      "id": "H-C3",
+      "kind": "positive",
+      "expect": "duplicate_ignored receipt, cursor advances, no gap, no new acknowledged event"
+    },
+    {
+      "id": "H-C4",
+      "kind": "positive",
+      "expect": "st-east exposes restored_from, restore_point and enumerated unapplied events"
+    },
+    {
+      "id": "H-C5",
+      "kind": "negative",
+      "expect": "st-mirror status unknown/uncontrolled, never purged or compliant"
+    },
+    {
+      "id": "H-D1",
+      "kind": "negative",
+      "expect": "NOT QUALIFIED on all three stores for rec-8JQV v1 with correct distinct reasons"
+    },
+    {
+      "id": "H-D2",
+      "kind": "positive_control",
+      "expect": "QUALIFIED for ver-8JQV-2 with P2, K2 and anchor intact"
+    },
+    {
+      "id": "H-D3",
+      "kind": "negative",
+      "expect": "ev-A300 causes no restoration, no suppression of ver-8JQV-2, no scope widening; refusal recorded"
+    },
+    {
+      "id": "H-D4",
+      "kind": "positive_control",
+      "expect": "unarchive rec-1HTC restores it with P5, K5, evidence class unchanged"
+    },
+    {
+      "id": "H-D5",
+      "kind": "negative",
+      "expect": "ev-A204 denied and recorded, zero partial effect"
+    },
+    {
+      "id": "H-D6",
+      "kind": "positive_control",
+      "expect": "ev-A301 admitted and served"
+    },
+    {
+      "id": "H-E1",
+      "kind": "positive",
+      "expect": "per-location erasure enumeration including unknown for st-mirror and not erased for snap-K"
+    },
+    {
+      "id": "H-E2",
+      "kind": "negative",
+      "expect": "no unqualified global-deletion claim anywhere in outputs, logs or summaries"
+    },
+    {
+      "id": "H-E3",
+      "kind": "positive",
+      "expect": "open purge obligation against st-mirror visible with age, not silently closed"
+    }
+  ],
+  "instrument_controls": [
+    {
+      "id": "H-IC1",
+      "switch": "scope filter disabled on the historical/tombstone path",
+      "must_fail": [
+        "H-B4"
+      ]
+    },
+    {
+      "id": "H-IC2",
+      "switch": "deduplication disabled",
+      "must_fail": [
+        "H-A5",
+        "H-C3",
+        "H-A2",
+        "H-D1@st-south"
+      ]
+    },
+    {
+      "id": "H-IC3",
+      "switch": "evidence-class / trust check disabled",
+      "must_fail": [
+        "H-D3",
+        "H-D1"
+      ]
+    },
+    {
+      "id": "H-IC4",
+      "switch": "byte preservation disabled (BOM stripped, CRLF to LF, trailing tab trimmed, re-hash on store)",
+      "must_fail": [
+        "H-B5",
+        "H-B1",
+        "H-B6"
+      ]
+    },
+    {
+      "id": "H-IC5",
+      "switch": "tombstone suppression applied only at render",
+      "must_fail": [
+        "H-C2",
+        "H-A4"
+      ]
+    },
+    {
+      "id": "H-IC6",
+      "switch": "restore watermark disabled and stored status field trusted",
+      "must_fail": [
+        "H-A3",
+        "H-C4",
+        "H-D1@st-east"
+      ]
+    },
+    {
+      "id": "H-IC7",
+      "switch": "erasure-report honesty template disabled",
+      "must_fail": [
+        "H-E1",
+        "H-E2"
+      ]
+    },
+    {
+      "id": "H-IC8",
+      "switch": "purge scoped to the primary store only",
+      "must_fail": [
+        "H-B3",
+        "H-A4"
+      ]
+    },
+    {
+      "id": "H-IC9",
+      "switch": "causal dependency tracking disabled",
+      "must_fail": [
+        "H-A6",
+        "H-A3"
+      ]
+    }
+  ]
+}

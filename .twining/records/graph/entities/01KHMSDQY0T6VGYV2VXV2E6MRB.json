@@ -5,8 +5,8 @@
   "properties": {
     "description": "Core type definitions: BlackboardEntry, Decision, Entity, Relation, AssembledContext, etc.",
     "layer": "utils",
-    "scope": "src/,src/engine/,src/engine/triage.ts,src/storage/,src/tools/"
+    "scope": "src/,src/contracts/,src/engine/,src/engine/triage.ts,src/storage/,src/tools/"
   },
   "type": "file",
-  "updated_at": "2026-08-16T03:38:47.662Z"
+  "updated_at": "2026-09-16T02:43:26.318Z"
 }

@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Final report drafted (no-go for adoption at 0f9fd985); four operator docs rewritten as self-contained guides and independently re-executed; matrix gained the C08 row and an operator-surface section; append latency re-measured flat (p95 ~11 ms to 16k events); full suite 2744 passed / 0 failed.\nFindings: A store finalized by migrate --to 3 refuses every registry write from the same build with FORMAT_VERSION_TOO_NEW (lead-reproduced on a one-record store at 0f9fd985); only identity-init stores accept writes, so the upgrade path yields a store the product cannot write to; SessionStart with source compact injects only the delta since that session's last injection and nothing when nothing is new, so a model can return from compaction with no working set (shown through the hook shim, real host unavailable); As installed the plugin capture shim resolves no CLI (no bundled CLI, nothing on PATH), so v3 capture silently never happens unless TWINING_CLI_JS is set; A workflow subagent declined its assigned doc rewrite because a mid-turn user question was relayed to it as the only user request; restating the standing authorization in the prompt is the workaround",
+  "entry_type": "status",
+  "id": "01M497HYSBQZZQV93S6VKVEZF5",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "0f9fd985df6890a34240cf644d16081a0a2cf680",
+    "recorded_at": "2026-10-06T18:28:00.917Z"
+  },
+  "scope": "docs/",
+  "summary": "Final report drafted (no-go for adoption at 0f9fd985); four operator docs rewritten as self-contained guides and independently re-executed; matrix gained the C08 row and an operator-surface section…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-10-06T18:28:00.939Z"
+}

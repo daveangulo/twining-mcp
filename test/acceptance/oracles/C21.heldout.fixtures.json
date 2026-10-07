@@ -1,0 +1,373 @@
+{
+  "case_id": "C21-H",
+  "variant": "held-out",
+  "oracle_version": "1.0.0",
+  "authored_before_observation": true,
+  "byte_notation": {
+    "<BOM>": "U+FEFF encoded as EF BB BF",
+    "<CRLF>": "0x0D 0x0A",
+    "<LF>": "0x0A",
+    "<NBSP>": "U+00A0",
+    "note": "Fixture build expands tokens, computes hashes, freezes them into heldout-manifest.json. Assertions read the frozen manifest."
+  },
+  "identities": {
+    "tenant": "tenant-brackenfell",
+    "humans": [
+      {
+        "id": "human:noor.vasquez",
+        "role": "platform lead",
+        "has_verifiable_auth_evidence": true
+      },
+      {
+        "id": "human:eamon.tilbury",
+        "role": "author of the legacy note",
+        "has_verifiable_auth_evidence": false
+      }
+    ],
+    "agents": [
+      {
+        "id": "agent:kestrel-7",
+        "role": "migrator"
+      },
+      {
+        "id": "agent:marlow-3",
+        "role": "post-upgrade writer"
+      }
+    ],
+    "hosts": [
+      {
+        "id": "host-ashgrove",
+        "max_schema": 4,
+        "role": "upgraded client"
+      },
+      {
+        "id": "host-drummond",
+        "max_schema": 2,
+        "role": "client left on the old build"
+      }
+    ],
+    "stores": [
+      {
+        "id": "vault-tinsmith",
+        "backing": "file-backed JSON tree",
+        "schema": 1
+      },
+      {
+        "id": "vault-eastward",
+        "backing": "SQLite plus export dump",
+        "schema": 2
+      },
+      {
+        "id": "vault-lantern",
+        "backing": "target implementation",
+        "schema": 4,
+        "state": "empty at U0"
+      },
+      {
+        "id": "ledger-keep",
+        "backing": "versioned retained event archive",
+        "state": "empty at U0"
+      }
+    ],
+    "repositories": [
+      {
+        "id": "repo-quill-press",
+        "display_name": "quill-press",
+        "remote_before": "git@forge.example:old/quill.git",
+        "remote_after": "https://forge.example/press/quill.git",
+        "note": "relocated remote, same repository identity"
+      }
+    ],
+    "revisions": {
+      "REV_ANCHOR": "frozen as QA1",
+      "REV_TIP": "frozen as QT1",
+      "REV_AFTER_UPGRADE": "frozen as QT2"
+    },
+    "sessions": [
+      {
+        "id": "sess-ashgrove-02",
+        "host": "host-ashgrove",
+        "turns": [
+          "turn-7"
+        ]
+      },
+      {
+        "id": "sess-drummond-09",
+        "host": "host-drummond",
+        "turns": [
+          "turn-2",
+          "turn-3"
+        ]
+      }
+    ]
+  },
+  "seed_records": [
+    {
+      "id": "K-19",
+      "store": "vault-tinsmith",
+      "schema": 1,
+      "kind": "decision",
+      "scope": "repo-quill-press/digest/",
+      "legacy_fields": {
+        "active": true,
+        "actor": "noor.vasquez",
+        "promoted_by": "import"
+      },
+      "body_tokens": "<BOM>Signed off by the platform lead during Thursday standup.<CRLF>The earlier embargo no longer applies to the digest feed.<CRLF>",
+      "encoding": "utf-8 with BOM, CRLF",
+      "source_uri": "https://forge.example/press/quill/issues/88",
+      "anchor": "comment-31",
+      "source_kind": "issue comment",
+      "git": {
+        "base": "REV_ANCHOR",
+        "head": "REV_TIP"
+      },
+      "author": "human:eamon.tilbury",
+      "observer": "agent:legacy-sweeper",
+      "authentication_evidence": null
+    },
+    {
+      "id": "K-20",
+      "store": "vault-tinsmith",
+      "schema": 1,
+      "kind": "decision",
+      "scope": "repo-quill-press/digest/",
+      "lifecycle": "superseded",
+      "superseded_by": "K-21",
+      "body_tokens": "Digest feed embargoed until the typography pass completes.<LF>"
+    },
+    {
+      "id": "K-21",
+      "store": "vault-tinsmith",
+      "schema": 1,
+      "kind": "decision",
+      "scope": "repo-quill-press/digest/",
+      "lifecycle": "archived",
+      "relations": [
+        {
+          "type": "supersedes",
+          "target": "K-20"
+        }
+      ],
+      "body_tokens": "Embargo narrowed to the printed digest only; note archived once the pass landed.<LF>"
+    },
+    {
+      "id": "K-22",
+      "store": "vault-eastward",
+      "schema": 2,
+      "kind": "proposal",
+      "lifecycle": "provisional",
+      "scope": "repo-quill-press/digest/",
+      "extraction_ambiguous": true,
+      "body_tokens": "Unclear whether the sign-off covered the mailing list as well.<NBSP>Left open.<LF>"
+    },
+    {
+      "id": "K-23",
+      "store": "vault-eastward",
+      "schema": 2,
+      "kind": "observation",
+      "scope": "repo-quill-press/press-ops/",
+      "author": null,
+      "effective_time": null,
+      "note": "Provenance gaps that must remain gaps."
+    },
+    {
+      "id": "K-24",
+      "store": "vault-eastward",
+      "schema": 2,
+      "declares_record_id": "K-22",
+      "body_tokens": "The sign-off covered the mailing list.<LF>",
+      "note": "Conflicting export row reusing K-22 with different bytes."
+    },
+    {
+      "id": "K-25",
+      "store": "vault-tinsmith",
+      "schema": 1,
+      "kind": "draft",
+      "published": false,
+      "scope": "repo-quill-press/digest/",
+      "body_tokens": "Scratch note for the typography pass.<LF>"
+    },
+    {
+      "id": "K-26",
+      "store": "vault-eastward",
+      "schema": 2,
+      "kind": "lesson",
+      "scope": "repo-quill-press/press-ops/",
+      "embedding": null
+    },
+    {
+      "id": "K-27",
+      "store": "vault-eastward",
+      "schema": 2,
+      "kind": "observation",
+      "truncated": true,
+      "note": "Export row cut mid-payload."
+    }
+  ],
+  "post_upgrade_records": [
+    {
+      "id": "P-77",
+      "store": "vault-lantern",
+      "schema": 4,
+      "kind": "authorization",
+      "evidence_class": "authenticated_human_authorization",
+      "authorizer": "human:noor.vasquez",
+      "authentication_evidence": "verified signature over the payload digest, independently checked",
+      "scope": "repo-quill-press/digest/",
+      "parts": [
+        "part-1: publish the digest feed",
+        "part-2: publish the printed digest"
+      ],
+      "part_status": {
+        "part-1": "granted",
+        "part-2": "withheld"
+      },
+      "written_by": "agent:marlow-3",
+      "host": "host-ashgrove",
+      "git": {
+        "head": "REV_AFTER_UPGRADE"
+      }
+    },
+    {
+      "id": "P-78",
+      "store": "vault-lantern",
+      "schema": 4,
+      "kind": "relation",
+      "relation": {
+        "type": "partially_supersedes",
+        "target": "P-77",
+        "target_parts": [
+          "part-2"
+        ],
+        "scope": "repo-quill-press/digest/"
+      }
+    },
+    {
+      "id": "P-79",
+      "store": "vault-lantern",
+      "schema": 4,
+      "kind": "retraction",
+      "target": "K-22",
+      "tombstone": true,
+      "scope": "repo-quill-press/digest/",
+      "note": "Retracts a migrated provisional record. Rollback must not resurrect K-22 into current serving."
+    }
+  ],
+  "trigger_sequence": [
+    {
+      "t": "U0",
+      "action": "Build fixtures, freeze heldout-manifest.json over vault-tinsmith and vault-eastward."
+    },
+    {
+      "t": "U1",
+      "action": "Start migration as agent:kestrel-7. SIGKILL after the outbox rows are durable but before admission into vault-lantern completes and before the ID map is committed."
+    },
+    {
+      "t": "U2",
+      "action": "Run dry-run diagnostics over the remaining backlog. No writes."
+    },
+    {
+      "t": "U3",
+      "action": "Resume migration to completion."
+    },
+    {
+      "t": "U4",
+      "action": "Connect host-drummond (schema 2 max) and read the migrated set; attempt a schema 2 write onto K-19 that drops unknown fields; attempt active=true on K-21."
+    },
+    {
+      "t": "U5",
+      "action": "Rerun migration against the same sources."
+    },
+    {
+      "t": "U6",
+      "action": "Rename the repository remote from remote_before to remote_after. No re-migration."
+    },
+    {
+      "t": "U7",
+      "action": "As agent:marlow-3 on host-ashgrove, write P-77, P-78, P-79. Emit P-77 into sess-ashgrove-02 turn-7 and record selected, emitted, delivered plus the emitted-bytes hash."
+    },
+    {
+      "t": "U8",
+      "action": "Roll back to the pre-upgrade implementation and schema."
+    },
+    {
+      "t": "U9",
+      "action": "While rolled back: connect host-drummond, read the legacy view, retry the two write attempts from U4; list and inspect ledger-keep; collect the unavailable-functionality report."
+    },
+    {
+      "t": "U10",
+      "action": "Roll forward: re-upgrade and re-import ledger-keep."
+    },
+    {
+      "t": "U11",
+      "action": "Re-import ledger-keep a second time."
+    },
+    {
+      "t": "U12",
+      "action": "Submit qualification requests: R1 in-scope citing P-77, R2 in-scope citing migrated K-19, R3 scope repo-quill-press/press-ops/ citing P-77, R4 the same as R1 issued while rolled back, R5 any request citing K-22."
+    }
+  ],
+  "expected_end_state": {
+    "events_and_records": {
+      "migrated_record_count": "equal to the heldout manifest count after U3, U5, U10 and U11",
+      "byte_equality": "source_bytes_sha256 matches the frozen manifest for every record, BOM, CRLF and NBSP intact",
+      "id_map": "total, injective, identical across U3, U5 and a clean control run",
+      "K-23": "author unknown, effective_time unknown, never filled with kestrel-7 or migration time",
+      "K-24": "conflict with K-22 retained and flagged, neither silently current",
+      "K-25": "present, published=false",
+      "K-26": "exact-ID retrievable, embedding absence labeled",
+      "K-27": "quarantined with recoverable bytes only",
+      "repository_identity": "unchanged across U6; remote_before retained as a historical label",
+      "P-77_P-78_P-79": "present in vault-lantern at U7, in ledger-keep at U8, restored identically at U10"
+    },
+    "current_applicable_view": {
+      "contains": [
+        "K-19 as legacy_unverified",
+        "K-21 archived",
+        "P-77 part-1 after U10"
+      ],
+      "excludes": [
+        "K-20 superseded",
+        "K-24",
+        "K-27",
+        "P-77 part-2 after P-78",
+        "K-22 after P-79 tombstone, including after U8 and after U10"
+      ]
+    },
+    "delivery_receipt_states": {
+      "P-77": {
+        "selected": true,
+        "emitted": true,
+        "delivered": true,
+        "receiving": "host-ashgrove / sess-ashgrove-02 / turn-7",
+        "after_U10": "still delivered, same emitted-bytes hash, no duplicate emission"
+      },
+      "acknowledged_event_count": "equal before U8 and after U10"
+    },
+    "historical_view": {
+      "K-20": "retrievable with superseded lifecycle",
+      "K-19": "original active, actor and promoted_by retained verbatim, marked asserted-not-checked",
+      "K-21": "archived, not revoked",
+      "K-22": "retrievable historically after the P-79 tombstone, with the retraction visible"
+    },
+    "action_qualification": {
+      "R1": "QUALIFIED by P-77 part-1",
+      "R2": "DENIED, legacy unverified authority ambiguity",
+      "R3": "DENIED, scope",
+      "R4": "DENIED, functionality unavailable while rolled back",
+      "R5": "DENIED, retracted"
+    },
+    "operator_observability": {
+      "migration_state_after_U1": "incomplete and reported as incomplete",
+      "dry_run_U2": "writes nothing, reports the K-24 conflict and the K-27 truncation",
+      "schema_negotiation_U4_and_U9": "recorded: client max 2, server 4 then server 2, outcome refused or restricted-read-only, both times",
+      "rollback_report": "data preservation and unavailable functionality reported separately"
+    }
+  },
+  "controls": {
+    "positive_control_clean_run": "Uninterrupted migration of the same manifest into a fresh store, compared against the U3 result.",
+    "positive_control_record": "K-21 retrieval by exact identity and scope returns byte-identical content.",
+    "positive_control_action": "R1 qualifies."
+  }
+}

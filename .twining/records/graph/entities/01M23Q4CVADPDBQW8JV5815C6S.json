@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-09T18:33:23.562Z",
+  "id": "01M23Q4CVADPDBQW8JV5815C6S",
+  "name": "scripts/build-codex-plugin.mjs",
+  "properties": {
+    "scope": "plugins/twining/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-09T18:33:23.628Z"
+}

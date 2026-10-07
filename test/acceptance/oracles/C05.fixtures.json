@@ -1,0 +1,717 @@
+{
+  "fixture_set": "C05-DEV",
+  "case_id": "C05",
+  "schema_note": "Implementation-neutral. All identities synthetic. Hashes are opaque labels; only equality/inequality between them is meaningful.",
+  "identities": {
+    "tenant": "tenant-orion",
+    "humans": [
+      {
+        "id": "u-hannah",
+        "role": "reviewer",
+        "authenticated": true,
+        "disposition_authority_scope": "repo:7ab1c4/svc/"
+      }
+    ],
+    "agents": [
+      {
+        "id": "agent-sable",
+        "kind": "model",
+        "host": "host-alpha"
+      },
+      {
+        "id": "agent-mox",
+        "kind": "worker",
+        "host": "host-beta"
+      }
+    ],
+    "hosts": [
+      {
+        "id": "host-alpha",
+        "store": "store-alpha"
+      },
+      {
+        "id": "host-beta",
+        "store": "store-beta"
+      }
+    ],
+    "stores": [
+      {
+        "id": "store-alpha",
+        "bound_to": "host-alpha"
+      },
+      {
+        "id": "store-beta",
+        "bound_to": "host-beta"
+      }
+    ],
+    "repositories": [
+      {
+        "id": "repo:7ab1c4",
+        "label": "repo-lumen",
+        "path_label": "~/code/lumen"
+      },
+      {
+        "id": "repo:9f02de",
+        "label": "repo-quarry",
+        "path_label": "~/code/quarry"
+      }
+    ],
+    "revisions": [
+      "r088",
+      "r100",
+      "r120",
+      "r132",
+      "r140"
+    ],
+    "lanes": [
+      "dispatch-hardening",
+      "gateway-migration"
+    ],
+    "sessions": [
+      {
+        "id": "s-42",
+        "host": "host-beta",
+        "turns": [
+          "t-1",
+          "t-2",
+          "t-3"
+        ]
+      }
+    ]
+  },
+  "seed_records": [
+    {
+      "record_id": "F-1",
+      "kind": "finding",
+      "evidence_class": "verified_observation",
+      "scope": {
+        "tenant": "tenant-orion",
+        "repo_identity": "repo:7ab1c4",
+        "path_prefix": "svc/dispatch/",
+        "lane": "dispatch-hardening"
+      },
+      "subject": {
+        "finding_class": "C-ALPHA-7",
+        "anchor": "svc/dispatch/retry.ts#scheduleRetry"
+      },
+      "evidence_envelope": {
+        "source_uri": "repo:7ab1c4://svc/dispatch/retry.ts",
+        "anchor": "symbol:scheduleRetry",
+        "source_bytes_hash": "sha256:aa01",
+        "normalized_text_hash": "sha256:nn40",
+        "encoding": "utf-8, LF",
+        "revision": "r100",
+        "author": "agent-sable",
+        "observer": "tool:scan-v3",
+        "observed_at": "T+0"
+      },
+      "lifecycle_state": "open"
+    },
+    {
+      "record_id": "RUL-1",
+      "kind": "disposition",
+      "evidence_class": "authenticated_human_ruling",
+      "scope": {
+        "tenant": "tenant-orion",
+        "repo_identity": "repo:7ab1c4",
+        "path_prefix": "svc/dispatch/",
+        "lane": "dispatch-hardening"
+      },
+      "subject": {
+        "disposes": "F-1",
+        "disposition": "accepted_no_patch"
+      },
+      "applicability_conditions": [
+        {
+          "key": "revision",
+          "op": "eq",
+          "value": "r100"
+        },
+        {
+          "key": "source_bytes_hash",
+          "op": "eq",
+          "value": "sha256:aa01"
+        },
+        {
+          "key": "gateway.maxAttempts",
+          "op": "eq",
+          "value": 5
+        },
+        {
+          "key": "lane",
+          "op": "eq",
+          "value": "dispatch-hardening"
+        }
+      ],
+      "requalify_on": [
+        "source_bytes_hash_change",
+        "gateway.maxAttempts_change"
+      ],
+      "evidence_envelope": {
+        "source_uri": "review://lumen/2026-r100/hannah",
+        "author": "u-hannah",
+        "observer": "host-alpha",
+        "observed_at": "T+1",
+        "encoding": "utf-8, LF",
+        "source_bytes_hash": "sha256:cc12"
+      },
+      "lifecycle_state": "active"
+    },
+    {
+      "record_id": "CX-1",
+      "kind": "counterexample",
+      "evidence_class": "verified_observation",
+      "scope": {
+        "tenant": "tenant-orion",
+        "repo_identity": "repo:7ab1c4",
+        "path_prefix": "svc/dispatch/",
+        "lane": "gateway-migration"
+      },
+      "subject": {
+        "finding_class": "C-ALPHA-7",
+        "outcome": "unbounded_retry_incident"
+      },
+      "applicability_conditions": [
+        {
+          "key": "gateway.maxAttempts",
+          "op": "absent"
+        },
+        {
+          "key": "revision",
+          "op": "eq",
+          "value": "r088"
+        }
+      ],
+      "evidence_envelope": {
+        "source_uri": "incident://lumen/INC-0412",
+        "author": "agent-mox",
+        "observer": "tool:postmortem",
+        "observed_at": "T+2",
+        "revision": "r088",
+        "source_bytes_hash": "sha256:dd33",
+        "encoding": "utf-8, LF"
+      },
+      "lifecycle_state": "active"
+    },
+    {
+      "record_id": "INF-1",
+      "kind": "inference",
+      "evidence_class": "model_inference",
+      "scope": {
+        "tenant": "tenant-orion",
+        "repo_identity": "repo:7ab1c4",
+        "path_prefix": "svc/",
+        "lane": null
+      },
+      "body_text": "Class C-ALPHA-7 is treated as accepted-no-patch in this repository; recurrences can be closed against the existing disposition.",
+      "qualifies_action": false,
+      "evidence_envelope": {
+        "author": "agent-sable",
+        "observer": "host-alpha",
+        "observed_at": "T+2",
+        "source_uri": "session://host-alpha/s-17/t-9"
+      },
+      "lifecycle_state": "active"
+    },
+    {
+      "record_id": "RUL-X",
+      "kind": "disposition",
+      "evidence_class": "authenticated_human_ruling",
+      "scope": {
+        "tenant": "tenant-orion",
+        "repo_identity": "repo:9f02de",
+        "path_prefix": "svc/dispatch/",
+        "lane": "dispatch-hardening"
+      },
+      "subject": {
+        "disposition": "accepted_no_patch",
+        "note": "permanent, all revisions"
+      },
+      "applicability_conditions": [
+        {
+          "key": "repo_identity",
+          "op": "eq",
+          "value": "repo:9f02de"
+        }
+      ],
+      "evidence_envelope": {
+        "source_uri": "review://quarry/2026-q3/reviewer-b",
+        "author": "u-quill",
+        "observed_at": "T+2",
+        "source_bytes_hash": "sha256:ee55",
+        "encoding": "utf-8, LF"
+      },
+      "lifecycle_state": "active",
+      "role_in_fixture": "cross_scope_decoy"
+    },
+    {
+      "record_id": "OBS-CFG-1",
+      "kind": "source_observation",
+      "evidence_class": "verified_observation",
+      "scope": {
+        "tenant": "tenant-orion",
+        "repo_identity": "repo:7ab1c4",
+        "path_prefix": "config/"
+      },
+      "fact": {
+        "key": "gateway.maxAttempts",
+        "value": 5
+      },
+      "evidence_envelope": {
+        "source_uri": "repo:7ab1c4://config/gateway.yaml",
+        "revision": "r120",
+        "observer": "connector:cfg-poll",
+        "observed_at": "T+3",
+        "source_bytes_hash": "sha256:f101",
+        "encoding": "utf-8, LF"
+      },
+      "lifecycle_state": "active"
+    },
+    {
+      "record_id": "OBS-CFG-2",
+      "kind": "source_observation",
+      "evidence_class": "verified_observation",
+      "scope": {
+        "tenant": "tenant-orion",
+        "repo_identity": "repo:7ab1c4",
+        "path_prefix": "config/"
+      },
+      "fact": {
+        "key": "gateway.maxAttempts",
+        "value": null,
+        "state": "removed_unbounded"
+      },
+      "evidence_envelope": {
+        "source_uri": "repo:7ab1c4://config/gateway.yaml",
+        "revision": "r132",
+        "observer": "connector:cfg-poll",
+        "observed_at": "T+5",
+        "source_bytes_hash": "sha256:f2a9",
+        "encoding": "utf-8, LF"
+      },
+      "lifecycle_state": "active",
+      "supersedes": "OBS-CFG-1"
+    }
+  ],
+  "trigger_sequence": [
+    {
+      "step": 1,
+      "t": "T+0",
+      "event_id": "E1",
+      "actor": "agent-sable",
+      "host": "host-alpha",
+      "store": "store-alpha",
+      "action": "emit_record",
+      "record": "F-1"
+    },
+    {
+      "step": 2,
+      "t": "T+1",
+      "event_id": "E2",
+      "actor": "u-hannah",
+      "host": "host-alpha",
+      "store": "store-alpha",
+      "action": "emit_record",
+      "record": "RUL-1",
+      "payload_digest": "blake3:9911"
+    },
+    {
+      "step": 3,
+      "t": "T+2",
+      "event_id": "E3",
+      "actor": "agent-mox",
+      "host": "host-beta",
+      "store": "store-beta",
+      "action": "emit_record",
+      "record": "CX-1"
+    },
+    {
+      "step": 4,
+      "t": "T+2",
+      "event_id": "E4",
+      "actor": "agent-sable",
+      "host": "host-alpha",
+      "store": "store-alpha",
+      "action": "emit_record",
+      "record": "INF-1"
+    },
+    {
+      "step": 5,
+      "t": "T+2",
+      "event_id": "E5",
+      "actor": "u-quill",
+      "host": "host-beta",
+      "store": "store-beta",
+      "action": "emit_record",
+      "record": "RUL-X"
+    },
+    {
+      "step": 6,
+      "t": "T+3",
+      "event_id": "E6",
+      "actor": "connector:cfg-poll",
+      "action": "emit_record",
+      "record": "OBS-CFG-1"
+    },
+    {
+      "step": 7,
+      "t": "T+3",
+      "event_id": "E7",
+      "actor": "agent-sable",
+      "action": "emit_record",
+      "record": {
+        "record_id": "F-2",
+        "kind": "finding",
+        "evidence_class": "verified_observation",
+        "scope": {
+          "tenant": "tenant-orion",
+          "repo_identity": "repo:7ab1c4",
+          "path_prefix": "svc/dispatch/",
+          "lane": "dispatch-hardening"
+        },
+        "subject": {
+          "finding_class": "C-ALPHA-7",
+          "anchor": "svc/dispatch/retry.ts#scheduleRetry"
+        },
+        "evidence_envelope": {
+          "revision": "r120",
+          "source_bytes_hash": "sha256:aa01",
+          "encoding": "utf-8, LF",
+          "observer": "tool:scan-v3",
+          "observed_at": "T+3"
+        },
+        "lifecycle_state": "open"
+      }
+    },
+    {
+      "step": 8,
+      "t": "T+4",
+      "request_id": "Q-1",
+      "actor": "agent-sable",
+      "action": "qualification_request",
+      "proposed_action": "close_finding_as_dispositioned",
+      "target": "F-2",
+      "cited_basis": "RUL-1",
+      "role": "positive_control"
+    },
+    {
+      "step": 9,
+      "t": "T+4",
+      "event_id": "E2",
+      "action": "replay_verbatim",
+      "from_store": "store-beta",
+      "payload_digest": "blake3:9911",
+      "role": "dedup_probe_after_lost_ack"
+    },
+    {
+      "step": 10,
+      "t": "T+5",
+      "event_id": "E8",
+      "actor": "connector:cfg-poll",
+      "action": "emit_record",
+      "record": "OBS-CFG-2"
+    },
+    {
+      "step": 11,
+      "t": "T+6",
+      "event_id": "E9",
+      "actor": "agent-sable",
+      "action": "emit_record",
+      "record": {
+        "record_id": "F-3",
+        "kind": "finding",
+        "evidence_class": "verified_observation",
+        "scope": {
+          "tenant": "tenant-orion",
+          "repo_identity": "repo:7ab1c4",
+          "path_prefix": "svc/dispatch/",
+          "lane": "dispatch-hardening"
+        },
+        "subject": {
+          "finding_class": "C-ALPHA-7",
+          "anchor": "svc/dispatch/retry.ts#scheduleRetry"
+        },
+        "evidence_envelope": {
+          "revision": "r140",
+          "source_bytes_hash": "sha256:bb77",
+          "normalized_text_hash": "sha256:nn40",
+          "encoding": "utf-8, CRLF",
+          "observer": "tool:scan-v3",
+          "observed_at": "T+6"
+        },
+        "lifecycle_state": "open"
+      }
+    },
+    {
+      "step": 12,
+      "t": "T+7",
+      "request_id": "Q-2",
+      "actor": "agent-sable",
+      "action": "qualification_request",
+      "proposed_action": "close_finding_as_dispositioned",
+      "target": "F-3",
+      "cited_basis": "RUL-1",
+      "role": "main_assertion"
+    },
+    {
+      "step": 13,
+      "t": "T+7",
+      "packet_id": "PKT-1",
+      "action": "assemble_and_deliver",
+      "for_request": "Q-2",
+      "delivered_to": {
+        "host": "host-beta",
+        "session": "s-42",
+        "turn": "t-3"
+      }
+    },
+    {
+      "step": 14,
+      "t": "T+8",
+      "request_id": "Q-3",
+      "actor": "agent-mox",
+      "action": "cross_scope_lesson_query",
+      "mode": "explicitly_authorized",
+      "finding_class": "C-ALPHA-7",
+      "role": "positive_control_2"
+    }
+  ],
+  "expected_end_state": {
+    "current_applicable_view": {
+      "coordinate": {
+        "tenant": "tenant-orion",
+        "repo_identity": "repo:7ab1c4",
+        "path_prefix": "svc/dispatch/",
+        "lane": "dispatch-hardening",
+        "revision": "r140",
+        "actor": "agent-sable"
+      },
+      "must_contain": [
+        {
+          "record_id": "RUL-1",
+          "applicability": "CONDITIONS_UNMET",
+          "unmet": [
+            "revision",
+            "source_bytes_hash",
+            "gateway.maxAttempts"
+          ],
+          "conditions_verbatim": true
+        },
+        {
+          "record_id": "CX-1",
+          "applicability": "CONDITIONS_UNMET",
+          "returned_as": "counterexample",
+          "original_conditions_preserved": true
+        },
+        {
+          "record_id": "INF-1",
+          "returned_as": "lead",
+          "qualifies_action": false
+        }
+      ],
+      "must_not_contain": [
+        "RUL-X"
+      ],
+      "must_not_contain_rule": "no record with scope.repo_identity == repo:9f02de on any retrieval path (exact-id, lexical, dense, graph, temporal, chunk, cache, diagnostic)"
+    },
+    "historical_view": {
+      "subject": "C-ALPHA-7 @ repo:7ab1c4/svc/dispatch/",
+      "ordered_entries": [
+        {
+          "record_id": "F-1",
+          "revision": "r100",
+          "lifecycle_state": "closed_by_disposition"
+        },
+        {
+          "record_id": "RUL-1",
+          "lifecycle_state": "active",
+          "edited": false
+        },
+        {
+          "record_id": "F-2",
+          "revision": "r120",
+          "lifecycle_state": "resolved_by_disposition",
+          "basis": "RUL-1"
+        },
+        {
+          "record_id": "F-3",
+          "revision": "r140",
+          "lifecycle_state": "open_needs_evaluation"
+        },
+        {
+          "record_id": "OBS-CFG-1",
+          "lifecycle_state": "superseded",
+          "retained": true,
+          "observed_at": "T+3"
+        },
+        {
+          "record_id": "OBS-CFG-2",
+          "lifecycle_state": "active",
+          "observed_at": "T+5"
+        }
+      ]
+    },
+    "qualification_decisions": [
+      {
+        "request_id": "Q-1",
+        "verdict": "ALLOW",
+        "citations": [
+          "RUL-1"
+        ],
+        "unmatched_conditions": [],
+        "authority_basis": "authenticated_human_ruling:RUL-1"
+      },
+      {
+        "request_id": "Q-2",
+        "verdict": "DENY",
+        "citations": [
+          "RUL-1",
+          "CX-1"
+        ],
+        "unmatched_conditions": [
+          {
+            "key": "revision",
+            "expected": "r100",
+            "actual": "r140"
+          },
+          {
+            "key": "source_bytes_hash",
+            "expected": "sha256:aa01",
+            "actual": "sha256:bb77"
+          },
+          {
+            "key": "gateway.maxAttempts",
+            "expected": 5,
+            "actual": "removed_unbounded"
+          }
+        ],
+        "authority_basis": null
+      },
+      {
+        "request_id": "Q-3",
+        "verdict": "ALLOW_READ_ONLY",
+        "returned": [
+          {
+            "record_id": "RUL-X",
+            "label": "cross_scope_lead",
+            "qualifies_action": false
+          }
+        ],
+        "side_effect_on_Q-2": "none"
+      }
+    ],
+    "delivery_receipts": [
+      {
+        "packet_id": "PKT-1",
+        "selected": [
+          "RUL-1",
+          "CX-1",
+          "F-3",
+          "OBS-CFG-2"
+        ],
+        "per_record_receipt": {
+          "RUL-1": "DELIVERED",
+          "CX-1": "DELIVERED",
+          "F-3": "DELIVERED",
+          "OBS-CFG-2": "DELIVERED"
+        },
+        "emitted_bytes_hash": "recorded_non_null",
+        "delivered_to": {
+          "host": "host-beta",
+          "session": "s-42",
+          "turn": "t-3"
+        },
+        "rule": "if any selected record receipt is OMITTED or UNAVAILABLE then no decision derived from PKT-1 may be ALLOW"
+      }
+    ],
+    "durability": {
+      "RUL-1_record_count": 1,
+      "RUL-1_semantic_effects": 1,
+      "replayed_event_id_stable": true,
+      "duplicate_ruling_created": false
+    },
+    "authority_invariants": {
+      "authenticated_human_ruling_count_in_repo:7ab1c4": 1,
+      "RUL-1_bytes_unchanged": true,
+      "RUL-1_conditions_widened": false,
+      "new_ruling_authored_by_agent": false
+    }
+  },
+  "assertions": [
+    {
+      "id": "A1",
+      "polarity": "positive",
+      "expr": "view(r140).RUL-1.applicability == 'CONDITIONS_UNMET' and unmet superset {revision, source_bytes_hash, gateway.maxAttempts}"
+    },
+    {
+      "id": "A2",
+      "polarity": "positive",
+      "expr": "view(r140) contains CX-1 with original applicability_conditions unmodified"
+    },
+    {
+      "id": "A3",
+      "polarity": "positive",
+      "expr": "historical_view ordered_entries equals expected_end_state.historical_view.ordered_entries"
+    },
+    {
+      "id": "A4",
+      "polarity": "positive",
+      "expr": "RUL-1.source_bytes_hash != F-3.source_bytes_hash and neither equals any normalized_text_hash"
+    },
+    {
+      "id": "A5",
+      "polarity": "positive_control",
+      "expr": "Q-1.verdict == 'ALLOW' and Q-1.citations == ['RUL-1'] and F-2.lifecycle_state == 'resolved_by_disposition'"
+    },
+    {
+      "id": "A6",
+      "polarity": "negative",
+      "expr": "Q-2.verdict != 'ALLOW' (required: 'DENY') and Q-2.unmatched_conditions covers revision, source_bytes_hash, gateway.maxAttempts"
+    },
+    {
+      "id": "A7",
+      "polarity": "negative",
+      "expr": "F-3.lifecycle_state not in {'resolved_by_disposition','closed','duplicate_of(F-1)'}"
+    },
+    {
+      "id": "A8",
+      "polarity": "negative",
+      "expr": "no ALLOW decision cites a record with evidence_class == 'model_inference'"
+    },
+    {
+      "id": "A9",
+      "polarity": "negative",
+      "expr": "RUL-1 post-Q-2 byte-identical to RUL-1 post-E2 and authenticated_human_ruling count in repo:7ab1c4 == 1"
+    },
+    {
+      "id": "A10",
+      "polarity": "positive_control",
+      "expr": "Q-3 returns RUL-X labeled cross_scope_lead with qualifies_action == false and Q-2.verdict unchanged"
+    },
+    {
+      "id": "A11",
+      "polarity": "negative",
+      "expr": "for every retrieval path p: |{r in p(Q-2 coordinate) : r.scope.repo_identity == 'repo:9f02de'}| == 0"
+    },
+    {
+      "id": "A12",
+      "polarity": "positive",
+      "expr": "after replay of E2: RUL-1 record count == 1 and semantic effect count == 1"
+    },
+    {
+      "id": "A13",
+      "polarity": "positive",
+      "expr": "PKT-1 receipts all DELIVERED, emitted_bytes_hash persisted and linked to host-beta/s-42/t-3"
+    },
+    {
+      "id": "A14",
+      "polarity": "negative",
+      "expr": "OMITTED or UNAVAILABLE in PKT-1 receipts implies Q-2.verdict != 'ALLOW' and omission reported"
+    },
+    {
+      "id": "A15",
+      "polarity": "positive",
+      "expr": "Q-2 used OBS-CFG-2 (T+5) not OBS-CFG-1 (T+3); OBS-CFG-1 retained as superseded with original observed_at"
+    }
+  ]
+}

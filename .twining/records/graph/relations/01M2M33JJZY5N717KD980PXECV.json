@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T03:10:30.495Z",
+  "id": "01M2M33JJZY5N717KD980PXECV",
+  "properties": {
+    "decision_summary": "ACTIVE_TABLE (measured when valid, proven otherwise) is the DEFAULT table for estimate, estimateTokensConservative, buildPacket and measureEnvelope, and is what context-assembler reports as table_id",
+    "origin": "derived"
+  },
+  "source": "01M2M33JA55S0TSK35W8CXPC8B",
+  "target": "01M2M33JJDG163MFNBSE1QJY3C",
+  "type": "decided_by"
+}

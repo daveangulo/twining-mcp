@@ -1,0 +1,17 @@
+{
+  "agent_id": "tokenizer-wiring",
+  "detail": "New decision \"Re-baselined SIX lane-04 budget/density baselines down to measured-table units, each to a MEASURED band rather than a scaled guess, restoring the pre-lane-04 numbers where the measured table brings them back\" relates to:\n- 01M2KKE0XE0K2201Z5081YMNB0: \"Tokenizer decision (DP4): run ONE calibration pass against the Anthropic count-tokens API with the owner's key injected per-process (never printed or exported), so the shipped table is a measured ratio plus a stated safety margin instead of the 1-token-per-UTF-8-byte proof that is ~4x loose; if the key is unavailable the proven bound ships and the report says budgets are conservative by ~4x\"\n- 01M2M33J7FXXNS7EF4R8C2NQN0: \"Loaded calibration.json with a STATIC import (`with { type: \"json\" }` + tsconfig resolveJsonModule) rather than createRequire, and kept validation at module load anyway\"\n- 01M2M33JBN8Z91VKRE4476TVX7: \"The safety factor is applied ONCE, into the ratios, and estimate() no longer multiplies by table.safety_factor\"\n- 01M2M33JG05BVDB8XPNSBDH2F0: \"ACTIVE_TABLE (measured when valid, proven otherwise) is the DEFAULT table for estimate, estimateTokensConservative, buildPacket and measureEnvelope, and is what context-assembler reports as table_id\"",
+  "entry_type": "finding",
+  "id": "01M2M33JN3CYRKCPPAXKW1W24V",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "92093f8c902437e8f85cc2fb4f24064ee965e297",
+    "recorded_at": "2026-09-16T03:10:30.541Z"
+  },
+  "scope": "src/retrieval/",
+  "summary": "Related decisions in scope: 4 existing decision(s) overlap",
+  "tags": [
+    "implementation"
+  ],
+  "timestamp": "2026-09-16T03:10:30.563Z"
+}

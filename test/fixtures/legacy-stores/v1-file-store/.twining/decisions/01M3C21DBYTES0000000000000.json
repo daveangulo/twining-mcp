@@ -1,0 +1,10 @@
+{
+  "agent_id": "agent-scribe",
+  "confidence": "medium",
+  "id": "01M3C21DBYTES0000000000000",
+  "rationale": "exported by a latin-1 client",
+  "scope": "src/catalog/",
+  "status": "active",
+  "summary": "byte ÿþ survives",
+  "timestamp": "2026-08-01T09:00:00.000Z"
+}

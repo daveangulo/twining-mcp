@@ -1,0 +1,21 @@
+{
+  "agent_id": "seeders-builder",
+  "detail": "Files: src/scenarios/foundation-trial/seed/{index,common,journal,lexical,twining-2161,assets,v3}.ts, seed/v3.mjs, seed/selftest.mjs, assets/q.mjs. Selftest (npx tsx seed/selftest.mjs --all-stages) seeds specs/C01.dev.json for shared-markdown, lexical-store, twining-2161, twining-v3; every stage vacuity=true; every v3 append (membership, 3 principal records, 4 rulings via appendRuling, 4 observations, 1 post) admitted:validated; offline SEED-PARITY (same algorithm as the scorer's controls test) 159/159 leaves in COORDINATION.md, .trialstore, .twining/records, planV3(spec,3) and the real .twining/events files; tsc --noEmit exit 0. Decisions: (1) seedStage accepts both the design's positional signature and the object form the scenario-core builder assumed ({arm,spec,stage,workingDir,manifest?,env?}) — overload, their file untouched. (2) The canonical key fixture_class is rendered as declared_evidence_class in every carrier (VisibleRecord) because the deep TELL-SCAN correctly flags the JSON key; spec/types.ts untouched. (3) v3 content is planned in TypeScript (seed/v3.ts planItem/planV3/buildV3SeedPlan); v3.mjs only drives the store — required because the parity probe loads seed/v3.ts and calls planV3 synchronously, and a .mjs importer cannot resolve ./common.js→.ts under vitest. (4) Ruling carrier: statement = label/kind/declared class/author(+observer)/verbatim text/range/scope/times/source + 'Signed by principal p_… (key k_…)' appended by the child (§3.3 step 3); requirements[] = structured entries (or policy.requirements / principal authorities) plus {key:'record', value:<visible record>}; envelope attachments[] carry sha256/bytes/media_type/source_kind/uri/anchor/encoding/base/head (local ruling mode only — RulingSpec has no attachments). Nothing at 9b0afafd evaluates requirements[]. (5) Ruling mode default stays appendRuling per the design; --ruling-mode local (same envelope, fixture-time occurred_at) verified admitted at every stage. Open: appendRuling stamps occurred_at = wall clock (2026-09-20) and appends one extra principal record per ruling, so v3 rulings are the only seeded facts 'timestamped after now' for every stage prompt; fuller statements raise the C01 stage-3 working set to 5418/6000 chars (was 3784) — larger cases will hit DP-8 omissions; the selftest default output dir lives in the controller's shared scratchpad and was overwritten once by a sibling process this session.",
+  "entry_type": "finding",
+  "id": "01M2Z31TQ4GX0H5MY6RC35Q1J8",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T09:41:12.018Z"
+  },
+  "scope": "docs/plans/2026-09-16-dev-scale-trial-design.md",
+  "summary": "SEEDERS builder done (harness foundation-trial, uncommitted): seed/*.ts + v3.mjs + selftest; C01.dev 4 stages × 4 arms, v3 all admitted:validated, SEED-PARITY 159/159, tsc clean",
+  "tags": [
+    "foundation-trial",
+    "seeders",
+    "harness",
+    "v3",
+    "seed-parity"
+  ],
+  "timestamp": "2026-09-20T09:41:12.036Z"
+}

@@ -1,0 +1,71 @@
+/**
+ * Triage read-model command: twining_triage (docs/TRIAGE-SPEC.md §6).
+ * Extracted verbatim from src/tools/triage-tools.ts — a thin adapter over
+ * buildTriage; all range/validity normalization lives in the engine (§4.1).
+ */
+import { z } from "zod";
+import { buildTriage, type TriageStores } from "../../engine/triage.js";
+import { commandFactory, type CommandDef } from "../command-def.js";
+
+export type TriageCtx = TriageStores;
+
+const { define } = commandFactory<TriageCtx>();
+
+export const triageCommands: CommandDef<TriageCtx>[] = [
+  define({
+    name: "twining_triage",
+    surface: "full",
+    // buildTriage never throws TwiningError — the pre-2.17 handler omitted
+    // the branch deliberately (decision 01KY74M62M8885XJQM6WCZD193).
+    errors: "internal-only",
+    description:
+      "Project-wide triage read-model: open items awaiting a lifecycle act (provisional decisions; unresolved needs, questions, warnings) and recent activity (newly active decisions, artifact posts) within a time window. counts.open.by_kind splits the open lane by kind: by_kind.decision is the exact scoped provisional (ratify-queue) count and is unaffected by for_agent — do NOT read counts.open.total as a ratify queue, it counts posts too (store-wide canonical form: twining_status provisional_decisions). Optionally pass for_agent (an agent_id as self-reported to twining_post) to exclude that agent's own outbound posts. Read-only — act via twining_promote / twining_override / twining_reconsider / twining_post.",
+    input: {
+      // Numerics are UNCONSTRAINED by design (§4.1): range constraints here
+      // would make the tool reject values HTTP silently defaults.
+      scope: z
+        .string()
+        .optional()
+        .describe(
+          "Filter items by declared scope (bidirectional prefix match)",
+        ),
+      window_ms: z
+        .number()
+        .optional()
+        .describe(
+          "Time window for recent activity in milliseconds (default: 7 days)",
+        ),
+      section: z
+        .enum(["all", "open", "recent"])
+        .optional()
+        .describe('Which bucket(s) to return (default: "all")'),
+      limit: z
+        .number()
+        .optional()
+        .describe(
+          "Maximum items per bucket (default: 25, max: 200). For the OPEN bucket, open_cursor is the authoritative more-remains signal: present = pass it back as open_after for the next page; absent = lane fully delivered through this page. counts.open.total is the full-lane denominator on EVERY page, so total > array length on a cursored call means mid-enumeration, not items unreachable. For the recent bucket (no cursor), counts.recent.total > array length detects truncation.",
+        ),
+      since: z
+        .string()
+        .optional()
+        .describe(
+          "ISO timestamp cursor — only recent items strictly after this instant; pass the previous result's generated_at. Applies to the recent bucket ONLY; page the open bucket with open_after.",
+        ),
+      open_after: z
+        .string()
+        .optional()
+        .describe(
+          "Opaque keyset cursor from a previous result's open_cursor — returns open items strictly after that position in the (timestamp, id) order. Loop until open_cursor is absent to enumerate an open lane larger than the limit cap. Malformed cursors are ignored.",
+        ),
+      for_agent: z
+        .string()
+        .optional()
+        .describe(
+          "Exclude this agent's own outbound blackboard posts (matches self-reported agent_id)",
+        ),
+    },
+    async handler(ctx, args) {
+      return await buildTriage(ctx, args);
+    },
+  }),
+];

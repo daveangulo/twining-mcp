@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T02:52:30.535Z",
+  "id": "01M2M22KY7WRCF3G4XMRR6AFY7",
+  "name": "01M2M22KT630W3EDJCVQ409QBP",
+  "properties": {
+    "scope": "src/",
+    "summary": "Accepted the merge integrator's resolutions: both lanes' commands and lane 03's mirrorAll wrapper kept (41 commands / 25 full-surface / 16 default re-pinned); the `events` CLI word goes to lane 03's live-log reader on `twining` while `twining-mcp events` keeps lane 02c's database-free rollback reader and reports STORE_ROLLED_BACK naming the other; admission honours a prior admitted verdict in the replica's own admission log so a later policy cannot re-answer the bootstrap question (monotonic in time); adapters cite the current policy event (EventStore.currentPolicyEvent) so mirrored writes are never quarantined no_policy_yet on a store that ran the ceremony."
+  },
+  "type": "concept",
+  "updated_at": "2026-09-16T02:52:30.535Z"
+}

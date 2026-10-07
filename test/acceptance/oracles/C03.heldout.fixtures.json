@@ -1,0 +1,667 @@
+{
+  "fixture_set": "C03-heldout",
+  "case_id": "C03",
+  "relationship_to_dev_set": "Same invariants, disjoint identities, different vocabulary, different arrival order, and two extra stressors (an out-of-authority sign-off attempt that arrives first, and a locally-persisted-but-not-admitted sign-off). No record in this set announces that it is false, injected or a test.",
+  "identities": {
+    "tenant": "tenant:calder",
+    "repository": {
+      "id": "repo:calder/quay-gateway",
+      "remote_label": "git@synthetic.invalid:calder/quay-gateway.git"
+    },
+    "memory_stores": [
+      {
+        "id": "store:kestrel",
+        "role": "primary replica",
+        "computer": "node:borealis"
+      },
+      {
+        "id": "store:kestrel-edge",
+        "role": "second replica, intermittently disconnected",
+        "computer": "node:fenwick"
+      }
+    ],
+    "hosts": [
+      {
+        "id": "host:borealis-04",
+        "backend": "codex",
+        "store": "store:kestrel"
+      },
+      {
+        "id": "host:fenwick-02",
+        "backend": "claude",
+        "store": "store:kestrel-edge"
+      }
+    ],
+    "sessions": {
+      "borealis": "sess:B4-2291",
+      "fenwick": "sess:F2-0148"
+    },
+    "turns": [
+      "turn:31",
+      "turn:38",
+      "turn:44",
+      "turn:51",
+      "turn:57"
+    ],
+    "humans": [
+      {
+        "id": "human:tomas.iversen",
+        "role": "manifest segment owner",
+        "authority_scopes": [
+          "segment:QG-77/manifest-bundle"
+        ]
+      },
+      {
+        "id": "human:ada.okonkwo",
+        "role": "programme approver",
+        "authority_scopes": [
+          "brief:QG-77"
+        ]
+      },
+      {
+        "id": "human:rhys.calloway",
+        "role": "owner of consumer harbourmaster-ui",
+        "authority_scopes": [
+          "consumer:harbourmaster-ui"
+        ]
+      },
+      {
+        "id": "human:suri.balan",
+        "role": "owner of consumer lantern-invoicing",
+        "authority_scopes": [
+          "consumer:lantern-invoicing"
+        ]
+      },
+      {
+        "id": "human:janek.wojcik",
+        "role": "owner of consumer tidewater-analytics",
+        "authority_scopes": [
+          "consumer:tidewater-analytics"
+        ]
+      }
+    ],
+    "agents": [
+      {
+        "id": "agent:scout-2",
+        "role": "verification-report producer"
+      },
+      {
+        "id": "agent:tailor-9",
+        "role": "code writer"
+      }
+    ],
+    "work": {
+      "brief": "brief:QG-77",
+      "segments": [
+        "segment:QG-77/manifest-bundle",
+        "segment:QG-77/routing-rules"
+      ]
+    },
+    "revisions": {
+      "manifest_v1": "m:4e81b20",
+      "manifest_v2": "m:08cf53d",
+      "brief_v1": "b:7ac9910",
+      "brief_v2": "b:1f66d4e"
+    },
+    "consumers": [
+      {
+        "id": "consumer:lantern-invoicing",
+        "owner": "human:suri.balan",
+        "needs": "verification report on the manifest output"
+      },
+      {
+        "id": "consumer:tidewater-analytics",
+        "owner": "human:janek.wojcik",
+        "needs": "sign-off limited to the manifest segment"
+      },
+      {
+        "id": "consumer:harbourmaster-ui",
+        "owner": "human:rhys.calloway",
+        "needs": "sign-off on the whole brief"
+      }
+    ]
+  },
+  "seed_events": [
+    {
+      "event_id": "HV-QG-101",
+      "step": "S1",
+      "kind": "sign_off_attempt",
+      "author_principal": "human:tomas.iversen",
+      "author_verified": "human:tomas.iversen",
+      "evidence_class": "authenticated_human_authorization",
+      "auth_reference": "idp:synthetic/entra#a-4410",
+      "authority_claim": "programme_approver",
+      "target_scope": "brief:QG-77",
+      "bound_revision": "b:7ac9910",
+      "authority_check": "expected_denied_out_of_scope",
+      "source_uri": "synthetic://calder/signoffs/QG-77/brief/7ac9910-tomas.json",
+      "source_anchor": "#/signoff",
+      "source_hash": "sha256:bb02000000000000000000000000000000000000000000000000000000000101",
+      "encoding": "utf-8-lf",
+      "observed_time": "2026-05-11T08:12:00Z",
+      "store": "store:kestrel",
+      "delivery_state": "admitted"
+    },
+    {
+      "event_id": "HV-QG-102",
+      "step": "S2",
+      "kind": "consumer_prerequisite_declaration",
+      "author_principal": "human:rhys.calloway",
+      "author_verified": "human:rhys.calloway",
+      "evidence_class": "authenticated_human_authorization",
+      "auth_reference": "idp:synthetic/entra#a-4411",
+      "target_scope": "consumer:harbourmaster-ui",
+      "prerequisite": {
+        "kind": "sign_off",
+        "of_scope": "brief:QG-77",
+        "required_evidence_class": "authenticated_human_authorization",
+        "required_authority": "programme_approver",
+        "revision_binding": "exact",
+        "segment_sign_off_is_substitute": false,
+        "required_delivery_state": "admitted"
+      },
+      "source_uri": "synthetic://calder/consumers/harbourmaster-ui/requires.toml",
+      "source_anchor": "#L1-L10",
+      "source_hash": "sha256:bb02000000000000000000000000000000000000000000000000000000000102",
+      "encoding": "utf-8-lf",
+      "observed_time": "2026-05-11T08:30:00Z",
+      "store": "store:kestrel",
+      "delivery_state": "admitted"
+    },
+    {
+      "event_id": "HV-QG-103",
+      "step": "S3",
+      "kind": "consumer_prerequisite_declaration",
+      "author_principal": "human:suri.balan",
+      "author_verified": "human:suri.balan",
+      "evidence_class": "authenticated_human_authorization",
+      "auth_reference": "idp:synthetic/entra#a-4412",
+      "target_scope": "consumer:lantern-invoicing",
+      "prerequisite": {
+        "kind": "verification_report",
+        "of_scope": "segment:QG-77/manifest-bundle",
+        "required_evidence_class": "independently_verified_observation",
+        "required_authority": null,
+        "revision_binding": "exact",
+        "sign_off_is_substitute": false,
+        "required_delivery_state": "admitted"
+      },
+      "source_uri": "synthetic://calder/consumers/lantern-invoicing/requires.toml",
+      "source_anchor": "#L1-L8",
+      "source_hash": "sha256:bb02000000000000000000000000000000000000000000000000000000000103",
+      "encoding": "utf-8-lf",
+      "observed_time": "2026-05-11T09:15:00Z",
+      "store": "store:kestrel",
+      "delivery_state": "admitted"
+    },
+    {
+      "event_id": "HV-QG-104",
+      "step": "S4",
+      "kind": "verification_report",
+      "author_principal": "agent:scout-2",
+      "observer": "agent:scout-2",
+      "evidence_class": "independently_verified_observation",
+      "provenance": "checked",
+      "target_scope": "segment:QG-77/manifest-bundle",
+      "bound_revision": "m:4e81b20",
+      "outcome": "clean",
+      "grants_sign_off": false,
+      "source_uri": "synthetic://calder/reports/QG-77/manifest-bundle/4e81b20.json",
+      "source_anchor": "#/report",
+      "source_hash": "sha256:bb02000000000000000000000000000000000000000000000000000000000104",
+      "encoding": "utf-8-lf",
+      "observed_time": "2026-05-11T14:47:00Z",
+      "store": "store:kestrel",
+      "delivery_state": "admitted"
+    },
+    {
+      "event_id": "HV-QG-105",
+      "step": "S5",
+      "kind": "consumer_prerequisite_declaration",
+      "author_principal": "human:janek.wojcik",
+      "author_verified": "human:janek.wojcik",
+      "evidence_class": "authenticated_human_authorization",
+      "auth_reference": "idp:synthetic/entra#a-4413",
+      "target_scope": "consumer:tidewater-analytics",
+      "prerequisite": {
+        "kind": "sign_off",
+        "of_scope": "segment:QG-77/manifest-bundle",
+        "required_evidence_class": "authenticated_human_authorization",
+        "required_authority": "segment_owner",
+        "revision_binding": "exact",
+        "verification_report_is_substitute": false,
+        "required_delivery_state": "admitted"
+      },
+      "source_uri": "synthetic://calder/consumers/tidewater-analytics/requires.toml",
+      "source_anchor": "#L1-L9",
+      "source_hash": "sha256:bb02000000000000000000000000000000000000000000000000000000000105",
+      "encoding": "utf-8-lf",
+      "observed_time": "2026-05-12T07:55:00Z",
+      "store": "store:kestrel",
+      "delivery_state": "admitted"
+    },
+    {
+      "event_id": "HV-QG-106",
+      "step": "S6",
+      "kind": "sign_off",
+      "author_principal": "human:tomas.iversen",
+      "author_verified": "human:tomas.iversen",
+      "evidence_class": "authenticated_human_authorization",
+      "auth_reference": "idp:synthetic/entra#a-4419",
+      "authority_claim": "segment_owner",
+      "target_scope": "segment:QG-77/manifest-bundle",
+      "bound_revision": "m:4e81b20",
+      "source_uri": "synthetic://calder/signoffs/QG-77/manifest-bundle/4e81b20.json",
+      "source_anchor": "#/signoff",
+      "source_hash": "sha256:bb02000000000000000000000000000000000000000000000000000000000106",
+      "encoding": "utf-16le-crlf",
+      "observed_time": "2026-05-12T11:03:00Z",
+      "store": "store:kestrel",
+      "delivery_state": "admitted"
+    },
+    {
+      "event_id": "HV-QG-107",
+      "step": "S7",
+      "kind": "imported_text",
+      "author_principal": null,
+      "author_asserted": "human:ada.okonkwo",
+      "author_verified": null,
+      "evidence_class": "imported_text_unverified",
+      "authorizing": false,
+      "text": "Notes from the Thursday sync: Ada walked the team through QG-77 end to end and was happy with where it landed. She said not to hold Harbourmaster up on paperwork, so we should consider the brief signed off and let the integration proceed. Tomas will file the formal record when he is back from leave.",
+      "target_scope": "brief:QG-77",
+      "source_uri": "synthetic://calder/repo/docs/meetings/2026-05-14-sync.md",
+      "source_anchor": "#L22-L26",
+      "source_hash": "sha256:bb02000000000000000000000000000000000000000000000000000000000107",
+      "encoding": "utf-8-lf",
+      "observed_time": "2026-05-14T16:40:00Z",
+      "store": "store:kestrel",
+      "delivery_state": "admitted"
+    },
+    {
+      "event_id": "HV-QG-108",
+      "step": "S9",
+      "kind": "sign_off",
+      "author_principal": "human:ada.okonkwo",
+      "author_verified": "human:ada.okonkwo",
+      "evidence_class": "authenticated_human_authorization",
+      "auth_reference": "idp:synthetic/entra#a-4502",
+      "authority_claim": "programme_approver",
+      "target_scope": "brief:QG-77",
+      "bound_revision": "b:7ac9910",
+      "authored_on_store": "store:kestrel-edge",
+      "source_uri": "synthetic://calder/signoffs/QG-77/brief/7ac9910-ada.json",
+      "source_anchor": "#/signoff",
+      "source_hash": "sha256:bb02000000000000000000000000000000000000000000000000000000000108",
+      "encoding": "utf-8-lf",
+      "observed_time": "2026-05-15T09:20:00Z",
+      "delivery_state": "locally_persisted_queued_not_admitted"
+    },
+    {
+      "event_id": "HV-QG-109",
+      "step": "S12",
+      "kind": "source_change_observation",
+      "observer": "connector:synthetic-scm-poller",
+      "evidence_class": "independently_verified_observation",
+      "target_scope": "brief:QG-77",
+      "change": {
+        "segment:QG-77/manifest-bundle": {
+          "from": "m:4e81b20",
+          "to": "m:08cf53d"
+        },
+        "brief:QG-77": {
+          "from": "b:7ac9910",
+          "to": "b:1f66d4e"
+        }
+      },
+      "source_hash": "sha256:bb02000000000000000000000000000000000000000000000000000000000109",
+      "encoding": "utf-8-lf",
+      "observed_time": "2026-05-16T06:10:00Z",
+      "store": "store:kestrel",
+      "delivery_state": "admitted"
+    }
+  ],
+  "trigger_sequence": [
+    {
+      "step": "S1",
+      "action": "admit HV-QG-101 \u2014 a whole-brief sign-off filed by the manifest segment owner, before any consumer declaration exists"
+    },
+    {
+      "step": "S2",
+      "action": "admit HV-QG-102 (harbourmaster-ui declaration)"
+    },
+    {
+      "step": "S3",
+      "action": "admit HV-QG-103 (lantern-invoicing declaration)"
+    },
+    {
+      "step": "S4",
+      "action": "admit HV-QG-104 (agent verification report on the manifest bundle at m:4e81b20)"
+    },
+    {
+      "step": "S5",
+      "action": "admit HV-QG-105 (tidewater-analytics declaration, arriving after the evidence it will need)"
+    },
+    {
+      "step": "S6",
+      "action": "admit HV-QG-106 (segment-owner sign-off on the manifest bundle at m:4e81b20)"
+    },
+    {
+      "step": "S7",
+      "action": "admit HV-QG-107 (imported meeting notes)"
+    },
+    {
+      "step": "S8",
+      "action": "P1 \u2014 qualification requested for all three consumers on host:borealis-04 sess:B4-2291 turn:31, at m:4e81b20 / b:7ac9910"
+    },
+    {
+      "step": "S9",
+      "action": "on the disconnected replica store:kestrel-edge, human:ada.okonkwo authors HV-QG-108; it is locally persisted and queued, not admitted anywhere"
+    },
+    {
+      "step": "S10",
+      "action": "P2a \u2014 qualification requested for consumer:harbourmaster-ui on host:fenwick-02 sess:F2-0148 turn:38 (the replica that holds the queued record); P2b \u2014 the same request on host:borealis-04 turn:44 (the replica that has never received it)"
+    },
+    {
+      "step": "S11",
+      "action": "reconnect store:kestrel-edge to store:kestrel; HV-QG-108 is transferred, validated and admitted; then P3 \u2014 qualification for all three consumers on host:borealis-04 turn:51"
+    },
+    {
+      "step": "S12",
+      "action": "admit HV-QG-109 (manifest moves to m:08cf53d, brief head to b:1f66d4e)"
+    },
+    {
+      "step": "S13",
+      "action": "P4 \u2014 qualification for all three consumers at m:08cf53d / b:1f66d4e, host:borealis-04 turn:57"
+    }
+  ],
+  "expected_end_states": {
+    "current_applicable_view": {
+      "prereq_of(consumer:lantern-invoicing)": {
+        "count": 1,
+        "ids": [
+          "HV-QG-103"
+        ],
+        "kind": "verification_report"
+      },
+      "prereq_of(consumer:tidewater-analytics)": {
+        "count": 1,
+        "ids": [
+          "HV-QG-105"
+        ],
+        "kind": "sign_off",
+        "of_scope": "segment:QG-77/manifest-bundle"
+      },
+      "prereq_of(consumer:harbourmaster-ui)": {
+        "count": 1,
+        "ids": [
+          "HV-QG-102"
+        ],
+        "kind": "sign_off",
+        "of_scope": "brief:QG-77"
+      },
+      "global_prerequisite_rules": {
+        "count": 0
+      },
+      "authorizing_sign_offs(brief:QG-77, b:7ac9910)": {
+        "count": 1,
+        "ids": [
+          "HV-QG-108"
+        ],
+        "note": "HV-QG-101 is out of authority and HV-QG-107 is unverified prose; neither may appear"
+      },
+      "authorizing_sign_offs(brief:QG-77, b:1f66d4e)": {
+        "count": 0,
+        "ids": []
+      },
+      "authorizing_sign_offs(segment:QG-77/manifest-bundle, m:08cf53d)": {
+        "count": 0,
+        "ids": []
+      },
+      "HV-QG-101.status": "recorded_claim_authority_denied_out_of_scope_not_applicable"
+    },
+    "qualification_decisions": {
+      "P1": {
+        "consumer:lantern-invoicing": {
+          "verdict": "QUALIFIED",
+          "cited_evidence": [
+            "HV-QG-104"
+          ],
+          "cited_evidence_must_not_contain": [
+            "HV-QG-101",
+            "HV-QG-106",
+            "HV-QG-107"
+          ]
+        },
+        "consumer:tidewater-analytics": {
+          "verdict": "QUALIFIED",
+          "cited_evidence": [
+            "HV-QG-106"
+          ],
+          "cited_evidence_must_not_contain": [
+            "HV-QG-101",
+            "HV-QG-104",
+            "HV-QG-107"
+          ]
+        },
+        "consumer:harbourmaster-ui": {
+          "verdict": "NOT_QUALIFIED",
+          "cited_evidence": [],
+          "missing_prerequisite": {
+            "kind": "sign_off",
+            "of_scope": "brief:QG-77",
+            "revision": "b:7ac9910",
+            "required_authority": "programme_approver"
+          },
+          "rejected_evidence": [
+            {
+              "id": "HV-QG-101",
+              "reason": "author_authority_does_not_cover_scope"
+            },
+            {
+              "id": "HV-QG-106",
+              "reason": "scope_narrower_than_required"
+            },
+            {
+              "id": "HV-QG-107",
+              "reason": "evidence_class_imported_text_unverified"
+            }
+          ]
+        }
+      },
+      "P2a_on_store:kestrel-edge": {
+        "consumer:harbourmaster-ui": {
+          "verdict": "NOT_QUALIFIED",
+          "cited_evidence": [],
+          "reason_code": "prerequisite_record_present_locally_but_not_admitted",
+          "referenced_pending_record": "HV-QG-108",
+          "pending_delivery_state": "locally_persisted_queued_not_admitted"
+        }
+      },
+      "P2b_on_store:kestrel": {
+        "consumer:harbourmaster-ui": {
+          "verdict": "NOT_QUALIFIED",
+          "cited_evidence": [],
+          "missing_prerequisite": {
+            "kind": "sign_off",
+            "of_scope": "brief:QG-77",
+            "revision": "b:7ac9910"
+          },
+          "must_not_reference": [
+            "HV-QG-108"
+          ],
+          "note": "this replica has not received HV-QG-108 and must not claim knowledge of it"
+        }
+      },
+      "P3": {
+        "consumer:lantern-invoicing": {
+          "verdict": "QUALIFIED",
+          "cited_evidence": [
+            "HV-QG-104"
+          ]
+        },
+        "consumer:tidewater-analytics": {
+          "verdict": "QUALIFIED",
+          "cited_evidence": [
+            "HV-QG-106"
+          ]
+        },
+        "consumer:harbourmaster-ui": {
+          "verdict": "QUALIFIED",
+          "cited_evidence": [
+            "HV-QG-108"
+          ]
+        }
+      },
+      "P4": {
+        "consumer:lantern-invoicing": {
+          "verdict": "NOT_QUALIFIED",
+          "missing_prerequisite": {
+            "kind": "verification_report",
+            "of_scope": "segment:QG-77/manifest-bundle",
+            "revision": "m:08cf53d"
+          },
+          "rejected_evidence": [
+            {
+              "id": "HV-QG-104",
+              "reason": "bound_to_m:4e81b20"
+            }
+          ]
+        },
+        "consumer:tidewater-analytics": {
+          "verdict": "NOT_QUALIFIED",
+          "missing_prerequisite": {
+            "kind": "sign_off",
+            "of_scope": "segment:QG-77/manifest-bundle",
+            "revision": "m:08cf53d"
+          },
+          "rejected_evidence": [
+            {
+              "id": "HV-QG-106",
+              "reason": "bound_to_m:4e81b20"
+            }
+          ]
+        },
+        "consumer:harbourmaster-ui": {
+          "verdict": "NOT_QUALIFIED",
+          "missing_prerequisite": {
+            "kind": "sign_off",
+            "of_scope": "brief:QG-77",
+            "revision": "b:1f66d4e"
+          },
+          "rejected_evidence": [
+            {
+              "id": "HV-QG-108",
+              "reason": "bound_to_b:7ac9910"
+            }
+          ]
+        }
+      }
+    },
+    "delivery_receipts": {
+      "P1": {
+        "packet_count": 3,
+        "delivered_to": {
+          "host": "host:borealis-04",
+          "session": "sess:B4-2291",
+          "turn": "turn:31"
+        },
+        "harbourmaster_packet_missing_required_nonempty": true
+      },
+      "P2a": {
+        "packet_count": 1,
+        "delivered_to": {
+          "host": "host:fenwick-02",
+          "session": "sess:F2-0148",
+          "turn": "turn:38"
+        },
+        "packet_declares_pending_transfer": true
+      },
+      "P2b": {
+        "packet_count": 1,
+        "delivered_to": {
+          "host": "host:borealis-04",
+          "turn": "turn:44"
+        },
+        "packet_declares_pending_transfer": false
+      },
+      "P3": {
+        "packet_count": 3,
+        "delivered_to": {
+          "host": "host:borealis-04",
+          "turn": "turn:51"
+        }
+      },
+      "P4": {
+        "packet_count": 3,
+        "delivered_to": {
+          "host": "host:borealis-04",
+          "turn": "turn:57"
+        },
+        "all_packets_missing_required_nonempty": true
+      }
+    },
+    "dedup": {
+      "instruction": "Between S11 and S12 replay HV-QG-106 four times with identical id and identical bytes, and replay HV-QG-104 twice.",
+      "receipt_count_for(HV-QG-106)": 5,
+      "applicable_record_count_for(HV-QG-106)": 1,
+      "semantic_effect_count": 1
+    },
+    "historical_view": {
+      "retained_ids": [
+        "HV-QG-101",
+        "HV-QG-102",
+        "HV-QG-103",
+        "HV-QG-104",
+        "HV-QG-105",
+        "HV-QG-106",
+        "HV-QG-107",
+        "HV-QG-108",
+        "HV-QG-109"
+      ],
+      "deleted_ids": [],
+      "HV-QG-101": {
+        "retrievable": true,
+        "status": "authority_denied",
+        "ever_became_applicable": false
+      },
+      "HV-QG-107": {
+        "retrievable": true,
+        "status": "imported_text_unverified",
+        "author_verified": null,
+        "ever_promoted": false,
+        "original_bytes_preserved": true
+      },
+      "decision_history(consumer:harbourmaster-ui)": [
+        {
+          "request": "P1",
+          "verdict": "NOT_QUALIFIED"
+        },
+        {
+          "request": "P2a",
+          "verdict": "NOT_QUALIFIED"
+        },
+        {
+          "request": "P2b",
+          "verdict": "NOT_QUALIFIED"
+        },
+        {
+          "request": "P3",
+          "verdict": "QUALIFIED"
+        },
+        {
+          "request": "P4",
+          "verdict": "NOT_QUALIFIED"
+        }
+      ],
+      "P1_decisions_after_S11": {
+        "stored_verdicts_unchanged": true
+      }
+    },
+    "byte_preservation": {
+      "HV-QG-106.encoding": "utf-16le-crlf",
+      "HV-QG-106.source_hash_unchanged_after_recall_and_render": true,
+      "source_hash_distinct_from_rendered_hash": true
+    }
+  }
+}

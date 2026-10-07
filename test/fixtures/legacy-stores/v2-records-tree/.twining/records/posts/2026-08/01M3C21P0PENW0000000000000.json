@@ -1,0 +1,17 @@
+{
+  "agent_id": "agent-scribe",
+  "detail": "Seen twice in the August runs; no alert fires.",
+  "entry_type": "warning",
+  "id": "01M3C21P0PENW0000000000000",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "recorded_at": "2026-08-05T09:00:00.000Z"
+  },
+  "scope": "src/catalog/",
+  "summary": "the nightly build silently skips empty shards",
+  "tags": [
+    "catalog"
+  ],
+  "timestamp": "2026-08-05T09:00:00.000Z"
+}

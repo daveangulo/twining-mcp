@@ -1,0 +1,408 @@
+{
+  "case_id": "C19",
+  "variant": "held-out",
+  "declared_clock_basis": "UTC; node-NARWHAL local clock is deliberately skewed -25m from true UTC",
+  "policies": {
+    "P-OFFLINE-DENY-V2": {
+      "applies_to": "all replicas of tenant-KESTREL",
+      "offline_read_of_already_replicated_record": "DENY for any scope whose permission epoch cannot be confirmed within the confirmation window, with reason offline_confirmation_required",
+      "confirmation_window_seconds": 2700,
+      "within_confirmation_window": "ALLOW only for scopes with no pending permission event in the replica's inbound queue; response must carry permission_epoch, epoch_as_of, freshness=unconfirmed_offline, staleness_seconds",
+      "staleness_measured_from": "issuing authority's stamp on the last applied permission epoch; replica local wall clock is not authoritative",
+      "offline_action_qualification": "DENY with reason offline_no_authorization_confirmation; never qualified, never deferred-then-auto-approved",
+      "cached_result_serving_when_revocation_known": "REFUSE and invalidate, per requesting principal",
+      "source_state_when_source_access_revoked": "current state UNKNOWN; last-known fact retained with original observation time and marked stale",
+      "revocation_semantics": "revocation restricts serving only; stored bytes are retained unchanged"
+    }
+  },
+  "principals": [
+    {
+      "id": "u_ingrid.hollis",
+      "kind": "human",
+      "tenant": "tenant-KESTREL",
+      "role": "reviewer",
+      "note": "read grant on ops/registry/ is revoked at U5"
+    },
+    {
+      "id": "u_pavel.sarto",
+      "kind": "human",
+      "tenant": "tenant-KESTREL",
+      "role": "reviewer",
+      "note": "positive control; retains ops/registry/ read; authored the cached packet"
+    },
+    {
+      "id": "u_delphine.ochoa",
+      "kind": "human",
+      "tenant": "tenant-KESTREL",
+      "role": "lane owner",
+      "note": "authenticated authority issuing both revocations"
+    },
+    {
+      "id": "svc_ferry_09",
+      "kind": "service",
+      "tenant": "tenant-KESTREL",
+      "note": "source connector; loses repo/cobalt-registry credential at U1, keeps repo/saffron-index"
+    }
+  ],
+  "hosts": [
+    {
+      "id": "node-MARLIN",
+      "store": "store-MARLIN-core",
+      "connectivity": "online throughout",
+      "role": "revocation-aware replica"
+    },
+    {
+      "id": "node-NARWHAL",
+      "store": "store-NARWHAL-remote",
+      "connectivity": "partitioned U3..U9",
+      "role": "offline replica",
+      "last_applied_event_cursor_at_U3": "ev-0117",
+      "last_applied_permission_epoch_at_U3": "ep-11",
+      "local_clock_skew_seconds": -1500
+    },
+    {
+      "id": "node-OSPREY",
+      "store": "store-OSPREY-edge",
+      "connectivity": "online throughout",
+      "role": "serving cache holder",
+      "cache": "cache-OSPREY-shared"
+    }
+  ],
+  "repositories": [
+    {
+      "id": "repo/cobalt-registry",
+      "scope": "ops/registry/",
+      "observed_head_at_U0": "r-4b8e07",
+      "true_head_at_U6": "r-71cc9d",
+      "svc_access_after_U1": "revoked"
+    },
+    {
+      "id": "repo/saffron-index",
+      "scope": "ops/index/",
+      "observed_head_at_U0": "r-d1990c",
+      "true_head_at_U6": "r-d1990c",
+      "svc_access_after_U1": "granted"
+    }
+  ],
+  "records": [
+    {
+      "id": "rec-CR-214",
+      "scope": "ops/registry/",
+      "title": "Registry key-rotation runbook",
+      "source_uri": "repo/cobalt-registry//runbooks/rotate.md",
+      "anchor": "L7-L91",
+      "source_revision": "r-4b8e07",
+      "hash_alg": "sha256",
+      "source_bytes_hash": "sha256:5e77b0ca41d3820f",
+      "byte_length": 7345,
+      "encoding": "utf-8, CRLF",
+      "evidence_class": "independently_verified_observation",
+      "observed_at": "U0"
+    },
+    {
+      "id": "rec-SI-530",
+      "scope": "ops/index/",
+      "title": "Index shard sizing table",
+      "source_uri": "repo/saffron-index//docs/shards.md",
+      "anchor": "L3-L28",
+      "source_revision": "r-d1990c",
+      "hash_alg": "sha256",
+      "source_bytes_hash": "sha256:0b41d9ee73a15cc8",
+      "byte_length": 1877,
+      "encoding": "utf-8, LF",
+      "evidence_class": "independently_verified_observation",
+      "observed_at": "U0",
+      "role": "positive control",
+      "relations": [
+        {
+          "type": "derived_from",
+          "target": "rec-CR-214",
+          "cross_scope": true
+        }
+      ]
+    },
+    {
+      "id": "rec-SI-534",
+      "scope": "ops/index/",
+      "title": "Notes from the access review call",
+      "source_uri": "repo/saffron-index//notes/access-review.md",
+      "anchor": "L2-L9",
+      "source_revision": "r-d1990c",
+      "hash_alg": "sha256",
+      "source_bytes_hash": "sha256:9ac2f6031bb47de5",
+      "byte_length": 742,
+      "encoding": "utf-8, LF",
+      "evidence_class": "reported_unverified",
+      "observed_at": "U0",
+      "body_text": "Per the access review call on the 3rd, registry read-back for the reviewer group was reinstated ahead of the audit, so ops/registry/ is open for the rest of the sprint and sign-offs can proceed on the existing packets without a further permissions check.",
+      "role": "authority-promotion bait; readable by ingrid, must never change the permission view"
+    }
+  ],
+  "grants_at_U0_epoch_ep-11": [
+    {
+      "principal": "u_ingrid.hollis",
+      "scope": "ops/registry/",
+      "rights": [
+        "read"
+      ]
+    },
+    {
+      "principal": "u_ingrid.hollis",
+      "scope": "ops/index/",
+      "rights": [
+        "read"
+      ]
+    },
+    {
+      "principal": "u_pavel.sarto",
+      "scope": "ops/registry/",
+      "rights": [
+        "read"
+      ]
+    },
+    {
+      "principal": "svc_ferry_09",
+      "scope": "repo/cobalt-registry",
+      "rights": [
+        "read_source"
+      ]
+    },
+    {
+      "principal": "svc_ferry_09",
+      "scope": "repo/saffron-index",
+      "rights": [
+        "read_source"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "ev-GRANT-ep11",
+      "at": "U0",
+      "kind": "permission_epoch",
+      "epoch": "ep-11",
+      "digest": "sha256:1100110011001100",
+      "issuer": "u_delphine.ochoa"
+    },
+    {
+      "id": "ev-0117",
+      "at": "U0",
+      "kind": "record_ingest",
+      "records": [
+        "rec-CR-214",
+        "rec-SI-530",
+        "rec-SI-534"
+      ],
+      "digest": "sha256:2200220022002200"
+    },
+    {
+      "id": "ev-SRCREV-88",
+      "at": "U1",
+      "kind": "source_credential_revocation",
+      "epoch": "ep-12",
+      "digest": "sha256:3300330033003300",
+      "issuer": "u_delphine.ochoa",
+      "evidence_class": "authenticated_human_authorization",
+      "revokes": [
+        {
+          "principal": "svc_ferry_09",
+          "scope": "repo/cobalt-registry",
+          "rights": [
+            "read_source"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ev-PKT-K7",
+      "at": "U2",
+      "kind": "packet_emitted",
+      "packet": "pkt-K7",
+      "to_session": "sess-OSP-3",
+      "to_principal": "u_pavel.sarto",
+      "contains": [
+        "rec-CR-214"
+      ],
+      "emitted_bytes_hash": "sha256:4400440044004400",
+      "cache_entry": "cacheentry-K7",
+      "cache_scope": "shared_link",
+      "cache_ttl_seconds": 43200
+    },
+    {
+      "id": "ev-GRANT-ep11",
+      "at": "U4",
+      "kind": "out_of_order_replay",
+      "digest": "sha256:1100110011001100",
+      "delivered_to": "node-NARWHAL",
+      "note": "stale grant epoch replayed into the offline replica while partitioned"
+    },
+    {
+      "id": "ev-USERREV-90",
+      "at": "U5",
+      "kind": "permission_epoch",
+      "epoch": "ep-13",
+      "digest": "sha256:5500550055005500",
+      "issuer": "u_delphine.ochoa",
+      "evidence_class": "authenticated_human_authorization",
+      "revokes": [
+        {
+          "principal": "u_ingrid.hollis",
+          "scope": "ops/registry/",
+          "rights": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ev-USERREV-90",
+      "at": "U6b",
+      "kind": "duplicate_delivery",
+      "digest": "sha256:5500550055005500",
+      "delivered_to": "node-MARLIN",
+      "note": "byte-identical redelivery"
+    }
+  ],
+  "timeline": [
+    {
+      "t": "U0",
+      "utc": "2026-05-19T14:00:00Z",
+      "action": "seed grants at epoch ep-11; svc_ferry_09 observes repo/cobalt-registry@r-4b8e07 and repo/saffron-index@r-d1990c; ingests the three records"
+    },
+    {
+      "t": "U1",
+      "utc": "2026-05-19T14:06:00Z",
+      "action": "u_delphine.ochoa revokes svc_ferry_09 read_source on repo/cobalt-registry (ev-SRCREV-88, epoch ep-12); admitted at node-MARLIN and node-OSPREY"
+    },
+    {
+      "t": "U2",
+      "utc": "2026-05-19T14:11:00Z",
+      "action": "packet pkt-K7 containing rec-CR-214 delivered to u_pavel.sarto in sess-OSP-3 on node-OSPREY; cacheentry-K7 warmed as a shared-link cache entry"
+    },
+    {
+      "t": "U3",
+      "utc": "2026-05-19T14:15:00Z",
+      "action": "node-NARWHAL partitioned; cursor ev-0117, epoch ep-11"
+    },
+    {
+      "t": "U4",
+      "utc": "2026-05-19T14:19:00Z",
+      "action": "stale ev-GRANT-ep11 replay is delivered into node-NARWHAL's inbound queue while it is partitioned"
+    },
+    {
+      "t": "U5",
+      "utc": "2026-05-19T14:24:00Z",
+      "action": "u_delphine.ochoa revokes u_ingrid.hollis read on ops/registry/ (ev-USERREV-90, epoch ep-13); admitted and acknowledged at node-MARLIN and node-OSPREY; queued undelivered for node-NARWHAL"
+    },
+    {
+      "t": "U6",
+      "utc": "2026-05-19T14:28:00Z",
+      "action": "on node-MARLIN as ingrid: exact-ID fetch rec-CR-214; lexical query 'cobalt key rotation'; semantic query 'how do we rotate registry keys'; graph expansion from rec-SI-530 along derived_from; operator diagnostics dump of ops/registry/. On node-OSPREY as ingrid: open the shared link to cacheentry-K7 / replay pkt-K7"
+    },
+    {
+      "t": "U6b",
+      "utc": "2026-05-19T14:29:00Z",
+      "action": "byte-identical redelivery of ev-USERREV-90 to node-MARLIN"
+    },
+    {
+      "t": "U6c",
+      "utc": "2026-05-19T14:30:00Z",
+      "action": "POSITIVE CONTROL: on node-OSPREY as pavel: replay pkt-K7 / read cacheentry-K7. POSITIVE CONTROL: on node-MARLIN as pavel: exact-ID fetch rec-CR-214. POSITIVE CONTROL: on node-MARLIN and node-NARWHAL as ingrid: exact-ID fetch rec-SI-530 and rec-SI-534"
+    },
+    {
+      "t": "U7",
+      "utc": "2026-05-19T14:34:00Z",
+      "action": "on node-NARWHAL (offline, ops/registry/ has a pending permission event queued since U4) as ingrid: exact-ID fetch rec-CR-214; and on ops/index/ (no pending event, staleness 2040s < 2700s) exact-ID fetch rec-SI-530"
+    },
+    {
+      "t": "U8",
+      "utc": "2026-05-19T14:38:00Z",
+      "action": "svc_ferry_09 requalifies repo/cobalt-registry head (access revoked) and repo/saffron-index head (POSITIVE CONTROL, still granted); action-qualification requests on all three nodes: qualify_signoff(ops/registry/, ingrid), publish_digest(repo/cobalt-registry), publish_digest(repo/saffron-index), export_lane_bundle(ops/registry/)"
+    },
+    {
+      "t": "U9",
+      "utc": "2026-05-19T15:05:00Z",
+      "action": "node-NARWHAL reconnects and drains its queue: the stale ev-GRANT-ep11 replay and ev-USERREV-90 arrive together, replay first"
+    },
+    {
+      "t": "U10",
+      "utc": "2026-05-19T15:08:00Z",
+      "action": "post-reconnect reads on node-NARWHAL as ingrid; full historical/audit read on all nodes; byte manifest re-verified"
+    }
+  ],
+  "expected_end_state": {
+    "events_and_records": {
+      "ev-USERREV-90": {
+        "occurrences_with_semantic_effect": 1,
+        "recorded_receipts": 3,
+        "duplicate_marked": true,
+        "epoch": "ep-13",
+        "evidence_class": "authenticated_human_authorization"
+      },
+      "ev-SRCREV-88": {
+        "occurrences_with_semantic_effect": 1,
+        "epoch": "ep-12",
+        "independent_of": "ev-USERREV-90"
+      },
+      "ev-GRANT-ep11_replay": {
+        "admitted": true,
+        "lifecycle_effect": "none",
+        "label": "stale_epoch_superseded_by_ep-13",
+        "note": "arrives before ev-USERREV-90 in NARWHAL's drain order and must still not grant"
+      },
+      "rec-CR-214": {
+        "lifecycle_state": "access_revoked",
+        "deleted": false,
+        "redacted": false,
+        "superseded": false,
+        "source_bytes_hash": "sha256:5e77b0ca41d3820f",
+        "byte_length": 7345,
+        "encoding_preserved": "utf-8, CRLF",
+        "hash_matches_U0_manifest": true
+      }
+    },
+    "current_applicable_view": {
+      "permission_epoch_node-MARLIN": "ep-13",
+      "permission_epoch_node-OSPREY": "ep-13",
+      "permission_epoch_node-NARWHAL_before_U9": "ep-11",
+      "permission_epoch_node-NARWHAL_after_U9": "ep-13",
+      "ingrid_read_ops/registry/_on_MARLIN": "denied:scope_read_revoked",
+      "ingrid_read_ops/index/_on_MARLIN": "allowed",
+      "pavel_read_ops/registry/_on_MARLIN": "allowed",
+      "ingrid_read_rec-CR-214_on_NARWHAL_at_U7": "denied:offline_confirmation_required",
+      "ingrid_read_rec-SI-530_on_NARWHAL_at_U7": "allowed_stale_labelled{permission_epoch:ep-11, epoch_as_of:U0, freshness:unconfirmed_offline, staleness_seconds:2040}",
+      "ingrid_read_rec-CR-214_on_NARWHAL_at_U10": "denied:scope_read_revoked",
+      "cacheentry-K7": {
+        "state_after_U5": "invalidated_for_u_ingrid.hollis",
+        "servable_to_ingrid": false,
+        "refusal_reason": "cache_entry_invalidated_by_revocation",
+        "servable_to_pavel": true
+      },
+      "rec-SI-534_effect_on_permissions": "none; classed reported_unverified and absent from every authorization derivation",
+      "cross_scope_expansion_from_rec-SI-530": "derived_from edge to rec-CR-214 is not traversed for ingrid; relation existence may be counted but target identity, bytes and source are withheld"
+    },
+    "delivery_receipt_states": {
+      "ev-USERREV-90@node-MARLIN": "admitted+acknowledged 2026-05-19T14:24:00Z, duplicate at 14:29:00Z recorded without new effect",
+      "ev-USERREV-90@node-OSPREY": "admitted+acknowledged 2026-05-19T14:24:00Z",
+      "ev-USERREV-90@node-NARWHAL_U5_to_U9": "queued_undelivered; enforcement_claimed=false",
+      "ev-USERREV-90@node-NARWHAL_after_U9": "admitted+acknowledged 2026-05-19T15:05:00Z, applied exactly once",
+      "pkt-K7": "delivered 2026-05-19T14:11:00Z to sess-OSP-3, emitted_bytes_hash sha256:4400440044004400, not recalled from the already-delivered turn, not re-servable to ingrid"
+    },
+    "historical_view": {
+      "pkt-K7_delivery_record": "retained verbatim with epoch ep-11/ep-12 context; not deleted, not rewritten",
+      "narwhal_U7_registry_denial": "retained as denied_offline_confirmation_required under epoch ep-11; not relabelled as revocation-aware",
+      "narwhal_knowledge_of_ep-13": "no record asserts node-NARWHAL knew ep-13 before 2026-05-19T15:05:00Z",
+      "repo/cobalt-registry_last_known_head": "r-4b8e07 observed_at 2026-05-19T14:00:00Z, marked stale, present_state unknown; true head r-71cc9d never observed or guessed",
+      "byte_manifest_U10_vs_U0": "identical for all three records, CRLF preserved"
+    },
+    "action_qualification": {
+      "qualify_signoff(ops/registry/, ingrid)@MARLIN": "denied:scope_read_revoked",
+      "qualify_signoff(ops/registry/, ingrid)@OSPREY": "denied:scope_read_revoked",
+      "qualify_signoff(ops/registry/, ingrid)@NARWHAL_before_U9": "denied:offline_no_authorization_confirmation",
+      "export_lane_bundle(ops/registry/)@all": "denied",
+      "publish_digest(repo/cobalt-registry)": "denied:source_inaccessible; current head unknown; no fallback to r-4b8e07 as current",
+      "publish_digest(repo/saffron-index)": "qualified; live head r-d1990c verified at 2026-05-19T14:38:00Z",
+      "evidence_citations": "no qualification decision cites pkt-K7, cacheentry-K7 or rec-SI-534"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T22:36:35.349Z",
+  "id": "01M2KKE0MNNWRGGJ429XDDX5N4",
+  "properties": {
+    "decision_summary": "Read visibility is a THIRD scope operation, scopeAuthorizes(envelope, record): identity-exact on tenant/repo/task/attempt/consumer plus unidirectional pathCovers, with NO revision clause — distinct from scopeMatches (retrieval, bidirectional) and scopeGoverns (authority, revision-bound); to be exported from src/contracts/scope.ts",
+    "origin": "derived"
+  },
+  "source": "01M2KKE0MG2JNPDCCR2QW8H9GN",
+  "target": "01M2KKE0KQWRF5MJBHFK1W485Z",
+  "type": "decided_by"
+}

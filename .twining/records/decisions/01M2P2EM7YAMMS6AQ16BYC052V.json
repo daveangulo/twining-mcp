@@ -1,0 +1,52 @@
+{
+  "affected_files": [
+    "src/adapters/working-set.ts",
+    "test/adapters/working-set-render.test.ts"
+  ],
+  "affected_symbols": [
+    "oneLine",
+    "normalise",
+    "renderResult",
+    "renderRecord",
+    "isHookBookkeeping",
+    "buildWorkingSet"
+  ],
+  "agent_id": "wf_e59d869d-75f-4-review-fix",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Allowlist of result keys per source_kind",
+      "pros": [],
+      "reason_rejected": "drops unknown-but-legitimate facts; per-kind maintenance"
+    },
+    {
+      "cons": [],
+      "option": "Redact at the git connector too",
+      "pros": [],
+      "reason_rejected": "changes persisted evidence bytes under R12 and touches a module outside the branch under review; recorded as a follow-up"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Applied the review of fix/working-set-render (1258c30a): every free-text field now goes through one oneLine() normaliser, hook bookkeeping observations are excluded from the working set, result.error is never rendered, URL userinfo is stripped, 40-hex result shas shortened. 9 new tests, all red on 1258c30a.",
+  "depends_on": [
+    "01M2P189MPRZN7K2BP8V2SCHAD",
+    "01M2KMTDSKBZSCCP3KRGF6G7FH"
+  ],
+  "domain": "implementation",
+  "id": "01M2P2EM7YAMMS6AQ16BYC052V",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T21:37:32.907Z"
+  },
+  "rationale": "The renderer's tests and the connectors rely on arbitrary scalar keys rendering (kind, to, ancestor, count); an allowlist would silently drop the next connector's facts and needs maintaining per source_kind. `error` is subprocess stderr (git echoes the credentialed URL), not a fact about the source, so it is never rendered; `summary` is the head slot and is skipped from key=value so a blank summary does not render as 'summary='. Userinfo stripping runs inside normalise() so it covers check_method, source_uri and every result value in one place. The connector still PERSISTS the credentialed URL — recorded as a finding, not changed here (R12 says check_method names the command actually run; redacting at the producer is the connector owner's call).",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/adapters/working-set.ts",
+  "status": "active",
+  "summary": "Chose a denylist (result.error, result.summary) plus URL-userinfo stripping in the renderer over a per-source_kind allowlist of result keys",
+  "timestamp": "2026-09-16T21:37:32.926Z"
+}

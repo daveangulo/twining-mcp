@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: three lane reviews ran while the claude.ai session limit was hit, so most refuters and lane 02b's quality lens never executed; confirmed survivors are in the tasks output files (w8jybac9a, w3rnyqkba, w78rxiiys) and unrefuted finder results in the workflow journals; the lanes were told to verify those themselves. Do not treat the journals' unrefuted findings as confirmed.",
+  "entry_type": "warning",
+  "id": "01M2KWYGV0M53AAFMSV8FDBSV0",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "5de4e006744db9f787a73e00e3ba271111a6fbe8",
+    "recorded_at": "2026-09-16T01:22:53.389Z"
+  },
+  "scope": "docs/plans/",
+  "summary": "three lane reviews ran while the claude.ai session limit was hit, so most refuters and lane 02b's quality lens never executed; confirmed survivors are in the tasks output files (w8jybac9a, w3rnyqkb…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-16T01:22:53.408Z"
+}

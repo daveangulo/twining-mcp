@@ -1,0 +1,18 @@
+{
+  "agent_id": "fix-repo-ids",
+  "detail": "Full summary: legacy-scan reports layout v2 for ANY file under records/, so a migrate rerun on a v1 store sees records/RECORDS-FROZEN.md (written by finalize) and reads the store as v1+v2 — migrated_from flipped 1 -> 2 on every rerun and legacy/manifest.json's layouts is likewise unstable across reruns. finalize now preserves the first run's migrated_from from the existing store.json; the manifest instability is untouched (root-cause fix belongs in legacy-scan: exclude RECORDS-FROZEN.md, or a non-.json file, from the v2 heuristic).",
+  "entry_type": "need",
+  "id": "01M2YJ56XTT2QW48B0XGKTG8E0",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T04:45:57.030Z"
+  },
+  "scope": "src/retrieval/store-identity.ts",
+  "summary": "legacy-scan reports layout v2 for ANY file under records/, so a migrate rerun on a v1 store sees records/RECORDS-FROZEN.md (written by finalize) and reads the store as v1+v2 — migrated_from flipped…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-20T04:45:57.050Z"
+}

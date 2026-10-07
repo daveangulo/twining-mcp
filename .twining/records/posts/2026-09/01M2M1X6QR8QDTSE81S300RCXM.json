@@ -1,0 +1,17 @@
+{
+  "agent_id": "merge-integrator",
+  "detail": "New decision \"Marked C07, C13 and C23 not-tested rather than partial, and recorded that C13's stated blocker (the Git carrier) has since merged so it is now a coverage gap rather than a dependency\" relates to:\n- 01M2M1X6P0EYR9E3BQ1RGR3Q85: \"Rebuilt every matrix count by running the suite against the merged tree rather than transcribing the lanes' self-reported numbers\"",
+  "entry_type": "finding",
+  "id": "01M2M1X6QR8QDTSE81S300RCXM",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "aef83faba517a8bafeb107d11ece4f587fcbbd7b",
+    "recorded_at": "2026-09-16T02:49:33.158Z"
+  },
+  "scope": "docs/reports/",
+  "summary": "Related decisions in scope: 1 existing decision(s) overlap",
+  "tags": [
+    "testing"
+  ],
+  "timestamp": "2026-09-16T02:49:33.176Z"
+}

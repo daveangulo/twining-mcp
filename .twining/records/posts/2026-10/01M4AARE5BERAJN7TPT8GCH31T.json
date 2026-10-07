@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "",
+  "entry_type": "finding",
+  "id": "01M4AARE5BERAJN7TPT8GCH31T",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "98226d81e87150f79eba58de090c4715379b99d0",
+    "recorded_at": "2026-10-07T04:43:13.431Z"
+  },
+  "scope": "docs/operations/",
+  "summary": "migrate --to 3 on an identity-init store re-imports the 2.x mirror of each native write as a second legacy_unverified record (K9), then the store is read-only (K1)",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-10-07T04:43:13.451Z"
+}

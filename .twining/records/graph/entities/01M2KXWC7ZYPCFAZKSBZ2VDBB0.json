@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T01:39:11.742Z",
+  "id": "01M2KXWC7ZYPCFAZKSBZ2VDBB0",
+  "name": "01M2KXWC719QF8B4C4A0GE4SPN",
+  "properties": {
+    "scope": "src/retrieval/",
+    "summary": "Tokenizer calibration (DP4) must run before the v3 merge ships: the unified budget currency under the proven 1 token/byte bound makes every 2.x briefing ~4x tighter for the same max_tokens, which conflicts with the field's standing 'do not make assemble quieter' constraint; the calibration script's whitespace-only corpus document must be skipped or padded first (API rejects empty text blocks)."
+  },
+  "type": "concept",
+  "updated_at": "2026-09-16T01:39:11.742Z"
+}

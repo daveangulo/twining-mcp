@@ -1,0 +1,28 @@
+{
+  "affected_files": [
+    "docs/plans/2026-09-15-foundation-programme-log.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Environment restored (Dave accepted the Xcode license; git/brew back on the plain PATH); pruned the eight Stage 0 reproduction worktrees; logged DN7-resolved/DN14/D18; noted the archiver's 500 tracked post-record deletions for the next records commit.",
+  "depends_on": [],
+  "domain": "testing",
+  "id": "01M2KF04PDF60DR8VF5K80GS5B",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "d862f6ce8b8216ee51145fd1ba7864516492f3cc",
+    "recorded_at": "2026-09-15T21:19:06.408Z"
+  },
+  "rationale": "leaving changed workflow worktrees on disk is the exact accumulation prior sessions had to clean up later.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/plans/",
+  "status": "active",
+  "summary": "Chose to prune the eight Stage 0 reproduction worktrees immediately after confirming their gap tests were already committed on foundation/v3",
+  "timestamp": "2026-09-15T21:19:06.445Z"
+}

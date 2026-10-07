@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-15T21:24:21.128Z",
+  "id": "01M2KF9R08AB6A69WJP18QFVA9",
+  "name": "src/core/commands/graph.ts",
+  "properties": {
+    "scope": "src/cli/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-15T21:24:21.420Z"
+}

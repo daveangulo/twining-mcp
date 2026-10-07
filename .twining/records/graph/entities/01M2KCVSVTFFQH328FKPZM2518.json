@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T20:41:47.130Z",
+  "id": "01M2KCVSVTFFQH328FKPZM2518",
+  "name": "01M2KCVSP62A2P3NY4R01C1KSJ",
+  "properties": {
+    "scope": "docs/",
+    "summary": "Chose to keep the baseline gap reproductions as characterization tests (green while the gap exists, red when a lane closes it) rather than converting them to xfail-style expectations"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-15T20:41:47.130Z"
+}

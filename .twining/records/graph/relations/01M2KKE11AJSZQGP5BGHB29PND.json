@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T22:36:35.754Z",
+  "id": "01M2KKE11AJSZQGP5BGHB29PND",
+  "properties": {
+    "decision_summary": "Tokenizer decision (DP4): run ONE calibration pass against the Anthropic count-tokens API with the owner's key injected per-process (never printed or exported), so the shipped table is a measured ratio plus a stated safety margin instead of the 1-token-per-UTF-8-byte proof that is ~4x loose; if the key is unavailable the proven bound ships and the report says budgets are conservative by ~4x",
+    "origin": "derived"
+  },
+  "source": "01M2KKE0NYTGMBKY5J6VCX4Y8X",
+  "target": "01M2KKE0ZJ157BM7ETH4N794EG",
+  "type": "decided_by"
+}

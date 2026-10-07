@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T01:50:51.899Z",
+  "id": "01M2KYHQZVQVF07R20Q0VKCGM0",
+  "name": "01M2KYHQYY6WR8RRKQXSWXEBZV",
+  "properties": {
+    "scope": "src/exchange/",
+    "summary": "Accepted lane 02b's partial refutations: redaction of remote credentials happens at construction (the id is committed into cursors, so print-time redaction is too late); cross-replica add/add conflicts are resolved keep-ours-and-retain-theirs (never checkout --ours, which loses a side); same-digest/different-signature duplicates are decided by which signature verifies (no timing input), not by a widened journal primary key that would break existing rows."
+  },
+  "type": "concept",
+  "updated_at": "2026-09-16T01:50:51.899Z"
+}

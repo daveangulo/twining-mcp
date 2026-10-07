@@ -23,8 +23,9 @@ Full reference for all Twining MCP tools. See `CLAUDE.md` for mandatory workflow
 | `twining_neighbors` | Optional | Explore entity connections up to depth 3 |
 | `twining_graph_query` | Optional | Search graph entities by name or property |
 | `twining_prune_graph` | Maintenance | Remove stale graph nodes |
+| `twining_exchange_status` | Exchange | What this replica is uncertain about: outbox depth, events waiting on prerequisites, rejected/quarantined counts with reasons, per-consumer cursors, and the gaps it knows it has. Read-only; never runs git |
 
-That is the complete default surface — 15 tools. **If a tool is not in this table, it does not exist unless the project sets `tools.full_surface: true`.** Notably `twining_decide`, `twining_link_commit`, `twining_amend`, `twining_verify`, `twining_dismiss`, and `twining_handoff` are *not* available by default: use `twining_record` instead, whose `decisions` array writes to the same store and which also accepts `commit_hash`, `supersedes`, and `depends_on`. `supersedes` requires exactly one decision in the call — with several, the superseding record is ambiguous and the supersession is skipped with `supersedes_skipped: true` in the response; a nonexistent target is reported as `supersedes_dangling` instead of being silently ignored.
+That is the complete default surface — 16 tools. **If a tool is not in this table, it does not exist unless the project sets `tools.full_surface: true`.** Notably `twining_decide`, `twining_link_commit`, `twining_amend`, `twining_verify`, `twining_dismiss`, and `twining_handoff` are *not* available by default: use `twining_record` instead, whose `decisions` array writes to the same store and which also accepts `commit_hash`, `supersedes`, and `depends_on`. `supersedes` requires exactly one decision in the call — with several, the superseding record is ambiguous and the supersession is skipped with `supersedes_skipped: true` in the response; a nonexistent target is reported as `supersedes_dangling` instead of being silently ignored.
 
 ## Extended Tools (require `full_surface: true`)
 
@@ -89,6 +90,11 @@ Note: `twining_decide` auto-creates `file`/`function` entities with `decided_by`
 | Tool | Purpose |
 |------|---------|
 | `twining_export` | Export full state as markdown for context window handoff or docs |
+
+### Migration
+| Tool | Purpose |
+|------|---------|
+| `twining_migrate_status` | Report where this store stands on the v2 → v3 migration: the steps completed, an interrupted run's resume point, and whether a rollback view is in force |
 
 (`twining_status` and `twining_archive` are on the **default** surface — see the Core Tools table above.)
 

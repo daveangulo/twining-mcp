@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-15T20:57:23.340Z",
+  "id": "01M2KDRC4CDBW9TG662VFM3PQ2",
+  "name": "test/contracts/contracts.test.ts",
+  "properties": {
+    "scope": "docs/adr/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-15T20:57:23.647Z"
+}

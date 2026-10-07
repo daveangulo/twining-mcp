@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-08T23:01:36.116Z",
+  "id": "01M21M2S7MAN4TC6KMVY2B8R2R",
+  "properties": {
+    "decision_summary": "Chose an unconditional short empty-result sync caveat (measured 33 tokens, under the §6.3 ceiling of 40) over an actionable-only line",
+    "origin": "derived"
+  },
+  "source": "01M21M2RWY5EAKBRD1FENQ8NVF",
+  "target": "01M21M2S7HCSF7DTR5JKDSQTZE",
+  "type": "decided_by"
+}

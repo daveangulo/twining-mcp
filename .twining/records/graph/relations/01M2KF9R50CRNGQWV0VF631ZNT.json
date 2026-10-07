@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T21:24:21.280Z",
+  "id": "01M2KF9R50CRNGQWV0VF631ZNT",
+  "properties": {
+    "decision_summary": "Accepted the CLI lane's three extensions of the unknown-flag rejection — bare positional payloads refused, `capabilities` accepts only --project, a value flag with no value is refused — all exit 2 with USAGE naming the token",
+    "origin": "derived"
+  },
+  "source": "01M2KF9R0DPNDWKQE8Y6HTBB2B",
+  "target": "01M2KF9R4MGK5N4KA179HSWWSX",
+  "type": "decided_by"
+}

@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Chose not to add an estimate-vs-measured validation to scripts/calibrate-tokenizer.mjs despite the per-class attribution caveat\" relates to:\n- 01KQTRRN1BN7VK7P363XRY45EE: \"Chose to keep CLAUDE.md gate authority over reporter's prompt-injection-only alternative for issue #9\"\n- 01KZWAF4QC392XCBBNC6E1N2NQ: \"Accepted the field's withdrawal of D13 ask 1 as specified and dropped commit archaeology entirely\"\n- 01M21M2RZXFQTWP2R4CJJE1CKN: \"Chose to read every code anchor myself rather than fan out mapper agents\"\n- 01M21M2S16YBBJGKVGKNDXMX6H: \"Placed createSuperseding last in W2 as the pre-authorized slide candidate (wave-2 response §3.2) with a decidable criterion (review findings > 6 or touching both backends' write sections), and marked the lineage bundle and the empty-result sync caveat as the two items that never move (cross-host plan §6.3)\"\n- 01M21M2S5Y5P8TS5EY277D597R: \"Chose an unconditional short empty-result sync caveat (measured 33 tokens, under the §6.3 ceiling of 40) over an actionable-only line\"\n- 01M2P29AMP3S5W7AQ6W4RJ3CAE: \"U-9 resolved: EV-A10/EV-K20 (authenticated_human_action archive) map to a v3 lifecycle event kind `archived` on the target, ingress adapter, class human_statement, producer = the acting human, signed with the human key (capability write)\"\n- 01M2P29AR7PD7CSE35C0Z9SR3W: \"Reason-code union fixed at 27 codes: the 24 named in design §4 plus source_state_unknown (C04 A1/B1 pre-fixed disjunction), statement_is_not_ruling and caller_asserted_field_non_authorizing (one non-authorizing code per non-authorizing class-map row); derived renderings use reported_result_non_authorizing\"\n- 01M2P29B31NFKPT6BCCDY50QBN: \"Policy and principal authorities are top-level spec objects (policy, identities) rendered by every seeder as two records (policy.record_id, identities.record_id) signed by a synthetic steward human in v3, rather than entries in records[]\"\n- 01M2P29B6V9JK053DSRZFNTGK9: \"Severity is required on every fact and authority_changing is read as severity=authority AND category in {authorization, consumer_prerequisite} AND kind in {decision, cited_exclude, write_forbidden, reason_code_forbidden}\"",
+  "entry_type": "finding",
+  "id": "01M2YH9Y4XRNKWRF4ZJ41ZQH1E",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-20T04:31:03.305Z"
+  },
+  "scope": "docs/",
+  "summary": "Related decisions in scope: 9 existing decision(s) overlap",
+  "tags": [
+    "security"
+  ],
+  "timestamp": "2026-09-20T04:31:03.325Z"
+}

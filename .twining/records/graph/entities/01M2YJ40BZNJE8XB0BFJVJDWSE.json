@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-20T04:45:17.567Z",
+  "id": "01M2YJ40BZNJE8XB0BFJVJDWSE",
+  "name": "01M2YJ4095C24QRQF8ADC2PMS6",
+  "properties": {
+    "scope": "docs/plans/2026-09-16-dev-scale-trial-design.md",
+    "summary": "Chose to inherit baseline's description in OracleInContextCondition"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-20T04:45:17.567Z"
+}

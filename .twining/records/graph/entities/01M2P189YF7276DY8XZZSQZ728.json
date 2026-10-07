@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T21:16:37.199Z",
+  "id": "01M2P189YF7276DY8XZZSQZ728",
+  "name": "01M2P189WW5ER2Y7H350W449XD",
+  "properties": {
+    "scope": "src/adapters/",
+    "summary": "Chose NOT to fix store-identity.ts reading repo_id while ensureStoreDescriptor writes repo_ids"
+  },
+  "type": "concept",
+  "updated_at": "2026-09-16T21:16:37.199Z"
+}

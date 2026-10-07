@@ -1,0 +1,18 @@
+{
+  "agent_id": "reviewer-591fcf63",
+  "detail": "Full summary: readers now disagree on one hand-written shape only — declaredRepoId (retrieval + migrate) takes repo_id first, repoIdFor (adapter runtime) takes repo_ids[0]; they coincide on every producer-written file because finalize writes identity.repo_id first and ensureStoreDescriptor only appends. test/retrieval/store-identity.test.ts 'prefers repo_id over repo_ids[0]' pins the divergent shape {repo_id:A, repo_ids:[B,A]} as desired; the store-identity.ts header claims agreement with repoIdFor only for the repo_id-absent case.",
+  "entry_type": "warning",
+  "id": "01M2Z2DW3B7ZDRF2RZ7QS20B6Z",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T09:30:18.070Z"
+  },
+  "scope": "src/retrieval/store-identity.ts",
+  "summary": "readers now disagree on one hand-written shape only — declaredRepoId (retrieval + migrate) takes repo_id first, repoIdFor (adapter runtime) takes repo_ids[0]; they coincide on every producer-writte…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-20T09:30:18.091Z"
+}

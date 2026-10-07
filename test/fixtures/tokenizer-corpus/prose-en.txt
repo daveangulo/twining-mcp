@@ -1,0 +1,6 @@
+The retrieval layer selects candidates by scope before it ranks them. A relevance
+score is not an access right, and a cache key collision is not a permission. When
+a query names a scope the principal may not read, the answer is that there is no
+in-scope evidence, and the system says so rather than quietly widening the search
+until it finds something. This paragraph is ordinary English prose and exists to
+measure how many tokens a byte of ordinary English prose costs.

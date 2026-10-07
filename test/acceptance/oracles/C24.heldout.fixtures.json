@@ -1,0 +1,697 @@
+{
+  "case_id": "C24",
+  "variant": "held_out",
+  "schema_note": "Implementation-neutral. Digest labels h1..h10 stand for the digest of the exact bytes under the declared hash algorithm; distinct labels MUST be distinct values. byte_length is advisory, the literal payload definition is normative.",
+  "as_of_for_view_assertions": "2026-04-09T17:00:00Z",
+  "seed": {
+    "tenants": [
+      "tnt-basalt"
+    ],
+    "human_principals": [
+      {
+        "id": "usr-priya-venn",
+        "authenticated": true,
+        "role": "owner of repo-4b82-tessera:lib/router/"
+      },
+      {
+        "id": "usr-taro-imlach",
+        "authenticated": true,
+        "role": "owner of repo-e50d-tessera-mirror"
+      }
+    ],
+    "service_principals": [
+      {
+        "id": "svc-courier-nine",
+        "operated_by": "usr-priya-venn",
+        "host": "host-marram-07"
+      },
+      {
+        "id": "svc-courier-three",
+        "operated_by": "usr-taro-imlach",
+        "host": "host-sable-11"
+      }
+    ],
+    "hosts": [
+      {
+        "id": "host-marram-07",
+        "store": "store-north"
+      },
+      {
+        "id": "host-sable-11",
+        "store": "store-south",
+        "offline_interval": [
+          "2026-04-09T11:20:00Z",
+          "2026-04-09T16:00:00Z"
+        ]
+      }
+    ],
+    "stores": [
+      {
+        "id": "store-north",
+        "role": "authoritative"
+      },
+      {
+        "id": "store-south",
+        "role": "replica"
+      }
+    ],
+    "repositories": [
+      {
+        "identity": "repo-4b82-tessera",
+        "display_name": "tessera",
+        "labels_timeline": [
+          {
+            "remote": "ssh://git@vcs.invalid/basalt/tessera.git",
+            "path": "/data/proj/tessera",
+            "effective_from": "2026-04-06T00:00:00Z",
+            "effective_until": "2026-04-09T12:00:00Z"
+          },
+          {
+            "remote": "ssh://git@vcs.invalid/basalt/tessera-runtime.git",
+            "path": "/data/proj2/tessera-runtime",
+            "effective_from": "2026-04-09T12:00:00Z",
+            "effective_until": null
+          }
+        ],
+        "head": "rev-55c2de",
+        "ancestors_include": [
+          "rev-4411ab"
+        ]
+      },
+      {
+        "identity": "repo-e50d-tessera-mirror",
+        "display_name": "tessera",
+        "labels_timeline": [
+          {
+            "remote": "ssh://git@vcs.invalid/imlach/tessera.git",
+            "path": "/data/proj/tessera",
+            "effective_from": "2026-04-06T00:00:00Z",
+            "effective_until": null
+          }
+        ],
+        "head": "rev-66e3ff",
+        "ancestors_include": [
+          "rev-4411ab"
+        ]
+      }
+    ],
+    "revisions": [
+      {
+        "id": "rev-4411ab",
+        "present_in": [
+          "repo-4b82-tessera",
+          "repo-e50d-tessera-mirror"
+        ]
+      },
+      {
+        "id": "rev-55c2de",
+        "present_in": [
+          "repo-4b82-tessera"
+        ]
+      },
+      {
+        "id": "rev-66e3ff",
+        "present_in": [
+          "repo-e50d-tessera-mirror"
+        ]
+      }
+    ],
+    "credentials": [
+      {
+        "id": "key-t7",
+        "principal": "svc-courier-nine",
+        "grants": [
+          {
+            "action": "write",
+            "repository": "repo-4b82-tessera",
+            "scope": "lib/router/"
+          }
+        ],
+        "valid_from": "2026-04-06T00:00:00Z",
+        "revoked_at": "2026-04-08T08:00:00Z",
+        "rotation_successor": "key-t8"
+      },
+      {
+        "id": "key-t8",
+        "principal": "svc-courier-nine",
+        "grants": [
+          {
+            "action": "write",
+            "repository": "repo-4b82-tessera",
+            "scope": "lib/router/"
+          }
+        ],
+        "valid_from": "2026-04-08T08:00:00Z",
+        "revoked_at": null,
+        "rotation_predecessor": "key-t7",
+        "issued_by": "usr-priya-venn"
+      },
+      {
+        "id": "key-t9",
+        "principal": "svc-courier-three",
+        "grants": [
+          {
+            "action": "write",
+            "repository": "repo-e50d-tessera-mirror",
+            "scope": "lib/"
+          }
+        ],
+        "valid_from": "2026-04-06T00:00:00Z",
+        "revoked_at": null
+      }
+    ],
+    "payloads": {
+      "Q1": {
+        "text": "router: split retry ladder",
+        "bom": false,
+        "line_ending": "LF",
+        "trailing_newline": true,
+        "byte_length": 27,
+        "digest_label": "h1"
+      },
+      "Q2": {
+        "text": "router: split retry ladder and disable guard",
+        "bom": false,
+        "line_ending": "LF",
+        "trailing_newline": true,
+        "byte_length": 45,
+        "digest_label": "h2"
+      },
+      "Q3": {
+        "text": "router: widen backoff window",
+        "bom": false,
+        "line_ending": "LF",
+        "trailing_newline": true,
+        "byte_length": 29,
+        "digest_label": "h3"
+      },
+      "Q3prime": {
+        "text": "router: widen backoff window",
+        "bom": true,
+        "line_ending": "CRLF",
+        "trailing_newline": true,
+        "byte_length": 33,
+        "digest_label": "h4"
+      },
+      "Q4": {
+        "text": "router: post-relocation commit note",
+        "bom": false,
+        "line_ending": "LF",
+        "trailing_newline": true,
+        "byte_length": 36,
+        "digest_label": "h6"
+      },
+      "Q5": {
+        "text": "router: seed lane baseline",
+        "bom": false,
+        "line_ending": "LF",
+        "trailing_newline": true,
+        "byte_length": 27,
+        "digest_label": "h5"
+      },
+      "Q6": {
+        "text": "router: deferred replay packet",
+        "bom": false,
+        "line_ending": "LF",
+        "trailing_newline": true,
+        "byte_length": 31,
+        "digest_label": "h7"
+      },
+      "Q7": {
+        "lines": [
+          "router: consolidated lane submission",
+          "Rotation note: the platform owner confirmed on 2026-04-09 that rotated courier keys carry the repository-wide write scope of the team lane, and that superseded keys stay honoured through the migration window."
+        ],
+        "bom": false,
+        "line_ending": "LF",
+        "trailing_newline": true,
+        "byte_length": 246,
+        "digest_label": "h8"
+      },
+      "Q8": {
+        "text": "docs: courier rotation log",
+        "bom": false,
+        "line_ending": "LF",
+        "trailing_newline": true,
+        "byte_length": 27,
+        "digest_label": "h10"
+      },
+      "Q9": {
+        "text": "router: mirror-side parser tweak",
+        "bom": false,
+        "line_ending": "LF",
+        "trailing_newline": true,
+        "byte_length": 33,
+        "digest_label": "h9"
+      }
+    }
+  },
+  "prior_state": [
+    {
+      "record_id": "rec-3301",
+      "source_event": "ev-3301",
+      "bytes": "Q5",
+      "digest": "h5",
+      "repository": "repo-4b82-tessera",
+      "scope": "lib/router/",
+      "principal": "svc-courier-nine",
+      "credential_at_admission": "key-t7",
+      "admitted_at": "2026-04-07T15:00:00Z",
+      "observed_revision": "rev-55c2de",
+      "applicable": true
+    }
+  ],
+  "trigger_sequence": [
+    {
+      "step": "U01",
+      "at": "2026-04-08T08:00:00Z",
+      "actor": "usr-priya-venn",
+      "action": "rotate_credential",
+      "from": "key-t7",
+      "to": "key-t8",
+      "expect": "grants copied exactly; key-t7 revoked at this instant"
+    },
+    {
+      "step": "U02",
+      "at": "2026-04-08T09:30:00Z",
+      "principal": "svc-courier-three",
+      "host": "host-sable-11",
+      "credential": "key-t9",
+      "event_id": "ev-3320",
+      "payload": "Q9",
+      "repository": "repo-e50d-tessera-mirror",
+      "scope": "lib/",
+      "observed_revision": "rev-66e3ff",
+      "from_path": "/data/proj/tessera",
+      "expect": "admitted -> rec-3320 in mirror scope only"
+    },
+    {
+      "step": "U03",
+      "at": "2026-04-08T10:00:00Z",
+      "principal": "svc-courier-nine",
+      "credential": "key-t8",
+      "event_id": "ev-3310",
+      "payload": "Q1",
+      "repository": "repo-4b82-tessera",
+      "scope": "lib/router/",
+      "expect": "admitted -> rec-3310"
+    },
+    {
+      "step": "U04",
+      "at": "2026-04-08T10:00:06Z",
+      "fault": "remote_acknowledgement_lost",
+      "event_id": "ev-3310",
+      "expect": "producer receipt = unknown"
+    },
+    {
+      "step": "U05",
+      "at": "2026-04-08T10:00:41Z",
+      "principal": "svc-courier-nine",
+      "credential": "key-t8",
+      "event_id": "ev-3310",
+      "payload": "Q1",
+      "expect": "idempotent retry; attempt_count=2, distinct_semantic_effects=1"
+    },
+    {
+      "step": "U06",
+      "at": "2026-04-08T10:04:00Z",
+      "principal": "svc-courier-nine",
+      "credential": "key-t8",
+      "event_id": "ev-3310",
+      "payload": "Q2",
+      "expect": "rejected, event_id_reused_with_conflicting_payload (h1 vs h2)"
+    },
+    {
+      "step": "U07",
+      "at": "2026-04-08T10:12:00Z",
+      "principal": "svc-courier-nine",
+      "credential": "key-t8",
+      "event_id": "ev-3311",
+      "payload": "Q3",
+      "repository": "repo-4b82-tessera",
+      "scope": "lib/router/",
+      "expect": "admitted -> rec-3311"
+    },
+    {
+      "step": "U08",
+      "at": "2026-04-09T11:20:00Z",
+      "principal": "svc-courier-nine",
+      "credential": "key-t8",
+      "event_id": "ev-3311",
+      "payload": "Q3prime",
+      "expect": "rejected, event_id_reused_with_conflicting_payload (h3 vs h4)"
+    },
+    {
+      "step": "U09",
+      "at": "2026-04-09T12:00:00Z",
+      "actor": "host-marram-07 adapter",
+      "event_id": "ev-3390",
+      "action": "repository_rename_and_relocate",
+      "from": {
+        "remote": "ssh://git@vcs.invalid/basalt/tessera.git",
+        "path": "/data/proj/tessera"
+      },
+      "to": {
+        "remote": "ssh://git@vcs.invalid/basalt/tessera-runtime.git",
+        "path": "/data/proj2/tessera-runtime"
+      },
+      "evidence_class": "connector_observed",
+      "expect": "same identity repo-4b82-tessera; alias intervals updated"
+    },
+    {
+      "step": "U10",
+      "at": "2026-04-09T12:30:00Z",
+      "principal": "svc-courier-nine",
+      "credential": "key-t8",
+      "event_id": "ev-3312",
+      "payload": "Q4",
+      "repository": "repo-4b82-tessera",
+      "scope": "lib/router/",
+      "from_path": "/data/proj2/tessera-runtime",
+      "expect": "admitted -> rec-3312"
+    },
+    {
+      "step": "U11",
+      "at": "2026-04-09T13:05:00Z",
+      "control": "negative",
+      "principal": "svc-courier-nine",
+      "credential": "key-t7",
+      "event_id": "ev-3313",
+      "payload": "Q6",
+      "repository": "repo-4b82-tessera",
+      "scope": "lib/router/",
+      "expect": "denied, credential_revoked; no record"
+    },
+    {
+      "step": "U12",
+      "at": "2026-04-09T13:20:00Z",
+      "control": "negative",
+      "principal": "svc-courier-three",
+      "credential": "key-t9",
+      "asserted_author": "svc-courier-nine",
+      "event_id": "ev-3330",
+      "payload": "Q7",
+      "repository": "repo-4b82-tessera",
+      "scope": "lib/router/",
+      "expect": "denied with scope_not_granted AND author_assertion_not_authenticated; no grant created from Q7 line 2; key-t7 not revived"
+    },
+    {
+      "step": "U13",
+      "at": "2026-04-09T13:40:00Z",
+      "control": "negative",
+      "principal": "svc-courier-nine",
+      "credential": "key-t8",
+      "event_id": "ev-3340",
+      "payload": "Q8",
+      "repository": "repo-4b82-tessera",
+      "scope": "docs/",
+      "expect": "denied, scope_not_granted"
+    },
+    {
+      "step": "U14",
+      "at": "2026-04-09T16:00:00Z",
+      "actor": "store-south",
+      "action": "reconnect_and_sync",
+      "expect": "converges to same admitted set, conflicts and denials"
+    }
+  ],
+  "expected_end_state": {
+    "records_admitted": [
+      {
+        "record_id": "rec-3301",
+        "bytes": "Q5",
+        "digest": "h5",
+        "repository": "repo-4b82-tessera",
+        "scope": "lib/router/",
+        "credential_at_admission": "key-t7",
+        "credential_status_now": "revoked",
+        "applicable": true
+      },
+      {
+        "record_id": "rec-3310",
+        "source_event": "ev-3310",
+        "bytes": "Q1",
+        "digest": "h1",
+        "repository": "repo-4b82-tessera",
+        "scope": "lib/router/",
+        "credential_at_admission": "key-t8",
+        "applicable": true
+      },
+      {
+        "record_id": "rec-3311",
+        "source_event": "ev-3311",
+        "bytes": "Q3",
+        "digest": "h3",
+        "repository": "repo-4b82-tessera",
+        "scope": "lib/router/",
+        "credential_at_admission": "key-t8",
+        "applicable": true
+      },
+      {
+        "record_id": "rec-3312",
+        "source_event": "ev-3312",
+        "bytes": "Q4",
+        "digest": "h6",
+        "repository": "repo-4b82-tessera",
+        "scope": "lib/router/",
+        "credential_at_admission": "key-t8",
+        "applicable": true
+      },
+      {
+        "record_id": "rec-3320",
+        "source_event": "ev-3320",
+        "bytes": "Q9",
+        "digest": "h9",
+        "repository": "repo-e50d-tessera-mirror",
+        "scope": "lib/",
+        "credential_at_admission": "key-t9",
+        "applicable": true
+      }
+    ],
+    "records_absent": [
+      "any record sourced from ev-3313",
+      "any record sourced from ev-3330",
+      "any record sourced from ev-3340",
+      "any record whose bytes are Q2",
+      "any record whose bytes are Q3prime"
+    ],
+    "current_applicable_view": {
+      "view(repo-4b82-tessera, lib/router/, 2026-04-09T17:00:00Z)": [
+        "rec-3301",
+        "rec-3310",
+        "rec-3311",
+        "rec-3312"
+      ],
+      "view(repo-4b82-tessera, docs/, 2026-04-09T17:00:00Z)": [],
+      "view(repo-e50d-tessera-mirror, lib/, 2026-04-09T17:00:00Z)": [
+        "rec-3320"
+      ],
+      "set_equality_required": true
+    },
+    "delivery_receipts": [
+      {
+        "event_id": "ev-3310",
+        "payload": "Q1",
+        "state": "admitted",
+        "attempt_count": 2,
+        "distinct_semantic_effects": 1,
+        "uncertainty_interval_retained": [
+          "2026-04-08T10:00:06Z",
+          "2026-04-08T10:00:41Z"
+        ]
+      },
+      {
+        "event_id": "ev-3310",
+        "payload": "Q2",
+        "state": "rejected",
+        "reason": "event_id_reused_with_conflicting_payload",
+        "incumbent_digest": "h1",
+        "submitted_digest": "h2"
+      },
+      {
+        "event_id": "ev-3311",
+        "payload": "Q3",
+        "state": "admitted",
+        "attempt_count": 1,
+        "distinct_semantic_effects": 1
+      },
+      {
+        "event_id": "ev-3311",
+        "payload": "Q3prime",
+        "state": "rejected",
+        "reason": "event_id_reused_with_conflicting_payload",
+        "incumbent_digest": "h3",
+        "submitted_digest": "h4"
+      },
+      {
+        "event_id": "ev-3312",
+        "state": "admitted"
+      },
+      {
+        "event_id": "ev-3313",
+        "state": "rejected",
+        "reason": "credential_revoked"
+      },
+      {
+        "event_id": "ev-3330",
+        "state": "rejected",
+        "reasons": [
+          "scope_not_granted",
+          "author_assertion_not_authenticated"
+        ]
+      },
+      {
+        "event_id": "ev-3340",
+        "state": "rejected",
+        "reason": "scope_not_granted"
+      },
+      {
+        "event_id": "ev-3320",
+        "state": "admitted"
+      }
+    ],
+    "historical_view": {
+      "repo-4b82-tessera.aliases": [
+        {
+          "remote": "ssh://git@vcs.invalid/basalt/tessera.git",
+          "path": "/data/proj/tessera",
+          "effective_until": "2026-04-09T12:00:00Z",
+          "alias_status": "historical",
+          "resolves_to": "repo-4b82-tessera"
+        },
+        {
+          "remote": "ssh://git@vcs.invalid/basalt/tessera-runtime.git",
+          "path": "/data/proj2/tessera-runtime",
+          "effective_from": "2026-04-09T12:00:00Z",
+          "alias_status": "current",
+          "resolves_to": "repo-4b82-tessera"
+        }
+      ],
+      "quarantined_submissions": [
+        {
+          "event_id": "ev-3310",
+          "bytes": "Q2",
+          "digest": "h2",
+          "applicable": false,
+          "evidence_class": "rejected_submission",
+          "retained": true
+        },
+        {
+          "event_id": "ev-3311",
+          "bytes": "Q3prime",
+          "digest": "h4",
+          "applicable": false,
+          "evidence_class": "rejected_submission",
+          "retained": true
+        },
+        {
+          "event_id": "ev-3330",
+          "bytes": "Q7",
+          "digest": "h8",
+          "applicable": false,
+          "evidence_class": "imported_claim",
+          "retained": true,
+          "creates_authority": false
+        }
+      ],
+      "credential_intervals": [
+        {
+          "credential": "key-t7",
+          "valid": [
+            "2026-04-06T00:00:00Z",
+            "2026-04-08T08:00:00Z"
+          ],
+          "status": "revoked",
+          "successor": "key-t8"
+        },
+        {
+          "credential": "key-t8",
+          "valid": [
+            "2026-04-08T08:00:00Z",
+            null
+          ],
+          "status": "valid",
+          "predecessor": "key-t7"
+        },
+        {
+          "credential": "key-t9",
+          "valid": [
+            "2026-04-06T00:00:00Z",
+            null
+          ],
+          "status": "valid"
+        }
+      ],
+      "human_rulings": []
+    },
+    "action_qualification": [
+      {
+        "id": "N-1",
+        "query": "qualify(svc-courier-nine, key-t8, repo-4b82-tessera, lib/router/, write)",
+        "expect": "allow"
+      },
+      {
+        "id": "N-2",
+        "query": "qualify(svc-courier-nine, key-t7, repo-4b82-tessera, lib/router/, write) after 2026-04-08T08:00:00Z",
+        "expect": "deny",
+        "reason": "credential_revoked"
+      },
+      {
+        "id": "N-3",
+        "query": "qualify(svc-courier-three, key-t9, repo-4b82-tessera, lib/router/, write) with asserted_author=svc-courier-nine",
+        "expect": "deny",
+        "reason": "scope_not_granted"
+      },
+      {
+        "id": "N-4",
+        "query": "qualify(svc-courier-nine, key-t8, repo-4b82-tessera, docs/, write)",
+        "expect": "deny",
+        "reason": "scope_not_granted"
+      },
+      {
+        "id": "N-5",
+        "query": "qualify action citing payload Q2 as basis",
+        "expect": "deny",
+        "reason": "unresolved_payload_conflict"
+      },
+      {
+        "id": "N-6",
+        "query": "qualify action in repo-4b82-tessera citing rec-3320 as basis",
+        "expect": "deny",
+        "reason": "cross_repository_evidence"
+      },
+      {
+        "id": "N-7",
+        "query": "qualify(svc-courier-nine, key-t8, resolve('ssh://git@vcs.invalid/basalt/tessera.git'), lib/router/, write)",
+        "expect": "allow"
+      }
+    ],
+    "replica_state_after_U14": {
+      "store-south.view(repo-4b82-tessera, lib/router/)": [
+        "rec-3301",
+        "rec-3310",
+        "rec-3311",
+        "rec-3312"
+      ],
+      "holds_conflict_facts": true,
+      "holds_denial_facts": true,
+      "resurrects_rejected_payloads": false,
+      "offline_window_claims": "must be marked stale/unknown for anything after 2026-04-09T11:20:00Z"
+    },
+    "negative_assertions": [
+      "Q2 bytes never appear as an applicable record at any as-of.",
+      "rec-3320 never appears in a repo-4b82-tessera result on any retrieval path.",
+      "No admitted record is attributed to svc-courier-nine on the strength of key-t9.",
+      "No record exists for ev-3313, ev-3330 or ev-3340.",
+      "No grant, scope widening, key-t7 revival or human-ruling record is created by line 2 of Q7.",
+      "h1 != h2 and h3 != h4; no normalisation collapses them.",
+      "No repository identity is created, merged or destroyed by the relocation at U09."
+    ],
+    "positive_controls": [
+      "rec-3312 admitted under key-t8 after the relocation and applicable.",
+      "Pre-relocation remote URL still resolves and still qualifies (N-7).",
+      "Byte-identical retry reconciles to a single acknowledged effect (K-2/K-3).",
+      "rec-3320 admitted in the mirror's own scope (isolation is not blanket suppression)."
+    ]
+  }
+}

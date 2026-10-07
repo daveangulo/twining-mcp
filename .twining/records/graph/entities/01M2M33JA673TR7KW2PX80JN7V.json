@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-16T03:10:30.214Z",
+  "id": "01M2M33JA673TR7KW2PX80JN7V",
+  "name": "test/acceptance/cases/c05.test.ts",
+  "properties": {
+    "scope": "src/retrieval/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-16T03:10:30.661Z"
+}

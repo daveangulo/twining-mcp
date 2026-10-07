@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-20T04:45:56.989Z",
+  "id": "01M2YJ56VXHP2DM3S5R89N8ZZE",
+  "properties": {
+    "decision_summary": "Chose to fix readStoreIdentity, resolveIdentity and migrateStatus to fall back to repo_ids[0] when repo_id is absent (repo_id still preferred when present), reporting source 'store.json' and the file's format",
+    "origin": "derived"
+  },
+  "source": "01M2YJ56VW6B8YN8EG7111ZG3V",
+  "target": "01M2YJ56VN0S9NMAHNSRVVFPPN",
+  "type": "decided_by"
+}

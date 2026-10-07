@@ -1,0 +1,16 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: the lead's Stage 0 extraction saved only each oracle's markdown body — the structured invariants and open_questions arrays were printed to the console and never written to the oracle files, so the rulings pass found 6 of 56 question ids in the repo. Fixed by appending both lists from the workflow journal to every *.oracle.md; the 73 ruling rows in appendix B were derived from the oracles' stated defaults and stand.",
+  "entry_type": "warning",
+  "id": "01M2KDRCJ1QPM6FKBAGN1S1XE4",
+  "origin": "discovery",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:57:23.656Z"
+  },
+  "scope": "docs/adr/",
+  "summary": "the lead's Stage 0 extraction saved only each oracle's markdown body — the structured invariants and open_questions arrays were printed to the console and never written to the oracle files, so the …",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-15T20:57:23.777Z"
+}

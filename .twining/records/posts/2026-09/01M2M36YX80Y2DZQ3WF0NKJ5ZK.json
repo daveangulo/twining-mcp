@@ -1,0 +1,18 @@
+{
+  "agent_id": "main",
+  "detail": "Full summary: Tokenizer calibration wired (3687984a): measured table active with proven fallback, prose 0.42 tokens/byte vs 1.0 (budgets ~2.3x denser), double-applied safety factor defect fixed, two vacuous re-baselined tests repaired; full suite 2711 passed / 0 failed. Log D40 committed 31f8d45a. Session context exhausted; remaining work recorded.\nFindings: Calibration incompleteness: ascii_space keeps the proven ratio 1.0 because the whitespace-only corpus document is refused by count-tokens, and whitespace is ~15% of briefing bytes; a corpus document ≥80% whitespace but not blank would let a second calibration run land near 0.28 tokens/byte instead of 0.42.; warning: the committed plugin bundle (plugin/server/twining-server.mjs, 1,385,871 bytes) is stale against the merged tree (fresh build 1,641,873 bytes); CI's bundle-freshness job is red on foundation/v3 and feat/cli-2.17 until scripts/bump-plugin-version.sh rebuilds it at release — owner action, deliberately not done here.; Programme state at session end: foundation/v3 = 3687984a + 31f8d45a (2711 tests, 0 failed; PR #49 draft do-not-merge); feat/cli-2.17 = d2e96ad (PR #48, 2.17.0 under Dave's tag). Remaining: dev-scale matched trial (RB5), final report docs/reports/2026-09-foundation-final.md with go/no-go table, operator docs completion; owner items: BEHAVIORS.md + bundle at release, Codex hook trust, C28 on the second machine, file-wins precedence (gap 8), remote-staleness owner (gap 5).",
+  "entry_type": "status",
+  "id": "01M2M36YX80Y2DZQ3WF0NKJ5ZK",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "31f8d45a3c09a87c743dea8384a931a7f6cb7304",
+    "recorded_at": "2026-09-16T03:12:21.399Z"
+  },
+  "scope": "src/retrieval/",
+  "summary": "Tokenizer calibration wired (3687984a): measured table active with proven fallback, prose 0.42 tokens/byte vs 1.0 (budgets ~2.3x denser), double-applied safety factor defect fixed, two vacuous re-b…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-16T03:12:21.416Z"
+}

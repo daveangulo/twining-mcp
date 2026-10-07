@@ -1,0 +1,45 @@
+{
+  "affected_files": [
+    "src/cli/twining.ts",
+    "src/core/command-def.ts",
+    "src/core/commands/lifecycle.ts",
+    "src/core/commands/graph.ts",
+    "src/embeddings/embedder.ts",
+    "src/index.ts",
+    "test/cli/twining.test.ts",
+    "test/core/command-registry.test.ts",
+    "docs/CLI.md",
+    "CHANGELOG.md",
+    "README.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Keep process.exit and add an unref'd watchdog",
+      "pros": [],
+      "reason_rejected": "still races the native thread pool; the abort is in the runtime's destructor, not in Node"
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "CLI lane applied all 7 confirmed review findings on feat/cli-2.17: exit-134 blocker fixed (process.exitCode + drain, red-on-revert test with a real model cache), unknown flags/positional payloads/dangling value flags rejected with exit 2, envelope carries absolute project_root/store_dir, requires_mode in capabilities, doc counts corrected (15 handlers, 24+7 hidden), embedder offline upgrade-only.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M2KF9QWRRKAXD7G05PRQX5M0",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "d862f6ce8b8216ee51145fd1ba7864516492f3cc",
+    "recorded_at": "2026-09-15T21:24:20.996Z"
+  },
+  "rationale": "Reproduced 3/3 by two independent refuters and by the lane; the fix measured 5/5 exit 0 in ~0.3 s with a real cache and is also safer (an in-flight async embedding write is no longer truncated). Regression guard: a test that symlinks the real ~87 MB model cache and is skipped when absent, proven red when dist was patched back to process.exit.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/cli/",
+  "status": "active",
+  "summary": "CLI exits by setting process.exitCode and letting the event loop drain (sqlite handle and drain timer closed in finally) instead of calling process.exit — the latter raced onnxruntime-node's thread pool and aborted with SIGABRT (exit 134) on every successful run with a cached embedding model",
+  "timestamp": "2026-09-15T21:24:21.016Z"
+}

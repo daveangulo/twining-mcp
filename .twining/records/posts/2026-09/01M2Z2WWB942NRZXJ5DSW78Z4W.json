@@ -1,0 +1,17 @@
+{
+  "agent_id": "main",
+  "detail": "New decision \"Chose branch fix/repo-ids-review (from 591fcf63, the fix/repo-ids tip) in this worktree rather than fix/repo-ids\" relates to:\n- 01KWN4BCJVKH1X982JA0WDDS66: \"Forward migrate refuses to run when config is sqlite with export_records explicitly false\"",
+  "entry_type": "finding",
+  "id": "01M2Z2WWB942NRZXJ5DSW78Z4W",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T09:38:29.846Z"
+  },
+  "scope": "src/migrate/",
+  "summary": "Related decisions in scope: 1 existing decision(s) overlap",
+  "tags": [
+    "deployment"
+  ],
+  "timestamp": "2026-09-20T09:38:29.865Z"
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-20T09:38:29.468Z",
+  "id": "01M2Z2WVYWGFDPVYR93XVHNMCZ",
+  "properties": {
+    "decision_summary": "Chose NOT to add a migrate heal path for stores migrated pre-591fcf63 after identity init",
+    "origin": "derived"
+  },
+  "source": "01M2KKN9T66STMAR95Y6WBKYSG",
+  "target": "01M2Z2WVYSM2DNJG0VW9WXWN7E",
+  "type": "decided_by"
+}

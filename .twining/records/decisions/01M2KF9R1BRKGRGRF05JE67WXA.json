@@ -1,0 +1,38 @@
+{
+  "affected_files": [
+    "src/cli/twining.ts",
+    "src/core/command-def.ts",
+    "src/core/commands/lifecycle.ts",
+    "src/core/commands/graph.ts",
+    "src/embeddings/embedder.ts",
+    "src/index.ts",
+    "test/cli/twining.test.ts",
+    "test/core/command-registry.test.ts",
+    "docs/CLI.md",
+    "CHANGELOG.md",
+    "README.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "CLI lane applied all 7 confirmed review findings on feat/cli-2.17: exit-134 blocker fixed (process.exitCode + drain, red-on-revert test with a real model cache), unknown flags/positional payloads/dangling value flags rejected with exit 2, envelope carries absolute project_root/store_dir, requires_mode in capabilities, doc counts corrected (15 handlers, 24+7 hidden), embedder offline upgrade-only.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M2KF9R1BRKGRGRF05JE67WXA",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "d862f6ce8b8216ee51145fd1ba7864516492f3cc",
+    "recorded_at": "2026-09-15T21:24:21.143Z"
+  },
+  "rationale": "Each is the same failure mode the review named (a typo or forgotten flag silently turning into an argument-free destructive call, or a dangling --project falling through to the cwd store); refusing loudly is the conservative default for a tool agents call unattended.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/cli/",
+  "status": "active",
+  "summary": "Accepted the CLI lane's three extensions of the unknown-flag rejection — bare positional payloads refused, `capabilities` accepts only --project, a value flag with no value is refused — all exit 2 with USAGE naming the token",
+  "timestamp": "2026-09-15T21:24:21.163Z"
+}

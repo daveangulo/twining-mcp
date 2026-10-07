@@ -1,0 +1,20 @@
+{
+  "agent_id": "main",
+  "detail": "The matrix still says \"the calibration pass has never completed — there is no API key on this machine\" and test/fixtures/tokenizer-corpus/README.md says \"No calibrated table is checked in today\". Both predate D40's calibration run. src/retrieval/calibration.json: id measured-claude-sonnet-4-5/2026-09-16, reference anthropic-count-tokens/claude-sonnet-4-5, 5 docs / 2675 bytes, safety factor 1.15; ratios ascii_alnum 0.263, latin1_supp 0.882, multibyte 0.341; ascii_space 1.0 (whitespace.txt skipped as blank, unmeasured) and ascii_punct 1.0 (clamped to the proven bound). The final report and matrix must describe it this way. ANTHROPIC_API_KEY is absent from this session's environment, so the optional second calibration (handoff item 5) cannot run here; the ≥80%-whitespace non-blank corpus document will be prepared for it.",
+  "entry_type": "finding",
+  "id": "01M2NEMD9KJRQPVJ1NWVNVKYRD",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "9b0afafdecac27e2a03521d29aa1e08eb4091624",
+    "recorded_at": "2026-09-16T15:51:10.878Z"
+  },
+  "scope": "docs/reports/",
+  "summary": "Matrix R15 row, known-gap 5 and the tokenizer-corpus README are stale: calibration.json IS measured (2026-09-16, count-tokens) and wired in 3687984a; only ascii_space and ascii_punct stay at 1.0",
+  "tags": [
+    "foundation-programme",
+    "tokenizer",
+    "matrix",
+    "stale-doc"
+  ],
+  "timestamp": "2026-09-16T15:51:10.900Z"
+}

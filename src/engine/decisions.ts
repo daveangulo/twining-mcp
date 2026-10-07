@@ -26,6 +26,40 @@ import { decisionEmbedText, embedContentHash } from "../embeddings/embed-text.js
 import { COUNT_SEMANTICS, SEARCH_NOISE_FLOOR, type SearchEngine } from "../embeddings/search.js";
 import { GraphAutoPopulator } from "./graph-auto-populator.js";
 import type { IDecisionStore, IIndexManager } from "../storage/interfaces.js";
+import { selectCandidates, legacyScope, legacyEnvelope } from "../retrieval/select.js";
+
+/**
+ * The repo identity used by this engine's scope gate.
+ *
+ * A DecisionEngine is constructed per store, and `getByScope` has already read
+ * from that one store, so every record it returns shares a repo by
+ * construction. A single constant therefore gives the gate the repo component
+ * it needs without threading a store path through the engine's constructor —
+ * what the gate contributes here is segment-boundary path matching, not
+ * cross-store isolation (the store boundary already provides that).
+ */
+const WHY_REPO_SCOPE = "r_whyscope000000000000000000";
+
+/**
+ * The scope a decision should be matched for RELEVANCE under for a `why` query.
+ *
+ * `DecisionStore.getByScope` admits a record by its own scope, by a file in
+ * `affected_files`, or by an exact `affected_symbols` hit. Whichever of those
+ * matched is what makes the record relevant; the record's own scope is what
+ * authorizes it. Mirrors `matchedScopeFor` in context-assembler.ts.
+ */
+function whyMatchedScope(d: { scope: string; affected_files?: string[]; affected_symbols?: string[] }, query: string): string {
+  const rel = (a: string, b: string): boolean => {
+    const na = (a ?? "").trim().replace(/\/+$/, "").replace(/^\.\//, "");
+    const nb = (b ?? "").trim().replace(/\/+$/, "").replace(/^\.\//, "");
+    if (na === "" || nb === "" || na === "project" || nb === "project") return true;
+    return na === nb || na.startsWith(nb + "/") || nb.startsWith(na + "/");
+  };
+  if (rel(d.scope, query)) return d.scope;
+  for (const f of d.affected_files ?? []) if (rel(f, query)) return f;
+  for (const sym of d.affected_symbols ?? []) if (sym === query) return query;
+  return d.scope;
+}
 
 /** Entry in a dependency trace chain. */
 export interface TraceEntry {
@@ -86,6 +120,13 @@ export interface WhyResult {
   more?: WhyCompactDecision[];
   truncated: boolean;
   total_in_scope: number;
+  /**
+   * Records `getByScope` returned that the scope gate then cut, counted by
+   * reason. Makes a zero result distinguishable from an empty store — without
+   * it, a caller asking about a file reads `total_in_scope: 0` as "nothing
+   * constrains this file" whether or not anything was filtered.
+   */
+  scope_suppressed?: Array<{ reason: string; count: number }>;
   superseded_count: number;
   /**
    * Compact identity of the superseded/overridden records the default filter
@@ -668,7 +709,41 @@ export class DecisionEngine {
     }
 
     const budget = options?.max_tokens ?? DEFAULT_WHY_MAX_TOKENS;
-    const all = await this.decisionStore.getByScope(scope);
+
+    // Lane 04 (R13/R14): re-gate `getByScope`'s result through the shared
+    // predicate before anything is ranked or counted.
+    //
+    // `getByScope` matches with 2.x's raw bidirectional `startsWith`, under
+    // which "src/auth" matches "src/authz" — two unrelated modules. The
+    // contract's `pathCovers` matches on SEGMENT boundaries, so that pair no
+    // longer matches, and the repo-identity component makes a record ingested
+    // from another repository's records tree unreachable from this one.
+    //
+    // This narrows what `why` returns; it never widens it. A record the old
+    // matcher admitted by a partial-segment collision was never an answer to
+    // the question asked.
+    const repo = WHY_REPO_SCOPE;
+    const fetched = await this.decisionStore.getByScope(scope);
+    const whyGate = selectCandidates(
+      fetched,
+      (d) => legacyScope(d.scope, repo),
+      (d) => d.id,
+      { principal: "why", authorized: legacyEnvelope(repo), query: legacyScope(scope, repo), mode: "strict" },
+      // A record admitted by `affected_files`/`affected_symbols` is matched for
+      // RELEVANCE under the file that admitted it, not under its own scope.
+      //
+      // Gate 1 of this project's own workflow is "call twining_why on the files
+      // you intend to modify". A decision scoped `src/payments/` that names
+      // `src/auth/jwt.ts` IS the answer to "what constrains src/auth/jwt.ts",
+      // and an earlier version of this gate cut exactly those records — turning
+      // a real constraint into a silent empty result. Authorization still uses
+      // the record's own scope above; only relevance uses the matched file.
+      (d) => legacyScope(whyMatchedScope(d, scope), repo),
+    );
+    const all = whyGate.admitted;
+    // A zero result must be distinguishable from an empty store (the loss used
+    // to be silent: `total_in_scope: 0` with no trace of what was cut).
+    const scope_suppressed = Object.entries(whyGate.suppressed).map(([reason, count]) => ({ reason, count }));
 
     // Counts superseded + overridden. Archived are counted ONLY by
     // archived_excluded_count — the old widen-everything semantics double-
@@ -762,6 +837,9 @@ export class DecisionEngine {
       ...(archived_excluded_count > 0 ? { archived_excluded_count } : {}),
       active_count,
       provisional_count,
+      // A zero result is now distinguishable from an empty store: these are the
+      // records `getByScope` returned that the scope gate then cut, by reason.
+      ...(scope_suppressed.length > 0 ? { scope_suppressed } : {}),
       token_estimate: tokensUsed,
     };
   }

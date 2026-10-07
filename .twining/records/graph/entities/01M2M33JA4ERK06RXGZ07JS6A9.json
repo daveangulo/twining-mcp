@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-16T03:10:30.212Z",
+  "id": "01M2M33JA4ERK06RXGZ07JS6A9",
+  "name": "test/retrieval/tokenizer-packet.test.ts",
+  "properties": {
+    "scope": "src/retrieval/"
+  },
+  "type": "file",
+  "updated_at": "2026-09-16T03:10:30.659Z"
+}

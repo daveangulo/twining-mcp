@@ -1,0 +1,35 @@
+{
+  "affected_files": [
+    "docs/adr/2026-09-foundation-contracts.md",
+    "docs/reports/2026-09-foundation-matrix.md",
+    "docs/plans/2026-09-15-lane-briefs.md",
+    "docs/plans/2026-09-15-foundation-programme-log.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "dispatching them",
+      "pros": []
+    }
+  ],
+  "assembled_before": true,
+  "commit_hashes": [],
+  "confidence": "medium",
+  "constraints": [],
+  "context": "Committed Stage 0 docs on foundation/v3 (6f18727): ADR §9.1 steelman verdicts + C20 correction, requirements/cases matrix skeleton, lane 02–05 dispatch briefs, programme log; memory updated. Three background lanes in flight (slice, oracle rulings, CLI).",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M2KCVSZTYN4Z5M52WBWSCJHK",
+  "provenance": {
+    "recorded_at": "2026-09-15T20:41:47.138Z"
+  },
+  "rationale": "lanes 03 and 04 depend on the slice's EventStore and the CLI core landing, so dispatching early would produce code against an interface that may change once the slice meets its oracles.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/",
+  "status": "active",
+  "summary": "Chose to write dispatch-ready briefs for lanes 02–05 now (docs/plans/2026-09-15-lane-briefs.md) rather than dispatching them",
+  "timestamp": "2026-09-15T20:41:47.258Z"
+}

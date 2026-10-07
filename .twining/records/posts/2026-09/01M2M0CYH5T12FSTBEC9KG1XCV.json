@@ -1,0 +1,18 @@
+{
+  "agent_id": "merge-integrator",
+  "detail": "Full summary: Merged lane/04-retrieval into foundation/v3 (no conflicts) and fixed a production defect it exposed: no adapter write path cited the membership policy, so every mirrored write on a store with a policy would have been quarantined.\nDecisions: [object Object]; [object Object]; Widened C25's fixture grant from R_GW to every repo it seeds (R_GW, R_LED, R_BILL) — each bait is a legitimate record in its own repository, which is what makes it bait rather than an invalid record, and the case tests the scope GATE rather than admission\nFindings: warning: lane 04 shipped a literal NUL byte in src/retrieval/select.ts (a cache-key join separator written as a raw 0x00 instead of the \u0000 escape), which makes the file binary to git. Caught by lane 02c's F4 regression test — the same defect 02c's own review found in v3-forward.ts. Runtime value unchanged by the fix.; warning: the ancestor-membership rule has now produced three separate defects at the 02b seam (ceremony rulings, adapter/mirror writes, acceptance fixtures). Anything that mints an event should be audited for whether it cites the policy it will be judged under; the adapter runtime now does it centrally, but appendRaw callers bypass that path.",
+  "entry_type": "status",
+  "id": "01M2M0CYH5T12FSTBEC9KG1XCV",
+  "origin": "narration",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "e9b4817f9645b9627706a6181a37e579f035961f",
+    "recorded_at": "2026-09-16T02:23:11.892Z"
+  },
+  "scope": "src/adapters/",
+  "summary": "Merged lane/04-retrieval into foundation/v3 (no conflicts) and fixed a production defect it exposed: no adapter write path cited the membership policy, so every mirrored write on a store with a pol…",
+  "tags": [
+    "session-record"
+  ],
+  "timestamp": "2026-09-16T02:23:11.909Z"
+}

@@ -1,0 +1,47 @@
+{
+  "affected_files": [
+    "src/events/event-store.ts"
+  ],
+  "affected_symbols": [],
+  "agent_id": "merge-integrator",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Exempt evidence_class legacy_unverified from the ancestor-membership requirement",
+      "pros": [],
+      "reason_rejected": "the import ingress admits every class, so a hostile peer could publish legacy_unverified events with parents:[] and have them admitted without any grant — a real widening of R03/R17"
+    },
+    {
+      "cons": [],
+      "option": "Make replicaKnowsAPolicy() ordering-relative (only count memberships whose event id sorts before the event's)",
+      "pros": [],
+      "reason_rejected": "ULIDs are author-minted, so forging a low id becomes a cheaper bypass than the parents:[] one the existing guard was written to stop"
+    },
+    {
+      "cons": [],
+      "option": "Persist the originating ingress in the journal and exempt ingress 'migration'",
+      "pros": [],
+      "reason_rejected": "needs a schema column and rebuild currently hard-codes ingress 'import' when re-journaling, so it is a larger change than the merge warrants; recorded as a separate finding"
+    }
+  ],
+  "assembled_before": false,
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [],
+  "context": "Merged lane/02c-migration into foundation/v3; resolved the commands.ts and registry-count conflicts keeping both lanes' commands, and fixed a cross-lane admission non-monotonicity that wiped every projection on rebuild.",
+  "depends_on": [],
+  "domain": "implementation",
+  "id": "01M2KZC0P941AZCWZFSWXR2NBS",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "28402bb3f65df5d85da08d2d74b4121f17766060",
+    "recorded_at": "2026-09-16T02:05:12.758Z"
+  },
+  "rationale": "Lane 02b's ancestor-membership capability check (D29) falls back to a REPLICA-state question ('do I hold a policy?') when the event has no membership ancestor. That makes the verdict non-monotonic in time: lane 02c's migrated legacy corpus was admitted under the policy-free bootstrap regime, then the scenario created a membership, and on rebuild all 45 legacy events flipped to quarantined no_policy_yet / pending_parents — projections went from 45 records to 5 and the projection digest stopped reproducing, violating ADR §12 step 6 and D29's own 'at first admission AND on rebuild'. The admission_log is first-party local evidence (written by logAdmission on this machine, replayed from the durable receipt log before admit() runs), so honouring it cannot be forged by a peer the way author-controlled parents/ULIDs can. It only ever preserves a verdict this replica already reached; it never admits an event seen for the first time and does not touch the terminal 'lacks capability' answer. It is the same rule as C14 N1/N2/N3 — never silently revoke what was already admitted.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "src/events/",
+  "status": "active",
+  "summary": "Made admission monotonic for events this replica already admitted: when the bootstrap branch would quarantine no_policy_yet, honour a prior 'admitted' outcome for the same (event id, digest) in this replica's own admission_log",
+  "timestamp": "2026-09-16T02:05:12.777Z"
+}

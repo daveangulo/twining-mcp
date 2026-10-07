@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T21:24:21.423Z",
+  "id": "01M2KF9R9F8X5ERGKYA7R1GVSQ",
+  "properties": {
+    "decision_summary": "Embedder.getInstance upgrades a cached instance to offline when a later caller asks for it, never downgrades",
+    "origin": "derived"
+  },
+  "source": "01KJJAP1393ZRMJY1SRKEQVBVQ",
+  "target": "01M2KF9R967BAM3AAR4B542PMC",
+  "type": "decided_by"
+}

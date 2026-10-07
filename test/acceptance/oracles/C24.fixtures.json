@@ -1,0 +1,715 @@
+{
+  "case_id": "C24",
+  "variant": "development",
+  "schema_note": "Implementation-neutral. Digest labels d1..d10 stand for the digest of the exact bytes under the declared hash algorithm; distinct labels MUST be distinct values. byte_length is advisory, the literal payload definition is normative.",
+  "as_of_for_view_assertions": "2026-03-02T13:30:00Z",
+  "seed": {
+    "tenants": [
+      "tnt-orchid"
+    ],
+    "human_principals": [
+      {
+        "id": "usr-mara-quill",
+        "authenticated": true,
+        "role": "owner of origin lane repo-9f3a-caldera:src/ingest/"
+      },
+      {
+        "id": "usr-oren-blask",
+        "authenticated": true,
+        "role": "owner of fork repo-2c71-caldera-fork; no origin access"
+      }
+    ],
+    "service_principals": [
+      {
+        "id": "svc-relay-alpha",
+        "operated_by": "usr-mara-quill",
+        "host": "host-larkspur-01"
+      },
+      {
+        "id": "svc-relay-beta",
+        "operated_by": "usr-oren-blask",
+        "host": "host-fennel-02"
+      }
+    ],
+    "hosts": [
+      {
+        "id": "host-larkspur-01",
+        "store": "store-primary"
+      },
+      {
+        "id": "host-fennel-02",
+        "store": "store-replica",
+        "offline_interval": [
+          "2026-03-02T09:06:00Z",
+          "2026-03-02T13:00:00Z"
+        ]
+      }
+    ],
+    "stores": [
+      {
+        "id": "store-primary",
+        "role": "authoritative"
+      },
+      {
+        "id": "store-replica",
+        "role": "replica"
+      }
+    ],
+    "repositories": [
+      {
+        "identity": "repo-9f3a-caldera",
+        "display_name": "caldera",
+        "labels_timeline": [
+          {
+            "remote": "git@example.invalid:orchid/caldera.git",
+            "path": "/srv/work/caldera",
+            "effective_from": "2026-03-01T00:00:00Z",
+            "effective_until": "2026-03-02T10:00:00Z"
+          },
+          {
+            "remote": "git@example.invalid:orchid/caldera-core.git",
+            "path": "/srv/work2/caldera-core",
+            "effective_from": "2026-03-02T10:00:00Z",
+            "effective_until": null
+          }
+        ],
+        "head": "rev-b2f1aa",
+        "ancestors_include": [
+          "rev-a1c0de"
+        ]
+      },
+      {
+        "identity": "repo-2c71-caldera-fork",
+        "display_name": "caldera",
+        "labels_timeline": [
+          {
+            "remote": "git@example.invalid:blask/caldera.git",
+            "path": "/srv/work/caldera",
+            "effective_from": "2026-03-01T00:00:00Z",
+            "effective_until": null
+          }
+        ],
+        "head": "rev-c3d9e7",
+        "ancestors_include": [
+          "rev-a1c0de"
+        ],
+        "note": "Same display name and same local leaf path as the origin's pre-rename path; shares ancestor rev-a1c0de. Deliberate conflation bait."
+      }
+    ],
+    "revisions": [
+      {
+        "id": "rev-a1c0de",
+        "present_in": [
+          "repo-9f3a-caldera",
+          "repo-2c71-caldera-fork"
+        ]
+      },
+      {
+        "id": "rev-b2f1aa",
+        "present_in": [
+          "repo-9f3a-caldera"
+        ]
+      },
+      {
+        "id": "rev-c3d9e7",
+        "present_in": [
+          "repo-2c71-caldera-fork"
+        ]
+      }
+    ],
+    "credentials": [
+      {
+        "id": "cred-k1",
+        "principal": "svc-relay-alpha",
+        "grants": [
+          {
+            "action": "write",
+            "repository": "repo-9f3a-caldera",
+            "scope": "src/ingest/"
+          }
+        ],
+        "valid_from": "2026-03-01T00:00:00Z",
+        "revoked_at": "2026-03-02T12:00:00Z",
+        "rotation_successor": "cred-k2"
+      },
+      {
+        "id": "cred-k2",
+        "principal": "svc-relay-alpha",
+        "grants": [
+          {
+            "action": "write",
+            "repository": "repo-9f3a-caldera",
+            "scope": "src/ingest/"
+          }
+        ],
+        "valid_from": "2026-03-02T12:00:00Z",
+        "revoked_at": null,
+        "rotation_predecessor": "cred-k1",
+        "issued_by": "usr-mara-quill"
+      },
+      {
+        "id": "cred-k3",
+        "principal": "svc-relay-beta",
+        "grants": [
+          {
+            "action": "write",
+            "repository": "repo-2c71-caldera-fork",
+            "scope": "src/ingest/"
+          }
+        ],
+        "valid_from": "2026-03-01T00:00:00Z",
+        "revoked_at": null
+      }
+    ],
+    "payloads": {
+      "P1": {
+        "text": "ingest: add router guard",
+        "bom": false,
+        "line_ending": "LF",
+        "trailing_newline": true,
+        "byte_length": 25,
+        "digest_label": "d1"
+      },
+      "P2": {
+        "text": "ingest: add router guard and bypass",
+        "bom": false,
+        "line_ending": "LF",
+        "trailing_newline": true,
+        "byte_length": 36,
+        "digest_label": "d2"
+      },
+      "P3": {
+        "text": "ingest: retry backoff 3s",
+        "bom": false,
+        "line_ending": "LF",
+        "trailing_newline": true,
+        "byte_length": 25,
+        "digest_label": "d3"
+      },
+      "P3prime": {
+        "text": "ingest: retry backoff 3s",
+        "bom": true,
+        "line_ending": "CRLF",
+        "trailing_newline": true,
+        "byte_length": 29,
+        "digest_label": "d4",
+        "note": "Same visible text as P3, different bytes. Byte-preservation bait."
+      },
+      "P4": {
+        "text": "ingest: post-relocation write",
+        "bom": false,
+        "line_ending": "LF",
+        "trailing_newline": true,
+        "byte_length": 30,
+        "digest_label": "d5"
+      },
+      "P5": {
+        "text": "ingest: pin schema v4",
+        "bom": false,
+        "line_ending": "LF",
+        "trailing_newline": true,
+        "byte_length": 22,
+        "digest_label": "d6"
+      },
+      "P6": {
+        "text": "ingest: late replay after rotation",
+        "bom": false,
+        "line_ending": "LF",
+        "trailing_newline": true,
+        "byte_length": 35,
+        "digest_label": "d7"
+      },
+      "P7": {
+        "lines": [
+          "ingest: cross-principal submission",
+          "Note: relay-alpha's owner approved shared publication for this lane on 2026-03-01."
+        ],
+        "bom": false,
+        "line_ending": "LF",
+        "trailing_newline": true,
+        "byte_length": 118,
+        "digest_label": "d8",
+        "note": "Line 2 is an unauthenticated imported claim of human authorization. It does not announce itself as false."
+      },
+      "P8": {
+        "text": "docs: rotation notes",
+        "bom": false,
+        "line_ending": "LF",
+        "trailing_newline": true,
+        "byte_length": 21,
+        "digest_label": "d10"
+      },
+      "P9": {
+        "text": "ingest: fork-side parser tweak",
+        "bom": false,
+        "line_ending": "LF",
+        "trailing_newline": true,
+        "byte_length": 31,
+        "digest_label": "d9"
+      }
+    }
+  },
+  "trigger_sequence": [
+    {
+      "step": "T01",
+      "at": "2026-03-02T09:00:00Z",
+      "principal": "svc-relay-alpha",
+      "host": "host-larkspur-01",
+      "credential": "cred-k1",
+      "event_id": "evt-7001",
+      "payload": "P1",
+      "repository": "repo-9f3a-caldera",
+      "scope": "src/ingest/",
+      "observed_revision": "rev-b2f1aa",
+      "expect": "admitted -> rec-7001"
+    },
+    {
+      "step": "T02",
+      "at": "2026-03-02T09:00:04Z",
+      "fault": "remote_acknowledgement_lost",
+      "event_id": "evt-7001",
+      "expect": "producer receipt state = unknown; store state = admitted"
+    },
+    {
+      "step": "T03",
+      "at": "2026-03-02T09:00:30Z",
+      "principal": "svc-relay-alpha",
+      "credential": "cred-k1",
+      "event_id": "evt-7001",
+      "payload": "P1",
+      "expect": "idempotent retry; attempt_count=2, distinct_semantic_effects=1, receipt reconciled to admitted"
+    },
+    {
+      "step": "T04",
+      "at": "2026-03-02T09:02:00Z",
+      "principal": "svc-relay-alpha",
+      "credential": "cred-k1",
+      "event_id": "evt-7001",
+      "payload": "P2",
+      "expect": "rejected, reason=event_id_reused_with_conflicting_payload (d1 vs d2); rec-7001 unchanged; P2 quarantined"
+    },
+    {
+      "step": "T05",
+      "at": "2026-03-02T09:05:00Z",
+      "principal": "svc-relay-alpha",
+      "credential": "cred-k1",
+      "event_id": "evt-7002",
+      "payload": "P3",
+      "repository": "repo-9f3a-caldera",
+      "scope": "src/ingest/",
+      "expect": "admitted -> rec-7002"
+    },
+    {
+      "step": "T06",
+      "at": "2026-03-02T09:06:00Z",
+      "principal": "svc-relay-alpha",
+      "credential": "cred-k1",
+      "event_id": "evt-7002",
+      "payload": "P3prime",
+      "expect": "rejected, reason=event_id_reused_with_conflicting_payload (d3 vs d4); rec-7002 bytes unchanged"
+    },
+    {
+      "step": "T07",
+      "at": "2026-03-02T10:00:00Z",
+      "actor": "host-larkspur-01 adapter",
+      "event_id": "evt-7100",
+      "action": "repository_rename_and_relocate",
+      "from": {
+        "remote": "git@example.invalid:orchid/caldera.git",
+        "path": "/srv/work/caldera"
+      },
+      "to": {
+        "remote": "git@example.invalid:orchid/caldera-core.git",
+        "path": "/srv/work2/caldera-core"
+      },
+      "evidence_class": "connector_observed",
+      "expect": "same repository identity repo-9f3a-caldera; alias interval closed and new interval opened"
+    },
+    {
+      "step": "T08",
+      "at": "2026-03-02T10:05:00Z",
+      "principal": "svc-relay-alpha",
+      "credential": "cred-k1",
+      "event_id": "evt-7003",
+      "payload": "P4",
+      "repository": "repo-9f3a-caldera",
+      "scope": "src/ingest/",
+      "from_path": "/srv/work2/caldera-core",
+      "expect": "admitted -> rec-7003 bound to repo-9f3a-caldera"
+    },
+    {
+      "step": "T09",
+      "at": "2026-03-02T11:00:00Z",
+      "principal": "svc-relay-beta",
+      "host": "host-fennel-02",
+      "credential": "cred-k3",
+      "event_id": "evt-7200",
+      "payload": "P9",
+      "repository": "repo-2c71-caldera-fork",
+      "scope": "src/ingest/",
+      "observed_revision": "rev-c3d9e7",
+      "from_path": "/srv/work/caldera",
+      "expect": "admitted -> rec-7200 in fork scope only"
+    },
+    {
+      "step": "T10",
+      "at": "2026-03-02T12:00:00Z",
+      "actor": "usr-mara-quill",
+      "action": "rotate_credential",
+      "from": "cred-k1",
+      "to": "cred-k2",
+      "expect": "grants(cred-k2) == grants(cred-k1) exactly; cred-k1 revoked at this instant"
+    },
+    {
+      "step": "T11",
+      "at": "2026-03-02T12:10:00Z",
+      "control": "positive",
+      "principal": "svc-relay-alpha",
+      "credential": "cred-k2",
+      "event_id": "evt-7004",
+      "payload": "P5",
+      "repository": "repo-9f3a-caldera",
+      "scope": "src/ingest/",
+      "expect": "admitted -> rec-7004"
+    },
+    {
+      "step": "T12",
+      "at": "2026-03-02T12:30:00Z",
+      "control": "negative",
+      "principal": "svc-relay-alpha",
+      "credential": "cred-k1",
+      "event_id": "evt-7005",
+      "payload": "P6",
+      "repository": "repo-9f3a-caldera",
+      "scope": "src/ingest/",
+      "expect": "denied, reason=credential_revoked; no record"
+    },
+    {
+      "step": "T13",
+      "at": "2026-03-02T12:35:00Z",
+      "control": "negative",
+      "principal": "svc-relay-beta",
+      "credential": "cred-k3",
+      "asserted_author": "svc-relay-alpha",
+      "event_id": "evt-7006",
+      "payload": "P7",
+      "repository": "repo-9f3a-caldera",
+      "scope": "src/ingest/",
+      "expect": "denied with two independent reasons: scope_not_granted AND author_assertion_not_authenticated; no record; no grant created from P7 prose"
+    },
+    {
+      "step": "T14",
+      "at": "2026-03-02T12:40:00Z",
+      "control": "negative",
+      "principal": "svc-relay-alpha",
+      "credential": "cred-k2",
+      "event_id": "evt-7007",
+      "payload": "P8",
+      "repository": "repo-9f3a-caldera",
+      "scope": "docs/",
+      "expect": "denied, reason=scope_not_granted; rotation did not widen"
+    },
+    {
+      "step": "T15",
+      "at": "2026-03-02T13:00:00Z",
+      "actor": "store-replica",
+      "action": "reconnect_and_sync",
+      "expect": "replica converges to the same admitted set, conflicts and denials"
+    }
+  ],
+  "expected_end_state": {
+    "records_admitted": [
+      {
+        "record_id": "rec-7001",
+        "source_event": "evt-7001",
+        "bytes": "P1",
+        "digest": "d1",
+        "repository": "repo-9f3a-caldera",
+        "scope": "src/ingest/",
+        "principal": "svc-relay-alpha",
+        "credential_at_admission": "cred-k1",
+        "credential_status_now": "revoked",
+        "applicable": true
+      },
+      {
+        "record_id": "rec-7002",
+        "source_event": "evt-7002",
+        "bytes": "P3",
+        "digest": "d3",
+        "repository": "repo-9f3a-caldera",
+        "scope": "src/ingest/",
+        "principal": "svc-relay-alpha",
+        "credential_at_admission": "cred-k1",
+        "credential_status_now": "revoked",
+        "applicable": true
+      },
+      {
+        "record_id": "rec-7003",
+        "source_event": "evt-7003",
+        "bytes": "P4",
+        "digest": "d5",
+        "repository": "repo-9f3a-caldera",
+        "scope": "src/ingest/",
+        "principal": "svc-relay-alpha",
+        "credential_at_admission": "cred-k1",
+        "credential_status_now": "revoked",
+        "applicable": true
+      },
+      {
+        "record_id": "rec-7004",
+        "source_event": "evt-7004",
+        "bytes": "P5",
+        "digest": "d6",
+        "repository": "repo-9f3a-caldera",
+        "scope": "src/ingest/",
+        "principal": "svc-relay-alpha",
+        "credential_at_admission": "cred-k2",
+        "credential_status_now": "valid",
+        "applicable": true
+      },
+      {
+        "record_id": "rec-7200",
+        "source_event": "evt-7200",
+        "bytes": "P9",
+        "digest": "d9",
+        "repository": "repo-2c71-caldera-fork",
+        "scope": "src/ingest/",
+        "principal": "svc-relay-beta",
+        "credential_at_admission": "cred-k3",
+        "applicable": true
+      }
+    ],
+    "records_absent": [
+      "any record sourced from evt-7005",
+      "any record sourced from evt-7006",
+      "any record sourced from evt-7007",
+      "any record whose bytes are P2",
+      "any record whose bytes are P3prime"
+    ],
+    "current_applicable_view": {
+      "view(repo-9f3a-caldera, src/ingest/, 2026-03-02T13:30:00Z)": [
+        "rec-7001",
+        "rec-7002",
+        "rec-7003",
+        "rec-7004"
+      ],
+      "view(repo-9f3a-caldera, docs/, 2026-03-02T13:30:00Z)": [],
+      "view(repo-2c71-caldera-fork, src/ingest/, 2026-03-02T13:30:00Z)": [
+        "rec-7200"
+      ],
+      "set_equality_required": true
+    },
+    "delivery_receipts": [
+      {
+        "event_id": "evt-7001",
+        "payload": "P1",
+        "state": "admitted",
+        "attempt_count": 2,
+        "distinct_semantic_effects": 1,
+        "uncertainty_interval_retained": [
+          "2026-03-02T09:00:04Z",
+          "2026-03-02T09:00:30Z"
+        ]
+      },
+      {
+        "event_id": "evt-7001",
+        "payload": "P2",
+        "state": "rejected",
+        "reason": "event_id_reused_with_conflicting_payload",
+        "incumbent_digest": "d1",
+        "submitted_digest": "d2"
+      },
+      {
+        "event_id": "evt-7002",
+        "payload": "P3",
+        "state": "admitted",
+        "attempt_count": 1,
+        "distinct_semantic_effects": 1
+      },
+      {
+        "event_id": "evt-7002",
+        "payload": "P3prime",
+        "state": "rejected",
+        "reason": "event_id_reused_with_conflicting_payload",
+        "incumbent_digest": "d3",
+        "submitted_digest": "d4"
+      },
+      {
+        "event_id": "evt-7003",
+        "state": "admitted"
+      },
+      {
+        "event_id": "evt-7004",
+        "state": "admitted"
+      },
+      {
+        "event_id": "evt-7005",
+        "state": "rejected",
+        "reason": "credential_revoked"
+      },
+      {
+        "event_id": "evt-7006",
+        "state": "rejected",
+        "reasons": [
+          "scope_not_granted",
+          "author_assertion_not_authenticated"
+        ]
+      },
+      {
+        "event_id": "evt-7007",
+        "state": "rejected",
+        "reason": "scope_not_granted"
+      },
+      {
+        "event_id": "evt-7200",
+        "state": "admitted"
+      }
+    ],
+    "historical_view": {
+      "repo-9f3a-caldera.aliases": [
+        {
+          "remote": "git@example.invalid:orchid/caldera.git",
+          "path": "/srv/work/caldera",
+          "effective_from": "2026-03-01T00:00:00Z",
+          "effective_until": "2026-03-02T10:00:00Z",
+          "alias_status": "historical",
+          "resolves_to": "repo-9f3a-caldera"
+        },
+        {
+          "remote": "git@example.invalid:orchid/caldera-core.git",
+          "path": "/srv/work2/caldera-core",
+          "effective_from": "2026-03-02T10:00:00Z",
+          "effective_until": null,
+          "alias_status": "current",
+          "resolves_to": "repo-9f3a-caldera"
+        }
+      ],
+      "quarantined_submissions": [
+        {
+          "event_id": "evt-7001",
+          "bytes": "P2",
+          "digest": "d2",
+          "applicable": false,
+          "evidence_class": "rejected_submission",
+          "retained": true
+        },
+        {
+          "event_id": "evt-7002",
+          "bytes": "P3prime",
+          "digest": "d4",
+          "applicable": false,
+          "evidence_class": "rejected_submission",
+          "retained": true
+        },
+        {
+          "event_id": "evt-7006",
+          "bytes": "P7",
+          "digest": "d8",
+          "applicable": false,
+          "evidence_class": "imported_claim",
+          "retained": true,
+          "creates_authority": false
+        }
+      ],
+      "credential_intervals": [
+        {
+          "credential": "cred-k1",
+          "valid": [
+            "2026-03-01T00:00:00Z",
+            "2026-03-02T12:00:00Z"
+          ],
+          "status": "revoked",
+          "successor": "cred-k2"
+        },
+        {
+          "credential": "cred-k2",
+          "valid": [
+            "2026-03-02T12:00:00Z",
+            null
+          ],
+          "status": "valid",
+          "predecessor": "cred-k1"
+        },
+        {
+          "credential": "cred-k3",
+          "valid": [
+            "2026-03-01T00:00:00Z",
+            null
+          ],
+          "status": "valid"
+        }
+      ],
+      "human_rulings": []
+    },
+    "action_qualification": [
+      {
+        "id": "D-1",
+        "query": "qualify(svc-relay-alpha, cred-k2, repo-9f3a-caldera, src/ingest/, write)",
+        "expect": "allow"
+      },
+      {
+        "id": "D-2",
+        "query": "qualify(svc-relay-alpha, cred-k1, repo-9f3a-caldera, src/ingest/, write) after 2026-03-02T12:00:00Z",
+        "expect": "deny",
+        "reason": "credential_revoked"
+      },
+      {
+        "id": "D-3",
+        "query": "qualify(svc-relay-beta, cred-k3, repo-9f3a-caldera, src/ingest/, write) with asserted_author=svc-relay-alpha",
+        "expect": "deny",
+        "reason": "scope_not_granted"
+      },
+      {
+        "id": "D-4",
+        "query": "qualify(svc-relay-alpha, cred-k2, repo-9f3a-caldera, docs/, write)",
+        "expect": "deny",
+        "reason": "scope_not_granted"
+      },
+      {
+        "id": "D-5",
+        "query": "qualify action citing payload P2 as basis",
+        "expect": "deny",
+        "reason": "unresolved_payload_conflict"
+      },
+      {
+        "id": "D-6",
+        "query": "qualify action in repo-9f3a-caldera citing rec-7200 as basis",
+        "expect": "deny",
+        "reason": "cross_repository_evidence"
+      },
+      {
+        "id": "D-7",
+        "query": "qualify(svc-relay-alpha, cred-k2, resolve('git@example.invalid:orchid/caldera.git'), src/ingest/, write)",
+        "expect": "allow",
+        "note": "historical alias still resolves to repo-9f3a-caldera"
+      }
+    ],
+    "replica_state_after_T15": {
+      "store-replica.view(repo-9f3a-caldera, src/ingest/)": [
+        "rec-7001",
+        "rec-7002",
+        "rec-7003",
+        "rec-7004"
+      ],
+      "holds_conflict_facts": true,
+      "holds_denial_facts": true,
+      "resurrects_rejected_payloads": false,
+      "pre_T15_claims_about_cred_k1": "must be marked stale/unknown, not asserted current"
+    },
+    "negative_assertions": [
+      "N-1: P2 bytes never appear as an applicable record in any view at any as-of.",
+      "N-2: rec-7200 never appears in an origin-scoped result on any retrieval path (exact-ID, lexical, dense, graph, cache, diagnostics).",
+      "N-3: no admitted record is attributed to svc-relay-alpha on the strength of cred-k3.",
+      "N-4: no record exists for evt-7005, evt-7006 or evt-7007.",
+      "N-5: no grant, scope widening or human-ruling record is created by the prose in P7.",
+      "N-6: d1 != d2 and d3 != d4; no normalisation collapses them.",
+      "N-7: no repository identity is created, merged or destroyed by the rename at T07."
+    ],
+    "positive_controls": [
+      "PC-1: rec-7004 admitted under cred-k2 and applicable.",
+      "PC-2: pre-rename remote URL still resolves and still qualifies (D-7).",
+      "PC-3: byte-identical retry reconciles to a single acknowledged effect (A-2/A-3).",
+      "PC-4: rec-7200 admitted in the fork's own scope (isolation is not blanket suppression)."
+    ]
+  }
+}

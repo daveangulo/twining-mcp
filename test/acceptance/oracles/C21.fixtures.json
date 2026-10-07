@@ -1,0 +1,400 @@
+{
+  "case_id": "C21",
+  "variant": "development",
+  "oracle_version": "1.0.0",
+  "authored_before_observation": true,
+  "byte_notation": {
+    "<BOM>": "U+FEFF encoded as EF BB BF",
+    "<CRLF>": "0x0D 0x0A",
+    "<LF>": "0x0A",
+    "note": "Literal record bodies are given in this token notation. Fixture build expands tokens to real bytes, computes every hash, and freezes them into manifest.json. Assertions compare against the frozen manifest, never against hashes written by hand in this file."
+  },
+  "hash_fields": [
+    "source_bytes_sha256",
+    "git_object_id",
+    "normalized_text_sha256",
+    "rendered_output_sha256"
+  ],
+  "identities": {
+    "tenant": "tenant-quarrystone",
+    "humans": [
+      {
+        "id": "human:mira.oyelaran",
+        "role": "release authorizer",
+        "has_verifiable_auth_evidence": true
+      },
+      {
+        "id": "human:tobias.renk",
+        "role": "legacy record author",
+        "has_verifiable_auth_evidence": false
+      }
+    ],
+    "agents": [
+      {
+        "id": "agent:scribe-01",
+        "role": "migrator"
+      },
+      {
+        "id": "agent:drifter-02",
+        "role": "post-upgrade writer"
+      }
+    ],
+    "hosts": [
+      {
+        "id": "host-hollowmere",
+        "max_schema": 3,
+        "role": "new client"
+      },
+      {
+        "id": "host-fenwick",
+        "max_schema": 1,
+        "role": "old client, never upgraded"
+      }
+    ],
+    "stores": [
+      {
+        "id": "store-legacy-A",
+        "backing": "file-backed JSON tree",
+        "schema": 1,
+        "state": "read-only source"
+      },
+      {
+        "id": "store-legacy-B",
+        "backing": "SQLite + export dump",
+        "schema": 2,
+        "state": "read-only source"
+      },
+      {
+        "id": "store-new",
+        "backing": "target implementation",
+        "schema": 3,
+        "state": "empty at T0"
+      },
+      {
+        "id": "archive-retained",
+        "backing": "versioned retained event archive",
+        "schema": "multi",
+        "state": "empty at T0"
+      }
+    ],
+    "repositories": [
+      {
+        "id": "repo-masonry",
+        "display_name": "masonry-core",
+        "clone_paths": [
+          "/srv/a/masonry-core",
+          "/srv/b/masonry-core"
+        ],
+        "note": "two paths, one repository identity"
+      }
+    ],
+    "revisions": {
+      "REV_BASE": "git commit, synthetic, frozen at fixture build as GB1",
+      "REV_HEAD": "git commit, synthetic, frozen at fixture build as GH1",
+      "REV_POST": "git commit written after migration, frozen as GH2"
+    },
+    "sessions": [
+      {
+        "id": "sess-hollowmere-11",
+        "host": "host-hollowmere",
+        "turns": [
+          "turn-4",
+          "turn-5"
+        ]
+      },
+      {
+        "id": "sess-fenwick-03",
+        "host": "host-fenwick",
+        "turns": [
+          "turn-1"
+        ]
+      }
+    ]
+  },
+  "seed_records": [
+    {
+      "id": "L-001",
+      "store": "store-legacy-A",
+      "schema": 1,
+      "kind": "decision",
+      "scope": "repo-masonry/catalog/",
+      "legacy_fields": {
+        "active": true,
+        "actor": "mira.oyelaran",
+        "promoted_by": "system"
+      },
+      "body_tokens": "<BOM>Approved on the 2026-03-04 release call. Publication hold lifted for the catalog output.<CRLF>See the release thread for the exact wording.<CRLF>",
+      "encoding": "utf-8 with BOM, CRLF line endings",
+      "source_uri": "https://forge.example/masonry/pull/412",
+      "anchor": "note-9",
+      "source_kind": "code review comment",
+      "git": {
+        "base": "REV_BASE",
+        "head": "REV_HEAD"
+      },
+      "author": "human:tobias.renk",
+      "observer": "agent:legacy-importer",
+      "observation_time": "2026-03-04T17:22:00Z",
+      "effective_time": "2026-03-04T17:22:00Z",
+      "authentication_evidence": null,
+      "note": "The prose asserts a human approval. No authentication evidence exists for it."
+    },
+    {
+      "id": "L-000",
+      "store": "store-legacy-A",
+      "schema": 1,
+      "kind": "decision",
+      "scope": "repo-masonry/catalog/",
+      "lifecycle": "superseded",
+      "superseded_by": "L-002",
+      "body_tokens": "Catalog output stays on publication hold until the index rebuild lands.<LF>",
+      "encoding": "utf-8 no BOM, LF"
+    },
+    {
+      "id": "L-002",
+      "store": "store-legacy-A",
+      "schema": 1,
+      "kind": "decision",
+      "scope": "repo-masonry/catalog/",
+      "lifecycle": "archived",
+      "relations": [
+        {
+          "type": "supersedes",
+          "target": "L-000"
+        }
+      ],
+      "body_tokens": "Hold replaced by the narrower catalog-output hold; archived after the rebuild.<LF>",
+      "note": "Positive control record: archived is not revoked."
+    },
+    {
+      "id": "L-003",
+      "store": "store-legacy-A",
+      "schema": 1,
+      "kind": "proposal",
+      "lifecycle": "provisional",
+      "scope": "repo-masonry/catalog/",
+      "extraction_ambiguous": true,
+      "original_text_retained": true,
+      "body_tokens": "Possibly the reviewer meant the whole story, not only the catalog output.<LF>"
+    },
+    {
+      "id": "L-004",
+      "store": "store-legacy-B",
+      "schema": 2,
+      "kind": "observation",
+      "scope": "repo-masonry/ops/",
+      "observer": null,
+      "observation_time": null,
+      "note": "Missing historical metadata. Must stay unknown after migration."
+    },
+    {
+      "id": "L-003-conflict",
+      "store": "store-legacy-B",
+      "schema": 2,
+      "declares_record_id": "L-003",
+      "body_tokens": "The reviewer meant the whole story.<LF>",
+      "note": "Malformed or conflicting export: same declared record id as L-003, different bytes."
+    },
+    {
+      "id": "L-006",
+      "store": "store-legacy-A",
+      "schema": 1,
+      "kind": "draft",
+      "published": false,
+      "scope": "repo-masonry/catalog/",
+      "body_tokens": "Draft note, never exported.<LF>",
+      "note": "Dirty or unpublished work. Must survive migration."
+    },
+    {
+      "id": "L-007",
+      "store": "store-legacy-B",
+      "schema": 2,
+      "kind": "lesson",
+      "scope": "repo-masonry/ops/",
+      "embedding": null,
+      "note": "Optional absent embedding. Derived index may be rebuilt, record must stay exact-ID retrievable."
+    },
+    {
+      "id": "L-008",
+      "store": "store-legacy-B",
+      "schema": 2,
+      "kind": "observation",
+      "truncated": true,
+      "note": "Export row truncated mid-payload. Recoverable bytes must be retained in quarantine, meaning must not be guessed."
+    }
+  ],
+  "post_upgrade_records": [
+    {
+      "id": "N-101",
+      "store": "store-new",
+      "schema": 3,
+      "kind": "authorization",
+      "evidence_class": "authenticated_human_authorization",
+      "authorizer": "human:mira.oyelaran",
+      "authentication_evidence": "verified signature over the payload digest, independently checked",
+      "scope": "repo-masonry/catalog/",
+      "parts": [
+        "part-A: publish catalog output",
+        "part-B: publish full story"
+      ],
+      "part_status": {
+        "part-A": "granted",
+        "part-B": "withheld"
+      },
+      "written_by": "agent:drifter-02",
+      "host": "host-hollowmere",
+      "git": {
+        "head": "REV_POST"
+      },
+      "note": "Multi-part scoped authorization. Schema 1 and 2 cannot represent per-part status."
+    },
+    {
+      "id": "N-102",
+      "store": "store-new",
+      "schema": 3,
+      "kind": "relation",
+      "relation": {
+        "type": "partially_supersedes",
+        "target": "N-101",
+        "target_parts": [
+          "part-B"
+        ],
+        "scope": "repo-masonry/catalog/"
+      },
+      "note": "Partial supersession. Unknown semantics to old clients."
+    },
+    {
+      "id": "N-103",
+      "store": "store-new",
+      "schema": 3,
+      "kind": "observation",
+      "scope": "repo-masonry/catalog/",
+      "hashes_required_distinct": [
+        "source_bytes_sha256",
+        "git_object_id",
+        "normalized_text_sha256",
+        "rendered_output_sha256"
+      ],
+      "body_tokens": "<BOM>Rendered output differs from the stored bytes by BOM and newline only.<CRLF>",
+      "note": "All four hash values must differ from each other."
+    }
+  ],
+  "trigger_sequence": [
+    {
+      "t": "T0",
+      "action": "Build fixtures, expand byte tokens, compute and freeze manifest.json over store-legacy-A and store-legacy-B: per record id, bytes, all applicable hashes, encoding, lifecycle, relations, evidence class, published flag."
+    },
+    {
+      "t": "T1",
+      "action": "Snapshot legacy store bytes on disk for later comparison."
+    },
+    {
+      "t": "T2",
+      "action": "Run migration in dry-run mode against both legacy stores."
+    },
+    {
+      "t": "T3",
+      "action": "Run migration for real as agent:scribe-01. SIGKILL the migrator process after records are written to store-new but before the derived index build and before the ID-map commit."
+    },
+    {
+      "t": "T4",
+      "action": "Restart and resume or rerun migration to completion."
+    },
+    {
+      "t": "T5",
+      "action": "Run migration a third time against the same sources."
+    },
+    {
+      "t": "T6",
+      "action": "As agent:drifter-02 on host-hollowmere, write N-101, N-102, N-103 in schema 3. Emit N-101 into sess-hollowmere-11 turn-4 and record selected, emitted, delivered states plus the emitted-bytes hash."
+    },
+    {
+      "t": "T7",
+      "action": "Connect host-fenwick (schema 1 max). Attempt (a) read N-101, (b) write an update to N-101 through a schema 1 payload that omits every field schema 1 does not know, (c) write active=true onto the migrated L-001 successor."
+    },
+    {
+      "t": "T8",
+      "action": "Roll back to the pre-upgrade implementation and schema. Post-upgrade records go to archive-retained plus an explicitly restricted legacy view."
+    },
+    {
+      "t": "T9",
+      "action": "While rolled back: list and inspect archive-retained; collect the reported unavailable-functionality list; connect host-fenwick again and repeat T7b and T7c."
+    },
+    {
+      "t": "T10",
+      "action": "Roll forward: re-upgrade and re-import archive-retained into store-new."
+    },
+    {
+      "t": "T11",
+      "action": "Re-import archive-retained a second time."
+    },
+    {
+      "t": "T12",
+      "action": "Submit four action-qualification requests: Q1 in-scope citing N-101, Q2 in-scope citing migrated L-001, Q3 out-of-scope citing N-101, Q4 the same as Q1 but issued while rolled back."
+    }
+  ],
+  "expected_end_state": {
+    "events_and_records": {
+      "migrated_record_count": "exactly the manifest count, no duplicates, after T4, T5, T10 and T11",
+      "byte_equality": "every migrated record source_bytes_sha256 equals its frozen manifest value, BOM and CRLF intact",
+      "id_map": "total and injective, legacy id resolvable to new id and back, identical across T4, T5 and a clean control run",
+      "relations": "exactly the manifest relation set, plus N-102 after T10, nothing invented, nothing dropped",
+      "L-004": "observer unknown, observation_time unknown",
+      "L-005_conflict": "L-003 and L-003-conflict both retained, conflict flagged, neither silently admitted as current",
+      "L-006": "present, published=false, bytes intact",
+      "L-007": "exact-ID retrievable, embedding absence labeled",
+      "L-008": "quarantined with its recoverable bytes, no reconstructed meaning",
+      "N-101_N-102_N-103": "present in store-new at T6, in archive-retained at T8, back in store-new at T10 with identical bytes and hashes",
+      "N-103_hashes": "all four hash values distinct"
+    },
+    "current_applicable_view": {
+      "contains": [
+        "L-001 as legacy_unverified",
+        "L-002 archived",
+        "L-003 provisional",
+        "N-101 part-A granted after T10"
+      ],
+      "excludes": [
+        "L-000 superseded",
+        "L-003-conflict",
+        "L-008",
+        "N-101 part-B after N-102 applies"
+      ],
+      "during_rollback": "no schema 3 semantics served as if they were legacy records"
+    },
+    "delivery_receipt_states": {
+      "N-101": {
+        "selected": true,
+        "emitted": true,
+        "delivered": true,
+        "receiving": "host-hollowmere / sess-hollowmere-11 / turn-4",
+        "emitted_bytes_hash": "frozen at T6",
+        "after_T10": "still delivered, same emitted_bytes_hash, not re-queued, not duplicated"
+      },
+      "acknowledged_event_count": "equal before T8 and after T10"
+    },
+    "historical_view": {
+      "L-000": "retrievable with superseded lifecycle and superseded_by pointer",
+      "L-001": "retrievable with its original asserted active, actor and promoted_by values verbatim, marked asserted-not-checked",
+      "L-002": "archived, not revoked",
+      "legacy_ambiguity_flag": "present on every record migrated from schema 1 or 2 that carries an authority-shaped claim"
+    },
+    "action_qualification": {
+      "Q1": "QUALIFIED by N-101 part-A",
+      "Q2": "DENIED, reason cites legacy unverified authority ambiguity",
+      "Q3": "DENIED, reason cites scope",
+      "Q4": "DENIED, reason cites functionality unavailable during rollback, not record absence"
+    },
+    "operator_observability": {
+      "migration_state_after_T3": "incomplete and reported as incomplete",
+      "dry_run_T2": "reports the L-003 conflict and the L-008 truncation and writes nothing",
+      "schema_negotiation_T7": "recorded event: client max 1, server 3, outcome refused or restricted-read-only",
+      "rollback_report": "data-preservation section and unavailable-functionality section are separate and both non-empty"
+    }
+  },
+  "controls": {
+    "positive_control_clean_run": "An uninterrupted migration of the same manifest into a fresh store, used as the comparison target for the T4 resume result.",
+    "positive_control_record": "L-002 retrieval by exact identity and scope returns byte-identical content.",
+    "positive_control_action": "Q1 qualifies."
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-15T22:48:46.111Z",
+  "id": "01M2KM4A8ZXQ4MN24HZ2E8SRQS",
+  "properties": {
+    "decision_summary": "Competing scoped corrections of equal class in the same scope must project as CONFLICTED, never resolved by array/ULID order — lane 02b found correctionFor resolves by array order (an invented resolution under C22 INV-11); the lead fixes projection.ts at merge and removes the todo",
+    "origin": "derived"
+  },
+  "source": "01M2KFYG1GWK3RE0E912VK38R8",
+  "target": "01M2KM4A8Q3HZ7N2E8KHRWNKXF",
+  "type": "decided_by"
+}

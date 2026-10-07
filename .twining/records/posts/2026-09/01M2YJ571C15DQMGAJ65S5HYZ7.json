@@ -1,0 +1,18 @@
+{
+  "agent_id": "fix-repo-ids",
+  "detail": "Full summary: no existing test pinned the derived-from-path reading of an identity-init store, so the flip to minted broke nothing; the six store.json-reading suites (migrate/v3-forward, v3-rollback, cli, cli/v3-verbs, acceptance c21, context-assembler) all pass unchanged.",
+  "entry_type": "finding",
+  "id": "01M2YJ571C15DQMGAJ65S5HYZ7",
+  "origin": "discovery",
+  "provenance": {
+    "branch": "foundation/v3",
+    "commit_sha": "c3af1a456ce974ced08f366d7287068a9a17c602",
+    "recorded_at": "2026-09-20T04:45:57.144Z"
+  },
+  "scope": "src/retrieval/store-identity.ts",
+  "summary": "no existing test pinned the derived-from-path reading of an identity-init store, so the flip to minted broke nothing; the six store.json-reading suites (migrate/v3-forward, v3-rollback, cli, cli/v3…",
+  "tags": [
+    "session-finding"
+  ],
+  "timestamp": "2026-09-20T04:45:57.164Z"
+}

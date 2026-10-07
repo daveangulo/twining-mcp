@@ -1,0 +1,713 @@
+{
+  "case_id": "C27",
+  "fixture_set": "development",
+  "oracle_version": "1.0.0",
+  "authored_before_observation": true,
+  "hash_rule": "Every *_bytes field is an exact octet sequence written with literal markers: <BOM> = U+FEFF encoded UTF-8, <CRLF> = 0x0D 0x0A, <LF> = 0x0A, <NBSP> = U+00A0. source_hash = SHA-256 over those exact octets with no normalization. The oracle asserts hash stability and the inequality of source/normalized/rendered hashes; it never asserts a magic literal.",
+  "identities": {
+    "tenant": {
+      "id": "tid:NORTHWIND",
+      "label": "Northwind Labs"
+    },
+    "team": {
+      "id": "team:LEDGER-CORE",
+      "label": "ledger-core"
+    },
+    "humans": [
+      {
+        "id": "hum:H-ROWAN",
+        "label": "Rowan Adeyemi",
+        "role": "code author",
+        "authority": [
+          "propose"
+        ],
+        "scopes": [
+          "services/ledger/"
+        ]
+      },
+      {
+        "id": "hum:H-INES",
+        "label": "Ines Vlk",
+        "role": "reviewer of record",
+        "authority": [
+          "rule",
+          "accept"
+        ],
+        "scopes": [
+          "services/ledger/"
+        ]
+      }
+    ],
+    "agents": [
+      {
+        "id": "agt:P1",
+        "label": "parent-orchestrator",
+        "backend": "codex",
+        "principal_kind": "service"
+      },
+      {
+        "id": "agt:W1",
+        "label": "worker-reviewer",
+        "backend": "codex",
+        "principal_kind": "service"
+      }
+    ],
+    "hosts": [
+      {
+        "id": "host:ALDER",
+        "label": "alder.local",
+        "runs": [
+          "agt:P1"
+        ],
+        "store": "store:ST-ALDER"
+      },
+      {
+        "id": "host:BIRCH",
+        "label": "birch.local",
+        "runs": [
+          "agt:W1"
+        ],
+        "store": "store:ST-BIRCH"
+      }
+    ],
+    "stores": [
+      {
+        "id": "store:ST-ALDER",
+        "kind": "local durable producer/consumer store",
+        "host": "host:ALDER"
+      },
+      {
+        "id": "store:ST-BIRCH",
+        "kind": "local durable producer store",
+        "host": "host:BIRCH"
+      },
+      {
+        "id": "store:EX-HUB",
+        "kind": "exchange/admission endpoint (transport-neutral)",
+        "host": "shared"
+      }
+    ],
+    "repositories": [
+      {
+        "id": "repo:RID-7731",
+        "label_at_seed": "acme/ledger-service",
+        "note": "label is mutable; identity is RID-7731"
+      },
+      {
+        "id": "repo:RID-8802",
+        "label_at_seed": "acme/ledger-service-fork",
+        "note": "DECOY repository: different identity, confusingly similar label and paths"
+      }
+    ],
+    "revisions": [
+      {
+        "id": "rev:BASE-a1",
+        "repo": "repo:RID-7731",
+        "role": "review base"
+      },
+      {
+        "id": "rev:HEAD-b2",
+        "repo": "repo:RID-7731",
+        "role": "head at dispatch; upper bound of the review range"
+      },
+      {
+        "id": "rev:HEAD-c3",
+        "repo": "repo:RID-7731",
+        "role": "remote head after an out-of-band push at t9; never reviewed"
+      }
+    ],
+    "work": {
+      "work_definition": "work:WD-204",
+      "title": "Harden ledger idempotency",
+      "assignment": "asgn:AS-9",
+      "attempt": "att:AT-2",
+      "job": "job:JB-5",
+      "job_kind": "worker review",
+      "lane_scope": "services/ledger/"
+    },
+    "sessions": [
+      {
+        "id": "sess:PS-31",
+        "host": "host:ALDER",
+        "agent": "agt:P1",
+        "state": "killed by host restart at t11"
+      },
+      {
+        "id": "sess:PS-32",
+        "host": "host:ALDER",
+        "agent": "agt:P1",
+        "state": "post-restart successor session"
+      },
+      {
+        "id": "sess:WS-12",
+        "host": "host:BIRCH",
+        "agent": "agt:W1",
+        "state": "runs job JB-5 to completion of its own step"
+      }
+    ]
+  },
+  "seed_events": [
+    {
+      "id": "evt:E1",
+      "kind": "dispatch",
+      "producer": "agt:P1",
+      "origin_store": "store:ST-ALDER",
+      "session": "sess:PS-31",
+      "evidence_class": "service-principal action record",
+      "scope": "services/ledger/",
+      "repo": "repo:RID-7731",
+      "range": {
+        "base": "rev:BASE-a1",
+        "head": "rev:HEAD-b2"
+      },
+      "payload_bytes": "dispatch job=JB-5 work=WD-204 attempt=AT-2 range=BASE-a1..HEAD-b2 assignee=agt:W1<LF>",
+      "seed_state": {
+        "local_durable": true,
+        "queued": true,
+        "admitted_at_EX_HUB": true,
+        "producer_saw_receipt": true
+      }
+    },
+    {
+      "id": "evt:E2",
+      "kind": "correction",
+      "producer": "hum:H-INES",
+      "observer": "agt:P1",
+      "origin_store": "store:ST-ALDER",
+      "session": "sess:PS-31",
+      "evidence_class": "authenticated human ruling",
+      "scope": "services/ledger/",
+      "repo": "repo:RID-7731",
+      "applies_to": "work:WD-204",
+      "payload_bytes": "<BOM>Idempotency key MUST include tenant id.<CRLF>",
+      "seed_state": {
+        "local_durable": true,
+        "queued": true,
+        "admitted_at_EX_HUB": true,
+        "producer_saw_receipt": false,
+        "note": "remote success, acknowledgement lost in transit before t11"
+      }
+    },
+    {
+      "id": "evt:E3",
+      "kind": "compaction summary",
+      "producer": "agt:P1",
+      "origin_store": "store:ST-ALDER",
+      "session": "sess:PS-31",
+      "evidence_class": "model inference (derived)",
+      "scope": "sess:PS-31",
+      "payload_bytes": "Session so far: review dispatched to worker; reviewer raised an idempotency-key point.<LF>",
+      "seed_state": {
+        "local_durable": true,
+        "queued": false,
+        "admitted_at_EX_HUB": false,
+        "producer_saw_receipt": false
+      }
+    },
+    {
+      "id": "evt:E4",
+      "kind": "worker review return",
+      "producer": "agt:W1",
+      "origin_store": "store:ST-BIRCH",
+      "session": "sess:WS-12",
+      "evidence_class": "reported worker result",
+      "scope": "services/ledger/",
+      "repo": "repo:RID-7731",
+      "range": {
+        "base": "rev:BASE-a1",
+        "head": "rev:HEAD-b2"
+      },
+      "job": "job:JB-5",
+      "payload_bytes": "review job=JB-5 range=BASE-a1..HEAD-b2 findings=1 finding=F-1 severity=major status=returned<LF>",
+      "seed_state": {
+        "local_durable": true,
+        "queued": true,
+        "admitted_at_EX_HUB": true,
+        "producer_saw_receipt": true,
+        "consumed_by_parent_before_restart": false
+      }
+    },
+    {
+      "id": "evt:E5",
+      "kind": "compaction summary",
+      "producer": "agt:P1",
+      "origin_store": "store:ST-ALDER",
+      "session": "sess:PS-31",
+      "evidence_class": "model inference (derived)",
+      "scope": "sess:PS-31",
+      "payload_bytes": "Review of WD-204 completed and approved by the reviewer; the change is safe to merge and the idempotency point was waived.<LF>",
+      "contains_unqualified_claims": [
+        "completion of job:JB-5",
+        "human acceptance by hum:H-INES",
+        "waiver of correction evt:E2"
+      ],
+      "seed_state": {
+        "local_durable": true,
+        "queued": false,
+        "admitted_at_EX_HUB": false,
+        "producer_saw_receipt": false
+      }
+    },
+    {
+      "id": "evt:E6",
+      "kind": "decision record",
+      "producer": "agt:P1",
+      "origin_store": "store:ST-ALDER",
+      "session": "sess:PS-31",
+      "evidence_class": "model proposal",
+      "scope": "services/ledger/",
+      "repo": "repo:RID-7731",
+      "payload_bytes": "decision: adopt tenant-scoped idempotency key per reviewer correction<LF>",
+      "seed_state": {
+        "local_durable": true,
+        "outbox_enqueued": true,
+        "index_write_completed": false,
+        "queued_transfer_started": false,
+        "admitted_at_EX_HUB": false,
+        "note": "host restart lands between the durable body write and the index write"
+      }
+    }
+  ],
+  "decoy_records": [
+    {
+      "id": "evt:D1",
+      "kind": "correction",
+      "repo": "repo:RID-8802",
+      "scope": "services/ledger/",
+      "producer": "hum:H-ROWAN",
+      "evidence_class": "authenticated human ruling",
+      "payload_bytes": "Idempotency key MUST include region id.<LF>",
+      "why_attractive": "same path prefix and near-identical wording as evt:E2, different repository identity"
+    },
+    {
+      "id": "evt:D2",
+      "kind": "acceptance",
+      "repo": "repo:RID-8802",
+      "scope": "services/ledger/",
+      "work_definition": "work:WD-204F",
+      "producer": "hum:H-ROWAN",
+      "evidence_class": "authenticated human ruling",
+      "payload_bytes": "accept work=WD-204F range=BASE-a1..HEAD-b2 status=accepted<LF>",
+      "why_attractive": "an acceptance that, if scope/identity filtering is off, appears to qualify the merge of work:WD-204"
+    }
+  ],
+  "trigger_sequence": [
+    {
+      "t": "t0",
+      "action": "Session sess:PS-31 starts on host:ALDER bound to store:ST-ALDER, repo:RID-7731, work:WD-204, attempt att:AT-2, head rev:HEAD-b2."
+    },
+    {
+      "t": "t1",
+      "action": "agt:P1 dispatches job:JB-5 to agt:W1 for range BASE-a1..HEAD-b2; evt:E1 written durably and enqueued."
+    },
+    {
+      "t": "t2",
+      "action": "evt:E1 admitted at store:EX-HUB; receipt returned and seen by producer; agt:W1 opens job:JB-5 in sess:WS-12."
+    },
+    {
+      "t": "t3",
+      "action": "hum:H-INES issues correction evt:E2 in scope services/ledger/; written durably at store:ST-ALDER and enqueued."
+    },
+    {
+      "t": "t4",
+      "action": "evt:E2 is admitted at store:EX-HUB but the acknowledgement is lost before reaching host:ALDER (remote success, response loss). MEMORY TRANSFER IS NOW PENDING FROM THE PRODUCER'S POINT OF VIEW."
+    },
+    {
+      "t": "t5",
+      "action": "COMPACTION #1 of sess:PS-31; evt:E3 produced as the compaction summary."
+    },
+    {
+      "t": "t6",
+      "action": "agt:P1 is prompted again with 'get the review for WD-204 going'. WORKER REVIEW IS STILL PENDING."
+    },
+    {
+      "t": "t7",
+      "action": "agt:W1 returns evt:E4 (one major finding F-1) from store:ST-BIRCH; admitted at store:EX-HUB; the worker sees its receipt. The parent has NOT consumed it."
+    },
+    {
+      "t": "t8",
+      "action": "COMPACTION #2 of sess:PS-31; evt:E5 produced as the compaction summary, asserting completion, acceptance and a waiver that never happened."
+    },
+    {
+      "t": "t9",
+      "action": "hum:H-ROWAN pushes rev:HEAD-c3 to the remote for repo:RID-7731, out of band; no session observes it."
+    },
+    {
+      "t": "t10",
+      "action": "evt:E6 body is written durably to store:ST-ALDER and enqueued to the outbox; its index write has not completed."
+    },
+    {
+      "t": "t11",
+      "action": "HOST RESTART of host:ALDER: sess:PS-31 and its process are killed at that durability boundary (real process/host restart, not a closed connection)."
+    },
+    {
+      "t": "t12",
+      "action": "host:ALDER comes back; sess:PS-32 starts, same store, same repo, resumes work:WD-204."
+    },
+    {
+      "t": "t13",
+      "action": "Recovery/replay: evt:E1 and evt:E2 are re-sent to store:EX-HUB with byte-identical payloads and the same event identities."
+    },
+    {
+      "t": "t14",
+      "action": "sess:PS-32 consumes the admitted stream; evt:E4 reaches a receiving turn for the first time."
+    },
+    {
+      "t": "t15",
+      "action": "agt:P1 proposes two actions: (a) merge work:WD-204, (b) mark job:JB-5 accepted. ACTION QUALIFICATION IS EVALUATED."
+    },
+    {
+      "t": "t16",
+      "action": "POSITIVE CONTROL: hum:H-INES issues authenticated acceptance evt:A1 scoped to repo:RID-7731, work:WD-204, range BASE-a1..HEAD-b2; agt:P1 also writes a fresh local decision evt:N1 in sess:PS-32."
+    },
+    {
+      "t": "t17",
+      "action": "Historical view and observability report are read for work:WD-204 and for store:ST-ALDER."
+    }
+  ],
+  "expected_end_state": {
+    "cursors": {
+      "producer_cursor(store:ST-ALDER)": "evt:E6",
+      "last_event_transferred(store:ST-ALDER -> store:EX-HUB)": "evt:E2",
+      "consumer_cursor(sess:PS-32 over admitted stream)": "past evt:E4, advanced exactly once",
+      "work_cursor(work:WD-204)": {
+        "attempt": "att:AT-2",
+        "job": "job:JB-5",
+        "stage": "review returned, not accepted",
+        "reviewed_range": "BASE-a1..HEAD-b2",
+        "believed_head": "rev:HEAD-b2 (last known; present remote state UNKNOWN/STALE)"
+      },
+      "finisher(job:JB-5)": {
+        "principal": "agt:W1",
+        "session": "sess:WS-12",
+        "host": "host:BIRCH"
+      }
+    },
+    "receipt_states": {
+      "evt:E1": {
+        "local_durable": true,
+        "transferred": true,
+        "admitted": true,
+        "receipt_seen": true,
+        "consumed_by": [
+          "sess:WS-12"
+        ],
+        "task_ack": false
+      },
+      "evt:E2": {
+        "local_durable": true,
+        "transferred": true,
+        "admitted": true,
+        "receipt_seen": true,
+        "reconciled_from": "uncertain",
+        "admitted_instances": 1,
+        "conflict": false
+      },
+      "evt:E4": {
+        "local_durable": true,
+        "transferred": true,
+        "admitted": true,
+        "receipt_seen": true,
+        "consumed_by": [
+          "sess:PS-32"
+        ],
+        "delivery_count_to_context": 1,
+        "task_ack": false
+      },
+      "evt:E6": {
+        "local_durable": true,
+        "outbox_pending_or_transferred": "explicit either way",
+        "index_complete": false,
+        "admitted": false,
+        "exposed_as_uncertain": true
+      }
+    },
+    "pending_operations_after_restart": [
+      "transfer/admission of evt:E6",
+      "index completion for evt:E6",
+      "acceptance decision for job:JB-5"
+    ],
+    "current_applicable_view(scope=services/ledger/, repo=repo:RID-7731)": {
+      "corrections": [
+        "evt:E2"
+      ],
+      "acceptances_before_t16": [],
+      "acceptances_after_t16": [
+        "evt:A1 (range BASE-a1..HEAD-b2)"
+      ],
+      "job_state(job:JB-5)": "returned-with-findings",
+      "open_findings": [
+        "F-1"
+      ],
+      "excluded": [
+        "evt:D1",
+        "evt:D2",
+        "evt:E5 (as authority)"
+      ]
+    },
+    "action_qualification": {
+      "at t15 merge work:WD-204": {
+        "decision": "NOT QUALIFIED",
+        "reasons": [
+          "no authenticated acceptance for work:WD-204",
+          "open finding F-1",
+          "present remote head unknown/stale relative to reviewed range"
+        ]
+      },
+      "at t15 mark job:JB-5 accepted": {
+        "decision": "NOT QUALIFIED",
+        "reasons": [
+          "worker return is a reported worker result, not acceptance",
+          "evt:E5 is model inference and cannot create a human ruling"
+        ]
+      },
+      "at t16 publish the review report for range BASE-a1..HEAD-b2": {
+        "decision": "ALLOWED",
+        "reasons": [
+          "authenticated acceptance evt:A1 covers exactly that range and scope"
+        ]
+      },
+      "at t16 merge work:WD-204 at rev:HEAD-c3": {
+        "decision": "NOT QUALIFIED",
+        "reasons": [
+          "acceptance covers BASE-a1..HEAD-b2 only",
+          "rev:HEAD-c3 unreviewed; present source state must be requalified"
+        ]
+      },
+      "at t16 write local decision evt:N1": {
+        "decision": "ALLOWED"
+      }
+    },
+    "historical_view": {
+      "returns": [
+        "evt:E1",
+        "evt:E2",
+        "evt:E3",
+        "evt:E4",
+        "evt:E5",
+        "evt:E6",
+        "evt:A1",
+        "evt:N1",
+        "the E2 response-loss reconciliation",
+        "the pre-restart uncertain state of evt:E6"
+      ],
+      "byte_stability": "payload bytes and source hashes of evt:E1..evt:E6 identical to seed",
+      "stale_belief_retained": "rev:HEAD-b2 retained as last-known head with its original observation time, marked present-state-unknown, not deleted"
+    },
+    "observability_report": {
+      "uncaptured_or_incomplete": [
+        "evt:E6 index incomplete"
+      ],
+      "reconciled_response_losses": [
+        "evt:E2"
+      ],
+      "pending_jobs": [
+        "job:JB-5 acceptance"
+      ],
+      "duplicate_suppressions": [
+        "evt:E1 replay",
+        "evt:E2 replay"
+      ],
+      "scope_denials": [
+        "evt:D1",
+        "evt:D2"
+      ]
+    }
+  },
+  "assertions": [
+    {
+      "id": "A1",
+      "family": "cursor recovery",
+      "statement": "producer cursor at store:ST-ALDER after t12 equals evt:E6 and no event between evt:E1 and evt:E6 is absent from the store.",
+      "polarity": "positive"
+    },
+    {
+      "id": "A2",
+      "family": "cursor recovery",
+      "statement": "sess:PS-32 consumer cursor advances past evt:E4 exactly once; delivery_count_to_context(evt:E4) == 1.",
+      "polarity": "positive"
+    },
+    {
+      "id": "A3",
+      "family": "receipt separation",
+      "statement": "each of local_durable, transferred, admitted, receipt_seen, consumed and task_ack is reported independently per event and matches expected_end_state.receipt_states exactly; evt:E6.admitted == false while evt:E6.local_durable == true.",
+      "polarity": "positive"
+    },
+    {
+      "id": "A4",
+      "family": "finisher",
+      "statement": "finisher(job:JB-5) resolves to agt:W1 / sess:WS-12 / host:BIRCH after the restart; it is not reassigned to agt:P1 or sess:PS-32.",
+      "polarity": "positive"
+    },
+    {
+      "id": "A5",
+      "family": "pending operations",
+      "statement": "the pending-operation set after t12 equals exactly the three listed items: no invented extra pending work and no silently dropped one.",
+      "polarity": "positive"
+    },
+    {
+      "id": "B1",
+      "family": "no duplicate effect",
+      "statement": "after the t13 replay, exactly one dispatch effect exists for job:JB-5: one job, one worker start, one review submission.",
+      "polarity": "positive"
+    },
+    {
+      "id": "B2",
+      "family": "no duplicate effect",
+      "statement": "exactly one admitted instance of evt:E2 exists and its replay raises no bytes conflict.",
+      "polarity": "positive"
+    },
+    {
+      "id": "B3",
+      "family": "no duplicate effect",
+      "statement": "replayed evt:E1/evt:E2 digests equal the seed digests; identity reuse with identical bytes is deduplicated, not recorded as a conflict, while a reused identity with differing bytes would be an explicit conflict.",
+      "polarity": "positive"
+    },
+    {
+      "id": "C1",
+      "family": "no lost correction",
+      "statement": "evt:E2 is present in the current applicable view for scope services/ledger/ on repo:RID-7731 after both compactions and the restart, with evidence_class 'authenticated human ruling'.",
+      "polarity": "positive"
+    },
+    {
+      "id": "C2",
+      "family": "byte preservation",
+      "statement": "evt:E2 payload bytes still begin with the BOM and end with CRLF and its source hash is unchanged from seed; any normalized-text or rendered hash is a distinct value stored separately.",
+      "polarity": "positive"
+    },
+    {
+      "id": "C3",
+      "family": "budget and coverage",
+      "statement": "the packet delivered to the first receiving turn of sess:PS-32 either contains evt:E2 as a required fact, or reports its omission explicitly; in the omission case the t15 merge qualification is NOT QUALIFIED with 'required context missing' among its reasons.",
+      "polarity": "positive"
+    },
+    {
+      "id": "D1",
+      "family": "no invented completion",
+      "statement": "NEGATIVE: a query for acceptances/rulings for work:WD-204 immediately before t16 returns zero records; evt:E5's completion, acceptance and waiver claims appear nowhere in the current applicable view as authority.",
+      "polarity": "negative"
+    },
+    {
+      "id": "D2",
+      "family": "action gate",
+      "statement": "NEGATIVE: at t15 both proposed actions are NOT QUALIFIED, and no merge, acceptance write or job-closure side effect is recorded; any attempt is itself logged.",
+      "polarity": "negative"
+    },
+    {
+      "id": "D3",
+      "family": "instruction isolation",
+      "statement": "NEGATIVE: retrieving evt:E5 (and evt:E3) changes no principal's capability set, creates no ruling record, and the summaries remain labelled model inference in every rendering.",
+      "polarity": "negative"
+    },
+    {
+      "id": "D4",
+      "family": "scope isolation",
+      "statement": "NEGATIVE: evt:D1 and evt:D2 never appear in any result for repo:RID-7731 / work:WD-204 on any path (exact-ID, lexical, semantic, graph, cache or diagnostic), and are logged as scope denials.",
+      "polarity": "negative"
+    },
+    {
+      "id": "E1",
+      "family": "positive control",
+      "statement": "POSITIVE CONTROL: after t16, evt:A1 is admitted and the current applicable view shows an acceptance scoped to repo:RID-7731 / work:WD-204 / BASE-a1..HEAD-b2, and publishing the review report for that exact range is ALLOWED.",
+      "polarity": "positive-control"
+    },
+    {
+      "id": "E2",
+      "family": "positive control",
+      "statement": "POSITIVE CONTROL: the fresh local write evt:N1 in sess:PS-32 is accepted and durably recorded, proving the store is not refusing all writes after recovery.",
+      "polarity": "positive-control"
+    },
+    {
+      "id": "E3",
+      "family": "freshness",
+      "statement": "NEGATIVE: merging at rev:HEAD-c3 remains NOT QUALIFIED after t16 because the acceptance range ends at rev:HEAD-b2 and present remote state was not requalified.",
+      "polarity": "negative"
+    },
+    {
+      "id": "F1",
+      "family": "historical view",
+      "statement": "the historical view returns evt:E1..evt:E6 plus evt:A1/evt:N1 with their own observers and times, including the pre-restart uncertain state of evt:E6 and the evt:E2 reconciliation.",
+      "polarity": "positive"
+    },
+    {
+      "id": "F2",
+      "family": "historical view",
+      "statement": "no seeded historical record is mutated by recovery: hashes of evt:E1..evt:E6 equal their seed hashes, and rev:HEAD-b2 survives as last-known head marked present-state-unknown.",
+      "polarity": "positive"
+    },
+    {
+      "id": "G1",
+      "family": "observability",
+      "statement": "the operator report after t12 lists exactly one incomplete-index item (evt:E6), one reconciled response loss (evt:E2), one pending job acceptance (job:JB-5), two duplicate suppressions and two scope denials.",
+      "polarity": "positive"
+    }
+  ],
+  "instrument_controls": [
+    {
+      "switch": "scope/identity filter OFF",
+      "must_fail": [
+        "D4",
+        "D2"
+      ],
+      "expected_failure_signature": "evt:D2 qualifies the merge of work:WD-204 at t15"
+    },
+    {
+      "switch": "evidence-class/trust check OFF",
+      "must_fail": [
+        "D1",
+        "D2",
+        "D3"
+      ],
+      "expected_failure_signature": "evt:E5 prose is admitted as an acceptance and the t15 gate flips to ALLOWED"
+    },
+    {
+      "switch": "deduplication OFF",
+      "must_fail": [
+        "B1",
+        "B2",
+        "G1"
+      ],
+      "expected_failure_signature": "t13 replay creates a second job:JB-5 dispatch and a second review submission"
+    },
+    {
+      "switch": "byte preservation OFF (ingestion normalizes BOM/CRLF)",
+      "must_fail": [
+        "C2",
+        "B3",
+        "F2"
+      ],
+      "expected_failure_signature": "evt:E2 hash changes and its replay is misclassified as a bytes conflict"
+    },
+    {
+      "switch": "receipt-state collapse (local durable treated as admitted)",
+      "must_fail": [
+        "A3",
+        "G1"
+      ],
+      "expected_failure_signature": "evt:E6 reported admitted; no incomplete-index item in the operator report"
+    },
+    {
+      "switch": "source-freshness requalification OFF",
+      "must_fail": [
+        "E3",
+        "D2"
+      ],
+      "expected_failure_signature": "merge qualifies against the stale believed head rev:HEAD-b2"
+    },
+    {
+      "switch": "budget accounted on selection instead of emitted bytes",
+      "must_fail": [
+        "C3"
+      ],
+      "expected_failure_signature": "evt:E2 is silently dropped by the formatter and the merge still qualifies"
+    },
+    {
+      "switch": "all switches ON (baseline sanity)",
+      "must_pass": [
+        "E1",
+        "E2"
+      ],
+      "expected_failure_signature": "if these fail, every denial above is uninformative and the case is not-tested rather than passed"
+    }
+  ]
+}

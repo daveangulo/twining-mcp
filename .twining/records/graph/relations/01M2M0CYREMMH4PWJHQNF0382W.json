@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T02:23:12.142Z",
+  "id": "01M2M0CYREMMH4PWJHQNF0382W",
+  "properties": {
+    "decision_summary": "Widened C25's fixture grant from R_GW to every repo it seeds (R_GW, R_LED, R_BILL)",
+    "origin": "derived"
+  },
+  "source": "01M2KFYG1DM83NV91PNWGY1GAH",
+  "target": "01M2M0CYRBXCWQ8AQF0MDHEX5X",
+  "type": "decided_by"
+}

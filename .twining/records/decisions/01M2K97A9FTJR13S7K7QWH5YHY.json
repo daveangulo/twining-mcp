@@ -1,0 +1,51 @@
+{
+  "affected_files": [
+    "docs/plans/2026-09-15-foundation-programme-plan.md"
+  ],
+  "affected_symbols": [],
+  "agent_id": "main",
+  "alternatives": [
+    {
+      "cons": [],
+      "option": "Start Stage 0 investigation workflows immediately and ask questions later",
+      "pros": [],
+      "reason_rejected": "the rulings change lane ownership, the CLI's place in the plan, and the schema design (human-ruling ceremony), so work started before them would be partly wasted"
+    },
+    {
+      "cons": [],
+      "option": "Ask only 'any questions?' back with a short list, no written plan",
+      "pros": [],
+      "reason_rejected": "the audit-trail artifacts (assumptions, decision points, fallbacks, risks, strongest alternative) are the review product Dave asked for"
+    }
+  ],
+  "assembled_before": true,
+  "assumptions": [
+    "The package's three contract files (requirements, acceptance-cases, source-evidence) are authoritative; synthetic data only; field repos out of bounds",
+    "main d7860e0 is the base; the uncommitted Codex-plugin diff is complete and parkable on its own branch",
+    "Release authority stays with Dave: no v* tags (they trigger Publish), no npm publish, no plugin scope updates, no field sends by this session",
+    "Never run migration against this repo's live .twining store; scratch copies only"
+  ],
+  "commit_hashes": [],
+  "confidence": "high",
+  "constraints": [
+    "Node >= 22.13 floor, zero new native dependencies",
+    "Never two vitest suites concurrently on this machine",
+    "Workflows: worktree isolation for code-executing agents, short prompts, inline review fallback on stall"
+  ],
+  "context": "Drafted the foundation programme plan of record (docs/plans/2026-09-15-foundation-programme-plan.md) for the twining-foundation-20260915 package: baseline pinned, all 7 supplied gaps confirmed at source, 5 stages, 7 rulings pending Dave.",
+  "depends_on": [],
+  "domain": "planning",
+  "id": "01M2K97A9FTJR13S7K7QWH5YHY",
+  "provenance": {
+    "branch": "main",
+    "commit_sha": "d7860e060ddf79e9cca2cc8a0bd9179985c04eee",
+    "recorded_at": "2026-09-15T19:38:10.074Z"
+  },
+  "rationale": "Dave's working style invests up front in a plan then executes unattended; the package itself asks for ruling briefs (decision, options/costs, recommendation, unblocks, delay cost) rather than repeated permission requests. Execution-shaping unknowns (CLI scheduling vs the field's urgent MCP whitelist, second computer, Codex host install, trial budget/model, human-ruling ceremony, branch/version form, W2 absorption) are product-owner calls, not implementation defaults.",
+  "rationale_source": "authored",
+  "reversible": true,
+  "scope": "docs/plans/",
+  "status": "active",
+  "summary": "Chose to write the foundation programme plan as a rulings-gated draft (7 ruling briefs) rather than start execution or ask open-ended questions",
+  "timestamp": "2026-09-15T19:38:10.095Z"
+}

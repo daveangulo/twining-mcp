@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-09-16T21:16:37.126Z",
+  "id": "01M2P189W6NWRSSKYWFGBPGRVE",
+  "properties": {
+    "decision_summary": "Chose to always render 'volatile: yes|no' (not only when true) so absent and false stay distinguishable, and to render the observation body's base/head on the observed line while scope.revision renders on the scope line, both as 8-hex base..head with one side allowed absent (..head, base..)",
+    "origin": "derived"
+  },
+  "source": "01M2P189NMS3NVJZRZK7TMTYTH",
+  "target": "01M2P189VYSRP50WNVKWQ64X5Z",
+  "type": "decided_by"
+}
