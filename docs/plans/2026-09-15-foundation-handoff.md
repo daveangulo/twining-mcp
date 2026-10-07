@@ -1,3 +1,5 @@
+> **Superseded 2026-10-07.** Items 1, 3 and 4 below are done (push; final report `docs/reports/2026-09-foundation-final.md`; operator guides). Item 2 (the trial) is deferred until after the operator-surface fixes by ruling D62; item 5 is prepared and blocked on an API key. Start from the final report's §5 (failures and correction batches A–D) and §13 (owner decisions), and the programme log from D58 onward. Branch head `842da944`, code at `0f9fd985`.
+
 # Foundation programme — handoff for the next session (written 2026-09-15 ~20:20)
 
 Read in this order: this file → `2026-09-15-foundation-programme-plan.md` (ruled plan) → `2026-09-15-foundation-programme-log.md` (A/DN/D/S audit trail, D1–D40) → `docs/adr/2026-09-foundation-contracts.md` + appendices A/B/C → `docs/reports/2026-09-foundation-matrix.md`. Gate 1: `twining_assemble` scope `src/` — the store holds every decision and finding from this run.
